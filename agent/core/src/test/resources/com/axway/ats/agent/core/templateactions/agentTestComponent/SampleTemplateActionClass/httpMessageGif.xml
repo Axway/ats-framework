@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST method="GET">
+            <HTTP_REQUEST_URL>http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif</HTTP_REQUEST_URL>
+            <HTTP_HEADER name="Accept-Language" value="en-us,en;q=0.5"/>
+            <HTTP_HEADER name="Cookie" value="s_vi=[CS]v1|25D5B6AE85011013-40000109000649D7[CE]"/>
+            <HTTP_HEADER name="Host" value="www.adobe.com"/>
+            <HTTP_HEADER name="Accept-Charset" value="ISO-8859-1,utf-8;q=0.7,*;q=0.7"/>
+            <HTTP_HEADER name="Referer" value="http://${targetHost}:8080/webtop/application/"/>
+            <HTTP_HEADER name="Accept-Encoding" value="gzip,deflate"/>
+            <HTTP_HEADER name="Keep-Alive" value="115"/>
+            <HTTP_HEADER name="User-Agent" value="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3"/>
+            <HTTP_HEADER name="Connection" value="keep-alive"/>
+            <HTTP_HEADER name="Accept" value="image/png,image/*;q=0.8,*/*;q=0.5"/>
+        </HTTP_REQUEST>
+        <HTTP_RESPONSE>
+            <HTTP_RESPONSE_RESULT>200 OK</HTTP_RESPONSE_RESULT>
+            <HTTP_HEADER name="ETag" value="&quot;6b8-5c2a9e80&quot;"/>
+            <HTTP_HEADER name="Date" value="Tue, 22 Jun 2010 12:52:25 GMT"/>
+            <HTTP_HEADER name="Content-Length" value="1720"/>
+            <HTTP_HEADER name="Expires" value="Tue, 22 Jun 2010 13:07:25 GMT"/>
+            <HTTP_HEADER name="Last-Modified" value="Fri, 26 Oct 2007 18:17:14 GMT"/>
+            <HTTP_HEADER name="Keep-Alive" value="timeout=5, max=500"/>
+            <HTTP_HEADER name="Content-Type" value="image/gif"/>
+            <HTTP_HEADER name="Connection" value="Keep-Alive"/>
+            <HTTP_HEADER name="Accept-Ranges" value="bytes"/>
+            <HTTP_HEADER name="Server" value="Apache"/>
+            <HTTP_HEADER name="Cache-Control" value="max-age=900"/>
+            <HTTP_RESOURCE_FILE>HTTP_FILE_5.gif</HTTP_RESOURCE_FILE>
+        </HTTP_RESPONSE>
+    </HTTP_ACTION>
+</HTTP_ACTIONS>

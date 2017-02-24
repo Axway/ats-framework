@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="agenttest" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../src/agent_descriptor.xsd">
+
+    <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.FirstActionClass"/>
+    
+    <initHandler name="com.axway.ats.agent.core.ant.component.agenttest.InitHandler"/>
+    
+    <finalHandler name="com.axway.ats.agent.core.ant.component.agenttest.FinalHandler"/>
+    
+    <cleanupHandler name="com.axway.ats.agent.core.ant.component.agenttest.CleanupHandler"/>
+    
+    <environment>
+
+         <file path="/tmp/test.txt" backupName="backup_test.txt"/>
+    </environment>
+
+</component>

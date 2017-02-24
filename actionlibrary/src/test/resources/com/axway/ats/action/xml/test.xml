@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicles>
+	<cars id="1" country="BG" warehouse="a2007">
+		<car id="1.1" title="VW GOLF MK4 1997 1.9 TDI manual">
+			<mark country="DE">VW</mark>
+			<model series="MK4">GOLF</model>
+			<date format="dd/mm/yyyy">
+				<day>01</day>
+				<month>06</month>
+				<year>1997</year>
+			</date>
+			<engine>
+				<fuel>diesel</fuel>
+				<volume>1900cc</volume>
+				<power>150hp</power>
+			</engine>
+			<transmission>manual</transmission>
+			<color>blue</color>
+			<status>
+				<available>1</available>
+				<partsonly>0</partsonly>
+			</status>
+			<owner id="1">
+				<firstname>Dragoslav</firstname>
+				<lastname>Slaveykov</lastname>
+				<email>dslaveykov@a2007.bg</email>
+				<phone>+359888224406</phone>
+			</owner>
+			<location>
+				<country>Bulgaria</country>
+				<city>
+					<name>Sofia</name>
+					<street>
+						<name>bul. Al. Dondukov</name>
+						<number>89</number>
+					</street>
+				</city>
+			</location>
+			<used>true</used>
+		</car>
+		<car id="1.2" title="AUDI A4 1.8T manual">
+			<mark country="DE">Audi</mark>
+			<model series="first series">A4</model>
+			<date format="dd/mm/yyyy">
+				<day>22</day>
+				<month>04</month>
+				<year>1997</year>
+			</date>
+			<engine>
+				<fuel>gasoline</fuel>
+				<volume>1800cc</volume>
+				<power>150hp</power>
+			</engine>
+			<transmission>manual</transmission>
+			<color>black</color>
+			<status>
+				<available>1</available>
+				<partsonly>0</partsonly>
+			</status>
+			<owner id="2">
+				<firstname>Georgi</firstname>
+				<lastname>Kostadinov</lastname>
+				<email>gkostadinov@a2007.bg</email>
+				<phone>+359884592466</phone>
+			</owner>
+			<location>
+				<country>Bulgaria</country>
+				<city>
+					<name>Sofia</name>
+					<street>
+						<name>bul. Hr. Botev</name>
+						<number>44</number>
+					</street>
+				</city>
+			</location>
+			<used>true</used>
+		</car>
+		<car id="1.3" title="BMW E46 2.0d manual">
+			<mark country="DE">BMW</mark>
+			<model series="E46">E46</model>
+			<date format="dd/mm/yyyy">
+				<day>14</day>
+				<month>09</month>
+				<year>2002</year>
+			</date>
+			<engine>
+				<fuel>diesel</fuel>
+				<volume>2000cc</volume>
+				<power>136hp</power>
+			</engine>
+			<transmission>manual</transmission>
+			<color>red</color>
+			<status>
+				<available>1</available>
+				<partsonly>1</partsonly>
+			</status>
+			<owner id="3">
+				<firstname>Ivan</firstname>
+				<lastname>Monev</lastname>
+				<email>imonev@a2007.bg</email>
+				<phone>+359885038475</phone>
+			</owner>
+			<location>
+				<country>Bulgaria</country>
+				<city>
+					<name>Plovdiv</name>
+					<street>
+						<name>bul. P. Slaveykov</name>
+						<number>112</number>
+					</street>
+				</city>
+			</location>
+			<used>true</used>
+		</car>
+	</cars>
+	<cars id="2" country="SER"  warehouse="Nova Frey">
+		<car id="2.1" title="Mercedes S400CDI auto">
+			<mark country="DE">Mercedes</mark>
+			<model series="W220">S400</model>
+			<date format="dd/mm/yyyy">
+				<day>21</day>
+				<month>10</month>
+				<year>2004</year>
+			</date>
+			<engine>
+				<fuel>diesel</fuel>
+				<volume>4000cc</volume>
+				<power>300hp</power>
+			</engine>
+			<transmission>auto</transmission>
+			<color>silver</color>
+			<status>
+				<available>1</available>
+				<partsonly>0</partsonly>
+			</status>
+			<owner id="1">
+				<firstname>Dragoslav</firstname>
+				<lastname>Slaveykov</lastname>
+				<email>dslaveykov@a2007.bg</email>
+				<phone>+359888224406</phone>
+			</owner>
+			<location>
+				<country>Serbia</country>
+				<city>
+					<name>Beograd</name>
+					<street>
+						<name>bul. Mihajla Pupina</name>
+						<number>9</number>
+					</street>
+				</city>
+			</location>
+			<used>false</used>
+		</car>
+		<car id="2.2" title="Fiat 500">
+			<mark country="IT">Fiat</mark>
+			<model series="first series">500</model>
+			<date format="dd/mm/yyyy">
+				<day>01</day>
+				<month>01</month>
+				<year>2005</year>
+			</date>
+			<engine>
+				<fuel>gasoline</fuel>
+				<volume>1400cc</volume>
+				<power>80hp</power>
+			</engine>
+			<transmission>manual</transmission>
+			<color>black/white</color>
+			<status>
+				<available>0</available>
+				<partsonly>0</partsonly>
+			</status>
+			<owner id="4">
+				<firstname>Stefani</firstname>
+				<lastname>Vasileva</lastname>
+				<email>svasileva@novafrey.sr</email>
+				<phone>+35844490343</phone>
+			</owner>
+			<location>
+				<country>Serbia</country>
+				<city>
+					<name>Beograd</name>
+					<street>
+						<name>bul. Milica Zarnik</name>
+						<number>104</number>
+					</street>
+				</city>
+			</location>
+			<used>false</used>
+		</car>
+		<car id="2.3" title="Porsche Cayenne Turbo S auto">
+			<mark country="DE">Porsche</mark>
+			<model series="first series">Cayenne</model>
+			<date format="dd/mm/yyyy">
+				<day>27</day>
+				<month>08</month>
+				<year>2004</year>
+			</date>
+			<engine>
+				<fuel>gasoline</fuel>
+				<volume>5000cc</volume>
+				<power>650hp</power>
+			</engine>
+			<transmission>auto</transmission>
+			<color>metallic white</color>
+			<status>
+				<available>1</available>
+				<partsonly>0</partsonly>
+			</status>
+			<owner id="5">
+				<firstname>Gergana</firstname>
+				<lastname>Hristova</lastname>
+				<email>ghristova@novafrey.sr</email>
+				<phone>+35848491392</phone>
+			</owner>
+			<location>
+				<country>Serbia</country>
+				<city>
+					<name>Novi Sad</name>
+					<street>
+						<name>ul. T. Bojanic</name>
+						<number>34</number>
+					</street>
+				</city>
+			</location>
+			<used>true</used>
+		</car>
+	</cars>
+</vehicles>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST method="GET">
+        <HTTP_REQUEST_URL>http://${targetHost}:8080/webtop/api/website/8a4581842916cac2012916cb69c90165/resource/gfx/H2HMFT.png</HTTP_REQUEST_URL>
+            <HTTP_HEADER name="Host" value="${targetHost}:8080"/>
+        </HTTP_REQUEST>
+        <HTTP_RESPONSE>
+            <HTTP_RESPONSE_RESULT>200 OK</HTTP_RESPONSE_RESULT>
+            <HTTP_HEADER name="Pragma" value="no-cache"/>
+            <HTTP_HEADER name="Cache-Control" value="cache"/>
+            <HTTP_RESOURCE_FILE>HTTP_FILE_1.png</HTTP_RESOURCE_FILE>
+        </HTTP_RESPONSE>
+    </HTTP_ACTION>    
+</HTTP_ACTIONS>

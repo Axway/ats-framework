@@ -1,0 +1,442 @@
+<Map>
+    <Section name="checkbox">
+        <Element mapID="checkbox1" type="CheckBox" name="checkbox1" value="checkbox1_value"/>
+        <Element mapID="checkbox2" type="CheckBox" name="checkbox2"/>
+        <Element mapID="checkbox3" type="CheckBox" name="checkbox3" value="checkbox3_value"/>
+        <Element mapID="checkbox4" type="CheckBox" name="checkbox4"/>
+        <Element mapID="checkbox5" type="CheckBox" name="checkbox5"/>
+        <Element mapID="checkbox6" type="CheckBox" name="checkbox6"/>
+        <Element mapID="checkbox7" type="CheckBox" name="checkbox7" id="1"/>
+        <Element mapID="checkbox8" type="CheckBox" name="checkbox8" id="2"/>
+        <Element mapID="checkbox9" type="CheckBox" name="checkbox9" id="2"/>
+        <Element mapID="checkbox10" type="CheckBox" id="10"/>
+
+        <Element mapID="checkbox_no_type_attribute" name="checkbox_no_type_attribute"/>
+        <Element mapID="checkbox_empty_form_specified" type="CheckBox" name="checkbox_empty_form_specified"/>
+
+        <Element mapID="textbox1" type="TextBox" name="checkbox3"/>
+        <Element mapID="popuplist1" type="SingleSelectList" name="checkbox4"/>
+
+        <Element mapID="checkbox20" type="CheckBox"/>
+
+        <Element mapID="checkbox30" type="WrongTypeCheckBox"/>
+    </Section>
+
+    <Section name="textbox">
+        <Element mapID="textbox1" type="TextBox" id="textbox1"/>
+        <Element mapID="textbox2" type="TextBox" name="textbox2"/>
+        <Element mapID="textbox3" type="TextBox" name="textbox3"/>
+        <Element mapID="textbox4" type="TextBox" name="textbox4"/>
+        <Element mapID="textbox5" type="TextBox"/>
+        <Element mapID="textbox6" type="TextBox" name="textbox6"/>
+        <Element mapID="textbox7" type="TextBox" id="2"/>
+        <Element mapID="textbox8" type="TextBox" id="2"/>
+
+        <Element mapID="textbox10" type="TextBox" name="textbox10"/>
+
+        <Element mapID="textbox20" type="WrongTypeTextBox"/>
+
+        <Element mapID="checkbox1" type="CheckBox" name="textbox2"/>
+
+        <Element mapID="text1" type="Text" value="existing_text"/>
+        <Element mapID="text2" type="Text" value="non_existing_text"/>
+
+        <Element mapID="textFrame" type="Text" value="existing text in frame" frame="BottomFrame -> BottomRightFrame"/>
+        <Element mapID="textFrameNonExist" type="Text" value="non_existing_text_in_frame" frame="BottomFrame -> BottomRightFrame"/>
+
+
+    </Section>
+
+    <Section name="textarea">
+        <Element mapID="textarea1" type="TextArea" id="textarea1"/>
+        <Element mapID="textarea2" type="TextArea" name="textarea2"/>
+        <Element mapID="textarea3" type="TextArea" name="textarea" id="textarea3"/>
+        <Element mapID="textarea4" type="TextArea" name="textarea4"/>
+        <Element mapID="textarea5" type="TextArea" name="textarea5"/>
+        <Element mapID="textarea6" type="TextArea" name="textarea6" id="2"/>
+        <Element mapID="textarea7" type="TextArea" name="textarea7" id="2"/>
+
+        <Element mapID="textarea10" type="TextArea" name="textarea10"/>
+
+        <Element mapID="textarea20" type="TextArea"/>
+
+        <Element mapID="textarea30" type="WrongTypeTextArea"/>
+
+        <Element mapID="checkbox1" type="CheckBox" name="textarea4"/>
+    </Section>
+
+    <Section name="button">
+        <Element mapID="button1" type="Button" value="Log In"/>
+
+        <Element mapID="button2" type="Button" id="button2"/>
+        <Element mapID="button3" type="Button" name="button3" value="btn3_value"/>
+        <Element mapID="button4" type="Button" name="button4"/>
+        <Element mapID="button5" type="Button" value="button5"/>
+
+        <Element mapID="button6" type="Button" id="button6"/>
+        <Element mapID="button7" type="Button" name="button7" value="btn7_value"/>
+        <Element mapID="button8" type="Button" name="button8"/>
+        <Element mapID="button9" type="Button" value="button9"/>
+
+        <Element mapID="button10" type="Button" id="button10"/>
+        <Element mapID="button11" type="Button" name="button11" value="btn11_value"/>
+        <Element mapID="button12" type="Button" name="button12"/>
+        <Element mapID="button13" type="Button" value="button13"/>
+
+        <Element mapID="button14" type="Button" id="button14"/>
+
+        <Element mapID="button16" type="Button" name="button16" value="btn16_value"/>
+        <Element mapID="button17" type="Button" name="button16" value="btn16_value"/>
+
+        <Element mapID="button18" type="Button" name="button19"/>
+        <Element mapID="button19" type="Button" name="button19" value="btn19_value"/>
+        <Element mapID="button20" type="Button" name="button20"/>
+
+        <Element mapID="button30" type="Button" name="submit" value="Download"/>
+
+        <Element mapID="button40" type="Button" name="button40" value="button40_value"/>
+        <Element mapID="button41" type="Button" name="button41" value="button41_value"/>
+
+        <Element mapID="button50" type="Button" name="button50" value="button50_value" frame="some_fake_frame"/>
+        <Element mapID="button51" type="Button" value="button51_value"/>
+        <Element mapID="button52" type="Button" value="button52_value"/>
+
+        <Element mapID="button60" type="Button" value="button60"/>
+
+        <Element mapID="button70" type="Button"/>
+
+        <Element mapID="button80" type="WrongTypeButton"/>
+
+        <Element mapID="textbox1" type="TextBox" name="testTextBox"/>
+    </Section>
+
+    <Section name="browsebutton">
+        <Element mapID="browse_button1" type="FileBrowse" name="browsebutton1"/>
+        <Element mapID="browse_button2" type="FileBrowse" name="browsebutton2"/>
+        <Element mapID="browse_button3" type="FileBrowse" name="browsebutton3"/>
+        <Element mapID="browse_button4" type="FileBrowse" name="browsebutton4"/>
+        <Element mapID="browse_button5" type="FileBrowse" name="browsebutton5"/>
+
+        <Element mapID="browse_button6" type="FileBrowse" name="browsebutton6" id="1"/>
+        <Element mapID="browse_button7" type="FileBrowse" name="browsebutton7" id="2"/>
+        <Element mapID="browse_button8" type="FileBrowse" name="browsebutton8" id="2"/>
+
+        <Element mapID="browse_button10" type="FileBrowse" name="browsebutton10"/>
+
+        <Element mapID="browse_button20" type="FileBrowse"/>
+
+        <Element mapID="browse_button30" type="WrongTypeFileBrowse"/>
+    </Section>
+
+    <Section name="link">
+        <Element mapID="link" type="Link" href="link.htm" name="link_name"/>
+        <Element mapID="link2" type="Link" href="link2.htm" name="link2_name"/>
+
+        <Element mapID="link3" type="Link" href="blank.html" id="link3_id"/>
+
+        <Element mapID="link4" type="Link" href="blank.html"/>
+        <Element mapID="link5" type="Link" href="blank.html"/>
+        <Element mapID="link6" type="Link" href="blank.html"/>
+
+        <Element mapID="link7" type="Link" href="blank.html" name="link7_name"/>
+        <Element mapID="link8" type="Link" href="blank.html" name="link8_name"/>
+        <Element mapID="link9" type="Link" href="blank.html" name="link8_name"/>
+        <Element mapID="link10" type="Link" href="blank.html" name="link10_name"/>
+        <Element mapID="link11" type="Link" href="blank.html" name="link8_name"/>
+
+        <Element mapID="link20" type="Link" href="blank.html" id="1"/>
+        <Element mapID="link21" type="Link" href="blank.html" id="1"/>
+
+        <Element mapID="link30" type="Link" href="blank.html" frame="fake_frame"/>
+        <Element mapID="link31" type="link" href="blank.html"/>
+
+        <Element mapID="link40" type="Link" href="blank.html" name="link40_name"/>
+
+        <Element mapID="link50" type="Link"/>
+
+        <Element mapID="link60" type="WrongTypeLink"/>
+
+        <Element mapID="linkTitle1" type="Link" href="blank.html" title="linkTitle1"/>
+        <Element mapID="linkTitle2" type="Link" href="blank.html" title="linkTitle2"/>
+        <Element mapID="linkTitle3" type="Link" href="blank.html" title="linkTitle2"/>
+
+        <Element mapID="linkTitle4" type="Link" href="blank.html" title="linkTitle4" name="linkTitle4_name"/>
+        <Element mapID="linkTitle5" type="Link" href="blank.html" title="linkTitle4"/>
+
+        <Element mapID="log_in_textbox" type="TextBox" name="passwd"/>
+        <Element mapID="log_in_button" type="Button" value="Log In"/>
+        <Element mapID="policy_manager_link" type="Link" href="/AdminPortal/policy/list.jsp"/>
+
+        <Element mapID="linkToNewWnd" type="Link" href="blank.html" id="linkToNewWnd"/>
+
+    </Section>
+
+    <Section name="div">
+        <Element mapID="div1" type="Div" id="div1_id"/>
+        <Element mapID="div2" type="Div"/>
+        <Element mapID="div3" type="Div" id="div3_id"/>
+
+        <Element mapID="div4" type="Div" id="div4_id"/>
+        <Element mapID="div5" type="Div" id="div4_id"/>
+        <Element mapID="div6" type="Div" id="div6_id"/>
+        <Element mapID="div7" type="Div" id="div7_id"/>
+
+        <Element mapID="div10" type="Div" id="div10_id" frame="fake_frame"/>
+    </Section>
+
+    <Section name="radiogroup">
+        <Element mapID="radio_group1" type="RadioList" name="rgroup1"/>
+
+        <Element mapID="radio_group2" type="RadioList" name="rgroup1"/>
+
+        <Element mapID="radio_group4" type="RadioList" name="rgroup2"/>
+
+        <Element mapID="radio_group5" type="RadioList" name="rgroup5"/>
+
+        <Element mapID="radio_group6" type="RadioList" name="rgroup6"/>
+
+        <Element mapID="radio_group7" type="RadioList" name="rgroup7"/>
+
+        <Element mapID="radio_group8" type="RadioList" name="rgroup8"/>
+
+        <Element mapID="radio_group10" type="RadioList" name="rgroup10"/>
+
+        <Element mapID="radio_group11" type="RadioList" name="rgroup11"/>
+
+
+        <Element mapID="radio_group20" type="RadioList" name="rgroup20"/>
+
+        <Element mapID="radio_group21" type="RadioList" name="rgroup21"/>
+
+        <Element mapID="radio_group23" type="RadioList" name="rgroup23"/>
+
+        <Element mapID="radio_group24" type="RadioList" name="rgroup24"/>
+
+        <Element mapID="radio_group30" type="RadioList"/>
+
+        <Element mapID="radio_group40" type="WrongTypeRadioList"/>
+    </Section>
+
+
+    <Section name="popuplist">
+        <Element mapID="popup_list1" type="SingleSelectList" name="popuplist1"/>
+
+        <Element mapID="popup_list2" type="SingleSelectList" name="popuplist1"/>
+
+        <Element mapID="popup_list3" type="SingleSelectList" name="popuplist1"/>
+
+        <Element mapID="popup_list4" type="SingleSelectList" name="popuplist4"/>
+
+        <Element mapID="popup_list5" type="SingleSelectList" name="popuplist5"/>
+
+        <Element mapID="popup_list7" type="SingleSelectList" name="popuplist7"/>
+
+        <Element mapID="popup_list8" type="SingleSelectList" name="popuplist8"/>
+
+        <Element mapID="popup_list10" type="SingleSelectList" name="popuplist10"/>
+
+        <Element mapID="popup_list11" type="SingleSelectList" name="popuplist11"/>
+
+        <Element mapID="popup_list18" type="SingleSelectList" name="popuplist18"/>
+
+        <Element mapID="popup_list19" type="SingleSelectList" name="popuplist19"/>
+
+        <Element mapID="popup_list20" type="SingleSelectList" name="popuplist20" id="1"/>
+
+        <Element mapID="popup_list21" type="SingleSelectList" name="popuplist21" id="2"/>
+
+        <Element mapID="popup_list22" type="SingleSelectList" name="popuplist22" id="2"/>
+
+        <Element mapID="popup_list23" type="SingleSelectList" name="popuplist23" />
+
+        <Element mapID="popup_list30" type="SingleSelectList" name="popuplist30"/>
+
+        <Element mapID="popup_list40" type="SingleSelectList"/>
+
+        <Element mapID="popup_list50" type="WrongTypeSingleSelectList" name="popuplist30"/>
+    </Section>
+
+    <Section name="listbox">
+        <Element mapID="list_box1" type="MultiSelectList" name="listbox1"/>
+
+        <Element mapID="list_box2" type="MultiSelectList" name="listbox2"/>
+
+        <Element mapID="list_box3" type="MultiSelectList" name="listbox3"/>
+
+        <Element mapID="list_box4" type="MultiSelectList" name="listbox4"/>
+
+        <Element mapID="list_box5" type="MultiSelectList" name="listbox5"/>
+
+        <Element mapID="list_box6" type="MultiSelectList" name="listbox6">
+        </Element>
+
+        <Element mapID="list_box7" type="MultiSelectList" name="listbox7">
+        </Element>
+
+        <Element mapID="list_box9" type="MultiSelectList" name="listbox9">
+        </Element>
+
+        <Element mapID="list_box10" type="MultiSelectList" name="listbox10">
+        </Element>
+
+        <Element mapID="list_box11" type="MultiSelectList" name="listbox11"/>
+
+        <Element mapID="list_box12" type="MultiSelectList" name="listbox12"/>
+
+        <Element mapID="list_box13" type="MultiSelectList" name="listbox13"/>
+
+        <Element mapID="list_box14" type="MultiSelectList" name="listbox14" form="non_existing_form">
+        </Element>
+
+        <Element mapID="list_box15" type="MultiSelectList" name="listbox15"/>
+
+        <Element mapID="list_box20" type="MultiSelectList" name="listbox20" id="1"/>
+
+        <Element mapID="list_box21" type="MultiSelectList" name="listbox21" id="2"/>
+
+        <Element mapID="list_box22" type="MultiSelectList" name="listbox22" id="2"/>
+
+        <Element mapID="list_box30" type="MultiSelectList" name="listbox30"/>
+
+        <Element mapID="list_box40" type="MultiSelectList"/>
+
+        <Element mapID="list_box50" type="WrongTypeMultiSelectList"/>
+    </Section>
+
+    <Section name="forms">
+        <Element mapID="checkbox1" type="CheckBox" name="checkbox1" value="checkbox"/>
+        <Element mapID="checkbox2" type="CheckBox" name="checkbox1" value="checkbox" formid="form2"/>
+
+        <Element mapID="checkbox3" type="CheckBox" name="checkbox3" value="checkbox"/>
+        <Element mapID="checkbox4" type="CheckBox" name="checkbox4"/>
+
+        <Element mapID="textbox1" type="TextBox" name="textbox1"/>
+        <Element mapID="textbox2" type="TextBox" name="textbox2" formid="invalid_form_id"/>
+    </Section>
+
+    <Section name="frames">
+        <Element mapID="checkboxTop" type="CheckBox" name="checkboxTop" value="checkbox" frame="TopFrame"/>
+        <Element mapID="checkboxBottomLeft" type="CheckBox" name="checkboxBottomLeft" value="checkbox" frame="BottomFrame -> BottomLeftFrame"/>
+        <Element mapID="checkboxBottomRight" type="CheckBox" name="checkboxBottomRight" value="checkbox" frame="BottomFrame -> BottomRightFrame"/>
+
+        <Element mapID="checkbox1" type="CheckBox" name="not_existing_checkbox" value="checkbox" frame="BottomFrame -> BottomRightFrame"/>
+        <Element mapID="checkboxTop2" type="CheckBox" name="checkboxTop" value="checkbox" frame="BottomFrame -> BottomRightFrame"/>
+
+        <Element mapID="duplicatedCheckboxAtTop" type="CheckBox" name="duplicatedCheckbox" frame="TopFrame"/>
+        <Element mapID="duplicatedCheckboxAtBottomLeft" type="CheckBox" name="duplicatedCheckbox" frame="BottomFrame -> BottomLeftFrame"/>
+        <Element mapID="duplicatedCheckboxAtBottomRight" type="CheckBox" name="duplicatedCheckbox" frame="BottomFrame -> BottomRightFrame"/>
+    </Section>
+
+    <Section name="table">
+
+        <Element mapID="editableTable" type="Table" id="editableTable"/>
+
+        <Element mapID="table1" type="Table" id="id_table1"/>
+        <Element mapID="table2" type="Table" title="table2_title"/>
+        <Element mapID="table3" type="Table" title="table2_title"/>
+        <Element mapID="table4" type="Table" title="table4_title"/>
+        <Element mapID="table5" type="Table" title="table5_title"/>
+        <Element mapID="table6" type="Table" title="table6_title"/>
+        <Element mapID="table7" type="Table" title="table7_title"/>
+        <Element mapID="table8" type="Table" title="table8_title"/>
+        <Element mapID="table9" type="FAKETable" title="table9_title"/>
+
+        <Element mapID="table11" type="Table" id="id_table11"/>
+        <Element mapID="table12" type="Table" id="id_table11"/>
+
+        <Element mapID="table13" type="Table" title="table13_title" name="table13_name"/>
+        <Element mapID="table14" type="Table" title="table13_title" name="table13_name"/>
+
+        <Element mapID="table15" type="Table" name="table15_name"/>
+        <Element mapID="table16" type="Table" name="table15_name"/>
+
+        <Element mapID="table17" type="Table" title="table17_title"/>
+        <Element mapID="table18" type="Table" title="table17_title"/>
+
+        <Element mapID="table19" type="Table" fnb="table19_fnb"/>
+        <Element mapID="table20" type="Table" fnb="table19_fnb"/>
+
+        <Element mapID="table21" type="Table" fnbStartsWith="table21_fnbStartsWith"/>
+        <Element mapID="table22" type="Table" fnbStartsWith="table21_fnbStartsWith"/>
+
+        <Element mapID="table23" type="Table" fnbEndsWith="table23_fnbEndsWith"/>
+        <Element mapID="table24" type="Table" fnbEndsWith="table23_fnbEndsWith"/>
+
+        <Element mapID="table25" type="Table" fnbContains="table25_fnbContains"/>
+        <Element mapID="table26" type="Table" fnbContains="table25_fnbContains"/>
+
+        <Element mapID="table30" type="Table" title="table30_title" frame="fake_frame"/>
+
+        <Element mapID="table31" type="Table" fnb="TABLE_31"/>
+
+        <Element mapID="table43" type="Table" id="id_table43"/>
+
+        <Element mapID="table50" type="Table"/>
+
+        <Element mapID="table60" type="WrongTypeTable"/>
+
+    </Section>
+
+    <Section name="image">
+        <Element mapID="image_no_such_image" type="Image" id="image_no_such_image" src="image_no_such_image"/>
+        <Element mapID="image1" type="Image" id="image1" src="image1.jpg"/>
+        <Element mapID="image2" type="Image" src="image2.jpg"/>
+        <Element mapID="image3" type="Image" src="image3.jpg"/>
+        <Element mapID="image4" type="Image" src="image4.jpg" alt="Image4" />
+        <Element mapID="image5" type="Image" src="image5.jpg" alt="Image5" />
+        <Element mapID="image6" type="Image" src="image6.jpg" alt="Image6" />
+        <Element mapID="image7" type="Image" src="image7.jpg" alt="Image7" />
+        <Element mapID="image8" type="Image" src="image8.jpg" alt="Image7" />
+        <Element mapID="image9" type="Image" src="image9.jpg" id="image9" />
+        <Element mapID="image10" type="Image" alt="image10.jpg" id="image10" src="image10.jpg" />
+        <Element mapID="image11" type="Image" src="image11.jpg" alt="image11" />
+        <Element mapID="image12" type="Image" src="image12.jpg" />
+        <Element mapID="image13" type="Image" src="image12.jpg" frame="no_such_frame" />
+    </Section>
+
+
+    <Section name="sessions">
+        <Element mapID="poupWndLink" type="Link" href="sessions2.htm"/>
+        <Element mapID="checkbox1" type="CheckBox" name="checkbox1"/>
+        <Element mapID="textbox1" type="TextBox" name="textbox1"/>
+        <Element mapID="textarea1" type="TextArea" name="textarea1"/>
+        <Element mapID="button1" type="Button" name="button1Name"/>
+    </Section>
+
+    <Section name="download">
+        <Element mapID="downloadFileL" type="Link" href="../files/TestFile.txt"/>
+    </Section>
+
+
+
+
+
+    <Section name="mg_admin_ui_login">
+        <Element mapID="loginTB" type="TextBox" name="passwd"/>
+        <Element mapID="loginB" type="Button" value="Log In"/>
+    </Section>
+
+    <Section name="mg_admin_ui_administration">
+        <Element mapID="AdministrationL" type="Link" href="/admin/license/index.php"/>
+        <Element mapID="backupRestoreL" type="Link" href="/admin/license/configuration.php" name="Backup + Restore"/>
+        <Element mapID="supportL" type="Link" href="/admin/license/support.php" name="Support"/>
+        <Element mapID="queuesL" type="Link" href="/admin/stats/queue.php" name="Queues"/>
+        <Element mapID="troubleshootingL" type="Link" href="/admin/license/advanced_diagnostic_tools.php" name="Troubleshooting"/>
+    </Section>
+
+    <Section name="blank_tes">
+        <Element mapID="loginTB" type="TextBox" name="passwd"/>
+        <Element mapID="loginB" type="Button" value="Log In"/>
+    </Section>
+
+    <Section name="testXPath">
+        <Element mapID="linkToBlankPage" type="Link" id="dupId" frame="SomeFrame" xpath="//html/body/form[1]/a[@id='dupId']" />
+        <Element mapID="linkToLinksPage" type="Link" id="dupId" frame="SomeFrame" xpath="//html/body/form[2]/a[@id='dupId']" />
+
+        <Element mapID="link_something1" type="Link" id="dupId" frame="OtherFrame -> NestedFrame" xpath="//html/body/div[2]/span[@class='someCssClass']/a[1][@id='dupId']" />
+        <Element mapID="link_something2" type="Link" id="dupId" frame="OtherFrame -> NestedFrame" xpath="//html/body/div[2]/span[@class='someCssClass']/a[2][@id='dupId']" />
+
+        <Element mapID="otherLinkToLinksPage" type="Link" id="dupId" frame="OtherFrame -> NestedFrame" xpath="//html/body/div[1]/span[@class='someCssClass']/a[@id='dupId']" />
+    </Section>
+
+</Map>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>My comment</comment>
+<entry key="text/plain">txt</entry>
+<entry key="text/html">html</entry>
+<entry key="text/javascript">js</entry>
+<entry key="text/x-js">js</entry>
+<entry key="text/css">css</entry>
+<entry key="text/xml">xml</entry>
+
+<entry key="image/png">png</entry>
+<entry key="image/gif">gif</entry>
+<entry key="image/x-ico">ico</entry>
+<entry key="image/x-icon">ico</entry>
+<entry key="image/vnd.microsoft.icon">ico</entry> <!-- official MIME type at IANA -->
+<entry key="image/jpeg">jpeg</entry>
+<entry key="image/jpg">jpg</entry>
+
+<entry key="application/x-javascript">js</entry>
+<entry key="application/javascript">js</entry>
+<entry key="application/x-shockwave-flash">swf</entry>
+<entry key="application/java-archive">jar</entry>
+<entry key="application/octet-stream">dat</entry>
+</properties>

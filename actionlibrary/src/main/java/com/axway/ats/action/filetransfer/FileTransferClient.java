@@ -1,0 +1,631 @@
+/*
+ * Copyright 2017 Axway Software
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.axway.ats.action.filetransfer;
+
+import java.io.File;
+
+import org.apache.log4j.Logger;
+
+import com.axway.ats.action.ActionLibraryConfigurator;
+import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.common.filetransfer.FileTransferException;
+import com.axway.ats.common.filetransfer.TransferMode;
+import com.axway.ats.common.filetransfer.TransferProtocol;
+import com.axway.ats.core.filetransfer.As2Client;
+import com.axway.ats.core.filetransfer.ClientFactory;
+import com.axway.ats.core.filetransfer.FtpsClient;
+import com.axway.ats.core.filetransfer.HttpClient;
+import com.axway.ats.core.filetransfer.HttpsClient;
+import com.axway.ats.core.filetransfer.SftpClient;
+import com.axway.ats.core.filetransfer.model.IFileTransferClient;
+import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.validation.Validate;
+import com.axway.ats.core.validation.ValidationType;
+import com.axway.ats.core.validation.Validator;
+
+/**
+ * The {@link FileTransferClient} can be used to execute actions specific for
+ * the different file transfer protocols. The supported protocols are :
+ * <ul>
+ * <li>FTP, FTPS</li>
+ * <li>HTTP, HTTPS</li>
+ * <li>SFTP</li>
+ * <li>AS2</li>
+ * </ul>
+ *
+ * <b>User guide</b> page related to this class:
+ * <a href="https://techweb.axway.com/confluence/display/ATS/Functional+tests#Functionaltests-FileTransfers">basic</a>
+ * and
+ * <a href="https://techweb.axway.com/confluence/display/ATS/File+transfers">detailed</a>
+ */
+@PublicAtsApi
+public class FileTransferClient {
+
+    private static final Logger   log                                              = Logger.getLogger( FileTransferClient.class );
+
+    /** Constants for setting FTPS connection type. */
+    @PublicAtsApi
+    public static final String    FTPS_CONNNECTION_TYPE                            = FtpsClient.FTPS_CONNECTION_TYPE;                            // duplicate in order to prevent reverse reference from CoreLibrary to ActionLibrary
+    @PublicAtsApi
+    public static final Integer   FTPS_CONNNECTION_TYPE__IMPLICIT                  = FtpsClient.FTPS_CONNECTION_TYPE__IMPLICIT;
+    @PublicAtsApi
+    public static final Integer   FTPS_CONNNECTION_TYPE__AUTH_SSL                  = FtpsClient.FTPS_CONNECTION_TYPE__AUTH_SSL;
+    @PublicAtsApi
+    public static final Integer   FTPS_CONNNECTION_TYPE__AUTH_TLS                  = FtpsClient.FTPS_CONNECTION_TYPE__AUTH_TLS;
+
+    /** FTPS encryption protocol. Currently only one value can be specified */
+    @PublicAtsApi
+    public static final String    FTPS_ENCRYPTION_PROTOCOLS                        = FtpsClient.FTPS_ENCRYPTION_PROTOCOLS;
+
+    /** Username when authenticating over SFTP. If not specified, the public key alias name is used instead of a user name */
+    @PublicAtsApi
+    public static final String    SFTP_USERNAME                                    = SftpClient.SFTP_USERNAME;
+    /** Accepts SFTP {@link SSHCipher} or {@link SSHCipher}s array. Only the specified ciphers will be used */
+    @PublicAtsApi
+    public static final String    SFTP_CIPHERS                                     = SftpClient.SFTP_CIPHERS;
+
+    /** AS2 suffix to be added after the IP:PORT section of the URL */
+    @PublicAtsApi
+    public static final String    AS2_URL_SUFFIX                                   = As2Client.AS2_URL_SUFFIX;
+
+    /** AS2 sender ID */
+    @PublicAtsApi
+    public static final String    AS2_SENDER_ID                                    = As2Client.AS2_SENDER_ID;
+    /** AS2 sender email */
+    @PublicAtsApi
+    public static final String    AS2_SENDER_EMAIL                                 = As2Client.AS2_SENDER_EMAIL;
+    /** AS2 receiver ID */
+    @PublicAtsApi
+    public static final String    AS2_RECEIVER_ID                                  = As2Client.AS2_RECEIVER_ID;
+
+    /** Constants to request a SYNC MDN */
+    @PublicAtsApi
+    public static final String    AS2_REQUEST_SYNC_MDN                             = As2Client.AS2_REQUEST_SYNC_MDN;
+    public static final String    AS2_REQUEST_SYNC_MDN__TRUE                       = As2Client.AS2_REQUEST_SYNC_MDN__TRUE;
+
+    /** Keystore file needed when encrypting/signing a message */
+    @PublicAtsApi
+    public static final String    AS2_KEYSTORE                                     = As2Client.AS2_KEYSTORE;
+    /** Keystore file password needed when encrypting/signing a message */
+    @PublicAtsApi
+    public static final String    AS2_KEYSTORE_PASSWORD                            = As2Client.AS2_KEYSTORE_PASSWORD;
+
+    /** AS2 message subject */
+    @PublicAtsApi
+    public static final String    AS2_MESSAGE_SUBJECT                              = As2Client.AS2_MESSAGE_SUBJECT;
+
+    /**
+     * Alias for certificate used to encrypting a message.
+     * The public key of the remote server is needed.
+     */
+    @PublicAtsApi
+    public static final String    AS2_ENCRYPTION_CERT_ALIAS                        = As2Client.AS2_ENCRYPTION_CERT_ALIAS;
+    /** Constants for setting encryption algorithm */
+    @PublicAtsApi
+    public static final String    AS2_ENCRYPTION_ALGORITHM                         = As2Client.AS2_ENCRYPTION_ALGORITHM;
+    @PublicAtsApi
+    public static final String    AS2_ENCRYPTION_ALGORITHM__3DES                   = As2Client.AS2_ENCRYPTION_ALGORITHM__3DES;
+    @PublicAtsApi
+    public static final String    AS2_ENCRYPTION_ALGORITHM__RC2                    = As2Client.AS2_ENCRYPTION_ALGORITHM__RC2;
+
+    /**
+     * Alias for certificate used to sign a message
+     * The AS2 client private key is needed, its public key must be trusted by the remote server.
+     */
+    @PublicAtsApi
+    public static final String    AS2_SIGNATURE_CERT_ALIAS                         = As2Client.AS2_SIGNATURE_CERT_ALIAS;
+    /** Constants for setting signature hash method */
+    @PublicAtsApi
+    public static final String    AS2_SIGNATURE_HASH_METHOD                        = As2Client.AS2_SIGNATURE_HASH_METHOD;
+    @PublicAtsApi
+    public static final String    AS2_SIGNATURE_HASH_METHOD__MD5                   = As2Client.AS2_SIGNATURE_HASH_METHOD__MD5;
+    @PublicAtsApi
+    public static final String    AS2_SIGNATURE_HASH_METHOD__SHA1                  = As2Client.AS2_SIGNATURE_HASH_METHOD__SHA1;
+
+    /**
+     * Constants to route the AS2 transfer over TLS.
+     * Note that you do not need the server certificate as we will trust it anyway.
+     */
+    @PublicAtsApi
+    public static final String    AS2_TRANSFER_OVER_TLS                            = As2Client.AS2_TRANSFER_OVER_TLS;
+    @PublicAtsApi
+    public static final String    AS2_TRANSFER_OVER_TLS__TRUE                      = As2Client.AS2_TRANSFER_OVER_TLS__TRUE;
+
+    /** Property for customizing the HTTP/HTTPS client's socket buffer in bytes */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_SOCKET_BUFFER_SIZE                    = HttpClient.HTTP_HTTPS_SOCKET_BUFFER_SIZE;
+    /**
+     * Constants for setting HTTP/HTTPS client's upload method.
+     * The default value is PUT
+     */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_UPLOAD_METHOD                         = HttpClient.HTTP_HTTPS_UPLOAD_METHOD;
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_UPLOAD_METHOD__PUT                    = HttpClient.HTTP_HTTPS_UPLOAD_METHOD__PUT;
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_UPLOAD_METHOD__POST                   = HttpClient.HTTP_HTTPS_UPLOAD_METHOD__POST;
+
+    /**
+     * By default the HTTP/HTTPS client will first try to do the transfer without passing user credentials,
+     * if it fail due to "not authorized" then it will retry with the credentials passed.
+     * This constant allows forcing the client to pass the user credentials with the very first headers.
+     */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION       = HttpClient.HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION;
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE = HttpClient.HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE;
+
+    /**
+     * Allows adding HTTP headers to the HTTP/S requests.
+     * The values passed must be in the form '<header key>:<header value>'
+     */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_REQUEST_HEADER                        = HttpClient.HTTP_HTTPS_REQUEST_HEADER;
+
+    /**
+     * By the default the content type header on upload is set to "application/octet-stream".
+     * This constant allows setting some other value for this header.
+     */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_UPLOAD_CONTENT_TYPE                   = HttpClient.HTTP_HTTPS_UPLOAD_CONTENT_TYPE;
+
+    /**
+     * Property to specify time in milliseconds for socket read timeout. By default there is no timeout and client waits indefinitely.
+     * Value could be specified either as Integer object or String representing the number.
+     */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_SOCKET_READ_TIMEOUT                   = HttpClient.HTTP_HTTPS_SOCKET_READ_TIMEOUT;
+
+    /** HTTPS encryption protocol. You can specify more than one using ',' as separator */
+    @PublicAtsApi
+    public static final String    HTTPS_ENCRYPTION_PROTOCOLS                       = HttpsClient.HTTPS_ENCRYPTION_PROTOCOLS;
+
+    /** HTTPS cipher suite. You can specify more than one using ',' as separator */
+    @PublicAtsApi
+    public static final String    HTTPS_CIPHER_SUITES                              = HttpsClient.HTTPS_CIPHER_SUITES;
+
+    protected IFileTransferClient client                                           = null;
+
+    protected FileTransferClient() {
+
+        // this constructor is used as an alternative for classes that extend
+        // this one, in
+        // case their logic does not require the same actions that are
+        // undertaken by the other
+        // parameterized constructor
+    }
+
+    /**
+     * Overrides the default connection timeout with a new custom value
+     *
+     * @param newValue the new value of the default connection timeout in milliseconds
+     */
+    @PublicAtsApi
+    public void setConnectionTimeout( int newValue ) {
+
+        this.client.setConnectionTimeout( newValue );
+    }
+
+    /**
+     * Creates a new file transfer client, which would work with the specified
+     * {@link TransferProtocol}
+     *
+     * @param protocol
+     *            the {@link TransferProtocol} the client would work with
+     */
+    @PublicAtsApi
+    public FileTransferClient( TransferProtocol protocol ) {
+
+        try {
+            int port = protocol.getDefaultPort();
+
+            if( !protocol.toString().endsWith( "_CUSTOM" ) ) {
+                // a regular client we develop
+                this.client = ClientFactory.getInstance().getClient( protocol, port );
+            } else {
+                // a product specific client
+                String customFileTransferClient = FileTransferConfigurator.getInstance()
+                                                                          .getFileTransferClient( protocol );
+
+                this.client = ClientFactory.getInstance().getClient( protocol, port,
+                                                                     customFileTransferClient );
+            }
+
+            this.client.setDebugMode( ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode() );
+
+        } catch( Exception e ) {
+            throw new FileTransferException( e );
+        }
+    }
+
+    // -------------------- SETTINGS ------------------
+
+    /**
+     * Sets a new port for the {@link FileTransferClient} to use<br>
+     * <br>
+     * If no port is set via this method then the default one for the currently
+     * set protocol is used
+     *
+     * @param port
+     *            the port to use
+     */
+    @PublicAtsApi
+    public void setPort( @Validate(name = "port", type = ValidationType.NUMBER_PORT_NUMBER) int port ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ port } );
+
+        this.client.setCustomPort( port );
+    }
+
+    // -------------------- ACTIONS --------------------
+
+    /**
+     * Set the current {@link TransferMode} to be used by the
+     * {@link FileTransferClient}
+     *
+     * @param mode
+     *            the {@link TransferMode} to use
+     */
+    @PublicAtsApi
+    public void setTransferMode( TransferMode mode ) {
+
+        this.client.setTransferMode( mode );
+    }
+
+    /**
+     * Add custom client/protocol specific parameters. This should be set before connect.
+     * Specific keys and values are defined as constants in this class.
+     * @param key {@link #FTPS_CONNNECTION_TYPE}, {@link #HTTP_HTTPS_SOCKET_READ_TIMEOUT} or similar constants
+     * @param value the value for the corresponding key. It could be either constant if property is either:
+     *  <ul>
+     *      <li>enumerable value from constants from this class like {@link #HTTP_HTTPS_UPLOAD_METHOD__POST}</li>
+     *      <li>or string (for keys like {@link #HTTP_HTTPS_UPLOAD_CONTENT_TYPE})</li>
+     *      <li>or number (for keys like {@link #HTTP_HTTPS_SOCKET_BUFFER_SIZE}, {@link #HTTP_HTTPS_SOCKET_READ_TIMEOUT})</li>
+     *  </ul>
+     * @throws IllegalArgumentException if property passed is not supported
+     */
+    @PublicAtsApi
+    public void addCustomProperty( String key, Object value ) throws IllegalArgumentException {
+
+        this.client.addCustomProperty( key, value );
+    }
+
+    /**
+     * Uploads a the file to the specified directory and with the specified file
+     * name
+     *
+     * @param localFile
+     *            the local file to upload
+     * @param remoteDir
+     *            the remote directory to upload the file to
+     * @param remoteFile
+     *            the remote file name that the file should have
+     */
+    @PublicAtsApi
+    public void uploadFile( @Validate(name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
+                            @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                            @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ localFile, remoteDir, remoteFile } );
+
+        // upload the file itself
+        this.client.uploadFile( localFile, remoteDir, remoteFile );
+    }
+
+    /**
+     * Upload a the file to the specified directory and with the specified file
+     * name
+     *
+     * @param localFile
+     *            the local file to upload
+     * @param remoteDir
+     *            the remote directory to upload the file to
+     */
+    @PublicAtsApi
+    public void uploadFile( String localFile, String remoteDir ) {
+
+        File local = new File( localFile );
+        uploadFile( localFile, remoteDir, local.getName() );
+    }
+
+    /**
+     * Download a file from the specified directory and with the specified file
+     * name
+     *
+     * @param localDir
+     *            the local directory to download the file to
+     * @param localFile
+     *            the local file that will be created
+     * @param remoteDir
+     *            the remote directory to download from
+     * @param remoteFile
+     *            the remote file to download
+     */
+    @PublicAtsApi
+    public void downloadFile( @Validate(name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
+                              @Validate(name = "localDir", type = ValidationType.STRING_NOT_EMPTY) String localDir,
+                              @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                              @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ localFile, localDir, remoteDir,
+                                                                remoteFile } );
+
+        // upload the file itself
+        this.client.downloadFile( IoUtils.normalizeDirPath( localDir ) + localFile, remoteDir, remoteFile );
+    }
+
+    /**
+     * Downloads a file from the specified directory and with the specified file
+     * name, the download will preserve the name of the file
+     *
+     * @param localDir
+     *            the local directory to download the file to
+     * @param remoteDir
+     *            the remote directory to download from
+     * @param remoteFile
+     *            the remote file to download
+     */
+    @PublicAtsApi
+    public void downloadFile( @Validate(name = "localDir", type = ValidationType.STRING_NOT_EMPTY) String localDir,
+                              @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                              @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ localDir, remoteDir, remoteFile } );
+
+        // upload the file itself
+        this.client.downloadFile( IoUtils.normalizeDirPath( localDir ) + remoteFile, remoteDir, remoteFile );
+    }
+
+    /**
+     * Execute some custom command.
+     * This is specific for each protocol and remote server.
+     *
+     * @param command the command to execute
+     * @return the command output
+     */
+    @PublicAtsApi
+    public String executeCommand( @Validate(name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ command } );
+
+        // execute the command
+        return this.client.executeCommand( command );
+    }
+
+    /**
+     * Starts an upload in a different thread and then pauses it
+     * and waits to be resumed by {@link resumePausedTransfer}.
+     *
+     * <p><b>Only one upload should be started and paused. Other transfers with the same object
+     * should be done only after this one is resumed.</b></p>
+     *
+     * @param localFile
+     *            the local file to upload
+     * @param remoteDir
+     *            the remote directory to upload the file to
+     * @param remoteFile
+     *            the remote file name that the file should have
+     */
+    @PublicAtsApi
+    public void startUploadAndPause( @Validate(name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
+                                     @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                                     @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ localFile, remoteDir, remoteFile } );
+
+        this.client.startUploadAndPause( localFile, remoteDir, remoteFile );
+    }
+
+    /**
+     * Starts an upload in a different thread and then pauses it
+     * and waits to be resumed by {@link resumePausedTransfer}.
+     *
+     * <p><b>Only one upload should be started and paused. Other transfers with the same object
+     * should be done only after this one is resumed.</b></p>
+     *
+     * @param localFile
+     *            the local file to upload
+     * @param remoteDir
+     *            the remote directory to upload the file to
+     */
+    @PublicAtsApi
+    public void startUploadAndPause( String localFile, String remoteDir ) {
+
+        File local = new File( localFile );
+        startUploadAndPause( localFile, remoteDir, local.getName() );
+    }
+
+    /**
+     * Resumes a started and paused transfer.
+     */
+    @PublicAtsApi
+    public void resumePausedTransfer() {
+
+        this.client.resumePausedTransfer();
+    }
+
+    @PublicAtsApi
+    public void connect( @Validate(name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ hostname } );
+
+        doConnect( hostname, null, null );
+    }
+
+    /**
+     * Connect to a remote host using basic authentication
+     *
+     * @param hostname
+     *            the host to connect to
+     * @param userName
+     *            the user name
+     * @param password
+     *            the password for the provided user name
+     */
+    @PublicAtsApi
+    public void connect( @Validate(name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname,
+                         @Validate(name = "userName", type = ValidationType.STRING_NOT_EMPTY) String userName,
+                         @Validate(name = "password", type = ValidationType.STRING_NOT_EMPTY) String password ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ hostname, userName, password } );
+
+        doConnect( hostname, userName, password );
+    }
+
+    private void doConnect( String hostname, String userName, String password ) {
+
+        ActionLibraryConfigurator configurator = ActionLibraryConfigurator.getInstance();
+        long initialDelay = configurator.getFileTransferConnectionInitialDelay();
+        try {
+            Thread.sleep( initialDelay );
+        } catch( InterruptedException e ) {
+            log.error( "Interrupted before the initial delay has passed", e );
+        }
+
+        int attempts = configurator.getFileTransferConnectionAttempts();
+        long interval = configurator.getFileTransferConnectionInterval();
+
+        while( attempts-- > 0 ) {
+            // connect using base authentication
+            try {
+                this.client.connect( hostname, userName, password );
+                return;
+            } catch( FileTransferException e ) {
+                log.error( "Connection attempt failed", e );
+            }
+
+            log.info( "Connection attempts left: " + attempts );
+
+            if( attempts > 0 ) {
+                try {
+                    Thread.sleep( interval );
+                } catch( InterruptedException e ) {
+                    log.error( "Interrupted before the interval between attempts has passed", e );
+                }
+            }
+        }
+
+        throw new FileTransferException( "Could not connect. Look up the reason in the log." );
+    }
+
+    /**
+     * Connect to a remote host using secure authentication
+     *
+     * @param hostname
+     *            the host to connect to
+     * @param keystoreFile
+     *            the file containing the key store
+     * @param keystorePassword
+     *            the key store password
+     * @param privateKeyAlias
+     *            the private key alias
+     */
+    @PublicAtsApi
+    public void connect( @Validate(name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname,
+                         @Validate(name = "keystoreFile", type = ValidationType.STRING_NOT_EMPTY) String keystoreFile,
+                         @Validate(name = "keystorePassword", type = ValidationType.STRING_NOT_EMPTY) String keystorePassword,
+                         @Validate(name = "privateKeyAlias", type = ValidationType.STRING_NOT_EMPTY) String privateKeyAlias ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ hostname, keystoreFile, keystorePassword,
+                                                                privateKeyAlias } );
+
+        ActionLibraryConfigurator configurator = ActionLibraryConfigurator.getInstance();
+        long initialDelay = configurator.getFileTransferConnectionInitialDelay();
+        try {
+            Thread.sleep( initialDelay );
+        } catch( InterruptedException e ) {
+            log.error( "Interrupted before the initial delay has passed", e );
+        }
+
+        int attempts = configurator.getFileTransferConnectionAttempts();
+        long interval = configurator.getFileTransferConnectionInterval();
+
+        while( attempts-- > 0 ) {
+            // connect using base authentication
+            try {
+                this.client.connect( hostname, keystoreFile, keystorePassword, privateKeyAlias );
+                return;
+            } catch( FileTransferException e ) {
+                log.error( "Connection attempt failed", e );
+            }
+
+            log.info( "Connection attempts left: " + attempts );
+
+            if( attempts > 0 ) {
+                try {
+                    Thread.sleep( interval );
+                } catch( InterruptedException e ) {
+                    log.error( "Interrupted before the interval between attempts has passed", e );
+                }
+            }
+        }
+
+        throw new FileTransferException( "Could not connect. Look up the reason in the log." );
+    }
+
+    /**
+     * Disconnect from the remote host
+     */
+    @PublicAtsApi
+    public void disconnect() {
+
+        // connect using base authentication
+        this.client.disconnect();
+    }
+
+    /**
+     * Enable or disable gathering of the responses for the protocol commands.
+     * Not implemented for all protocols. Available for FTP and FTPS
+     * @param enable <b>true</b> to enable, <b>false</b> to disable response gathering.
+     */
+    @PublicAtsApi
+    public void enableResponseCollection( boolean enable ) {
+
+        this.client.enableResponseCollection( enable );
+    }
+
+    /**
+     * Gets the gathered responses for the protocol commands. Available for FTP and FTPS.
+     * @return array of all the responses since gatherResponses(true) was invoked or <b>null</b> otherwise.
+     */
+    @PublicAtsApi
+    public String[] getResponses() {
+
+        return this.client.getResponses();
+    }
+
+    /**
+     * <b>Note:</b> This method is unofficial. It returns object from
+     * the core of ATS framework which is not supposed to be used directly 
+     * by customers. 
+     * It might be changed or removed at any moment without notice.
+     * 
+     * @return the internal object handling the actual operations
+     */
+    public Object getInternalObject() {
+
+        return this.client;
+    }
+}

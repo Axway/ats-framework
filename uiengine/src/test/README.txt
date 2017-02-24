@@ -1,0 +1,1 @@
+Here are left sample functional tests for run with Maven

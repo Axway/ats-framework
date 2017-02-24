@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="stautomation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../../../src/agent_descriptor.xsd">
+	
+    <!--All the action classes are defined below-->
+    <actionClass name="com.axway.st.automation.fixtures.configuration.accounts.subscription.SentToSettings"/>
+    
+    <!--Custom cleanup handler-->
+    <cleanupHandler name="com.axway.st.automation.fixtures.CleanupHandler"/>
+
+    <!--Environment description-->
+    <environment backupFolder="/opt/TMWD/SecureTransport">
+    
+        <!--Oracle tables--> 
+        <database host="127.127.127.127" port="33060" name="st" user="root" password="axway" type="mysql">
+            <table name="AT_CustAttr_LocalCerts"/>
+            <table name="AT_CustAttr_PartnerCerts"/>
+            <table name="Account"/>
+            <table name="Application"/>
+            <table name="Application_BusinessUnit"/>
+            <table name="BusinessUnit"/>
+            <table name="CertificateKey"/>
+            <table name="CertificateReference"/>
+            <table name="CertificateRequest"/>
+            <table name="CustomAttributes"/>
+            <table name="CustomProperties"/>
+            <table name="DataTransformation"/>
+            <table name="DelegatedAdministrator"/>
+            <table name="DelegatedAdministrator_BusinessUnit"/>
+            <table name="Event"/>
+            <table name="LicenseSubject"/>
+            <table name="Revision"/>
+            <table name="Site"/>
+            <table name="SiteTemplate"/>
+            <table name="Subscription"/>
+            <table name="SubtransmissionStatus"/>
+            <table name="TransferConfiguration"/>
+            <table name="TransferData"/>
+            <table name="TransferStatus"/>
+            <table name="VirtualUser"/>
+        </database>
+        
+        <file path="testfile1.txt"/>
+        <file path="testfile2.txt" backupName="testfile2.txt_backup"/>
+    </environment>
+</component>

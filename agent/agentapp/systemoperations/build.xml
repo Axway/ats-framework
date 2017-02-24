@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="ats-agent-systemoperations"
+         basedir="."
+         xmlns="antlib:org.apache.tools.ant"
+         xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:ant-contrib="antlib:net.sf.antcontrib"
+         default="all">
+
+    <echo>Using Ant version: ${ant.version}</echo>
+    <property name="build.compiler" value="extJavac"/>
+    <echo>Using Java home: ${java.home}; Property java.version: ${java.version}</echo>
+    <!-- Next 2 properties set syntax and bytecode compliance level (javac task) -->
+    <property name="ant.build.javac.source" value="${java.version}" />
+    <property name="ant.build.javac.target" value="${java.version}" />
+
+    <!-- the name of your Agent component, this defines the names of the produced jar files -->
+    <property name="agent.component.name" value="ats-agent-systemoperations"/>
+    <!-- the folder where the Agent actions are -->
+    <property name="agent.component.src" value="${basedir}/src/main/java"/>
+
+    <!-- the java package where the Agent actions are -->
+    <property name="source.package" value="com.axway.ats.agent.components.system.operations"/>
+    <!-- the java package of the produced client endpoints -->
+    <property name="result.package" value="com.axway.ats.agent.components.system.operations.clients"/>
+
+    <!-- the folder with the ATS libraries -->
+    <property name="libs.ats" value="${basedir}/target/lib/ats" />
+    <!-- the folder where you will get the produced jar files -->
+    <property name="distribution.dir" value="${basedir}/target/dist" />
+
+    <path id="agent.component.compile.classpath">
+        <fileset dir="${libs.ats}" includes="*.jar"/>
+    </path>
+
+    <!-- this code is used to create the java source files of the client stubs -->
+    <macrodef name="run-acgen">
+        <attribute name="src.dir" />
+        <attribute name="dest.dir" />
+        <attribute name="descriptor.xml" />
+        <attribute name="package" />
+        <attribute name="sourcePackage" />
+        <sequential>
+            <mkdir dir="@{dest.dir}" />
+            <taskdef name="acgen" classname="com.axway.ats.agent.core.ant.ACGen">
+                <classpath>
+                        <pathelement path="${basedir}/target/${agent.component.name}-server-classes" />
+                        <fileset dir="${libs.ats}" includes="**/*.jar"/>
+                </classpath>
+            </taskdef>
+            <acgen descriptor="@{descriptor.xml}"
+                   sourcedir="@{src.dir}"
+                   destdir="@{dest.dir}"
+                   package="@{package}"
+                   sourcePackage="@{sourcePackage}">
+            </acgen>
+        </sequential>
+    </macrodef>
+
+
+    <!-- Agent Component targets -->
+    <target name="component-create" depends="component-compile-server,
+                    component-generate-client,
+                    component-compile-client,
+                    component-jar" />
+
+    <target name="component-compile-server">
+
+        <mkdir dir="${basedir}/target"/>
+
+        <echo>Creating ATS Agent component: ${agent.component.name}</echo>
+
+        <mkdir dir="${basedir}/target/${agent.component.name}-server-classes"/>
+        <mkdir dir="${basedir}/target/${agent.component.name}-server-resources"/>
+        <!-- <mkdir dir="${basedir}/target/${agent.component.name}-server-resources/resources"/> -->
+        <copy todir="${basedir}/target/${agent.component.name}-server-resources" verbose="true">
+            <fileset dir="${basedir}/src/main/resources" includes="**" />
+        </copy>
+
+        <javac	srcdir="${agent.component.src}"
+                destdir="${basedir}/target/${agent.component.name}-server-classes"
+                classpathref="agent.component.compile.classpath"
+                 debug="on"
+                debuglevel="lines,vars,source"/>
+    </target>
+
+    <target name="component-generate-client">
+
+        <run-acgen
+                src.dir="${agent.component.src}"
+                dest.dir="${basedir}/target/${agent.component.name}-client-sources"
+                descriptor.xml="${agent.component.src}/../resources/META-INF/agent_descriptor.xml"
+                package="${result.package}"
+                sourcePackage="${source.package}"/>
+    </target>
+
+    <target name="component-compile-client">
+        <mkdir dir="${basedir}/target/${agent.component.name}-client-classes"/>
+        <!-- deprecation=true  add it in order to show warnings for investigation -->
+        <javac	srcdir="${basedir}/target/${agent.component.name}-client-sources"
+                destdir="${basedir}/target/${agent.component.name}-client-classes"
+                classpathref="agent.component.compile.classpath"
+                debug="true"
+                deprecation="true"/>
+    </target>
+
+    <target name="component-jar">
+        <mkdir dir="${distribution.dir}" />
+        <mkdir dir="${basedir}/target/${agent.component.name}-client-classes"/>
+        <!-- set-default-value property="build.number" value="DEV" /> -->
+
+        <!-- create client-side stubs -->
+        <!-- before
+          <create-jar dest.dir="${basedir}/target/dist" title="auto-${component.name}-client">
+            <fileset dir="${basedir}/target/${component.name}-client-classes" />
+            <fileset dir="${basedir}/target/${component.name}-client-sources" />
+        </create-jar -->
+        <!-- create client-side stubs -->
+        <jar destfile="${distribution.dir}/${agent.component.name}-client.jar" > <!-- build="${build.number}" -->
+            <fileset dir="${basedir}/target/${agent.component.name}-client-classes"/>
+            <fileset dir="${basedir}/target/${agent.component.name}-client-sources"/>
+        </jar>
+
+        <!-- create service-side stubs -->
+        <!-- create-jar dest.dir="${basedir}/target/dist" title="auto-${component.name}-service" build="${build.number}">
+            <fileset dir="${agent.component.src}"/>
+            <fileset dir="${basedir}/target/${component.name}-server-classes" />
+            <fileset dir="${basedir}/target/${agent.component.name}-server-resources"/>
+            <metainf file="${basedir}/src/agent_descriptor.xml" />
+        </create-jar -->
+        <jar destfile="${distribution.dir}/${agent.component.name}-service.jar">
+            <fileset dir="${basedir}/target/${agent.component.name}-server-classes"/>
+            <fileset dir="${agent.component.src}"/>
+            <fileset dir="${basedir}/target/${agent.component.name}-server-resources"/>
+            <metainf file="${agent.component.src}/../resources/agent_descriptor.xml" />
+        </jar>
+
+        <echo>Successfully created ATS Agent component: ${agent.component.name}</echo>
+    </target>
+
+    <target name="publish">
+        <publish-to-local-ivy-repository dist.dir="${basedir}/target/dist" />
+    </target>
+
+    <target name="clean">
+    <!-- <delete dir="target" /> Maven had already cleaned it up. Do not clean again in the middle of run -->
+    </target>
+
+    <!-- General targets -->
+    <target name="all" depends="clean, component-create" />
+
+</project>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.axway.ats.framework</groupId>
+		<artifactId>ats-framework</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ats-testharness</artifactId>
+	<name>ATS-TestHarness</name>
+	<description>ATS Test Harness Library is the entry point of ATS framework which listens for
+      events as start/stop run, start/stop test and also manage data provider tests as
+      the supported Excel data provider. It is also responsible for Quality Center integration.
+    </description>
+	<url>https://github.com/Axway/ats-framework</url>
+
+	<!-- <build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/RunAll.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/*$*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build> -->
+
+	<dependencies>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-configuration</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-log</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.10</version>
+		</dependency>				
+	    <dependency>
+	    	<groupId>com.beust</groupId>
+	      	<artifactId>jcommander</artifactId>
+	      	<version>1.48</version>
+	    </dependency>		
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.11</version>
+		</dependency>
+
+		<!-- TEST dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>

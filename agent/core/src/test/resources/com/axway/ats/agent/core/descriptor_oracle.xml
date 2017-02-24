@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dlpautomation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../../../src/agent_descriptor.xsd">
+	
+    <!--All the action classes are defined below-->
+    <actionClass name="com.axway.mft.dlp.automation.fixtures.action.PackageProcessorTool"/>
+   
+    <!--Initialization handler-->
+    <initHandler name="com.axway.mft.dlp.automation.fixtures.InitHandler"/>
+    
+    <!--Custom cleanup handler-->
+    <cleanupHandler name="com.axway.mft.dlp.automation.fixtures.CleanupHandler"/>
+    
+    <!--Environment description-->
+    <environment backupFolder="/var/corvigo">
+    
+        <!--Oracle tables--> 
+        <database name="mft" user="axway" password="axway" type="oracle" sid="some_sid">
+        
+            <table name="SETTINGS"/>
+        
+            <!-- policy tables -->
+            <table name="POLICIES" columnsToExclude="LAST_UPDATE"/>
+	        <table name="POLICY_ANNOTATIONS" columnsToExclude="LAST_UPDATE"/>
+	        <table name="POLICY_ANNOTATIONS_PER_LOCALE"/>
+	        <table name="POLICY_ATTACHMENT_LISTS"/>
+	        <table name="POLICY_INBOUND_ORDER" columnsToExclude="LAST_UPDATE"/>
+	        <table name="POLICY_LDAP_GROUP"/>
+	        <table name="POLICY_LDAP_QUERY"/>
+	        <table name="POLICY_NAME_LIST" />
+	        <table name="POLICY_NOTIFICATIONS" columnsToExclude="LAST_UPDATE"/>
+	        <table name="POLICY_NOTIF_PER_LOCALE"/>
+	        <table name="POLICY_OUTBOUND_ORDER" columnsToExclude="LAST_UPDATE"/>
+	        <table name="POLICY_PROPERTIES"/>
+	        <table name="POLICY_SHARED_LIST_ATTRIBUTE"/>
+	        <table name="POLICY_SHARED_LIST_SOURCE"/>
+	        <table name="POLICY_SHARED_LIST_UPD_STATUS"/>
+	        <table name="POLICY_SHARED_LISTS"/>
+	        <table name="POLICY_TAG_USAGE" />
+	        <table name="POLICY_TAGS" columnsToExclude="LAST_UPDATE"/>
+	        <table name="POLICY_WORD_LISTS" />
+	        
+            <!-- package store tables (FIXME: should be handled by PS Agent component) -->
+            <table name="PACKAGESTOREPKGVIEWUSER"/>
+            <table name="PACKAGESTOREPKGVIEWREF"/>
+            <table name="PACKAGESTOREPKGVIEW"/>
+            <table name="PACKAGESTOREPKGUSER"/>
+            <table name="PACKAGESTOREPKG"/>
+            <table name="PACKAGESTORESTREAMREF"/>
+            <table name="PACKAGESTORESTREAMCHUNK"/>
+            <table name="PACKAGESTORESTREAM"/>
+
+            <!-- package tags -->
+            <table name="POLICYPACKAGETAGLOG"/>
+            
+            <!-- queue processor -->
+            <table name="PACKAGE_PROCESSOR_QUEUE"/>
+
+            <!-- user tables -->
+            <table name="LOCAL_USER"/>
+            <table name="USER_PASSWORDS"/>
+            
+            <!-- RBAC tables -->
+            <table name="ROLE_ASSIGNMENTS"/>
+            <table name="IDENTITIES"/>
+            
+            <!-- Package logging tables -->
+            <table name="MFTPACKAGESTREAMLOG"/>
+            <table name="MFTPACKAGETRACKINGLOG"/>
+            <table name="MFTPACKAGEUSERLOG"/>
+            <table name="MFTPACKAGELOG"/>
+        
+            <!-- MCS tables -->
+            <table name="MCSMAILRECIPIENT"/>
+            <table name="MCSMAILQUEUE"/>
+        </database>
+        
+        <file path="testfile1.txt"/>
+        <file path="testfile2.txt" backupName="testfile2.txt_backup"/>
+    </environment>
+</component>

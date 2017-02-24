@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module
+    version="1.3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info
+        organisation="com.axway.ats"
+        module="all"
+        revision="3.0.0"
+        status="release" />
+    <configurations>
+        <conf
+            name="compile-fixtures" />
+        <conf
+            name="runtime" />
+        <conf
+            name="deploy" />
+    </configurations>
+    <publications />
+    <dependencies>
+        <dependency
+            org="com.axway.ats"
+            name="auto-action"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-config"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-core"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-common"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />			
+        <dependency
+            org="com.axway.ats"
+            name="auto-environment"
+            rev="3.0.0"
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module
+    version="1.3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info
+        organisation="com.axway.ats"
+        module="all"
+        revision="3.0.0"
+        status="release" />
+    <configurations>
+        <conf
+            name="compile-fixtures" />
+        <conf
+            name="runtime" />
+        <conf
+            name="deploy" />
+    </configurations>
+    <publications />
+    <dependencies>
+        <dependency
+            org="com.axway.ats"
+            name="auto-action"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-config"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-core"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-common"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />			
+        <dependency
+            org="com.axway.ats"
+            name="auto-environment"
+            rev="3.0.0"
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module
+    version="1.3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info
+        organisation="com.axway.ats"
+        module="all"
+        revision="3.0.0"
+        status="release" />
+    <configurations>
+        <conf
+            name="compile-fixtures" />
+        <conf
+            name="runtime" />
+        <conf
+            name="deploy" />
+    </configurations>
+    <publications />
+    <dependencies>
+        <dependency
+            org="com.axway.ats"
+            name="auto-action"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-config"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-core"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-common"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />			
+        <dependency
+            org="com.axway.ats"
+            name="auto-environment"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-harness"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-htfcore"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-log"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-rbv"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-monitor"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />			
+        <dependency
+            org="com.axway.ats"
+            name="auto-systemMonitor"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api; deploy">
+			<exclude name="auto-systemMonitor-service"/>
+		</dependency>
+		<dependency
+            org="com.axway.ats"
+            name="auto-systemOperations"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api; deploy" >
+            <artifact name="auto-systemOperations-client"/>
+        </dependency>
+        <dependency
+            org="com.axway.ats"
+            name="auto-uiengine"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-htfagent"
+            rev="3.0.0"
+            conf="runtime; deploy" />
+        <dependency
+            org="com.axway.ats"
+            name="auto-htf-webapps"
+            rev="3.0.0"
+            conf="runtime; compile-fixtures->api; deploy">
+            <exclude module="jaxws-rt"/>
+            <exclude module="jaxws-tools"/>
+        </dependency>
+    </dependencies>
+</ivy-module>

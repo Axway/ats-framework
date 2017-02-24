@@ -1,0 +1,153 @@
+Return-Path: test1@kermit.auto.lab.sofi.axway.int
+Received: from [127.0.0.1] ([10.134.9.189])
+	by kermit.auto.lab.sofi.axway.int
+	; Thu, 27 Aug 2015 14:54:54 +0300
+References: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+Subject: test2
+To: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
+From: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
+X-Forwarded-Message-Id: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+Message-ID: <55DEFAD7.2060507@kermit.auto.lab.sofi.axway.int>
+Date: Thu, 27 Aug 2015 14:56:07 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.1.0
+MIME-Version: 1.0
+In-Reply-To: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+Content-Type: multipart/mixed;
+ boundary="------------060100070504060404010709"
+
+--------------060100070504060404010709
+Content-Type: multipart/alternative;
+ boundary="------------060302000807030502010402"
+
+
+--------------060302000807030502010402
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+plain text on 2nd level
+
+--------------060302000807030502010402
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <font color="#666600"><big>test2</big></font>
+  </body>
+</html>
+
+--------------060302000807030502010402--
+
+--------------060100070504060404010709
+Content-Type: message/rfc822;
+ name="test again.eml"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="test again.eml"
+
+Return-Path: test1@kermit.auto.lab.sofi.axway.int
+Received: from [127.0.0.1] ([10.134.9.189])
+	by kermit.auto.lab.sofi.axway.int
+	; Thu, 27 Aug 2015 14:50:40 +0300
+To: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
+From: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
+Subject: test again
+Message-ID: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+Date: Thu, 27 Aug 2015 14:51:54 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.1.0
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------050509020408080901080404"
+
+This is a multi-part message in MIME format.
+--------------050509020408080901080404
+Content-Type: multipart/alternative;
+ boundary="------------090502040806050906040603"
+
+
+--------------090502040806050906040603
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+_*test *_
+
+--------------090502040806050906040603
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <u><b>test </b></u><br>
+  </body>
+</html>
+
+--------------090502040806050906040603--
+
+--------------050509020408080901080404
+Content-Type: message/rfc822;
+ name="RFC822-headers-Mailgate-Notification_2_Regular_0_Attachments.eml"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename*0="RFC822-headers-Mailgate-Notification_2_Regular_0_Attachments";
+ filename*1=".eml"
+
+Return-Path: <>
+X-Original-To: test68@automator.es.lab.sofi.axway.int
+Delivered-To: test68@automator.es.lab.sofi.axway.int
+Received: from mailgate46.perf-es.lab.sofi.axway.int (mailgate46.perf-es.lab.sofi.axway.int [10.232.12.46])
+	by automator4.auto-es.lab.sofi.axway.int (Postfix) with ESMTP id B90602E244
+	for <test68@automator.es.lab.sofi.axway.int>; Mon,  2 May 2011 14:41:56 +0300 (EEST)
+Date: Mon, 02 May 2011 14:57:04 +0300
+Content-Type: multipart/mixed;
+ boundary="_-==0R35QC70UTVNY9==-_"
+From: "MailGate Notifier" <admin@automator.es.lab.sofi.axway.int>
+To: test68@automator.es.lab.sofi.axway.int
+Message-ID: <0R35QCA0UTVNY8-01@mailgate46.perf-es.lab.sofi.axway.int>
+MIME-Version: 1.0
+Subject: The notification subject
+X-M-MSG: 
+X-WSS-ID: 0LKKH74-1A-002-03
+
+Ci0tXy09PTBSMzVRQzcwVVRWTlk5PT0tXwpDb250ZW50LVR5cGU6IG11bHRpcGFydC9hbHRl
+cm5hdGl2ZTsKIGJvdW5kYXJ5PSJfLT09MFIzNVFDNzBVVFZOWUE9PS1fIgpDb250ZW50LVRy
+YW5zZmVyLUVuY29kaW5nOiA3Yml0CkNvbnRlbnQtRGlzcG9zaXRpb246IGlubGluZQoKCi0t
+Xy09PTBSMzVRQzcwVVRWTllBPT0tXwpDb250ZW50LVR5cGU6IHRleHQvcGxhaW47CiBjaGFy
+c2V0PXV0Zi04CkNvbnRlbnQtRGlzcG9zaXRpb246IGlubGluZQpDb250ZW50LVRyYW5zZmVy
+LUVuY29kaW5nOiA3Yml0CgpUaGlzIG5vdGlmaWNhdGlvbiBzaG91bGQgYmUgZGVsaXZlcmVk
+CgotLV8tPT0wUjM1UUM3MFVUVk5ZQT09LV8KQ29udGVudC1EaXNwb3NpdGlvbjogaW5saW5l
+CkNvbnRlbnQtVHlwZTogdGV4dC9odG1sOwogY2hhcnNldD11dGYtOApDb250ZW50LVRyYW5z
+ZmVyLUVuY29kaW5nOiA3Yml0CgpUaGlzIG5vdGlmaWNhdGlvbiBzaG91bGQgYmUgZGVsaXZl
+cmVkDTxici8+Ci0tXy09PTBSMzVRQzcwVVRWTllBPT0tXy0tCgotLV8tPT0wUjM1UUM3MFVU
+Vk5ZOT09LV8KQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogN2JpdApDb250ZW50LURpc3Bv
+c2l0aW9uOiBpbmxpbmUKQ29udGVudC1UeXBlOiB0ZXh0L3JmYzgyMi1oZWFkZXJzCgpSZWNl
+aXZlZDogZnJvbSBBS1JBQ0hFVkEuYXh3YXkuaW50IChha3JhY2hldmEud2tzLnNvZmkuYXh3
+YXkuaW50CiBbMTAuMTM0LjE0LjIyNl0pIGJ5IG1haWxnYXRlNDYucGVyZi1lcy5sYWIuc29m
+aS5heHdheS5pbnQgKFBvc3RmaXgpCiB3aXRoIEVTTVRQIGlkIDI3NjczQjFBN0M3IGZvciA8
+dGVzdDY4QGF1dG9tYXRvci5lcy5sYWIuc29maS5heHdheS5pbnQ+OwogTW9uLCAyIE1heSAy
+MDExIDE0OjU2OjU5ICswMzAwIChFRVNUKQpGcm9tOiBzZW5kZXJAc2VuZGVyLmNvbQpUbzog
+dGVzdDY4QGF1dG9tYXRvci5lcy5sYWIuc29maS5heHdheS5pbnQKU3ViamVjdDogJEJyb2Fk
+Y2FzdF9Db250ZW50JApNSU1FLVZlcnNpb246IDEuMApEYXRlOiBUdWUsIDIxIEp1biAyMDA1
+IDEyOjI0OjM0ICswMzAwIChFRVNUKQpTdGF0dXM6IFJPClgtSGVhZGVyLUF1dG9tYXRpb246
+IEhlYWRlciBmb3IgcmVtb3ZhbApBdXRvbWF0aW9uLU1lc3NhZ2UtVGFnOiAxMzA0MzM3NDcz
+ODY0Ck1lc3NhZ2UtSUQ6IDwyMDExMDUwMjExNTY1OS4yNzY3M0IxQTdDN0BtYWlsZ2F0ZTQ2
+LnBlcmYtZXMubGFiLnNvZmkuYXh3YXkuaW50PgoKCi0tXy09PTBSMzVRQzcwVVRWTlk5PT0t
+Xy0tCg==
+--------------050509020408080901080404--
+
+--------------060100070504060404010709
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+plain text on 1st level
+
+--------------060100070504060404010709--

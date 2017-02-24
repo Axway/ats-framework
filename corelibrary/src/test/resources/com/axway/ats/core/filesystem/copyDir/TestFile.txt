@@ -1,0 +1,4 @@
+sample file
+some data
+¶¶¶
+test

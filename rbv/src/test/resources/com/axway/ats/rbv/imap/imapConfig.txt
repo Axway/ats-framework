@@ -1,0 +1,3 @@
+imapServer="zele.sofia-auto.axway.com";
+imapPass="PASSWORD123";
+imapInboxFolder="INBOX";

@@ -1,0 +1,16 @@
+package $PACKAGE$;
+
+import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.agent.webapp.client.EnvironmentCleanupClient;
+
+@PublicAtsApi
+public class $CLASS_NAME$ extends EnvironmentCleanupClient {
+
+    private static final String COMPONENT_NAME = "$COMPONENT_NAME$";
+
+    @PublicAtsApi
+    public $CLASS_NAME$( String host ) {
+
+        super( host );
+    }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST>
+            <HTTP_REQUEST_URL>http://${targetHost}:8080/com/axway/darwin/server/core/rest/serverpush/stream?http_method=POST&amp;http_accept=application/x-amf&amp;support_only_ok_status=true</HTTP_REQUEST_URL>
+            <HTTP_HEADER name="Content-Length" value="4"/>
+            <HTTP_HEADER name="Keep-Alive" value="115"/>
+            <AMF_OBJECT>
+                <AMF_OBJECT_TYPE/>
+            </AMF_OBJECT>
+        </HTTP_REQUEST>
+    </HTTP_ACTION>
+</HTTP_ACTIONS>

@@ -1,0 +1,159 @@
+/*
+ * Copyright 2017 Axway Software
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.axway.ats.harness.testng;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
+import org.testng.ITestListener;
+import org.testng.TestNG;
+import org.testng.internal.Version;
+
+import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.AtsVersion;
+import com.axway.ats.core.utils.ClasspathUtils;
+import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.core.utils.StringUtils;
+import com.axway.ats.harness.Configuration;
+import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.model.AutoLogger;
+
+/**
+ * Suite listener to capture test events from TestNG<br>
+ * <br>
+ *
+ * TestNG stuff: <blockquote>
+ *
+ * TestNG runs an xml file which has one "suite". <br>
+ * "suite" consists of one or more "test". <br>
+ * <br>
+ *
+ * "suite" events are provided by ISuiteListener. <br>
+ * "test" events are provided by TestListenerAdapter.
+ */
+@PublicAtsApi
+public class AtsTestngSuiteListener implements ISuiteListener {
+
+    static {
+        Configuration.init();
+    }
+
+    private static final AutoLogger logger = AutoLogger.getLogger( "com.axway.ats" );
+
+    public void onStart( ISuite suite ) {
+    	/*
+    	 * Check whether we are using a patched TestNG distribution, 
+    	 * in such case ATS supports inserting messages before a testcase is started and after it is ended.
+    	*/
+    	ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = Version.VERSION.contains("ATS");
+        // get the run name specified by the user
+        String runName = Configuration.getRunName();
+        if( runName.equals( Configuration.DEFAULT_RUN_NAME ) ) {
+            // the user did not specify a run name, use the one from TestNG
+            runName = suite.getName();
+        }
+
+        // the following is needed in case when more than one RUN are executed sequentially
+        // we need to clear some temporary data in the other listener we use
+        TestNG testNgInstance = TestNG.getDefault();
+        // cleanup the class level listener
+        new AtsTestngClassListener().resetTempData();
+        // cleanup the test level listener
+        for( ITestListener listener : testNgInstance.getTestListeners() ) {
+            if( listener instanceof AtsTestngTestListener ) {
+                ( ( AtsTestngTestListener ) listener ).resetTempData();
+            }
+        }
+
+        // start a new run
+        String hostNameIp = "";
+        try {
+            InetAddress addr = InetAddress.getLocalHost();
+            hostNameIp = addr.getHostName() + "/" + addr.getHostAddress();
+
+        } catch( UnknownHostException uhe ) {
+            hostNameIp = null;
+        }
+
+        logger.startRun( runName, Configuration.getOsName(), Configuration.getProductName(),
+                         Configuration.getVersionName(), Configuration.getBuildName(), hostNameIp );
+
+        logSystemInformation();
+        logClassPath();
+    }
+
+    public void onFinish( ISuite suite ) {
+    	// clear the lastSuiteName
+    	AtsTestngTestListener.resetLastSuiteName();
+        /*
+         * If not patched testNG is used then we will have one suite left to end before we end the run, unless
+         * no suite was ever started
+         */
+        if( AtsTestngClassListener.getLastSuiteName() == null ) {
+            logger.endSuite();
+        }
+
+        // end the run
+        logger.endRun();
+    }
+
+    private void logSystemInformation() {
+
+        StringBuilder systemInformation = new StringBuilder();
+
+        appendMessage( systemInformation, "ATS version: '", AtsVersion.getAtsVersion() );
+        appendMessage( systemInformation, " os.name: '", ( String ) System.getProperty( "os.name" ) );
+        appendMessage( systemInformation, " os.arch: '", ( String ) System.getProperty( "os.arch" ) );
+        appendMessage( systemInformation, " java.version: '",
+                       ( String ) System.getProperty( "java.version" ) );
+        appendMessage( systemInformation, " java.home: '", ( String ) System.getProperty( "java.home" ) );
+
+        List<String> ipList = new ArrayList<String>();
+        for( InetAddress ip : HostUtils.getAllIpAddresses() ) {
+            ipList.add( ip.getHostAddress() );
+        }
+
+        appendMessage( systemInformation, " IP addresses: '", ipList.toString() );
+
+        logger.info( "System information : " + systemInformation.toString() );
+    }
+
+    private void logClassPath() {
+
+        StringBuilder classpath = new StringBuilder();
+
+        classpath.append( " Test Executor classpath on \"" );
+        classpath.append( HostUtils.getLocalHostIP() );
+        classpath.append( "\" : \n" );
+        classpath.append( new ClasspathUtils().getClassPathDescription() );
+
+        logger.info( classpath, true );
+    }
+
+    private void appendMessage( StringBuilder message, String valueDesc, String value ) {
+
+        if( !StringUtils.isNullOrEmpty( value ) ) {
+            if( message.length() > 0 ) {
+                message.append( "," );
+            }
+            message.append( valueDesc + value + "'" );
+        }
+    }
+}

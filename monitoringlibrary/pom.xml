@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-framework</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ats-monitoringlibrary</artifactId>
+    <name>ATS-MonitoringLibrary</name>
+    <description>ATS system monitoring library</description>
+    <url>https://github.com/Axway/ats-framework</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-log</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework.agent.webapp</groupId>
+            <artifactId>ats-agent-webapp-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework.agent.standalone</groupId>
+            <artifactId>ats-agent-standalone-monitoring</artifactId>
+            <version>${project.version}</version>
+            <classifier>client</classifier>
+        </dependency>
+
+        <!-- external dependencies - log4j through Maven-parent -->
+    </dependencies>
+</project>

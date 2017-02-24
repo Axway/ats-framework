@@ -1,0 +1,63 @@
+Return-Path: <>
+X-Original-To: test68@automator.es.lab.sofi.axway.int
+Delivered-To: test68@automator.es.lab.sofi.axway.int
+Received: from mailgate46.perf-es.lab.sofi.axway.int (mailgate46.perf-es.lab.sofi.axway.int [10.232.12.46])
+	by automator4.auto-es.lab.sofi.axway.int (Postfix) with ESMTP id B90602E244
+	for <test68@automator.es.lab.sofi.axway.int>; Mon,  2 May 2011 14:41:56 +0300 (EEST)
+Date: Mon, 02 May 2011 14:57:04 +0300
+Content-Type: multipart/mixed;
+ boundary="_-==0R35QC70UTVNY9==-_"
+From: "MailGate Notifier" <admin@automator.es.lab.sofi.axway.int>
+To: test68@automator.es.lab.sofi.axway.int
+Message-ID: <0R35QCA0UTVNY8-01@mailgate46.perf-es.lab.sofi.axway.int>
+MIME-Version: 1.0
+Subject: The notification subject
+X-M-MSG: 
+X-WSS-ID: 0LKKH74-1A-002-03
+
+
+--_-==0R35QC70UTVNY9==-_
+Content-Type: multipart/alternative;
+ boundary="_-==0R35QC70UTVNYA==-_"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--_-==0R35QC70UTVNYA==-_
+Content-Type: text/plain;
+ charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+
+This notification should be delivered
+
+--_-==0R35QC70UTVNYA==-_
+Content-Disposition: inline
+Content-Type: text/html;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+This notification should be delivered<br/>
+--_-==0R35QC70UTVNYA==-_--
+
+--_-==0R35QC70UTVNY9==-_
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Type: text/rfc822-headers
+
+Received: from AKRACHEVA.axway.int (akracheva.wks.sofi.axway.int
+ [10.134.14.226]) by mailgate46.perf-es.lab.sofi.axway.int (Postfix)
+ with ESMTP id 27673B1A7C7 for <test68@automator.es.lab.sofi.axway.int>;
+ Mon, 2 May 2011 14:56:59 +0300 (EEST)
+From: sender@sender.com
+To: test68@automator.es.lab.sofi.axway.int
+Subject: $Broadcast_Content$
+MIME-Version: 1.0
+Date: Tue, 21 Jun 2005 12:24:34 +0300 (EEST)
+Status: RO
+X-Header-Automation: Header for removal
+Automation-Message-Tag: 1304337473864
+Message-ID: <20110502115659.27673B1A7C7@mailgate46.perf-es.lab.sofi.axway.int>
+
+
+--_-==0R35QC70UTVNY9==-_--

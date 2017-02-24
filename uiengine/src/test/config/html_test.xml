@@ -1,0 +1,34 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Run All HTML tests" verbose="1">
+
+    <!-- -->
+    <!-- SUPPORTED PARAMETERS: -->
+    <!-- -->
+    <!-- 1. "browser": which browser to run -->
+    <!-- options are: -->
+    <!-- "FF" - Firefox, -->
+    <!-- "IE" - InternetExplorer -->
+    <!-- "CH" - Chrome -->
+    <!-- "HIDDEN" - No real browser -->
+    <!-- default value: "FF" -->
+
+    <test name="Testing with Firefox browser">
+        <parameter name="browser" value="FF" />
+        <classes>
+            <class name="com.axway.ats.uiengine.htmlengine.Test_Link"></class>
+        </classes>
+        <!-- <packages>
+            <package name="com.axway.ats.uiengine.htmlengine" />
+        </packages> -->
+
+    </test>
+    <!-- <test name="Testing with Hidden browser"> <parameter name="browser"
+        value="HIDDEN" /> <classes> <class name="com.axway.automation.uiengine.htmlengine.Test_Button">
+        <methods> <include name="notExistingElement" /> </methods> </class> com.axway.ats.rbv.imap.FunctionalTest_ImapFolder
+        </classes> </test> -->
+
+    <!-- test name="Testing with Chrome browser"> <parameter name="browser"
+        value="CH" /> <packages> <package name="com.axway.ats.uiengine.htmlengine"
+        /> </packages> </test -->
+
+</suite>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.axway.ats.framework</groupId>
+		<artifactId>ats-framework</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ats-core</artifactId>
+	<name>ATS-CoreLibrary</name>
+	<description>ATS Core Library</description>
+	<url>https://github.com/Axway/ats-framework</url>
+
+	<properties>
+		<!-- Apache FTP and FTPS Library -->
+		<org.apache.commons.net.version>3.5</org.apache.commons.net.version>
+
+		<!-- MySQL: in ivy was 5.1.7 but this is missing. 5.1.13 now in Artifactory -->
+		<mysql.mysql-connector-java.version>5.1.13</mysql.mysql-connector-java.version>
+		<oracle.ojdbc.version>11.1.0.6.0</oracle.ojdbc.version>
+		<!-- jTDS dependency is defined in parent pom.xml -->
+		<com.ibm.db2jcc.version>4.13.80</com.ibm.db2jcc.version>
+		<com.datastax.cassandra.driver.version>2.0.1</com.datastax.cassandra.driver.version>
+
+		<openas2.version>20100816</openas2.version>
+		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
+			is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
+		<org.jvnet.winp.version>1.23</org.jvnet.winp.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-configuration</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>${javax.mail.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>${javax.activation.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${apache.httpcomponents.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>${apache.xercesImpl.version}</version>
+			<optional>false</optional>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>${apache.xalan.version}</version>
+		</dependency>
+		<!-- Needed for jTDS -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>${apache.commons-dbcp.version}</version>
+			<exclusions>
+				<exclusion>
+					<!-- bug in 1.5.4 which is fixed in 1.5.5 -->
+					<groupId>commons-pool</groupId>
+					<artifactId>commons-pool</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<version>${apache.commons-pool.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<version>${net.sourceforge.jtds.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle.ojdbc5</groupId>
+			<artifactId>ojdbc5</artifactId>
+			<version>${oracle.ojdbc.version}</version>
+			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
+				and loaded with reflection <scope>runtime</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.mysql-connector-java.version}</version>
+			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
+				and loaded with reflection <scope>runtime</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>db2jcc</artifactId>
+			<version>${com.ibm.db2jcc.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>${org.apache.commons.net.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openas2</groupId>
+			<artifactId>openas2</artifactId>
+			<version>${openas2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jvnet.winp</groupId>
+			<artifactId>winp</artifactId>
+			<version>${org.jvnet.winp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>${com.jcraft.jsch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>${com.datastax.cassandra.driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>${net.java.dev.jna.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>platform</artifactId>
+			<version>${net.java.dev.jna.version}</version>
+		</dependency>
+		<!-- ProcessTalker dependencies -->
+		<dependency>
+			<groupId>com.axway.ats.expectj</groupId>
+			<artifactId>ats-expectj</artifactId>
+			<version>2.0.7</version>
+		</dependency>
+		<!-- TEST dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+		</dependency>
+
+	</dependencies>
+
+</project>

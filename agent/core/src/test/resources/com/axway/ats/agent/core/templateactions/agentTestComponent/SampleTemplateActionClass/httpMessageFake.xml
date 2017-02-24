@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST method="GET">
+            <HTTP_REQUEST_URL>http://${targetHost}:8080/webtop/api/website/8a4581842916cac2012916cb69c90165/resource/gfx/H2HMFT.png</HTTP_REQUEST_URL>
+            <HTTP_HEADER name="Accept-Language" value="en-us,en;q=0.5"/>
+            <HTTP_HEADER name="Host" value="${targetHost}:8080"/>
+            <HTTP_HEADER name="Accept-Charset" value="ISO-8859-1,utf-8;q=0.7,*;q=0.7"/>
+            <HTTP_HEADER name="Accept-Encoding" value="gzip,deflate"/>
+            <HTTP_HEADER name="Keep-Alive" value="115"/>
+            <HTTP_HEADER name="User-Agent" value="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3"/>
+            <HTTP_HEADER name="Connection" value="keep-alive"/>
+            <HTTP_HEADER name="Accept" value="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"/>
+        </HTTP_REQUEST>
+        <HTTP_RESPONSE>
+            <HTTP_RESPONSE_RESULT>200 OK</HTTP_RESPONSE_RESULT>
+            <HTTP_HEADER name="Date" value="Tue, 22 Jun 2010 12:44:11 GMT"/>
+            <HTTP_HEADER name="Content-Length" value="6155"/>
+            <HTTP_HEADER name="Expires" value="0"/>
+            <HTTP_HEADER name="Last-Modified" value="Tue, 08 Jun 2010 09:01:56 GMT"/>
+            <HTTP_HEADER name="Content-Type" value="fake/encoding"/>
+            <HTTP_HEADER name="Pragma" value="no-cache"/>
+            <HTTP_HEADER name="Cache-Control" value="cache"/>
+            <HTTP_RESOURCE_FILE size="6155">HTTP_FILE_1.png</HTTP_RESOURCE_FILE>
+        </HTTP_RESPONSE>
+    </HTTP_ACTION>
+</HTTP_ACTIONS>

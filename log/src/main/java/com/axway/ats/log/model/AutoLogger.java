@@ -1,0 +1,575 @@
+/*
+ * Copyright 2017 Axway Software
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.axway.ats.log.model;
+
+import java.util.Enumeration;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+
+import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.appenders.PassiveDbAppender;
+import com.axway.ats.log.autodb.TestCaseState;
+import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
+import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.CleanupLoadQueueStateEvent;
+import com.axway.ats.log.autodb.events.ClearScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
+import com.axway.ats.log.autodb.events.EndCheckpointEvent;
+import com.axway.ats.log.autodb.events.EndLoadQueueEvent;
+import com.axway.ats.log.autodb.events.EndRunEvent;
+import com.axway.ats.log.autodb.events.EndSuiteEvent;
+import com.axway.ats.log.autodb.events.EndTestCaseEvent;
+import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
+import com.axway.ats.log.autodb.events.InsertCheckpointEvent;
+import com.axway.ats.log.autodb.events.InsertMessageEvent;
+import com.axway.ats.log.autodb.events.InsertSystemStatisticEvent;
+import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
+import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
+import com.axway.ats.log.autodb.events.RegisterThreadWithLoadQueueEvent;
+import com.axway.ats.log.autodb.events.RememberLoadQueueStateEvent;
+import com.axway.ats.log.autodb.events.StartCheckpointEvent;
+import com.axway.ats.log.autodb.events.StartRunEvent;
+import com.axway.ats.log.autodb.events.StartSuiteEvent;
+import com.axway.ats.log.autodb.events.StartTestCaseEvent;
+import com.axway.ats.log.autodb.events.UpdateRunEvent;
+
+/**
+ * The class which wraps the log4j Logger and adds all custom functionality
+ *
+ */
+public class AutoLogger {
+
+    private final static String AUTO_LOGGER_CLASS_NAME = AutoLogger.class.getName();
+
+    private Logger              logger;
+
+    private AutoLogger( Logger logger ) {
+
+        this.logger = logger;
+    }
+
+    public static synchronized AutoLogger getLogger( String name ) {
+
+        return new AutoLogger( Logger.getLogger( name ) );
+    }
+
+    public static synchronized AutoLogger getLogger( Logger logger ) {
+
+        return new AutoLogger( logger );
+    }
+
+    public Logger getInternalLogger() {
+
+        return this.logger;
+    }
+
+    /**
+     * Insert a debug message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void debug( Object message, Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.DEBUG,
+                                           message.toString(), t, false, false ) );
+    }
+
+    /**
+     * Insert a debug message
+     *
+     * @param message the message
+     */
+    public void debug( Object message ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.DEBUG,
+                                           message.toString(), null, false, false ) );
+    }
+
+    /**
+     * Insert an error message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void error( Object message, Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.ERROR,
+                                           message.toString(), t, false, false ) );
+    }
+
+    /**
+     * Insert an error message
+     *
+     * @param message the message
+     */
+    public void error( Object message ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.ERROR,
+                                           message.toString(), null, false, false ) );
+    }
+
+    /**
+     * Insert a fatal message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void fatal( Object message, Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.FATAL,
+                                           message.toString(), t, false, false ) );
+    }
+
+    /**
+     * Insert a fatal message
+     *
+     * @param message the message
+     */
+    public void fatal( Object message ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.FATAL,
+                                           message.toString(), null, false, false ) );
+    }
+
+    /**
+     * Insert an info message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void info( Object message, Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
+                                           t, false, false ) );
+    }
+
+    public void info( Object message, boolean sendRunMessage ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
+                                           null, false, sendRunMessage ) );
+    }
+
+    /**
+     * Insert an info message
+     *
+     * @param message the message
+     */
+    public void info( Object message ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
+                                           null, false, false ) );
+    }
+
+    /**
+     * Insert a trace message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void trace( Object message, Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.TRACE,
+                                           message.toString(), t, false, false ) );
+    }
+
+    /**
+     * Insert a trace message
+     *
+     * @param message the message
+     */
+    public void trace( Object message ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.TRACE,
+                                           message.toString(), null, false, false ) );
+    }
+
+    /**
+     * Insert a warning message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void warn( Object message, Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.WARN, message.toString(),
+                                           t, false, false ) );
+    }
+
+    /**
+     * Insert a warning message
+     *
+     * @param message the message
+     */
+    public void warn( Object message ) {
+
+        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.WARN, message.toString(),
+                                           null, false, false ) );
+    }
+
+    /**
+     * Start a new run
+     *
+     * @param runName name of the run
+     * @param osName name of the OS
+     * @param productName name of the product
+     * @param versionName version of the product
+     * @param buildName build of the product
+     * @param hostName name/IP of the machine , from which the run was started
+     */
+    public void startRun( String runName, String osName, String productName, String versionName,
+                          String buildName, String hostName ) {
+
+        sendEvent( new StartRunEvent( AUTO_LOGGER_CLASS_NAME, logger, runName, osName, productName,
+                                      versionName, buildName, hostName ) );
+    }
+
+    /**
+     * End a run
+     */
+    public void endRun() {
+
+        sendEvent( new EndRunEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * Add some meta info about a run.
+     * Must be called while there is an existing run
+     * 
+     * @param metaKey key
+     * @param metaValue value
+     */
+    public void addRunMetainfo( String metaKey, String metaValue ) {
+
+        sendEvent( new AddRunMetainfoEvent( AUTO_LOGGER_CLASS_NAME, logger, metaKey, metaValue ) );
+    }
+
+    /**
+     * Update the static information about the current run.
+     * <br><b>NOTE</b>: This method can be called at anytime after a run is started.
+     *
+     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     *
+     * @param runName name of the run
+     * @param osName name of the OS
+     * @param productName name of the product
+     * @param versionName version of the product
+     * @param buildName build of the product
+     * @param userNote some user note about this run
+     * @param hostName name/IP of the machine , from which the run was started
+     */
+    public void updateRun( String runName, String osName, String productName, String versionName,
+                           String buildName, String userNote, String hostName ) {
+
+        sendEvent( new UpdateRunEvent( AUTO_LOGGER_CLASS_NAME, logger, runName, osName, productName,
+                                       versionName, buildName, userNote, hostName ) );
+    }
+
+    /**
+     * Start a new suite
+     *
+     * @param suiteName name of the suite
+     */
+    public void startSuite( String packageName, String suiteName ) {
+
+        sendEvent( new StartSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger, suiteName, packageName ) );
+    }
+
+    /**
+     * End the current suite
+     */
+    public void endSuite() {
+
+        sendEvent( new EndSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * Clear all meta info about a scenario.
+     */
+    public void clearScenarioMetainfo() {
+
+        sendEvent( new ClearScenarioMetainfoEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * Add some meta info about a scenario.
+     * Must be called while there is an existing scenario
+     * 
+     * @param metaKey key
+     * @param metaValue value
+     */
+    public void addScenarioMetainfo( String metaKey, String metaValue ) {
+
+        sendEvent( new AddScenarioMetainfoEvent( AUTO_LOGGER_CLASS_NAME, logger, metaKey, metaValue ) );
+    }
+
+    /**
+     * Start a new test case
+     *
+     * @param name the name of the test case
+     * @param inputArguments the input arguments of the test case
+     */
+    public void startTestcase( String suiteFullName, String suiteSimpleName, String name,
+                               String inputArguments, String testDescription ) {
+
+        sendEvent( new StartTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, suiteFullName, suiteSimpleName,
+                                           name, inputArguments, testDescription ) );
+    }
+
+    /**
+     * End the current test case
+     *
+     * @param testCaseResult the result of the test case execution
+     */
+    public void endTestcase( TestCaseResult testCaseResult ) {
+
+        sendEvent( new EndTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, testCaseResult ) );
+    }
+
+    /**
+     * Delete the testcase with the give ID
+     * 
+     * @param testCaseId
+     */
+    public void deleteTestcase( int testCaseId ) {
+
+        sendEvent( new DeleteTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, testCaseId ) );
+    }
+
+    /**
+     * Register a thread with the given load queue
+     *
+     * @param loadQueueName name of the load queue to register this thread with
+     */
+    public void registerThreadWithLoadQueue( String loadQueueName ) {
+
+        sendEvent( new RegisterThreadWithLoadQueueEvent( AUTO_LOGGER_CLASS_NAME, logger,
+                                                         Thread.currentThread().getName(), loadQueueName ) );
+    }
+
+    /**
+     * Remember the load queue state
+     *
+     * @param name name of the load queue
+     * @param loadQueueId database load queue id
+     * @param threadingPattern description of the threading pattern
+     * @param numberThreads the number of threads this load queue starts
+     */
+    public void rememberLoadQueueState( String name, int loadQueueId, String threadingPattern,
+                                        int numberThreads ) {
+
+        sendEvent( new RememberLoadQueueStateEvent( AUTO_LOGGER_CLASS_NAME, logger, name, loadQueueId,
+                                                    threadingPattern, numberThreads ) );
+    }
+
+    /**
+     * Cleanup the load queue state
+     *
+     * @param name name of the load queue
+     */
+    public void cleanupLoadQueueState( String name ) {
+
+        sendEvent( new CleanupLoadQueueStateEvent( AUTO_LOGGER_CLASS_NAME, logger, name ) );
+    }
+
+    /**
+     * End the load queue with the given name
+     *
+     * @param name name of the load queue
+     * @param result the result of the load queue execution
+     */
+    public void endLoadQueue( String name, LoadQueueResult result ) {
+
+        sendEvent( new EndLoadQueueEvent( AUTO_LOGGER_CLASS_NAME, logger, name, result ) );
+    }
+
+    /**
+     * Start a checkpoint
+     *
+     * @param name the name of the checkpoint
+     */
+    public void startCheckpoint( String name ) {
+
+        sendEvent( new StartCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, "",
+                                             Thread.currentThread().getName() ) );
+    }
+
+    /**
+     * Start a checkpoint which is doing some data transfer
+     *
+     * @param name the name of the checkpoint
+     * @param transferUnit the data transfer unit
+     */
+    public void startCheckpoint( String name, String transferUnit ) {
+
+        sendEvent( new StartCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, transferUnit,
+                                             Thread.currentThread().getName() ) );
+    }
+
+    /**
+     * Start a checkpoint which is doing some data transfer
+     *
+     * @param name the name of the checkpoint
+     * @param transferUnit the data transfer unit
+     * @param startTimestamp the event time
+     */
+    public void startCheckpoint( String name, String transferUnit, long startTimestamp ) {
+
+        sendEvent( new StartCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, transferUnit,
+                                             Thread.currentThread().getName(), startTimestamp ) );
+    }
+
+    /**
+     * End a checkpoint and calculate the execution time and transfer rate
+     *
+     * @param name name of the checkpoint
+     * @param transferSize the size of the transfer
+     * @param result the result of the checkpoint execution
+     */
+    public void endCheckpoint( String name, long transferSize, CheckpointResult result ) {
+
+        sendEvent( new EndCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name,
+                                           Thread.currentThread().getName(), transferSize, result ) );
+    }
+
+    /**
+     * End a checkpoint and calculate the execution time and transfer rate
+     *
+     * @param name name of the checkpoint
+     * @param transferSize the size of the transfer
+     * @param result the result of the checkpoint execution
+     * @param endTimestamp the event time
+     */
+    public void endCheckpoint( String name, long transferSize, CheckpointResult result, long endTimestamp ) {
+
+        sendEvent( new EndCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name,
+                                           Thread.currentThread().getName(), transferSize, result,
+                                           endTimestamp ) );
+    }
+
+    /**
+     * Directly insert a checkpoint. The user provides all the needed info.
+     *
+     * @param name the name of the checkpoint
+     */
+    public void insertCheckpoint( String name, long responseTime, CheckpointResult result ) {
+
+        sendEvent( new InsertCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, -1, responseTime, 0, "",
+                                              Thread.currentThread().getName(), result ) );
+    }
+
+    public void insertCheckpoint( String name, long startTimestamp, long responseTime, long transferSize,
+                                  String transferUnit, CheckpointResult result ) {
+
+        sendEvent( new InsertCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, startTimestamp,
+                                              responseTime, transferSize, transferUnit,
+                                              Thread.currentThread().getName(), result ) );
+    }
+
+    /**
+     * Insert system statistics identified by their DB IDs
+     *
+     * @param monitoredMachine the monitored machine
+     * @param statisticIds the statistics' DB IDs
+     * @param statisticValues the statistics' values
+     * @param timestamp the timestamp
+     */
+    public void insertSystemStatistcs( String monitoredMachine, String statisticIds, String statisticValues,
+                                       long timestamp ) {
+
+        sendEvent( new InsertSystemStatisticEvent( AUTO_LOGGER_CLASS_NAME, logger, monitoredMachine,
+                                                   statisticIds, statisticValues, timestamp ) );
+    }
+
+    /**
+     * Join to an existing test case
+     *
+     * @param testCaseState the state of the test case to join to
+     */
+    public void joinTestCase( TestCaseState testCaseState ) {
+
+        sendEvent( new JoinTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, testCaseState ) );
+    }
+
+    /**
+     * Leave the test case to which we have joined
+     */
+    public void leaveTestCase() {
+
+        sendEvent( new LeaveTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * This event can not go through the regular way of sending log4j events in the case with Passive DB appenders. 
+     * The reason is that we have to evaluate the result after the work of each passive appender and stop
+     * calling these appenders when the first one(the only one serving this caller) has processed the event. 
+     */
+    @SuppressWarnings("unchecked")
+    public TestCaseState getCurrentTestCaseState() {
+
+        GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger );
+
+        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+        while( appenders.hasMoreElements() ) {
+            Appender appender = appenders.nextElement();
+
+            if( appender instanceof ActiveDbAppender ) {
+                // Comes here on Test Executor side. There is just 1 Active appender
+                return ( ( ActiveDbAppender ) appender ).getCurrentTestCaseState( event ).getTestCaseState();
+            } else if( appender instanceof PassiveDbAppender ) {
+                // Comes here on Agent side. There will be 1 Passive appender per caller
+
+                // Pass the event to any existing appender.
+                // The correct one will return result, wrong appenders will return null.
+                GetCurrentTestCaseEvent resultEvent = ( ( PassiveDbAppender ) appender ).getCurrentTestCaseState( event );
+                if( resultEvent != null ) {
+                    // we found the right Passive appender
+                    return resultEvent.getTestCaseState();
+                }
+            }
+        }
+
+        // no appropriate appender found
+        return null;
+    }
+
+    public boolean isDebugEnabled() {
+
+        return logger.isDebugEnabled();
+    }
+
+    /**
+     * Send an event to the logging system
+     *
+     * @param event the event to send
+     */
+    private void sendEvent( LoggingEvent event ) {
+
+        // check if this level is allowed for the repository at all
+        if( LogManager.getLoggerRepository().isDisabled( event.getLevel().toInt() ) ) {
+            return;
+        }
+
+        // check if the event level is allowed for this logger
+        if( event.getLevel().isGreaterOrEqual( logger.getEffectiveLevel() ) ) {
+            logger.callAppenders( event );
+        }
+    }
+
+}

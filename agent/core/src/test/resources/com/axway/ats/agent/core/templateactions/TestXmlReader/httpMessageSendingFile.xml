@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST method="PUT">
+            <HTTP_REQUEST_URL>http://${targetHost}:8080/com/axway/cs/h2h/data/${senderMessageAttachmentId}</HTTP_REQUEST_URL>
+            <HTTP_HEADER name="Accept" value="text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"/>
+            <HTTP_RESOURCE_FILE>HTTP_FILE_1.dat</HTTP_RESOURCE_FILE>
+        </HTTP_REQUEST>
+        <HTTP_RESPONSE>
+            <HTTP_RESPONSE_RESULT>200 OK</HTTP_RESPONSE_RESULT>
+            <HTTP_HEADER name="Date" value="Tue, 22 Jun 2010 12:46:00 GMT"/>
+            <HTTP_HEADER name="Content-Length" value="0"/>
+            <HTTP_HEADER name="Content-Type" value="text/plain; charset=iso-8859-1"/>
+        </HTTP_RESPONSE>
+    </HTTP_ACTION>
+</HTTP_ACTIONS>

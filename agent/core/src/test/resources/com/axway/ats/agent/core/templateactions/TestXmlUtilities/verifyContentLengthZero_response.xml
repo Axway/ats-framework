@@ -1,0 +1,6 @@
+    <HTTP_RESPONSE_RESULT>200 OK</HTTP_RESPONSE_RESULT>
+    <HTTP_HEADER name="Content-Length" value="0"/>
+    <HTTP_HEADER name="Accept-Charset" value="ISO-8859-1,utf-8;q=0.7,*;q=0.7"/>
+    <HTTP_HEADER name="Accept-Ranges" value="bytes"/>
+    <HTTP_HEADER name="Content-Type" value="text/html"/>
+    <HTTP_HEADER name="Server" value="Apache-Coyote/1.1"/>

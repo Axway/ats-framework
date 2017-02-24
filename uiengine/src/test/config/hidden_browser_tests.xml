@@ -1,0 +1,13 @@
+<suite name="Run sample Hidden Browser HTML tests" verbose="1">
+
+    <test name="Testing with Hidden browser" >
+
+        <parameter name="browser" value="HIDDEN" />
+        <!-- <parameter name="browser" value="FF" /> -->
+
+        <packages>
+            <package name="com.axway.ats.uiengine.htmlengine" />
+        </packages>
+    </test>
+
+</suite>

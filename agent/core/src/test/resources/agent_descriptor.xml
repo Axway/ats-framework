@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="agenttest" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../src/agent_descriptor.xsd">
+	
+    <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.FirstActionClass"/>
+    <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.SecondActionClass"/>
+    <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.WrongActionClass"/>
+    
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.ActionClassWithConstants"/>
+    
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.TestWithReturnValuesClass"/>
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.TestWithInputValuesClass"/>
+    
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.ComplexActionClass"/>
+    
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.test.TestWithMemberClasses"/>
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.test.FirstMemberClass"/>
+    <actionClass name="com.axway.ats.agent.core.ant.needed_in_acgen_tests.test.memberclasses.SecondMemberClass"/>
+    
+    <initHandler name="com.axway.ats.agent.core.ant.component.agenttest.InitHandler"/>
+    <finalHandler name="com.axway.ats.agent.core.ant.component.agenttest.FinalHandler"/>
+    <cleanupHandler name="com.axway.ats.agent.core.ant.component.agenttest.CleanupHandler"/>
+</component>

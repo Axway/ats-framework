@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<component name="auto-system-operations" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="agent_descriptor.xsd">
+
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalFileSystemOperations" />
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalFileSystemSnapshot" />        
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalSystemInputOperations" />
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalSystemOperations" />
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalProcessOperations" />
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalProcessTalker" />        
+	<actionClass
+        name="com.axway.ats.agent.components.system.operations.InternalRegistryOperations" />
+        
+    <cleanupHandler
+        name="com.axway.ats.agent.components.system.operations.CleanupHandler" />
+</component>

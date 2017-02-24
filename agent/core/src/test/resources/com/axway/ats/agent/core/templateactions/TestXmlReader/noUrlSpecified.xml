@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST method="POST">
+        </HTTP_REQUEST>
+        <HTTP_RESPONSE>
+        </HTTP_RESPONSE>
+    </HTTP_ACTION>
+</HTTP_ACTIONS>

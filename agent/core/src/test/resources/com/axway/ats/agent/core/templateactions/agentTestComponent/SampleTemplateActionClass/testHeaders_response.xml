@@ -1,0 +1,7 @@
+<HTTP_RESPONSE>
+    <HTTP_RESOURCE_FILE size="541">HTTP_FILE_1.js</HTTP_RESOURCE_FILE>
+    <HTTP_RESPONSE_RESULT>OK</HTTP_RESPONSE_RESULT>
+    <HTTP_HEADER name="Content-Length" value="541"/>
+    <HTTP_HEADER name="Accept-Charset" value="ISO-8859-1,utf-8;q=0.7,*;q=0.7"/>
+    <HTTP_HEADER name="User-Agent" value="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3"/>
+</HTTP_RESPONSE>

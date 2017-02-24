@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="agenttest"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../src/agent_descriptor.xsd">
+
+    <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.FirstActionClass"/>
+
+    <cleanupHandler name="com.axway.ats.agent.core.ant.component.agenttest.CleanupHandler"/>
+
+    <!-- Environment 1 -->
+    <!--  Drive letter for widowsBackupFolder is changed from d:/test to c:/test
+        as D: is CD/DVD-ROM on some machines and this exception is get on myDir.getCanonicalPath():
+    Caused by: java.io.IOException: The device is not ready
+        at java.io.WinNTFileSystem.canonicalize0(Native Method)
+        at java.io.Win32FileSystem.canonicalize(Win32FileSystem.java:396)
+        at java.io.File.getCanonicalPath(File.java:559)
+        at com.axway.ats.environment.file.DirectoryEnvironmentUnit.<init>(DirectoryEnvironmentUnit.java:55)
+     -->
+    <environment name="env1" backupFolder="/var/backup/agent_backup" windowsBackupFolder="C:/test_tmp" >
+
+        <file path="/tmp/test1.txt"/>
+
+        <file path="/tmp/test2.txt">
+            <action command="proc1" sleep="3"/>
+        </file>
+
+    </environment>
+
+
+    <!-- Environment 2 -->
+    <environment name="env2" backupFolder="/var/backup/agent_backup_2" windowsBackupFolder="C:/test_tmp2">
+
+        <directory path="C:/agent_orig_2/original dir2/" />
+
+    </environment>
+
+</component>

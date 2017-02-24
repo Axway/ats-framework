@@ -1,0 +1,141 @@
+X-tm-filename: 14022
+X-MMS-MessageLab-Submitter: JUNKMAIL@JohnDeere.com
+X-MMS-MessageLab-Date-Reported: Mon, 31 Jan 2005 17:13:21 +0200 (EET)
+X-MMS-MessageLab-Report-Type: SpamReport
+X-MimeOLE: Produced By Microsoft Exchange V6.0.6603.0
+Received: from edxmb8.jdnet.deere.com ([164.121.13.157]) by
+ edxmb1.jdnet.deere.com with Microsoft SMTPSVC(5.0.2195.6747); Thu, 27
+ Jan 2005 12:28:55 -0600
+MIME-Version: 1.0
+Received: from edxbridge3.jdnet.deere.com ([204.54.167.65]) by
+ edxmb8.jdnet.deere.com with Microsoft SMTPSVC(5.0.2195.6747); Thu, 27
+ Jan 2005 12:28:54 -0600
+Received: from edxgw2.jdnet.deere.com ([204.53.106.130]) by
+ edxbridge3.jdnet.deere.com with Microsoft SMTPSVC(5.0.2195.6747); Thu,
+ 27 Jan 2005 12:28:55 -0600
+Received: from fdpnmailgw2.mailgws.com ([164.121.249.100]) by
+ edxgw2.jdnet.deere.com with Microsoft SMTPSVC(5.0.2195.6747); Thu, 27
+ Jan 2005 12:28:55 -0600
+Received: from 207.28.190.6 by fdpnmailgw2.mailgws.com with ESMTP (SMTP
+ Relay (MMS v5.6.3)); Thu, 27 Jan 2005 12:28:48 -0600
+Received: from PROCESS-DAEMON.DRAKE.EDU by DRAKE.EDU (PMDF V6.2-X17
+ #30973) id <01LK3H196SM80004VS@DRAKE.EDU> for
+ BrownPamelaR@JohnDeere.com; Thu, 27 Jan 2005 12:28:40 -0600 (CST)
+Received: from DRAKE.EDU (PMDF V6.2-X17 #30973) id
+ <01LK3H13PAXC0000U4@DRAKE.EDU>; Thu, 27 Jan 2005 12:28:40 -0600 (CST)
+Return-Path: 
+X-OriginalArrivalTime: 27 Jan 2005 18:28:55.0040 (UTC)
+ FILETIME=[0ED96800:01C5049E]
+X-WSS-ID: 6DE7ED6A2QG57304-01-01
+X-Server-Uuid: E8FD8656-5D88-4603-B7E9-5EBE78430DB5
+content-class: urn:content-classes:message
+Subject: Delivery Notification: Delivery has been successful
+Date: Thu, 27 Jan 2005 12:28:40 -0600
+Message-ID: <01LK3H1939H20000U4@DRAKE.EDU>
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+Thread-Topic: Delivery Notification: Delivery has been successful
+Thread-Index: AcUEng8QUWj3Vh6hTNm1MbuKRdtZqw==
+Priority: Urgent
+From: a@sofia-qa2.axway.com
+To: test41@sofia-qa.axway.com
+Content-Type: multipart/mixed;
+ boundary="----_=_NextPart_002_01C5049E.0ED34D80"
+Content-Transfer-Encoding: 7bit
+
+This is a multi-part message in MIME format.
+
+------_=_NextPart_002_01C5049E.0ED34D80
+Content-Type: text/plain;
+ charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+This report relates to a message you sent with the following header =
+fields:
+
+  Message-id: =
+<A0FA42E4C805C8488802954DCB1D6D340305CBB2@edxmb1.jdnet.deere.com>
+  Date: Thu, 27 Jan 2005 12:24:56 -0600
+From: a@sofia-qa2.axway.com
+your
+   friends, made me cry, remembering all the fun times......
+
+Your message has been successfully delivered to the following =
+recipients:
+
+  Recipient address: sle010@DRAKE.EDU
+  Reason: Read receipts not supported; message successfully delivered.
+
+
+
+------_=_NextPart_002_01C5049E.0ED34D80
+Content-Type: application/octet-stream;
+ name=ATT918798.txt
+Content-Transfer-Encoding: base64
+Content-Description: ATT918798.txt
+Content-Disposition: attachment;
+ filename=ATT918798.txt
+
+T3JpZ2luYWwtZW52ZWxvcGUtaWQ6IDAxTEszSDBLUEM2QTAwMDA4T0BEUkFLRS5FRFUNClJlcG9y
+dGluZy1NVEE6IGRucztEUkFLRS5FRFUgKERSQUtFLkVEVSkNCg0KQWN0aW9uOiBkZWxpdmVyZWQN
+ClN0YXR1czogMi4wLjAgKFJlYWQgcmVjZWlwdHMgbm90IHN1cHBvcnRlZDsgbWVzc2FnZSBzdWNj
+ZXNzZnVsbHkgZGVsaXZlcmVkLikNCk9yaWdpbmFsLXJlY2lwaWVudDogcmZjODIyO3NsZTAxMEBk
+cmFrZS5lZHUNCkZpbmFsLXJlY2lwaWVudDogcmZjODIyO3NsZTAxMEBEUkFLRS5FRFUNCg==
+
+------_=_NextPart_002_01C5049E.0ED34D80
+Content-Type: text/rfc822-headers;
+ name=ATT918799.txt
+Content-Transfer-Encoding: base64
+Content-Description: ATT918799.txt
+Content-Disposition: attachment;
+ filename=ATT918799.txt
+
+UmV0dXJuLXBhdGg6IDxCcm93blBhbWVsYVJASm9obkRlZXJlLmNvbT4NCkRpc3Bvc2l0aW9uLW5v
+dGlmaWNhdGlvbi10bzogQnJvd25QYW1lbGFSQEpvaG5EZWVyZS5jb20NClJlY2VpdmVkOiBmcm9t
+IERSQUtFLkVEVSBieSBEUkFLRS5FRFUgKFBNREYgVjYuMi1YMTcgIzMwOTczKQ0KIGlkIDwwMUxL
+M0gxM1BBWEMwMDAwVTRARFJBS0UuRURVPjsgVGh1LCAyNyBKYW4gMjAwNSAxMjoyODo0MCAtMDYw
+MCAoQ1NUKQ0KUmVjZWl2ZWQ6IGZyb20gQ09OVkVSU0lPTi1EQUVNT04uRFJBS0UuRURVIGJ5IERS
+QUtFLkVEVSAoUE1ERiBWNi4yLVgxNyAjMzA5NzMpDQogaWQgPDAxTEszSDBLUDZJTzAwMDA4T0BE
+UkFLRS5FRFU+IGZvciBzbGUwMTBARFJBS0UuRURVDQogKE9SQ1BUIHNsZTAxMEBkcmFrZS5lZHUp
+OyBUaHUsIDI3IEphbiAyMDA1IDEyOjI4OjMwIC0wNjAwIChDU1QpDQpSZWNlaXZlZDogZnJvbSBw
+dXJlbWVzZy5kcmFrZS5lZHUgKFsxMC4xLjAuMzVdKQ0KIGJ5IERSQUtFLkVEVSAoUE1ERiBWNi4y
+LVgxNyAjMzA5NzMpDQogd2l0aCBFU01UUCBpZCA8MDFMSzNIMEZSOEJLMDAwNFVaQERSQUtFLkVE
+VT4gZm9yIHNsZTAxMEBEUkFLRS5FRFUNCiAoT1JDUFQgc2xlMDEwQGRyYWtlLmVkdSk7IFRodSwg
+MjcgSmFuIDIwMDUgMTI6Mjg6MDUgLTA2MDAgKENTVCkNClJlY2VpdmVkOiBmcm9tIGZkcG5tYWls
+Z3cyLm1haWxnd3MuY29tDQogKGZkcG5tYWlsZ3c0Lm1haWxnd3MuY29tIFsxNjQuMTIxLjI0OS45
+OV0pDQoJYnkgcHVyZW1lc2cuZHJha2UuZWR1ICg4LjEyLjExLzguMTIuMTEpIHdpdGggRVNNVFAg
+aWQgajBSSHFrVFUwMDg2MjIJZm9yDQogPHNsZTAxMEBkcmFrZS5lZHU+OyBUaHUsDQogMjcgSmFu
+IDIwMDUgMTE6NTI6NDcgLTA2MDAgKGVudmVsb3BlLWZyb20gQnJvd25QYW1lbGFSQEpvaG5EZWVy
+ZS5jb20pDQpSZWNlaXZlZDogZnJvbSAyMDQuNTMuMTA2LjEzMCBieSBmZHBubWFpbGd3Mi5tYWls
+Z3dzLmNvbSB3aXRoIEVTTVRQDQogKCBTTVRQIFJlbGF5IChNTVMgdjUuNi4zKSk7IFRodSwgMjcg
+SmFuIDIwMDUgMTI6MjU6MDMgLTA2MDANClJlY2VpdmVkOiBmcm9tIGVkeGJyaWRnZTIuamRuZXQu
+ZGVlcmUuY29tIChbMTY0LjEyMS4xNS42Ml0pDQogYnkgZWR4Z3cyLmpkbmV0LmRlZXJlLmNvbSB3
+aXRoIE1pY3Jvc29mdCBTTVRQU1ZDKDUuMC4yMTk1LjY3NDcpOyBUaHUsDQogMjcgSmFuIDIwMDUg
+MTI6MjU6MDIgLTA2MDANClJlY2VpdmVkOiBmcm9tIGVkeG1iOC5qZG5ldC5kZWVyZS5jb20gKFsx
+NjQuMTIxLjEzLjE1N10pDQogYnkgZWR4YnJpZGdlMi5qZG5ldC5kZWVyZS5jb20gd2l0aCBNaWNy
+b3NvZnQgU01UUFNWQyg1LjAuMjE5NS42NzQ3KTsgVGh1LA0KIDI3IEphbiAyMDA1IDEyOjI1OjAx
+IC0wNjAwDQpSZWNlaXZlZDogZnJvbSBlZHhtYjEuamRuZXQuZGVlcmUuY29tIChbMTY0LjEyMS4x
+NS4xNzBdKQ0KIGJ5IGVkeG1iOC5qZG5ldC5kZWVyZS5jb20gd2l0aCBNaWNyb3NvZnQgU01UUFNW
+Qyg1LjAuMjE5NS42NzQ3KTsgVGh1LA0KIDI3IEphbiAyMDA1IDEyOjI0OjU4IC0wNjAwDQpEYXRl
+OiBUaHUsIDI3IEphbiAyMDA1IDEyOjI0OjU2IC0wNjAwDQpGcm9tOiBCcm93biBQYW1lbGEgUiA8
+QnJvd25QYW1lbGFSQEpvaG5EZWVyZS5jb20+DQpTdWJqZWN0OiBUYWtlIGEgbWludXRlIHRvIGxp
+c3RlbiwgdGhpcyBzb25nIHJlbWluZHMgbWUgb2YgeW91IGFuZCBhbGwgeW91cg0KIGZyaWVuZHMs
+IG1hZGUgbWUgY3J5LCByZW1lbWJlcmluZyBhbGwgdGhlIGZ1biB0aW1lcy4uLi4uLg0KVG86IFNh
+cmFoMiA8c2xlMDEwQERSQUtFLkVEVT4NCk1lc3NhZ2UtaWQ6IDxBMEZBNDJFNEM4MDVDODQ4ODgw
+Mjk1NERDQjFENkQzNDAzMDVDQkIyQGVkeG1iMS5qZG5ldC5kZWVyZS5jb20+DQpNSU1FLXZlcnNp
+b246IDEuMA0KWC1NSU1FT0xFOiBQcm9kdWNlZCBCeSBNaWNyb3NvZnQgRXhjaGFuZ2UgVjYuMC42
+NjAzLjANCkNvbnRlbnQtdHlwZTogVEVYVC9QTEFJTg0KQ29udGVudC10cmFuc2Zlci1lbmNvZGlu
+ZzogUVVPVEVELVBSSU5UQUJMRQ0KSW1wb3J0YW5jZTogaGlnaA0KUHJpb3JpdHk6IFVyZ2VudA0K
+WC1Qcmlvcml0eTogMQ0KVGhyZWFkLVRvcGljOiBUYWtlIGEgbWludXRlIHRvIGxpc3RlbiwgdGhp
+cyBzb25nIHJlbWluZHMgbWUgb2YgeW91IGFuZCBhbGwgeW91cg0KIGZyaWVuZHMsIG1hZGUgbWUg
+Y3J5LCByZW1lbWJlcmluZyBhbGwgdGhlIGZ1biB0aW1lcy4uLi4uLg0KVGhyZWFkLUluZGV4OiBB
+Y1VFbllCZWlDcW1IMTdRUWlHSDJCVGtTbEdNc1E9PQ0KY29udGVudC1jbGFzczogdXJuOmNvbnRl
+bnQtY2xhc3NlczptZXNzYWdlDQpYLVNlcnZlci1VdWlkOiBFOEZEODY1Ni01RDg4LTQ2MDMtQjdF
+OS01RUJFNzg0MzBEQjUNClgtTVMtSGFzLUF0dGFjaDogeWVzDQpYLU1TLVRORUYtQ29ycmVsYXRv
+cjoNClgtV1NTLUlEOiA2REU3RUU3NTJRRzU2NTQ1LTAxLTAxDQpYLVBNWC1WZXJzaW9uOiA0Ljcu
+MC4xMTE2MjEsIEFudGlzcGFtLUVuZ2luZTogMi4wLjIuMCwNCiBBbnRpc3BhbS1EYXRhOiAyMDA1
+LjEuMjcuNA0KWC1PcmlnaW5hbEFycml2YWxUaW1lOiAyNyBKYW4gMjAwNSAxODoyNDo1OC4wNjE5
+IChVVEMpDQogRklMRVRJTUU9WzgxRUU2Q0IwOjAxQzUwNDlEXQ0KDQoNCg==
+
+------_=_NextPart_002_01C5049E.0ED34D80--
+

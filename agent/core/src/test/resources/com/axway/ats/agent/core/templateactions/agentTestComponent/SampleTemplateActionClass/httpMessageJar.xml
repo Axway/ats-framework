@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HTTP_ACTIONS>
+    <HTTP_ACTION>
+        <HTTP_REQUEST method="GET">
+            <HTTP_REQUEST_URL>http://kermit.sofia-auto.axway.com:8080/com/axway/cs/ria/bundle/xferhelper.jar</HTTP_REQUEST_URL>
+            <HTTP_HEADER name="If-Modified-Since" value="Wed, 19 May 2010 12:20:14 GMT"/>
+            <HTTP_HEADER name="Cookie" value="PHPSESSID=bq6gnqjt06nb5f4vi9eakkpre4"/>
+            <HTTP_HEADER name="Host" value="kermit.sofia-auto.axway.com:8080"/>
+            <HTTP_HEADER name="Accept-Encoding" value="pack200-gzip, gzip"/>
+            <HTTP_HEADER name="User-Agent" value="Mozilla/4.0 (Windows XP 5.1) Java/1.6.0_19"/>
+            <HTTP_HEADER name="Connection" value="keep-alive"/>
+            <HTTP_HEADER name="Accept" value="text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"/>
+            <HTTP_HEADER name="Content-Type" value="application/x-java-archive"/>
+            <HTTP_HEADER name="Pragma" value="no-cache"/>
+            <HTTP_HEADER name="Cache-Control" value="no-cache"/>
+        </HTTP_REQUEST>
+        <HTTP_RESPONSE>
+            <HTTP_RESPONSE_RESULT>200 OK</HTTP_RESPONSE_RESULT>
+            <HTTP_HEADER name="Date" value="Wed, 16 Jun 2010 14:57:20 GMT"/>
+			<HTTP_HEADER name="Cache-control" value="cache"/>
+			<HTTP_HEADER name="Content-Length" value="1301472"/>
+			<HTTP_HEADER name="Last-Modified" value="Fri, 18 Jun 2010 14:23:03 GMT"/>
+			<HTTP_HEADER name="Content-Type" value="application/java-archive"/>
+			<HTTP_RESOURCE_FILE>HTTP_FILE_0.jar</HTTP_RESOURCE_FILE>
+        </HTTP_RESPONSE>
+    </HTTP_ACTION>
+</HTTP_ACTIONS>
