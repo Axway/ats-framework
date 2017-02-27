@@ -99,10 +99,10 @@ public class FileSystemVerification extends VerificationSkeleton {
         atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
         new Validator().validateMethodParameters( new Object[]{ atsAgent, fileOrFolderPath } );
 
-        File targetFileOrFolder = new File( IoUtils.normalizeFilePath( fileOrFolderPath ) );
+        File targetFileOrFolder = new File( fileOrFolderPath );
 
         this.atsAgent = atsAgent;
-        this.directory = IoUtils.normalizeUnixDir( targetFileOrFolder.getParent() );
+        this.directory = targetFileOrFolder.getParent();
 
         // get the folder
         FileSystemStorage storage;
@@ -143,7 +143,7 @@ public class FileSystemVerification extends VerificationSkeleton {
                                                                 isRegEx } );
 
         this.atsAgent = atsAgent;
-        this.directory = IoUtils.normalizeUnixDir( directory );
+        this.directory = directory;
 
         FileSystemStorage storage;
         if( this.atsAgent == null ) {

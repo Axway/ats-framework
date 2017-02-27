@@ -43,6 +43,10 @@ import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -933,7 +937,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     @Override
     public void setFilePermissions( String sourceFile, String permissions ) {
 
-        sourceFile = normalizeFilePath( sourceFile );
+        sourceFile = IoUtils.normalizeFilePath( sourceFile );
         File file = new File( sourceFile );
 
         checkFileExistence( file );
@@ -1055,41 +1059,27 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     @Override
     public void setFileHiddenAttribute( String sourceFile, boolean hidden ) {
 
-        // TODO: Java 1.7 has native support for this functionality
-        sourceFile = normalizeFilePath( sourceFile );
+        sourceFile = IoUtils.normalizeFilePath( sourceFile );
         checkFileExistence( new File( sourceFile ) );
 
-        final String errMsg = "Could not set the hidden attribute of file '" + sourceFile + "'";
+        final String errMsg = "Could not " + ( hidden
+                                                      ? "set"
+                                                      : "unset" )
+                              + " the hidden attribute of file '" + sourceFile + "'";
 
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
-            String cmdCommand = "attrib " + ( hidden
-                                                     ? "+"
-                                                     : "-" )
-                                + "h " + new File( sourceFile ).getPath();
-            // set the hidden attribute
-            executeExternalProcess( new String[]{ cmdCommand } );
-        } else if( OperatingSystemType.getCurrentOsType().isUnix() ) {
-            // a '.' prefix makes the file hidden
-            String filePath = IoUtils.getFilePath( sourceFile );
-            String fileName = IoUtils.getFileName( sourceFile );
-            if( hidden ) {
-                if( fileName.startsWith( "." ) ) {
-                    log.warn( "File '" + sourceFile + "' is already hidden. No changes are made!" );
-                    return;
-                } else {
-                    fileName = "." + fileName;
+        try {
+            Path path = Paths.get( sourceFile );
+            DosFileAttributes attr;
+            attr = Files.readAttributes( path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS );
+
+            boolean goHidden = attr.isHidden();
+            if( !hidden && goHidden ) {
+                Files.setAttribute( path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS );
+            } else if( hidden && !goHidden ) {
+                Files.setAttribute( path, "dos:hidden", false, LinkOption.NOFOLLOW_LINKS );
                 }
-            } else {
-                if( !fileName.startsWith( "." ) ) {
-                    log.warn( "File '" + sourceFile + "' is already NOT hidden. No changes are made!" );
-                    return;
-                } else {
-                    fileName = fileName.substring( 1 );
-                }
-            }
-            renameFile( sourceFile, filePath + fileName, false );
-        } else {
-            throw new FileSystemOperationException( errMsg + ": Unknown OS type" );
+        } catch( IOException e ) {
+            throw new FileSystemOperationException( errMsg, e );
         }
     };
 
@@ -1729,7 +1719,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      */
     private void chown( long userId, long groupId, String filename ) {
 
-        filename = normalizeFilePath( filename );
+        filename = IoUtils.normalizeFilePath( filename );
         String[] command = new String[]{ "/bin/sh", "-c",
                                          "chown " + String.valueOf( userId ) + ":" + String.valueOf( groupId )
                                                           + " '" + filename + "'" };;
@@ -1837,7 +1827,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                                                throws FileSystemOperationException,
                                                                                IOException {
 
-        filename = normalizeFilePath( filename );
+        filename = IoUtils.normalizeFilePath( filename );
         File file = new File( filename );
         checkFileExistence( file );
         String command = file.isDirectory()
@@ -2195,17 +2185,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             }
         }
         return matchingFiles;
-    }
-
-    private String normalizeFilePath( String filePath ) {
-
-        String osCompatibleFilePath = IoUtils.normalizeFilePath( filePath );
-        if( !osCompatibleFilePath.equals( filePath ) ) {
-            log.warn( "Non Windows OS is detected and file path is changed from '" + filePath + "' to '"
-                      + osCompatibleFilePath + "'" );
-        }
-
-        return osCompatibleFilePath;
     }
 
     /**

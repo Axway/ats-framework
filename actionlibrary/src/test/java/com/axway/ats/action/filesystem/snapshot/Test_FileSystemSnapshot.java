@@ -35,6 +35,7 @@ import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.action.BaseTest;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.common.system.OperatingSystemType;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.core.utils.IoUtils;
@@ -78,6 +79,10 @@ public class Test_FileSystemSnapshot extends BaseTest {
          * some tests
          */
         fixFileModificationTimes();
+
+        new LocalFileSystemOperations().setFileHiddenAttribute( FILES_ROOT + "dir1"
+                                                                + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
+                                                                + ".hidden_dir", true );
     }
 
     private static String getProjectRoot() {

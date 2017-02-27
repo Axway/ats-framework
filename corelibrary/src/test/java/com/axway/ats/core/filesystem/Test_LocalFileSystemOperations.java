@@ -205,6 +205,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCreateFilePositiveWithUidAndGid() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -261,6 +262,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCreateFileWithUidAndGidNegative() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -349,6 +351,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void createBinaryFilePositiveWithUidAndGid() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -409,6 +412,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void createBinaryFileWithUidAndGidNegative() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -533,6 +537,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
 
         try {
             expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+            expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
             expect( Runtime.getRuntime() ).andReturn( mockRuntime );
             String[] cmdCommand = new String[]{ "/bin/sh", "-c",
                                                 "chown 120:230 '" + newDirectory.getPath() + "'" };
@@ -586,6 +591,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
 
         try {
             expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+            expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
             expect( Runtime.getRuntime() ).andReturn( mockRuntime );
             String[] cmdCommand = new String[]{ "/bin/sh", "-c",
                                                 "chown 120:230 '" + newDirectory.getPath() + "'" };
@@ -838,6 +844,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void getFilePermissionsPositive() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -915,7 +922,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test(expected = AttributeNotSupportedException.class)
     public void setFilePermissionsNegativeWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS ).times( 2 );
 
         replayAll();
 
@@ -929,6 +936,11 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test(expected = FileDoesNotExistException.class)
     public void setFilePermissionsNegativeNoSuchFile() throws Exception {
 
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+       
+        replayAll();
+        
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
         localFileSystemOperations.setFilePermissions( "dasdasd", "777" );
     }
@@ -937,6 +949,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void getFileUidPositive() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -957,6 +970,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void getFileUidNegativeException() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -995,6 +1009,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setFileUidPositive() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1002,6 +1017,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
         expect( mockProcess.waitFor() ).andReturn( 0 );
 
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1022,6 +1038,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setFileUidNegativeCannotSet() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1029,6 +1046,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
         expect( mockProcess.waitFor() ).andReturn( 0 );
         
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -1046,6 +1064,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setFileUidNegativeException() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -1084,6 +1103,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void getFileGidPositive() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1104,6 +1124,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void getFileGidNegativeException() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -1142,6 +1163,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setFileGidPositive() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1149,6 +1171,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
         expect( mockProcess.waitFor() ).andReturn( 0 );
         
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1169,6 +1192,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setFileGidNegativeCannotSet() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
@@ -1176,6 +1200,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
         expect( mockProcess.waitFor() ).andReturn( 0 );
         
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
@@ -1193,6 +1218,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setFileGidNegativeException() throws Exception {
 
         expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
+        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
         expect( Runtime.getRuntime() ).andReturn( mockRuntime );
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
         expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );

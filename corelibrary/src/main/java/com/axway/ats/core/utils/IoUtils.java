@@ -36,6 +36,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
@@ -107,14 +108,35 @@ public class IoUtils {
      */
     public static String normalizeFilePath( String source ) {
 
-        String otherSystemsFileSeparator = AtsSystemProperties.SYSTEM_FILE_SEPARATOR.equals( '/' )
-                                                                                                   ? "\\"
-                                                                                                   : FORWARD_SLASH;
-        return source.replace( otherSystemsFileSeparator, AtsSystemProperties.SYSTEM_FILE_SEPARATOR );
+        return normalizeFilePath( source, OperatingSystemType.getCurrentOsType() );
     }
 
     /**
-     * 1. Replaces any '\\' or '/' characters with the ones for this system </br>
+     * Replaces any '\\' or '/' characters with the ones for the target system
+     * 
+     * @param source the file path
+     * @param osType the system to format for
+     * @return the properly formatted file path
+     */
+    public static String normalizeFilePath( String source, OperatingSystemType osType ) {
+
+        if( source == null ) {
+            return null;
+        }
+
+        String fileSeparator = osType.isWindows()
+                                                  ? "\\"
+                                                  : "/";
+        String opositeFileSeparator = fileSeparator.equals( "/" )
+                                                                  ? "\\"
+                                                                  : FORWARD_SLASH;
+
+        return source.replace( opositeFileSeparator, fileSeparator );
+    }
+
+    /**
+     * 1. Replaces any '\\' or '/' characters with the ones for this system
+     * <p>
      * 2. Appends system specific file separator character at the end if not present
      *
      * @param source the directory path
@@ -122,11 +144,28 @@ public class IoUtils {
      */
     public static String normalizeDirPath( String source ) {
 
-        source = normalizeFilePath( source );
-        if( source.lastIndexOf( AtsSystemProperties.SYSTEM_FILE_SEPARATOR ) < ( source.length() - 1 ) ) {
-            source = source + AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
-        }
+        return normalizeDirPath( source, OperatingSystemType.getCurrentOsType() );
+    }
 
+    /**
+     * 1. Replaces any '\\' or '/' characters with the ones for the target system
+     * <p>
+     * 2. Appends system specific file separator character at the end if not present
+     *
+     * @param source the directory path
+     * @param osType the system to format for
+     * @return the properly formatted directory path
+     */
+    public static String normalizeDirPath( String source, OperatingSystemType osType ) {
+
+        String fileSeparator = osType.isWindows()
+                                                  ? "\\"
+                                                  : "/";
+
+        source = normalizeFilePath( source, osType );
+        if( source != null && !source.endsWith( fileSeparator ) ) {
+            source = source + fileSeparator;
+        }
         return source;
     }
 

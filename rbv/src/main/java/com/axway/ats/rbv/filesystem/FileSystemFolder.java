@@ -57,7 +57,7 @@ public class FileSystemFolder implements Matchable {
 
         this.isOpen = false;
         this.atsAgent = atsAgent;
-        this.path = IoUtils.normalizeUnixDir( path );
+        this.path = path;
         this.fileName = fileName;
         this.isRegExp = isRegExp;
         this.includeSubDirs = includeSubDirs;
@@ -78,6 +78,8 @@ public class FileSystemFolder implements Matchable {
             //get the name of the OS
             this.osType = this.systemOperations.getOperatingSystemType();
 
+            // provide path valid for the target host
+            this.path = IoUtils.normalizeDirPath( path, this.osType );
         } catch( Exception e ) {
             throw new RbvStorageException( "Could not open " + getDescription(), e );
         }
