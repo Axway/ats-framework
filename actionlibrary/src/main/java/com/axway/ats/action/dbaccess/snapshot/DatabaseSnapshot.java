@@ -602,8 +602,12 @@ public class DatabaseSnapshot {
         }
 
         if( tableToSkip == null ) {
+            String query = "SELECT * FROM ";
             // no skip rules about this table, all columns are important
-            return "SELECT * FROM " + table.getName();
+            if(table.getSchema() != null){
+                query += table.getSchema() + ".";
+            }
+            return  query + table.getName();
         }
 
         StringBuilder sql = new StringBuilder( "SELECT" );
@@ -628,8 +632,12 @@ public class DatabaseSnapshot {
         }
         // remove last comma
         sql.setLength( sql.length() - 1 );
-
-        sql.append( " FROM " + table.getName() );
+        sql.append( " FROM " );
+        
+        if( table.getSchema() != null ) {
+            sql.append( table.getSchema() ).append( "." );
+        }
+        sql.append( table.getName() );
         return sql.toString();
     }
 

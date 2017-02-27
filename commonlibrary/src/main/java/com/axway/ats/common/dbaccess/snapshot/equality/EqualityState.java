@@ -165,7 +165,7 @@ public class EqualityState {
             tablesPerSnapshot.put( table, indexesPerTable );
         }
 
-        indexesPerTable.add( indexName + index );
+        indexesPerTable.add( "name=" + indexName + index );
     }
 
     @PublicAtsApi

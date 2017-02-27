@@ -733,6 +733,7 @@ public abstract class AbstractDbProvider implements DbProvider {
 
                 TableDescription table = new TableDescription();
                 table.setName( tableName );
+                table.setSchema( tablesResultSet.getString( "TABLE_SCHEM" ) );
 
                 table.setPrimaryKeyColumn( exctractPrimaryKeyColumn( tableName, databaseMetaData ) );
                 table.setIndexes( extractTableIndexes( tableName, databaseMetaData,

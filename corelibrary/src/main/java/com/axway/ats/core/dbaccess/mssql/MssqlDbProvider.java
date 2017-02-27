@@ -24,18 +24,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.ConnectionPool;
-import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbColumn;
-import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.MssqlColumnDescription;
@@ -192,10 +187,9 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
         try {
             String tableSchema = tableResultSet.getString( "TABLE_SCHEM" );
-            if( !StringUtils.isNullOrEmpty( tableSchema ) && !tableSchema.equalsIgnoreCase( dbName ) ) {
-                log.debug( "Table '" + tableName
-                           + "' is skipped because its JDBC TABLE_SCHEM property is not the expected '"
-                           + dbName + "', but is '" + tableSchema + "'" );
+            if( !StringUtils.isNullOrEmpty( tableSchema ) && "sys".equalsIgnoreCase( tableSchema ) ) {
+                log.debug( "Table '" + tableName + "' is skipped because its JDBC TABLE_SCHEM property is '"
+                           + tableSchema + "'" );
                 return false;
             }
         } catch( SQLException e ) {

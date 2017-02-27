@@ -40,6 +40,8 @@ public class TableDescription {
 
     // table name
     private String              name;
+    
+    private String              schema;
 
     // primary key column
     private String              primaryKeyColumn = "";
@@ -77,6 +79,16 @@ public class TableDescription {
         this.name = name;
     }
 
+    public String getSchema(){
+        
+        return schema;
+    }
+
+    public void setSchema( String schema ){
+        
+        this.schema = schema;
+    }
+    
     public String getPrimaryKeyColumn() {
 
         return primaryKeyColumn;
