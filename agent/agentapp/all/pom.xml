@@ -149,58 +149,6 @@
                         <artifactId>replacer</artifactId>
                     </plugin>
                     <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-jre-linux</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>unpack-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <includeArtifactIds>jre</includeArtifactIds>
-                                    <includeClassifiers>linux</includeClassifiers>
-                                    <outputDirectory>${project.build.directory}/jre-linux</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>unpack-jre-windows</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>unpack-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <includeArtifactIds>jre</includeArtifactIds>
-                                    <includeClassifiers>windows</includeClassifiers>
-                                    <outputDirectory>${project.build.directory}/jre-windows</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>unpack-jre-solaris</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>unpack-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <includeArtifactIds>jre</includeArtifactIds>
-                                    <includeClassifiers>solaris-sparc</includeClassifiers>
-                                    <outputDirectory>${project.build.directory}/jre-solaris</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>unpack-jre-aix</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>unpack-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <includeGroupIds>com.axway.securetransport.thirdparty.com.ibm</includeGroupIds>
-                                    <outputDirectory>${project.build.directory}/jre-aix</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
@@ -215,22 +163,6 @@
                                         <descriptor>${basedir}/src/assembly/assemble-all.xml</descriptor>
                                     </descriptors>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>assemble-all-java-7</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>${basedir}/src/assembly/assemble-all-java-7-linux.xml</descriptor>
-                                        <descriptor>${basedir}/src/assembly/assemble-all-java-7-windows.xml</descriptor>
-                                        <descriptor>${basedir}/src/assembly/assemble-all-java-7-solaris.xml</descriptor>
-                                        <descriptor>${basedir}/src/assembly/assemble-all-java-7-aix.xml</descriptor>
-                                    </descriptors>
-                                    <appendAssemblyId>true</appendAssemblyId>
                                 </configuration>
                             </execution>
                         </executions>
@@ -283,15 +215,16 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+<!--         <dependency> -->
+<!--             <groupId>org.fusesource</groupId> -->
+<!--             <artifactId>sigar</artifactId> -->
+<!--             <scope>provided</scope> -->
+<!--         </dependency> -->
         <dependency>
-            <groupId>org.fusesource</groupId>
-            <artifactId>sigar</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.ats.thirdparty.org.fusesource</groupId>
-            <artifactId>sigar-native-libs</artifactId>
-            <version>1.6.4</version>
+            <groupId>org.kaazing</groupId>
+            <artifactId>sigar.dist</artifactId>
+            <version>1.0.0.0</version>
+            <classifier>distribution</classifier>
             <type>zip</type>
             <scope>provided</scope>
         </dependency>
@@ -311,33 +244,6 @@
             <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-api</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.securetransport.thirdparty.com.sun</groupId>
-            <artifactId>jre</artifactId>
-            <version>1.7.0_71_64</version>
-            <classifier>linux</classifier>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.securetransport.thirdparty.com.sun</groupId>
-            <artifactId>jre</artifactId>
-            <version>1.7.0_71_64</version>
-            <classifier>windows</classifier>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.securetransport.thirdparty.com.sun</groupId>
-            <artifactId>jre</artifactId>
-            <version>1.7.0_71_64</version>
-            <classifier>solaris-sparc</classifier>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.securetransport.thirdparty.com.ibm</groupId>
-            <artifactId>jre</artifactId>
-            <version>1.7.1_25_SR2</version>
-            <type>zip</type>
         </dependency>
         <!-- <dependency> TODO Check <groupId>javassist</groupId> <artifactId>javassist</artifactId> <version>3.12.1.GA</version> 
             </dependency> -->

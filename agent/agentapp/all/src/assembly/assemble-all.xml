@@ -53,22 +53,18 @@
       <outputDirectory>/ats-agent/actions_dependencies/auto-monitor</outputDirectory>
       <scope>provided</scope>
       <includes>
-        <include>org.fusesource:sigar</include>
-      </includes>
-      <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping>
-      <useProjectArtifact>true</useProjectArtifact>
-      <useTransitiveDependencies>true</useTransitiveDependencies>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>/ats-agent/actions_dependencies/auto-monitor</outputDirectory>
-      <scope>provided</scope>
-      <includes>
-        <include>com.axway.ats.thirdparty.org.fusesource:sigar-native-libs</include>
+        <include>org.kaazing:sigar.dist</include>
       </includes>
       <!-- <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping> -->
       <useProjectArtifact>true</useProjectArtifact>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <unpack>true</unpack>
+      <unpackOptions>
+      <excludes>
+          <exclude>sigar/log4j.jar</exclude>
+          <exclude>sigar/*.sigar*</exclude>
+      </excludes>
+      </unpackOptions>
     </dependencySet>
 
     <dependencySet>
