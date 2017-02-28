@@ -10,7 +10,7 @@
         <server>
 			<id>maven.oracle.com</id>
 			<username>group.ats.team@axway.com</username>
-			<password>{r4Zb7m5L9nUHoFVaDNSUhNphrxfpVJ3zDi3olw6unT8=}</password>
+			<password>${env.MAVEN_ORACLE_PASSWD}</password>
 			<configuration>
 			    <basicAuthScope>
 			        <host>ANY</host>
