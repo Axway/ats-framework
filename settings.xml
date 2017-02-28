@@ -7,5 +7,27 @@
             <username>${env.CI_DEPLOY_USERNAME}</username>
             <password>${env.CI_DEPLOY_PASSWORD}</password>
         </server>
+        <server>
+			<id>maven.oracle.com</id>
+			<username>group.ats.team@axway.com</username>
+			<password>{r4Zb7m5L9nUHoFVaDNSUhNphrxfpVJ3zDi3olw6unT8=}</password>
+			<configuration>
+			    <basicAuthScope>
+			        <host>ANY</host>
+			        <port>ANY</port>
+			        <realm>OAM 11g</realm>
+			    </basicAuthScope>
+			    <httpConfiguration>
+			        <all>
+			            <params>
+			                <property>
+			                    <name>http.protocol.allow-circular-redirects </name>
+			                    <value>%b,true</value>
+			                </property>
+			            </params>
+			        </all>
+			    </httpConfiguration>
+			</configuration>
+	    </server> 
     </servers>
 </settings>

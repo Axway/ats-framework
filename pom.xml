@@ -192,7 +192,7 @@
                <artifactId>maven-javadoc-plugin</artifactId>
                <version>${org.apache.maven.plugins.maven.javadoc.plugin.version}</version>
                <configuration>
-                   <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are treated ad warnings -->
+                   <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are treated as warnings -->
                    <!-- due to being not available in JDK 7, building it via it, will cause build error -->
                    <additionalparam>-Xdoclint:none</additionalparam>
                </configuration>
@@ -341,5 +341,33 @@
 			<organizationUrl>http://www.axway.com</organizationUrl>
 		</developer>
 	</developers>
+	
+	<!-- Needed so we can obtain com.oracle.jdbc (used in ats-core -->
+    <repositories>
+        <repository>
+			<!-- the id must be the same as this in settings.xml -->
+            <id>maven.oracle.com</id>
+            <name>oracle-maven-repo</name>
+            <url>https://maven.oracle.com</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+    </repositories>
+    
+	<pluginRepositories>
+         <pluginRepository>
+	        <id>maven.oracle.com</id>
+	        <name>oracle-maven-repo</name>
+	        <url>https://maven.oracle.com</url>
+	        <layout>default</layout>
+	        <releases>
+	            <enabled>true</enabled>
+	            <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
