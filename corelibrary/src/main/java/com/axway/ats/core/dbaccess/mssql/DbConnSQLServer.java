@@ -72,10 +72,9 @@ public class DbConnSQLServer extends DbConnection {
     private static final String                JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
 
     /**
-    * The port to be used for connecting to the database - use
-    * default one of not supplied
-    */
-    private int                                port                                  = 1433;
+     * Default DB port
+     */
+    private static final int                   DEFAULT_PORT                          = 1433;
 
     /**
      * The connection URL
@@ -165,6 +164,8 @@ public class DbConnSQLServer extends DbConnection {
     protected void initializeCustomProperties(
                                                Map<String, Object> properties ) {
 
+        this.port = DEFAULT_PORT;
+        
         if( properties != null && properties.containsKey( DbKeys.USE_SECURE_SOCKET )
             && "true".equals( properties.get( DbKeys.USE_SECURE_SOCKET ) ) ) {
             useSSL = true;
@@ -228,17 +229,6 @@ public class DbConnSQLServer extends DbConnection {
     public String getURL() {
 
         return url.toString();
-    }
-
-    @Override
-    public String getConnHash() {
-
-        StringBuilder connHash = new StringBuilder();
-        connHash.append( host );
-        connHash.append( port );
-        connHash.append( db );
-
-        return connHash.toString();
     }
 
     @Override

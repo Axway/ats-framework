@@ -16,6 +16,7 @@
 package com.axway.ats.core.dbaccess.mysql;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class Test_DbConnMySQL extends BaseTest {
         assertEquals( "user", dbConnection.getUser() );
         assertEquals( "pass", dbConnection.getPassword() );
         assertEquals( "jdbc:mysql://host:123/db", dbConnection.getURL() );
-        assertEquals( "host123db", dbConnection.getConnHash() );
+        assertTrue( dbConnection.getConnHash().startsWith( "host_123_db" ) );
         assertEquals( "MySQL connection to host:123/db", dbConnection.getDescription() );
         assertEquals( Driver.class, dbConnection.getDriverClass() );
     }

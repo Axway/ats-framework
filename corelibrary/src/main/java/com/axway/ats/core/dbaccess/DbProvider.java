@@ -16,6 +16,7 @@
 package com.axway.ats.core.dbaccess;
 
 import java.io.InputStream;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,16 @@ public interface DbProvider {
      * @return description about all tables present in the database
      */
     public List<TableDescription> getTableDescriptions();
+
+    /**
+     * Get the JDBC database metadata.</p> 
+     * <b>Note:</b> The connection is not closed as it must remain open while reading the metadata.
+     * The user must call the {@link #disconnect() disconnect} method when done reading.
+     * 
+     * @return the database metadata
+     * @throws DbException on error
+     */
+    public DatabaseMetaData getDatabaseMetaData() throws DbException;
 
     /**
      * Executes a given SQL update statement and returns number of updated rows

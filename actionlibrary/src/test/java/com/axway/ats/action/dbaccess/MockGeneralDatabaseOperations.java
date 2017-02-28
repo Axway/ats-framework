@@ -16,11 +16,11 @@
 package com.axway.ats.action.dbaccess;
 
 import java.io.InputStream;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.axway.ats.action.dbaccess.DatabaseOperations;
 import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.DbConnection;
@@ -217,4 +217,10 @@ class MockDbProvider implements DbProvider {
 	public List<TableDescription> getTableDescriptions() {
 		return null;
 	}
+
+    @Override
+    public DatabaseMetaData getDatabaseMetaData() throws DbException {
+
+        return null;
+    }
 }

@@ -16,6 +16,7 @@
 package com.axway.ats.rbv.db;
 
 import java.io.InputStream;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -228,6 +229,12 @@ public class MockDbProvider implements DbProvider {
 
     @Override
     public List<TableDescription> getTableDescriptions() {
+
+        return null;
+    }
+
+    @Override
+    public DatabaseMetaData getDatabaseMetaData() throws DbException {
 
         return null;
     }

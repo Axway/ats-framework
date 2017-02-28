@@ -36,11 +36,6 @@ public class DbConnCassandra extends DbConnection {
      */
     private static final int   DEFAULT_PORT    = 9042;
 
-    /**
-     * The port to be used for connecting to the database
-     */
-    private int                port;
-    
     public static final String DATABASE_TYPE = "CASSANDRA";
 
     /**
@@ -103,17 +98,6 @@ public class DbConnCassandra extends DbConnection {
     public String getURL() {
 
         return ":cassandra:" + host + ":" + port + "/" + db;
-    }
-
-    @Override
-    public String getConnHash() {
-
-        StringBuilder connHash = new StringBuilder();
-        connHash.append( host );
-        connHash.append( port );
-        connHash.append( db );
-
-        return connHash.toString();
     }
 
     @Override

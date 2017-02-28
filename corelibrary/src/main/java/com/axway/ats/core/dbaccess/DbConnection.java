@@ -33,10 +33,17 @@ public abstract class DbConnection {
     //required attributes
     protected String              host;
     protected String              db;
+    protected int                 port;
     protected String              user;
     protected String              password;
 
     protected Map<String, Object> customProperties;
+
+    // The unique counter is used to designate multiple connection to same database.
+    // This is needed when using more than one connection at a time, when do disconnect,
+    // we must find the exact connection to close.
+    private static int            globalConnectionCounter;
+    private int                   connectionCounter;
 
     /**
      * Constructor
@@ -63,6 +70,8 @@ public abstract class DbConnection {
 
         this.customProperties = customProperties;
         initializeCustomProperties( customProperties );
+        
+        this.connectionCounter = ++globalConnectionCounter;
     }
 
     /**
@@ -137,11 +146,30 @@ public abstract class DbConnection {
     public abstract String getDescription();
 
     /**
+     * @return the connection unique counter number
+     */
+    private int getConnectionCounter() {
+
+        return this.connectionCounter;
+    }
+    
+    /**
      * Get the connection hash
      * 
      * @return the connection hash - it is based on the host port and database
      */
-    public abstract String getConnHash();
+    public String getConnHash() {
+        StringBuilder connHash = new StringBuilder();
+        connHash.append( host );
+        connHash.append( "_" );
+        connHash.append( port );
+        connHash.append( "_" );
+        connHash.append( db );
+        connHash.append( "_" );
+        connHash.append( getConnectionCounter() );
+
+        return connHash.toString();
+    }
 
     /**
      * Get a DataSource from this connection

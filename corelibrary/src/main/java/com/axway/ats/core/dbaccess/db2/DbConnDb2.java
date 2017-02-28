@@ -40,11 +40,6 @@ public class DbConnDb2 extends DbConnection {
     private static final String JDBC_DB2_PREFIX = "jdbc:db2://";
 
     /**
-     * The port to be used for connecting to the database
-     */
-    private int                 port;
-
-    /**
      * The connection URL
      */
     private String              url;
@@ -130,17 +125,6 @@ public class DbConnDb2 extends DbConnection {
     public String getURL() {
 
         return url;
-    }
-
-    @Override
-    public String getConnHash() {
-
-        StringBuilder connHash = new StringBuilder();
-        connHash.append( host );
-        connHash.append( port );
-        connHash.append( db );
-
-        return connHash.toString();
     }
 
     @Override

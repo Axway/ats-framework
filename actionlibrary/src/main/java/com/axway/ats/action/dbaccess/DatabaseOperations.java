@@ -16,7 +16,6 @@
 package com.axway.ats.action.dbaccess;
 
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -491,17 +490,17 @@ public class DatabaseOperations {
     }
 
     /**
-     * Returns the JDBC meta data about this database.
-     * This can be used for doing not CRUD operations, for example if want to get the list
-     * of tables into some database
+     * Returns the JDBC meta data about this database, 
+     * for example if want to get the list of tables into some database.</p> 
+     * <b>Note:</b> The connection is not closed internally as it must remain open while reading the metadata.
+     * The user must call the {@link #disconnect() disconnect} method when done.
      * 
      * @return the database meta data instance
-     * @throws SQLException
      */
     @PublicAtsApi
-    public DatabaseMetaData getDatabaseMetaData() throws SQLException {
+    public DatabaseMetaData getDatabaseMetaData() {
 
-        return dbProvider.getDbConnection().getDataSource().getConnection().getMetaData();
+            return dbProvider.getDatabaseMetaData();
     }
 
     private String getQuotation() {

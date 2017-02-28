@@ -16,7 +16,9 @@
 package com.axway.ats.core.dbaccess.cassandra;
 
 import java.io.InputStream;
+
 import java.nio.ByteBuffer;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -447,6 +449,12 @@ public class CassandraDbProvider implements DbProvider {
 
     @Override
     public List<TableDescription> getTableDescriptions() {
+
+        throw new RuntimeException( "Method not implemented" );
+    }
+    
+    @Override
+    public DatabaseMetaData getDatabaseMetaData() throws DbException {
 
         throw new RuntimeException( "Method not implemented" );
     }

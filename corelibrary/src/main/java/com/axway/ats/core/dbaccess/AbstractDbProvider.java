@@ -94,6 +94,21 @@ public abstract class AbstractDbProvider implements DbProvider {
 
         return dbConnection;
     }
+    
+    /* (non-Javadoc)
+     * @see com.tumbleweed.automation.core.dbaccess.DbProvider#getDatabaseMetaData()
+     */
+    @Override
+    public DatabaseMetaData getDatabaseMetaData() {
+
+        connection = ConnectionPool.getConnection( dbConnection );
+
+        try {
+            return connection.getMetaData();
+        } catch( SQLException e ) {
+            throw new DbException( "Error getting database metadata", e );
+        }
+    }
 
     public DbRecordValuesList[] select( String query ) throws DbException {
 

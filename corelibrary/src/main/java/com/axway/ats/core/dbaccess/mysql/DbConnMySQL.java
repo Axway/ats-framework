@@ -40,11 +40,6 @@ public class DbConnMySQL extends DbConnection {
     private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
 
     /**
-     * The port to be used for connecting to the database
-     */
-    private int                 port;
-
-    /**
      * The connection URL
      */
     private String              url;
@@ -125,17 +120,6 @@ public class DbConnMySQL extends DbConnection {
     public String getURL() {
 
         return url;
-    }
-
-    @Override
-    public String getConnHash() {
-
-        StringBuilder connHash = new StringBuilder();
-        connHash.append( host );
-        connHash.append( port );
-        connHash.append( db );
-
-        return connHash.toString();
     }
 
     @Override

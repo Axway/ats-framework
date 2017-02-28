@@ -16,6 +16,7 @@
 package com.axway.ats.core.dbaccess.mssql;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ public class Test_DbConnSQLServer extends BaseTest {
         assertEquals( "user", dbConnection.getUser() );
         assertEquals( "pass", dbConnection.getPassword() );
         assertEquals( "jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL() );
-        assertEquals( "host1433db", dbConnection.getConnHash() );
+        assertTrue( dbConnection.getConnHash().startsWith( "host_1433_db" ) );
         assertEquals( "MSSQL connection to host:1433/db", dbConnection.getDescription() );
         assertEquals( net.sourceforge.jtds.jdbc.Driver.class, dbConnection.getDriverClass() );
     }

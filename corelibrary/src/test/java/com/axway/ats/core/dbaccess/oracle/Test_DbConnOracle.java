@@ -16,6 +16,7 @@
 package com.axway.ats.core.dbaccess.oracle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class Test_DbConnOracle extends BaseTest {
         assertEquals( "user", dbConnection.getUser() );
         assertEquals( "pass", dbConnection.getPassword() );
         assertEquals( "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=123))(CONNECT_DATA=(SID=ORCL)))", dbConnection.getURL() );
-        assertEquals( "host123db", dbConnection.getConnHash() );
+        assertTrue( dbConnection.getConnHash().startsWith( "host_123_db" ) );
         assertEquals( "Oracle connection to host:123/db", dbConnection.getDescription() );
         assertEquals( OracleDriver.class, dbConnection.getDriverClass() );
     }

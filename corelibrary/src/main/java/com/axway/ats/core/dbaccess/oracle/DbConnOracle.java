@@ -73,12 +73,6 @@ public class DbConnOracle extends DbConnection {
     private String              serviceName;
 
     /**
-     * The port to be used for connecting to the database - use
-     * default one if not supplied
-     */
-    private int                 port;
-    
-    /**
      * The protocol to be used for connecting to the database. 
      * If not set the default one with no encryption will be used
      */
@@ -272,17 +266,6 @@ public class DbConnOracle extends DbConnection {
     public String getURL() {
 
         return url;
-    }
-
-    @Override
-    public String getConnHash() {
-
-        StringBuilder connHash = new StringBuilder();
-        connHash.append( host );
-        connHash.append( port );
-        connHash.append( db );
-
-        return connHash.toString();
     }
 
     @Override
