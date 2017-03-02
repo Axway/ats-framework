@@ -650,7 +650,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             int fileNameLength = dis.readInt();
                             checkParamLengthForSocketTransfer( fileNameLength, "file name length" );
                             String fileName = readString( dis, fileNameLength );
-                            fileName = IoUtils.normalizeFilePath( fileName ); // switch file separators according to the current OS
+                            fileName = IoUtils.normalizeFilePath( fileName, osType ); // switch file separators according to the current OS
                             File file = new File( fileName );
                             if( fdType.equals( FILE_COPY_SOCKET_COMMAND ) ) {
 
@@ -1059,7 +1059,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     @Override
     public void setFileHiddenAttribute( String sourceFile, boolean hidden ) {
 
-        sourceFile = IoUtils.normalizeFilePath( sourceFile );
+        sourceFile = IoUtils.normalizeFilePath( sourceFile, osType );
         checkFileExistence( new File( sourceFile ) );
 
         final String errMsg = "Could not " + ( hidden
@@ -1719,7 +1719,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      */
     private void chown( long userId, long groupId, String filename ) {
 
-        filename = IoUtils.normalizeFilePath( filename );
+        filename = IoUtils.normalizeFilePath( filename, osType );
         String[] command = new String[]{ "/bin/sh", "-c",
                                          "chown " + String.valueOf( userId ) + ":" + String.valueOf( groupId )
                                                           + " '" + filename + "'" };;
