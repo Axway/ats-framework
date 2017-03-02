@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,6 +38,7 @@ import com.axway.ats.core.dbaccess.MssqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
+import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
@@ -313,15 +314,12 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, dbe );
         } finally {
             try {
-                if( backupReader != null ) {
-                    backupReader.close();
-                }
+                IoUtils.closeStream( backupReader, "Could not close reader for backup file "
+                        + backupFileName);
                 if( connection != null ) {
                     connection.setAutoCommit( isAutoCommit );
                     connection.close();
                 }
-            } catch( IOException ioe ) {
-                log.error( ERROR_RESTORING_BACKUP + backupFileName, ioe );
             } catch( SQLException sqle ) {
                 log.error( ERROR_RESTORING_BACKUP + backupFileName, sqle );
             }

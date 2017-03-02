@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,13 +42,15 @@ public class ConnectionPool {
     }
 
     /**
-     * Searches the hash map if this connection already exists and returns it or it creates a new connection, adds it to
-     * the map and returns it.
+     * Get JDBC connection - already existing or create a new one if needed.
+     * Searches the hash map if this connection already exists and returns it or it creates a new connection,
+     * adds it to the map and returns it.
      *
-     * Note: each connection is identified by "connection string", "db username" and "db password"
+     * Note: Each connection is identified by "connection string" identifying particular DB/schema instance
      *
      * @param dbConnection The connection descriptor
-     * @return a Connection or null when error occur
+     * @return a JDBC Connection
+     * @throws DbException on error
      */
     public static synchronized Connection getConnection(
                                                          DbConnection dbConnection ) throws DbException {
@@ -56,8 +58,9 @@ public class ConnectionPool {
         // create the connection identifier
         String connectionDescription = dbConnection.getConnHash();
         DataSource dataSource;
-        // use the cached connection if not closed already(for example when mysql get restarted)
+
         if( dataSourceMap.containsKey( connectionDescription ) ) {
+            // use the cached connection
             dataSource = dataSourceMap.get( connectionDescription );
         } else {
             dataSource = dbConnection.getDataSource();
@@ -83,7 +86,7 @@ public class ConnectionPool {
 
     /**
      * Search the hash map for this connection and remove it before it is disconnected
-     * 
+     *
      * @param dbConnection The connection descriptor
      */
     public static synchronized void removeConnection(

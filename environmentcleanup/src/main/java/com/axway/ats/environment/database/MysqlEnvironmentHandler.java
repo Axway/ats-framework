@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,6 +38,7 @@ import com.axway.ats.core.dbaccess.MysqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
+import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
@@ -79,8 +80,6 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
             backupReader = new BufferedReader( new FileReader( new File( backupFileName ) ) );
 
-            //don't use the MysqlDbProvider, because we need to be as fast as possible
-            //so we have to get the connection only once
             connection = ConnectionPool.getConnection( dbConnection );
 
             isAutoCommit = connection.getAutoCommit();
@@ -147,16 +146,12 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                                            + backupFileName, dbe );
         } finally {
             try {
-                if( backupReader != null ) {
-                    backupReader.close();
-                }
-
+                IoUtils.closeStream( backupReader, "Could not close reader for backup file "
+                            + backupFileName);
                 if( connection != null ) {
                     connection.setAutoCommit( isAutoCommit );
                     connection.close();
                 }
-            } catch( IOException ioe ) {
-                log.error( "Could not close reader for backup file " + backupFileName, ioe );
             } catch( SQLException sqle ) {
                 log.error( "Could close DB connection" );
             }
