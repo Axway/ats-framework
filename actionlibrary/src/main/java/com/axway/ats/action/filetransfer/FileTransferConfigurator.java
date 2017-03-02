@@ -30,10 +30,13 @@ public class FileTransferConfigurator extends AbstractConfigurator {
     private static final String HTTP_FILE_TRANSFER_CLIENT  = "actionlibrary.filetransfer.http.client";
     private static final String HTTPS_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.https.client";
     private static final String PESIT_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.pesit.client";
+    private static final String CUSTOM_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.custom.client";
+    private static final String CUSTOM_FILE_TRANSFER_PORT = "actionlibrary.filetransfer.custom.port";
 
     private String httpFileTransferClient;
     private String httpsFileTransferClient;
     private String pesitFileTransferClient;
+    private String customFileTransferClient;
 
     /**
      * The singleton instance for this configurator
@@ -84,6 +87,11 @@ public class FileTransferConfigurator extends AbstractConfigurator {
         try {
             pesitFileTransferClient = getProperty( PESIT_FILE_TRANSFER_CLIENT );
         } catch( NoSuchPropertyException e ) {}
+        
+        try {
+            customFileTransferClient = getProperty( CUSTOM_FILE_TRANSFER_CLIENT );
+        } catch( NoSuchPropertyException e ) {}
+        
     }
 
     /**
@@ -121,9 +129,30 @@ public class FileTransferConfigurator extends AbstractConfigurator {
                                                                  + " property is missing/empty!" );
                 }
                 return pesitFileTransferClient;
+            case CUSTOM:
+            	if( customFileTransferClient == null ) {
+                    throw new FileTransferConfiguratorException( "Uknown custom client for " + protocol
+                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
+                                                                 + " file is not in the classpath or "
+                                                                 + CUSTOM_FILE_TRANSFER_CLIENT
+                                                                 + " property is missing/empty!" );
+                }
+            	return customFileTransferClient;
             default:
                 throw new FileTransferConfiguratorException( "No custom client implementation for " + protocol
                                                              + " protocol" );
         }
+    }
+    
+    /**
+     * @return the custom port for the custom transfer protocol, as specified in ats-adapters.properties.
+     */
+    public int getPort(){
+    	try{
+    		String port = getProperty( CUSTOM_FILE_TRANSFER_PORT );
+    		return Integer.valueOf(port);
+    	}catch (NoSuchPropertyException e) {
+    		return -1;
+		}
     }
 }

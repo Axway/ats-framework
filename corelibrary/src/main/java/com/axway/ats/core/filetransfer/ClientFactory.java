@@ -118,13 +118,12 @@ public class ClientFactory {
             case HTTP_CUSTOM:
             case HTTPS_CUSTOM:
             case PESIT_CUSTOM:
+            case CUSTOM:
                 // load the custom client
                 IFileTransferClient client = loadCustomClient( customFileTransferClient );
                 client.setCustomPort( port );
 
                 return client;
-            case AS2:
-                return new As2Client( port );
             default:
                 throw new FileTransferException( "No implementation for the " + protocol
                                                        + " protocol is currently available" );
@@ -132,7 +131,7 @@ public class ClientFactory {
     }
 
     /**
-     * Instanciates the custom file transfer client
+     * Instantiates the custom file transfer client
      * 
      * @param customFileTransferClient the class name of the custom client
      * @return

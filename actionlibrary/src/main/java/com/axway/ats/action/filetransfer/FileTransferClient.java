@@ -24,7 +24,6 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.common.filetransfer.TransferProtocol;
-import com.axway.ats.core.filetransfer.As2Client;
 import com.axway.ats.core.filetransfer.ClientFactory;
 import com.axway.ats.core.filetransfer.FtpsClient;
 import com.axway.ats.core.filetransfer.HttpClient;
@@ -77,72 +76,6 @@ public class FileTransferClient {
     @PublicAtsApi
     public static final String    SFTP_CIPHERS                                     = SftpClient.SFTP_CIPHERS;
 
-    /** AS2 suffix to be added after the IP:PORT section of the URL */
-    @PublicAtsApi
-    public static final String    AS2_URL_SUFFIX                                   = As2Client.AS2_URL_SUFFIX;
-
-    /** AS2 sender ID */
-    @PublicAtsApi
-    public static final String    AS2_SENDER_ID                                    = As2Client.AS2_SENDER_ID;
-    /** AS2 sender email */
-    @PublicAtsApi
-    public static final String    AS2_SENDER_EMAIL                                 = As2Client.AS2_SENDER_EMAIL;
-    /** AS2 receiver ID */
-    @PublicAtsApi
-    public static final String    AS2_RECEIVER_ID                                  = As2Client.AS2_RECEIVER_ID;
-
-    /** Constants to request a SYNC MDN */
-    @PublicAtsApi
-    public static final String    AS2_REQUEST_SYNC_MDN                             = As2Client.AS2_REQUEST_SYNC_MDN;
-    public static final String    AS2_REQUEST_SYNC_MDN__TRUE                       = As2Client.AS2_REQUEST_SYNC_MDN__TRUE;
-
-    /** Keystore file needed when encrypting/signing a message */
-    @PublicAtsApi
-    public static final String    AS2_KEYSTORE                                     = As2Client.AS2_KEYSTORE;
-    /** Keystore file password needed when encrypting/signing a message */
-    @PublicAtsApi
-    public static final String    AS2_KEYSTORE_PASSWORD                            = As2Client.AS2_KEYSTORE_PASSWORD;
-
-    /** AS2 message subject */
-    @PublicAtsApi
-    public static final String    AS2_MESSAGE_SUBJECT                              = As2Client.AS2_MESSAGE_SUBJECT;
-
-    /**
-     * Alias for certificate used to encrypting a message.
-     * The public key of the remote server is needed.
-     */
-    @PublicAtsApi
-    public static final String    AS2_ENCRYPTION_CERT_ALIAS                        = As2Client.AS2_ENCRYPTION_CERT_ALIAS;
-    /** Constants for setting encryption algorithm */
-    @PublicAtsApi
-    public static final String    AS2_ENCRYPTION_ALGORITHM                         = As2Client.AS2_ENCRYPTION_ALGORITHM;
-    @PublicAtsApi
-    public static final String    AS2_ENCRYPTION_ALGORITHM__3DES                   = As2Client.AS2_ENCRYPTION_ALGORITHM__3DES;
-    @PublicAtsApi
-    public static final String    AS2_ENCRYPTION_ALGORITHM__RC2                    = As2Client.AS2_ENCRYPTION_ALGORITHM__RC2;
-
-    /**
-     * Alias for certificate used to sign a message
-     * The AS2 client private key is needed, its public key must be trusted by the remote server.
-     */
-    @PublicAtsApi
-    public static final String    AS2_SIGNATURE_CERT_ALIAS                         = As2Client.AS2_SIGNATURE_CERT_ALIAS;
-    /** Constants for setting signature hash method */
-    @PublicAtsApi
-    public static final String    AS2_SIGNATURE_HASH_METHOD                        = As2Client.AS2_SIGNATURE_HASH_METHOD;
-    @PublicAtsApi
-    public static final String    AS2_SIGNATURE_HASH_METHOD__MD5                   = As2Client.AS2_SIGNATURE_HASH_METHOD__MD5;
-    @PublicAtsApi
-    public static final String    AS2_SIGNATURE_HASH_METHOD__SHA1                  = As2Client.AS2_SIGNATURE_HASH_METHOD__SHA1;
-
-    /**
-     * Constants to route the AS2 transfer over TLS.
-     * Note that you do not need the server certificate as we will trust it anyway.
-     */
-    @PublicAtsApi
-    public static final String    AS2_TRANSFER_OVER_TLS                            = As2Client.AS2_TRANSFER_OVER_TLS;
-    @PublicAtsApi
-    public static final String    AS2_TRANSFER_OVER_TLS__TRUE                      = As2Client.AS2_TRANSFER_OVER_TLS__TRUE;
 
     /** Property for customizing the HTTP/HTTPS client's socket buffer in bytes */
     @PublicAtsApi
@@ -232,15 +165,20 @@ public class FileTransferClient {
         try {
             int port = protocol.getDefaultPort();
 
-            if( !protocol.toString().endsWith( "_CUSTOM" ) ) {
+            if( !protocol.toString().contains( "CUSTOM" ) ) {
                 // a regular client we develop
                 this.client = ClientFactory.getInstance().getClient( protocol, port );
             } else {
+            	int customPort = FileTransferConfigurator.getInstance().getPort();
+            	if (customPort == -1){
+            		log.warn("No custom port was found for '"+protocol+"'. We will use the default one '"+port+"'");
+            		customPort = port;
+            	}
                 // a product specific client
                 String customFileTransferClient = FileTransferConfigurator.getInstance()
                                                                           .getFileTransferClient( protocol );
 
-                this.client = ClientFactory.getInstance().getClient( protocol, port,
+                this.client = ClientFactory.getInstance().getClient( protocol, customPort,
                                                                      customFileTransferClient );
             }
 

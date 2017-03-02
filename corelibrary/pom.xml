@@ -127,19 +127,20 @@
 			<version>${org.apache.commons.net.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openas2</groupId>
-			<artifactId>openas2</artifactId>
-			<version>${openas2.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jvnet.winp</groupId>
 			<artifactId>winp</artifactId>
 			<version>${org.jvnet.winp.version}</version>
 		</dependency>
+		<!-- SFTP client dependencies -->
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>${com.jcraft.jsch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>${org.bouncycastle.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.datastax.cassandra</groupId>

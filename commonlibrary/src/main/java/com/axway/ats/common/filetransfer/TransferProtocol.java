@@ -43,8 +43,8 @@ public enum TransferProtocol {
     /** Custom PeSIT type*/
     @PublicAtsApi PESIT_CUSTOM,
 
-    /** AS2 type*/
-    @PublicAtsApi AS2;
+    /** Custom file transfer type*/
+    @PublicAtsApi CUSTOM;
 
     /**
      * @return the default port for the current protocol
@@ -67,8 +67,8 @@ public enum TransferProtocol {
             case HTTPS:
             case HTTPS_CUSTOM:
                 return 443;
-            case AS2:
-                return 80;
+            case CUSTOM:
+                return -1;
             default:
                 throw new RuntimeException( "No default port is set for the protocol" + this );
         }
