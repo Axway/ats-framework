@@ -937,7 +937,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     @Override
     public void setFilePermissions( String sourceFile, String permissions ) {
 
-        sourceFile = IoUtils.normalizeFilePath( sourceFile );
+        sourceFile = IoUtils.normalizeFilePath( sourceFile, osType );
         File file = new File( sourceFile );
 
         checkFileExistence( file );
@@ -1827,7 +1827,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                                                throws FileSystemOperationException,
                                                                                IOException {
 
-        filename = IoUtils.normalizeFilePath( filename );
+        filename = IoUtils.normalizeFilePath( filename, osType );
         File file = new File( filename );
         checkFileExistence( file );
         String command = file.isDirectory()
