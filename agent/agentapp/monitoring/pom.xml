@@ -8,9 +8,8 @@
         <artifactId>ats-agent-standalone</artifactId>
         <version>4.0.0-SNAPSHOT</version>
     </parent>
-
     <artifactId>ats-agent-monitoring</artifactId>
-    <name>ATS-Agent-Standalone-Monitoring</name>
+    <name>ATS-Agent-Monitoring</name>
     <description>Component for system monitoring. Contains ATS Agent actions deployed in ATS agents. Produces service (for agent side) and client JAR files</description>
 
     <properties>

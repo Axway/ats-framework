@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>ats-agent-systemoperations</artifactId>
-    <name>ATS-Agent-Standalone-SystemOperations</name>
+    <name>ATS-Agent-SystemOperations</name>
     <description>Component for system operations. Contains ATS Agent actions deployed in ATS agents. Produces service (for agent side) and client JAR files</description>
 
     <properties>

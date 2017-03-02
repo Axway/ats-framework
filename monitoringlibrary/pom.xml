@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>com.axway.ats.framework.agent.standalone</groupId>
-            <artifactId>ats-agent-standalone-monitoring</artifactId>
+            <artifactId>ats-agent-monitoring</artifactId>
             <version>${project.version}</version>
             <classifier>client</classifier>
         </dependency>
