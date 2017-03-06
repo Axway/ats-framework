@@ -23,8 +23,6 @@
 		<oracle.ojdbc.version>12.1.0.1</oracle.ojdbc.version>
 		<!-- jTDS dependency is defined in parent pom.xml -->
 		<com.datastax.cassandra.driver.version>2.0.1</com.datastax.cassandra.driver.version>
-
-		<openas2.version>20100816</openas2.version>
 		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
 			is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
 		<org.jvnet.winp.version>1.23</org.jvnet.winp.version>
