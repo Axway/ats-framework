@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.axway.ats.core.dbaccess.db2.DbConnDb2;
+//import com.axway.ats.core.dbaccess.db2.DbConnDb2;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.environment.BaseTest;
@@ -42,13 +42,6 @@ public class Test_EnvrionmentHandlerFactory extends BaseTest {
                              .getClass() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void createDbBackupHandlerNegative() {
-
-        EnvironmentHandlerFactory factory = EnvironmentHandlerFactory.getInstance();
-        factory.createDbBackupHandler( new DbConnDb2( "host", "db", "user", "pass" ) );
-    }
-
     @Test
     public void createDbRestoreHandlerPositive() {
 
@@ -62,10 +55,4 @@ public class Test_EnvrionmentHandlerFactory extends BaseTest {
                              .getClass() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void createDbRestoreHandlerNegative() {
-
-        EnvironmentHandlerFactory factory = EnvironmentHandlerFactory.getInstance();
-        factory.createDbRestoreHandler( new DbConnDb2( "host", "db", "user", "pass" ) );
-    }
 }

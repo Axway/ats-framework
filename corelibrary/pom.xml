@@ -22,7 +22,6 @@
 		<mysql.mysql-connector-java.version>5.1.13</mysql.mysql-connector-java.version>
 		<oracle.ojdbc.version>12.1.0.1</oracle.ojdbc.version>
 		<!-- jTDS dependency is defined in parent pom.xml -->
-		<com.ibm.db2jcc.version>4.13.80</com.ibm.db2jcc.version>
 		<com.datastax.cassandra.driver.version>2.0.1</com.datastax.cassandra.driver.version>
 
 		<openas2.version>20100816</openas2.version>
@@ -115,11 +114,6 @@
 			<version>${mysql.mysql-connector-java.version}</version>
 			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
 				and loaded with reflection <scope>runtime</scope> -->
-		</dependency>
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>db2jcc</artifactId>
-			<version>${com.ibm.db2jcc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-net</groupId>

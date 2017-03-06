@@ -33,8 +33,8 @@ import org.xml.sax.SAXException;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.cassandra.CassandraDbProvider;
 import com.axway.ats.core.dbaccess.cassandra.DbConnCassandra;
-import com.axway.ats.core.dbaccess.db2.Db2DbProvider;
-import com.axway.ats.core.dbaccess.db2.DbConnDb2;
+//import com.axway.ats.core.dbaccess.db2.Db2DbProvider;
+//import com.axway.ats.core.dbaccess.db2.DbConnDb2;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
@@ -191,11 +191,6 @@ public class DatabaseProviderFactory {
 					dbName, dbUser, dbPass, customProperties));
 			break;
 
-		case DbConnDb2.DATABASE_TYPE:
-			dbProvider = new Db2DbProvider((DbConnDb2) createDbConnection(dbType, dbHost, dbName,
-					dbUser, dbPass, customProperties));
-			break;
-
 		case DbConnCassandra.DATABASE_TYPE:
 			dbProvider = new CassandraDbProvider((DbConnCassandra) createDbConnection(dbType,
 					dbHost, dbName, dbUser, dbPass, customProperties));
@@ -320,9 +315,6 @@ public class DatabaseProviderFactory {
 		}
 		case DbConnOracle.DATABASE_TYPE: {
 			return new DbConnOracle(host, database, user, password, customProperties);
-		}
-		case DbConnDb2.DATABASE_TYPE: {
-			return new DbConnDb2(host, database, user, password, customProperties);
 		}
 		case DbConnCassandra.DATABASE_TYPE: {
 			return new DbConnCassandra(host, database, user, password, customProperties);
