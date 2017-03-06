@@ -159,7 +159,7 @@ public class TableDescription {
         boolean sameColumns = checkColumns( that, equality );
 
         // check the table content only if columns are same
-        if( sameColumns ) {
+        if( thisValuesList != null && thatValuesList != null && sameColumns ) {
 
             // check the table size
             if( thisValuesList.size() != thatValuesList.size() ) {

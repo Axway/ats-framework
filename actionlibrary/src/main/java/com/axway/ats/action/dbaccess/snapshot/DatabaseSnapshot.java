@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -76,6 +77,8 @@ public class DatabaseSnapshot {
     // MAP< table name > < what to skip >
     Map<String, SkipRules>      skipRulesPerTable = new HashMap<String, SkipRules>();
 
+    List<String>      skipTableContent = new ArrayList<String>();
+    
     //  An interface which tells whether some table index names should be treated as same or not
     private IndexNameMatcher    indexNameMatcher;
 
@@ -122,7 +125,7 @@ public class DatabaseSnapshot {
             skipRulesPerTable.put( table, new SkipRules() );
         }
     }
-
+    
     /**
      * Specify a column which values will not be read when comparing the table content.
      * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
@@ -147,6 +150,15 @@ public class DatabaseSnapshot {
     public void skipTableColumns( String tableName, String... columnNames ) {
 
         skipRulesPerTable.put( tableName, new SkipRules( columnNames ) );
+    }
+    
+    @PublicAtsApi
+    public void skipTablesContent(
+                                   String... tables ) {
+
+        for( String table : tables ) {
+            skipTableContent.add( table );
+        }
     }
 
     /**
@@ -285,14 +297,16 @@ public class DatabaseSnapshot {
             // Here we put all skip rules into one list. It doesn't make sense to ask people 
             // to add same skip rules for same tables in both snapshot instances.
             Map<String, SkipRules> allSkipRules = mergeSkipRules( that.skipRulesPerTable );
-
+            
+            List<String> allTablesContentSkip = mergeTableContentToSkip(that.skipTableContent);
+            
             Set<String> allTablesToSkip = getAllTablesToSkip( allSkipRules );
 
             // We can use just one index name matcher
             IndexNameMatcher actualIndexNameMatcher = mergeIndexNameMatchers( that.indexNameMatcher );
 
             compareTables( this.name, thisTables, that.name, thatTables, that.dbProvider, allTablesToSkip,
-                           allSkipRules, actualIndexNameMatcher, that.backupXmlFile, equality );
+                           allSkipRules, allTablesContentSkip, actualIndexNameMatcher, that.backupXmlFile, equality );
 
             if( equality.hasDifferences() ) {
                 // there are some unexpected differences
@@ -354,8 +368,9 @@ public class DatabaseSnapshot {
     private void compareTables( String thisSnapshotName, List<TableDescription> thisTables,
                                 String thatSnapshotName, List<TableDescription> thatTables,
                                 DbProvider thatDbProvider, Set<String> allTablesToSkip,
-                                Map<String, SkipRules> allSkipRules, IndexNameMatcher indexNameMatcher,
-                                Document thatBackupXmlFile, EqualityState equality ) {
+                                Map<String, SkipRules> allSkipRules, List<String> allTablesContentSkip,
+                                IndexNameMatcher indexNameMatcher, Document thatBackupXmlFile, 
+                                EqualityState equality ) {
 
         // make a list of tables present in both snapshots
         List<String> commonTables = getCommonTables( thisSnapshotName, thisTables, thatSnapshotName,
@@ -384,12 +399,17 @@ public class DatabaseSnapshot {
                 continue;
             }
 
-            // load the content of this snapshot's table
-            List<String> thisValuesList = loadTableData( thisSnapshotName, thisTable, allSkipRules,
-                                                         this.dbProvider, backupXmlFile );
-            // load the content of that snapshot's table
-            List<String> thatValuesList = loadTableData( thatSnapshotName, thatTable, allSkipRules,
-                                                         thatDbProvider, thatBackupXmlFile );
+            List<String> thisValuesList = null;
+            List<String> thatValuesList = null;
+            
+            if( !allTablesContentSkip.contains( tableName ) ) {
+                // load the content of this snapshot's table
+                thisValuesList = loadTableData( thisSnapshotName, thisTable, allSkipRules,
+                                                             this.dbProvider, backupXmlFile );
+                // load the content of that snapshot's table
+                thatValuesList = loadTableData( thatSnapshotName, thatTable, allSkipRules, 
+                                                             thatDbProvider, thatBackupXmlFile );
+            }
 
             thisTable.compare( thatTable, thisValuesList, thatValuesList, indexNameMatcher, equality );
         }
@@ -464,7 +484,22 @@ public class DatabaseSnapshot {
 
         return allSkipRules;
     }
+    
+    private List<String> mergeTableContentToSkip(
+                                                  List<String> skipTableContent ) {
 
+        List<String> allTablesContentToSkip = new ArrayList<String>();
+        allTablesContentToSkip.addAll( this.skipTableContent );
+
+        for( String table : skipTableContent ) {
+            if( !allTablesContentToSkip.contains( table ) ) {
+                allTablesContentToSkip.add( table );
+            }
+        }
+
+        return allTablesContentToSkip;
+    }
+    
     /**
      * Retrieve all tables that are to be skipped
      * 
@@ -653,5 +688,44 @@ public class DatabaseSnapshot {
                           e );
             }
         }
+    }
+    
+    public static void main(
+                             String[] args ) {
+
+        BasicConfigurator.configure();
+
+        String host = "kermit.auto.lab.sofi.axway.int";
+        String dbType = "MSSQL";
+        String dbPort = "1433";
+        String dbUser = "AutoUser";
+        String dbPass = "SECRET123";
+
+        TestBox tb1 = new TestBox();
+        tb1.setHost( host );
+        tb1.setDbType( dbType );
+        tb1.setDbPort( dbPort );
+        tb1.setDbName( "dbsnapshot3" );
+        tb1.setDbUser( dbUser );
+        tb1.setDbPass( dbPass );
+        
+        TestBox tb2 = new TestBox();
+        tb2.setHost( host );
+        tb2.setDbType( dbType );
+        tb2.setDbPort( dbPort );
+        tb2.setDbName( "dbsnapshot4" );
+        tb2.setDbUser( dbUser );
+        tb2.setDbPass( dbPass );
+
+        DatabaseSnapshot sn1 = new DatabaseSnapshot( "SNAP1", tb1 );
+        sn1.skipTablesContent( "tAllTypes" );
+        sn1.takeSnapshot();
+        sn1.saveToFile( "D:\\snp1.txt" );
+
+        DatabaseSnapshot sn2 = new DatabaseSnapshot( "SNAP2", tb2 );
+        sn2.takeSnapshot();
+        sn2.saveToFile( "D:\\snp2.txt" );
+
+//        sn1.compare( sn2 );
     }
 }

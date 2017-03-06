@@ -17,6 +17,7 @@ package com.axway.ats.action.dbaccess.snapshot;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -82,8 +83,17 @@ class DatabaseSnapshotBackupUtils {
 
             tableDescription.toXmlNode( doc, tableNode );
 
-            List<String> valuesList = snapshot.loadTableData( snapshot.name, tableDescription,
-                                                              snapshot.skipRulesPerTable, null, null );
+            List<String> valuesList = new ArrayList<String>();
+            if( snapshot.skipTableContent.contains( tableDescription.getName() ) ) {
+                // no rows have to be saved, so we skip this iteration
+                continue;
+            } else {
+                valuesList.addAll( snapshot.loadTableData( snapshot.name,
+                                                           tableDescription,
+                                                           snapshot.skipRulesPerTable,
+                                                           null,
+                                                           null ) );
+            }
             for( String values : valuesList ) {
                 Element rowNode = doc.createElement( DatabaseSnapshotUtils.NODE_ROW );
                 rowNode.setTextContent( values );
