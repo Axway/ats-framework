@@ -139,9 +139,6 @@ public abstract class AbstractDbProvider implements DbProvider {
             int currentRow = 0;
             while( res.next() ) {
                 currentRow++;
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Result row number: " + currentRow );
-                }
                 DbRecordValuesList recordList = new DbRecordValuesList();
 
                 for( int i = 1; i <= numberOfColumns; i++ ) {
@@ -192,6 +189,9 @@ public abstract class AbstractDbProvider implements DbProvider {
                 }
 
                 dbRecords.add( recordList );
+            }
+            if( log.isDebugEnabled() ) {
+                log.debug( "Select statement returned " + currentRow + " rows" );
             }
         } catch( SQLException e ) {
             throw new DbException( errMsg, e );
@@ -811,7 +811,13 @@ public abstract class AbstractDbProvider implements DbProvider {
 
         ResultSet columnInformation = null;
         try {
-            columnInformation = databaseMetaData.getColumns( null, null, tableName, "%" );
+            // Get info about all columns in the specified table.
+            // Specifying the user name is needed for Oracle, otherwise returns info about the specified table in all DBs.
+            // We can use an method overriding instead of checking this instance type.
+            columnInformation = databaseMetaData.getColumns( null, ( this instanceof OracleDbProvider
+                                                                                                      ? dbConnection.getUser()
+                                                                                                      : null ),
+                                                             tableName, "%" );
             while( columnInformation.next() ) {
                 StringBuilder sb = new StringBuilder();
                 String columnName = columnInformation.getString( "COLUMN_NAME" );
@@ -837,35 +843,39 @@ public abstract class AbstractDbProvider implements DbProvider {
         }
     }
 
-    private Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
-                                                     String catalog ) throws SQLException {
+    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                     String catalog ) throws DbException {
 
         Map<String, String> indexes = new HashMap<>();
 
-        ResultSet indexInformation = databaseMetaData.getIndexInfo( catalog, null, tableName, true, true );
-        while( indexInformation.next() ) {
-            StringBuilder sb = new StringBuilder();
-            String indexName = indexInformation.getString( "INDEX_NAME" );
-            if( !StringUtils.isNullOrEmpty( indexName ) ) {
-                sb.append( extractResultSetAttribute( indexInformation, "COLUMN_NAME", "column" ) );
-                sb.append( extractResultSetAttribute( indexInformation, "INDEX_QUALIFIER",
-                                                      "index catalog" ) );
-                sb.append( ", type=" + sqlTypeToString( indexInformation.getInt( "TYPE" ) ) );
-                sb.append( extractResultSetAttribute( indexInformation, "ASC_OR_DESC", "asc/desc" ) );
-                sb.append( extractResultSetAttribute( indexInformation, "NON_UNIQUE", "non-unique" ) );
-                sb.append( extractResultSetAttribute( indexInformation, "FILTER_CONDITION",
-                                                      "filter condition" ) );
-                sb.append( extractResultSetAttribute( indexInformation, "ORDINAL_POSITION",
-                                                      "sequence number" ) );
+        try {
+            ResultSet indexInformation = databaseMetaData.getIndexInfo( catalog, null, tableName, true,
+                                                                        true );
+            while( indexInformation.next() ) {
+                StringBuilder sb = new StringBuilder();
+                String indexName = indexInformation.getString( "INDEX_NAME" );
+                if( !StringUtils.isNullOrEmpty( indexName ) ) {
+                    sb.append( extractResultSetAttribute( indexInformation, "COLUMN_NAME", "column" ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "INDEX_QUALIFIER",
+                                                          "index catalog" ) );
+                    sb.append( ", type=" + sqlTypeToString( indexInformation.getInt( "TYPE" ) ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "ASC_OR_DESC", "asc/desc" ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "NON_UNIQUE", "non-unique" ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "FILTER_CONDITION",
+                                                          "filter condition" ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "ORDINAL_POSITION",
+                                                          "sequence number" ) );
 
-                //                sb.append( extractIndexAttribute( indexInformation, "TABLE_NAME" ) );
-                //                sb.append( extractResultSetAttribute( indexInformation, "TYPE", "type" ) );
-                //                sb.append( extractIndexAttribute( indexInformation, "CARDINALITY" ) );
-                //                sb.append( extractIndexAttribute( indexInformation, "PAGES" ) );
-                indexes.put( indexName, sb.toString() );
+                    //                sb.append( extractIndexAttribute( indexInformation, "TABLE_NAME" ) );
+                    //                sb.append( extractResultSetAttribute( indexInformation, "TYPE", "type" ) );
+                    //                sb.append( extractIndexAttribute( indexInformation, "CARDINALITY" ) );
+                    //                sb.append( extractIndexAttribute( indexInformation, "PAGES" ) );
+                    indexes.put( indexName, sb.toString() );
+                }
             }
+        } catch( SQLException e ) {
+            throw new DbException( "Error extracting table indexes info", e );
         }
-
         return indexes;
     }
 

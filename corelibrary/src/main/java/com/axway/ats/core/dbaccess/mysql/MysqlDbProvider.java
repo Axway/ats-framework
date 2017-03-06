@@ -19,14 +19,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbProvider;
+import com.axway.ats.core.dbaccess.DbRecordValue;
+import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 
 /**
@@ -113,4 +118,37 @@ public class MysqlDbProvider extends AbstractDbProvider {
 
         return value;
     }
+    
+    @Override
+    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                       String catalog ) throws DbException {
+
+        String sql = "show index from " + tableName + ";";
+
+        String indexName = null;
+        Map<String, String> indexes = new HashMap<>();
+        for( DbRecordValuesList valueList : select( sql ) ) {
+            StringBuilder info = new StringBuilder();
+            for( DbRecordValue dbValue : valueList ) {
+                String value = dbValue.getValueAsString();
+                String name = dbValue.getDbColumn().getColumnName();
+                if( "INDEX_NAME".equalsIgnoreCase( name ) ) {
+                    indexName = value;
+                } else {
+                    info.append( ", " + name + "=" + value );
+                }
+            }
+
+            if( indexName == null ) {
+                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+                log.warn( "IndexName column not found in query polling for index properties:\nQuery: " + sql
+                          + "\nQuery result: " + valueList.toString()
+                          + "\nWe will use the following as an index name: " + indexName );
+            }
+
+            indexes.put( indexName, info.toString() );
+        }
+
+        return indexes;
+    }    
 }

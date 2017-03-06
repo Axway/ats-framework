@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -32,6 +33,7 @@ import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbColumn;
 import com.axway.ats.core.dbaccess.DbRecordValue;
+import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.MssqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
@@ -57,11 +59,6 @@ public class MssqlDbProvider extends AbstractDbProvider {
         super( dbConnection );
     }
 
-    //////////////////////////////////////////////////////////////
-    // Utility methods for DB usage
-    //////////////////////////////////////////////////////////////
-
-    //********************************************************************************************
     /**
      * Gets a first row of a result set of a query and returns it as a HashMap.
      * 
@@ -197,5 +194,53 @@ public class MssqlDbProvider extends AbstractDbProvider {
         }
 
         return true;
+    }
+    
+    @Override
+    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                       String catalog ) throws DbException {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append( "SELECT" );
+        sql.append( " indexes.name as Name," );
+        sql.append( " indexes.type_desc as Type," );
+        sql.append( " ds.name as DataSpaceName," );
+        sql.append( " ds.type as DataSpaceType," );
+        sql.append( " indexes.is_primary_key as IsPrimaryKey," );
+        sql.append( " indexes.is_unique as IsUnique," );
+        sql.append( " indexes.ignore_dup_key as IsDuplicateKey," );
+        sql.append( " indexes.is_unique_constraint as IsUniqueConstraint" );
+        sql.append( " FROM" );
+        sql.append( " sys.indexes as indexes" );
+        sql.append( " JOIN" );
+        sql.append( " sys.data_spaces ds on ds.data_space_id = indexes.data_space_id" );
+        sql.append( " WHERE object_id = (select object_id from sys.objects where name = '" + tableName
+                    + "');" );
+
+        String indexName = null;
+        Map<String, String> indexes = new HashMap<>();
+        for( DbRecordValuesList valueList : select( sql.toString() ) ) {
+            StringBuilder info = new StringBuilder();
+            for( DbRecordValue dbValue : valueList ) {
+                String value = dbValue.getValueAsString();
+                String name = dbValue.getDbColumn().getColumnName();
+                if( "Name".equalsIgnoreCase( name ) ) {
+                    indexName = value;
+                } else {
+                    info.append( ", " + name + "=" + value );
+                }
+            }
+
+            if( indexName == null ) {
+                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+                log.warn( "IndexName column not found in query polling for index properties:\nQuery: "
+                          + sql.toString() + "\nQuery result: " + valueList.toString()
+                          + "\nWe will use the following as an index name: " + indexName );
+            }
+
+            indexes.put( indexName, info.toString() );
+        }
+
+        return indexes;
     }
 }

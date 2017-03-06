@@ -19,9 +19,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -29,7 +32,9 @@ import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.DbColumn;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbRecordValue;
+import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.OracleColumnDescription;
+import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.IoUtils;
 
 /**
@@ -161,6 +166,48 @@ public class OracleDbProvider extends AbstractDbProvider {
         }
 
         return recordValue;
-
     }
+    
+    @Override
+    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                       String catalog ) throws DbException {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append( "SELECT" );
+        sql.append( " ais.INDEX_NAME," );
+        sql.append( " ais.PARTITION_NAME," );
+        sql.append( " ais.PARTITION_POSITION," );
+        sql.append( " ais.OBJECT_TYPE," );
+        sql.append( " ais.DISTINCT_KEYS" );
+        sql.append( " FROM" );
+        sql.append( " ALL_IND_STATISTICS ais" );
+        sql.append( " WHERE TABLE_OWNER='" + dbConnection.getUser() + "'" );
+        sql.append( " AND TABLE_NAME='" + tableName + "'" );
+
+        String indexName = null;
+        Map<String, String> indexes = new HashMap<>();
+        for( DbRecordValuesList valueList : select( sql.toString() ) ) {
+            StringBuilder info = new StringBuilder();
+            for( DbRecordValue dbValue : valueList ) {
+                String value = dbValue.getValueAsString();
+                String name = dbValue.getDbColumn().getColumnName();
+                if( "INDEX_NAME".equalsIgnoreCase( name ) ) {
+                    indexName = value;
+                } else {
+                    info.append( ", " + name + "=" + value );
+                }
+            }
+
+            if( indexName == null ) {
+                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+                log.warn( "IndexName column not found in query polling for index properties:\nQuery: "
+                          + sql.toString() + "\nQuery result: " + valueList.toString()
+                          + "\nWe will use the following as an index name: " + indexName );
+            }
+
+            indexes.put( indexName, info.toString() );
+        }
+
+        return indexes;
+    }    
 }
