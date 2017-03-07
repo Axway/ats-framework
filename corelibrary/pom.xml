@@ -100,9 +100,15 @@
 			<version>${net.sourceforge.jtds.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.oracle.jdbc</groupId>
-		    <artifactId>ojdbc7</artifactId>
-		    <version>${oracle.ojdbc.version}</version>
+			<groupId>com.oracle.jdbc</groupId>
+			<artifactId>ojdbc7</artifactId>
+			<version>${oracle.ojdbc.version}</version>
+			<exclusions>
+                <exclusion>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>xmlparserv2</artifactId>
+                </exclusion>
+            </exclusions>
 			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
 				and loaded with reflection <scope>runtime</scope> -->
 		</dependency>
