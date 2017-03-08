@@ -1327,6 +1327,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 System.err.println( DbUtils.getFullSqlException( errorMessage, sqle ) );
                 if( dbae == null ) {
                     dbae = new DatabaseAccessException( errorMessage, sqle );
+                } else{
+                    log.error( "The transaction could not be rolled back, possible cause '" + dbae.getMessage() + "'" );
                 }
             } finally {
                 try {
