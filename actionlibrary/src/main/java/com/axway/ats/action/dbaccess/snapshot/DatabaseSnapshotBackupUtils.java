@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -92,11 +94,15 @@ class DatabaseSnapshotBackupUtils {
                                                            tableDescription,
                                                            snapshot.skipRulesPerTable,
                                                            null,
+                                                           null,
                                                            null ) );
             }
             for( String values : valuesList ) {
                 Element rowNode = doc.createElement( DatabaseSnapshotUtils.NODE_ROW );
-                rowNode.setTextContent( values );
+                if( skipRow( snapshot.skipRows.get( tableDescription.getName() ),
+                             values ) ) {
+                    rowNode.setTextContent( values );
+                }
 
                 tableNode.appendChild( rowNode );
             }
@@ -128,6 +134,20 @@ class DatabaseSnapshotBackupUtils {
         log.info( "Save database snapshot into file " + backupFile + " - END" );
 
         return doc;
+    }
+    
+    private boolean skipRow(
+                             Map<String, String> skipRows,
+                             String rowValues ) {
+
+        if( skipRows != null ) {
+            for( Entry<String, String> skipRow : skipRows.entrySet() ) {
+                if( rowValues.contains( skipRow.getKey() + "=" + skipRow.getValue() ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
