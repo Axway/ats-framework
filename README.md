@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Axway/ats-framework.svg?branch=master)](https://travis-ci.org/Axway/ats-framework)
+
 ATS framework is Java test automation framework providing multiple modules. It helps to automate:
 - file system, DB and mail operations;
 - file transfer operations (REST, HTTP, FTP(S), SFTP);
@@ -10,3 +12,5 @@ ATS framework is Java test automation framework providing multiple modules. It h
 - system monitoring on host (machine), process and JVM level;
 
 Other related projects are ATS Test Explorer, and REST logger.
+
+Latest release version: **4.0.0**
