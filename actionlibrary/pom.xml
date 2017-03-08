@@ -119,7 +119,7 @@
             <version>${org.bouncycastle.version}</version>
         </dependency>
         <dependency>
-            <groupId>gnu.classpath.ext</groupId>
+            <groupId>com.axway.ats.gnu.classpath.ext</groupId>
             <artifactId>inetlib</artifactId>
             <version>${gnu.classpath.ext.inetlib.version}</version>
         </dependency>
