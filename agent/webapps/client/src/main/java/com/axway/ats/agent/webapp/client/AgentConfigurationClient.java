@@ -214,7 +214,7 @@ public final class AgentConfigurationClient extends ActionClient {
      * @throws AgentException
      */
     @PublicAtsApi
-    public void setNewCallerId() throws AgentException {
+    public void setUseNewCallerIdOnEachRun() throws AgentException {
 
         AgentServicePool.useNewUniqueId();
     }

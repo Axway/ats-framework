@@ -132,24 +132,24 @@ public class AgentServicePool {
             // check if new unique id must be generated each time
             if( !useNewUuId ) {
                 // create temp file containing caller working directory and the unique id
-                String userLoc = System.getProperty( "user.dir" );
-                String uuiFileLocation = System.getProperty( "java.io.tmpdir" ) + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + "\\ats_uid.txt";
+                String userWorkingDirectory = AtsSystemProperties.SYSTEM_USER_HOME_DIR;
+                String uuiFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + "\\ats_uid.txt";
                 File uuiFile = new File( uuiFileLocation );
                 
                 // check if the file exist and if exist check if the data we need is in, 
                 // otherwise add it to the file 
                 if( uuiFile.exists() ) {
                     String uuiFileContent = IoUtils.streamToString( IoUtils.readFile( uuiFileLocation ) );
-                    if( uuiFileContent.contains( userLoc ) ) {
+                    if( uuiFileContent.contains( userWorkingDirectory ) ) {
                         for( String line : uuiFileContent.split( "\n" ) ) {
-                            if( line.contains( userLoc ) ) {
-                                uniqueId = line.substring( userLoc.length() ).trim();
+                            if( line.contains( userWorkingDirectory ) ) {
+                                uniqueId = line.substring( userWorkingDirectory.length() ).trim();
                             }
                         }
                     } else {
                         generateNewUUID();
                         new LocalFileSystemOperations().appendToFile( uuiFileLocation,
-                                                                      userLoc + "\t" + uniqueId + "\n" );
+                                                                      userWorkingDirectory + "\t" + uniqueId + "\n" );
                     }
                 } else {
                     generateNewUUID();
@@ -160,7 +160,7 @@ public class AgentServicePool {
                     }
                     if(uuiFile.exists()){
                         new LocalFileSystemOperations().appendToFile( uuiFileLocation,
-                                                                      userLoc + "\t" + uniqueId + "\n" ); 
+                                                                      userWorkingDirectory + "\t" + uniqueId + "\n" ); 
                     }
                 }
             } else{
