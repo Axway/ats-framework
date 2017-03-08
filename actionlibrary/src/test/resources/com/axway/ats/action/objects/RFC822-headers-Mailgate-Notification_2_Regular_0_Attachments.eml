@@ -45,7 +45,7 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 Content-Type: text/rfc822-headers
 
-Received: from AKRACHEVA.axway.int (akracheva.wks.sofi.axway.int
+Received: from MAILER.axway.int (mailer.wks.sofi.axway.int
  [10.134.14.226]) by mailgate46.perf-es.lab.sofi.axway.int (Postfix)
  with ESMTP id 27673B1A7C7 for <test68@automator.es.lab.sofi.axway.int>;
  Mon, 2 May 2011 14:56:59 +0300 (EEST)

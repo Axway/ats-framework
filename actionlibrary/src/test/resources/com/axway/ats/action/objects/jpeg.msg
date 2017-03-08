@@ -6,7 +6,7 @@ Received: from tm (tm.corp.axway.com [10.191.2.10])
 	for <test43@automator.sofia-qa2.axway.com>; Fri, 19 Oct 2007 14:45:39 +0300 (EEST)
 FROM: 1192794169660 <sender@sender.com>
 To: test43@automator.sofia-qa2.axway.com
-Message-ID: <28195661.3291192794340347.JavaMail.tminakov@tm>
+Message-ID: <28195661.3291192794340347.JavaMail.username@tm>
 Subject: All_Image_Files : JPEG : looney.jpeg
 MIME-Version: 1.0
 Content-Type: multipart/mixed; 

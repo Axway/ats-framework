@@ -1,7 +1,7 @@
 Return-Path: <test180@es.lab.sofi.axway.int>
 X-Original-To: test99@automator.es.lab.sofi.axway.int
 Delivered-To: test99@automator.es.lab.sofi.axway.int
-Received: from AKRACHEVA.corp.axway.com (akracheva.corp.axway.com [10.191.2.24])
+Received: from MAILER.corp.axway.com (mailer.corp.axway.com [10.191.2.24])
     by automator6.auto-es.lab.sofi.axway.int (Postfix) with SMTP id 9DAE92E228
     for <test99@automator.es.lab.sofi.axway.int>; Wed, 16 Feb 2011 11:52:31 +0200 (EET)
 X-Mailbox-Line: From - Wed Feb 16 11:47:30 2011

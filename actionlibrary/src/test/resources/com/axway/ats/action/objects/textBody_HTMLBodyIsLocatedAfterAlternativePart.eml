@@ -1,18 +1,18 @@
-Return-Path: test1@kermit.auto.lab.sofi.axway.int
+Return-Path: test1@auto.lab.sofi.axway.int
 Received: from [127.0.0.1] ([10.134.9.189])
-	by kermit.auto.lab.sofi.axway.int
+	by auto.lab.sofi.axway.int
 	; Thu, 27 Aug 2015 14:54:54 +0300
-References: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+References: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
 Subject: test2
-To: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
-From: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
-X-Forwarded-Message-Id: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
-Message-ID: <55DEFAD7.2060507@kermit.auto.lab.sofi.axway.int>
+To: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
+From: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
+X-Forwarded-Message-Id: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
+Message-ID: <55DEFAD7.2060507@auto.lab.sofi.axway.int>
 Date: Thu, 27 Aug 2015 14:56:07 +0300
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
  Thunderbird/38.1.0
 MIME-Version: 1.0
-In-Reply-To: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+In-Reply-To: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
 Content-Type: multipart/mixed;
  boundary="------------060100070504060404010709"
 
@@ -50,14 +50,14 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
  filename="test again.eml"
 
-Return-Path: test1@kermit.auto.lab.sofi.axway.int
+Return-Path: test1@auto.lab.sofi.axway.int
 Received: from [127.0.0.1] ([10.134.9.189])
-	by kermit.auto.lab.sofi.axway.int
+	by auto.lab.sofi.axway.int
 	; Thu, 27 Aug 2015 14:50:40 +0300
-To: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
-From: Radoslav Kostadinov <test1@kermit.auto.lab.sofi.axway.int>
+To: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
+From: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
 Subject: test again
-Message-ID: <55DEF9DA.9030604@kermit.auto.lab.sofi.axway.int>
+Message-ID: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
 Date: Thu, 27 Aug 2015 14:51:54 +0300
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
  Thunderbird/38.1.0

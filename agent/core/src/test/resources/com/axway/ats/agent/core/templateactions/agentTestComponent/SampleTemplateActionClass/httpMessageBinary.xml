@@ -4,7 +4,7 @@
         <HTTP_REQUEST method="GET">
             <HTTP_REQUEST_URL>http://${targetHost}:8080/com/axway/cs/h2h/data/${recipientMessageAttachmentId}/${user_id}/desktop.ini</HTTP_REQUEST_URL>
             <HTTP_HEADER name="Accept-Language" value="en-us,en;q=0.5"/>
-            <HTTP_HEADER name="Host" value="emine.sofia-auto.axway.com:8080"/>
+            <HTTP_HEADER name="Host" value="host.axway.com:8080"/>
             <HTTP_HEADER name="Accept-Charset" value="ISO-8859-1,utf-8;q=0.7,*;q=0.7"/>
             <HTTP_HEADER name="Accept-Encoding" value="gzip,deflate"/>
             <HTTP_HEADER name="Keep-Alive" value="115"/>

@@ -67,12 +67,12 @@ Received: from vmg-117.es.lab.sofi.axway.int (vmg-117.es.lab.sofi.axway.int [10.
 	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:46 +0300 (EEST)
 X-WSS-ID: 0L91ML2-ID-0HI-02
 X-TMWD-Spam-Summary: TS=20100920112928; ID=1; SEV=2.4.2; DFV=B2010092010; IFV=NA; AIF=B2010092010; RPD=6.02.0034; ENG=NA; RPDID=NA; CAT=NONE; CON=NONE; SIG=AAAAAAAAAAAAAAAACr8CIQAAfQ==
-Received: from akracheva (akracheva.corp.axway.com [10.191.2.33])
+Received: from mailer (mailer.corp.axway.com [10.191.2.33])
 	by vmg-117.es.lab.sofi.axway.int (Postfix) with ESMTP id 2F36B3CC176
 	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:24 +0300 (EEST)
 From: sender@sender.com
 To: test53@automator.es.lab.sofi.axway.int
-Message-ID: <5760903.01284982177750.JavaMail.akracheva@akracheva>
+Message-ID: <5760903.01284982177750.JavaMail.mailer@mailer>
 Subject: subject
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -332,12 +332,12 @@ Received: from vmg-117.es.lab.sofi.axway.int (vmg-117.es.lab.sofi.axway.int [10.
 	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:46 +0300 (EEST)
 X-WSS-ID: 0L91ML2-ID-0HI-02
 X-TMWD-Spam-Summary: TS=20100920112928; ID=1; SEV=2.4.2; DFV=B2010092010; IFV=NA; AIF=B2010092010; RPD=6.02.0034; ENG=NA; RPDID=NA; CAT=NONE; CON=NONE; SIG=AAAAAAAAAAAAAAAACr8CIQAAfQ==
-Received: from akracheva (akracheva.corp.axway.com [10.191.2.33])
+Received: from mailer (mailer.corp.axway.com [10.191.2.33])
 	by vmg-117.es.lab.sofi.axway.int (Postfix) with ESMTP id 2F36B3CC176
 	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:24 +0300 (EEST)
 From: sender@sender.com
 To: test553@automator.es.lab.sofi.axway.int
-Message-ID: <5760903.01284982177750.JavaMail.akracheva@akracheva>
+Message-ID: <5760903.01284982177750.JavaMail.mailer@mailer>
 Subject: some subject
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii

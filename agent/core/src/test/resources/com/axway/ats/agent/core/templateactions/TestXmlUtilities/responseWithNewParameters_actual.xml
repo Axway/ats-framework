@@ -4,7 +4,7 @@
         <HTTP_REQUEST method="POST">
             <HTTP_REQUEST_URL>http://${targetHost}:8080/com/axway/cs/h2h/control/transactions?sender=${senderMail}&amp;receiver=&amp;state=AVAILABLE&amp;http_method=GET&amp;http_accept=application/x-amf&amp;support_only_ok_status=true</HTTP_REQUEST_URL>
             <HTTP_HEADER name="Accept-Language" value="en-us,en;q=0.5"/>
-            <HTTP_HEADER name="Host" value="emine.sofia-auto.axway.com:8080"/>
+            <HTTP_HEADER name="Host" value="host.axway.com:8080"/>
             <HTTP_HEADER name="Content-Length" value="16"/>
             <HTTP_HEADER name="Accept-Charset" value="ISO-8859-1,utf-8;q=0.7,*;q=0.7"/>
             <HTTP_HEADER name="Accept-Encoding" value="gzip,deflate"/>

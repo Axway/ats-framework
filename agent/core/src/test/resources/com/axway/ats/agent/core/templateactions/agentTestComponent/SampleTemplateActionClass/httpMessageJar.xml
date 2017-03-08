@@ -2,10 +2,10 @@
 <HTTP_ACTIONS>
     <HTTP_ACTION>
         <HTTP_REQUEST method="GET">
-            <HTTP_REQUEST_URL>http://kermit.sofia-auto.axway.com:8080/com/axway/cs/ria/bundle/xferhelper.jar</HTTP_REQUEST_URL>
+            <HTTP_REQUEST_URL>http://host.axway.com:8080/com/axway/cs/ria/bundle/xferhelper.jar</HTTP_REQUEST_URL>
             <HTTP_HEADER name="If-Modified-Since" value="Wed, 19 May 2010 12:20:14 GMT"/>
             <HTTP_HEADER name="Cookie" value="PHPSESSID=bq6gnqjt06nb5f4vi9eakkpre4"/>
-            <HTTP_HEADER name="Host" value="kermit.sofia-auto.axway.com:8080"/>
+            <HTTP_HEADER name="Host" value="host.axway.com:8080"/>
             <HTTP_HEADER name="Accept-Encoding" value="pack200-gzip, gzip"/>
             <HTTP_HEADER name="User-Agent" value="Mozilla/4.0 (Windows XP 5.1) Java/1.6.0_19"/>
             <HTTP_HEADER name="Connection" value="keep-alive"/>
