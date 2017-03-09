@@ -70,17 +70,6 @@
 					</snapshots>
 				</repository>
 				
-				<repository>
-					<id>repo.maven.apache.org</id>
-					<url>http://repo.maven.apache.org/maven2</url>
-					<releases>
-						<enabled>false</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				
 			</repositories>
 			
 			<pluginRepositories>
