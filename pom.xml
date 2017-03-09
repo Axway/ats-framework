@@ -313,6 +313,78 @@
 		<developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
 		<url>https://github.com/Axway/ats-framework</url>
 	</scm>
+	
+	<repositories>
+				
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+					
+		<repository>
+			<id>maven.org</id>
+			<url>http://repo1.maven.org/maven/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			</repository>
+					
+			<!-- Used for com.oracle.jdbc:ojdbc7. -->
+			<!-- Needs permission to access this repo. -->
+			<!-- More on https://blogs.oracle.com/dev2dev/entry/oracle_maven_repository_instructions_for -->
+			<repository>
+				<id>maven.oracle.com</id>
+				<url>http://maven.oracle.com/</url>
+				<layout>default</layout>
+				<releases>
+					<enabled>true</enabled>
+					<updatePolicy>never</updatePolicy>
+				</releases>
+			</repository>
+					
+			</repositories>
+				
+			<pluginRepositories>
+					
+				<pluginRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+					
+				<pluginRepository>
+					<id>maven.org</id>
+					<url>http://repo1.maven.org/maven/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+				</pluginRepository>
+					
+				<pluginRepository>
+					<id>maven.oracle.com</id>
+					<url>http://maven.oracle.com/</url>
+					<layout>default</layout>
+					<releases>
+						<enabled>true</enabled>
+						<updatePolicy>never</updatePolicy>
+					</releases>
+				</pluginRepository>
+					
+			</pluginRepositories>
 
 	<developers>
 		<developer>
