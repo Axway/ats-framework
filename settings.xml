@@ -62,12 +62,11 @@
 				<repository>
 					<id>maven.oracle.com</id>
 					<url>http://maven.oracle.com/</url>
+					<layout>default</layout>
 					<releases>
 						<enabled>true</enabled>
+						<updatePolicy>never</updatePolicy>
 					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
 				</repository>
 				
 			</repositories>
@@ -91,20 +90,16 @@
 					<releases>
 						<enabled>true</enabled>
 					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
 				</pluginRepository>
 				
 				<pluginRepository>
 					<id>maven.oracle.com</id>
 					<url>http://maven.oracle.com/</url>
+					<layout>default</layout>
 					<releases>
 						<enabled>true</enabled>
+						<updatePolicy>never</updatePolicy>
 					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
 				</pluginRepository>
 				
 			</pluginRepositories>
