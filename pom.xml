@@ -3,12 +3,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
-
     <groupId>com.axway.ats.framework</groupId>
     <artifactId>ats-framework</artifactId>
     <version>4.0.0-SNAPSHOT</version>
@@ -302,6 +296,17 @@
         <name>Axway Software</name>
         <url>http://www.axway.com</url>
     </organization>
+    
+    <distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
     <scm>
 		<connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
