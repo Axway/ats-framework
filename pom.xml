@@ -318,7 +318,7 @@
     <repositories>
         <repository>
 	<!-- the id must be the same as this in settings.xml -->
-            <id>maven.oracle.com</id>
+            <id>oracle</id>
             <name>oracle-maven-repo</name>
             <url>https://maven.oracle.com</url>
             <layout>default</layout>
@@ -330,7 +330,7 @@
     </repositories>
     <pluginRepositories>
          <pluginRepository>
-	     <id>maven.oracle.com</id>
+	     <id>oracle</id>
 	     <name>oracle-maven-repo</name>
 	     <url>https://maven.oracle.com</url>
 	     <layout>default</layout>

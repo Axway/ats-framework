@@ -8,7 +8,7 @@
             <password>${env.CI_DEPLOY_PASSWORD}</password>
         </server>
         <server>
-	    <id>maven.oracle.com</id>
+	    <id>oracle</id>
 	    <username>group.ats.team@axway.com</username>
 	    <password>${env.MAVEN_ORACLE_PASSWD}</password>
 	    <configuration>
