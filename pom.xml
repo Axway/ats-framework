@@ -298,125 +298,80 @@
     </organization>
     
     <distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+	<snapshotRepository>
+		<id>ossrh</id>
+		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	</snapshotRepository>
+	<repository>
+		<id>ossrh</id>
+		<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+	</repository>
+    </distributionManagement>
 
     <scm>
-		<connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
-		<developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
-		<url>https://github.com/Axway/ats-framework</url>
-	</scm>
+	<connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
+	<developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
+	<url>https://github.com/Axway/ats-framework</url>
+    </scm>
 	
-	<repositories>
-				
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-					
-		<repository>
-			<id>maven.org</id>
-			<url>http://repo1.maven.org/maven/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			</repository>
-					
-			<!-- Used for com.oracle.jdbc:ojdbc7. -->
-			<!-- Needs permission to access this repo. -->
-			<!-- More on https://blogs.oracle.com/dev2dev/entry/oracle_maven_repository_instructions_for -->
-			<repository>
-				<id>maven.oracle.com</id>
-				<url>http://maven.oracle.com/</url>
-				<layout>default</layout>
-				<releases>
-					<enabled>true</enabled>
-					<updatePolicy>never</updatePolicy>
-				</releases>
-			</repository>
-					
-			</repositories>
-				
-			<pluginRepositories>
-					
-				<pluginRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-					
-				<pluginRepository>
-					<id>maven.org</id>
-					<url>http://repo1.maven.org/maven/</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-				</pluginRepository>
-					
-				<pluginRepository>
-					<id>maven.oracle.com</id>
-					<url>http://maven.oracle.com/</url>
-					<layout>default</layout>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>never</updatePolicy>
-					</releases>
-				</pluginRepository>
-					
-			</pluginRepositories>
+    <!-- Needed so we can obtain com.oracle.jdbc (used in ats-core -->
+    <repositories>
+        <repository>
+	<!-- the id must be the same as this in settings.xml -->
+            <id>maven.oracle.com</id>
+            <name>oracle-maven-repo</name>
+            <url>https://maven.oracle.com</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+         <pluginRepository>
+	     <id>maven.oracle.com</id>
+	     <name>oracle-maven-repo</name>
+	     <url>https://maven.oracle.com</url>
+	     <layout>default</layout>
+	     <releases>
+	         <enabled>true</enabled>
+	         <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 
-	<developers>
-		<developer>
-			<name>Angel Todorov</name>
-			<email>atodorov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Nikolay Gogovski</name>
-			<email>ngogovski@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Svilen Dikov</name>
-			<email>sdikov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Radoslav Kostadinov</name>
-			<email>rkostadinov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Dragoslav Slaveykov</name>
-			<email>dslaveykov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-	</developers>
+    <developers>
+	<developer>
+	    <name>Angel Todorov</name>
+	    <email>atodorov@axway.com</email>
+	    <organization>Axway</organization>
+	    <organizationUrl>http://www.axway.com</organizationUrl>
+	</developer>
+	<developer>
+	    <name>Nikolay Gogovski</name>
+	    <email>ngogovski@axway.com</email>
+	    <organization>Axway</organization>
+	    <organizationUrl>http://www.axway.com</organizationUrl>
+	</developer>
+	<developer>
+	    <name>Svilen Dikov</name>
+	    <email>sdikov@axway.com</email>
+	    <organization>Axway</organization>
+	    <organizationUrl>http://www.axway.com</organizationUrl>
+	</developer>
+	<developer>
+	    <name>Radoslav Kostadinov</name>
+	    <email>rkostadinov@axway.com</email>
+	    <organization>Axway</organization>
+	    <organizationUrl>http://www.axway.com</organizationUrl>
+	</developer>
+	<developer>
+	    <name>Dragoslav Slaveykov</name>
+	    <email>dslaveykov@axway.com</email>
+	    <organization>Axway</organization>
+	    <organizationUrl>http://www.axway.com</organizationUrl>
+	</developer>
+    </developers>
 
 </project>
