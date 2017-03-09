@@ -28,6 +28,91 @@
 			        </all>
 			    </httpConfiguration>
 			</configuration>
-	    </server> 
+	    </server>  
     </servers>
+    
+    <profiles>
+		<profile>
+			<id>oss</id>
+			
+			<repositories>
+				
+				<repository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				
+				<repository>
+					<id>maven.org</id>
+					<url>http://repo1.maven.org/maven/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				
+				<repository>
+					<id>maven.oracle.com</id>
+					<url>http://maven.oracle.com/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				
+			</repositories>
+			
+			<pluginRepositories>
+				
+				<pluginRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+				
+				<pluginRepository>
+					<id>maven.org</id>
+					<url>http://repo1.maven.org/maven/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				
+				<pluginRepository>
+					<id>maven.oracle.com</id>
+					<url>http://maven.oracle.com/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				
+			</pluginRepositories>
+		</profile>
+	</profiles>
+		
+	<activeProfiles>
+		<activeProfile>oss</activeProfile>
+	</activeProfiles>
+    
 </settings>

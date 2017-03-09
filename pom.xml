@@ -346,33 +346,5 @@
 			<organizationUrl>http://www.axway.com</organizationUrl>
 		</developer>
 	</developers>
-	
-	<!-- Needed so we can obtain com.oracle.jdbc (used in ats-core -->
-    <repositories>
-        <repository>
-			<!-- the id must be the same as this in settings.xml -->
-            <id>maven.oracle.com</id>
-            <name>oracle-maven-repo</name>
-            <url>https://maven.oracle.com</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-        </repository>
-    </repositories>
-    
-	<pluginRepositories>
-         <pluginRepository>
-	        <id>maven.oracle.com</id>
-	        <name>oracle-maven-repo</name>
-	        <url>https://maven.oracle.com</url>
-	        <layout>default</layout>
-	        <releases>
-	            <enabled>true</enabled>
-	            <updatePolicy>never</updatePolicy>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
 
 </project>
