@@ -309,16 +309,49 @@
     </distributionManagement>
 
     <scm>
-	<connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
-	<developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
-	<url>https://github.com/Axway/ats-framework</url>
+	    <connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
+	    <developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
+	    <url>https://github.com/Axway/ats-framework</url>
     </scm>
+
+	<developers>
+		<developer>
+			<name>Angel Todorov</name>
+			<email>atodorov@axway.com</email>
+			<organization>Axway</organization>
+			<organizationUrl>http://www.axway.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Nikolay Gogovski</name>
+			<email>ngogovski@axway.com</email>
+			<organization>Axway</organization>
+			<organizationUrl>http://www.axway.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Svilen Dikov</name>
+			<email>sdikov@axway.com</email>
+			<organization>Axway</organization>
+			<organizationUrl>http://www.axway.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Radoslav Kostadinov</name>
+			<email>rkostadinov@axway.com</email>
+			<organization>Axway</organization>
+			<organizationUrl>http://www.axway.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Dragoslav Slaveykov</name>
+			<email>dslaveykov@axway.com</email>
+			<organization>Axway</organization>
+			<organizationUrl>http://www.axway.com</organizationUrl>
+		</developer>
+	</developers>
 	
-    <!-- Needed so we can obtain com.oracle.jdbc (used in ats-core -->
+	<!-- Needed so we can obtain com.oracle.jdbc (used in ats-core) -->
     <repositories>
         <repository>
-	<!-- the id must be the same as this in settings.xml -->
-            <id>oracle</id>
+			<!-- the id must be the same as this in settings.xml -->
+            <id>maven.oracle.com</id>
             <name>oracle-maven-repo</name>
             <url>https://maven.oracle.com</url>
             <layout>default</layout>
@@ -328,50 +361,18 @@
             </releases>
         </repository>
     </repositories>
-    <pluginRepositories>
+    
+	<pluginRepositories>
          <pluginRepository>
-	     <id>oracle</id>
-	     <name>oracle-maven-repo</name>
-	     <url>https://maven.oracle.com</url>
-	     <layout>default</layout>
-	     <releases>
-	         <enabled>true</enabled>
-	         <updatePolicy>never</updatePolicy>
+	        <id>maven.oracle.com</id>
+	        <name>oracle-maven-repo</name>
+	        <url>https://maven.oracle.com</url>
+	        <layout>default</layout>
+	        <releases>
+	            <enabled>true</enabled>
+	            <updatePolicy>never</updatePolicy>
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
-    <developers>
-	<developer>
-	    <name>Angel Todorov</name>
-	    <email>atodorov@axway.com</email>
-	    <organization>Axway</organization>
-	    <organizationUrl>http://www.axway.com</organizationUrl>
-	</developer>
-	<developer>
-	    <name>Nikolay Gogovski</name>
-	    <email>ngogovski@axway.com</email>
-	    <organization>Axway</organization>
-	    <organizationUrl>http://www.axway.com</organizationUrl>
-	</developer>
-	<developer>
-	    <name>Svilen Dikov</name>
-	    <email>sdikov@axway.com</email>
-	    <organization>Axway</organization>
-	    <organizationUrl>http://www.axway.com</organizationUrl>
-	</developer>
-	<developer>
-	    <name>Radoslav Kostadinov</name>
-	    <email>rkostadinov@axway.com</email>
-	    <organization>Axway</organization>
-	    <organizationUrl>http://www.axway.com</organizationUrl>
-	</developer>
-	<developer>
-	    <name>Dragoslav Slaveykov</name>
-	    <email>dslaveykov@axway.com</email>
-	    <organization>Axway</organization>
-	    <organizationUrl>http://www.axway.com</organizationUrl>
-	</developer>
-    </developers>
 
 </project>

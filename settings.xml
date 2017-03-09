@@ -8,26 +8,26 @@
             <password>${env.CI_DEPLOY_PASSWORD}</password>
         </server>
         <server>
-	    <id>oracle</id>
-	    <username>group.ats.team@axway.com</username>
-	    <password>${env.MAVEN_ORACLE_PASSWD}</password>
-	    <configuration>
-	        <basicAuthScope>
-	            <host>ANY</host>
-	            <port>ANY</port>
-		    <realm>OAM 11g</realm>
-	        </basicAuthScope>
-	        <httpConfiguration>
-	            <all>
-		        <params>
-		            <property>
-		                <name>http.protocol.allow-circular-redirects </name>
-		                <value>%b,true</value>
-		            </property>
-		        </params>
-		    </all>
-	        </httpConfiguration>
-	    </configuration>
-        </server>  
+			<id>maven.oracle.com</id>
+			<username>group.ats.team@axway.com</username>
+			<password>${env.MAVEN_ORACLE_PASSWD}</password>
+			<configuration>
+			    <basicAuthScope>
+			        <host>ANY</host>
+			        <port>ANY</port>
+			        <realm>OAM 11g</realm>
+			    </basicAuthScope>
+			    <httpConfiguration>
+			        <all>
+			            <params>
+			                <property>
+			                    <name>http.protocol.allow-circular-redirects </name>
+			                    <value>%b,true</value>
+			                </property>
+			            </params>
+			        </all>
+			    </httpConfiguration>
+			</configuration>
+	    </server>  
     </servers>
 </settings>
