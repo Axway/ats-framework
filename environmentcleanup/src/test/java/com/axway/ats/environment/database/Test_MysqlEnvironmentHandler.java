@@ -452,6 +452,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
 
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler( mockDbConnection, mockDbProvider );
         envHandler.restore( Test_MysqlEnvironmentHandler.class.getResource( "backupFile.txt" ).getFile() );
+        envHandler.disconnect();
 
         verifyAll();
     }
@@ -511,7 +512,8 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
 
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler( mockDbConnection, mockDbProvider );
         envHandler.restore( Test_MysqlEnvironmentHandler.class.getResource( "backupFile.txt" ).getFile() );
-
+        envHandler.disconnect();
+        
         verifyAll();
     }
 

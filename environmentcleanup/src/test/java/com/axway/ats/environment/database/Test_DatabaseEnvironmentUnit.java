@@ -86,6 +86,7 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
         mockBackupHandler.addTable( table2 );
 
         mockBackupHandler.createBackup( tempFile.getCanonicalPath() );
+        mockBackupHandler.disconnect();
 
         replay( mockFactory );
         replay( mockBackupHandler );
@@ -115,6 +116,7 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
 
         expect( mockFactory.createDbRestoreHandler( mockDbConnection ) ).andReturn( mockRestoreHandler );
         mockRestoreHandler.restore( tempFile.getCanonicalPath() );
+        mockRestoreHandler.disconnect();
 
         replay( mockFactory );
         replay( mockBackupHandler );

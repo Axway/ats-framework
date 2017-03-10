@@ -408,6 +408,7 @@ public class Test_OracleEnvironmentHandler extends BaseTest {
         OracleEnvironmentHandler envHandler = new OracleEnvironmentHandler( mockDbConnection,
                                                                             mockDbProvider );
         envHandler.restore( Test_OracleEnvironmentHandler.class.getResource( "backupFile.txt" ).getFile() );
+        envHandler.disconnect();
 
         verify( mockDbConnection );
         verify( mockDataSource );
@@ -449,6 +450,7 @@ public class Test_OracleEnvironmentHandler extends BaseTest {
         OracleEnvironmentHandler envHandler = new OracleEnvironmentHandler( mockDbConnection,
                                                                             mockDbProvider );
         envHandler.restore( Test_OracleEnvironmentHandler.class.getResource( "backupFile.txt" ).getFile() );
+        envHandler.disconnect();
 
         verify( mockDbConnection );
         verify( mockDataSource );
