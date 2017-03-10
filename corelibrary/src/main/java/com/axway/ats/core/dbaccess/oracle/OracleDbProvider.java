@@ -183,6 +183,7 @@ public class OracleDbProvider extends AbstractDbProvider {
         sql.append( " ALL_IND_STATISTICS ais" );
         sql.append( " WHERE TABLE_OWNER='" + dbConnection.getUser() + "'" );
         sql.append( " AND TABLE_NAME='" + tableName + "'" );
+        sql.append( " AND ais.INDEX_NAME NOT LIKE 'SYS_%'" ); // skip system indexes
 
         String indexName = null;
         Map<String, String> indexes = new HashMap<>();
