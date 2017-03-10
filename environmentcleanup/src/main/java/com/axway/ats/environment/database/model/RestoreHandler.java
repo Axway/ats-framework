@@ -32,4 +32,9 @@ public interface RestoreHandler {
      */
     public void restore(
                          String backupFileName ) throws DatabaseEnvironmentCleanupException;
+
+    /**
+     * Release the database connection
+     */
+    public void disconnect();
 }

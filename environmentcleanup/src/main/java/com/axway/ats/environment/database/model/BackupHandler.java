@@ -76,4 +76,9 @@ public interface BackupHandler {
     public void createBackup(
                               String backupFileName ) throws DatabaseEnvironmentCleanupException;
 
+    /**
+     * Release the database connection
+     */
+    public void disconnect();
+
 }

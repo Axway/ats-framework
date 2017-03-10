@@ -299,4 +299,13 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.addLocks = lockTables;
 
     }
+    
+    /**
+     * Release the database connection
+     */
+    @Override
+    public void disconnect() {
+
+        this.dbProvider.disconnect();
+    }
 }

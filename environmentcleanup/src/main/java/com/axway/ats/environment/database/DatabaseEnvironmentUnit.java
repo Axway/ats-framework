@@ -142,12 +142,12 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     @PublicAtsApi
     public void backup() throws EnvironmentCleanupException {
 
+        BackupHandler dbBackup = null;
         try {
-
             log.info( "Creating backup of environment unit " + getDescription() + "..." );
 
             //create db backup handler instance
-            BackupHandler dbBackup = environmentHandlerFactory.createDbBackupHandler( dbConnection );
+            dbBackup = environmentHandlerFactory.createDbBackupHandler( dbConnection );
             dbBackup.setLockTables( addLocks );
             dbBackup.setForeignKeyCheck( disableForeignKeys );
             dbBackup.setIncludeDeleteStatements( includeDeleteStatements );
@@ -163,6 +163,10 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
             log.info( "Successfully created backup of environment unit " + getDescription() );
         } finally {
             setTempBackupDir( null );
+
+            if( dbBackup != null ) {
+                dbBackup.disconnect();
+            }
         }
     }
 
@@ -170,9 +174,16 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     public boolean executeRestoreIfNecessary() throws DatabaseEnvironmentCleanupException {
 
         //create db backup handler instance
-        RestoreHandler dbRestore = environmentHandlerFactory.createDbRestoreHandler( dbConnection );
+        RestoreHandler dbRestore = null;
+        try {
+            dbRestore = environmentHandlerFactory.createDbRestoreHandler( dbConnection );
 
-        dbRestore.restore( getBackupFile() );
+            dbRestore.restore( getBackupFile() );
+        } finally {
+            if( dbRestore != null ) {
+                dbRestore.disconnect();
+            }
+        }
 
         // we always restore the database data
         return true;
