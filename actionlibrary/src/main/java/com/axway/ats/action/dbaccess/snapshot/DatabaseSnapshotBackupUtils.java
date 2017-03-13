@@ -18,6 +18,7 @@ package com.axway.ats.action.dbaccess.snapshot;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -93,13 +94,13 @@ class DatabaseSnapshotBackupUtils {
                 valuesList.addAll( snapshot.loadTableData( snapshot.name,
                                                            tableDescription,
                                                            snapshot.skipRulesPerTable,
-                                                           null,
+                                                           new HashMap<String, Map<String, String>>(),
                                                            null,
                                                            null ) );
             }
             for( String values : valuesList ) {
                 Element rowNode = doc.createElement( DatabaseSnapshotUtils.NODE_ROW );
-                if( skipRow( snapshot.skipRows.get( tableDescription.getName() ),
+                if( !skipRow( snapshot.skipRows.get( tableDescription.getName() ),
                              values ) ) {
                     rowNode.setTextContent( values );
                 }
