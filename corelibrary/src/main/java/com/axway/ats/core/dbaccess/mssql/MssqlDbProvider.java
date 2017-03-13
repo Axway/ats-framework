@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 /**
  * Base class implementing SQLServer database access related methods
- * 
+ *
  */
 public class MssqlDbProvider extends AbstractDbProvider {
 
@@ -51,7 +51,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
     /**
      * Constructor to create authenticated connection to a database.
-     * 
+     *
      * @param dbconn db-connection object
      */
     public MssqlDbProvider( DbConnSQLServer dbConnection ) {
@@ -61,7 +61,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
     /**
      * Gets a first row of a result set of a query and returns it as a HashMap.
-     * 
+     *
      * @param sQuery the query to be executed - expected to return only one row
      * @return HashMap object with the column names and values of the row
      * @exception SQLException - if a database error occurs
@@ -73,8 +73,9 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
         HashMap<String, String> hash = new HashMap<String, String>();
 
+        PreparedStatement stmnt = null;
         try {
-            PreparedStatement stmnt = connection.prepareStatement( sQuery );
+            stmnt = connection.prepareStatement( sQuery );
             rs = stmnt.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -87,18 +88,11 @@ public class MssqlDbProvider extends AbstractDbProvider {
                     hash.put( columnName, columnValue );
                 }
             }
-            rs.close();
-            stmnt.close();
-
         } catch( SQLException ex ) {
             log.error( ExceptionUtils.getExceptionMsg( ex ) );
         } finally {
             DbUtils.closeResultSet( rs );
-            try {
-                connection.close();
-            } catch( SQLException sqle ) {
-                log.error( ExceptionUtils.getExceptionMsg( sqle ) );
-            }
+            DbUtils.close( connection, stmnt );
         }
 
         return hash;
@@ -115,7 +109,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
         }
         if( valueAsObject != null && valueAsObject.getClass().isArray() ) {
             if( ! ( valueAsObject instanceof byte[] ) ) {
-                // FIXME other array types might be needed to be tracked in a different way 
+                // FIXME other array types might be needed to be tracked in a different way
                 log.warn( "Array type that needs attention" );
             }
             // we have an array of primitive data type
@@ -161,10 +155,10 @@ public class MssqlDbProvider extends AbstractDbProvider {
         if( columnDescription.isTypeBinary() || "text".equals( type ) || "ntext".equals( type ) ) {
             /*
              * http://jtds.sourceforge.net/faq.html
-             * By default useLOBs is true. In such cases calling getObject on the result set returns 
+             * By default useLOBs is true. In such cases calling getObject on the result set returns
              * a LOB object, not a java String. In order to get java String it is needed to use the getString method.
              * If useLOBs is false - getObject returns java String
-             * 
+             *
              * "useLOBs=false;" can be added in the connection URL, or we can simply call the getString method here
              */
             recordValue = new DbRecordValue( dbColumn, res.getString( columnIndex ) );
@@ -176,7 +170,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
     }
 
     /**
-     * Currently handling the case where a system table is returned, we do not want such table. 
+     * Currently handling the case where a system table is returned, we do not want such table.
      * In such case the TABLE_SCEM is 'sys', but the regular tables have the DB name instead.
      */
     @Override

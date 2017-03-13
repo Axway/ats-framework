@@ -198,11 +198,7 @@ public abstract class AbstractDbProvider implements DbProvider {
         } catch( IOException ioe ) {
             throw new DbException( errMsg, ioe );
         } finally {
-            try {
-                connection.close();
-            } catch( SQLException sqle ) {
-                log.error( sqle );
-            }
+            DbUtils.closeConnection( connection );
         }
 
         return dbRecords.toArray( new DbRecordValuesList[]{} );
