@@ -345,7 +345,9 @@ public class DatabaseSnapshot {
         } finally {
             // close the database connections
             disconnect( this.dbProvider, "after comparing database snapshots" );
-            disconnect( that.dbProvider, "after comparing database snapshots" );
+            if( that != null ) {
+                disconnect( that.dbProvider, "after comparing database snapshots" );
+            }
         }
     }
 
