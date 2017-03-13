@@ -27,7 +27,8 @@
 
     <properties>
         <jv.version>1.7</jv.version>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
+        <maven.min.version>3.0.5</maven.min.version>
         <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version> <!-- min version to copy empty dirs -->
 		<!--  Minimum version to work with TestNG with more than three version tokens like in 6.9.13.6 -->
@@ -209,6 +210,27 @@
                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
                </configuration>
+           </plugin>
+           <plugin>
+               <artifactId>maven-enforcer-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <id>enforce-rules</id>
+                       <goals>
+                           <goal>enforce</goal>
+                       </goals>
+                       <configuration>
+                           <rules>
+                               <requireJavaVersion>
+                                   <version>${java.version}</version>
+                               </requireJavaVersion>
+                               <requireMavenVersion>
+                                   <version>${maven.min.version}</version>
+                               </requireMavenVersion>
+                           </rules>
+                       </configuration>
+                   </execution>
+               </executions>
            </plugin>
        </plugins>
    </build>
