@@ -75,6 +75,7 @@ import com.axway.ats.common.filesystem.FileSystemOperationException;
 import com.axway.ats.common.filesystem.FileTailInfo;
 import com.axway.ats.common.filesystem.Md5SumMode;
 import com.axway.ats.common.system.OperatingSystemType;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.exceptions.AttributeNotSupportedException;
 import com.axway.ats.core.filesystem.exceptions.FileDoesNotExistException;
 import com.axway.ats.core.filesystem.model.FileAttributes;
@@ -2031,6 +2032,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             // fix possible path on Windows: d:/work/path -> D:\work\path
             File fromDir = new File( fromDirName );
             fromDirName = fromDir.getCanonicalPath();
+            /* 
+             * getCanonicalPath() does not append slash or backslash at the end of the filepath, so we manually append it
+             * This is done, because later, this slash or backslash is needed, when constructing the target file name
+             */
+            fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
             for( File file : files ) {
                 checkFileExistence( file );
 
@@ -2039,10 +2045,17 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
                 sendFileToSocketStream( file, toFileName, outputStream, failOnError );
                 if( file.isDirectory() && isRecursive ) {
-
+                    /* Append slash, so we can concatenate files properly.
+                     * Even though, on Windows, we well concatenate slash as well,
+                     * it manages to transform it to \\, when saving files to disk,
+                     * ( ..path\\to/file -> saved as ..path\\to\\file ) 
+                     * whereas, Linux, thinks \\ or \ is part of the filename.
+                     * ( ../path/to/file -> saved as ../path/to/\file )
+                     */
+                    toFileName += "/";
                     sendFilesToSocketStream( file.listFiles(),
-                                             fromDirName,
-                                             toDirName,
+                                             file.getCanonicalPath(),
+                                             toFileName,
                                              outputStream,
                                              isRecursive,
                                              failOnError );
