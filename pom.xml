@@ -29,6 +29,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <java.version>1.8</java.version>
+        <java.classlevel.version>1.7</java.classlevel.version> <!-- output classpath compliance level --> 
         <maven.min.version>3.0.5</maven.min.version>
         <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version> <!-- min version to copy empty dirs -->
@@ -93,8 +94,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${java.classlevel.version}</source>
+                    <target>${java.classlevel.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
