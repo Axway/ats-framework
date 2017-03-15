@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -54,12 +55,25 @@ public abstract class AbstractDbProvider implements DbProvider {
 
     private static Logger    log;
     private static final int BYTE_BUFFER_SIZE = 1024;
+    private static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
 
     protected DbConnection   dbConnection;
 
     private Connection       connection;
 
     protected String[]       reservedWords    = new String[]{};
+    
+    static {
+        // TODO in jdk8 there is a way to get them without additional libraries or reflection
+        // http://stackoverflow.com/a/30444747
+        for( Field field : Types.class.getFields() ) {
+            try {
+                SQL_COLUMN_TYPES.put( ( Integer ) field.get( null ), field.getName() );
+            } catch( IllegalArgumentException | IllegalAccessException e ) {
+                log.error( "Unable to load sql column types.", e );
+            }
+        }
+    }
 
     /**
      * Constructor to create authenticated connection to a database.
@@ -819,7 +833,7 @@ public abstract class AbstractDbProvider implements DbProvider {
                 String columnName = columnInformation.getString( "COLUMN_NAME" );
 
                 sb.append( "name=" + columnName );
-                sb.append( ", type=" + sqlTypeToString( columnInformation.getInt( "DATA_TYPE" ) ) );
+                sb.append( ", type=" + SQL_COLUMN_TYPES.get( columnInformation.getInt( "DATA_TYPE" ) ) );
                 sb.append( extractResultSetAttribute( columnInformation, "IS_AUTOINCREMENT",
                                                       "auto increment" ) );
                 sb.append( extractResultSetAttribute( columnInformation, "COLUMN_DEF", "default" ) );
@@ -854,7 +868,7 @@ public abstract class AbstractDbProvider implements DbProvider {
                     sb.append( extractResultSetAttribute( indexInformation, "COLUMN_NAME", "column" ) );
                     sb.append( extractResultSetAttribute( indexInformation, "INDEX_QUALIFIER",
                                                           "index catalog" ) );
-                    sb.append( ", type=" + sqlTypeToString( indexInformation.getInt( "TYPE" ) ) );
+                    sb.append( ", type=" + SQL_COLUMN_TYPES.get( indexInformation.getInt( "TYPE" ) ) );
                     sb.append( extractResultSetAttribute( indexInformation, "ASC_OR_DESC", "asc/desc" ) );
                     sb.append( extractResultSetAttribute( indexInformation, "NON_UNIQUE", "non-unique" ) );
                     sb.append( extractResultSetAttribute( indexInformation, "FILTER_CONDITION",
@@ -882,87 +896,6 @@ public abstract class AbstractDbProvider implements DbProvider {
             return ", " + attributeNiceName + "=" + resultSet.getString( attribute );
         } catch( SQLException e ) {
             return "";
-        }
-    }
-
-    private String sqlTypeToString( int type ) {
-
-        // unfortunately java.sql.Types cannot convert the internal number to a String. So we do it ourselves.
-        switch( type ){
-            case Types.BIT:
-                return "BIT";
-            case Types.TINYINT:
-                return "BIT";
-            case Types.SMALLINT:
-                return "BIT";
-            case Types.INTEGER:
-                return "BIT";
-            case Types.BIGINT:
-                return "BIT";
-            case Types.FLOAT:
-                return "BIT";
-            case Types.REAL:
-                return "BIT";
-            case Types.DOUBLE:
-                return "BIT";
-            case Types.NUMERIC:
-                return "BIT";
-            case Types.DECIMAL:
-                return "BIT";
-            case Types.CHAR:
-                return "BIT";
-            case Types.VARCHAR:
-                return "BIT";
-            case Types.LONGVARCHAR:
-                return "LONGVARCHAR";
-            case Types.DATE:
-                return "DATE";
-            case Types.TIME:
-                return "TIME";
-            case Types.TIMESTAMP:
-                return "TIMESTAMP";
-            case Types.BINARY:
-                return "BINARY";
-            case Types.VARBINARY:
-                return "VARBINARY";
-            case Types.LONGVARBINARY:
-                return "LONGVARBINARY";
-            case Types.NULL:
-                return "NULL";
-            case Types.OTHER:
-                return "OTHER";
-            case Types.JAVA_OBJECT:
-                return "JAVA_OBJECT";
-            case Types.DISTINCT:
-                return "DISTINCT";
-            case Types.STRUCT:
-                return "STRUCT";
-            case Types.ARRAY:
-                return "ARRAY";
-            case Types.BLOB:
-                return "BLOB";
-            case Types.CLOB:
-                return "CLOB";
-            case Types.REF:
-                return "REF";
-            case Types.DATALINK:
-                return "DATALINK";
-            case Types.BOOLEAN:
-                return "BOOLEAN";
-            case Types.ROWID:
-                return "ROWID";
-            case Types.NCHAR:
-                return "NCHAR";
-            case Types.NVARCHAR:
-                return "NVARCHAR";
-            case Types.LONGNVARCHAR:
-                return "LONGNVARCHAR";
-            case Types.NCLOB:
-                return "NCLOB";
-            case Types.SQLXML:
-                return "SQLXML";
-            default:
-                return String.valueOf( type );
         }
     }
 }
