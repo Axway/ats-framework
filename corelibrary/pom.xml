@@ -103,12 +103,14 @@
 			<groupId>com.oracle.jdbc</groupId>
 			<artifactId>ojdbc7</artifactId>
 			<version>${oracle.ojdbc.version}</version>
+			<scope>system</scope>
+			<systemPath>${HOME}/.m2/repository/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar</systemPath>
 			<exclusions>
-                            <exclusion>
-                                <groupId>com.oracle.jdbc</groupId>
-                                <artifactId>xmlparserv2</artifactId>
-                            </exclusion>
-                        </exclusions>
+                <exclusion>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>xmlparserv2</artifactId>
+                </exclusion>
+            </exclusions>
 			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
 				and loaded with reflection <scope>runtime</scope> -->
 		</dependency>
