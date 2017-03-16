@@ -11,7 +11,7 @@
         <server>
             <id>maven.oracle.com</id>
             <username>${env.MAVEN_ORACLE_USERNAME}</username>
-            <password>${env.MAVEN_ORACLE_USERNAME}</password>
+            <password>${env.MAVEN_ORACLE_PASSWORD}</password>
             <configuration>
                 <basicAuthScope>
                     <host>ANY</host>
