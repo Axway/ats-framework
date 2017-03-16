@@ -2,11 +2,9 @@ language: java
 jdk:
     oraclejdk8
 before_install:
-    - wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar --user=$MAVEN_ORACLE_USER --password=$MAVEN_ORACLE_PASSWD
-    - wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.pom --user=$MAVEN_ORACLE_USER --password=$MAVEN_ORACLE_PASSWD
-    - mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=pom -DpomFile=ojdbc7-12.1.0.1.pom
-    - mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.1.pom
-script: mvn clean install deploy --settings="settings.xml"
+   - rm ~/.m2/settings.xml
+   - cp settings.xml ~/.m2
+script: mvn clean install deploy
 cache:
   directories:
     - $HOME/.m2
