@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -158,7 +159,7 @@ public class DatabaseSnapshot {
                                    String... tables ) {
 
         for( String table : tables ) {
-            skipTableContent.add( table );
+            skipTableContent.add( table.toLowerCase() );
         }
     }
 
@@ -433,7 +434,7 @@ public class DatabaseSnapshot {
             List<String> thisValuesList = null;
             List<String> thatValuesList = null;
             
-            if( !allTablesContentSkip.contains( tableName ) ) {
+            if( !allTablesContentSkip.contains( tableName.toLowerCase() ) ) {
                 // load the content of this snapshot's table
                 thisValuesList = loadTableData( thisSnapshotName, thisTable, allSkipRules,
                                                              allRowsToSkip, this.dbProvider, backupXmlFile );
@@ -641,8 +642,7 @@ public class DatabaseSnapshot {
                     // if there are rows for skipping we will find them and remove them from the list
                     String stringRowValue = rowValues.toString();
                     
-                    if( allSkipRows != null && !skipRow( allSkipRows.get( table.getName() ),
-                                                        stringRowValue ) ) {
+                    if( !skipRow( allSkipRows.get( table.getName() ), stringRowValue ) ) {
                         valuesList.add( stringRowValue );
 
                     }
@@ -762,5 +762,32 @@ public class DatabaseSnapshot {
                           e );
             }
         }
+    }
+    
+    public static void main(
+                            String[] args ) {
+
+       BasicConfigurator.configure();
+
+       String host = "10.134.64.2";
+       String dbType = "MYSQL";
+       String dbPort = "33060";
+       String dbUser = "root";
+       String dbPass = "tumbleweed";
+
+       TestBox tb1 = new TestBox();
+       tb1.setHost( host );
+       tb1.setDbType( dbType );
+       tb1.setDbPort( dbPort );
+       tb1.setDbName( "st" );
+       tb1.setDbUser( dbUser );
+       tb1.setDbPass( dbPass );
+
+       DatabaseSnapshot sn1 = new DatabaseSnapshot( "SNAP1", tb1 );
+       sn1.skipTableRows( "Account", "id", "8a68830257e2a3cc0157e2a7d0880002" );
+       sn1.takeSnapshot();
+       sn1.saveToFile( "D:\\snp1.txt" );
+   
+//       sn1.compare( sn2 );
     }
 }
