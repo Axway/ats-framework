@@ -1,7 +1,7 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-          
+
     <servers>
         <server>
             <id>ossrh</id>
@@ -22,42 +22,95 @@
                     <all>
                         <params>
                             <property>
-                                <name>http.protocol.allow-circular-redirects</name>
+                                <name>http.protocol.allow-circular-redirects </name>
                                 <value>%b,true</value>
                             </property>
                         </params>
                     </all>
                 </httpConfiguration>
             </configuration>
-        </server>
+        </server>  
     </servers>
-    
+
     <profiles>
         <profile>
-            <id>main</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+            <id>oss</id>
+
             <repositories>
                 <repository>
-                    <id>maven.oracle.com</id>
+                    <id>maven.org</id>
+                    <url>https://repo.maven.apache.org/maven2</url> <!-- replaces http://repo1.maven.org/maven2/ since Maven 3.0.4 -->
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
+                </repository>
+
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/groups/public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                
+                <repository>
+                    <id>maven.oracle.com</id>
                     <url>https://maven.oracle.com</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
                     <layout>default</layout>
                 </repository>
             </repositories>
+            
             <pluginRepositories>
                 <pluginRepository>
-                    <id>maven.oracle.com</id>
-                    <url>https://maven.oracle.com</url>
+                    <id>maven.org</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
                 </pluginRepository>
+                
+                <pluginRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/groups/public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+                
+                <!-- <pluginRepository>
+                    <id>maven.oracle.com</id>
+                    <url>http://maven.oracle.com/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository> -->
             </pluginRepositories>
         </profile>
     </profiles>
+        
+    <activeProfiles>
+        <activeProfile>oss</activeProfile>
+    </activeProfiles>
     
 </settings>
