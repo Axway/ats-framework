@@ -223,6 +223,20 @@
             <artifactId>powermock-api-easymock</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.oracle.jdbc</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <version>12.1.0.1</version>
+            <optional>true</optional>
+            <scope>test</scope> <!-- Indirectly refered. Declare here since it is also optional in Core library -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>xmlparserv2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
 </project>
