@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -540,9 +540,9 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     }
 
     /**
-     * Performs some supported HTTP request. Currently <i>read only<i> requests 
+     * Performs some supported HTTP request. Currently <i>read only<i> requests
      * are supported: GET, HEAD and OPTIONS
-     * 
+     *
      * @param requestedHostRelativeUrl location/query without host and port like: "/my_dir/res?myParam=1"
      * @param httpMethodName any of the currently supported HTTP methods: GET, HEAD and OPTIONS
      * @param needResponse whether caller wants to get the contents returned from this request,
@@ -699,7 +699,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     /**
      * Constructs path+file string by fixing not allowed combinations.
      */
-    private String getPathPlusFile( String remoteDir, String remoteFile ) {
+    protected String getPathPlusFile( String remoteDir, String remoteFile ) {
 
         if( !remoteDir.startsWith( "/" ) ) {
             remoteDir = "/" + remoteDir;
@@ -708,7 +708,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
             remoteDir = remoteDir + "/";
         }
         if( remoteFile.startsWith( "/" ) ) {
-            log.warn( "File for upload starts with slash('/') character which should be part of the path!" );
+            log.warn( "File name starts with slash('/') character which should be part of the path!" );
             if( remoteFile.length() > 1 ) {
                 remoteFile = remoteFile.substring( 1 );
             }
@@ -807,7 +807,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
         socket.setSndBufSize( this.socketBufferSize );
 
         PoolingHttpClientConnectionManager conManager = new PoolingHttpClientConnectionManager();
-        // set stale connection check 
+        // set stale connection check
         conManager.setValidateAfterInactivity( -1 );
         httpBuilder.setConnectionManager( conManager );
         Object socketTimeout = customProperties.get( HTTP_HTTPS_SOCKET_READ_TIMEOUT );

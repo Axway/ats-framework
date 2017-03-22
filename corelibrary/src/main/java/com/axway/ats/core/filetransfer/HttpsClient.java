@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -101,24 +101,24 @@ public class HttpsClient extends HttpClient {
         super.connect( hostname, userName, password );
 
         // trust everybody
-		try {
-			SSLContext sslContext = SslUtils.getTrustAllSSLContext();
+        try {
+            SSLContext sslContext = SslUtils.getTrustAllSSLContext();
 
-			SSLConnectionSocketFactory ssf = new SSLConnectionSocketFactory(sslContext, encryptionProtocols,
-					cipherSuites, new NoopHostnameVerifier());
+            SSLConnectionSocketFactory ssf = new SSLConnectionSocketFactory(sslContext, encryptionProtocols,
+                    cipherSuites, new NoopHostnameVerifier());
 
-			Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-					.register("https", ssf).build();
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                    .register("https", ssf).build();
 
-			HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
-					socketFactoryRegistry);
+            HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
+                    socketFactoryRegistry);
             this.httpBuilder.setConnectionManager( connectionManager )
                             .setSchemePortResolver( new DefaultSchemePortResolver() );
-			
-			this.httpClient = this.httpBuilder.build();
-		} catch (Exception e) {
-			throw new FileTransferException("Error setting trust manager", e);
-		}
+
+            this.httpClient = this.httpBuilder.build();
+        } catch (Exception e) {
+            throw new FileTransferException("Error setting trust manager", e);
+        }
     }
 
     @Override
@@ -148,25 +148,25 @@ public class HttpsClient extends HttpClient {
         };
         SSLConnectionSocketFactory sslSocketFactory;
         try {
-        	SSLContext sslContext = new SSLContextBuilder()
-        			.loadKeyMaterial(keyStore, keystorePassword.toCharArray())
-        			.loadTrustMaterial(trustStrategy).useProtocol("TLS").build();
-        	
+            SSLContext sslContext = new SSLContextBuilder()
+                    .loadKeyMaterial(keyStore, keystorePassword.toCharArray())
+                    .loadTrustMaterial(trustStrategy).useProtocol("TLS").build();
+
             sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-            		new NoopHostnameVerifier() );
+                    new NoopHostnameVerifier() );
         } catch( GeneralSecurityException ex ) {
             throw new FileTransferException( "Could not initialize SSL socket factory. Check concrete datails in exception cause",
                                                    ex );
         }
-		Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-				.register("https", sslSocketFactory).build();
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("https", sslSocketFactory).build();
 
-		HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-		this.httpBuilder.setSSLSocketFactory(sslSocketFactory)
-		.setConnectionManager(connectionManager)
-		.setSchemePortResolver(new DefaultSchemePortResolver());
-        
-		this.httpClient = this.httpBuilder.build();
+        HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        this.httpBuilder.setSSLSocketFactory(sslSocketFactory)
+        .setConnectionManager(connectionManager)
+        .setSchemePortResolver(new DefaultSchemePortResolver());
+
+        this.httpClient = this.httpBuilder.build();
     }
 
     @Override
@@ -174,7 +174,7 @@ public class HttpsClient extends HttpClient {
                                            String remoteDir,
                                            String remoteFile ) {
 
-        return "https://" + this.hostname + ":" + this.port + remoteDir + remoteFile;
+        return "https://" + this.hostname + ":" + this.port + getPathPlusFile(remoteDir, remoteFile);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class HttpsClient extends HttpClient {
                                          String remoteDir,
                                          String remoteFile ) {
 
-        return "https://" + this.hostname + ":" + this.port + remoteDir + remoteFile;
+        return "https://" + this.hostname + ":" + this.port + getPathPlusFile(remoteDir, remoteFile);
     }
 
     @Override
