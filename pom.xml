@@ -38,12 +38,14 @@
         <maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
         <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
-        <org.sonatype.plugins.nexus.staging.maven.plugin.version>1.6.7</org.sonatype.plugins.nexus.staging.maven.plugin.version>
         <!-- Travis CI plugin versions -->
         <org.apache.maven.plugins.maven.source.plugin.version>2.2.1</org.apache.maven.plugins.maven.source.plugin.version>
         <org.apache.maven.plugins.maven.javadoc.plugin.version>2.9.1</org.apache.maven.plugins.maven.javadoc.plugin.version>
         <org.sonatype.plugins.nexus.staging.maven.plugin.version>1.6.7</org.sonatype.plugins.nexus.staging.maven.plugin.version>
-
+        <!-- Maven GPG plugin properties -->
+        <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
+        <gpg.skip>true</gpg.skip> <!-- skip maven gpg execution. Enable via -Dgpg.skip=false -->
+        <gpg.executable>gpg2</gpg.executable>
 
         <log4j.version>1.2.17</log4j.version>
         <!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
@@ -86,6 +88,7 @@
 
         <net.java.dev.jna.version>3.4.0</net.java.dev.jna.version> <!-- JNA is used durectly in ats-core, comes from UI engine as Selenium-client dependency -->
         <commons-compress.version>1.10</commons-compress.version>
+        
     </properties>
 
     <build>
@@ -234,6 +237,21 @@
                                </requireMavenVersion>
                            </rules>
                        </configuration>
+                   </execution>
+               </executions>
+           </plugin>
+           <!-- Used only when deploying new release version -->
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <version>${maven.gpg.plugin.version}</version>
+               <executions>
+                   <execution>
+                       <id>sign-artifacts</id>
+                       <phase>verify</phase>
+                       <goals>
+                           <goal>sign</goal>
+                       </goals>
                    </execution>
                </executions>
            </plugin>
