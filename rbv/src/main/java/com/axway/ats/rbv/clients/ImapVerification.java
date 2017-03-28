@@ -103,19 +103,19 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkAttachmentNumber(
                                        int expectNumAttachments ) {
 
-        checkAttachmentNumber( new byte[0], expectNumAttachments );
+        checkAttachmentNumber( expectNumAttachments, new int[0] );
     }
 
     /**
      * Check that a nested IMAP message has the specified number of attachments
      *
-     * @param nestedPackagePath path to the nested message
      * @param expectNumAttachments
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkAttachmentNumber(
-                                       byte[] nestedPackagePath,
-                                       int expectNumAttachments ) {
+                                       int expectNumAttachments,
+                                       int... nestedPackagePath ) {
 
         //create the rule
         MimePartCountRule attachmentCountRule = new MimePartCountRule( nestedPackagePath,
@@ -138,21 +138,21 @@ public class ImapVerification extends VerificationSkeleton {
                                               String searchString,
                                               int partIndex ) {
 
-        checkStringInRegularBodyPart( new byte[0], searchString, partIndex );
+        checkStringInRegularBodyPart( searchString, partIndex, new int[0] );
     }
 
     /**
      * Check that the nested IMAP message contains the specified string in the given regular body part
      *
-     * @param nestedPackagePath path to the nested message
      * @param searchString  the string to search for
      * @param partIndex     the index of the regular part in the MIME structure (attachments are skipped)
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkStringInRegularBodyPart(
-                                              byte[] nestedPackagePath,
                                               String searchString,
-                                              int partIndex ) {
+                                              int partIndex,
+                                              int... nestedPackagePath ) {
 
         //create the rule
         StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
@@ -177,21 +177,21 @@ public class ImapVerification extends VerificationSkeleton {
                                              String searchRegex,
                                              int partIndex ) {
 
-        checkRegexInRegularBodyPart( new byte[0], searchRegex, partIndex );
+        checkRegexInRegularBodyPart( searchRegex, partIndex, new int[0] );
     }
 
     /**
      * Check that the nested IMAP message contains the specified regular expression in the given regular body part
      *
-     * @param nestedPackagePath path to the nested message
      * @param searchRegex  the regular expression to search for
      * @param partIndex    the index of the regular part in the MIME structure (attachments are skipped)
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkRegexInRegularBodyPart(
-                                             byte[] nestedPackagePath,
                                              String searchRegex,
-                                             int partIndex ) {
+                                             int partIndex,
+                                             int... nestedPackagePath ) {
 
         //create the rule
         StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
@@ -216,21 +216,21 @@ public class ImapVerification extends VerificationSkeleton {
                                          String searchString,
                                          int attachmentIndex ) {
 
-        checkStringInAttachment( new byte[0], searchString, attachmentIndex );
+        checkStringInAttachment( searchString, attachmentIndex, new int[0] );
     }
 
     /**
      * Check that the nested IMAP message contains the specified string in the given attachment part
      *
-     * @param nestedPackagePath path to the nested message
      * @param searchString      the string to search for
      * @param attachmentIndex   the index of the attachment in the MIME structure (regular parts are skipped)
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkStringInAttachment(
-                                         byte[] nestedPackagePath,
                                          String searchString,
-                                         int attachmentIndex ) {
+                                         int attachmentIndex,
+                                         int... nestedPackagePath ) {
 
         //create the rule
         StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
@@ -255,21 +255,21 @@ public class ImapVerification extends VerificationSkeleton {
                                         String searchRegex,
                                         int attachmentIndex ) {
 
-        checkRegexInAttachment( new byte[0], searchRegex, attachmentIndex );
+        checkRegexInAttachment( searchRegex, attachmentIndex, new int[0] );
     }
 
     /**
      * Check that the nested IMAP message contains the specified regular expression in the given attachment part
      *
-     * @param nestedPackagePath path to the nested message
      * @param searchRegex       the regular expression to search for
      * @param attachmentIndex   the index of the attachment in the MIME structure (regular parts are skipped)
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkRegexInAttachment(
-                                        byte[] nestedPackagePath,
                                         String searchRegex,
-                                        int attachmentIndex ) {
+                                        int attachmentIndex,
+                                        int... nestedPackagePath ) {
 
         //create the rule
         StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
@@ -294,21 +294,21 @@ public class ImapVerification extends VerificationSkeleton {
                                             String searchRegex,
                                             int attachmentIndex ) {
 
-        checkRegexInAttachmentName( new byte[0], searchRegex, attachmentIndex );
+        checkRegexInAttachmentName( searchRegex, attachmentIndex, new int[0] );
     }
 
     /**
      * Check that the IMAP message contains attachment with the the specified name
      *
-     * @param nestedPackagePath path to the nested message
      * @param searchRegex  the regular expression to search for
      * @param attachmentIndex   the index of the attachment in the MIME structure (regular parts are skipped)
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkRegexInAttachmentName(
-                                            byte[] nestedPackagePath,
                                             String searchRegex,
-                                            int attachmentIndex ) {
+                                            int attachmentIndex,
+                                            int... nestedPackagePath ) {
 
         //create the rule
         AttachmentNameRule attachmentNameRule = new AttachmentNameRule( nestedPackagePath,
@@ -329,19 +329,19 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkBody(
                            String body ) {
 
-        checkBody( new byte[0], body );
+        checkBody( body, new int[0] );
     }
 
     /**
      * Check that the body of the nested message (including all parts) contains the specified string
      *
-     * @param nestedPackagePath path to the nested message
      * @param body  the string to search for
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkBody(
-                           byte[] nestedPackagePath,
-                           String body ) {
+                           String body,
+                           int... nestedPackagePath ) {
 
         //create the rule
         StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
@@ -366,23 +366,23 @@ public class ImapVerification extends VerificationSkeleton {
                              String headerValue,
                              HeaderMatchMode searchWhere ) {
 
-        checkHeader( new byte[0], headerName, headerValue, searchWhere );
+        checkHeader( headerName, headerValue, searchWhere, new int[0] );
     }
 
     /**
      * Check that the nested message contains a header with the specified value
      *
-     * @param nestedPackagePath path to the nested message
      * @param headerName    the name of the header
      * @param headerValue   the value to search for
      * @param searchWhere   type of matching to use
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkHeader(
-                             byte[] nestedPackagePath,
                              String headerName,
                              String headerValue,
-                             HeaderMatchMode searchWhere ) {
+                             HeaderMatchMode searchWhere,
+                             int... nestedPackagePath ) {
 
         //create the rule
         HeaderRule stringInPartRule = new HeaderRule( nestedPackagePath,
@@ -411,26 +411,26 @@ public class ImapVerification extends VerificationSkeleton {
                              int partIndex,
                              HeaderMatchMode searchWhere ) {
 
-        checkHeader( new byte[0], headerName, headerValue, partIndex, searchWhere );
+        checkHeader( headerName, headerValue, partIndex, searchWhere, new int[0] );
     }
 
     /**
      * Check that the nested message contains a header with the specified value
      * in one of its MIME parts
      *
-     * @param nestedPackagePath path to the nested message
      * @param headerName    the name of the header
      * @param headerValue   the value to search for
      * @param partIndex     the MIME part index
      * @param searchWhere   type of matching to use
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkHeader(
-                             byte[] nestedPackagePath,
                              String headerName,
                              String headerValue,
                              int partIndex,
-                             HeaderMatchMode searchWhere ) {
+                             HeaderMatchMode searchWhere,
+                             int... nestedPackagePath ) {
 
         //create the rule
         HeaderRule stringInPartRule = new HeaderRule( nestedPackagePath,
@@ -454,19 +454,19 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkHeaderForMessageTag(
                                           String messageTag ) {
 
-        checkHeaderForMessageTag( new byte[0], messageTag );
+        checkHeaderForMessageTag( messageTag, new int[0] );
     }
 
     /**
      * Check that the nested message is tagged with the specified message tag
      *
-     * @param nestedPackagePath path to the nested message
      * @param messageTag
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkHeaderForMessageTag(
-                                          byte[] nestedPackagePath,
-                                          String messageTag ) {
+                                          String messageTag,
+                                          int... nestedPackagePath ) {
 
         //create the rule
         //set this rule with highest priority, so it is evaluated first
@@ -492,21 +492,21 @@ public class ImapVerification extends VerificationSkeleton {
                               String subject,
                               SubjectMatchMode searchWhere ) {
 
-        checkSubject( new byte[0], subject, searchWhere );
+        checkSubject( subject, searchWhere, new int[0] );
     }
 
     /**
      * Check that the subject of the nested message contains the specified string
      *
-     * @param nestedPackagePath path to the nested message
      * @param subject       the string to search for
      * @param searchWhere   type of matching to use
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkSubject(
-                              byte[] nestedPackagePath,
                               String subject,
-                              SubjectMatchMode searchWhere ) {
+                              SubjectMatchMode searchWhere,
+                              int... nestedPackagePath ) {
 
         //create the rule
         SubjectRule subjectRule = new SubjectRule( nestedPackagePath,
@@ -527,19 +527,19 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkSubject(
                               String subject ) {
 
-        checkSubject( new byte[0], subject );
+        checkSubject( subject, new int[0] );
     }
 
     /**
      * Check that the subject of the nested message has the specified string
      *
-     * @param nestedPackagePath path to the nested message
      * @param subject       the expected subject
+     * @param nestedPackagePath path to the nested message
      */
     @PublicAtsApi
     public void checkSubject(
-                              byte[] nestedPackagePath,
-                              String subject ) {
+                              String subject,
+                              int... nestedPackagePath ) {
 
         //create the rule
         SubjectRule subjectRule = new SubjectRule( nestedPackagePath,
@@ -628,7 +628,7 @@ public class ImapVerification extends VerificationSkeleton {
     }
 
     private String getNestedMimePackagePathDescription(
-                                                        byte[] nestedPackagePath ) {
+                                                        int[] nestedPackagePath ) {
 
         if( nestedPackagePath == null || nestedPackagePath.length == 0 ) {
             return "";

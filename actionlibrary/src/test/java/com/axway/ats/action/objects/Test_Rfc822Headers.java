@@ -63,7 +63,7 @@ public class Test_Rfc822Headers extends BaseTest {
                                .startsWith( "This report relates to a message you sent" ) );
 
         // nested MimePackage - the RFC822-headers
-        MimePackage nestedPackWithHeadersOnly = mimeMessage.getNeededMimePackage( new byte[]{ 0 } );
+        MimePackage nestedPackWithHeadersOnly = mimeMessage.getNeededMimePackage( new int[]{ 0 } );
         List<PackageHeader> headers = nestedPackWithHeadersOnly.getAllHeaders();
         assertTrue( headers.size() == 31 );
 

@@ -52,7 +52,7 @@ public class StringInMimePartRule extends AbstractImapRule {
                                  String ruleName,
                                  boolean expectedResult ) {
 
-        this( new byte[0],
+        this( new int[0],
               expectedValue,
               isValueRegularExpression,
               PART_MAIN_MESSAGE,
@@ -68,7 +68,7 @@ public class StringInMimePartRule extends AbstractImapRule {
                                  String ruleName,
                                  boolean expectedResult ) {
 
-        this( new byte[0],
+        this( new int[0],
               expectedValue,
               isValueRegularExpression,
               partIndex,
@@ -77,7 +77,7 @@ public class StringInMimePartRule extends AbstractImapRule {
               expectedResult );
     }
 
-    public StringInMimePartRule( byte[] nestedPackagePath,
+    public StringInMimePartRule( int[] nestedPackagePath,
                                  String expectedValue,
                                  boolean isValueRegularExpression,
                                  String ruleName,
@@ -92,7 +92,7 @@ public class StringInMimePartRule extends AbstractImapRule {
               expectedResult );
     }
 
-    public StringInMimePartRule( byte[] nestedPackagePath,
+    public StringInMimePartRule( int[] nestedPackagePath,
                                  String expectedValue,
                                  boolean isValueRegularExpression,
                                  int partIndex,

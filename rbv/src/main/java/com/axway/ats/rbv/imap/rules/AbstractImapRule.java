@@ -24,7 +24,7 @@ import com.axway.ats.rbv.rules.AbstractRule;
 
 public abstract class AbstractImapRule extends AbstractRule {
 
-    private byte[] nestedPackagePath;
+    private int[] nestedPackagePath;
 
     public AbstractImapRule( String ruleName,
                              boolean expectedResult ) {
@@ -48,10 +48,10 @@ public abstract class AbstractImapRule extends AbstractRule {
     }
 
     protected void setNestedPackagePath(
-                                         byte[] nestedPackagePath ) {
+                                         int[] nestedPackagePath ) {
 
         if( nestedPackagePath == null ) {
-            this.nestedPackagePath = new byte[0];
+            this.nestedPackagePath = new int[0];
         } else {
             this.nestedPackagePath = nestedPackagePath;
         }

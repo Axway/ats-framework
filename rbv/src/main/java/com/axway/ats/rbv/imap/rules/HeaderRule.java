@@ -88,7 +88,7 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( new byte[0],
+        this( new int[0],
               headerName,
               expectedValue,
               PART_MAIN_MESSAGE,
@@ -98,7 +98,7 @@ public class HeaderRule extends AbstractImapRule {
               expectedResult );
     }
 
-    public HeaderRule( byte[] nestedPackagePath,
+    public HeaderRule( int[] nestedPackagePath,
                        String headerName,
                        String expectedValue,
                        HeaderMatchMode matchMode,
@@ -122,7 +122,7 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( new byte[0],
+        this( new int[0],
               headerName,
               expectedValue,
               PART_MAIN_MESSAGE,
@@ -140,7 +140,7 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( new byte[0],
+        this( new int[0],
               headerName,
               expectedValue,
               partIndex,
@@ -150,7 +150,7 @@ public class HeaderRule extends AbstractImapRule {
               expectedResult );
     }
 
-    public HeaderRule( byte[] nestedPackagePath,
+    public HeaderRule( int[] nestedPackagePath,
                        String headerName,
                        String expectedValue,
                        int partIndex,
@@ -177,10 +177,10 @@ public class HeaderRule extends AbstractImapRule {
                        boolean expectedResult,
                        int priority ) {
 
-        this( new byte[0], headerName, expectedValue, matchMode, ruleName, expectedResult, priority );
+        this( new int[0], headerName, expectedValue, matchMode, ruleName, expectedResult, priority );
     }
 
-    public HeaderRule( byte[] nestedPackagePath,
+    public HeaderRule( int[] nestedPackagePath,
                        String headerName,
                        String expectedValue,
                        HeaderMatchMode matchMode,

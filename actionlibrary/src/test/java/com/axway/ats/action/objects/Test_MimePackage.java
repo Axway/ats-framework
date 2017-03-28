@@ -782,7 +782,7 @@ public class Test_MimePackage extends BaseTest {
         assertEquals( null, mimePack.getPlainTextBody() );
 
         // nested MimePackage test
-        MimePackage nested = mimePack.getNeededMimePackage( new byte[]{ 0 } );
+        MimePackage nested = mimePack.getNeededMimePackage( new int[]{ 0 } );
         String nestedHtmlBody = nested.getHtmlTextBody();
         System.out.println( "nestedHtmlBody: " + nestedHtmlBody );
         assertTrue( nestedHtmlBody.contains( "Message body<br>" ) );

@@ -270,14 +270,14 @@ public class MimePackage implements Package {
      */
     @PublicAtsApi
     public MimePackage getNeededMimePackage(
-                                             byte[] packagePath ) throws NoSuchMimePackageException {
+                                             int[] packagePath ) throws NoSuchMimePackageException {
 
         return getNeededMimePackage( packagePath, packagePath );
     }
 
     private MimePackage getNeededMimePackage(
-                                              byte[] packagePath,
-                                              byte[] fullPackagePath ) throws NoSuchMimePackageException {
+                                              int[] packagePath,
+                                              int[] fullPackagePath ) throws NoSuchMimePackageException {
 
         if( packagePath.length == 0 ) {
             return this;
@@ -291,7 +291,7 @@ public class MimePackage implements Package {
             return nestedMimePackages.get( packagePath[0] );
         }
 
-        byte[] newPackagePath = new byte[packagePath.length - 1];
+        int[] newPackagePath = new int[packagePath.length - 1];
         System.arraycopy( packagePath, 1, newPackagePath, 0, newPackagePath.length );
 
         return nestedMimePackages.get( packagePath[0] ).getNeededMimePackage( newPackagePath,

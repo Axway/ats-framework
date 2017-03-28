@@ -19,7 +19,7 @@ import com.axway.ats.common.PublicAtsApi;
 
 @SuppressWarnings("serial")
 @PublicAtsApi
-public class RbvException extends Exception {
+public class RbvException extends RuntimeException {
 
     @PublicAtsApi
     public RbvException( String message ) {

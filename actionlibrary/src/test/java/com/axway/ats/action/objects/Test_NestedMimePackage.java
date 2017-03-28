@@ -34,15 +34,15 @@ import com.axway.ats.core.utils.IoUtils;
 
 public class Test_NestedMimePackage extends BaseTest {
 
-    private MimePackage         eMailMessage;
+    private MimePackage         emailMessage;
     private static final String MAIL_MESSAGE_PATH = Test_NestedMimePackage.class.getResource( "nestedMessages.msg" )
                                                                                 .getPath();
 
     // path to nested messages
-    private static final byte[] NESTED_1          = new byte[]{ 0 };
-    private static final byte[] NESTED_2          = new byte[]{ 1 };
-    private static final byte[] NESTED_2_1        = new byte[]{ 1, 0 };                    // nested message has a message nested into it
-    private static final byte[] NESTED_3          = new byte[]{ 2 };
+    private static final int[] NESTED_1          = new int[]{ 0 };
+    private static final int[] NESTED_2          = new int[]{ 1 };
+    private static final int[] NESTED_2_1        = new int[]{ 1, 0 };                    // nested message has a message nested into it
+    private static final int[] NESTED_3          = new int[]{ 2 };
 
     @Before
     public void setUp() throws Exception {
@@ -152,9 +152,9 @@ public class Test_NestedMimePackage extends BaseTest {
     }
 
     private MimePackage getNestedMessage(
-                                          byte[] packagePath ) throws NoSuchMimePackageException {
+                                          int[] packagePath ) throws NoSuchMimePackageException {
 
-        return eMailMessage.getNeededMimePackage( packagePath );
+        return emailMessage.getNeededMimePackage( packagePath );
     }
 
     private void loadNestedMessage() throws PackageException, FileNotFoundException {
@@ -162,7 +162,7 @@ public class Test_NestedMimePackage extends BaseTest {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream( MAIL_MESSAGE_PATH );
-            eMailMessage = new MimePackage( fis );
+            emailMessage = new MimePackage( fis );
         } finally {
             IoUtils.closeStream( fis );
         }

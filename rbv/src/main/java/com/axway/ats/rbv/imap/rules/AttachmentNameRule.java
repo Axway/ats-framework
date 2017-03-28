@@ -36,10 +36,10 @@ public class AttachmentNameRule extends AbstractImapRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        this( new byte[0], expectedValue, attachmentIndex, ruleName, expectedResult );
+        this( new int[0], expectedValue, attachmentIndex, ruleName, expectedResult );
     }
 
-    public AttachmentNameRule( byte[] nestedPackagePath,
+    public AttachmentNameRule( int[] nestedPackagePath,
                                String expectedValue,
                                int attachmentIndex,
                                String ruleName,

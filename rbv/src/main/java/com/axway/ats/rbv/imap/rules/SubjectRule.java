@@ -58,10 +58,10 @@ public class SubjectRule extends AbstractImapRule {
                         String ruleName,
                         boolean expectedResult ) {
 
-        this( new byte[0], expectedValue, matchMode, ruleName, expectedResult );
+        this( new int[0], expectedValue, matchMode, ruleName, expectedResult );
     }
 
-    public SubjectRule( byte[] nestedPackagePath,
+    public SubjectRule( int[] nestedPackagePath,
                         String expectedValue,
                         SubjectMatchMode matchMode,
                         String ruleName,

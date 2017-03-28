@@ -33,10 +33,10 @@ public class MimePartCountRule extends AbstractImapRule {
                               String ruleName,
                               boolean expectedResult ) {
 
-        this( new byte[0], expectedNumParts, lookForAttachments, ruleName, expectedResult );
+        this( new int[0], expectedNumParts, lookForAttachments, ruleName, expectedResult );
     }
 
-    public MimePartCountRule( byte[] nestedPackagePath,
+    public MimePartCountRule( int[] nestedPackagePath,
                               int expectedNumParts,
                               boolean lookForAttachments,
                               String ruleName,
