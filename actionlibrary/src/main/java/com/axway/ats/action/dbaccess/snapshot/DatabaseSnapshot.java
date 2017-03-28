@@ -641,6 +641,12 @@ public class DatabaseSnapshot {
                     // if there are rows for skipping we will find them and remove them from the list
                     String stringRowValue = rowValues.toString();
                     
+                    // escaping special characters that may 
+                    // cause some trouble while saving the snapshot into a file
+                    stringRowValue.replace( "&", "&amp;" );
+                    stringRowValue.replace( "<", "&lt;" );
+                    stringRowValue.replace( ">", "&gt;" );
+                    
                     DatabaseSnapshotBackupUtils dbUtil = new DatabaseSnapshotBackupUtils();
                     if( allSkipRows != null && !dbUtil.skipRow( allSkipRows.get( table.getName() ),
                                                         stringRowValue ) ) {
