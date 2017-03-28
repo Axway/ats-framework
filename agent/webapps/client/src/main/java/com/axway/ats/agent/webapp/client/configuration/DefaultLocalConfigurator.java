@@ -16,9 +16,7 @@
 package com.axway.ats.agent.webapp.client.configuration;
 
 import com.axway.ats.agent.core.configuration.ConfigurationException;
-import com.axway.ats.agent.core.configuration.ConfigurationSettings;
 import com.axway.ats.agent.core.configuration.Configurator;
-import com.axway.ats.agent.core.loading.ComponentLoaderType;
 
 /**
  * This is the default local configurator for ATS Agent.
@@ -30,8 +28,6 @@ public class DefaultLocalConfigurator implements Configurator {
     @Override
     public void apply() throws ConfigurationException {
 
-        //default loader for local JVM is classpath
-        ConfigurationSettings.getInstance().setComponentLoaderType( ComponentLoaderType.CLASSPATH );
     }
 
     @Override

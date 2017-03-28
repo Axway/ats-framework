@@ -15,8 +15,6 @@
  */
 package com.axway.ats.agent.core.configuration;
 
-import com.axway.ats.agent.core.loading.ComponentLoaderType;
-
 /**
  * The Agent configuration settings class
  */
@@ -28,7 +26,6 @@ public class ConfigurationSettings {
     private int                          monitorPollInterval;
     private int                          monitorInitialDelayInSecBeforePolling;
     private String                       componentsFolder;
-    private ComponentLoaderType          componentLoaderType;
 
     private String                       templateActionsFolder;
     private Boolean                      templateActionsMatchFilesBySize;
@@ -104,26 +101,6 @@ public class ConfigurationSettings {
     public void setTemplateActionsFolder( String teamplateActionsFolder ) {
 
         this.templateActionsFolder = teamplateActionsFolder;
-    }
-
-    /**
-     * Get the type of component loading
-     *
-     * @return
-     */
-    public ComponentLoaderType getComponentLoaderType() {
-
-        return componentLoaderType;
-    }
-
-    /**
-     * Set the type of component loading
-     *
-     * @param componentLoaderType
-     */
-    public void setComponentLoaderType( ComponentLoaderType componentLoaderType ) {
-
-        this.componentLoaderType = componentLoaderType;
     }
 
     public Boolean isTemplateActionsMatchFilesBySize() {

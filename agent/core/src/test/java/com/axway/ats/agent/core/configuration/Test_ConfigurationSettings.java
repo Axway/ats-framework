@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.axway.ats.agent.core.loading.ComponentLoaderType;
-
 public class Test_ConfigurationSettings {
 
     @Test
@@ -39,14 +37,5 @@ public class Test_ConfigurationSettings {
 
         configSettings.setComponentsFolder( "test/folder" );
         assertEquals( "test/folder", configSettings.getComponentsFolder() );
-    }
-
-    @Test
-    public void setGetComponentLoaderType() {
-
-        ConfigurationSettings configSettings = ConfigurationSettings.getInstance();
-
-        configSettings.setComponentLoaderType( ComponentLoaderType.DYNAMIC );
-        assertEquals( ComponentLoaderType.DYNAMIC, configSettings.getComponentLoaderType() );
     }
 }

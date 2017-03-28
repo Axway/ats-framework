@@ -15,15 +15,11 @@
  */
 package com.axway.ats.agent.webapp.client.configuration;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.axway.ats.agent.core.configuration.ConfigurationException;
-import com.axway.ats.agent.core.configuration.ConfigurationSettings;
-import com.axway.ats.agent.core.loading.ComponentLoaderType;
-import com.axway.ats.agent.webapp.client.configuration.DefaultLocalConfigurator;
 import com.axway.ats.junit.BaseTestWebapps;
 
 public class Test_DefaultLocalConfigurator extends BaseTestWebapps {
@@ -47,8 +43,5 @@ public class Test_DefaultLocalConfigurator extends BaseTestWebapps {
 
         DefaultLocalConfigurator localConfigurator = new DefaultLocalConfigurator();
         localConfigurator.apply();
-
-        assertEquals( ComponentLoaderType.CLASSPATH,
-                      ConfigurationSettings.getInstance().getComponentLoaderType() );
     }
 }

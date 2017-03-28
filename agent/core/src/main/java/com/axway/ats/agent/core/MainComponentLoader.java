@@ -27,9 +27,7 @@ import com.axway.ats.agent.core.configuration.ConfigurationManager;
 import com.axway.ats.agent.core.configuration.ConfigurationSettings;
 import com.axway.ats.agent.core.configuration.Configurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.core.loading.ClasspathComponentLoader;
 import com.axway.ats.agent.core.loading.ComponentHotDeployTask;
-import com.axway.ats.agent.core.loading.ComponentLoaderType;
 import com.axway.ats.agent.core.loading.DynamicComponentLoader;
 import com.axway.ats.core.utils.HostUtils;
 
@@ -131,38 +129,20 @@ public class MainComponentLoader {
         ComponentRepository componentRepository = ComponentRepository.getInstance();
         ConfigurationSettings settings = ConfigurationSettings.getInstance();
 
-        switch( settings.getComponentLoaderType() ){
-            case CLASSPATH: {
+        log.info( "Loading Agent component libraries from '" + settings.getComponentsFolder() + "'" );
 
-                log.info( "Loading Agent component libraries from classpath" );
+        // the default loader is the dynamic loader for hot deployment
+        DynamicComponentLoader componentLoader = new DynamicComponentLoader( new File( settings.getComponentsFolder() ),
+                                                                             loadingMutex );
 
-                ClasspathComponentLoader classpathLoader = new ClasspathComponentLoader( loadingMutex );
-                classpathLoader.loadAvailableComponents( componentRepository );
+        log.info( "Starting hot deployment thread" );
 
-                log.info( "Done loading Agent component libraries" );
-
-                break;
-            }
-            case DYNAMIC:
-            default: {
-
-                log.info( "Loading Agent component libraries from '" + settings.getComponentsFolder() + "'" );
-
-                // the default loader is the dynamic loader for hot deployment
-                DynamicComponentLoader componentLoader = new DynamicComponentLoader( new File( settings.getComponentsFolder() ),
-                                                                                     loadingMutex );
-
-                log.info( "Starting hot deployment thread" );
-
-                componentMonitor = new ScheduledThreadPoolExecutor( 1 );
-                scheduledFuture = componentMonitor.scheduleAtFixedRate( new ComponentHotDeployTask( componentLoader,
-                                                                                                    componentRepository ),
-                                                                        settings.getMonitorInitialDelay(),
-                                                                        settings.getMonitorPollInterval(),
-                                                                        TimeUnit.SECONDS );
-                break;
-            }
-        }
+        componentMonitor = new ScheduledThreadPoolExecutor( 1 );
+        scheduledFuture = componentMonitor.scheduleAtFixedRate( new ComponentHotDeployTask( componentLoader,
+                                                                                            componentRepository ),
+                                                                settings.getMonitorInitialDelay(),
+                                                                settings.getMonitorPollInterval(),
+                                                                TimeUnit.SECONDS );
     }
 
     /**
@@ -170,14 +150,9 @@ public class MainComponentLoader {
      */
     private void stopComponentLoader() {
 
-        ComponentLoaderType componentLoaderType = ConfigurationSettings.getInstance()
-                                                                       .getComponentLoaderType();
-        if( componentLoaderType == ComponentLoaderType.DYNAMIC ) {
-
-            // now cancel the hot deployment thread
-            log.info( "Shutting down hot deployment thread" );
-            scheduledFuture.cancel( true );
-            componentMonitor.shutdown();
-        }
+        // now cancel the hot deployment thread
+        log.info( "Shutting down hot deployment thread" );
+        scheduledFuture.cancel( true );
+        componentMonitor.shutdown();
     }
 }

@@ -38,8 +38,6 @@ public class AtsSystemProperties {
     @PublicAtsApi
     public static final String  AGENT__COMPONENTS_FOLDER                                          = "ats.agent.components.folder";
     @PublicAtsApi
-    public static final String  AGENT__COMPONENT_LOADER_TYPE                                      = "ats.agent.component.loader.type";
-    @PublicAtsApi
 
     public static final String  AGENT__TEMPLATE_ACTIONS_PROXY_PROPERTY                            = "ats.agent.template.actions.proxy";                             // Key to specify proxy for template action requests
     public static final String  AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY = "ats.agent.template.actions.register_full_and_net_action_time"; // Property to enable full action time logging in addition to net+server think time
