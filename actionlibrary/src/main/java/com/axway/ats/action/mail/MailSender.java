@@ -70,7 +70,7 @@ public class MailSender extends PackageSender {
 
     /**
      * Generic constructor. It sets the mail(SMTP) host and port using the default values taken from the
-     * actionlibrary.properties file.
+     * ats.actionlibrary.properties file.
      *
      * @throws ActionException
      */

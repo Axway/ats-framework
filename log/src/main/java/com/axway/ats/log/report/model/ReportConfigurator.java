@@ -35,7 +35,7 @@ public class ReportConfigurator extends AbstractConfigurator {
     private static final String TEST_EXPLORER_WEB_PATH = "log.mailreport.testexplorer.webpath";
     private static final String TEST_EXPLORER_WEB_PORT = "log.mailreport.testexplorer.webport";
 
-    private static final String CONFIGURATION_FILE_PATH = "/report.properties";
+    private static final String CONFIGURATION_FILE_PATH = "/ats.report.properties";
 
     private String   smtpServerName = "";
     private String   smtpServerPort = "";

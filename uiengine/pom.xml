@@ -1,230 +1,242 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.axway.ats.framework</groupId>
-        <artifactId>ats-framework</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.axway.ats.framework</groupId>
+		<artifactId>ats-framework</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>ats-uiengine</artifactId>
-    <name>ATS-UIEngine</name>
-    <description>ATS UI Engine library for performing tests over applications in HTML/JS/ and Swing</description>
-    <url>https://github.com/Axway/ats-framework</url>
+	<artifactId>ats-uiengine</artifactId>
+	<name>ATS-UIEngine</name>
+	<description>ATS UI Engine library for performing tests over applications in HTML/JS/ and Swing</description>
+	<url>https://github.com/Axway/ats-framework</url>
 
-    <properties>
-        <selenium-java.version>3.0.1</selenium-java.version>
-        <selelnium-htmlunit-driver.version>2.23.1</selelnium-htmlunit-driver.version>
+	<properties>
+		<selenium-java.version>3.0.1</selenium-java.version>
+		<selelnium-htmlunit-driver.version>2.23.1</selelnium-htmlunit-driver.version>
         <selenium-supported.browser.versions>Firefox 50, IE 11, Safari 5.1+, Chrome 53, Edge(limited) </selenium-supported.browser.versions>
 
-        <!-- use version referred from Selenium <htmlunit.version>2.12</htmlunit.version> -->
-        <fest.swing.version>1.2.1</fest.swing.version>
-        <testng.version>6.8.8</testng.version> <!-- non-patched version is needed just to activate Surefire TestNG runner -->
-        <xml-apis.version>1.4.01</xml-apis.version>
-        <com.github.detro.ghostdriver.phantomjsdriver>1.2.1</com.github.detro.ghostdriver.phantomjsdriver>
-        <org.json.simple.version>1.1.1</org.json.simple.version>
-    </properties>
+		<!-- use version referred from Selenium <htmlunit.version>2.12</htmlunit.version> -->
+		<fest.swing.version>1.2.1</fest.swing.version>
+		<testng.version>6.8.8</testng.version> <!-- non-patched version is needed just to activate Surefire TestNG runner -->
+		<xml-apis.version>1.4.01</xml-apis.version>
+		<com.github.detro.ghostdriver.phantomjsdriver>1.2.1</com.github.detro.ghostdriver.phantomjsdriver>
+		<org.json.simple.version>1.1.1</org.json.simple.version>
+	</properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/config/hidden_browser_tests.xml</suiteXmlFile>
-                        <!-- <suiteXmlFile>config/html_test.xml</suiteXmlFile> -->
-                    </suiteXmlFiles>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>src/test/config/hidden_browser_tests.xml</suiteXmlFile>
+						<!-- <suiteXmlFile>config/html_test.xml</suiteXmlFile> -->
+					</suiteXmlFiles>
                     <!-- <includes> <include>**/Test_*.java</include> </includes> 
                         <excludes> <exclude>**/*$*</exclude> </excludes> -->
-                    <additionalClasspathElements> <!-- for uiengine.properties, log4j.xml -->
-                        <additionalClasspathElement>src/test/config/</additionalClasspathElement>
-                    </additionalClasspathElements>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <configuration>
-                    <complianceLevel>${java.classlevel.version}</complianceLevel>
-                    <source>${java.classlevel.version}</source>
-                    <target>${java.classlevel.version}</target>
-                </configuration>
+					<additionalClasspathElements> <!-- for ats.uiengine.properties, log4j.xml -->
+						<additionalClasspathElement>src/test/config/</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<configuration>
+					<complianceLevel>${jv.version}</complianceLevel>
+					<source>${jv.version}</source>
+					<target>${jv.version}</target>
+				</configuration>
                 <!--configuration> <complianceLevel>1.6</complianceLevel> 
                     <Xlint>warning</Xlint> </configuration -->
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
             <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>aspectj-maven-plugin</artifactId>
-                                        <versionRange>[1.7,)</versionRange>
-                                        <goals>
-                                            <goal>compile</goal>
-                                            <goal>test-compile</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.7,)</versionRange>
+										<goals>
+											<goal>compile</goal>
+											<goal>test-compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-configuration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-log</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- <dependency> -->
-        <!-- <groupId>com.axway.ats.framework</groupId> -->
-        <!-- <artifactId>ats-testharness</artifactId> -->
-        <!-- <version>${project.version}</version> -->
-        <!-- <scope>test</scope> -->
-        <!-- </dependency> -->
-        <!-- TODO: copy to FunctionalTests as all tests are moved there -->
+	<dependencies>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-configuration</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-log</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.axway.ats.framework</groupId> -->
+		<!-- <artifactId>ats-testharness</artifactId> -->
+		<!-- <version>${project.version}</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+		<!-- TODO: copy to FunctionalTests as all tests are moved there -->
         <!-- TestNG original (not patched version) should exist for running 
             TestNG tests. Note that it is ordered AFTER our patched version. Surefire 
             plugin relies on this in order to know what kind of tests to run - JUnit 
             or TestNG -->
-        <dependency>
-            <groupId>org.testng</groupId>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+<!--    
+		FIXME we need to update the patched TestNG, so it depends to the Test Harness listeners with updated package names      
+		<dependency>
+            <groupId>com.axway.ats.thirdparty.org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
+            <version>${ats.testng.version}</version>
             <scope>test</scope>
         </dependency>
+ -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium-java.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>htmlunit-driver</artifactId>
+			<version>${selelnium-htmlunit-driver.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>${selenium-java.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.testng</groupId>
-                    <artifactId>testng</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>htmlunit-driver</artifactId>
-            <version>${selelnium-htmlunit-driver.version}</version>
-        </dependency>
+        <!-- HtmlUnit and its dependencies TODO: check why diff. group ID 
+            in Ivy: Currently referred from Selenium and no version override needed <dependency> 
+			<groupId>net.sourceforge.htmlunit</groupId> <artifactId>htmlunit</artifactId> 
+			<version>${htmlunit.version}</version> </dependency> -->
+		<dependency>
+			<!-- Runtime dependant at least for HtmlUnit tests -->
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>${xml-apis.version}</version>
+		</dependency>
 
-        <dependency>
-            <!-- Runtime dependant at least for HtmlUnit tests -->
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>${xml-apis.version}</version>
-        </dependency>
-
-        <dependency> <!-- Selenium WebDriver for PhantomJS -->
-            <groupId>com.codeborne</groupId>
-            <artifactId>phantomjsdriver</artifactId>
-            <version>${com.github.detro.ghostdriver.phantomjsdriver}</version>
-            <exclusions> <!-- PhantomJS has dependency old selenium versions. We use explicit artifact 
-                    exclusion by name because mvn eclipse:eclipse does not work with wildcards -->
+		<dependency> <!-- Selenium WebDriver for PhantomJS -->
+			<groupId>com.codeborne</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>${com.github.detro.ghostdriver.phantomjsdriver}</version>
+			<exclusions> <!-- PhantomJS has dependency old selenium versions. We use explicit artifact 
+					exclusion by name because mvn eclipse:eclipse does not work with wildcards -->
                 <!-- Wildcard exclusion for artifactId works for other goals 
                     but produces warnings. There is feature request for fix: http://jira.codehaus.org/browse/MNG-3832 -->
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-remote-driver</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-server</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-remote-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-server</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-java</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-swing</artifactId>
-            <version>${fest.swing.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-swing</artifactId>
+			<version>${fest.swing.version}</version>
+		</dependency>
 
-        <!-- Used by the SwingDriver to load JNLP applications -->
-        <dependency>
-            <groupId>org.jvnet.hudson</groupId>
-            <artifactId>netx</artifactId>
-            <version>0.5-hudson-2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.8.2</version>
-        </dependency>
+		<!-- Used by the SwingDriver to load JNLP applications -->
+		<dependency>
+			<groupId>org.jvnet.hudson</groupId>
+			<artifactId>netx</artifactId>
+			<version>0.5-hudson-2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.2</version>
+		</dependency>
 
-        <!-- Mobile dependencies -->
-        <dependency>
-            <groupId>io.appium</groupId>
-            <artifactId>java-client</artifactId>
-            <version>3.0.0</version>
-            <exclusions>
-                <exclusion> <!-- Currently depending on selenium-java-2.46, but working fine with 2.48.2 
-                        (tested) -->
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                </exclusion>
-                <exclusion> <!-- Currently depending on gson-2.2.4, but working fine with 2.3.1 (tested) -->
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<!-- Mobile dependencies -->
+		<dependency>
+			<groupId>io.appium</groupId>
+			<artifactId>java-client</artifactId>
+			<version>3.0.0</version>
+			<exclusions>
+				<exclusion> <!-- Currently depending on selenium-java-2.46, but working fine with 2.48.2 
+						(tested) -->
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-java</artifactId>
+				</exclusion>
+				<exclusion> <!-- Currently depending on gson-2.2.4, but working fine with 2.3.1 (tested) -->
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <!-- JSON dependencies for PerfLogger -->
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>${org.json.simple.version}</version>
-        </dependency>
+		<!-- JSON dependencies for PerfLogger -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>${org.json.simple.version}</version>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 
 </project>

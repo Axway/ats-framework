@@ -41,7 +41,7 @@ import com.axway.ats.log.model.CheckpointLogLevel;
  * This configuration client is used in two ways:
  * <li>Initial Agent configuration usually used before starting the first test case.<br>
  * <blockquote>
- * On startup, the Agent service gets configured by the agent.properties file placed in the war file. <br>
+ * On startup, the Agent service gets configured by the ats.agent.properties file placed in the war file. <br>
  * This client provides a way to change the Agent configuration settings while Agent service is up and running.<br>
  * <b>Note:</b> When using some of the methods here, the Agent will unload and load back all components when applying the new settings. All methods leading
  * to such behavior are noted in their javadoc<br><br>
@@ -58,15 +58,6 @@ public final class AgentConfigurationClient extends ActionClient {
      */
     @PublicAtsApi
     public static final String AGENT_SETTINGS_COMPONENTS_FOLDER     = AgentConfigurator.COMPONENTS_FOLDER;
-    /**
-     * The components loading type: <blockquote>
-     * DYNAMIC - Agent will monitor the components folder and load the Agent components when 
-     * there is a change in this folder. This is the default value <br>
-     * CLASSPATH - the Agent components will searched in the classpath
-     * <blockquote>
-     */
-    @PublicAtsApi
-    public static final String AGENT_SETTINGS_COMPONENT_LOADER_TYPE = AgentConfigurator.COMPONENT_LOADER_TYPE;
     /**
      * The polling interval (in seconds) while monitoring the components folder.
      * The default value is 5 seconds.

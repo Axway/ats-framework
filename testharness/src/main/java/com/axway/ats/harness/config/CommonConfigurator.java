@@ -32,10 +32,26 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public final class CommonConfigurator extends AbstractConfigurator {
 
-    private static final String       TEST_BOXES_PATH    = "common.testboxes.";
-    private static final String       MESSAGE_BOXES_PATH = "common.messageboxes.";
-    private static final String       MAIL_SERVERS_PATH  = "common.mailservers.";
+    private static final String       TEST_BOXES_PATH     = "common.testboxes.";
+    private static final String       MESSAGE_BOXES_PATH  = "common.messageboxes.";
+    private static final String       MAIL_SERVERS_PATH   = "common.mailservers.";
+    private static final String       LOGGING_RUN_PATH    = "ats.db.logging.run.";
+    
+    private static final String       KEY__RUN_NAME      = "ats.db.logging.run.name";
+    private static final String       KEY__OS_NAME       = "ats.db.logging.run.os";
+    private static final String       KEY__PRODUCT_NAME  = "ats.db.logging.run.product";
+    private static final String       KEY__VERSION_NAME  = "ats.db.logging.run.version";
+    private static final String       KEY__BUILD_NAME     = "ats.db.logging.run.build";
+    
+    public static final String        DEFAULT_RUN_NAME   = "Default Run Name";
 
+    // Run parameters
+    private String                    runName            = DEFAULT_RUN_NAME;
+    private String                    osName             = "Default OS";
+    private String                    productName        = "Default Product Name";
+    private String                    versionName        = "1.0.0";
+    private String                    buildName          = "1000";
+    
     /**
      * The singleton instance for this configurator
      */
@@ -55,8 +71,7 @@ public final class CommonConfigurator extends AbstractConfigurator {
      * Map to hold all the mail servers data
      */
     private BoxesMap<MailServer>      mailServersMap     = new BoxesMap<MailServer>();
-
-
+    
     private CommonConfigurator( String configurationSource ) {
 
         super();
@@ -73,13 +88,13 @@ public final class CommonConfigurator extends AbstractConfigurator {
 
     /**
      * Get access to default CommonConfigurator instance, 
-     * holding data from first found <code>/config.properties</code> file in classpath
+     * holding data from first found <code>/ats.config.properties</code> file in classpath
      */
     @PublicAtsApi
     public static synchronized CommonConfigurator getInstance() {
 
         if( instance == null ) {
-            instance = new CommonConfigurator( "/config.properties" );
+            instance = new CommonConfigurator( "/ats.config.properties" );
         }
         return instance;
     }
@@ -155,6 +170,31 @@ public final class CommonConfigurator extends AbstractConfigurator {
 
         return mailServer;
     }
+    
+    public String getRunName() {
+
+        return runName;
+    }
+
+    public String getOsName() {
+
+        return osName;
+    }
+
+    public String getProductName() {
+
+        return productName;
+    }
+
+    public String getVersionName() {
+
+        return versionName;
+    }
+
+    public String getBuildName() {
+
+        return buildName;
+    }
 
     /**
      * Register a configuration file
@@ -208,5 +248,24 @@ public final class CommonConfigurator extends AbstractConfigurator {
         Map<String, String> mailServersProperties = getProperties( MAIL_SERVERS_PATH );
         mailServersMap = new BoxesMap<MailServer>( mailServersProperties, MAIL_SERVERS_PATH,
                                                    MailServer.class );
+        
+        //reload the test boxes
+        Map<String, String> loggingRunMap = getProperties( LOGGING_RUN_PATH );
+
+        if( loggingRunMap.containsKey( KEY__RUN_NAME ) ) {
+            runName = loggingRunMap.get( KEY__RUN_NAME );
+        }
+        if( loggingRunMap.containsKey( KEY__OS_NAME ) ) {
+            osName = loggingRunMap.get( KEY__OS_NAME );
+        }
+        if( loggingRunMap.containsKey( KEY__PRODUCT_NAME ) ) {
+            productName = loggingRunMap.get( KEY__PRODUCT_NAME );
+        }
+        if( loggingRunMap.containsKey( KEY__VERSION_NAME ) ) {
+            versionName = loggingRunMap.get( KEY__VERSION_NAME );
+        }
+        if( loggingRunMap.containsKey( KEY__BUILD_NAME ) ) {
+            buildName = loggingRunMap.get( KEY__BUILD_NAME );
+        }
     }
 }

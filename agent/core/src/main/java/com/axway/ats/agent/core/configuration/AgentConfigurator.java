@@ -23,7 +23,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.agent.core.loading.ComponentLoaderType;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
@@ -35,13 +34,12 @@ public class AgentConfigurator implements Configurator {
 
     private static final Logger        log                               = Logger.getLogger( AgentConfigurator.class );
 
-    private static final String        SETTINGS_FILENAME                 = "agent.properties";
+    private static final String        SETTINGS_FILENAME                 = "ats.agent.properties";
 
     // the supported keys - could be read from file, system property or set
     public static final String         MONITOR_POLL_INTERVAL             = AtsSystemProperties.AGENT__MONITOR_POLL_INTERVAL;
     public static final String         MONITOR_INITIAL_DELAY_BEFORE_POLL = AtsSystemProperties.AGENT__MONITOR_INITIAL_POLL_DELAY;
     public static final String         COMPONENTS_FOLDER                 = AtsSystemProperties.AGENT__COMPONENTS_FOLDER;
-    public static final String         COMPONENT_LOADER_TYPE             = AtsSystemProperties.AGENT__COMPONENT_LOADER_TYPE;
 
     /**
      * Holds connection protocols for each host
@@ -95,9 +93,6 @@ public class AgentConfigurator implements Configurator {
          *   - if not provided, use the default setting
          */
 
-        // set the loader type
-        setAgentComponentsLoderType( configSettings );
-
         // set the Agent components folder
         setAgentComponentsFolder( configSettings );
 
@@ -127,45 +122,6 @@ public class AgentConfigurator implements Configurator {
     public static void setConnectionProtocol( String host, String protocol ) {
 
         protocolsPerHost.put( host, protocol );
-    }
-
-    private void setAgentComponentsLoderType( ConfigurationSettings configSettings ) {
-
-        String loadSource;
-
-        ComponentLoaderType oldLoaderType = configSettings.getComponentLoaderType();
-
-        // value provided from remote Agent client
-        ComponentLoaderType newLoaderType = parseLoaderType( agentRemoteProperties.getProperty( COMPONENT_LOADER_TYPE ) );
-        loadSource = "remotely provided value";
-
-        if( newLoaderType == null && oldLoaderType == null ) {
-            // look for other configuration ways just the first time(e.g. during load time)
-
-            // value provided as a system property
-            newLoaderType = parseLoaderType( AtsSystemProperties.getPropertyAsString( COMPONENT_LOADER_TYPE ) );
-            loadSource = "system property value";
-            if( newLoaderType == null ) {
-
-                // value provided from an Agent configuration file(placed in the Agent war file)
-                newLoaderType = parseLoaderType( agentFileProperties.getProperty( COMPONENT_LOADER_TYPE ) );
-                loadSource = "Agent configuration file value";
-                if( newLoaderType == null ) {
-
-                    // default value
-                    newLoaderType = ComponentLoaderType.DYNAMIC;
-                    loadSource = "default value";
-                }
-            }
-        }
-
-        if( newLoaderType != null && !newLoaderType.equals( oldLoaderType ) ) {
-            configSettings.setComponentLoaderType( newLoaderType );
-            log.info( "Agent components loader type is " + newLoaderType.toString() + " - using "
-                      + loadSource );
-        } else {
-            log.info( "Agent components loader type is " + oldLoaderType.toString() );
-        }
     }
 
     private void setAgentComponentsFolder( ConfigurationSettings configSettings ) {
@@ -289,19 +245,6 @@ public class AgentConfigurator implements Configurator {
     public void revert() throws ConfigurationException {
 
         // do nothing
-    }
-
-    private ComponentLoaderType parseLoaderType( String loaderTypeString ) {
-
-        ComponentLoaderType loaderType = null;
-        if( loaderTypeString != null ) {
-            try {
-                loaderType = Enum.valueOf( ComponentLoaderType.class, loaderTypeString );
-            } catch( IllegalArgumentException iae ) {
-                // Illegal value
-            }
-        }
-        return loaderType;
     }
 
     private static int parseStringAsNonNegativeNumber( String valueAsString ) {

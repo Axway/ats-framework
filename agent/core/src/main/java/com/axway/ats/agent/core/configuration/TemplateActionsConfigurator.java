@@ -33,7 +33,7 @@ public class TemplateActionsConfigurator implements Configurator {
 
     private static final Logger log                                     = Logger.getLogger( TemplateActionsConfigurator.class );
 
-    private static final String SETTINGS_FILENAME                       = "agent.properties";
+    private static final String SETTINGS_FILENAME                       = "ats.agent.properties";
 
     // the supported keys
     public static final String  AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY = AtsSystemProperties.AGENT__TEMPLATE_ACTIONS_FOLDER;
