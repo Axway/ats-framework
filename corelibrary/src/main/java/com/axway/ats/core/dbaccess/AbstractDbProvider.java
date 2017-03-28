@@ -833,12 +833,17 @@ public abstract class AbstractDbProvider implements DbProvider {
                 String columnName = columnInformation.getString( "COLUMN_NAME" );
 
                 sb.append( "name=" + columnName );
-                sb.append( ", type=" + SQL_COLUMN_TYPES.get( columnInformation.getInt( "DATA_TYPE" ) ) );
+                String type = SQL_COLUMN_TYPES.get( columnInformation.getInt( "DATA_TYPE" ) );
+                sb.append( ", type=" + type );
                 sb.append( extractResultSetAttribute( columnInformation, "IS_AUTOINCREMENT",
-                                                      "auto increment" ) );
-                sb.append( extractResultSetAttribute( columnInformation, "COLUMN_DEF", "default" ) );
-                sb.append( extractResultSetAttribute( columnInformation, "IS_NULLABLE", "nullable" ) );
-                sb.append( extractResultSetAttribute( columnInformation, "COLUMN_SIZE", "size" ) );
+                                                      "auto increment", tableName ) );
+                if( "BIT".equalsIgnoreCase( type ) ) {
+                    sb.append( extractBooleanResultSetAttribute( columnInformation, "COLUMN_DEF", "default" ) );
+                } else {
+                    sb.append( extractResultSetAttribute( columnInformation, "COLUMN_DEF", "default", tableName ) );
+                }
+                sb.append( extractResultSetAttribute( columnInformation, "IS_NULLABLE", "nullable", tableName ) );
+                sb.append( extractResultSetAttribute( columnInformation, "COLUMN_SIZE", "size", tableName ) );
                 //            sb.append( extractResultSetAttribute( columnInformation, "DECIMAL_DIGITS", "decimal digits" ) );
                 //            sb.append( extractResultSetAttribute( columnInformation, "NUM_PREC_RADIX", "radix" ) );
                 //            sb.append( extractResultSetAttribute( columnInformation, "ORDINAL_POSITION", "sequence number" ) );
@@ -865,16 +870,16 @@ public abstract class AbstractDbProvider implements DbProvider {
                 StringBuilder sb = new StringBuilder();
                 String indexName = indexInformation.getString( "INDEX_NAME" );
                 if( !StringUtils.isNullOrEmpty( indexName ) ) {
-                    sb.append( extractResultSetAttribute( indexInformation, "COLUMN_NAME", "column" ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "COLUMN_NAME", "column", tableName ) );
                     sb.append( extractResultSetAttribute( indexInformation, "INDEX_QUALIFIER",
-                                                          "index catalog" ) );
+                                                          "index catalog", tableName ) );
                     sb.append( ", type=" + SQL_COLUMN_TYPES.get( indexInformation.getInt( "TYPE" ) ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "ASC_OR_DESC", "asc/desc" ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "NON_UNIQUE", "non-unique" ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "ASC_OR_DESC", "asc/desc", tableName ) );
+                    sb.append( extractResultSetAttribute( indexInformation, "NON_UNIQUE", "non-unique", tableName ) );
                     sb.append( extractResultSetAttribute( indexInformation, "FILTER_CONDITION",
-                                                          "filter condition" ) );
+                                                          "filter condition", tableName ) );
                     sb.append( extractResultSetAttribute( indexInformation, "ORDINAL_POSITION",
-                                                          "sequence number" ) );
+                                                          "sequence number", tableName ) );
 
                     //                sb.append( extractIndexAttribute( indexInformation, "TABLE_NAME" ) );
                     //                sb.append( extractResultSetAttribute( indexInformation, "TYPE", "type" ) );
@@ -888,14 +893,41 @@ public abstract class AbstractDbProvider implements DbProvider {
         }
         return indexes;
     }
-
-    private String extractResultSetAttribute( ResultSet resultSet, String attribute,
-                                              String attributeNiceName ) {
+    
+    private String extractBooleanResultSetAttribute(
+                                                     ResultSet resultSet,
+                                                     String attribute,
+                                                     String attributeNiceName ) {
 
         try {
-            return ", " + attributeNiceName + "=" + resultSet.getString( attribute );
+            return ", " + attributeNiceName + "=" + resultSet.getBoolean( attribute );
         } catch( SQLException e ) {
             return "";
         }
     }
+
+    private String extractResultSetAttribute(
+                                             ResultSet resultSet,
+                                             String attribute,
+                                             String attributeNiceName,
+                                             String tableName ) {
+
+       try {
+           String result = resultSet.getString( attribute );
+            if( result != null ) {
+                char[] resultToChar = result.toCharArray();
+                if( resultToChar.length > 1 ) {
+                    if( ( int ) resultToChar[0] < 65 ) {
+                        log.warn( "Default value of '" + resultSet.getString( "COLUMN_NAME" )
+                                  + "' column in table '" + tableName
+                                  + "' contains special character that may cause some issues" );
+                    }
+                }
+            }
+
+           return ", " + attributeNiceName + "=" + result;
+       } catch( SQLException e ) {
+           return "";
+       }
+   }
 }
