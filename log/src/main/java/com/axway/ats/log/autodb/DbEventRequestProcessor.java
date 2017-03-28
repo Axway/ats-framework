@@ -63,7 +63,7 @@ import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.CacheableEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessor;
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
-import com.axway.ats.log.model.AutoLevel;
+import com.axway.ats.log.model.SystemLogLevel;
 
 public class DbEventRequestProcessor implements EventRequestProcessor {
 
@@ -846,7 +846,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 return 5;
             case Level.TRACE_INT:
                 return 6;
-            case AutoLevel.SYSTEM_INT:
+            case SystemLogLevel.SYSTEM_INT:
                 return 7;
             default:
                 return 4;

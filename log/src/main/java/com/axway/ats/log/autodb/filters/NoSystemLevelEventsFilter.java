@@ -18,7 +18,7 @@ package com.axway.ats.log.autodb.filters;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.axway.ats.log.model.AutoLevel;
+import com.axway.ats.log.model.SystemLogLevel;
 
 public class NoSystemLevelEventsFilter extends Filter {
 
@@ -26,7 +26,7 @@ public class NoSystemLevelEventsFilter extends Filter {
     public int decide(
                        LoggingEvent loggingEvent ) {
 
-        if( loggingEvent.getLevel().toInt() == AutoLevel.SYSTEM_INT ) {
+        if( loggingEvent.getLevel().toInt() == SystemLogLevel.SYSTEM_INT ) {
             return DENY;
         }
 

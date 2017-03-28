@@ -23,7 +23,7 @@ import com.axway.ats.log.autodb.EventProcessorState;
 import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException;
 import com.axway.ats.log.autodb.exceptions.IncorrectScenarioTypeException;
-import com.axway.ats.log.model.AutoLevel;
+import com.axway.ats.log.model.SystemLogLevel;
 
 /**
  * This is the base class for all database-related logging events
@@ -54,7 +54,7 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                  String message,
                                  LoggingEventType eventType ) {
 
-        super( loggerFQCN, logger, AutoLevel.SYSTEM, message, null );
+        super( loggerFQCN, logger, SystemLogLevel.SYSTEM, message, null );
 
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
