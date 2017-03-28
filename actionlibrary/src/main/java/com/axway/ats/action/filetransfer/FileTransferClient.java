@@ -433,35 +433,12 @@ public class FileTransferClient {
 
     private void doConnect( String hostname, String userName, String password ) {
 
-        ActionLibraryConfigurator configurator = ActionLibraryConfigurator.getInstance();
-        long initialDelay = configurator.getFileTransferConnectionInitialDelay();
+        // connect using base authentication
         try {
-            Thread.sleep( initialDelay );
-        } catch( InterruptedException e ) {
-            log.error( "Interrupted before the initial delay has passed", e );
-        }
-
-        int attempts = configurator.getFileTransferConnectionAttempts();
-        long interval = configurator.getFileTransferConnectionInterval();
-
-        while( attempts-- > 0 ) {
-            // connect using base authentication
-            try {
-                this.client.connect( hostname, userName, password );
-                return;
-            } catch( FileTransferException e ) {
-                log.error( "Connection attempt failed", e );
-            }
-
-            log.info( "Connection attempts left: " + attempts );
-
-            if( attempts > 0 ) {
-                try {
-                    Thread.sleep( interval );
-                } catch( InterruptedException e ) {
-                    log.error( "Interrupted before the interval between attempts has passed", e );
-                }
-            }
+            this.client.connect( hostname, userName, password );
+            return;
+        } catch( FileTransferException e ) {
+            log.error( "Connection attempt failed", e );
         }
 
         throw new FileTransferException( "Could not connect. Look up the reason in the log." );
@@ -489,35 +466,12 @@ public class FileTransferClient {
         new Validator().validateMethodParameters( new Object[]{ hostname, keystoreFile, keystorePassword,
                                                                 privateKeyAlias } );
 
-        ActionLibraryConfigurator configurator = ActionLibraryConfigurator.getInstance();
-        long initialDelay = configurator.getFileTransferConnectionInitialDelay();
+        // connect using base authentication
         try {
-            Thread.sleep( initialDelay );
-        } catch( InterruptedException e ) {
-            log.error( "Interrupted before the initial delay has passed", e );
-        }
-
-        int attempts = configurator.getFileTransferConnectionAttempts();
-        long interval = configurator.getFileTransferConnectionInterval();
-
-        while( attempts-- > 0 ) {
-            // connect using base authentication
-            try {
-                this.client.connect( hostname, keystoreFile, keystorePassword, privateKeyAlias );
-                return;
-            } catch( FileTransferException e ) {
-                log.error( "Connection attempt failed", e );
-            }
-
-            log.info( "Connection attempts left: " + attempts );
-
-            if( attempts > 0 ) {
-                try {
-                    Thread.sleep( interval );
-                } catch( InterruptedException e ) {
-                    log.error( "Interrupted before the interval between attempts has passed", e );
-                }
-            }
+            this.client.connect( hostname, keystoreFile, keystorePassword, privateKeyAlias );
+            return;
+        } catch( FileTransferException e ) {
+            log.error( "Connection attempt failed", e );
         }
 
         throw new FileTransferException( "Could not connect. Look up the reason in the log." );

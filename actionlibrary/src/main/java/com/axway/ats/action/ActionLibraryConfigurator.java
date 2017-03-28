@@ -30,10 +30,6 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     //the configuration keys
     private static final String              PACKAGE_LOADER_DEFAULT_BOX_KEY         = "actionlibrary.packageloader.defaultbox";
 
-    private static final String              FILE_TRANSFER_CONNECTION_TIMEOUT       = "actionlibrary.filetransfer.connection.timeout";
-    private static final String              FILE_TRANSFER_CONNECTION_ATTEMPTS      = "actionlibrary.filetransfer.connection.attempts";
-    private static final String              FILE_TRANSFER_CONNECTION_INTERVAL      = "actionlibrary.filetransfer.connection.interval";
-    private static final String              FILE_TRANSFER_CONNECTION_INITIAL_DELAY = "actionlibrary.filetransfer.connection.initialdelay";
     private static final String              FILE_TRANSFER_VERBOSE_MODE             = "actionlibrary.filetransfer.verbosemode";
 
     private static final String              FILE_SYSTEM_COPY_FILE_START_PORT       = "actionlibrary.filesystem.copyfile.start.port";
@@ -119,29 +115,6 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     }
 
     /**
-     * Get the file transfer connection timeout
-     * 
-     * @return the file transfer connection timeout
-     */
-    @PublicAtsApi
-    public long getFileTransferConnectionTimeout() {
-
-        return getLongProperty( FILE_TRANSFER_CONNECTION_TIMEOUT );
-    }
-
-    /**
-     * Set the file transfer connection timeout
-     * 
-     * @param timeout the file transfer connection timeout
-     */
-    @PublicAtsApi
-    public void setFileTransferConnectionTimeout(
-                                                  long timeout ) {
-
-        setTempProperty( FILE_TRANSFER_CONNECTION_TIMEOUT, Long.toString( timeout ) );
-    }
-
-    /**
      * Get the file transfer verbose mode
      * 
      * @return the file transfer verbose mode
@@ -162,75 +135,6 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
                                             boolean verboseMode ) {
 
         setTempProperty( FILE_TRANSFER_VERBOSE_MODE, Boolean.toString( verboseMode ) );
-    }
-
-    /**
-     * Set the file transfer connection attempts
-     * 
-     * @param attempts the file transfer connection attempts
-     */
-    @PublicAtsApi
-    public void setFileTransferConnectionAttempts(
-                                                   int attempts ) {
-
-        setTempProperty( FILE_TRANSFER_CONNECTION_ATTEMPTS, Integer.toString( attempts ) );
-    }
-
-    /**
-     * Get the file transfer connection attempts
-     * 
-     * @return the file transfer connection attempts
-     */
-    @PublicAtsApi
-    public int getFileTransferConnectionAttempts() {
-
-        return getIntegerProperty( FILE_TRANSFER_CONNECTION_ATTEMPTS );
-    }
-
-    /**
-     * Set the file transfer connection interval
-     * 
-     * @param interval the file transfer connection interval
-     */
-    @PublicAtsApi
-    public void setFileTransferConnectionInterval(
-                                                   long interval ) {
-
-        setTempProperty( FILE_TRANSFER_CONNECTION_INTERVAL, Long.toString( interval ) );
-    }
-
-    /**
-     * Get the file transfer connection interval
-     * 
-     * @return the file transfer connection interval
-     */
-    @PublicAtsApi
-    public long getFileTransferConnectionInterval() {
-
-        return getLongProperty( FILE_TRANSFER_CONNECTION_INTERVAL );
-    }
-
-    /**
-     * Set the file transfer connection initial delay
-     * 
-     * @param delay the file transfer connection initial delay
-     */
-    @PublicAtsApi
-    public void setFileTransferConnectionInitialDelay(
-                                                       long delay ) {
-
-        setTempProperty( FILE_TRANSFER_CONNECTION_INITIAL_DELAY, Long.toString( delay ) );
-    }
-
-    /**
-     * Get the file transfer connection initial delay
-     * 
-     * @return the file transfer connection initial delay
-     */
-    @PublicAtsApi
-    public long getFileTransferConnectionInitialDelay() {
-
-        return getLongProperty( FILE_TRANSFER_CONNECTION_INITIAL_DELAY );
     }
 
     /**
