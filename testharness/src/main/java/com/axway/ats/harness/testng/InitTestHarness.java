@@ -53,7 +53,7 @@ public class InitTestHarness {
                              "com.axway.ats.harness.testng.AtsTestngSuiteListener" );
             }
 
-            //Attaching custom test and suite listeners from the config.properties file
+            //Attaching custom test and suite listeners from the ats.config.properties file
             CommonConfigurator configurator = CommonConfigurator.getInstance();
             List<String> customTestListeners = getListeners( configurator,
                                                              "harness.testng.customtestlisteners" );
