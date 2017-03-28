@@ -95,7 +95,8 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
     public String toString() {
 
         StringBuilder sBuilder = new StringBuilder();
-
+        sBuilder.append( "_" );
+        
         Iterator<DbRecordValue> elementsIter = iterator();
         while( elementsIter.hasNext() ) {
             DbRecordValue recordValue = elementsIter.next();
@@ -109,7 +110,7 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
             if( recordValueString != null ) {
                 if( columnDescription.getType() != null && ( columnDescription.isTypeBinary() ) ) {
                     // we can get very long data here, so we use MD5 checksum instead
-                    recordValueString = "\"md5:" + StringUtils.md5sum( recordValueString ) + "\"";
+                    recordValueString = "md5:" + StringUtils.md5sum( recordValueString );
                 }
             } else {
                 recordValueString = "NULL";
@@ -119,7 +120,7 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
             sBuilder.append( "=" );
             sBuilder.append( recordValueString );
         }
-        sBuilder.append( "|" );
+        sBuilder.append( "|" ).append( "_" );
 
         return sBuilder.toString();
     }

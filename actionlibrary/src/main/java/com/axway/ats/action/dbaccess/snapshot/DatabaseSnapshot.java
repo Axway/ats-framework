@@ -641,7 +641,9 @@ public class DatabaseSnapshot {
                     // if there are rows for skipping we will find them and remove them from the list
                     String stringRowValue = rowValues.toString();
                     
-                    if( !skipRow( allSkipRows.get( table.getName() ), stringRowValue ) ) {
+                    DatabaseSnapshotBackupUtils dbUtil = new DatabaseSnapshotBackupUtils();
+                    if( allSkipRows != null && !dbUtil.skipRow( allSkipRows.get( table.getName() ),
+                                                        stringRowValue ) ) {
                         valuesList.add( stringRowValue );
 
                     }
@@ -733,20 +735,6 @@ public class DatabaseSnapshot {
         }
         sql.append( table.getName() );
         return sql.toString();
-    }
-    
-    private boolean skipRow(
-                             Map<String, String> skipTableRows,
-                             String rowValues ) {
-
-        if( skipTableRows != null ) {
-            for( Entry<String, String> skipRowValue : skipTableRows.entrySet() ) {
-                if( rowValues.contains( skipRowValue.getKey() + "=" + skipRowValue.getValue() ) ) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
     
     private void disconnect( DbProvider dbProvider, String when ) {
