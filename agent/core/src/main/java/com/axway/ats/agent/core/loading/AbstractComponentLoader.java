@@ -169,7 +169,7 @@ public abstract class AbstractComponentLoader implements ComponentLoader {
         for( String actionClassName : actionClassNames ) {
             try {
                 componentActionMap.registerActionClass( loadClass( actionClassName ) );
-            } catch( ClassNotFoundException cnfe ) {
+            } catch( ClassNotFoundException | NoClassDefFoundError cnfe ) {
                 //this is a non-fatal error so we can just log it
                 log.error( "Action class or a referred class could not be loaded, check configuration for component '"
                            + componentName + "': " + cnfe.getMessage() );
