@@ -123,7 +123,8 @@ public class MysqlDbProvider extends AbstractDbProvider {
     protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
                                                        String catalog ) throws DbException {
 
-        String sql = "show index from " + tableName + ";";
+    	String sql = "SELECT TABLE_NAME,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,SUB_PART,PACKED,NULLABLE,INDEX_TYPE "
+                + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName + "'";
 
         String indexName = null;
         Map<String, String> indexes = new HashMap<>();

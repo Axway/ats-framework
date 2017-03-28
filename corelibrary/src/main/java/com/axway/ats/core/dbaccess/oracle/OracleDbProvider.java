@@ -177,8 +177,7 @@ public class OracleDbProvider extends AbstractDbProvider {
         sql.append( " ais.INDEX_NAME," );
         sql.append( " ais.PARTITION_NAME," );
         sql.append( " ais.PARTITION_POSITION," );
-        sql.append( " ais.OBJECT_TYPE," );
-        sql.append( " ais.DISTINCT_KEYS" );
+        sql.append( " ais.OBJECT_TYPE" );
         sql.append( " FROM" );
         sql.append( " ALL_IND_STATISTICS ais" );
         sql.append( " WHERE TABLE_OWNER='" + dbConnection.getUser() + "'" );
