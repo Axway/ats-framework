@@ -15,193 +15,764 @@
  */
 package com.axway.ats.log;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Enumeration;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.log4j.Appender;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.appenders.PassiveDbAppender;
+import com.axway.ats.log.autodb.TestCaseState;
+import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
+import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.CleanupLoadQueueStateEvent;
+import com.axway.ats.log.autodb.events.ClearScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
+import com.axway.ats.log.autodb.events.EndCheckpointEvent;
+import com.axway.ats.log.autodb.events.EndLoadQueueEvent;
+import com.axway.ats.log.autodb.events.EndRunEvent;
+import com.axway.ats.log.autodb.events.EndSuiteEvent;
+import com.axway.ats.log.autodb.events.EndTestCaseEvent;
+import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
+import com.axway.ats.log.autodb.events.InsertCheckpointEvent;
+import com.axway.ats.log.autodb.events.InsertMessageEvent;
+import com.axway.ats.log.autodb.events.InsertSystemStatisticEvent;
+import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
+import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
+import com.axway.ats.log.autodb.events.RegisterThreadWithLoadQueueEvent;
+import com.axway.ats.log.autodb.events.RememberLoadQueueStateEvent;
+import com.axway.ats.log.autodb.events.StartCheckpointEvent;
+import com.axway.ats.log.autodb.events.StartRunEvent;
+import com.axway.ats.log.autodb.events.StartSuiteEvent;
+import com.axway.ats.log.autodb.events.StartTestCaseEvent;
+import com.axway.ats.log.autodb.events.UpdateRunEvent;
+import com.axway.ats.log.model.CheckpointResult;
+import com.axway.ats.log.model.LoadQueueResult;
+import com.axway.ats.log.model.SystemLogLevel;
+import com.axway.ats.log.model.TestCaseResult;
 
 @PublicAtsApi
 public class AtsDbLogger {
 
-    private static final Logger log            = Logger.getLogger( AtsDbLogger.class );
+    private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
 
-    private final long          MAX_FILE_SIZE  = 10 * 1024 * 1024;                                             // 10MB
+    protected Logger              logger;
 
-    private static String       ERR_MSG_PREFIX = "Cannot not attach file \"{FILE}\" to the current testcase: ";
+    private AtsDbLogger( Logger logger ) {
 
-    /**
-     * Attach a local file to the current test case in the Test Explorer DB.
-     * </br>It is expected to have Test Explorer running on port 80.
-     * </br>The file must not be bigger than 10MB
-     * 
-     * @param fileLocation the absolute path to the file
-     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-3.11.0" etc.
-     * @return TRUE if the operation was successful and false if not. A warning will be logged on failure.
-     */
-    public boolean attachFileToCurrentTest(
-                                            String fileLocation,
-                                            String testExplorerContextName ) {
+        this.logger = logger;
+    }
 
-        return attachFileToCurrentTest( fileLocation, testExplorerContextName, 80 );
+    public static synchronized AtsDbLogger getLogger(
+                                                      String name ) {
+
+        return new AtsDbLogger( Logger.getLogger( name ) );
+    }
+
+    public static synchronized AtsDbLogger getLogger(
+                                                      Logger logger ) {
+
+        return new AtsDbLogger( logger );
+    }
+
+    public Logger getInternalLogger() {
+
+        return this.logger;
     }
 
     /**
-     * Attach a local file to the current test case in the Test Explorer DB.
-     * </br>The file must not be bigger than 10MB
-     * 
-     * @param fileLocation the absolute path to the file
-     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-3.11.0" etc.
-     * @param testExplorerPort the port of the web application, e.g. 8080
-     * @return TRUE if the operation was successful and false if not. A warning will be logged on failure.
+     * Insert a debug message
+     *
+     * @param message the message
+     * @param t exception
      */
-    public boolean attachFileToCurrentTest(
-                                            String fileLocation,
-                                            String testExplorerContextName,
-                                            int testExplorerPort ) {
+    public void debug(
+                       Object message,
+                       Throwable t ) {
 
-        ERR_MSG_PREFIX = ERR_MSG_PREFIX.replace( "{FILE}", fileLocation );
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.DEBUG,
+                                           message.toString(),
+                                           t,
+                                           false,
+                                           false ) );
+    }
 
-        if( !checkFileExist( fileLocation ) ) {
-            return false;
-        }
-        if( !checkFileSizeIsNotTooLarge( fileLocation ) ) {
-            return false;
-        }
+    /**
+     * Insert a debug message
+     *
+     * @param message the message
+     */
+    public void debug(
+                       Object message ) {
 
-        ActiveDbAppender dbAppender = ActiveDbAppender.getCurrentInstance();
-        if( dbAppender == null ) {
-            log.warn( ERR_MSG_PREFIX + "Perhaps the database logging is turned off" );
-            return false;
-        }
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.DEBUG,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           false ) );
+    }
 
-        final int runId = dbAppender.getRunId();
-        final int suiteId = dbAppender.getSuiteId();
-        final int testcaseId = dbAppender.getTestCaseId();
+    /**
+     * Insert an error message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void error(
+                       Object message,
+                       Throwable t ) {
 
-        if( runId < 1 || suiteId < 1 || testcaseId < 1 ) {
-            log.warn( ERR_MSG_PREFIX
-                      + "Perhaps the database logging is turned off or you are trying to log while a testcase is not yet started" );
-            return false;
-        }
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.ERROR,
+                                           message.toString(),
+                                           t,
+                                           false,
+                                           false ) );
+    }
 
-        final String database = dbAppender.getDatabase();
-        final String host = dbAppender.getHost();
-        final String URL = "http://" + host + ":" + testExplorerPort + "/" + testExplorerContextName
-                           + "/UploadServlet";
+    /**
+     * Insert an error message
+     *
+     * @param message the message
+     */
+    public void error(
+                       Object message ) {
 
-        URL url = null;
-        try {
-            CloseableHttpClient client = HttpClients.createDefault();
-            HttpPost post = new HttpPost( URL );
-            url = post.getURI().toURL();
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.ERROR,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           false ) );
+    }
 
-            if( !isURLConnetionAvailable( url ) ) {
-                return false;
+    /**
+     * Insert a fatal message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void fatal(
+                       Object message,
+                       Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.FATAL,
+                                           message.toString(),
+                                           t,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Insert a fatal message
+     *
+     * @param message the message
+     */
+    public void fatal(
+                       Object message ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.FATAL,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Insert an info message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void info(
+                      Object message,
+                      Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.INFO,
+                                           message.toString(),
+                                           t,
+                                           false,
+                                           false ) );
+    }
+
+    public void info(
+                      Object message,
+                      boolean sendRunMessage ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.INFO,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           sendRunMessage ) );
+    }
+
+    /**
+     * Insert an info message
+     *
+     * @param message the message
+     */
+    public void info(
+                      Object message ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.INFO,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Insert a trace message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void trace(
+                       Object message,
+                       Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.TRACE,
+                                           message.toString(),
+                                           t,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Insert a trace message
+     *
+     * @param message the message
+     */
+    public void trace(
+                       Object message ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.TRACE,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Insert a warning message
+     *
+     * @param message the message
+     * @param t exception
+     */
+    public void warn(
+                      Object message,
+                      Throwable t ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.WARN,
+                                           message.toString(),
+                                           t,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Insert a warning message
+     *
+     * @param message the message
+     */
+    public void warn(
+                      Object message ) {
+
+        sendEvent( new InsertMessageEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           SystemLogLevel.WARN,
+                                           message.toString(),
+                                           null,
+                                           false,
+                                           false ) );
+    }
+
+    /**
+     * Start a new run
+     *
+     * @param runName name of the run
+     * @param osName name of the OS
+     * @param productName name of the product
+     * @param versionName version of the product
+     * @param buildName build of the product
+     * @param hostName name/IP of the machine , from which the run was started
+     */
+    public void startRun(
+                          String runName,
+                          String osName,
+                          String productName,
+                          String versionName,
+                          String buildName,
+                          String hostName ) {
+
+        sendEvent( new StartRunEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                      logger,
+                                      runName,
+                                      osName,
+                                      productName,
+                                      versionName,
+                                      buildName,
+                                      hostName ) );
+    }
+
+    /**
+     * End a run
+     */
+    public void endRun() {
+
+        sendEvent( new EndRunEvent( ATS_DB_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * Add some meta info about a run.
+     * Must be called while there is an existing run
+     * 
+     * @param metaKey key
+     * @param metaValue value
+     */
+    public void addRunMetainfo(
+                                String metaKey,
+                                String metaValue ) {
+
+        sendEvent( new AddRunMetainfoEvent( ATS_DB_LOGGER_CLASS_NAME, logger, metaKey, metaValue ) );
+    }
+
+    /**
+     * Update the static information about the current run.
+     * <br><b>NOTE</b>: This method can be called at anytime after a run is started.
+     *
+     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     *
+     * @param runName name of the run
+     * @param osName name of the OS
+     * @param productName name of the product
+     * @param versionName version of the product
+     * @param buildName build of the product
+     * @param userNote some user note about this run
+     * @param hostName name/IP of the machine , from which the run was started
+     */
+    public void updateRun(
+                           String runName,
+                           String osName,
+                           String productName,
+                           String versionName,
+                           String buildName,
+                           String userNote,
+                           String hostName ) {
+
+        sendEvent( new UpdateRunEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                       logger,
+                                       runName,
+                                       osName,
+                                       productName,
+                                       versionName,
+                                       buildName,
+                                       userNote,
+                                       hostName ) );
+    }
+
+    /**
+     * Start a new suite
+     *
+     * @param suiteName name of the suite
+     */
+    public void startSuite(
+                            String packageName,
+                            String suiteName ) {
+
+        sendEvent( new StartSuiteEvent( ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, packageName ) );
+    }
+
+    /**
+     * End the current suite
+     */
+    public void endSuite() {
+
+        sendEvent( new EndSuiteEvent( ATS_DB_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * Clear all meta info about a scenario.
+     */
+    public void clearScenarioMetainfo() {
+
+        sendEvent( new ClearScenarioMetainfoEvent( ATS_DB_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * Add some meta info about a scenario.
+     * Must be called while there is an existing scenario
+     * 
+     * @param metaKey key
+     * @param metaValue value
+     */
+    public void addScenarioMetainfo(
+                                     String metaKey,
+                                     String metaValue ) {
+
+        sendEvent( new AddScenarioMetainfoEvent( ATS_DB_LOGGER_CLASS_NAME, logger, metaKey, metaValue ) );
+    }
+
+    /**
+     * Start a new test case
+     *
+     * @param name the name of the test case
+     * @param inputArguments the input arguments of the test case
+     */
+    public void startTestcase(
+                               String suiteFullName,
+                               String suiteSimpleName,
+                               String name,
+                               String inputArguments,
+                               String testDescription ) {
+
+        sendEvent( new StartTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           suiteFullName,
+                                           suiteSimpleName,
+                                           name,
+                                           inputArguments,
+                                           testDescription ) );
+    }
+
+    /**
+     * End the current test case
+     *
+     * @param testCaseResult the result of the test case execution
+     */
+    public void endTestcase(
+                             TestCaseResult testCaseResult ) {
+
+        sendEvent( new EndTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME, logger, testCaseResult ) );
+    }
+
+    /**
+     * Delete the testcase with the give ID
+     * 
+     * @param testCaseId
+     */
+    public void deleteTestcase(
+                                int testCaseId ) {
+
+        sendEvent( new DeleteTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME, logger, testCaseId ) );
+    }
+
+    /**
+     * Register a thread with the given load queue
+     *
+     * @param loadQueueName name of the load queue to register this thread with
+     */
+    public void registerThreadWithLoadQueue(
+                                             String loadQueueName ) {
+
+        sendEvent( new RegisterThreadWithLoadQueueEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                                         logger,
+                                                         Thread.currentThread().getName(),
+                                                         loadQueueName ) );
+    }
+
+    /**
+     * Remember the load queue state
+     *
+     * @param name name of the load queue
+     * @param loadQueueId database load queue id
+     * @param threadingPattern description of the threading pattern
+     * @param numberThreads the number of threads this load queue starts
+     */
+    public void rememberLoadQueueState(
+                                        String name,
+                                        int loadQueueId,
+                                        String threadingPattern,
+                                        int numberThreads ) {
+
+        sendEvent( new RememberLoadQueueStateEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                                    logger,
+                                                    name,
+                                                    loadQueueId,
+                                                    threadingPattern,
+                                                    numberThreads ) );
+    }
+
+    /**
+     * Cleanup the load queue state
+     *
+     * @param name name of the load queue
+     */
+    public void cleanupLoadQueueState(
+                                       String name ) {
+
+        sendEvent( new CleanupLoadQueueStateEvent( ATS_DB_LOGGER_CLASS_NAME, logger, name ) );
+    }
+
+    /**
+     * End the load queue with the given name
+     *
+     * @param name name of the load queue
+     * @param result the result of the load queue execution
+     */
+    public void endLoadQueue(
+                              String name,
+                              LoadQueueResult result ) {
+
+        sendEvent( new EndLoadQueueEvent( ATS_DB_LOGGER_CLASS_NAME, logger, name, result ) );
+    }
+
+    /**
+     * Start a checkpoint
+     *
+     * @param name the name of the checkpoint
+     */
+    public void startCheckpoint(
+                                 String name ) {
+
+        sendEvent( new StartCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                             logger,
+                                             name,
+                                             "",
+                                             Thread.currentThread().getName() ) );
+    }
+
+    /**
+     * Start a checkpoint which is doing some data transfer
+     *
+     * @param name the name of the checkpoint
+     * @param transferUnit the data transfer unit
+     */
+    public void startCheckpoint(
+                                 String name,
+                                 String transferUnit ) {
+
+        sendEvent( new StartCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                             logger,
+                                             name,
+                                             transferUnit,
+                                             Thread.currentThread().getName() ) );
+    }
+
+    /**
+     * Start a checkpoint which is doing some data transfer
+     *
+     * @param name the name of the checkpoint
+     * @param transferUnit the data transfer unit
+     * @param startTimestamp the event time
+     */
+    public void startCheckpoint(
+                                 String name,
+                                 String transferUnit,
+                                 long startTimestamp ) {
+
+        sendEvent( new StartCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                             logger,
+                                             name,
+                                             transferUnit,
+                                             Thread.currentThread().getName(),
+                                             startTimestamp ) );
+    }
+
+    /**
+     * End a checkpoint and calculate the execution time and transfer rate
+     *
+     * @param name name of the checkpoint
+     * @param transferSize the size of the transfer
+     * @param result the result of the checkpoint execution
+     */
+    public void endCheckpoint(
+                               String name,
+                               long transferSize,
+                               CheckpointResult result ) {
+
+        sendEvent( new EndCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           name,
+                                           Thread.currentThread().getName(),
+                                           transferSize,
+                                           result ) );
+    }
+
+    /**
+     * End a checkpoint and calculate the execution time and transfer rate
+     *
+     * @param name name of the checkpoint
+     * @param transferSize the size of the transfer
+     * @param result the result of the checkpoint execution
+     * @param endTimestamp the event time
+     */
+    public void endCheckpoint(
+                               String name,
+                               long transferSize,
+                               CheckpointResult result,
+                               long endTimestamp ) {
+
+        sendEvent( new EndCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                           logger,
+                                           name,
+                                           Thread.currentThread().getName(),
+                                           transferSize,
+                                           result,
+                                           endTimestamp ) );
+    }
+
+    /**
+     * Directly insert a checkpoint. The user provides all the needed info.
+     *
+     * @param name the name of the checkpoint
+     */
+    public void insertCheckpoint(
+                                  String name,
+                                  long responseTime,
+                                  CheckpointResult result ) {
+
+        sendEvent( new InsertCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                              logger,
+                                              name,
+                                              -1,
+                                              responseTime,
+                                              0,
+                                              "",
+                                              Thread.currentThread().getName(),
+                                              result ) );
+    }
+
+    public void insertCheckpoint(
+                                  String name,
+                                  long startTimestamp,
+                                  long responseTime,
+                                  long transferSize,
+                                  String transferUnit,
+                                  CheckpointResult result ) {
+
+        sendEvent( new InsertCheckpointEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                              logger,
+                                              name,
+                                              startTimestamp,
+                                              responseTime,
+                                              transferSize,
+                                              transferUnit,
+                                              Thread.currentThread().getName(),
+                                              result ) );
+    }
+
+    /**
+     * Insert system statistics identified by their DB IDs
+     *
+     * @param monitoredMachine the monitored machine
+     * @param statisticIds the statistics' DB IDs
+     * @param statisticValues the statistics' values
+     * @param timestamp the timestamp
+     */
+    public void insertSystemStatistcs(
+                                       String monitoredMachine,
+                                       String statisticIds,
+                                       String statisticValues,
+                                       long timestamp ) {
+
+        sendEvent( new InsertSystemStatisticEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                                   logger,
+                                                   monitoredMachine,
+                                                   statisticIds,
+                                                   statisticValues,
+                                                   timestamp ) );
+    }
+
+    /**
+     * Join to an existing test case
+     *
+     * @param testCaseState the state of the test case to join to
+     */
+    public void joinTestCase(
+                              TestCaseState testCaseState ) {
+
+        sendEvent( new JoinTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME, logger, testCaseState ) );
+    }
+
+    /**
+     * Leave the test case to which we have joined
+     */
+    public void leaveTestCase() {
+
+        sendEvent( new LeaveTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME, logger ) );
+    }
+
+    /**
+     * This event can not go through the regular way of sending log4j events in the case with Passive DB appenders. 
+     * The reason is that we have to evaluate the result after the work of each passive appender and stop
+     * calling these appenders when the first one(the only one serving this caller) has processed the event. 
+     */
+    @SuppressWarnings("unchecked")
+    public TestCaseState getCurrentTestCaseState() {
+
+        GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME, logger );
+
+        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+        while( appenders.hasMoreElements() ) {
+            Appender appender = appenders.nextElement();
+
+            if( appender instanceof ActiveDbAppender ) {
+                // Comes here on Test Executor side. There is just 1 Active appender
+                return ( ( ActiveDbAppender ) appender ).getCurrentTestCaseState( event ).getTestCaseState();
+            } else if( appender instanceof PassiveDbAppender ) {
+                // Comes here on Agent side. There will be 1 Passive appender per caller
+
+                // Pass the event to any existing appender.
+                // The correct one will return result, wrong appenders will return null.
+                GetCurrentTestCaseEvent resultEvent = ( ( PassiveDbAppender ) appender ).getCurrentTestCaseState( event );
+                if( resultEvent != null ) {
+                    // we found the right Passive appender
+                    return resultEvent.getTestCaseState();
+                }
             }
-            log.debug( "POSTing " + fileLocation + " on " + URL );
-
-            File file = new File( fileLocation );
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-            builder.setMode( HttpMultipartMode.BROWSER_COMPATIBLE );
-            builder.addBinaryBody( "upfile", file, ContentType.DEFAULT_BINARY, fileLocation );
-            builder.addTextBody( "dbName", database );
-            builder.addTextBody( "runId", Integer.toString( runId ) );
-            builder.addTextBody( "suiteId", Integer.toString( suiteId ) );
-            builder.addTextBody( "testcaseId", Integer.toString( testcaseId ) );
-
-            HttpEntity entity = builder.build();
-            post.setEntity( entity );
-            checkPostExecutedSuccessfully( client.execute( post ), fileLocation );
-        } catch( FileNotFoundException fnfe ) {
-            log.warn( ERR_MSG_PREFIX + "it does not exist on the local file system", fnfe );
-            return false;
-        } catch( ClientProtocolException cpe ) {
-            log.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", cpe );
-            return false;
-        } catch( ConnectException ce ) {
-            log.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ce );
-            return false;
-        } catch( IOException ioe ) {
-            log.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ioe );
-            return false;
         }
 
-        log.info( "Successfully attached \"" + fileLocation + "\" to the current Test Explorer testcase" );
-        return true;
+        // no appropriate appender found
+        return null;
     }
 
-    private boolean checkFileExist(
-                                    String fileLocation ) {
+    public boolean isDebugEnabled() {
 
-        boolean exists = new LocalFileSystemOperations().doesFileExist( fileLocation );
-
-        if( !exists ) {
-            log.warn( ERR_MSG_PREFIX + "it does not exist on the local file system" );
-        }
-        return exists;
+        return logger.isDebugEnabled();
     }
 
-    private boolean checkFileSizeIsNotTooLarge(
-                                                String fileLocation ) {
+    /**
+     * Send an event to the logging system
+     *
+     * @param event the event to send
+     */
+    private void sendEvent(
+                            LoggingEvent event ) {
 
-        long fileSize = new LocalFileSystemOperations().getFileSize( fileLocation );
-        boolean goodSize = fileSize <= MAX_FILE_SIZE;
-
-        if( !goodSize ) {
-            log.warn( ERR_MSG_PREFIX + "as its size of \"" + fileSize
-                      + "\" bytes is larger than the allowed 10MB" );
+        // check if this level is allowed for the repository at all
+        if( LogManager.getLoggerRepository().isDisabled( event.getLevel().toInt() ) ) {
+            return;
         }
 
-        return goodSize;
-    }
-
-    private void checkPostExecutedSuccessfully(
-                                                HttpResponse response,
-                                                String fileLocation ) {
-
-        if( response.getStatusLine().getStatusCode() != 200 ) {
-            log.warn( "File \"" + fileLocation
-                      + "\" will not be attached to the current test, due to error in saving the file. " );
+        // check if the event level is allowed for this logger
+        if( event.getLevel().isGreaterOrEqual( logger.getEffectiveLevel() ) ) {
+            logger.callAppenders( event );
         }
-    }
-
-    private boolean isURLConnetionAvailable(
-                                             URL url ) {
-
-        try {
-            HttpURLConnection cc = ( HttpURLConnection ) url.openConnection();
-            cc.setRequestMethod( "HEAD" );
-
-            if( cc.getResponseCode() != 200 ) {
-                log.warn( ERR_MSG_PREFIX + "Upload URL \"" + url + "\" is not defined right" );
-                return false;
-            }
-        } catch( MalformedURLException mue ) {
-            log.warn( ERR_MSG_PREFIX + "Upload URL \"" + url + "\" is malformed", mue );
-            return false;
-        } catch( IOException ioe ) {
-            log.warn( ERR_MSG_PREFIX + "POST failed to URL \"" + url + "\"", ioe );
-            return false;
-        }
-        return true;
     }
 }

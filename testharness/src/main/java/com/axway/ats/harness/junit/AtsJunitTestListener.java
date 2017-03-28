@@ -30,8 +30,8 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.utils.TimeUtils;
-import com.axway.ats.harness.Configuration;
-import com.axway.ats.log.model.AutoLogger;
+import com.axway.ats.harness.config.CommonConfigurator;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.model.TestCaseResult;
 
 /**
@@ -46,7 +46,7 @@ public class AtsJunitTestListener extends RunListener {
 
     private static final Logger     log                              = Logger.getLogger( AtsJunitTestListener.class );
 
-    private static final AutoLogger logger                           = AutoLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger( "com.axway.ats" );
 
     private static final String     MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
 
@@ -96,9 +96,9 @@ public class AtsJunitTestListener extends RunListener {
             hostNameIp = null;
         }
 
-        logger.startRun( runNameSysProp /* no suite name in JUnit */, Configuration.getOsName(),
-                         Configuration.getProductName(), Configuration.getVersionName(),
-                         Configuration.getBuildName(), hostNameIp );
+        logger.startRun( runNameSysProp /* no suite name in JUnit */, CommonConfigurator.getInstance().getOsName(),
+                         CommonConfigurator.getInstance().getProductName(), CommonConfigurator.getInstance().getVersionName(),
+                         CommonConfigurator.getInstance().getBuildName(), hostNameIp );
         super.testRunStarted( description );
     }
 
@@ -250,7 +250,7 @@ public class AtsJunitTestListener extends RunListener {
             Throwable failureException = failure.getException();
             if( failureException instanceof AssertionError ) {
                 logger.error( MSG__TEST_FAILED_ASSERTION_ERROR, failureException ); //.getMessage() );
-            } else if( Configuration.getLogOnException() ) {
+            } else {
                 logger.error( MSG__TEST_FAILED, failureException );
             }
 

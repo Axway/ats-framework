@@ -40,8 +40,8 @@ import com.axway.ats.common.agent.templateactions.NetworkingStopWatch;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
-import com.axway.ats.log.model.AutoLogger;
 import com.axway.ats.log.model.CheckpointResult;
 
 /**
@@ -61,7 +61,7 @@ public class TemplateActionMethod extends ActionMethod {
 
     private boolean          isLoggingInBatchMode = false;
 
-    private final AutoLogger autoLogger;
+    private final AtsDbLogger autoLogger;
 
     public TemplateActionMethod( String componentName, String actionName, String actionClassName,
                                  String actionMethodName, Method method, Class<?> actualClass ) {
@@ -72,7 +72,7 @@ public class TemplateActionMethod extends ActionMethod {
         this.actionMethodName = actionMethodName;
         // Intentionally get logger from AbstractActionTask class so use the same logger for action start/end checkpoints.
         // Otherwise if using current class and changing additivity flag of TemplateActionMethod to false will disable checkpoint logging
-        this.autoLogger = AutoLogger.getLogger( AbstractActionTask.class.getName() );
+        this.autoLogger = AtsDbLogger.getLogger( AbstractActionTask.class.getName() );
 
         if( ActiveDbAppender.getCurrentInstance() != null ) {
             isLoggingInBatchMode = ActiveDbAppender.getCurrentInstance().isBatchMode();

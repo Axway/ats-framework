@@ -31,9 +31,9 @@ import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
-import com.axway.ats.harness.Configuration;
+import com.axway.ats.harness.config.CommonConfigurator;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
-import com.axway.ats.log.model.AutoLogger;
 
 /**
  * Suite listener to capture test events from TestNG<br>
@@ -51,21 +51,17 @@ import com.axway.ats.log.model.AutoLogger;
 @PublicAtsApi
 public class AtsTestngSuiteListener implements ISuiteListener {
 
-    static {
-        Configuration.init();
-    }
-
-    private static final AutoLogger logger = AutoLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
 
     public void onStart( ISuite suite ) {
-    	/*
-    	 * Check whether we are using a patched TestNG distribution, 
-    	 * in such case ATS supports inserting messages before a testcase is started and after it is ended.
-    	*/
-    	ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = Version.VERSION.contains("ATS");
+        /*
+         * Check whether we are using a patched TestNG distribution, 
+         * in such case ATS supports inserting messages before a testcase is started and after it is ended.
+        */
+        ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = Version.VERSION.contains("ATS");
         // get the run name specified by the user
-        String runName = Configuration.getRunName();
-        if( runName.equals( Configuration.DEFAULT_RUN_NAME ) ) {
+        String runName = CommonConfigurator.getInstance().getRunName();
+        if( runName.equals( CommonConfigurator.DEFAULT_RUN_NAME ) ) {
             // the user did not specify a run name, use the one from TestNG
             runName = suite.getName();
         }
@@ -92,16 +88,16 @@ public class AtsTestngSuiteListener implements ISuiteListener {
             hostNameIp = null;
         }
 
-        logger.startRun( runName, Configuration.getOsName(), Configuration.getProductName(),
-                         Configuration.getVersionName(), Configuration.getBuildName(), hostNameIp );
+        logger.startRun( runName, CommonConfigurator.getInstance().getOsName(), CommonConfigurator.getInstance().getProductName(),
+                         CommonConfigurator.getInstance().getVersionName(), CommonConfigurator.getInstance().getBuildName(), hostNameIp );
 
         logSystemInformation();
         logClassPath();
     }
 
     public void onFinish( ISuite suite ) {
-    	// clear the lastSuiteName
-    	AtsTestngTestListener.resetLastSuiteName();
+        // clear the lastSuiteName
+        AtsTestngTestListener.resetLastSuiteName();
         /*
          * If not patched testNG is used then we will have one suite left to end before we end the run, unless
          * no suite was ever started

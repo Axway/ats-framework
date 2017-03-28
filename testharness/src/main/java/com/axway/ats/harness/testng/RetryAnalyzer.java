@@ -20,15 +20,15 @@ import java.lang.reflect.Method;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
-import com.axway.ats.log.model.AutoLogger;
 
 /**
  * Evaluates if a failed test will be re-run.
  */
 public class RetryAnalyzer implements IRetryAnalyzer {
 
-    private static final AutoLogger logger = AutoLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
 
     private String                  lastTestName;
 

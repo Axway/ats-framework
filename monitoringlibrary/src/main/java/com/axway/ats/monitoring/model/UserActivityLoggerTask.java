@@ -27,8 +27,8 @@ import java.util.TreeMap;
 import com.axway.ats.agent.webapp.client.AgentMonitoringClient;
 import com.axway.ats.common.performance.monitor.beans.BasicReadingBean;
 import com.axway.ats.common.performance.monitor.beans.MonitorResults;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
-import com.axway.ats.log.model.AutoLogger;
 import com.axway.ats.monitoring.model.exceptions.MonitoringException;
 import com.axway.ats.monitoring.model.readings.ReadingsRepository;
 
@@ -58,7 +58,7 @@ import com.axway.ats.monitoring.model.readings.ReadingsRepository;
  */
 public class UserActivityLoggerTask extends AbstractLoggerTask {
 
-    private static AutoLogger       log             = AutoLogger.getLogger( UserActivityLoggerTask.class.getName() );
+    private static AtsDbLogger       log             = AtsDbLogger.getLogger( UserActivityLoggerTask.class.getName() );
 
     // All Agents are presented as a single virtual host.
     // The reason is that user wants to know the total number of simulated users, he does not

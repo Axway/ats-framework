@@ -44,14 +44,14 @@ import com.axway.ats.agent.core.threading.exceptions.ParameterDataProviderNotSup
 import com.axway.ats.agent.core.threading.exceptions.ThreadingPatternNotSupportedException;
 import com.axway.ats.agent.core.threading.listeners.QueueLoaderListener;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
-import com.axway.ats.log.model.AutoLogger;
+import com.axway.ats.log.AtsDbLogger;
 
 /**
  * Responsible for handling execution of actions in multiple threads
  */
 public class MultiThreadedActionHandler {
 
-    private static final AutoLogger           log = AutoLogger.getLogger( MultiThreadedActionHandler.class.getName() );
+    private static final AtsDbLogger           log = AtsDbLogger.getLogger( MultiThreadedActionHandler.class.getName() );
 
     // Map, holding all the MultiThreadedActionHandler instances for each Caller
     // < caller id, MultiThreadedActionHandler >

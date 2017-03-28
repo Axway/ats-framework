@@ -57,9 +57,9 @@ import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
-import com.axway.ats.log.model.AutoLogger;
 
 /**
  * Implementation of all public web methods used to communicate
@@ -68,7 +68,7 @@ import com.axway.ats.log.model.AutoLogger;
 @WebService(name = "AgentService", targetNamespace = "http://agentservice/", serviceName = "AgentService", portName = "AgentServicePort")
 public class AgentWsImpl {
 
-    private static final AutoLogger                 log                               = AutoLogger.getLogger( "com.axway.ats.agent.webapp.agentservice" );
+    private static final AtsDbLogger                 log                               = AtsDbLogger.getLogger( "com.axway.ats.agent.webapp.agentservice" );
 
     private static int                              lastRunId                         = -1;
 

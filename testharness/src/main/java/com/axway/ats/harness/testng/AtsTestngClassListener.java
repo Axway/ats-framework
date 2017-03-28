@@ -18,8 +18,8 @@ package com.axway.ats.harness.testng;
 import org.testng.ITestClass;
 
 import com.axway.ats.core.utils.StringUtils;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
-import com.axway.ats.log.model.AutoLogger;
 
 /**
  * <b>NOTE:</b> This listener can not work with an official TestNG distribution!
@@ -29,7 +29,7 @@ import com.axway.ats.log.model.AutoLogger;
  */
 public class AtsTestngClassListener {
 
-    private static final AutoLogger logger = AutoLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
     private static String           lastSuiteName;
 
     /**

@@ -22,15 +22,15 @@ import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.DbAccessFactory;
 import com.axway.ats.log.autodb.DbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
-import com.axway.ats.log.model.AutoLogger;
 
 public abstract class AbstractClientExecutor implements ClientExecutor {
 
-    protected AutoLogger         log;
+    protected AtsDbLogger         log;
 
     private static final String  LOCAL_MACHINE = "127.0.0.1";
 
@@ -42,7 +42,7 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
 
     protected AbstractClientExecutor() {
 
-        log = AutoLogger.getLogger( this.getClass().getName() );
+        log = AtsDbLogger.getLogger( this.getClass().getName() );
     }
 
     public abstract Object executeAction( ActionRequest actionRequest ) throws AgentException;

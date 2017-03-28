@@ -41,8 +41,8 @@ import com.axway.ats.agent.core.threading.data.config.UsernameDataConfig;
 import com.axway.ats.agent.core.threading.listeners.ActionTaskListener;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.PassiveDbAppender;
-import com.axway.ats.log.model.AutoLogger;
 import com.axway.ats.log.model.CheckpointResult;
 
 /**
@@ -57,7 +57,7 @@ public abstract class AbstractActionTask implements Runnable {
      */
     public static final boolean           REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS;
 
-    protected final AutoLogger            log;
+    protected final AtsDbLogger            log;
 
     protected String                      queueName;
 
@@ -132,7 +132,7 @@ public abstract class AbstractActionTask implements Runnable {
 
         this.caller = caller;
 
-        this.log = AutoLogger.getLogger( this.getClass().getName() );
+        this.log = AtsDbLogger.getLogger( this.getClass().getName() );
 
         PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance( ThreadsPerCaller.getCaller() );
         if( dbAppender != null ) {

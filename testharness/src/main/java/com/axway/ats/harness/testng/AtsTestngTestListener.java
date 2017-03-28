@@ -37,9 +37,8 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.utils.IoUtils;
-import com.axway.ats.harness.Configuration;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
-import com.axway.ats.log.model.AutoLogger;
 import com.axway.ats.log.model.TestCaseResult;
 /**
  * TestNG test listener <br>
@@ -57,7 +56,7 @@ import com.axway.ats.log.model.TestCaseResult;
 @PublicAtsApi
 public class AtsTestngTestListener extends TestListenerAdapter {
 
-    private static final AutoLogger logger                                = AutoLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger( "com.axway.ats" );
 
     private static final String     MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
 
@@ -149,7 +148,7 @@ public class AtsTestngTestListener extends TestListenerAdapter {
             Throwable failureException = testResult.getThrowable();
             if( failureException instanceof AssertionError ) {
                 logger.error( failureException.getMessage() );
-            } else if( Configuration.getLogOnException() ) {
+            } else {
                 logger.error( MSG__TEST_FAILED, testResult.getThrowable() );
             }
 
@@ -508,6 +507,6 @@ public class AtsTestngTestListener extends TestListenerAdapter {
      * @param lastSuiteName the new value for lastSuiteName
      */
     public static void resetLastSuiteName(){
-    	AtsTestngTestListener.lastSuiteName = null;
+        AtsTestngTestListener.lastSuiteName = null;
     }
 }

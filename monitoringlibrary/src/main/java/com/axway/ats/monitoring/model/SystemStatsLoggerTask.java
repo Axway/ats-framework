@@ -20,8 +20,8 @@ import java.util.List;
 import com.axway.ats.agent.components.monitoring.operations.clients.InternalSystemMonitoringOperations;
 import com.axway.ats.common.performance.monitor.beans.BasicReadingBean;
 import com.axway.ats.common.performance.monitor.beans.MonitorResults;
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
-import com.axway.ats.log.model.AutoLogger;
 import com.axway.ats.monitoring.model.exceptions.MonitoringException;
 import com.axway.ats.monitoring.model.readings.ReadingsRepository;
 
@@ -33,7 +33,7 @@ import com.axway.ats.monitoring.model.readings.ReadingsRepository;
  */
 public class SystemStatsLoggerTask extends AbstractLoggerTask {
 
-    private static AutoLogger log                         = AutoLogger.getLogger( SystemStatsLoggerTask.class.getName() );
+    private static AtsDbLogger log                         = AtsDbLogger.getLogger( SystemStatsLoggerTask.class.getName() );
 
     /*
      * If the system statistics are too many, we have to send the data to the

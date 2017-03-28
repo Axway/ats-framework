@@ -29,11 +29,11 @@ import com.axway.ats.agent.core.threading.listeners.QueueLoaderListener;
 import com.axway.ats.agent.core.threading.patterns.model.EndPattern;
 import com.axway.ats.agent.core.threading.patterns.model.ExecutionPattern;
 import com.axway.ats.agent.core.threading.patterns.model.StartPattern;
-import com.axway.ats.log.model.AutoLogger;
+import com.axway.ats.log.AtsDbLogger;
 
 public abstract class AbstractQueueLoader implements QueueLoader {
 
-    protected final AutoLogger               log;
+    protected final AtsDbLogger               log;
 
     protected String                         queueName;
     protected StartPattern                   startPattern;
@@ -51,7 +51,7 @@ public abstract class AbstractQueueLoader implements QueueLoader {
                          List<QueueLoaderListener> listeners ) throws NoSuchActionException,
                                                                     NoCompatibleMethodFoundException {
 
-        this.log = AutoLogger.getLogger( this.getClass().getName() );
+        this.log = AtsDbLogger.getLogger( this.getClass().getName() );
 
         this.queueName = queueName;
         this.startPattern = startPattern;

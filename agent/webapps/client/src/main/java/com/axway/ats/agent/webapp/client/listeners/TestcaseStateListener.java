@@ -31,7 +31,7 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.TestCaseState;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.events.ITestcaseStateListener;
-import com.axway.ats.log.model.AutoLogger;
+import com.axway.ats.log.AtsDbLogger;
 
 public class TestcaseStateListener implements ITestcaseStateListener {
 
@@ -148,7 +148,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      */
     private TestCaseState getCurrentTestCaseState() {
 
-        com.axway.ats.log.autodb.TestCaseState testCaseState = AutoLogger.getLogger( ActionClient.class.getName() )
+        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger( ActionClient.class.getName() )
                                                                          .getCurrentTestCaseState();
         if( testCaseState == null ) {
             return null;
