@@ -18,7 +18,6 @@ package com.axway.ats.action.dbaccess.snapshot;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,22 +81,23 @@ class DatabaseSnapshotBackupUtils {
         // append table descriptions
         for( TableDescription tableDescription : snapshot.tables ) {
             Element tableNode = doc.createElement( DatabaseSnapshotUtils.NODE_TABLE );
+
             dbNode.appendChild( tableNode );
-
             tableDescription.toXmlNode( doc, tableNode );
-
-            List<String> valuesList = new ArrayList<String>();
+            
+            // if the current table is in the skipTableContent we will do not need to get its all data
             if( snapshot.skipTableContent.contains( tableDescription.getName() ) ) {
                 // no rows have to be saved, so we skip this iteration
                 continue;
-            } else {
-                valuesList.addAll( snapshot.loadTableData( snapshot.name,
-                                                           tableDescription,
-                                                           snapshot.skipRulesPerTable,
-                                                           new HashMap<String, Map<String, String>>(),
-                                                           null,
-                                                           null ) );
             }
+
+            List<String> valuesList = new ArrayList<String>();
+            valuesList.addAll( snapshot.loadTableData( snapshot.name,
+                                                       tableDescription,
+                                                       snapshot.skipRulesPerTable,
+                                                       snapshot.skipRows,
+                                                       null,
+                                                       null ) );
             for( String values : valuesList ) {
                 Element rowNode = doc.createElement( DatabaseSnapshotUtils.NODE_ROW );
                 if( !skipRow( snapshot.skipRows.get( tableDescription.getName() ),
@@ -137,19 +137,26 @@ class DatabaseSnapshotBackupUtils {
         return doc;
     }
     
-    private boolean skipRow(
-                             Map<String, String> skipRows,
-                             String rowValues ) {
+    public boolean skipRow(
+                           Map<String, String> skipTableRows,
+                           String rowValues ) {
 
-        if( skipRows != null ) {
-            for( Entry<String, String> skipRow : skipRows.entrySet() ) {
-                if( rowValues.contains( skipRow.getKey() + "=" + skipRow.getValue() ) ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+       if( skipTableRows != null ) {
+           for( Entry<String, String> columnRowValue : skipTableRows.entrySet() ) {
+
+               String rowValueToSkip = columnRowValue.getValue();
+               if( !rowValueToSkip.endsWith( "?" ) ) {
+                   rowValueToSkip += "?";
+               }
+               String[] matches = rowValues.split( "\\|" + columnRowValue.getKey() + "=" + rowValueToSkip
+                                                   + "\\|" );
+               if( matches.length > 1 ) {
+                   return true;
+               }
+           }
+       }
+       return false;
+   }
 
     /**
      * Load a snapshot from a file
