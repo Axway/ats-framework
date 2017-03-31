@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Axway/ats-framework.svg?branch=master)](https://travis-ci.org/Axway/ats-framework)
-
+[![GitHub version](https://badge.fury.io/gh/Axway%2Fats-framework.svg)](https://badge.fury.io/gh/Axway%2Fats-framework)
 
 ATS framework is Java test automation framework providing multiple modules. It helps to automate:
 
