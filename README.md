@@ -2,17 +2,20 @@
 [![GitHub version](https://badge.fury.io/gh/Axway%2Fats-framework.svg)](https://badge.fury.io/gh/Axway%2Fats-framework)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-ATS framework is Java test automation framework providing multiple modules. It helps to automate:
+The Axway Automated Testing System (ATS) is an internally developed testing framework widely used for the testing needs of most of the Axway products.
 
-    file system, DB and mail operations;
-    file transfer operations (HTTP(S), FTP(S), SFTP, custom transfer clients);
-    work with XML and JSON files. Provides HTTP(S) and REST clients;
-    start and work with external processes;
-    work with UI components for browsers and Swing;
-    test configuration management - backup and restore;
-    verifications on different targets including file system, DB, mail and UI elements;
-    performance tests;
-    system monitoring on host (machine), process and JVM level;
+ATS key features include:
+<ul>
+  <li>Easy to write and maintain automated tests. Understandable by both QA and developers</li>
+  <li>Appropriate for variety types of functional and performance testing</li>
+  <li>Separate components, or complete products, or products grouped as a bigger product can be tested</li>
+  <li>Tests work on all platforms with (virtually) no change</li>
+  <li>Support of distributed environments – it all works locally and remotely</li>
+  <li>Comprehensive statistics about the system resource usage of the tested applications</li>
+  <li>Consolidated reporting allowing easy test result analyzes</li>
+  <li>Ability to freely mix ATS code with your own code</li>
+  <li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li>
+</ul>
 
 Documentaion is available at https://axway.github.io/ats-framework/ATS-OS-Documentation_118272397.html
 
