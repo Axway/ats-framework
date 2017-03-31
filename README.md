@@ -14,5 +14,12 @@ ATS framework is Java test automation framework providing multiple modules. It h
     performance tests;
     system monitoring on host (machine), process and JVM level;
 
-Other related projects are ATS Test Explorer, and HTTP DB logger.
+Documentaion is available at https://axway.github.io/ats-framework/ATS-OS-Documentation_118272397.html
+
+Other related projects:
+<ul>
+  <li>ATS Test Explorer at https://github.com/Axway/ats-testexplorer</li>
+  <li>ATS HTTP DB Logger at https://github.com/Axway/ats-httpdblogger</li>
+  <li>ATS Distribution at https://github.com/Axway/ats-distrib</li>
+</ul>
 
