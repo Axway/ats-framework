@@ -1,7 +1,0 @@
-SET FOREIGN_KEY_CHECKS = 0; -- ATS EOL;
-
-LOCK TABLES `Revision` WRITE; -- ATS EOL;
-DELETE FROM `Revision`; -- ATS EOL;
-INSERT INTO `Revision` (id,SchemaVersion,STVersion,InstallDate) 
-VALUES(1,2,'4.9  206','2008-11-27 12:35:49.0'); -- ATS EOL;
-UNLOCK TABLES; -- ATS EOL;

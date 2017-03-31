@@ -1,3 +1,0 @@
-imapServer="host.axway.com";
-imapPass="PASSWORD123";
-imapInboxFolder="INBOX";

@@ -1,7 +1,0 @@
-    $DEPRECATED$
-    @PublicAtsApi
-    public $RETURN_TYPE$ $METHOD_NAME$( $PARAMETERS$ ) throws AgentException {
-
-        $EXEC_RETURN_DEFINITION$executeAction( "$ACTION_NAME$", new Object[]{ $ARGUMENTS$ } );
-
-    }
