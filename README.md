@@ -13,5 +13,5 @@ ATS framework is Java test automation framework providing multiple modules. It h
     performance tests;
     system monitoring on host (machine), process and JVM level;
 
-Other related projects are ATS Test Explorer, and REST logger.
+Other related projects are ATS Test Explorer, and HTTP DB logger.
 
