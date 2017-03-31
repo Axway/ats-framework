@@ -1,0 +1,17 @@
+Deploying release
+
+1. Add ssh key to your github account ( if you don't have one already ) - more information on https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+- you can check if via executing ssh -T git@github.com ( you must be inside project's directory )
+2. Put the project's settings.xml in ~/.m2
+3. Set Sonatype's username and password, either via environment variables ( export CI_DEPLOY_USERNAME=yourusername, CI_DEPLOY_PASSWORD=yourpassword ), or via plain text in ~/.m2/settings.xml
+4. Import pgp keys:
+- gpg2 --import public.key
+- gpg2 --import private.key
+5. Run utils/deploy.sh
+
+On success, the release is visible in https://oss.sonatype.org/content/repositories/releases/com/axway/ats/ and after a couple of hours in search.maven.org
+If an error occured, perform mvn release:rollback. Check if tag is added to github. If yes, perform:
+- git tag -d sometag
+- git push origin :refs/tags/sometag
+
+And finally, fix the errors and run the deploy script again
