@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : File System Operations</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities_119475846.html">Basic functionalities</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : File System Operations
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 20, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="FileSystemOperations-Introduction">Introduction</h1><p>Using the <strong> <em>FileSystemOperations</em> </strong>class you can do lots of different tasks on any type of file system on any host. Some of these tasks are:</p><ul style="list-style-type: square;"><li><span>create file in variety of ways</span></li><li><span>append or replace text in file</span></li><li><span>manipulate file attributes like modification time, UID, GIU</span></li><li><span>rename and delete files and directories</span></li><li><span>read the whole file content</span></li><li><span> <span>extract content from a file in a way similar to the Linux grep command</span> </span></li><li><span>read the new file content - useful for watching log files</span></li><li><span>copy files/directories</span></li></ul><p><span><br/></span></p><hr/><h1 id="FileSystemOperations-FirstmakeaninstanceoftheFileSystemOperationsclass:">First make an instance of the <em>FileSystemOperations</em> class:</h1><div><div class="syntaxhighlighter sh-confluence nogutter  java"><p> </p><div class="table-wrap"><table class="confluenceTable"><colgroup> <col/> </colgroup><tbody><tr><td class="confluenceTd"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2"><code class="java plain">FileSystemOperations fileOperations = </code> <code class="java keyword">new</code> <code class="java plain">FileSystemOperations( SERVER_IP );</code></div></div></td></tr></tbody></table></div><p> </p></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note conf-macro output-block"><div class="confluence-information-macro-body"><p>If you want to work locally, use the constructor without any input arguments</p></div></div><p> </p><hr/><h1 id="FileSystemOperations-Examples">Examples</h1><p>Following are some example of what you can do with this class. For the full list please check the code or javadoc.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Make an instance of this class
+FileSystemOperations fileOperations = new FileSystemOperations( SERVER_IP );
+
+// create a remote folder
+fileOperations.createDirectory( SOME_DIRECTORY );
+
+// copy a local file to the remote folder
+fileOperations.copyFileTo( SOME_FILE, SOME_DIRECTORY );
+
+// get the MD5 sum of the remote file
+String md5Sum = fileOperations.computeMd5Sum( SOME_FILE, Md5SumMode.ASCII );
+
+// get the last 3 lines of the remote file
+String[] last3Lines = fileOperations.getLastLinesFromFile( SOME_FILE, 3 );
+
+// check whether some file exists
+fileOperations.doesFileExist( SOME_FILE );
+
+// delete the remote file
+fileOperations.deleteFile( SOME_FILE );
+
+// get all lines from the file which contain &quot;first name = &quot;
+String[] matchedLines = fileOperations.fileGrep( SOME_FILE, &quot;.*first name = .*&quot;, false); 
+
+// get a list of all XML files from the specified folder and its subfolders
+String[] foundFiles = fileOperations.findFiles( SOME_FOLDER, &quot;.*.XML&quot;, true, false, true );
+
+// Get info about all matches (in this case it will return all instances of the specified String)
+// This method remembers the last processed line, so the next call will continue from after that line,
+// which makes it good for extracting info from growing(log like) files when you need to check only the new content
+FileMatchInfo matchInfo = fileOperations.findNewTextInFile( SOME_FILE, &quot;Our server started successfully&quot;, true );
+// the list of matched lines can be taken from the returned matchInfo structure
+
+// copy a file from a remote host to another remote host - of course the ATS Agent must be running on both remote hosts
+fileOperations.copyRemoteFile( FROM_HOST, SOME_FILE, TO_HOST, SOME_FILE );
+
+// copy recursively a folder from a remote host to another remote host - of course the ATS Agent must be running on both remote hosts
+fileOperations.copyRemoteDirectory( FROM_HOST, SOME_FOLDER, TO_HOST, SOME_FOLDER, true );</pre>
+</div></div><p> </p><hr/><h1 id="FileSystemOperations-Specialconsiderationswhencopyingfilesanddirectories">Special considerations when copying files and directories</h1><p>When copying files or directories between 2 different hosts we need to establish a connection. This connection goes over some port and there are cases where appropriate ports are not available due to a running firewall, some restrictions present in cloud environments or you are using containers like Docker ones.</p><p>So in case you have only a number of available ports, you will need to specify a range of port numbers.This can be done in two ways:</p><ul style="list-style-type: square;"><li>Use the <br/> <em>ActionLibraryConfigurator</em>.getInstance().<em>setCopyFileStartPort</em>( START_PORT_NUMBER ) and <em> <em> <br/>ActionLibraryConfigurator</em>.getInstance().<em>setCopyFileEndPort</em>( END_PORT_NUMBER )<br/> <br/> </em></li><li>Rewrite the <em>actionlibrary.filesystem.copyfile.start.port</em> and <em>actionlibrary.filesystem.copyfile.end.port</em> values in your configuration files</li></ul><div class="confluence-information-macro confluence-information-macro-note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Here you set the proper port range on the <em> <strong>destination</strong> </em> host.</p></div></div><p> </p><hr/><p>Back to <a href="Basic-functionalities_119475846.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>

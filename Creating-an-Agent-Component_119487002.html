@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Creating an Agent Component</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Performance-testing_119486578.html">Performance testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Creating-ATS-actions_119486983.html">Creating ATS actions</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Creating an Agent Component
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 29, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <p>There are a few steps to take in order to create an Agent component</p><p> </p><hr/><h1 id="CreatinganAgentComponent-Creatingtheactions">Creating the actions</h1><p>Each <em>Agent component</em> contains at least one <em>Agent action</em>. These actions are java methods, so they exist in regular java classes.</p><p>Here we will make two java classes with actions. These will be used in the different user guide pages related to performance testing.</p><h3 id="CreatinganAgentComponent-Averysimpleactionclass">A very simple action class</h3><p>A class with just one action which accepts input arguments from the test and returns back some result.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">package com.test.myproduct.actions;
+
+import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.Parameter;
+
+import org.apache.log4j.Logger;
+
+public class SimpleActions {
+
+    // we can use this logger in order to log some messages
+    private static final Logger log = Logger.getLogger( SimpleAction.class );
+
+    @Action()
+    public String sayHi( @Parameter(name = &quot;myName&quot;) String myName, @Parameter(name = &quot;myAge&quot;) int myAge ) {
+
+        // we log some message from this action
+        log.info( &quot;Remote action message: Called by &#39;&quot; + myName + &quot;&#39; who is &quot; + myAge + &quot; years old&quot; );
+
+        // this action returns some data back
+        return &quot;Hello &quot; + myName + &quot;. You are &quot; + myAge + &quot; years old&quot;;
+    }
+}</pre>
+</div></div><h3 id="CreatinganAgentComponent-ActionclassdoingfiletransfersoverFTP">Action class doing file transfers over FTP</h3><p>This one is using the ATS <em>FileTransferClient</em> class which is able to transfer files over variety of protocols.</p><p>But the ATS <em>FileTransferClient</em> class cannot run in parallel for many user, now we make a wrapper around it to make this possible.</p><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">package com.test.myproduct.actions;
+
+import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.Parameter;
+import com.axway.ats.action.filetransfer.FileTransferClient;
+import com.axway.ats.common.filetransfer.TransferProtocol;
+
+public class FileTransferActions {
+
+    // this is the ATS client used for sending files over variety of transfer protocols
+    private FileTransferClient transferClient;
+
+    @Action
+    public void connect( @Parameter(name = &quot;hostname&quot;) String hostname, 
+                         @Parameter(name = &quot;port&quot;) int port,
+                         @Parameter(name = &quot;username&quot;) String username,
+                         @Parameter(name = &quot;password&quot;) String password ) {
+
+        // make instance of the transfer client and do a connect
+        transferClient = new FileTransferClient( TransferProtocol.FTP );
+        transferClient.setPort( port );
+
+        transferClient.connect( hostname, username, password );
+    }
+
+    @Action
+    public void upload( @Parameter(name = &quot;localFilePath&quot;) String localFilePath ) {
+
+        transferClient.uploadFile( localFilePath, &quot;/&quot; );
+    }
+
+    @Action
+    public void disconnect() {
+
+        transferClient.disconnect();
+    }
+}</pre>
+</div></div><p> </p><hr/><h1 id="CreatinganAgentComponent-Importantdetailsaboutactions">Important  details about actions</h1><ul><li>A java method becomes an <em>action</em> when we annotate it properly.</li><li>Any input action arguments must be annotated properly as well.</li><li>The action method body can have any content you wish.</li></ul><p> </p><hr/><h1 id="CreatinganAgentComponent-Creatingacleanuphandler">Creating a cleanup handler</h1><p>Each <em>Agent component</em> must contain one (and only one)<em> cleanup handler</em>.</p><p>We discuss this more here(TODO: provide a link) <br/> Here we will create a default cleanup handler:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">package com.test.myproduct.actions;
+
+import com.axway.ats.agent.core.model.EnvironmentCleanupHandler;
+
+public class SimpleCleanupHandler implements EnvironmentCleanupHandler {
+
+    public void clean() {
+
+        // just write your own java code that will do something useful in your case
+    }
+}
+</pre>
+</div></div><p><a href="https://techweb.axway.com/confluence/display/ATS/Environment+maintenance+using+HTF"> <span style="color: rgb(0,0,238);"> <span> </span> </span> </a></p><hr/><h1 id="CreatinganAgentComponent-CreatinganAgentdescriptorfile"> Creating an Agent descriptor file</h1><p>Each Agent component has one description file called <em><strong>agent_descriptor.xml</strong></em></p><p>Make the one bellow and put it in the <em>src</em> folder of your project. We assume <em>src</em> is the folder where you have all your action classes placed already.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: xml; gutter: false; theme: Confluence" data-theme="Confluence">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;component name=&quot;myproduct_actions&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;agent_descriptor.xsd&quot;&gt;
+  
+    &lt;actionClass name=&quot;com.test.myproduct.actions.SimpleActions&quot;/&gt;
+    &lt;actionClass name=&quot;com.test.myproduct.actions.FileTransferActions&quot;/&gt;
+  
+    &lt;cleanupHandler name=&quot;com.test.myproduct.actions.SimpleCleanupHandler&quot;/&gt;
+  
+&lt;/component&gt;</pre>
+</div></div><p>Here are the important details:</p><ul><li>appropriate <em>component name</em>.</li><li>list with<em> actions </em>classes</li><li>the one and only <em>cleanup handler</em></li></ul><p> </p><hr/><p>Proceed with <a href="Building-and-deploying-an-Agent-Component_119487087.html">building and deploying your component</a></p><p>Back to <a href="Creating-ATS-actions_119486983.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>

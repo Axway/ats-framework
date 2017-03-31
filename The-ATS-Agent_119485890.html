@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : The ATS Agent</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : The ATS Agent
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 28, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="TheATSAgent-Introduction">Introduction</h1><p>The ATS Agent is a java application which is used by some ATS framework classes to do their job.</p><p>As soon as the Agent is up and running it is ready to be used. You do not usually see an evidence of the existence of the ATS Agent in your test code, but when you use some known framework classes they might internally us the Agent.</p><p>The ATS Agent is mainly used for:</p><ul><li>Execute a command on a remote host. For example when the Test Executor needs to work on a remote host file system<br/>In such case we call it <strong> <em>the Agent</em> </strong></li><li>Monitoring the state of a remote host<br/>In such case we call it <strong> <em>the Monitoring Service</em> </strong></li><li>Loading the Application Under Test with a number of actions from a number of threads(users)<br/>In such case we call it <strong> <em>the Loader</em> </strong></li></ul><p> </p><hr/><h1 id="TheATSAgent-InstallingandstartingtheATSagent">Installing and starting the ATS agent</h1><p>This is really easy:</p><ol><li>Download the ATS Agent zip archive from</li><li>Unzip it on the host where you want to run it</li><li>Start it by using <strong> <em>agent.bat</em> </strong> on Windows or <strong> <em>agent.sh</em> </strong> on non windows platforms</li></ol><p>Now you can use it from your tests</p><p> </p><hr/><h1 id="TheATSAgent-Agentfilestructure">Agent file structure</h1><p>Following are the folders and files you will find after unzipping the Agent archive</p><ul><li>ats-agent<ul><li><em> <strong>actions</strong> </em> <br/> <em> <strong>the Agent component jars containing classes with actions that can be run remotely</strong> </em></li><li><em> <strong>actions_dependencies</strong> </em> <br/> <em> <strong>jars with classes needed by the actions</strong> </em></li><li>container<br/>libraries used to start the Agent web container</li><li>endorsed<br/>libraries used instead the ones from your java distribution</li><li>webapp<br/>the Agent web application</li></ul></li><li><em> <strong>logs</strong> </em> <br/> <em> <strong>Agent log files</strong> </em></li></ul><p>In the list above the folders important to you are made bold and italic</p><p> </p><hr/><h1 id="TheATSAgent-Verifyitrunsproperly">Verify it runs properly</h1><p>Following you can see some common problems and ways to investigate them</p><h3 id="TheATSAgent-Makesuretherearenoerrorsinitsconsole.">Make sure there are no errors in its <em> <strong>console</strong> </em>.</h3><p>The usual error is to use a too old java version. <br/>The other one is to see its port is already taken by another application.</p><h3 id="TheATSAgent-Makesuretherearenoerrorsinitslogfile">Make sure there are no errors in its log file</h3><p>The Agent log file is called <strong> <em>ATSAgentAudit.log</em> </strong> and placed in the <em> <strong>logs</strong> </em> sub-folder.</p><p>Hopefully the errors are easy to understand.</p><p>In most cases this file will also tell you what the Agent is doing when user has called some remote action.</p><h3 id="TheATSAgent-NoerrorsbutcannotcommunicatewiththeAgent">No errors but cannot communicate with the Agent</h3><p>If see no errors, but cannot communicate with the Agent then you either cannot reach this host(ping command can help you) or you should suspect a firewall prevent communication on the Agent port.<br/>You can easily check if the communication is possible between Test Executor and Agent by trying to open the following URL in a web browser on Test Executor: <br/>&quot;<em>http://&lt;The Agent IP or host name&gt;:&lt;The Agent port&gt;/agentapp/agentservice?wsdl</em>&quot;. <br/>On success you will see a list with all support web commands.</p><p> </p><hr/><h1 id="TheATSAgent-ConfiguringtheATSagent">Configuring the ATS agent</h1><p>Run the agent command line with the <em> <strong>help switch</strong> </em> and you will see different options.</p><p>You can specify:</p><ul><li>port to use</li><li>java executable</li><li>max memory size</li></ul><p>More options will be found if read the <em> <strong>agent.bat</strong> </em> and <em> <strong>agent.sh</strong> </em> files</p><h3 id="TheATSAgent-Defaultport">Default port</h3><p>By default the Agent is running on port 8089</p><p>If in your tests you do not provide a port, we will try to use 8089</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>You can change the default port by setting a java system variable.</p><p>For example, this can be done by calling this:</p><p><em>System.setProperty( &quot;ats.agent.default.port&quot;, &quot;8888&quot; );</em></p></div></div><p> </p><hr/><h1 id="TheATSAgent-RunningATSAgentonthelocalhost">Running ATS Agent on the local host</h1><p>Of course the ATS Agent can run on any host, including the local one.</p><p>But running the Agent locally does not mean we will use it. For example when using the <em> <strong>FileSystemOperations</strong> </em> class we will check whether you want to run your command locally or remotely. Only in the latter case we will work with an ATS Agent.</p><p>But still, there are cases when you must run it locally. This is when you want to monitor the system resources of the local host and also when you want to use the local host as a Loader.</p><h1 id="TheATSAgent-RunningmorethanoneATSAgentonsamehost">Running more than one ATS Agent on same host</h1><hr/><p>If you find a good reason to use more than one Agent on same host just make sure you specify different port number for each instance. Otherwise you will be getting &quot;Port already in use&quot; errors.</p><h1 id="TheATSAgent-Startitasaservice">Start it as a service</h1><p><a href="Start-ATS-agent-as-service_119486084.html">Here</a> you can see how to let the Agent start on system start</p><p> </p><hr/><p>Back to <a href="ATS-Framework-Guide.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>

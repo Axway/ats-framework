@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : User activity monitoring details</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="System-monitoring_119485353.html">System monitoring</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : User activity monitoring details
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 28, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Useractivitymonitoringdetails-Introduction">Introduction</h1><hr/><p>You can monitor the activity of the virtual users.</p><p>Virtual users live in the environment of the ATS Agent (also called Loader) which mimic the behavior of real users.For example your virtual users might do <em>login</em>, <em>file transfer</em> and <em>logout</em> and this page shows how get a good idea how many of them are running any of these actions at any time of the test execution.</p><p> </p><hr/><h1 id="Useractivitymonitoringdetails-Usage">Usage</h1><p>All you need is to use the appropriate method of the <em>SystemMonitor</em> class</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleUserActivityMonitoring( &lt;AGENT ADDRESS&gt; );
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>When you are running the test on more than one <em>Loader</em>, you just need to call this method for all of them</p></div></div><p> </p><hr/><h1 id="Useractivitymonitoringdetails-Reviewingthecollecteddata">Reviewing the collected data</h1><p>The collected data is available using the Test Explorer UI:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485811/119485834.png" data-image-src="attachments/119485811/119485834.png" data-unresolved-comment-count="0" data-linked-resource-id="119485834" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119485811" data-linked-resource-container-version="2"></span></p><p>For each time stamp this example shows the number of users connecting(blue line), uploading files(red line).</p><p>Additionally we also display the used memory on that host(green line)</p><p> </p><hr/><p>Back to <a href="System-monitoring_119485353.html">parent page</a></p><hr/>
+                    </div>
+
+                                        <div class="pageSection group">
+                        <div class="pageSectionHeader">
+                            <h2 id="attachments" class="pageSectionTitle">Attachments:</h2>
+                        </div>
+
+                        <div class="greybox" align="left">
+                                                            <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""/>
+                                <a href="attachments/119485811/119485834.png">pic1.png</a> (image/png)
+                                <br/>
+                                                    </div>
+                    </div>
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>

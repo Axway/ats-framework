@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Custom monitoring</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="System-monitoring_119485353.html">System monitoring</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="System-monitoring-details_119485571.html">System monitoring details</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Custom monitoring
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 28, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Custommonitoring-Introduction">Introduction</h1><p>You can write your own logic and attach it to the Monitoring Service. Following are the needed steps to achieve it.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>This is considered as advanced topic, so contact us if you need assistance</p></div></div><p> </p><hr/><h1 id="Custommonitoring-Createyourownmonitoringclass">Create your own monitoring class</h1><p>Write your own monitoring class which extends the <em> <strong>PerformanceMonitor</strong> </em> class. Here is an example:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.common.performance.monitor.PerformanceMonitor;
+import com.axway.ats.common.performance.monitor.beans.BasicReadingBean;
+import com.axway.ats.common.performance.monitor.beans.FullReadingBean;
+
+public class MyCustomPerformanceMonitor extends PerformanceMonitor {
+
+    // list with all readings(statistic beans) supported by this custom monitor
+    private FullReadingBean     importantTableSizeBean;
+    private FullReadingBean     freeDiskSpaceBean;
+
+    /**
+     * This method is called when starting monitoring the system
+     *
+     * If needed, some initialization steps could be performed at this point.
+     * For example if you intend to monitor a database, here is the place to establishing a DB connection
+     */
+    @Override
+    public void init( FullReadingBean[] readings ) throws Exception {
+           // Check which statistics our user is interested in.
+           // In order to do that you have to iterate over the array which is passed to this method as input argument
+           // and see the names of the passed readings.
+           // For example if readings[0].getName() returns &quot;Important table size&quot;, we can simply do the following:
+           importantTableSizeBean = readings[0];
+
+           // Do not assume the user wants to get info about all supported statistics.
+           // In our example we support 2 kinds of statistics but it is possible that 
+           // in some test only one of these statistics is wanted,
+           // so you have to make such check here
+    }
+
+    /**
+     * This method is called when stopping monitoring the system
+     *
+     * If needed, release some resources, for example a DB connection
+     */
+    @Override
+    public void deinit() throws Exception {
+    }
+
+    /**
+     * This method will be called just once.
+     *
+     * It must return a list with the needed statistics in the form of FullReadingBean. 
+     * This will provide the same data as the BasicReadingBean, but in addition it will provide the statistic 
+     * names and units
+     */
+    @Override
+    public List&lt;BasicReadingBean&gt; pollNewDataForFirstTime() throws Exception {
+
+        // make an array where we will fill the current poll results
+        List&lt;BasicReadingBean&gt; results = new ArrayList&lt;BasicReadingBean&gt;();
+
+        // if user requested this reading - make a new poll now
+        if( importantTableSizeBean != null ) {
+            importantTableSizeBean.setValue( getImportantTableSize() );
+            results.add( importantTableSizeBean );
+        }
+
+        // if user requested this reading - make a new poll now
+        if( freeDiskSpaceBean != null ) {
+            freeDiskSpaceBean.setValue( getFreeDiskSpace() );
+            results.add( freeDiskSpaceBean );
+        }
+
+        return results;
+    }
+
+    /**
+     * Once the pollNewDataForFirstTime() is called, then only the pollNewData() method
+     * is called in regular intervals and is supposed to return the actual monitoring data
+     *
+     * It must return a list of BasicReadingBean which contain unique statistic id and current value
+     */
+    @Override
+    public List&lt;BasicReadingBean&gt; pollNewData() throws Exception {
+
+        // make an array where we will fill the current poll results
+        List&lt;BasicReadingBean&gt; results = new ArrayList&lt;BasicReadingBean&gt;();
+
+        // if user requested this reading - make a new poll now
+        if( importantTableSizeBean != null ) {
+            BasicReadingBean importantTableSizeBasicBean = importantTableSizeBean.getBasicReadingBeanCopy();
+            importantTableSizeBasicBean.setValue( getImportantTableSize() );
+            results.add( importantTableSizeBasicBean );
+        }
+
+        // if user requested this reading - make a new poll now
+        if( freeDiskSpaceBean != null ) {
+            BasicReadingBean freeDiskSpaceBasicBean = freeDiskSpaceBean.getBasicReadingBeanCopy();
+            freeDiskSpaceBasicBean.setValue( getFreeDiskSpace() );
+            results.add( freeDiskSpaceBasicBean );
+        }
+
+        return results;
+    }
+
+    @Override
+    public String getDescription() {
+        // provide some name, that will be seen in the logs
+        return &quot;My Custom Monitor&quot;;
+    }
+
+    private String getImportantTableSize() {
+
+        // fill in this custom method body,
+        // so it returns the size of the important table
+    }
+
+    private String getFreeDiskSpace() {
+
+        // fill in this custom method body,
+        // so it returns the free disk space
+    }
+}
+</pre>
+</div></div><p> </p><hr/><h1 id="Custommonitoring-Createacustom.performance.configuration.xml">Create a custom.performance.configuration.xml</h1><p>This file describes your supported readings</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;configuration&gt;
+	&lt;monitor class=&quot;com.test.MyVeryCustomPerformanceMonitor&quot;&gt;
+		&lt;reading name=&quot;Important table size&quot; unit=&quot;Number&quot; /&gt;
+		&lt;reading name=&quot;Free disk space&quot; unit=&quot;MB&quot; /&gt;
+	&lt;/monitor&gt;
+&lt;/configuration&gt;
+</pre>
+</div></div><p>Note that you may have multiple &lt;monitor&gt; nodes with multiple multiple &lt;reading&gt; nodes.<br/> This file goes in the classpath root of the <em>Test Executor</em></p><p> </p><hr/><h1 id="Custommonitoring-Deploythecustommonitor">Deploy the custom monitor</h1><p>Package your monitoring class into a jar and deploy it to the <strong> <em>&lt;AGENT HOME&gt;action_dependencies</em> </strong>folder on the monitored host.</p><p>Now you can call your monitor in the same way as the regular ones:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleSystemMonitoring(  &lt;MONITORING SERVICE IP AND PORT&gt;,
+                                          new String[]{
+                                                  SystemMonitor.MONITOR_CPU.ALL,
+                                                  SystemMonitor.MONITOR_IO.ALL,
+                                                  SystemMonitor.MONITOR_MEMORY.ALL,
+                                                  SystemMonitor.MONITOR_VIRTUAL_MEMORY.ALL,
+                                                  SystemMonitor.MONITOR_NETWORK_INTERFACES.ALL,
+                                                  &quot;Important table size&quot;,
+                                                  &quot;Free disk space&quot;
+                                          }
+);
+</pre>
+</div></div><p>Now go to Test Explorer UI to see your result</p><p> </p><hr/><p>Back to <a href="System-monitoring-details_119485571.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>

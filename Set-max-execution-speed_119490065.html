@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Set max execution speed</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Performance-testing_119486578.html">Performance testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Running-performance-tests_119488013.html">Running performance tests</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Set max execution speed
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 31, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Setmaxexecutionspeed-Introduction">Introduction</h1><p>You cannot set a minimum speed for executing your action iterations <img class="emoticon emoticon-wink" src="images/icons/emoticons/wink.png" data-emoticon-name="wink" alt="(wink)"/></p><p>But you can set a maximum execution speed.</p><p> </p><hr/><h1 id="Setmaxexecutionspeed-Example">Example</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">AllAtOncePattern threadingPattern = new AllAtOncePattern( 2, true, 15, 2000 );
+
+threadingPattern.setExecutionSpeed( 60, 10 );
+
+loader.setThreadingPattern( threadingPattern );
+</pre>
+</div></div><p>Here we will run 2 threads, each of them will run 15 iterations with 2 secs delay between the iterations. Nothing new so far.</p><p>But we have also used the <strong> <em>setExecutionSpeed</em> </strong> method which defines that every 60 seconds we will have no more than 10 executions. As we have 2 threads, this means every minute each thread will run 5 iterations.</p><p>Here is the result:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119490065/119490064.png" data-image-src="attachments/119490065/119490064.png" data-unresolved-comment-count="0" data-linked-resource-id="119490064" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119490065" data-linked-resource-container-version="3"></span></p><p>You can see 2 threads were running 5 iterations and then stopped until a minute is completed, then repeated this procedure two more times until completed their last iteration.<br/> The 2000 ms delay was put in the threading pattern, so this graphic shows clearly how many iterations are ran for each time period(1 minute).</p><div class="confluence-information-macro confluence-information-macro-note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Only <em>AllAtOncePattern</em> and <em>FixedDurationAllAtOncePattern</em> support this feature</p></div></div><p> </p><hr/><p>Back to <a href="Running-performance-tests_119488013.html">parent page</a></p><hr/>
+                    </div>
+
+                                        <div class="pageSection group">
+                        <div class="pageSectionHeader">
+                            <h2 id="attachments" class="pageSectionTitle">Attachments:</h2>
+                        </div>
+
+                        <div class="greybox" align="left">
+                                                            <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""/>
+                                <a href="attachments/119490065/119490081.png">pic1.PNG</a> (image/png)
+                                <br/>
+                                                            <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""/>
+                                <a href="attachments/119490065/119490064.png">pic1.PNG</a> (image/png)
+                                <br/>
+                                                    </div>
+                    </div>
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>

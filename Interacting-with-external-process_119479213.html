@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Interacting with external process</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation_118272397.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Framework-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities_119475846.html">Basic functionalities</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Interacting with external process
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 20, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Interactingwithexternalprocess-Introduction">Introduction</h1><p>Imagine you want to run some external process, but you expect to be asked some questions and you must provide the answers.</p><p>In order to interact with an external process you will have to send commands to its input stream and read data from its output streams.</p><hr/><h1 id="Interactingwithexternalprocess-Startingtheexternalprocesstointeractwith"><strong>Starting the external process to interact with</strong></h1><p>You have to use one of the constructors of the <strong><em>ProcessTalker</em></strong> class:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.processtalk.ProcessTalker;
+
+ProcessTalker talker = new ProcessTalker( &quot;My external command&quot;, 10 );
+</pre>
+</div></div><p>In the provided example, the first argument is the command which you will run.</p><p>The second argument is the default time to wait(in seconds) for some operations to happen or fail. These operations usually either <em>send some command</em> to the external process or <em>expect some output</em> from the external process.</p><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>You can work in same way with a process on a remote host as long as you have a running ATS agent there.<br/> All you need to change in your code is to add the ATS agent address as a first parameter in your constructor:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ProcessTalker talker = new ProcessTalker( &lt;ATS agent address&gt;, &quot;My external command&quot;, 10 );
+</pre>
+</div></div></div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Waitforsomeoutput"><strong>Wait for some output</strong></h1><p>In order to understand what the external process is doing, you need to monitor its output. This is done with some of the <em>expect</em> like methods. Here are some examples:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// wait until the following pattern is outputted by the external process
+talker.expect( &quot;Type your choice and press enter:&quot; );
+
+// same as the above example, but the provided pattern is treated as java regular expression
+talker.expectByRegex( &quot;Type your choice and press enter:&quot; );
+
+// java regular expression which is spread on 2 different lines
+talker.expectByRegex( &quot;line1\r\nline2&quot; );
+</pre>
+</div></div><h3 id="Interactingwithexternalprocess-Expectsomemorecomplexoutput">Expect some more complex output</h3><p>If needed, you can wait for many patterns at once:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make a list with patterns to match
+String[] patterns = new String[]{&quot;line1&quot;, &quot;line3&quot; };
+
+// the following will succeed if all the patterns are matched in the given order
+talker.expectAll( patterns );
+</pre>
+</div></div><p>If you want to use regular expressions, use the <em>expectAllByRegex</em> method</p><p> </p><hr/><h1 id="Interactingwithexternalprocess-Sendcommandtotheexternalprocess"><strong>Send command to the external process</strong></h1><p>Here is how you can answer to some question:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// first wait to be asked for your choice
+talker.expect( &quot;Type your choice and press enter:&quot; );
+
+// now send your choice
+talker.send( &quot;1&quot; );
+
+// and send ENTER
+talker.sendEnterKey();
+</pre>
+</div></div><h3 id="Interactingwithexternalprocess-SendENTERkeymanytimes">Send ENTER key many times</h3><p>There is an easy to use method which is appropriate for example for reading a user license agreement or something similar. In such special case the user is guided through many pages and basically needs to press ENTER key until pass all the pages</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">talker.sendEnterKeyInLoop( &quot;Press ENTER to continue:&quot;,
+                           &quot;Press ENTER if you agree to this license agreement, press ESC to exit:&quot;,
+                           10 );
+</pre>
+</div></div><p>In this example we state that we expect on each page to get the first pattern, when we find it, we will press ENTER - this is the first method argument called <em>intermediate pattern</em>. The second method argument is the one that tells us we reached the last page and is called <em>final pattern</em>. The last argument is the max number of time we will send ENTER.</p><p>This just a helper method, you can do all this by calling multiple times methods starting with <strong> <em>expect</em>...</strong> and <strong> <em>send...</em> </strong></p><p> </p><hr/><h1 id="Interactingwithexternalprocess-Getthecurrentstandardoutput">Get the current standard output</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">talker.getCurrentStandardOutContents();
+</pre>
+</div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Getthecurrenterroroutput">Get the current error output</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">talker.getCurrentStandardErrContents();
+</pre>
+</div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Checkifthecurrentprocesshasalreadyexited.">Check if the current process has already exited.</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">talker.isClosed();
+</pre>
+</div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Howdoweknowifsomeoperationhasfailed">How do we know if some operation has failed</h1><p>If the operation passed, nothing special happens. There will be only some log messages.</p><p>If the operation fail, an exception is thrown.</p><p> </p><h1 id="Interactingwithexternalprocess-Timeoutconsiderations">Timeout considerations</h1><p>All methods starting with <em> <strong>expect...</strong> </em> have a versions with and without operation timeout. If timeout is not provided, we use the default timeout as provided in the ProcessTalker constructor.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>It is always smart to provide a default timeout in the constructor.</p><p>This assures you will have some operation timeout even when calling methods without explicit timeout</p></div></div><p> </p><hr/><p>Back to <a href="Basic-functionalities_119475846.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Mar 31, 2017 15:51</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
