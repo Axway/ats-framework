@@ -19,6 +19,8 @@ ATS key features include:
 
 Documentaion is available at https://axway.github.io/ats-framework/ATS-OS-Documentation_118272397.html
 
+ATS framework artifacts are available at https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/
+
 Other related projects:
 <ul>
   <li>ATS Test Explorer at https://github.com/Axway/ats-testexplorer</li>
