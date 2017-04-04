@@ -17,7 +17,7 @@ ATS key features include:
   <li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li>
 </ul>
 
-Documentaion is available at https://axway.github.io/ats-framework/ATS-OS-Documentation_118272397.html
+Documentaion is available at https://axway.github.io/ats-framework/ATS-OS-Documentation.html
 
 ATS framework artifacts are available at https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/
 
