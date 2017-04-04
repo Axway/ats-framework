@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Windows Registry Operations</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Windows Registry Operations
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 20, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="WindowsRegistryOperations-Introduction">Introduction</h1><p>This page shows you how to work with the Windows registry using ATS.</p><div class="confluence-information-macro confluence-information-macro-warning"><span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Working with the Windows registry can be dangerous for the stability of your system.<br/> We do not have a way to restore any changes made by your tests.</p></div></div><p> </p><hr/><h1 id="WindowsRegistryOperations-FirstmakeaninstanceoftheRegistryOperationsclass:">First make an instance of the <em>RegistryOperations</em> class:</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RegistryOperations regOperations = new RegistryOperations( SERVER_IP, RegistryOperations.HKEY_CURRENT_USER );
+</pre>
+</div></div><p>The first argument is the host to execute this code at. You must have a running ATS Agent there. If you want to work locally, use the constructor without any the first argument.</p><p>The second argument specifies the root key path you will be working with.</p><p> </p><hr/><h1 id="WindowsRegistryOperations-Supportedoperations">Supported operations</h1><h3 id="WindowsRegistryOperations-Readaregistryvalue">Read a registry value</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String regitryKeyPath = &quot;Software\\Microsoft\\Internet Explorer\\Main&quot;;
+
+regOperations.getStringValue( regitryKeyPath, &quot;Some string key&quot; );
+
+regOperations.getIntValue( regitryKeyPath, &quot;Some integer key&quot; );
+
+regOperations.getLongValue( regitryKeyPath, &quot;Some long key&quot; );
+
+regOperations.getBinaryValue( regitryKeyPath, &quot;Some binary key&quot; );
+
+</pre>
+</div></div><h3 id="WindowsRegistryOperations-Setaregistryvalue">Set a registry value</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String regitryKeyPath = &quot;Software\\Microsoft\\Internet Explorer\\Main&quot;;
+
+regOperations.setStringValue( regitryKeyPath, &quot;Some string key&quot;, &quot;Some Key Value&quot; );
+
+regOperations.setIntValue( regitryKeyPath, &quot;Some integer key&quot;, 20 );
+
+regOperations.setLongValue( regitryKeyPath, &quot;Some long key&quot;, 9000000000L );
+
+regOperations.setBinaryValue( regitryKeyPath, &quot;Some binary key&quot;, new byte[]{ 1, 2, 3, 4, 5 } );
+</pre>
+</div></div><h3 id="WindowsRegistryOperations-Deletearegistrykey">Delete a registry key</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String regitryKeyPath = &quot;Software\\Microsoft\\Internet Explorer\\Main&quot;;
+
+regOperations.deleteKey( regitryKeyPath , &quot;Some key name&quot; );
+</pre>
+</div></div><h3 id="WindowsRegistryOperations-Createaregistrykeypath">Create a registry key path</h3><p>For example, if you want to have a Configuration folder for MyApplication for MyCompany, you need to run the following code:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">regOperations.createPath( &quot;Software\\MyCompany&quot; );
+
+regOperations.createPath( &quot;Software\\MyCompany\\MyApplication&quot; );
+
+regOperations.createPath( &quot;Software\\MyCompany\\MyApplication\\Configuration&quot; );
+</pre>
+</div></div><p> </p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

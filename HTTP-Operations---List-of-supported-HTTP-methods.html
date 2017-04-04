@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : HTTP Operations - List of supported HTTP methods</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="HTTP-Operations.html">HTTP Operations</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : HTTP Operations - List of supported HTTP methods
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 16, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <p>Following is a list with currently supported HTTP methods</p><p> </p><hr/><h2 id="HTTPOperations-ListofsupportedHTTPmethods-GETmethod"><strong>GET method</strong></h2><p>GET is used to retrieve an already existing resource on the server without modifying it</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// execute a GET method
+HttpResponse response = client.get();
+
+// now examine the response </pre>
+</div></div><p> </p><hr/><h2 id="HTTPOperations-ListofsupportedHTTPmethods-POSTmethod"><strong>POST method</strong></h2><p>POST is used to create a new resource on the server</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// set the body to post by using one of the supported methods
+// set the request content type as well
+client.setRequestBody( new File( &lt;path to a local file&gt; ), &quot;text/xml&quot; );
+
+// execute a POST
+HttpResponse response = client.post();
+
+// now examine the response
+</pre>
+</div></div><p> </p><hr/><h2 id="HTTPOperations-ListofsupportedHTTPmethods-PUTmethod"><strong>PUT method</strong></h2><p>PUT is used to update an already existing resource on the server.</p><p>You can use the POST method as example, but call the <em>put</em> method instead.</p><p> </p><hr/><h2 id="HTTPOperations-ListofsupportedHTTPmethods-DELETEmethod"><strong>DELETE method</strong></h2><p>DELETE is used to delete an already existing resource on the server</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the HTTP client by specifying the target URI
+HttpClient client = new HttpClient( &lt;target URI&gt;/people/delete/123 );
+
+// execute a DELETE method
+HttpResponse response = client.delete();
+
+// now examine the response
+</pre>
+</div></div><p>In this example we delete a person with id 123 which is specified as part of the URI.</p><p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p><p> </p><hr/><p>Back to <a href="HTTP-Operations.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

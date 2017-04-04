@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Basic System Operations</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Basic System Operations
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 20, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="BasicSystemOperations-Introduction">Introduction</h1><p>This page shows some very basic but sometimes useful operations you can run on any system.</p><p>The list of all supported operations is wider than the provided here, use the class java doc to see all possible options.</p><p> </p><hr/><h1 id="BasicSystemOperations-FirstmakeaninstanceoftheSystemOperationsclass:">First make an instance of the <em>SystemOperations</em> class:</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">SystemOperations systemOps = new SystemOperations( SERVER_IP );
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>If you want to work locally, use the constructor without any input arguments</p></div></div><p> </p><hr/><h1 id="BasicSystemOperations-Checkthetypeoftheoperatingsystem">Check the type of the operating system</h1><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.getOperatingSystemType();
+</pre>
+</div></div><p> </p><hr/><h1 id="BasicSystemOperations-Workingwiththesystemtime">Working with the system time</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get system time in milliseconds
+systemOps.getTime( true );
+
+// get system time as string
+systemOps.getTime( false );
+
+// set system time providing milliseconds
+systemOps.setTime( &quot;1365753359278&quot;, true );
+
+// set system time providing it as string
+systemOps.setTime( &quot;03/30/13 10:00:00&quot;, false );
+</pre>
+</div></div><div class="confluence-information-macro confluence-information-macro-tip"><span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>When get/set time using a formatted string, we expect some particular format. For example &quot;03/30/13 10:00:00&quot; means 10 o'clock on 30th of March 2013</p></div></div><p> </p><hr/><h1 id="BasicSystemOperations-Getasystemproperty">Get a system property</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String userHome = systemOps.getSystemProperty(&quot;user.home&quot;);
+</pre>
+</div></div><p> </p><hr/><h1 id="BasicSystemOperations-Checkifsomeprocessislisteningonsomeportonsomehost">Check if some process is listening on some port on some host</h1><p>The next code tells if there is a process attached at the given port on the given host.</p><p>Internally we will try to make a connection to that host and port and we will keep trying for up to the 10 seconds timeout.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.isListening( SERVER_IP, 8080, 10 );
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>We can only tell if some process is attached to that port, but we do not know what kind of process it is</p></div></div><p> </p><hr/><h1 id="BasicSystemOperations-Makeasnapshotofthedisplayandsaveitintoalocalfile">Make a snapshot of the display and save it into a local file</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.createScreenshot( &quot;C:\\snapshot.png&quot; );
+</pre>
+</div></div><p> </p><hr/><h1 id="BasicSystemOperations-Mouseworks">Mouse works</h1><p>Perform a left click at a given position</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// having the top left display corner as starting point,
+// click 1000 pixels to the right and 200 pixels down
+systemOps.mouse.clickAt( 1000, 200 );
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-warning"><div class="confluence-information-macro-body"><p>You should use this only in cases when you do not have an alternative.</p><p>This kind of operations are easy to break. For example when the display is resized, the right coordinates will surely become wrong</p></div></div><p> </p><hr/><h1 id="BasicSystemOperations-Keyboardworks">Keyboard works</h1><p>Bellow are given some of the currently provided operations.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.keyboard.pressEnter();
+
+systemOps.keyboard.pressEsc();
+
+systemOps.keyboard.pressTab();
+
+systemOps.keyboard.pressAltF4();
+
+systemOps.keyboard.type( &quot;it is typing&quot; );
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-warning"><div class="confluence-information-macro-body"><p>You should use this only in cases when you do not have an alternative.</p><p>This kind of operations are easy to break. For example when a not expected system popup comes(the anti-virus program prompts you to update) then you will be sending your keyboard events to a wrong application.</p></div></div><p> </p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

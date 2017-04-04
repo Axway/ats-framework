@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Attach a file to the current testcase</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Test-logging.html">Test logging</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Attach a file to the current testcase
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 27, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Attachafiletothecurrenttestcase-Introduction">Introduction</h1><hr/><p>It is possible to attach some file to the current test case. This way you can check the file content from within your testcase in Test Explorer.</p><p>Imagine while testing your server you want at some moment to have its log file. Now you can attach this file to the testcase, so while reviewing the testcase data you can also see the content of that log file.</p><p> </p><hr/><h1 id="Attachafiletothecurrenttestcase-Usage">Usage</h1><p>All you need to do is to run code like the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.log.AtsDbLogger;
+
+new AtsDbLogger	().attachFileToCurrentTest( &quot;C:\\logFiles\\log.txt&quot;, &quot;TestExplorer-4.0.0-2&quot; );
+</pre>
+</div></div><p>where</p><ul style="list-style-type: square;"><li>the first argument is the <em>absolute file location</em> on the local file system</li><li>the second argument is <em>the name of the TestExplorer application context</em> e.g. for <a class="external-link" href="http://emine.auto.lab.sofi.axway.int/TestExplorer-3.11.0-2" rel="nofollow">http://192.168.1.100/TestExplorer-4.0.0-2</a> the TestExplorer's name is &quot;<span style="line-height: 1.42857;">TestExplorer-4.0.0-2</span>&quot;. The Test Explorer  hostname is automatically resolved from your log4j.xml where you have already defined for DB logging settings.</li><li>an optional third argument is the port at which Test Explorer is running. If not specified, the default value is 80</li></ul><p> </p><hr/><h1 id="Attachafiletothecurrenttestcase-HereishowitmightlooklikeinTestExplorer:">Here is how it might look like in Test Explorer:</h1><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-image-src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-id="119484924" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119484917" data-linked-resource-container-version="4"></span></p><p>As you can see we have an additional <em>Attachments</em> panel.</p><p>If you click on a button with the name of your file, its content is displayed. Of course this is meaningful for text files.</p><p>No matter if the file is text or binary, you can always download the file by clicking its link so can examine it with an appropriate viewer on your PC.</p><p> </p><hr/><h1 id="Attachafiletothecurrenttestcase-Filesizeconsiderations">File size considerations</h1><p>Currently the max file size supported is 10MB</p><p>If your file is larger, we recommend that you either get only the last N lines or take just the new lines. ATS code is already available to achieve this</p><h3 id="Attachafiletothecurrenttestcase-GetjustthelastNlinesfromthelogfile">Get just the last N lines from the log file</h3><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence"> FileSystemOperations op = new FileSystemOperations();
+
+ // getting the last 100 lines from the desired file
+ String[] fileLastLines = op.getLastLinesFromFile( &quot;C:\\logFiles\\log.txt&quot;, 100 );
+
+ // combining all array elements into one String
+ StringBuilder fileContent = new StringBuilder();
+ for( String line : fileLastLines ) {
+    fileContent.append( line );
+    fileContent.append( &quot;\n&quot; );
+ }
+
+ // creating the file, that will contain the last 100 lines
+ File logChunk = new File( &quot;&quot;C:\\logFiles\\logChunk.txt&quot; );
+ // make the file to be deleted, after the operation ends
+ logChunk.deleteOnExit();
+ 
+ // Save the content into a new file on the system. There are many ways to do this. Talk with us if need assistance
+ // ...
+ // ...
+
+ // and now attaching the new smaller file
+ boolean isAttachedOk = new AtsDbLogger().attachFileToCurrentTest( logChunk, &quot;TestExplorer-4.0.0-2&quot; );
+ // if needed, you can check whether the file was attached successfully</pre>
+</div></div><p> </p><h3 id="Attachafiletothecurrenttestcase-Getjustthenewlinesfromatextfile(assumingthisissometypicalgrowinglogfile)">Get just the new lines from a text file(assuming this is some typical growing log file)</h3><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">        String originalFile = &quot;C:\\logFiles\\log.txt&quot;;
+        FileSystemOperations op = new FileSystemOperations();
+
+        // in the beginning of the test read all current file lines
+        FileMatchInfo fileLastLines = op.findNewTextInFile( originalFile, &quot;.*&quot;,true);
+        StringBuilder fileContent = new StringBuilder();
+      
+	  	// Here the test is running. The log is growing and at some point you want to get the new lines only
+        // ...
+        // ...
+
+        // read the new lines since the last read
+        fileLastLines = op.findNewTextInFile( originalFile, &quot;.*&quot;,true);        
+        
+        // combining all array elements into one String
+        for( String line : fileLastLines.lines) {
+            fileContent.append( line );
+            fileContent.append( &quot;\n&quot; );
+        }
+        
+        File logChunk = new File( &quot;C:\\logChunk.txt&quot; );
+        // Save the content into a new file on the system. There are many ways to do this. Talk with us if need assistance
+        // ...
+        // ...
+
+        // and now attaching the new file which contains the new lines only
+        boolean isAttachedOk = new AtsDbLogger().attachFileToCurrentTest( logChunk, &quot;TestExplorer-4.0.0-2&quot; );
+        // if needed, you can check where the file was attached successfully</pre>
+</div></div><p> </p><hr/><p>Back to <a href="Test-logging.html">parent page</a></p><hr/>
+                    </div>
+
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

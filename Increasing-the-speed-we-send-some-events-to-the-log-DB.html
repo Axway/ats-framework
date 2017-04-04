@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Increasing the speed we send some events to the log DB</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Test-logging.html">Test logging</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Increasing the speed we send some events to the log DB
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 27, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="IncreasingthespeedwesendsomeeventstothelogDB-Introduction">Introduction</h1><hr/><p>In rare cases it may turn out that our logging system cannot handle the high volume of messages that are to be inserted in the logging DB.</p><p>In such case you will see a <strong>Queue full error</strong>.</p><p>The reason for the problem comes from the fact that in order to have a non blocking logging, ATS caches the log events in a queue with a limited size and when the queue gets overfilled this error comes up.</p><p> </p><hr/><h1 id="IncreasingthespeedwesendsomeeventstothelogDB-Monitorthelogeventsqueueperformance">Monitor the log events queue performance</h1><p>Prior to fixing the performance of the events queue it is good to first see how the number of cached events in the queue is changing during the test execution.</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Enabletracemessages">Enable trace messages</h3><p>You can enable trace messages on the <em> <strong>ATS agent side</strong> </em> by adding system variable called <strong>ats.log.monitor.events.queue</strong> with value <strong>true</strong> when starting the agent.</p><p>Edit the agent.sh or agent.bat by adding &quot;<strong>-Dats.log.monitor.events.queue=true</strong>&quot; in the line starting the agent.</p><p>By doing this you will see in the agent's console repetitive lines about:</p><ul><li>number of new events that can be cached</li><li>how long time it took to commit the last chunk of events. This is in the case when using <em>batch</em> logging mode</li></ul><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Usingjavacode">Using java code</h3><p>See the number of cached messages in the events queue of the <em> <strong>Test Executor</strong> </em>:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.log.appenders.ActiveDbAppender;
+
+int numberEventsStillNotInTheDB = ActiveDbAppender.getCurrentInstance().getNumberPendingLogEvents();
+</pre>
+</div></div><p>See the number of cached messages in the events queue of some <strong> <em>remote ATS agent</em> </strong>:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.webapp.client.AgentConfigurationClient;
+
+int numberEventsStillNotInTheDB = new AgentConfigurationClient( &lt;AGENT ADDRESS&gt; ).getNumberPendingLogEvents();
+</pre>
+</div></div><p> </p><hr/><h1 id="IncreasingthespeedwesendsomeeventstothelogDB-Reasonsfortheproblemandoptionstofixit">Reasons for the problem and options to fix it</h1><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Veryintensivelogging">Very intensive logging</h3><p>This usually happens when running performance tests with many threads which run very quick actions - for example you might be doing file transfers which take a few milliseconds each. This sends lots of log events in order to register the start and end of each action. Additionally the actions themselves can send come log events as well.</p><p><em> <strong>Possible solution</strong> </em> is to change the log level as explained <a href="Custom-log-level-on-ATS-agents.html">here</a></p><p>If for example, you have set the log level to DEBUG and change it to INFO, this will greatly reduce the number of log events.</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-SlowconnectiontotheDB">Slow connection to the DB</h3><p><br/> May happen when the DB is not in the same geographical location as the test running machines</p><p><em> <strong> <em> <strong>Possible</strong> </em> solution</strong> </em> is to use an instance of Test Explorer located in your local network.</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-VerylargeDB">Very large DB</h3><p>When our DB tables are getting very long - tens of millions of records</p><p><em> <strong> <em> <strong>Possible</strong> </em> solutions</strong> </em> are:</p><ul><li>Delete not needed runs</li><li>Use more than one DB - one for spare runs and one for official runs</li><li>Upgrade your DB hardware</li></ul><p> </p><hr/><h1 id="IncreasingthespeedwesendsomeeventstothelogDB-Increasetheeventsqueuecapacity">Increase the events queue capacity</h1><p>One possible option to ease the problem is to increase the size of the log events queue. The default capacity is 100 000 and can be changed by add the following line in your log4j.xml</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;param name=&quot;events&quot; value=&quot;200000&quot; /&gt;
+</pre>
+</div></div><p>Of course this is not going to speed up the insertions in the log DB, but will give more room for caching log events.</p><p>In some cases this can be your work-around. But in general if your heavily logging test execution continue for long enough, at some moment you will still hit the <em>queue full error</em>.</p><p> </p><hr/><h1 id="IncreasingthespeedwesendsomeeventstothelogDB-Insertlogeventsfaster">Insert log events faster</h1><p>The above list can give you some hints how to proceed, but there is one more way to use - let ATS send log events faster.</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Howdoesitwork?">How does it work?</h3><p>You can set ATS to send the most often log events in <em> <strong>batch mode</strong> </em>. This means that many events are cached in an internal buffer and when the buffer is full, the whole batch of events is sent to the log DB as one transaction and this causes some performance boost.</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Howfasteritgets?">How faster it gets?</h3><p>When you do DB inserts it is important how long are the tables you work with. Databases with tables containing up to 10 - 20 million lines are considered small, while such with 50+ million lines are very large databases.</p><p>Our tests show 5 times quicker inserts on small DBs and 2 times quicker inserts on very large DBs.</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Whicheventsarecached?">Which events are cached?</h3><p>We use batch mode only for the events that are proven to come in thousands for a single test execution - the <strong>message</strong> and <strong>action response</strong> events</p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Howtoswitchtobatchmode?">How to switch to batch mode?</h3><p>All you need to do is to add the following line inside the DB appender in your log4.xml file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;param name=&quot;mode&quot; value=&quot;batch&quot; /&gt;
+</pre>
+</div></div><p>An log4.xml example is provided <a href="Configure-ATS-Database-Logging.html">here</a></p><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Whatarethedrawbacks?">What are the drawbacks?</h3><ol><li>When running performance tests, if you look at the Test Explorer's <em>Performance actions</em> tab you will see how many actions are currently <em>running, </em>passed and <em>failed</em>. When using batch mode you will not see running, but only passed and failed ones.</li><li>Some events may take longer to be registered into DB. This may happen when the internal cache is not filled, in this case the events will be sent to the DB after they get too old which is 10 seconds. This means there is a chance that some events will be registered in the DB with a delay of up to 10 seconds.</li><li>If you kill the JVM some events from the cache may not get in the DB. This is not considered as a problem, because you are going to kill a test run only in case when the log results are not important to you.</li></ol><h3 id="IncreasingthespeedwesendsomeeventstothelogDB-Whenshouldthisoptionbeused?">When should this option be used?</h3><p>We advise you to use this option when you need it i.e. when you get <em>Queue full error</em>.</p><p> </p><hr/><p>Back to <a href="Test-logging.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

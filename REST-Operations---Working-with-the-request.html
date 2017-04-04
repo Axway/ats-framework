@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : REST Operations - Working with the request</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="REST-Operations.html">REST Operations</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : REST Operations - Working with the request
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 17, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <p>Usually prior to executing a REST method, you will need to set some special data to the request besides the URI.</p><hr/><h2 id="RESTOperations-Workingwiththerequest-Addheaderstotherequest"><strong>Add headers to the request</strong></h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// the type of content we are sending
+client.addRequestHeader( &quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot; );
+ 
+// the type of content we will accept back
+client.addRequestHeader( &quot;Accept&quot;, &quot;application/json&quot; );		
+</pre>
+</div></div><p> </p><hr/><h2 id="RESTOperations-Workingwiththerequest-Addqueryparameterstotherequest"><strong>Add query parameters to the request</strong></h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">client.addRequestParameter( &quot;lang&quot;, &quot;English&quot; );
+</pre>
+</div></div><p> </p><hr/><h2 id="RESTOperations-Workingwiththerequest-Specifyrequestmediatype"><strong>Specify request media type</strong></h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// send as text/xml
+client.setRequestMediaType( RestMediaType.TEXT_XML );
+
+// send as application/xml
+client.setRequestMediaType( RestMediaType.APPLICATION_XML );
+
+// send as application/json
+client.setRequestMediaType( RestMediaType.APPLICATION_JSON );
+</pre>
+</div></div><p> </p><hr/><h2 id="RESTOperations-Workingwiththerequest-Basicauthorization"><strong>Basic authorization</strong></h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">client.setBasicAuthorization( USER_NAME, USER_PASSWORD );
+</pre>
+</div></div><p> </p><hr/><h2 id="RESTOperations-Workingwiththerequest-Navigatetointernalresource"><strong>Navigate to internal resource</strong></h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+RestClient client = new RestClient( &lt;target URI&gt;/people );
+
+// add one or more resource path tokens
+client.addResourcePath( &quot;delete&quot; );
+client.addResourcePath( &quot;123&quot; );
+
+// execute a REST method
+RestResponse response = client.delete();
+</pre>
+</div></div><p>This example is equivalent to:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+RestClient client = new RestClient( &lt;target URI&gt;/people/delete/123 );
+
+// execute a REST method
+RestResponse response = client.delete();
+</pre>
+</div></div><p> </p><hr/><p>Back to <a href="REST-Operations.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

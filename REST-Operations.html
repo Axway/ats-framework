@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : REST Operations</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : REST Operations
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 17, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="RESTOperations-Introduction"><strong>Introduction</strong></h1><p>This page demonstrates how to use the ATS REST client</p><hr/><h1 id="RESTOperations-Simpleexample"><strong>Simple example</strong></h1><p>Let's have a look at this example:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.rest.RestClient;
+import com.axway.ats.action.rest.RestMediaType;
+import com.axway.ats.action.rest.RestResponse;
+
+@Test
+public void restOperations() {
+
+    // Instantiate the REST client by providing the remote URL
+    RestClient client = new RestClient( SERVER_BASE_REST_URL + &quot;demo/gethome&quot; );
+
+    // set some headers or query parameters if needed
+    client.setResponseMediaType( RestMediaType.APPLICATION_JSON )
+          .addRequestParameter( &quot;firstName&quot;, USER_FIRST_NAME )
+          .addRequestParameter( &quot;lastName&quot;, USER_LAST_NAME );
+
+    // execute some HTTP method
+    RestResponse response = client.get();
+
+    // verify we received the expected status code
+    assertEquals( 200, response.getStatusCode() );
+
+    // read the response body
+    String responseBody = response.getBodyAsString();
+}
+</pre>
+</div></div><p>As you can see we first point to the target HTTP resource we intend to work with, then we provide some request data if needed(like headers or query parameters) and then we execute some of the supported HTTP methods. Finally we extract the response content.</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods"><strong>Supported HTTP methods</strong></h1><p><a href="REST-Operations---Supported-HTTP-methods.html">Here</a> is the list</p><p> </p><hr/><h1 id="RESTOperations-Workingwiththerequest"><strong>Working with the request</strong></h1><p><a href="REST-Operations---Working-with-the-request.html">Here</a> are the details</p><p> </p><hr/><h1 id="RESTOperations-Workingwiththeresponse"><strong>Working with the response</strong></h1><p><a href="REST-Operations---Working-with-the-response.html">Here</a> are the details</p><p> </p><hr/><h1 id="RESTOperations-WorkingwithJSONbody"><strong>Working with JSON body</strong></h1><p><a href="REST-Operations---Parsing-JSON-body.html">Here</a> you can see how to work with a JSON body when sending a request or receiving a response</p><p> </p><hr/><h1 id="RESTOperations-WorkingwithXMLbody"><strong>Working with XML body</strong></h1><p><a href="REST-Operations---Parsing-XML-body.html">Here</a> you can see how to work with a XML body when sending a request or receiving a response</p><p> </p><hr/><h1 id="RESTOperations-ConfiguringtheRESTclient"><strong>Configuring the REST client</strong></h1><p>You need more logs from the client or need connected over SSL. Or may by you need to change the way we send java objects over the channel.</p><p><a href="REST-Operations---Configuring-the-client.html">Here</a> are the details.</p><p> </p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

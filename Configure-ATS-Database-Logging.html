@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Configure ATS Database Logging</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Test-logging.html">Test logging</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Configure ATS Database Logging
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 23, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="ConfigureATSDatabaseLogging-Introduction">Introduction</h1><p>We have listed here needed steps for allowing test logging to Test Explorer Database</p><p>There are 2 actual steps:</p><ol><li>Configure the log4 system - this way we know where to send the log messages</li><li>Subscribe to TestNG so we will get informed when a test is starting or ending</li></ol><p> </p><hr/><h1 id="ConfigureATSDatabaseLogging-Configurethelog4jsystem">Configure the log4j system</h1><p>ATS uses <a class="external-link" href="http://en.wikipedia.org/wiki/Log4j" rel="nofollow"> <span style="color: rgb(0,0,238);"> <span style="text-decoration: underline;">log4j</span> </span> </a> for its logging purpose.</p><p>Log4j is configured by a file called <em> <strong>log4j.xml</strong> </em> placed in the root of the classpath.</p><p>Here is an example of such file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: xml; gutter: false; theme: Confluence" data-theme="Confluence">&lt;!DOCTYPE log4j:configuration PUBLIC
+  &quot;-//APACHE//DTD LOG4J 1.2//EN&quot; &quot;http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd&quot;&gt;
+ 
+&lt;log4j:configuration xmlns:log4j=&quot;http://jakarta.apache.org/log4j/&quot;&gt;
+ 
+    &lt;!-- Console appender --&gt;
+    &lt;appender name=&quot;console&quot; class=&quot;org.apache.log4j.ConsoleAppender&quot;&gt;
+        &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;
+            &lt;param name=&quot;ConversionPattern&quot;
+                value=&quot;%-5p %d{HH:mm:ss} %c{2}: %m%n&quot; /&gt;
+        &lt;/layout&gt;
+        &lt;filter class=&quot;com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter&quot;/&gt;
+    &lt;/appender&gt;
+ 
+    &lt;!-- Test Explorer DB appender --&gt;
+    &lt;appender name=&quot;db&quot;
+        class=&quot;com.axway.ats.log.appenders.ActiveDbAppender&quot;&gt;
+        &lt;param name=&quot;host&quot; value=&quot;___Test Explorer server IP or Host name___&quot; /&gt;
+        &lt;param name=&quot;database&quot; value=&quot;___My DB name___&quot; /&gt;
+        &lt;param name=&quot;user&quot; value=&quot;___My DB user name___&quot; /&gt;
+        &lt;param name=&quot;password&quot; value=&quot;___My DB user password___&quot; /&gt;
+        &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;
+            &lt;param name=&quot;ConversionPattern&quot; value=&quot;%c{2}: %m%n&quot; /&gt;
+        &lt;/layout&gt;
+    &lt;/appender&gt;
+ 
+    &lt;!-- Root logger configuration --&gt;
+    &lt;root&gt;
+        &lt;priority value=&quot;info&quot; /&gt;
+ 
+        &lt;!-- enable logging into the console --&gt;
+        &lt;appender-ref ref=&quot;console&quot; /&gt;
+ 
+        &lt;!-- enable logging into the dedicated logging database --&gt;
+        &lt;appender-ref ref=&quot;db&quot; /&gt;
+    &lt;/root&gt;
+ 
+&lt;/log4j:configuration&gt;</pre>
+</div></div><p>You need to understand the following:</p><ol><li><em> <strong>Console appender</strong> </em> <br/>enables logging the test results in your console. It is useful while developing your tests as you can see right away what happens during the execution of this test.</li><li><em> <strong>DB appender</strong> </em> <br/>enables logging the test results in the Test Explorer database. This way you can see the test results via the Test Explorer UI<ol><li><strong> <em>host</em> </strong>- where your database is located</li><li><strong> <em>database</em> </strong> - the name of your database</li><li><strong> <em>user</em> </strong> - the database username</li><li><em> <strong>password</strong> </em> - the database user password</li></ol></li><li><strong> <em>&lt;root&gt;</em> node </strong><ol><li>enables and disable the two <em>appenders</em>.</li><li>sets the <strong> <em>priority level</em> </strong> which defines how verbose the logging will be. <br/>The possible options are trace, debug, info, warn, error, fatal where trace is really verbose and each next is less.</li></ol></li></ol><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p><strong>The appropriate log verbose (priority) level</strong></p><p>In most cases the used level is between debug and error.</p><p>DEBUG is mainly used while developing your test scenarios. At that phase you spend significant amount of time working with just one test, so you want more info until tweak it.</p><p>When running many tests at once you usually prefer INFO level.</p><p>If running performance tests, you may find it OK to see only messages at the level of WARN or even ERROR.</p></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p><strong>Log level and Test Explorer UI</strong></p><p>The log level defines which messages to get into the console and Test Explorer Database. Additionally when reviewing the results on Test Explorer UI you can filter which levels to be displayed.</p></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>You can use Console and DB appenders together or just one of them at a time.</p><p>If you want you can also add even more (for example a FILE appender) - consult with the Log4j documentation on this.</p></div></div><p> </p><hr/><h1 id="ConfigureATSDatabaseLogging-SubscribetoTestNGtestexecutionevents">Subscribe to TestNG test execution events</h1><p>You need to attach our TestNG event listeners to TestNG, so we get informed when some important event has happened.</p><p>These are events telling us when a test is starting or ending. We use this information to automatically start and end RUN, SUITE and TESTCASE in the Test Explorer DB.</p><p>There are a few ways to attach these listeners. In most cases the recommended one is to have one parent class of all your test classes. If we assume this class is called <em>BaseTest</em>, then here is all needed to do subscription.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.harness.testng.AtsTestngSuiteListener;
+import com.axway.ats.harness.testng.AtsTestngTestListener;
+
+@Listeners ( { AtsTestngSuiteListener.class, AtsTestngTestListener.class } )
+public class BaseTest {
+
+}</pre>
+</div></div><p>Now running your test, in the very beginning you will see in the console</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Successfully attached listener &quot;com.axway.ats.harness.testng.AtsTestngSuiteListener&quot;.
+Successfully attached listener &quot;com.axway.ats.harness.testng.AtsTestngTestListener&quot;.
+ 
+*** ATS *** Started a new Log database RUN with id: 1481</pre>
+</div></div><p>This tells us ATS was able to attach to the TestNG listeners system and then it also created a new RUN in the database.</p><p>Now you can go to the Test Explorer UI and see the test result.</p><p> </p><hr/><p>Back to <a href="Test-logging.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+
