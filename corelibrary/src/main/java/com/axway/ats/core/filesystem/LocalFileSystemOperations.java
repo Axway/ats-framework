@@ -47,6 +47,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -80,7 +81,6 @@ import com.axway.ats.core.filesystem.exceptions.AttributeNotSupportedException;
 import com.axway.ats.core.filesystem.exceptions.FileDoesNotExistException;
 import com.axway.ats.core.filesystem.model.FileAttributes;
 import com.axway.ats.core.filesystem.model.IFileSystemOperations;
-import com.axway.ats.core.process.LocalProcessExecutor;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 
@@ -924,49 +924,81 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         return fileExists;
     }
 
-    @Override
-    public String getFilePermissions( String sourceFile ) {
+	@Override
+	public String getFilePermissions(String sourceFile) {
 
-        File file = new File( sourceFile );
+		File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.PERMISSIONS );
+		checkFileExistence(file);
+		checkAttributeOsSupport(FileAttributes.PERMISSIONS);
 
-        return getPermissions( sourceFile );
-    }
+		return getPermissions(sourceFile);
+	}
+    
+	private String getPermissions(String sourceFile) {
 
-    @Override
-    public void setFilePermissions( String sourceFile, String permissions ) {
+		int ownerPermissions = 0;
+		int groupPermissions = 0;
+		int othersPermissions = 0;
 
-        sourceFile = IoUtils.normalizeFilePath( sourceFile, osType );
-        File file = new File( sourceFile );
+		try {
+			Path path = Paths.get(sourceFile);
+			PosixFileAttributes attr;
+			attr = Files.readAttributes(path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+			Set<PosixFilePermission> filePermissions = attr.permissions();
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.PERMISSIONS );
-        final String shellPath = "/bin/sh";
-        String[] cmdParameters = new String[]{ "-c", "chmod " + permissions + " '" + sourceFile + "'" };
+			if (filePermissions.contains(PosixFilePermission.OWNER_READ)) {
+				ownerPermissions += 4;
+			}
+			if (filePermissions.contains(PosixFilePermission.OWNER_WRITE)) {
+				ownerPermissions += 2;
+			}
+			if (filePermissions.contains(PosixFilePermission.OWNER_EXECUTE)) {
+				ownerPermissions += 1;
+			}
+			if (filePermissions.contains(PosixFilePermission.GROUP_READ)) {
+				groupPermissions += 4;
+			}
+			if (filePermissions.contains(PosixFilePermission.GROUP_WRITE)) {
+				groupPermissions += 2;
+			}
+			if (filePermissions.contains(PosixFilePermission.GROUP_EXECUTE)) {
+				groupPermissions += 1;
+			}
+			if (filePermissions.contains(PosixFilePermission.OTHERS_READ)) {
+				othersPermissions += 4;
+			}
+			if (filePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
+				othersPermissions += 2;
+			}
+			if (filePermissions.contains(PosixFilePermission.OTHERS_EXECUTE)) {
+				othersPermissions += 1;
+			}
 
-        try {
-            //Runtime.getRuntime().exec( cmdCommand );
-            LocalProcessExecutor lpe = new LocalProcessExecutor( "local", shellPath, cmdParameters );
-            lpe.execute();
-            int exitCode = lpe.getExitCode();
-            if( exitCode != 0 ) {
-                throw new IOException( "Setting file permissions external process returned: \n"
-                                       + "Process exit code: " + exitCode + "\n" + "Standard output: '"
-                                       + lpe.getStandardOutput() + "'\n" + "Error output: '"
-                                       + lpe.getErrorOutput() + "'\n" );
-            }
-        } catch( IOException ioe ) {
-            String commandAsString = shellPath + " "
-                                     + Arrays.toString( cmdParameters )
-                                             .substring( 1, Arrays.toString( cmdParameters ).length() - 1 );
-            throw new FileSystemOperationException( "Could not update permissions for file '" + sourceFile
-                                                    + "'\nby running the following command: "
-                                                    + commandAsString, ioe );
-        }
-        log.info( "Successfully set permissions of file '" + sourceFile + "' to " + permissions );
-    }
+		} catch (IOException ioe) {
+			throw new FileSystemOperationException("Could not get permissions for file '" + sourceFile + "'", ioe);
+		}
+		
+		return String.valueOf(ownerPermissions) + String.valueOf(groupPermissions) + String.valueOf(othersPermissions);
+	}
+
+	@Override
+	public void setFilePermissions(String sourceFile, String permissions) {
+
+		sourceFile = IoUtils.normalizeFilePath(sourceFile, osType);
+		File file = new File(sourceFile);
+
+		checkFileExistence(file);
+		checkAttributeOsSupport(FileAttributes.PERMISSIONS);
+
+		try {
+			Files.setPosixFilePermissions(new File(sourceFile).getCanonicalFile().toPath(),
+					getPosixFilePermission(Integer.parseInt(permissions, 8)));
+		} catch (IOException ioe) {
+			throw new FileSystemOperationException("Could not update permissions for file '" + sourceFile + "'", ioe);
+		}
+		log.info("Successfully set permissions of file '" + sourceFile + "' to " + permissions);
+	}
 
     @Override
     public long getFileUID( String sourceFile ) {
@@ -1057,32 +1089,53 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         }
     }
 
-    @Override
-    public void setFileHiddenAttribute( String sourceFile, boolean hidden ) {
+	@Override
+	public void setFileHiddenAttribute(String sourceFile, boolean hidden) {
 
-        sourceFile = IoUtils.normalizeFilePath( sourceFile, osType );
-        checkFileExistence( new File( sourceFile ) );
+		sourceFile = IoUtils.normalizeFilePath(sourceFile, osType);
+		checkFileExistence(new File(sourceFile));
 
-        final String errMsg = "Could not " + ( hidden
-                                                      ? "set"
-                                                      : "unset" )
-                              + " the hidden attribute of file '" + sourceFile + "'";
+		final String errMsg = "Could not " + (hidden ? "set" : "unset") + " the hidden attribute of file '" + sourceFile
+				+ "'";
+		if (OperatingSystemType.getCurrentOsType().isWindows()) {
+			try {
+				Path path = Paths.get(sourceFile);
+				DosFileAttributes attr;
+				attr = Files.readAttributes(path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
 
-        try {
-            Path path = Paths.get( sourceFile );
-            DosFileAttributes attr;
-            attr = Files.readAttributes( path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS );
-
-            boolean goHidden = attr.isHidden();
-            if( !hidden && goHidden ) {
-                Files.setAttribute( path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS );
-            } else if( hidden && !goHidden ) {
-                Files.setAttribute( path, "dos:hidden", false, LinkOption.NOFOLLOW_LINKS );
-                }
-        } catch( IOException e ) {
-            throw new FileSystemOperationException( errMsg, e );
-        }
-    };
+				boolean goHidden = attr.isHidden();
+				if (!hidden && goHidden) {
+					Files.setAttribute(path, "dos:hidden", false, LinkOption.NOFOLLOW_LINKS);
+				} else if (hidden && !goHidden) {
+					Files.setAttribute(path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS);
+				}
+			} catch (IOException e) {
+				throw new FileSystemOperationException(errMsg, e);
+			}
+		} else if (OperatingSystemType.getCurrentOsType().isUnix()) {
+			// a '.' prefix makes the file hidden
+			String filePath = IoUtils.getFilePath(sourceFile);
+			String fileName = IoUtils.getFileName(sourceFile);
+			if (hidden) {
+				if (fileName.startsWith(".")) {
+					log.warn("File '" + sourceFile + "' is already hidden. No changes are made!");
+					return;
+				} else {
+					fileName = "." + fileName;
+				}
+			} else {
+				if (!fileName.startsWith(".")) {
+					log.warn("File '" + sourceFile + "' is already NOT hidden. No changes are made!");
+					return;
+				} else {
+					fileName = fileName.substring(1);
+				}
+			}
+			renameFile(sourceFile, filePath + fileName, false);
+		} else {
+			throw new FileSystemOperationException(errMsg + ": Unknown OS type");
+		}
+	}
 
     @Override
     public long getFileSize( String sourceFile ) {
@@ -1736,23 +1789,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     /**
      *
      * @param filename the file name
-     * @return the permissions as {@link String}
-     * @throws FileSystemOperationException
-     */
-    private String getPermissions( String filename ) {
-
-        try {
-            String[] stats = getFileStats( filename, true );
-            return convertToOctalPermissions( stats[0] );
-
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get permissions for '" + filename + "'", e );
-        }
-    }
-
-    /**
-     *
-     * @param filename the file name
      * @return the file user id
      * @throws FileSystemOperationException
      */
@@ -1857,50 +1893,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                 + Arrays.toString( commandTokens )
                                                 + "\nCould not parse the result form the 'ls' command! Result: \n"
                                                 + result[0] );
-    }
-
-    /**
-     *
-     * @param permString permissions {@link String}
-     * @return octal permissions {@link String}
-     */
-    private String convertToOctalPermissions( String permString ) {
-
-        if( permString == null ) {
-            return null;
-        }
-        permString = permString.trim();
-        Integer[] octets = new Integer[]{ 0, 0, 0, 0 };
-        for( int idx = 0; idx < permString.length(); idx++ ) {
-            int pos = 1; // owner
-            if( idx >= 3 && idx < 6 ) { // group
-                pos = 2;
-            } else if( idx >= 6 ) { // others
-                pos = 3;
-            }
-            char ch = permString.charAt( idx );
-            if( ch == 'r' ) {
-                octets[pos] += 4;
-            } else if( ch == 'w' ) {
-                octets[pos] += 2;
-            } else if( ch == 'x' || ch == 't' || ch == 's' ) {
-                octets[pos] += 1;
-            }
-
-            // building the first octet - Special modes (setuid, setgid and sticky bit)
-            if( ch == 't' || ch == 'T' ) {
-                octets[0] += 1;
-            } else if( ch == 's' || ch == 'S' ) {
-                if( pos == 1 ) {
-                    octets[0] += 4;
-                } else {
-                    octets[0] += 2;
-                }
-            }
-        }
-
-        return String.valueOf( octets[0] ) + String.valueOf( octets[1] ) + String.valueOf( octets[2] )
-               + String.valueOf( octets[3] );
     }
 
     /**
@@ -2290,8 +2282,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 }
                 if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
                     // set file/dir permissions, after it is created
-                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getFilePermissions( unixPermissions ) );
+					Files.setPosixFilePermissions(entryDestination.getCanonicalFile().toPath(),
+							getPosixFilePermission(octalToDecimal(unixPermissions)));
                 }
             }
         } catch( Exception e ) {
@@ -2303,43 +2295,57 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             throw new FileSystemOperationException( errorMsg, e );
         }
     }
+    
+	private int octalToDecimal(int octal) {
 
-    private Set<PosixFilePermission> getFilePermissions( long permissions ) {
+		int decnum = 0, i = 0;
 
-        Set<PosixFilePermission> filePermissions = new HashSet<PosixFilePermission>();
+		while (octal != 0) {
+			decnum = decnum + (octal % 10) * (int) Math.pow(8, i);
+			i++;
+			octal = octal / 10;
+		}
 
-        //using bitwise operations check the file permissions in decimal numeric system
-        //e.g. 100100 AND 100, we will have for result 100
-        if( ( permissions & 256 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OWNER_READ );
-        }
-        if( ( permissions & 128 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OWNER_WRITE );
-        }
-        if( ( permissions & 64 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OWNER_EXECUTE );
-        }
-        if( ( permissions & 32 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.GROUP_READ );
-        }
-        if( ( permissions & 16 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.GROUP_WRITE );
-        }
-        if( ( permissions & 8 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.GROUP_EXECUTE );
-        }
-        if( ( permissions & 4 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OTHERS_READ );
-        }
-        if( ( permissions & 2 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OTHERS_WRITE );
-        }
-        if( ( permissions & 1 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OTHERS_EXECUTE );
-        }
+		return decnum;
+	}
 
-        return filePermissions;
-    }
+	private Set<PosixFilePermission> getPosixFilePermission(int permissions) {
+
+		Set<PosixFilePermission> filePermissions = new HashSet<PosixFilePermission>();
+
+		// using bitwise operations check the file permissions in decimal
+		// numeric system
+		// e.g. 100100 AND 100, we will have for result 100
+		if ((permissions & 256) > 0) {
+			filePermissions.add(PosixFilePermission.OWNER_READ);
+		}
+		if ((permissions & 128) > 0) {
+			filePermissions.add(PosixFilePermission.OWNER_WRITE);
+		}
+		if ((permissions & 64) > 0) {
+			filePermissions.add(PosixFilePermission.OWNER_EXECUTE);
+		}
+		if ((permissions & 32) > 0) {
+			filePermissions.add(PosixFilePermission.GROUP_READ);
+		}
+		if ((permissions & 16) > 0) {
+			filePermissions.add(PosixFilePermission.GROUP_WRITE);
+		}
+		if ((permissions & 8) > 0) {
+			filePermissions.add(PosixFilePermission.GROUP_EXECUTE);
+		}
+		if ((permissions & 4) > 0) {
+			filePermissions.add(PosixFilePermission.OTHERS_READ);
+		}
+		if ((permissions & 2) > 0) {
+			filePermissions.add(PosixFilePermission.OTHERS_WRITE);
+		}
+		if ((permissions & 1) > 0) {
+			filePermissions.add(PosixFilePermission.OTHERS_EXECUTE);
+		}
+
+		return filePermissions;
+	}
     
     private String[] executeExternalProcess( String[] command ) {
 
