@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -100,8 +99,10 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         mockRuntime = createMock( Runtime.class );
         mockStatic( OperatingSystemType.class );
 
-        file = File.createTempFile( "temporary", ".tmp",
-                                    new File( AtsSystemProperties.SYSTEM_USER_TEMP_DIR ) );
+        file = File.createTempFile("temporary", ".tmp", new File(AtsSystemProperties.SYSTEM_USER_TEMP_DIR));
+		if (realOsType.isUnix()) {
+			testObject.setFilePermissions(file.getAbsolutePath(), "511");
+		}
         STD_OUT = new ByteArrayInputStream( new String( "-r-x--x--x 2 123 150 80 May 20 14:56 "
                                                         + file.getPath() ).getBytes() );
         STD_ERR = new ByteArrayInputStream( new String( "-r-x--x--x 2 123 150 80 May 20 14:56 "
@@ -841,30 +842,29 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         assertFalse( testObject.doesFileExist( "dasdasd" ) );
     }
 
-    @Test()
-    public void getFilePermissionsPositive() throws Exception {
+	@Test()
+	public void getFilePermissionsPositive() throws Exception {
 
-        if(realOsType.isUnix()){
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+		if (realOsType.isUnix()) {
+			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+			expect(Runtime.getRuntime()).andReturn(mockRuntime);
+			String[] cmdCommand = new String[] { "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
+			expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+			expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+			expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+			expect(mockProcess.waitFor()).andReturn(0);
 
-        replayAll();
+			replayAll();
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( "0511", localFileSystemOperations.getFilePermissions( file.getPath() ) );
+			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+			assertEquals("0511", localFileSystemOperations.getFilePermissions(file.getPath()));
 
-        // verify results
-        verifyAll();
-        }else{
-            log.warn( "Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!" );
-        }
-
-    }
+			// verify results
+			verifyAll();
+		} else {
+			log.warn("Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!");
+		}
+	}
 
     @Test(expected = AttributeNotSupportedException.class)
     public void getFilePermissionsNegativeWindows() throws Exception {
@@ -887,42 +887,49 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         localFileSystemOperations.getFilePermissions( "dasdasd" );
     }
 
-    @Ignore // TODO: temporarily ignore
-    @Test()
-    public void setFilePermissionsPositive() throws Exception {
+	@Test()
+	public void setFilePermissionsPositive() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
+		if (realOsType.isUnix()) {
+			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+			expect(Runtime.getRuntime()).andReturn(mockRuntime);
+			String[] cmdCommand = new String[] { "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
+			expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
 
-        replayAll();
+			replayAll();
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFilePermissions( file.getPath(), "511" );
+			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+			localFileSystemOperations.setFilePermissions(file.getPath(), "511");
 
-        // verify results
-        verifyAll();
-    }
+			// verify results
+			verifyAll();
+		} else {
+			log.warn("Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!");
+		}
+	}
 
-    @Ignore // TODO: temporarily ignore
-    @Test(expected = FileSystemOperationException.class)
-    public void setFilePermissionsNegativeCannotSet() throws Exception {
+	@Test(expected = FileSystemOperationException.class)
+	public void setFilePermissionsNegativeCannotSet() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+		if (realOsType.isUnix()) {
+			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+			expect(Runtime.getRuntime()).andReturn(mockRuntime);
 
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+			String[] cmdCommand = new String[] { "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
+			expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
-        replayAll();
+			replayAll();
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFilePermissions( file.getPath(), "511" );
+			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+			localFileSystemOperations.setFilePermissions(file.getPath(), "511");
 
-        // verify results
-        verifyAll();
-    }
+			// verify results
+			verifyAll();
+		} else {
+			log.warn("Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!");
+			throw new FileSystemOperationException("");
+		}
+	}
 
     @Test(expected = AttributeNotSupportedException.class)
     public void setFilePermissionsNegativeWindows() throws Exception {
@@ -943,37 +950,41 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         }
     }
 
-	@Ignore // TODO: this test throws NPE, because of the PowerMock
-    @Test(expected = FileDoesNotExistException.class)
-    public void setFilePermissionsNegativeNoSuchFile() throws Exception {
+	@Test(expected = FileDoesNotExistException.class)
+	public void setFilePermissionsNegativeNoSuchFile() throws Exception {
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFilePermissions( "dasdasd", "777" );
-    }
+		if (realOsType.isUnix()) {
+			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+			localFileSystemOperations.setFilePermissions("dasdasd", "777");
+		} else {
+			log.warn("Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!");
+			throw new FileDoesNotExistException("");
+		}
+	}
 
-    @Test()
-    public void getFileUidPositive() throws Exception {
+	@Test()
+	public void getFileUidPositive() throws Exception {
 
-        if( realOsType.isUnix() ) {
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+		if (realOsType.isUnix()) {
+			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+			expect(Runtime.getRuntime()).andReturn(mockRuntime);
+			String[] cmdCommand = new String[] { "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
+			expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+			expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+			expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+			expect(mockProcess.waitFor()).andReturn(0);
 
-        replayAll();
+			replayAll();
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( 123L, localFileSystemOperations.getFileUID( file.getPath() ) );
+			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+			assertEquals(123L, localFileSystemOperations.getFileUID(file.getPath()));
 
-        // verify results
-        verifyAll();
-        } else {
-            log.warn( "Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!" );
-        }
-    }
+			// verify results
+			verifyAll();
+		} else {
+			log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
+		}
+	}
 
     @Test(expected = FileSystemOperationException.class)
     public void getFileUidNegativeException() throws Exception {
