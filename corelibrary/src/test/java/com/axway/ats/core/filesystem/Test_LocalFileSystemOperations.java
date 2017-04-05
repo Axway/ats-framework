@@ -841,6 +841,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         assertFalse( testObject.doesFileExist( "dasdasd" ) );
     }
 
+    @Ignore
 	@Test()
 	public void getFilePermissionsPositive() throws Exception {
 
