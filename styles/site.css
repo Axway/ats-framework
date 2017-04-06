@@ -340,6 +340,13 @@ h6{
 	padding: 0;
 }
 
+body {
+    color: #333;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857;
+}
+
 /* PARAGRAPH */
 p {
 	font-family: Arial,sans-serif;
