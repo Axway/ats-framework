@@ -42,10 +42,10 @@
     
         
         
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 20, 2017
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 04, 2017
                         </div>
                     <div id="main-content" class="wiki-content group">
-                    <h1 id="Interactingwithexternalprocess-Introduction">Introduction</h1><p>Imagine you want to run some external process, but you expect to be asked some questions and you must provide the answers.</p><p>In order to interact with an external process you will have to send commands to its input stream and read data from its output streams.</p><hr/><h1 id="Interactingwithexternalprocess-Startingtheexternalprocesstointeractwith"><strong>Starting the external process to interact with</strong></h1><p>You have to use one of the constructors of the <strong><em>ProcessTalker</em></strong> class:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+                    <h1 id="Interactingwithexternalprocess-Introduction">Introduction</h1><p>Imagine you want to run some external process, but you expect to be asked some questions and you must provide the answers.</p><p>In order to interact with an external process you will have to send commands to its input stream and read data from its output streams.</p><hr/><h1 id="Interactingwithexternalprocess-Startingtheexternalprocesstointeractwith">Starting the external process to interact with</h1><p>You have to use one of the constructors of the <strong> <em>ProcessTalker</em> </strong> class:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.processtalk.ProcessTalker;
 
 ProcessTalker talker = new ProcessTalker( &quot;My external command&quot;, 10 );
@@ -53,7 +53,7 @@ ProcessTalker talker = new ProcessTalker( &quot;My external command&quot;, 10 );
 </div></div><p>In the provided example, the first argument is the command which you will run.</p><p>The second argument is the default time to wait(in seconds) for some operations to happen or fail. These operations usually either <em>send some command</em> to the external process or <em>expect some output</em> from the external process.</p><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>You can work in same way with a process on a remote host as long as you have a running ATS agent there.<br/> All you need to change in your code is to add the ATS agent address as a first parameter in your constructor:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ProcessTalker talker = new ProcessTalker( &lt;ATS agent address&gt;, &quot;My external command&quot;, 10 );
 </pre>
-</div></div></div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Waitforsomeoutput"><strong>Wait for some output</strong></h1><p>In order to understand what the external process is doing, you need to monitor its output. This is done with some of the <em>expect</em> like methods. Here are some examples:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div></div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Waitforsomeoutput">Wait for some output</h1><p>In order to understand what the external process is doing, you need to monitor its output. This is done with some of the <em>expect</em> like methods. Here are some examples:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// wait until the following pattern is outputted by the external process
 talker.expect( &quot;Type your choice and press enter:&quot; );
 
@@ -70,7 +70,7 @@ String[] patterns = new String[]{&quot;line1&quot;, &quot;line3&quot; };
 // the following will succeed if all the patterns are matched in the given order
 talker.expectAll( patterns );
 </pre>
-</div></div><p>If you want to use regular expressions, use the <em>expectAllByRegex</em> method</p><p> </p><hr/><h1 id="Interactingwithexternalprocess-Sendcommandtotheexternalprocess"><strong>Send command to the external process</strong></h1><p>Here is how you can answer to some question:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p>If you want to use regular expressions, use the <em>expectAllByRegex</em> method</p><p> </p><hr/><h1 id="Interactingwithexternalprocess-Sendcommandtotheexternalprocess">Send command to the external process</h1><p>Here is how you can answer to some question:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// first wait to be asked for your choice
 talker.expect( &quot;Type your choice and press enter:&quot; );
 
@@ -94,7 +94,7 @@ talker.sendEnterKey();
 </div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Checkifthecurrentprocesshasalreadyexited.">Check if the current process has already exited.</h1><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">talker.isClosed();
 </pre>
-</div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Howdoweknowifsomeoperationhasfailed">How do we know if some operation has failed</h1><p>If the operation passed, nothing special happens. There will be only some log messages.</p><p>If the operation fail, an exception is thrown.</p><p> </p><h1 id="Interactingwithexternalprocess-Timeoutconsiderations">Timeout considerations</h1><p>All methods starting with <em> <strong>expect...</strong> </em> have a versions with and without operation timeout. If timeout is not provided, we use the default timeout as provided in the ProcessTalker constructor.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>It is always smart to provide a default timeout in the constructor.</p><p>This assures you will have some operation timeout even when calling methods without explicit timeout</p></div></div><p> </p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
+</div></div><p> </p><hr/><h1 id="Interactingwithexternalprocess-Howdoweknowifsomeoperationhasfailed">How do we know if some operation has failed</h1><p>If the operation passed, nothing special happens. There will be only some log messages.</p><p>If the operation fail, an exception is thrown.</p><p> </p><hr/><h1 id="Interactingwithexternalprocess-Timeoutconsiderations">Timeout considerations</h1><p>All methods starting with <em> <strong>expect...</strong> </em> have a versions with and without operation timeout. If timeout is not provided, we use the default timeout as provided in the ProcessTalker constructor.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>It is always smart to provide a default timeout in the constructor.</p><p>This assures you will have some operation timeout even when calling methods without explicit timeout</p></div></div><p> </p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
                     </div>
 
                     
@@ -102,7 +102,7 @@ talker.sendEnterKey();
                 </div>             </div> 
             <div id="footer" role="contentinfo">
                 <section class="footer-body">
-                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <p>Document generated by Confluence on Apr 05, 2017 10:53</p>
                     <div id="footer-logo"></div>
                 </section>
             </div>

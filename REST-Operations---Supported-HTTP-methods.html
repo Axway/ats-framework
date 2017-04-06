@@ -45,15 +45,15 @@
     
         
         
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 16, 2017
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 05, 2017
                         </div>
                     <div id="main-content" class="wiki-content group">
-                    <p>Following is a list with currently supported HTTP methods</p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-GETmethod"><strong>GET method</strong></h1><p>GET is used to retrieve an already existing resource on the server without modifying it</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+                    <p>Following is a list with currently supported HTTP methods</p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-GETmethod">GET method</h1><p>GET is used to retrieve an already existing resource on the server without modifying it</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// execute a GET method
 RestResponse response = client.get();
  
 // now examine the response</pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-POSTmethod"><strong>POST method</strong></h1><p>POST is used to create a new resource on the server</p><h3 id="RESTOperations-SupportedHTTPmethods-POSTaform">POST a form</h3><p>Post a form containing some information about some person:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-POSTmethod">POST method</h1><p>POST is used to create a new resource on the server</p><h3 id="RESTOperations-SupportedHTTPmethods-POSTaform">POST a form</h3><p>Post a form containing some information about some person:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// POST a form
 client.postForm( new RestForm().addParameter( &quot;firstName&quot;, USER_FIRST_NAME )
                                .addParameter( &quot;lastName&quot;, USER_LAST_NAME )
@@ -73,7 +73,7 @@ client.setResponseMediaType( RestMediaType.APPLICATION_XML );
 // POST the object
 RestResponse response = client.postObject( person );
 </pre>
-</div></div><p>In the example above, Person is some particular class provided by you, not the ATS framework.</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-PUTmethod"><strong>PUT method</strong></h1><p>PUT is used to update an already existing resource on the server</p><h3 id="RESTOperations-SupportedHTTPmethods-PUTaform">PUT a form</h3><p>Equivalent to the POST form example, but use the <strong> <em>putForm</em> </strong> method instead</p><h3 id="RESTOperations-SupportedHTTPmethods-PUTajavaobject">PUT a java object</h3><p>Equivalent to the POST object example, but use the <strong> <em>putObject</em> </strong> method instead</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-DELETEmethod"><strong>DELETE method</strong></h1><p>DELETE is used to delete an already existing resource on the server.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p>In the example above, Person is some particular class provided by you, not the ATS framework.</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-PUTmethod">PUT method</h1><p>PUT is used to update an already existing resource on the server</p><h3 id="RESTOperations-SupportedHTTPmethods-PUTaform">PUT a form</h3><p>Equivalent to the POST form example, but use the <strong> <em>putForm</em> </strong> method instead</p><h3 id="RESTOperations-SupportedHTTPmethods-PUTajavaobject">PUT a java object</h3><p>Equivalent to the POST object example, but use the <strong> <em>putObject</em> </strong> method instead</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-DELETEmethod">DELETE method</h1><p>DELETE is used to delete an already existing resource on the server.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
 RestClient client = new RestClient( &lt;target URI&gt;/people/delete/123 );
 
@@ -83,7 +83,7 @@ RestResponse response = client.delete();
 // read the body of the response
 String responseBody = response.getBodyAsString();
 </pre>
-</div></div><p>In this example we delete a person with id 123 which is specified as part of the URI.</p><p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-ANYmethod"><strong>ANY method</strong></h1><p>There are other HTTP methods not supported by our REST client, there could be also some methods specific only to your server. Here is how you can proceed in such case:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p>In this example we delete a person with id 123 which is specified as part of the URI.</p><p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p><p> </p><hr/><h1 id="RESTOperations-SupportedHTTPmethods-Anymethod">Any method</h1><p>There are other HTTP methods not supported by our REST client, there could be also some methods specific only to your server. Here is how you can proceed in such case:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
 RestClient client = new RestClient( &lt;target URI&gt; );
 
@@ -101,7 +101,7 @@ String responseBody = response.getBodyAsString();
                 </div>             </div> 
             <div id="footer" role="contentinfo">
                 <section class="footer-body">
-                    <p>Document generated by Confluence on Apr 04, 2017 09:30</p>
+                    <p>Document generated by Confluence on Apr 05, 2017 10:53</p>
                     <div id="footer-logo"></div>
                 </section>
             </div>
