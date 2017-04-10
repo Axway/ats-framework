@@ -31,20 +31,26 @@ public abstract class AbstractParameterDataProvider implements ParameterDataProv
     protected String                 parameterName;
     protected Class<?>               dataProviderInstance;
     protected ParameterProviderLevel parameterProviderLevel;
+    
+    // can be used when need to keep indexes in order to distribute next parameter values 
     protected HashMap<Long, Integer> perThreadIndexes;
+    // can be used when need to keep some special object in order to distribute next parameter values
+    protected HashMap<Long, Object>  perThreadObjects;
 
     public AbstractParameterDataProvider( String parameterName,
                                           ParameterProviderLevel parameterProviderLevel ) {
 
         this.parameterName = parameterName;
         this.parameterProviderLevel = parameterProviderLevel;
-        this.perThreadIndexes = new HashMap<Long, Integer>();
+        this.perThreadIndexes = new HashMap<>();
+        this.perThreadObjects = new HashMap<>();
     }
 
     @Override
     public final void initialize() throws ParameterDataProviderInitalizationException {
 
-        this.perThreadIndexes = new HashMap<Long, Integer>();
+        this.perThreadIndexes = new HashMap<>();
+        this.perThreadObjects = new HashMap<>();
 
         doInitialize();
     }
