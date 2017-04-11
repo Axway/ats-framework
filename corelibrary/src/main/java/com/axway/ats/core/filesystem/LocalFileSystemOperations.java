@@ -1317,9 +1317,13 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             reversedReader = new ReversedLinesFileReader( new File( fileName ),
                                                           4096,
                                                           chartset);
-            while( lastLinesList.size() < numLinesToRead ) {
-                lastLinesList.addFirst( reversedReader.readLine() );
-            }
+			while (lastLinesList.size() < numLinesToRead) {
+				String line = reversedReader.readLine();
+				// check if the file has less lines than the wanted
+				if (line != null) {
+					lastLinesList.addFirst(line);
+				}
+			}
 
             return lastLinesList.toArray( new String[lastLinesList.size()] );
         } catch( IOException ioe ) {
