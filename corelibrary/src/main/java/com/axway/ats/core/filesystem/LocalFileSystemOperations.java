@@ -1322,6 +1322,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 				// check if the file has less lines than the wanted
 				if (line != null) {
 					lastLinesList.addFirst(line);
+				} else {
+					break;
 				}
 			}
 
