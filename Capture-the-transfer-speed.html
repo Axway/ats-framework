@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Capture the transfer speed</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Performance-testing.html">Performance testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Capture the transfer speed
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 11, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Capturethetransferspeed-Introduction">Introduction</h1><p>If some of your actions do data transfers, it is valuable to monitor how much data is transferred.</p><p>We cannot measure how much data goes over the wire, but we can still get a good idea by using a simple trick</p><p> </p><hr/><h1 id="Capturethetransferspeed-Examplecode">Example code</h1><p> </p><p>As a starting point we will use the already presented action class called <a href="Creating-an-Agent-Component.html">FileTransferActions</a></p><p>We will replace the <em> <strong>upload action</strong> </em> as follows:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">@Action(transferUnit = &quot;Byte&quot;)
+public Long upload( @Parameter(name = &quot;localFilePath&quot;) String localFilePath ) {
+ 
+    // remember the length of the file we will transfer
+    long fileLength = new File( localFilePath ).length();
+ 
+    // transfer the file
+    transferClient.uploadFile( localFilePath, &quot;/&quot; );
+ 
+    // the file transferred, return its length
+    return fileLength;
+}
+
+</pre>
+</div></div><p>As you see now the java method returns a Long value which is the length of the transferred file. We have also stated in the <em>@Action</em> annotation this action will return number of transferred bytes - see the <strong> <em>transferUnit</em> </strong> attribute</p><p> </p><hr/><h1 id="Capturethetransferspeed-Result">Result</h1><p>Here is what you might get as a result:</p><p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/119497675/119497709.png" data-image-src="attachments/119497675/119497709.png" data-unresolved-comment-count="0" data-linked-resource-id="119497709" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119497675" data-linked-resource-container-version="3"></span></p><p>Our average transfer rate is almost 20 MB/sec</p><p>It is easy for us to calculate the transfer rate as we always know the action execution time and additionally your action is giving us the transfer size as well.</p><p> </p><hr/><h1 id="Capturethetransferspeed-Changethetransferunit">Change the transfer unit</h1><p>The presented example shows very large numbers.</p><p>This can be changed by returning the transfer size in KBytes (you have to divide the numbers by 1024) or in MBytes (you have to divide the numbers by 1024*1024). Do not forget to change accordingly the <strong> <em>transferUnit</em> </strong> attribute</p><p> </p><hr/><p>Back to <a href="Running-performance-tests.html">parent page</a></p><hr/>
+                    </div>
+
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

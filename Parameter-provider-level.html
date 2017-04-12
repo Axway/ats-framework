@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Parameter provider level</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Performance-testing.html">Performance testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Parametrization.html">Parametrization</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Parameter provider level
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 07, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Parameterproviderlevel-Introduction">Introduction</h1><p>This page shows how to change what values you are getting for each action execution</p><p> </p><hr/><h1 id="Parameterproviderlevel-Defaultbehavior">Default behavior</h1><p>Each of the supported patterns comes with a several different constructors and some of them allow you to set the parameter provider level, while others do not.</p><p>The following example will maintain a single user to each thread</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ &quot;vuser10&quot;, &quot;vuser11&quot;, &quot;vuser12&quot; } );
+</pre>
+</div></div><p>while the next example does not care about threads, but just gives the next available <em>username</em>.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ &quot;vuser10&quot;, &quot;vuser11&quot;, &quot;vuser12&quot; }, ParameterProviderLevel.PER_INVOCATION );
+</pre>
+</div></div><h3 id="Parameterproviderlevel-Settheproviderlevelafterconstructingtheparameterpattern">Set the provider level after constructing the parameter pattern</h3><p>You can always explicitly set the level using the <strong> <em>setParameterProviderLevel</em> </strong>method.</p><p>Here is how:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create the configurator using any available constructor
+ListDataConfig usersConfigurator = new ListDataConfig( PARAMETRIZED_USER, new String[]{ &quot;user1&quot;, &quot;user2&quot;, &quot;user3&quot; } );
+
+// set the needed provider level
+usersConfigurator.setParameterProviderLevel( ParameterProviderLevel.PER_INVOCATION );
+
+// pass this configurator to the load client
+loader.addParameterDataConfigurator( usersConfigurator );
+</pre>
+</div></div><p> </p><hr/><h1 id="Parameterproviderlevel-Possibleoptions">Possible options</h1><p>We will show these options using an example.</p><p>Lets say we are running 2 threads with 3 possible values for username. The possible usernames are &quot;<em>user1</em>&quot;, &quot;<em>user2</em>&quot; and &quot;<em>user3</em>&quot;</p><h3 id="Parameterproviderlevel-Parametersperthread">Parameters per thread</h3><p>Here is the result when using <strong> <em>ParameterProviderLevel.PER_THREAD</em> </strong></p><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup> <col/> <col/> <col/> </colgroup><tbody><tr><td class="confluenceTd"><p>iteration</p></td><td class="confluenceTd"><p>thread 1</p></td><td class="confluenceTd"><p>thread 2</p></td></tr><tr><td class="confluenceTd"><p>1</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user1</em></p></td></tr><tr><td class="confluenceTd"><p>2</p></td><td class="confluenceTd"><p><em>user2</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr><tr><td class="confluenceTd"><p>3</p></td><td class="confluenceTd"><p><em>user3</em></p></td><td class="confluenceTd"><p><em>user3</em></p></td></tr><tr><td class="confluenceTd"><p>4</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user1</em></p></td></tr></tbody></table></div><p>As you can see each thread will cycle through the available values without messing with the other threads.</p><p>When all the values are over, the thread will start pulling them from the beginning.</p><h3 id="Parameterproviderlevel-Staticparametersperthread">Static parameters per thread</h3><p>Here is the result when using <strong> <em>ParameterProviderLevel.PER_THREAD_STATIC</em> </strong></p><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup> <col/> <col/> <col/> </colgroup><tbody><tr><td class="confluenceTd"><p>iteration</p></td><td class="confluenceTd"><p>thread 1</p></td><td class="confluenceTd"><p>thread 2</p></td></tr><tr><td class="confluenceTd"><p>1</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr><tr><td class="confluenceTd"><p>2</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr><tr><td class="confluenceTd"><p>3</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr><tr><td class="confluenceTd"><p>4</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr></tbody></table></div><p>As you can see each thread gets assigned some value and keeps using only this value, no matter how many iterations are executed.</p><p>This is the expected way when parametrizing the username, as usually each thread represents one user during all iterations.</p><p>If we had a third thread, it would get assigned the &quot;<em>user3</em>&quot;. If we we had a fourth thread, it would get assigned the &quot;<em>user1</em>&quot; and so forth.</p><h3 id="Parameterproviderlevel-Parametersperinvocation">Parameters per invocation</h3><p>Here is the result when using <strong> <em>ParameterProviderLevel.PER_INVOCATION</em> </strong></p><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup> <col/> <col/> <col/> </colgroup><tbody><tr><td class="confluenceTd"><p>iteration</p></td><td class="confluenceTd"><p>thread 1</p></td><td class="confluenceTd"><p>thread 2</p></td></tr><tr><td class="confluenceTd"><p>1</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr><tr><td class="confluenceTd"><p>2</p></td><td class="confluenceTd"><p><em>user3</em></p></td><td class="confluenceTd"><p><em>user1</em></p></td></tr><tr><td class="confluenceTd"><p>3</p></td><td class="confluenceTd"><p><em>user2</em></p></td><td class="confluenceTd"><p><em>user3</em></p></td></tr><tr><td class="confluenceTd"><p>4</p></td><td class="confluenceTd"><p><em>user1</em></p></td><td class="confluenceTd"><p><em>user2</em></p></td></tr></tbody></table></div><p>As you can see here, there is no any respect to threads. Each new value is passed to whoever requested it.</p><p> </p><hr/><p>Back to <a href="Parametrization.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

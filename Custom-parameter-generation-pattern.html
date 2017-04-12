@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Custom parameter generation pattern</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Performance-testing.html">Performance testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Parametrization.html">Parametrization</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Custom parameter generation pattern
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 07, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Customparametergenerationpattern-Introduction">Introduction</h1><p>ATS provides some ready-to-use parameter generation patterns which fulfill most of the needs. But still, in reality there are case when you need to implement your very own logic.</p><p>Here we show such pattern which is not available with the ATS distribution, but can be used as starting point for creating your own custom pattern.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The code might look somewhat longer compared to most example in this user guide, but:</p><ul><li>you will rarely hit such need</li><li>code is not difficult</li><li>half of the code are comments which help understanding it</li></ul></div></div><p> </p><hr/><h1 id="Customparametergenerationpattern-Whatdoesthiscustomexampledo?">What does this custom example do?</h1><p>Our example demonstrates how to create simple words. These words have some length and letters as defined by the test.</p><p>Let's say you set all letters to be <em> <strong>7</strong> </em> character lone and all characters to fall in the range between <em> <strong>P</strong> </em> and <em> <strong>W</strong> </em>. The result is words like UQQRUPT, SQUPTQS, SVUURQP etc</p><p>All values will be provided depending on the specified <a href="Parameter-provider-level.html">parameter provider level</a></p><p> </p><hr/><h1 id="Customparametergenerationpattern-Thetestcode">The test code</h1><p>Here is how our test will look like</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    private static final String PARAMETRIZED_PARAM = &quot;&lt;parameter name&gt;&quot;;
+
+    @Test
+    public void myTest() {
+
+		// create a load client and provide the loader it works on
+		LoadClient loader = new LoadClient( LOADER_ADDRESS );
+ 
+		// set some threading pattern
+		loader.setThreadingPattern( new AllAtOncePattern( 10, true, 50, 1000 ) );
+
+		// call our custom parameter configurator
+		// the letters will be changing from &#39;O&#39; to &#39;R&#39;
+		// there will be 5 repeated letters in each produced value
+        loader.addParameterDataConfigurator( new RandomWordCreatorDataConfig( PARAMETRIZED_PARAM, &#39;P&#39;, &#39;W&#39;, 7, ParameterProviderLevel.PER_INVOCATION ) );
+
+		// give a name to your action queue
+        loader.startQueueing( &quot;Test custom parametrization&quot; );
+
+		// list the actions, one of them must have an input parameter that match the one we have parametrized above
+		// ...
+		// ...
+
+		// now execute the requested action queue according to the threading pattern
+        loader.executeQueuedActions();
+    }</pre>
+</div></div><p>As you can see this test code looks as easy(or difficult) as any other example with the already available parameter generation patterns</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>Now in order to make it working you need to make your own instances of <em> <strong>CustomParameterDataConfig</strong> </em> and <em> <strong>CustomParameterDataProvider</strong> </em>classes</p></div></div><p> </p><hr/><h1 id="Customparametergenerationpattern-Exampleofcustomdataconfiguration">Example of custom data configuration</h1><p>Please have a look at the code and the comments inside.</p><p>We basically remember the configuration as comes from the test. We also take care of distributing the values in case of using more than one loader.</p><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.model.EvenLoadDistributingUtils;
+import com.axway.ats.agent.core.threading.data.CustomParameterDataProvider;
+import com.axway.ats.agent.core.threading.data.config.CustomParameterDataConfig;
+import com.axway.ats.agent.core.threading.data.config.ParameterDataConfig;
+import com.axway.ats.agent.core.threading.data.config.ParameterProviderLevel;
+
+/**
+ * Example of custom data configuration. 
+ * It creates words by filling it with random characters.
+ */
+public class RandomWordCreatorDataConfig extends CustomParameterDataConfig {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param parameterName name of action parameter
+     * @param startChar the lowest possible character as defined in the ASCII table
+     * @param endChar the highest possible character as defined in the ASCII table
+     * @param numberChars how long is a word 
+     */
+    public RandomWordCreatorDataConfig( String parameterName, char startChar, char endChar, int numberChars ) {
+        this( parameterName, startChar, endChar, numberChars, ParameterProviderLevel.PER_THREAD_STATIC );
+    }
+
+    /**
+     * @param parameterName name of action parameter
+     * @param startChar the lowest possible character as defined in the ASCII table
+     * @param endChar the highest possible character as defined in the ASCII table
+     * @param numberChars how long is a word 
+     * @param parameterProviderLevel parameter provider level
+     */
+    public RandomWordCreatorDataConfig( String parameterName, char startChar, char endChar, int numberChars, ParameterProviderLevel parameterProviderLevel ) {
+        super( parameterName, new HashMap&lt;String, String&gt;(), parameterProviderLevel );
+
+        // save these control tokens as given from the test
+        controlTokens.put( RandomWordCreatorDataProvider.START_CHAR, String.valueOf( startChar ) );
+        controlTokens.put( RandomWordCreatorDataProvider.END_CHAR, String.valueOf( endChar ) );
+        controlTokens.put( RandomWordCreatorDataProvider.NUMBER_CHARS, String.valueOf( numberChars ) );
+    }
+
+    /**
+     * This method is called if we run performance tests using more than one ATS Loader
+     * 
+     * Here we have to properly split the configuration so at the side of the Tested Application it makes no 
+     * difference if we are using one or many Loaders
+     */
+    @Override
+    public List&lt;ParameterDataConfig&gt; distribute( int numberAgents ) {
+
+        List&lt;ParameterDataConfig&gt; distributedParameterProviders = new ArrayList&lt;ParameterDataConfig&gt;();
+
+        // read the control tokens as given from the test
+        char startChar = controlTokens.get( RandomWordCreatorDataProvider.START_CHAR ).toCharArray()[0];
+        char endChar = controlTokens.get( RandomWordCreatorDataProvider.END_CHAR ).toCharArray()[0];
+        int numberChars = Integer.parseInt( controlTokens.get( RandomWordCreatorDataProvider.NUMBER_CHARS ) );
+
+        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad( endChar - startChar, numberAgents );
+
+        for( int i = 0; i &lt; numberAgents; i++ ) {
+            distributedParameterProviders.add( new RandomWordCreatorDataConfig( this.parameterName, 
+                                                                                startChar,
+                                                                                ( char ) ( startChar + distributionValues[i] ),
+                                                                                numberChars,
+                                                                                this.parameterProviderLevel ) );
+            startChar = ( char ) ( startChar + distributionValues[i] );
+        }
+        return distributedParameterProviders;
+    }
+
+    /**
+     * Give the name of the data provider class
+     */
+    @Override
+    public Class&lt;? extends CustomParameterDataProvider&gt; getDataProviderClass() {
+        return RandomWordCreatorDataProvider.class;
+    }
+}</pre>
+</div></div><p> </p><hr/><h1 id="Customparametergenerationpattern-Exampleofcustomdataprovider">Example of custom data provider</h1><p>Please have a look at the code and the comments inside.</p><p>The <em>doInitialize()</em> method reads the configuration as comes from the test.</p><p>The <em>createNewWord</em> method generates each value when requested. Here the parameter provider level plays its role, you must make your logic working in all cases.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.action.ArgumentValue;
+import com.axway.ats.agent.core.threading.data.CustomParameterDataProvider;
+import com.axway.ats.agent.core.threading.data.config.ParameterProviderLevel;
+import com.axway.ats.agent.core.threading.exceptions.ParameterDataProviderInitalizationException;
+
+/**
+ * Example of custom parameter provider implementation.
+ * 
+ * This provider returns a random word.
+ */
+public class RandomWordCreatorDataProvider extends CustomParameterDataProvider {
+
+    public final static String START_CHAR   = &quot;START_CHAR&quot;;
+    public final static String END_CHAR     = &quot;END_CHAR&quot;;
+    public final static String NUMBER_CHARS = &quot;NUMBER_CHARS&quot;;
+
+    private char               startChar;                    // the lowest possible character as defined in the ASCII table
+    private char               endChar;                      // the highest possible character as defined in the ASCII table
+    private int                numberChars;                  // how long is a word 
+
+    public RandomWordCreatorDataProvider( String parameterName, Map&lt;String, String&gt; controlTokens,
+                                          ParameterProviderLevel parameterProviderLevel ) {
+        super( parameterName, controlTokens, parameterProviderLevel );
+    }
+
+    @Override
+    protected void doInitialize() throws ParameterDataProviderInitalizationException {
+
+        // read the control tokens as given from the test
+        this.startChar = controlTokens.get( START_CHAR ).toCharArray()[0];
+        this.endChar = controlTokens.get( END_CHAR ).toCharArray()[0];
+        this.numberChars = Integer.parseInt( controlTokens.get( NUMBER_CHARS ) );
+    }
+
+    // This method is called if the &quot;parameter provider level&quot; is set to &quot;per invocation&quot;
+    @Override
+    protected ArgumentValue generateNewValuePerInvocation( List&lt;ArgumentValue&gt; alreadyResolvedValues ) {
+
+        // use a new randomizer on each call
+        String newWord = createNewWord( new Random() );
+        return new ArgumentValue( parameterName, newWord );
+    }
+
+    // This method will be called if the &quot;parameter provider level&quot; is set to &quot;per thread&quot;
+    @Override
+    protected ArgumentValue generateNewValuePerThread( long currentThreadId,
+                                                       List&lt;ArgumentValue&gt; alreadyResolvedValues ) {
+
+        // check whether there is a randomizer already used by this thread
+        Random randomizer = ( Random ) perThreadObjects.get( currentThreadId );
+
+        if( randomizer == null ) {
+            randomizer = new Random();
+            perThreadObjects.put( currentThreadId, randomizer );
+        }
+
+        String newWord = createNewWord( randomizer );
+        return new ArgumentValue( parameterName, newWord );
+    }
+
+    // This method will be called if the &quot;parameter provider level&quot; is set to &quot;per thread static&quot;
+    @Override
+    protected ArgumentValue generateNewValuePerThreadStatic( long currentThreadId,
+                                                             List&lt;ArgumentValue&gt; alreadyResolvedValues ) {
+
+        // check whether there is a word already assigned to this thread
+        String wordForThisThread = ( String ) perThreadObjects.get( currentThreadId );
+
+        if( wordForThisThread == null ) {
+            // make a new word and assign it to this thread
+            wordForThisThread = createNewWord( new Random() );
+            perThreadObjects.put( currentThreadId, wordForThisThread );
+        }
+
+        return new ArgumentValue( parameterName, wordForThisThread );
+    }
+
+    // Returns a new word with content and length as defined in the test
+    private String createNewWord( Random randomizer ) {
+
+        String newWord = new String();
+        for( int i = 0; i &lt; numberChars; i++ ) {
+            char newChar = ( char ) ( startChar + randomizer.nextInt( endChar - startChar ) );
+            newWord = newWord + new Character( newChar ).toString();
+        }
+        return newWord;
+    }
+}</pre>
+</div></div><p> </p><hr/><p>Back to <a href="Parametrization.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Action queue pass rate</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Performance-testing.html">Performance testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Action queue pass rate
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 10, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="Actionqueuepassrate-Introduction">Introduction</h1><p>Often some of the actions you run will fail due to variety of reason. Maybe the Test application cannot handle the load or it is not configured properly or there are some speradic networking issues and etc.</p><p>The important question here is whether failing actions should result in failing the whole queue which will mark the test as failed, or maybe a certain amount of failed actions is not a big deal.</p><p>As there are different opinions, we provide a way to configure when a queue will fail based on the amount of failed action executions.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>When an action fail, the rest of the actions in the iteration are skipped (if there are such) and next iteration is started from beginning(if there are such).</p><p>If an action has fail, we say the iteration has failed as well.</p></div></div><p> </p><hr/><h1 id="Actionqueuepassrate-Specifyqueuepassrate">Specify queue pass rate</h1><p>By default the actions queue will marked as failed when there is even one failed action.</p><p>Lets have a look at the following partial example:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create one of the supported threading patterns
+ThreadingPattern pattern = new AllAtOncePattern( 100, true, 10, 0 );
+
+// specify the queue pass rate in %
+pattern.setQueuePassRate( 90 );
+</pre>
+</div></div><p>As you can see, we set a <strong> <em>queue pass rate</em> </strong> which is in percent. In this example the queue will pass if at least 90% of the iterations pass, otherwise the queue will be marked as failed and so the testcase.</p><p>In Test Explorer this threading pattern will be described as <strong> <em>All at once - 100 threads, 10 continuous iterations, pass if 90.0% of the iterations pass</em> </strong>. As we have 1000 iterations(100 threads with 10 iterations each) this means the queue will pass if at least 900 iterations pass.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>if you want to specify some more precise pass rate you have to follow the number with the letter <strong> <em>F</em> </strong> as this is a float java value.</p><p>For example this could be <strong> <em>90.5F</em> </strong></p></div></div><p> </p><hr/><p>Back to <a href="Running-performance-tests.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+
