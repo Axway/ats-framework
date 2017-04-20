@@ -340,8 +340,7 @@ public abstract class UiDriver {
     /**
     * This method allows you to load your own driver implementation which you can use as any other UI Engine driver
     * @param driverClassName the full class name of the custom driver class
-    * @param constructorNumber the index of the constructor (in the custom driver class implementation source code), 
-    *        which will be used for creating new instance
+    * @param parameterTypes the parameters that the constructor requires 
     * @param constructorArguments the arguments, which will be passed to the constructor
     * @return new UiDriver instance
     */
