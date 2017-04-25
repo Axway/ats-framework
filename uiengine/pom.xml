@@ -36,22 +36,24 @@
                         <suiteXmlFile>src/test/config/hidden_browser_tests.xml</suiteXmlFile>
                         <!-- <suiteXmlFile>config/html_test.xml</suiteXmlFile> -->
                     </suiteXmlFiles>
-                    <!-- <includes> <include>**/Test_*.java</include> </includes> 
-                        <excludes> <exclude>**/*$*</exclude> </excludes> -->
-                    <additionalClasspathElements> <!-- for ats.uiengine.properties, log4j.xml -->
-                        <additionalClasspathElement>src/test/config/</additionalClasspathElement>
-                    </additionalClasspathElements>
+                    <includes>
+                        <include>**/Test_*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.10</version>
                 <configuration>
                     <complianceLevel>${java.classlevel.version}</complianceLevel>
                     <source>${java.classlevel.version}</source>
                     <target>${java.classlevel.version}</target>
                 </configuration>
-                <!--configuration> <complianceLevel>1.6</complianceLevel> 
+                <!--configuration> <complianceLevel>1.6</complianceLevel>
                     <Xlint>warning</Xlint> </configuration -->
                 <executions>
                     <execution>
@@ -123,9 +125,9 @@
         <!-- <scope>test</scope> -->
         <!-- </dependency> -->
         <!-- TODO: copy to FunctionalTests as all tests are moved there -->
-        <!-- TestNG original (not patched version) should exist for running 
-            TestNG tests. Note that it is ordered AFTER our patched version. Surefire 
-            plugin relies on this in order to know what kind of tests to run - JUnit 
+        <!-- TestNG original (not patched version) should exist for running
+            TestNG tests. Note that it is ordered AFTER our patched version. Surefire
+            plugin relies on this in order to know what kind of tests to run - JUnit
             or TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -162,9 +164,9 @@
             <groupId>com.codeborne</groupId>
             <artifactId>phantomjsdriver</artifactId>
             <version>${com.github.detro.ghostdriver.phantomjsdriver}</version>
-            <exclusions> <!-- PhantomJS has dependency old selenium versions. We use explicit artifact 
+            <exclusions> <!-- PhantomJS has dependency old selenium versions. We use explicit artifact
                     exclusion by name because mvn eclipse:eclipse does not work with wildcards -->
-                <!-- Wildcard exclusion for artifactId works for other goals 
+                <!-- Wildcard exclusion for artifactId works for other goals
                     but produces warnings. There is feature request for fix: http://jira.codehaus.org/browse/MNG-3832 -->
                 <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
@@ -205,7 +207,7 @@
             <artifactId>java-client</artifactId>
             <version>3.0.0</version>
             <exclusions>
-                <exclusion> <!-- Currently depending on selenium-java-2.46, but working fine with 2.48.2 
+                <exclusion> <!-- Currently depending on selenium-java-2.46, but working fine with 2.48.2
                         (tested) -->
                     <groupId>org.seleniumhq.selenium</groupId>
                     <artifactId>selenium-java</artifactId>
