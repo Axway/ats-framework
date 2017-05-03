@@ -23,6 +23,7 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.config.AbstractConfigurator;
 import com.axway.ats.config.exceptions.ConfigSourceDoesNotExistException;
 import com.axway.ats.config.exceptions.ConfigurationException;
+import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
@@ -267,5 +268,29 @@ public final class CommonConfigurator extends AbstractConfigurator {
         if( loggingRunMap.containsKey( KEY__BUILD_NAME ) ) {
             buildName = loggingRunMap.get( KEY__BUILD_NAME );
         }
+    }
+    
+    /**
+     * By default ATS tries to discover on its own if some host is a local or remote one. </br>
+     * In case you find this discovery is not accurate, you can use this method 
+     * to explicitly set a host locality. </br></br>
+     * 
+     * This is important for some ATS operations which need to know if some host is a local one or not. </br>
+     * For example when copying a file to a remote host we will need to work with an ATS Agent located on that remote host. 
+     * But if we find this is a local host, we can simply use the available java classes for the copy process.
+     * 
+     * @param host host name or IP address
+     * @param isLocal whether this host should be treated as a local or remote one
+     */
+    @PublicAtsApi
+    public void setHostLocality( String host, boolean isLocal ) {
+
+        // this method currently does not read data from the configuration properties file
+        // this may change in future
+        if( StringUtils.isNullOrEmpty( host ) ) {
+            throw new IllegalArgumentException( "Bad host parameter provided: '" + host + "'" );
+        }
+
+        HostUtils.setHostLocality( host, isLocal );
     }
 }

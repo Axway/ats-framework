@@ -71,6 +71,21 @@ public class HostUtils {
     private static Map<String, InetAddress> localHostPublicAddresses = new HashMap<String, InetAddress>();
 
     /**
+     * Allows specifying externally(from the test code) whether some host is a local or remote one
+     * 
+     * @param host host name or IP address
+     * @param isLocal whether this host should be treated as a local or remote one
+     */
+    public static void setHostLocality( String host, boolean isLocal ) {
+
+        if( isLocal ) {
+            localHosts.add( host );
+        } else {
+            nonlocalHosts.add( host );
+        }
+    }
+    
+    /**
      * Get the local host name (e.g. someone.corp.axway.com)
      *
      * @return
