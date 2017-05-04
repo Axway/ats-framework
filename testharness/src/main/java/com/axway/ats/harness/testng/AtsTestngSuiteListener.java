@@ -27,6 +27,7 @@ import org.testng.TestNG;
 import org.testng.internal.Version;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
@@ -133,14 +134,18 @@ public class AtsTestngSuiteListener implements ISuiteListener {
 
     private void logClassPath() {
 
-        StringBuilder classpath = new StringBuilder();
+        // print JVM classpath if user has enabled it
+        if( AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__CLASSPATH_ON_START, false ) ) {
 
-        classpath.append( " Test Executor classpath on \"" );
-        classpath.append( HostUtils.getLocalHostIP() );
-        classpath.append( "\" : \n" );
-        classpath.append( new ClasspathUtils().getClassPathDescription() );
+            StringBuilder classpath = new StringBuilder();
 
-        logger.info( classpath, true );
+            classpath.append( " Test Executor classpath on \"" );
+            classpath.append( HostUtils.getLocalHostIP() );
+            classpath.append( "\" : \n" );
+            classpath.append( new ClasspathUtils().getClassPathDescription() );
+
+            logger.info( classpath, true );
+        }
     }
 
     private void appendMessage( StringBuilder message, String valueDesc, String value ) {

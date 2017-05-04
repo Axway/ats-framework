@@ -37,8 +37,8 @@ public class AtsSystemProperties {
     public static final String  AGENT__MONITOR_INITIAL_POLL_DELAY                                 = "ats.agent.monitor.initial.poll.delay";
     @PublicAtsApi
     public static final String  AGENT__COMPONENTS_FOLDER                                          = "ats.agent.components.folder";
+    
     @PublicAtsApi
-
     public static final String  AGENT__TEMPLATE_ACTIONS_PROXY_PROPERTY                            = "ats.agent.template.actions.proxy";                             // Key to specify proxy for template action requests
     public static final String  AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY = "ats.agent.template.actions.register_full_and_net_action_time"; // Property to enable full action time logging in addition to net+server think time
     public static final String  AGENT__TEMPLATE_ACTIONS_FOLDER                                    = "ats.agent.template.actions.folder";
@@ -48,6 +48,8 @@ public class AtsSystemProperties {
     // Log properties
     @PublicAtsApi
     public static final String  LOG__MONITOR_EVENTS_QUEUE                                         = "ats.log.monitor.events.queue";
+    @PublicAtsApi
+    public static final String  LOG__CLASSPATH_ON_START                                           = "ats.log.classpath.on.start";
 
     // TestHarness properties
     // Run name for JUnit executions
