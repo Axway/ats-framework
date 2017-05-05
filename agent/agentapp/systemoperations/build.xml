@@ -8,10 +8,10 @@
 
     <echo>Using Ant version: ${ant.version}</echo>
     <property name="build.compiler" value="extJavac"/>
-    <echo>Using Java home: ${java.home}; Property java.version: ${java.version}</echo>
+    <echo>Using Java home: ${java.home}; Property java.classlevel.version: ${java.classlevel.version}</echo>
     <!-- Next 2 properties set syntax and bytecode compliance level (javac task) -->
-    <property name="ant.build.javac.source" value="${java.version}" />
-    <property name="ant.build.javac.target" value="${java.version}" />
+    <property name="ant.build.javac.source" value="${java.classlevel.version}" />
+    <property name="ant.build.javac.target" value="${java.classlevel.version}" />
 
     <!-- the name of your Agent component, this defines the names of the produced jar files -->
     <property name="agent.component.name" value="ats-agent-systemoperations"/>
