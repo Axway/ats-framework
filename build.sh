@@ -8,8 +8,8 @@ if [ -z "$MAVEN_ORACLE_USERNAME" ]; then
    return 2
 fi
 
-if [ -z "$MAVEN_ORACLE_USERNAME" ]; then
-   echo "Please set environment variables MAVEN_ORACLE_USERNAME and MAVEN_ORACLE_PASSWORD for access to Oracle Maven repository( https://maven.oracle.com). This is needed in order to retrieve the Oracle JDBC driver"
+if [ -z "$MAVEN_ORACLE_PASSWORD" ]; then
+   echo "Please set environment variable MAVEN_ORACLE_PASSWORD for access to Oracle Maven repository( https://maven.oracle.com). This is needed in order to retrieve the Oracle JDBC driver"
    return 3
 fi
 
