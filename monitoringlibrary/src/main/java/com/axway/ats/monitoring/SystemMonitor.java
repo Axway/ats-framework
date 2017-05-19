@@ -16,51 +16,37 @@
 package com.axway.ats.monitoring;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.agent.components.monitoring.operations.clients.InternalSystemMonitoringOperations;
-import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.webapp.client.AgentMonitoringClient;
+import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.performance.monitor.beans.FullReadingBean;
+import com.axway.ats.core.monitoring.MonitoringException;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.utils.HostUtils;
-import com.axway.ats.core.utils.StringUtils;
-import com.axway.ats.core.validation.Validate;
-import com.axway.ats.core.validation.ValidationType;
-import com.axway.ats.core.validation.Validator;
-import com.axway.ats.monitoring.model.AbstractLoggerTask;
-import com.axway.ats.monitoring.model.MonitoringContext;
-import com.axway.ats.monitoring.model.ReadingTypes;
-import com.axway.ats.monitoring.model.SystemStatsLoggerTask;
-import com.axway.ats.monitoring.model.UserActivityLoggerTask;
-import com.axway.ats.monitoring.model.exceptions.MonitoringException;
-import com.axway.ats.monitoring.model.readings.ReadingsRepository;
+import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.autodb.DbAppenderConfiguration;
+import com.axway.ats.log.autodb.TestCaseState;
 
 /**
-* The public interface for interacting with the System Monitor.
-*
-* The monitored host parameter accepted by some methods is actually the ATS Agent address.
-*
-* <br/><br/>
-* <b>User guide</b>
-* <a href="https://techweb.axway.com/confluence/display/ATS/System+monitoring+service">page</a>
-* for the System monitor
-*/
-@PublicAtsApi
+ * The public interface for interacting with the System Monitor.
+ *
+ * The monitored host parameter accepted by some methods is actually the ATS
+ * Agent address.
+ *
+ * <br/>
+ * <br/>
+ * <b>User guide</b> <a href=
+ * "https://axway.github.io/ats-framework/ATS-OS-Documentation">page</a> for the
+ * System monitor
+ */
 public class SystemMonitor {
 
     private static final Logger log = Logger.getLogger( SystemMonitor.class );
@@ -69,7 +55,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_CPU {
         @PublicAtsApi
-        public static final String ALL                        = ReadingTypes.READING_CPU;
+        public static final String ALL                        = SystemMonitorDefinitions.READING_CPU;
         @PublicAtsApi
         public static final String LOAD_LAST_MINUTE           = SystemMonitorDefinitions.READING_CPU_LOAD__LAST_MINUTE;
         @PublicAtsApi
@@ -91,7 +77,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_MEMORY {
         @PublicAtsApi
-        public static final String ALL         = ReadingTypes.READING_MEMORY;
+        public static final String ALL         = SystemMonitorDefinitions.READING_MEMORY;
         @PublicAtsApi
         public static final String ACTUAL_USED = SystemMonitorDefinitions.READING_MEMORY__ACTUAL_USED;
         @PublicAtsApi
@@ -106,7 +92,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_VIRTUAL_MEMORY {
         @PublicAtsApi
-        public static final String ALL       = ReadingTypes.READING_VIRTUAL_MEMORY;
+        public static final String ALL       = SystemMonitorDefinitions.READING_VIRTUAL_MEMORY;
         @PublicAtsApi
         public static final String TOTAL     = SystemMonitorDefinitions.READING_VIRTUAL_MEMORY__TOTAL;
         @PublicAtsApi
@@ -123,7 +109,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_IO {
         @PublicAtsApi
-        public static final String ALL                     = ReadingTypes.READING_IO;
+        public static final String ALL                     = SystemMonitorDefinitions.READING_IO;
         @PublicAtsApi
         public static final String READ_BYTES_ALL_DEVICES  = SystemMonitorDefinitions.READING_IO__READ_BYTES_ALL_DEVICES;
         @PublicAtsApi
@@ -134,7 +120,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_NETWORK_INTERFACES {
         @PublicAtsApi
-        public static final String ALL     = ReadingTypes.READING_NETWORK_INTERFACES;
+        public static final String ALL     = SystemMonitorDefinitions.READING_NETWORK_INTERFACES;
         @PublicAtsApi
         public static final String TRAFFIC = SystemMonitorDefinitions.READING_NETWORK_TRAFFIC;
     }
@@ -142,7 +128,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_NETSTAT {
         @PublicAtsApi
-        public static final String ALL                         = ReadingTypes.READING_NETSTAT;;
+        public static final String ALL                         = SystemMonitorDefinitions.READING_NETSTAT;
         @PublicAtsApi
         public static final String ACTIVE_CONNECTION_OPENINGS  = SystemMonitorDefinitions.READING_NETSTAT__ACTIVE_CONNECTION_OPENINGS;
         @PublicAtsApi
@@ -168,7 +154,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_TCP {
         @PublicAtsApi
-        public static final String ALL            = ReadingTypes.READING_TCP;
+        public static final String ALL            = SystemMonitorDefinitions.READING_TCP;
         @PublicAtsApi
         public static final String CLOSE          = SystemMonitorDefinitions.READING_TCP__CLOSE;
         @PublicAtsApi
@@ -205,7 +191,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_PROCESS_CPU {
         @PublicAtsApi
-        public static final String ALL          = ReadingTypes.READING_PROCESS_CPU;
+        public static final String ALL          = SystemMonitorDefinitions.READING_PROCESS_CPU;
         @PublicAtsApi
         public static final String USAGE_USER   = SystemMonitorDefinitions.READING_PROCESS_CPU__USAGE_USER;
         @PublicAtsApi
@@ -218,7 +204,7 @@ public class SystemMonitor {
     @PublicAtsApi
     public static final class MONITOR_PROCESS_MEMORY {
         @PublicAtsApi
-        public static final String ALL         = ReadingTypes.READING_PROCESS_MEMORY;
+        public static final String ALL         = SystemMonitorDefinitions.READING_PROCESS_MEMORY;
         @PublicAtsApi
         public static final String VIRTUAL     = SystemMonitorDefinitions.READING_PROCESS_MEMORY__VIRTUAL;
         @PublicAtsApi
@@ -257,43 +243,35 @@ public class SystemMonitor {
         public static final String CPU_USAGE                             = SystemMonitorDefinitions.READING_JVM__CPU_USAGE;
     }
 
-    private ScheduledExecutorService          scheduler;
+    private Set<String>             monitoredHosts;
 
-    private Map<String, ScheduledFuture<?>>   loggerTasksPerHost;
+    private Set<String>             monitoredAgents;
 
-    // remember the requested monitor types in a Set, so there is no duplicated types
-    private Map<String, Set<FullReadingBean>> requestedReadingTypesPerHosts;
+    private Map<String, RestHelper> restHelpers;
 
-    private Set<String>                       monitoredHosts;
+    private boolean                 isStarted = false;
 
-    private Set<String>                       monitoredAgents;
-
-    private long                              startTimestamp;
-    private int                               pollInterval;
-    private int                               loggingInterval;
-
-    //the task which polls for user activity readings from the monitored agents
-    private UserActivityLoggerTask            lastUserActivityLoggerTask;
-
-    private boolean                           isStarted = false;
+    /* keeps track if which agents are already configured 
+     * (e.g. DB connection and join testcase has been executed on the agent 
+    */
+    private Set<String>             configuredAgents;
 
     /**
-     * Create the system monitor instance.
-     * <br>
-     * The first time an instance of this class is created, we initialize the Performance Monitoring service
-     * by passing the default configuration values. It is also possible to specify a custom
-     * configuration by placing a "custom.linux.shell.config.xml" file in the classpath. Refer to
-     * the online documentation for the correct template to use.
+     * Create the system monitor instance. <br>
+     * The first time an instance of this class is created, we initialize the
+     * Performance Monitoring service by passing the default configuration
+     * values. It is also possible to specify a custom configuration by placing
+     * a "custom.linux.shell.config.xml" file in the classpath. Refer to the
+     * online documentation for the correct template to use.
      */
     @PublicAtsApi
     public SystemMonitor() {
 
-        this.loggerTasksPerHost = new HashMap<String, ScheduledFuture<?>>();
-        this.requestedReadingTypesPerHosts = new HashMap<String, Set<FullReadingBean>>();
         this.monitoredAgents = new HashSet<String>();
         this.monitoredHosts = new HashSet<String>();
+        this.restHelpers = new HashMap<String, RestHelper>();
+        this.configuredAgents = new HashSet<String>();
 
-        MonitoringContext.getInstance().init();
     }
 
     /**
@@ -313,23 +291,18 @@ public class SystemMonitor {
      * </ul>
      */
     @PublicAtsApi
-    public void scheduleSystemMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                          @Validate(name = "systemReadingTypes", type = ValidationType.NOT_NULL) String[] systemReadingTypes ) {
+    public void scheduleSystemMonitoring(
+                                          String monitoredHost,
+                                          String[] systemReadingTypes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( "Could not schedule monitoring system statistics on '"
-                                                  + monitoredHost + "'",
-                                                  new Object[]{ monitoredHost, systemReadingTypes } );
-
-        Set<FullReadingBean> readingTypes = requestedReadingTypesPerHosts.get( monitoredHost );
-        if( readingTypes == null ) {
-            readingTypes = new HashSet<FullReadingBean>();
-        }
-        readingTypes.addAll( ReadingTypes.expandSystemReadings( systemReadingTypes ) );
-
-        requestedReadingTypesPerHosts.put( monitoredHost, readingTypes );
-        monitoredHosts.add( monitoredHost );
+        performSetup( monitoredHost );
+        // create JsonMonitoringUtils.constructXYZ() values
+        Object[] values = new Object[]{ null, systemReadingTypes };
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.SCHEDULE_SYSTEM_MONITORING_RELATIVE_URI,
+                                    "There were errors while scheduling system monitoring",
+                                    values );
     }
 
     /**
@@ -341,32 +314,19 @@ public class SystemMonitor {
      * @param readingParameters the parameters this monitor knows how to work with
      */
     @PublicAtsApi
-    public void scheduleMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                    @Validate(name = "readingType", type = ValidationType.STRING_NOT_EMPTY) String readingType,
-                                    @Validate(name = "readingParameters", type = ValidationType.NOT_NULL) Map<String, String> readingParameters ) {
+    public void scheduleMonitoring(
+                                    String monitoredHost,
+                                    String readingType,
+                                    Map<String, String> readingParameters ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( "Could not schedule monitoring a statistic on '"
-                                                  + monitoredHost + "'",
-                                                  new Object[]{ monitoredHost, readingType,
-                                                                readingParameters } );
-
-        Set<FullReadingBean> readingTypes = requestedReadingTypesPerHosts.get( monitoredHost );
-        if( readingTypes == null ) {
-            readingTypes = new HashSet<FullReadingBean>();
-        }
-
-        Set<String> readingNames = new HashSet<String>();
-        readingNames.add( readingType );
-
-        FullReadingBean reading = ReadingsRepository.getInstance()
-                                                    .getReadingXmlDefinition( readingType,
-                                                                              readingParameters );
-        readingTypes.add( reading );
-
-        requestedReadingTypesPerHosts.put( monitoredHost, readingTypes );
-        monitoredHosts.add( monitoredHost );
+        performSetup( monitoredHost );
+        // create JsonMonitoringUtils.constructXYZ() values
+        Object[] values = new Object[]{ readingType, readingParameters };
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.SCHEDULE_MONITORING_RELATIVE_URI,
+                                    "There were errors while scheduling monitoring",
+                                    values );
     }
 
     /**
@@ -382,18 +342,19 @@ public class SystemMonitor {
      * @param processReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_PROCESS_* constants
      */
     @PublicAtsApi
-    public void scheduleProcessMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                           @Validate(name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                           @Validate(name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                           @Validate(name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+    public void scheduleProcessMonitoring(
+                                           String monitoredHost,
+                                           String processPattern,
+                                           String processAlias,
+                                           String[] processReadingTypes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( new Object[]{ monitoredHost, processPattern, processAlias,
-                                                                processReadingTypes } );
-
-        scheduleProcessMonitoring( monitoredHost, null, processPattern, processAlias, null,
-                                   processReadingTypes );
+        performSetup( monitoredHost );
+        scheduleProcessOrChildProcessMonitoring( monitoredHost,
+                                                 null,
+                                                 processPattern,
+                                                 processAlias,
+                                                 null,
+                                                 processReadingTypes );
     }
 
     /**
@@ -410,99 +371,84 @@ public class SystemMonitor {
      * @param processReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_PROCESS_* constants
      */
     @PublicAtsApi
-    public void scheduleProcessMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                           @Validate(name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                           @Validate(name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                           @Validate(name = "processUsername", type = ValidationType.STRING_NOT_EMPTY) String processUsername,
-                                           @Validate(name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+    public void scheduleProcessMonitoring(
+                                           String monitoredHost,
+                                           String processPattern,
+                                           String processAlias,
+                                           String processUsername,
+                                           String[] processReadingTypes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( new Object[]{ monitoredHost, processPattern, processAlias,
-                                                                processUsername, processReadingTypes } );
-
-        scheduleProcessMonitoring( monitoredHost, null, processPattern, processAlias, processUsername,
-                                   processReadingTypes );
+        performSetup( monitoredHost );
+        scheduleProcessOrChildProcessMonitoring( monitoredHost,
+                                                 null,
+                                                 processPattern,
+                                                 processAlias,
+                                                 processUsername,
+                                                 processReadingTypes );
     }
 
     /**
-     * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
-     * a name of a parent process.
-     * </br>When one or more processes have a parent process specified, the parent process will combine
-     * the statistics of all of its children processes.
-     * </br>This way it is possible to get a picture of the resource usage of a whole tested product
-     * which is running more than one actual system processes
-     *
-     * @param monitoredHost the host where the monitored process lives
-     * @param parentProcess the virtual parent process
-     * @param processPattern the pattern to use in order to find the process among all system processes.
-     * @param processAlias the process alias to use when logging into the database
-     * @param processReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_PROCESS_* constants
-     */
+    * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
+    * a name of a parent process.
+    * </br>When one or more processes have a parent process specified, the parent process will combine
+    * the statistics of all of its children processes.
+    * </br>This way it is possible to get a picture of the resource usage of a whole tested product
+    * which is running more than one actual system processes
+    *
+    * @param monitoredHost the host where the monitored process lives
+    * @param parentProcess the virtual parent process
+    * @param processPattern the pattern to use in order to find the process among all system processes.
+    * @param processAlias the process alias to use when logging into the database
+    * @param processReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_PROCESS_* constants
+    */
     @PublicAtsApi
-    public void scheduleChildProcessMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                @Validate(name = "parentProcess", type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
-                                                @Validate(name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                                @Validate(name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                @Validate(name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+    public void scheduleChildProcessMonitoring(
+                                                String monitoredHost,
+                                                String parentProcess,
+                                                String processPattern,
+                                                String processAlias,
+                                                String[] processReadingTypes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( new Object[]{ monitoredHost, parentProcess, processPattern,
-                                                                processAlias, processReadingTypes } );
-
-        scheduleProcessMonitoring( monitoredHost, parentProcess, processPattern, processAlias, null,
-                                   processReadingTypes );
+        performSetup( monitoredHost );
+        scheduleProcessOrChildProcessMonitoring( monitoredHost,
+                                                 parentProcess,
+                                                 processPattern,
+                                                 processAlias,
+                                                 null,
+                                                 processReadingTypes );
     }
 
     /**
-     * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
-     * a name of a parent process.
-     * </br>When one or more processes have a parent process specified, the parent process will combine
-     * the statistics of all of its children processes.
-     * </br>This way it is possible to get a picture of the resource usage of a whole tested product
-     * which is running more than one actual system processes
-     *
-     * @param monitoredHost the host where the monitored process lives
-     * @param parentProcess the virtual parent process
-     * @param processPattern the pattern to use in order to find the process among all system processes.
-     * @param processAlias the process alias to use when logging into the database
-     * @param processUsername the name of the user who started this process
-     * @param processReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_PROCESS_* constants
-     */
+    * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
+    * a name of a parent process.
+    * </br>When one or more processes have a parent process specified, the parent process will combine
+    * the statistics of all of its children processes.
+    * </br>This way it is possible to get a picture of the resource usage of a whole tested product
+    * which is running more than one actual system processes
+    *
+    * @param monitoredHost the host where the monitored process lives
+    * @param parentProcess the virtual parent process
+    * @param processPattern the pattern to use in order to find the process among all system processes.
+    * @param processAlias the process alias to use when logging into the database
+    * @param processUsername the name of the user who started this process
+    * @param processReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_PROCESS_* constants
+    */
     @PublicAtsApi
-    public void scheduleChildProcessMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                @Validate(name = "parentProcess", type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
-                                                @Validate(name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                                @Validate(name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                @Validate(name = "processUsername", type = ValidationType.STRING_NOT_EMPTY) String processUsername,
-                                                @Validate(name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+    public void scheduleChildProcessMonitoring(
+                                                String monitoredHost,
+                                                String parentProcess,
+                                                String processPattern,
+                                                String processAlias,
+                                                String processUsername,
+                                                String[] processReadingTypes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( "Could not schedule a process for monitoring '"
-                                                  + monitoredHost + "'",
-                                                  new Object[]{ monitoredHost, parentProcess, processPattern,
-                                                                processAlias, processUsername,
-                                                                processReadingTypes } );
-
-        scheduleProcessMonitoring( monitoredHost, parentProcess, processPattern, processAlias,
-                                   processUsername, processReadingTypes );
-    }
-
-    private void scheduleProcessMonitoring( String monitoredHost, String parentProcess, String processPattern,
-                                            String processAlias, String processUsername,
-                                            String[] processReadingTypes ) {
-
-        Set<FullReadingBean> readingTypes = requestedReadingTypesPerHosts.get( monitoredHost );
-        if( readingTypes == null ) {
-            readingTypes = new HashSet<FullReadingBean>();
-        }
-        readingTypes.addAll( ReadingTypes.expandProcessReadings( parentProcess, processPattern, processAlias,
-                                                                 processUsername, processReadingTypes ) );
-
-        requestedReadingTypesPerHosts.put( monitoredHost, readingTypes );
-        monitoredHosts.add( monitoredHost );
+        performSetup( monitoredHost );
+        scheduleProcessOrChildProcessMonitoring( monitoredHost,
+                                                 parentProcess,
+                                                 processPattern,
+                                                 processAlias,
+                                                 processUsername,
+                                                 processReadingTypes );
     }
 
     /**
@@ -516,14 +462,14 @@ public class SystemMonitor {
      * @param jvmReadingTypes what kind of data to collect. Use some of the SystemMonitor.MONITOR_JVM_* constants
      */
     @PublicAtsApi
-    public void scheduleJvmMonitoring( @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                       @Validate(name = "jvmPort", type = ValidationType.NUMBER_PORT_NUMBER) String jvmPort,
-                                       @Validate(name = "jvmReadingTypes", type = ValidationType.NOT_NULL) String[] jvmReadingTypes ) {
+    public void scheduleJvmMonitoring(
+                                       String monitoredHost,
+                                       String jvmPort,
+                                       String[] jvmReadingTypes ) {
 
         scheduleJvmMonitoring( monitoredHost, jvmPort, "", jvmReadingTypes );
-
     }
-    
+
     /**
      * Schedule monitoring a JVM application
      * <br><b>Note:</b> You must open the tested JVM application for JMX connections by adding the following
@@ -537,38 +483,21 @@ public class SystemMonitor {
      */
     @PublicAtsApi
     public void scheduleJvmMonitoring(
-                                       @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                       @Validate(name = "jvmPort", type = ValidationType.NUMBER_PORT_NUMBER) String jvmPort,
-                                       @Validate(name = "alias", type = ValidationType.NOT_NULL) String alias,
-                                       @Validate(name = "jvmReadingTypes", type = ValidationType.NOT_NULL) String[] jvmReadingTypes ) {
+                                       String monitoredHost,
+                                       String jvmPort,
+                                       String alias,
+                                       String[] jvmReadingTypes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        new Validator().validateMethodParameters( "Could not schedule monitoring JVM statistics on '"
-                                                  + monitoredHost + "' at " + jvmPort + " port",
-                                                  new Object[]{ monitoredHost, jvmPort, jvmReadingTypes } );
-
-        Set<FullReadingBean> readingTypes = requestedReadingTypesPerHosts.get( monitoredHost );
-        if( readingTypes == null ) {
-            readingTypes = new HashSet<FullReadingBean>();
-        }
-
-        Map<String, String> readingParameters = new HashMap<String, String>();
-        readingParameters.put( "JMX_PORT", jvmPort );
-        if(!StringUtils.isNullOrEmpty( alias )){
-            readingParameters.put( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS, alias );
-        }
-        for( String readingType : jvmReadingTypes ) {
-            FullReadingBean reading = ReadingsRepository.getInstance()
-                                                        .getReadingXmlDefinition( readingType,
-                                                                                  readingParameters );
-            readingTypes.add( reading );
-        }
-
-        requestedReadingTypesPerHosts.put( monitoredHost, readingTypes );
-        monitoredHosts.add( monitoredHost );
+        performSetup( monitoredHost );
+        // create JsonMonitoringUtils.constructXYZ() values
+        Object[] values = new Object[]{ null, jvmPort, alias, jvmReadingTypes };
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.SCHEDULE_JVM_MONITORING_RELATIVE_URI,
+                                    "There were errors while scheduling jvm monitoring",
+                                    values );
     }
-    
+
     /**
      * Schedule custom monitoring a JVM application
      * <br><b>Note:</b>You can monitor just a single process.
@@ -588,43 +517,21 @@ public class SystemMonitor {
      */
     @PublicAtsApi
     public void scheduleCustomJvmMonitoring(
-                                             @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                             @Validate(name = "jmxPort", type = ValidationType.NUMBER_PORT_NUMBER) String jmxPort,
-                                             @Validate(name = "alias", type = ValidationType.NOT_NULL) String alias,
-                                             @Validate(name = "mbeanName", type = ValidationType.NOT_NULL) String mbeanName,
-                                             @Validate(name = "unit", type = ValidationType.NOT_NULL) String unit,
-                                             @Validate(name = "mbeanAttributes", type = ValidationType.NOT_NULL) String... mbeanAttributes ) {
+                                             String monitoredHost,
+                                             String jmxPort,
+                                             String alias,
+                                             String mbeanName,
+                                             String unit,
+                                             String... mbeanAttributes ) {
 
-        // validate input parameters
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        String jvmMonitor = "com.axway.ats.agent.components.monitoring.model.jvmmonitor.AtsJvmMonitor";
-
-        Set<FullReadingBean> readingTypes = requestedReadingTypesPerHosts.get( monitoredHost );
-        if( readingTypes == null ) {
-            readingTypes = new HashSet<FullReadingBean>();
-        }
-
-        Map<String, String> readingParameters = new LinkedHashMap<String, String>();
-        readingParameters.put( "JMX_PORT", jmxPort );
-        readingParameters.put( "MBEAN_NAME", mbeanName );
-        if( !StringUtils.isNullOrEmpty( alias ) ) {
-            readingParameters.put( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS, alias );
-        }
-
-        // we just need a list of values, so we are using only the keys of the already existing map
-        if( mbeanAttributes.length > 1 ) {
-            for( String att : mbeanAttributes ) {
-                readingParameters.put( att, "" );
-            }
-        }
-        // the first element in the array is always the mbean name
-        FullReadingBean reading = new FullReadingBean( jvmMonitor, mbeanAttributes[0], unit );
-        reading.setId( String.valueOf( ReadingsRepository.getInstance().getNewUniqueId() ) );
-        reading.setParameters( readingParameters );
-        readingTypes.add( reading );
-
-        requestedReadingTypesPerHosts.put( monitoredHost, readingTypes );
-        monitoredHosts.add( monitoredHost );
+        performSetup( monitoredHost );
+        // create JsonMonitoringUtils.constructXYZ() values
+        Object[] values = new Object[]{ null, jmxPort, alias, mbeanName, unit, mbeanAttributes };
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.SCHEDULE_CUSTOM_JVM_MONITORING_RELATIVE_URI,
+                                    "There were errors while scheduling custom jvm monitoring",
+                                    values );
     }
 
     /**
@@ -634,73 +541,51 @@ public class SystemMonitor {
      * @param atsAgent the ATS Agent which runs the monitored virtual users
      */
     @PublicAtsApi
-    public void scheduleUserActivityMonitoring( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent ) {
-
-        // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( "Could not schedule users activity monitoring on '"
-                                                  + atsAgent + "'", new Object[]{ atsAgent } );
+    public void scheduleUserActivityMonitoring(
+                                                String atsAgent ) {
 
         monitoredAgents.add( atsAgent );
+
+        performSetup( atsAgent );
+        scheduleUserActivity( atsAgent );
     }
 
     /**
      * Start monitoring
      *
-     * @param monitoredHost the host to monitor
-     * @param collectInterval in how many seconds to record the requested data.
-     * The logging interval will be 50 times the collect interval.
+     * @param pollingInterval in how many seconds to record the requested data
      */
     @PublicAtsApi
-    public void startMonitoring( int collectInterval ) {
+    public void startMonitoring(
+                                 int pollingInterval ) {
 
-        startMonitoring( collectInterval, collectInterval * 50 );
-    }
-
-    /**
-     * Start monitoring
-     *
-     * @param monitoredHost the host to monitor
-     * @param collectInterval in how many seconds to record the requested data
-     * @param loggingInterval in how many seconds to move the recorded data to the logging database
-     */
-    @PublicAtsApi
-    public void startMonitoring( int collectInterval, int loggingInterval ) {
-
-        if( isStarted ) {
-
-            throw new MonitoringException( "The system monitor is already started" );
-        }
-
-        checkTimeIntervals( collectInterval, loggingInterval );
-
-        this.scheduler = Executors.newScheduledThreadPool( 10 );
-        this.startTimestamp = System.currentTimeMillis();
-        this.pollInterval = collectInterval;
-        this.loggingInterval = loggingInterval;
-
-        List<MonitoringException> errorsStartingMonitoringPhysicalHosts = startMonitoringPhysicalHosts();
-        if( errorsStartingMonitoringPhysicalHosts.size() > 0 ) {
-            for( MonitoringException e : errorsStartingMonitoringPhysicalHosts ) {
-                log.error( "The following error occured while stating the system monitoring process", e );
+        Iterator<String> it = this.monitoredHosts.iterator();
+        List<String> errorsMessages = new ArrayList<>();
+        while( it.hasNext() ) {
+            String monitoredHost = it.next();
+            String errorMessage = performMonitoringOperation( monitoredHost,
+                                                              RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                              RestHelper.START_MONITORING_RELATIVE_URI,
+                                                              "There were errors while starting monitoring",
+                                                              new Object[]{ null,
+                                                                            pollingInterval,
+                                                                            System.currentTimeMillis() } );
+            if( errorMessage != null ) {
+                errorsMessages.add( errorMessage );
             }
-
-            cancelAnyMonitoringActivity();
+        }
+        // any monitoring operations on the agents is already cancelled,
+        // so here, we just log the errors from each agent
+        if( errorsMessages.size() > 0 ) {
+            for( String errorMessage : errorsMessages ) {
+                log.error( "The following error occured while stating the system monitoring process: "
+                           + errorMessage );
+            }
             throw new MonitoringException( "There were error starting the system monitoring process" );
         }
 
-        List<MonitoringException> errorsStartingMonitoringAgents = startMonitoringAgent();
-        if( errorsStartingMonitoringAgents.size() > 0 ) {
-            for( MonitoringException e : errorsStartingMonitoringAgents ) {
-                log.error( "The following error occured while stating the monitoring process on ATS Agent",
-                           e );
-            }
-
-            cancelAnyMonitoringActivity();
-            throw new MonitoringException( "There were errors starting the monitoring process on ATS Agent" );
-        }
-
         isStarted = true;
+
     }
 
     /**
@@ -709,25 +594,24 @@ public class SystemMonitor {
     @PublicAtsApi
     public void stopMonitoring() {
 
-        try {
-            boolean succesfulStopMonitoringPhysicalHosts = stopMonitoringPhysicalHosts( true );
-            boolean succesfulStopMonitoringUserActivity = stopMonitoringAgents( true );
-
-            if( !succesfulStopMonitoringPhysicalHosts || !succesfulStopMonitoringUserActivity ) {
-                throw new MonitoringException( "There were errors stopping the monitoring process" );
-            }
-        } finally {
-            // we have canceled all logging task ran by the scheduler, now stop the scheduler
-            scheduler.shutdownNow();
+        Iterator<String> it = this.monitoredHosts.iterator();
+        while( it.hasNext() ) {
+            String monitoredHost = it.next();
+            performMonitoringOperation( monitoredHost,
+                                        RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                        RestHelper.STOP_MONITORING_RELATIVE_URI,
+                                        "There were errors while stopping monitoring",
+                                        new Object[]{ null } );
+            performCleanup( monitoredHost );
         }
 
         isStarted = false;
     }
 
     /**
-     *
-     * @return <code>true</code> if the monitoring is started and <code>false</code> if it is not
-     */
+    *
+    * @return <code>true</code> if the monitoring is started and <code>false</code> if it is not
+    */
     @PublicAtsApi
     public boolean isStarted() {
 
@@ -735,275 +619,158 @@ public class SystemMonitor {
     }
 
     /**
-     * We enter this method on error, so try to cancel any monitoring collection activity,
-     * do not collect any remaining results
+     * Adds PassiveDbAppender on the agent with the local (on the Test executor
+     * side) log4j DB configuration, joins the current testcase, and initializes
+     * the monitoring.
      */
-    private void cancelAnyMonitoringActivity() {
+    private void performSetup(
+                               String monitoredHost ) {
 
-        try {
-            log.info( "Canceling any system monitoring activity, if there is such" );
-            stopMonitoringPhysicalHosts( false );
-            log.info( "Canceling any agent monitoring activity, if there is such" );
-            stopMonitoringAgents( false );
-        } finally {
-            // we have canceled all logging task ran by the scheduler, now stop the scheduler
-            scheduler.shutdownNow();
-        }
-
-    }
-
-    private List<MonitoringException> startMonitoringPhysicalHosts() {
-
-        List<MonitoringException> errors = new ArrayList<MonitoringException>();
-
-        // initialize the monitoring processes
-        Iterator<String> monitoredHostsIterator = monitoredHosts.iterator();
-        while( monitoredHostsIterator.hasNext() ) {
-            String monitoredHost = monitoredHostsIterator.next();
-
-            log.debug( "Initializing system monitoring on " + monitoredHost );
-            final String ERR_MSG = "Could not initialize monitoring " + monitoredHost + ". ";
-
-            Set<FullReadingBean> readings = requestedReadingTypesPerHosts.get( monitoredHost );
-            if( readings == null || readings.size() == 0 ) {
-                errors.add( new MonitoringException( ERR_MSG + " as no monitor types are provided" ) );
-                break;
-            }
-
-            try {
-                initializeSystemMonitoringProcess( monitoredHost, readings );
-            } catch( MonitoringException e ) {
-                errors.add( e );
-                break;
-            }
-
-            log.info( "Successfully initialized monitoring " + monitoredHost );
-        }
-
-        // run the monitoring processes
-        monitoredHostsIterator = monitoredHosts.iterator();
-        while( monitoredHostsIterator.hasNext() ) {
-            String monitoredHost = monitoredHostsIterator.next();
-            log.debug( "Starting system monitoring on " + monitoredHost );
-
-            try {
-                startSystemMonitoringProcess( monitoredHost );
-            } catch( MonitoringException e ) {
-                errors.add( e );
-                break;
-            }
-
-            // start the task which will log into the database at a scheduled interval
-            log.debug( "Starting the logging task for the system monitoring on " + monitoredHost );
-            AbstractLoggerTask loggerTask = new SystemStatsLoggerTask( monitoredHost );
-            ScheduledFuture<?> loggerTaskFuture = scheduler.scheduleAtFixedRate( loggerTask, loggingInterval,
-                                                                                 loggingInterval,
-                                                                                 TimeUnit.SECONDS );
-            //put the task in the map
-            loggerTasksPerHost.put( monitoredHost, loggerTaskFuture );
-
-            log.info( "Successfully started monitoring " + monitoredHost
-                      + ". Monitoring results will be collected on every " + loggingInterval + " seconds" );
-        }
-
-        return errors;
-    }
-
-    private List<MonitoringException> startMonitoringAgent() {
-
-        List<MonitoringException> errors = new ArrayList<MonitoringException>();
-
-        int numberAgents = 0;
-
-        // iterate the monitored hosts
-        Iterator<String> monitoredAgentsIterator = monitoredAgents.iterator();
-        while( monitoredAgentsIterator.hasNext() ) {
-            numberAgents++;
-            String monitoredAgent = monitoredAgentsIterator.next();
-            log.debug( "Starting ATS Agent monitoring on " + monitoredAgent );
-
-            try {
-                new AgentMonitoringClient( monitoredAgent ).startMonitoring( startTimestamp, pollInterval );
-            } catch( AgentException e ) {
-                errors.add( new MonitoringException( "Could not start monitoring ATS Agent " + monitoredAgent,
-                                                     e ) );
-            }
-        }
-
-        // Start the task which will log into the database at a scheduled interval
-        // Note that we use just 1 task for monitoring all agents
-        if( numberAgents > 0 && errors.size() == 0 ) {
-            log.debug( "Starting the logging task for the agent monitoring" );
-            lastUserActivityLoggerTask = new UserActivityLoggerTask( monitoredAgents );
-            ScheduledFuture<?> loggerTaskFuture = scheduler.scheduleAtFixedRate( lastUserActivityLoggerTask,
-                                                                                 loggingInterval,
-                                                                                 loggingInterval,
-                                                                                 TimeUnit.SECONDS );
-            // put the task in the map
-            loggerTasksPerHost.put( UserActivityLoggerTask.ATS_AGENT_HOSTS, loggerTaskFuture );
-
-            log.info( "User activity on " + Arrays.toString( monitoredAgents.toArray() )
-                      + " agent(s) will be monitored every " + loggingInterval + " seconds" );
-        }
-
-        return errors;
-    }
-
-    private boolean stopMonitoringPhysicalHosts( boolean getRemainingData ) {
-
-        boolean successfulOperation = true;
-
-        // cancel the logging tasks
-        Iterator<String> loggerTasksIterator = monitoredHosts.iterator();
-        while( loggerTasksIterator.hasNext() ) {
-            String monitoredHost = loggerTasksIterator.next();
-
-            log.debug( "Stopping the logging task for the system monitoring on " + monitoredHost );
-            ScheduledFuture<?> loggerTaskFuture = loggerTasksPerHost.get( monitoredHost );
-            if( loggerTaskFuture != null ) {
-                // the loggerTaskFuture is null when we scheduled to monitor this host but got
-                // error when tried to start the monitoring process
-
-                if( loggerTaskFuture.isCancelled() ) {
-                    throw new MonitoringException( "Logging task for the system monitoring process on "
-                                                   + monitoredHost + " has been cancelled" );
-                }
-                loggerTaskFuture.cancel( false );
-
-                try {
-                    // log any remaining results by explicitly calling the task to get the results
-                    if( getRemainingData ) {
-                        log.debug( "Get any remaining monitoring results for " + monitoredHost );
-                        AbstractLoggerTask loggerTask = new SystemStatsLoggerTask( monitoredHost );
-                        loggerTask.run();
-                    }
-                } catch( Exception e ) {
-                    successfulOperation = false;
-                    log.error( "Error getting final monitoring results for " + monitoredHost, e );
-                }
-            }
-        }
-
-        // stop the monitoring process
-        Iterator<String> monitoredHostsIterator = monitoredHosts.iterator();
-        while( monitoredHostsIterator.hasNext() ) {
-            String monitoredHost = monitoredHostsIterator.next();
-            try {
-                stopSystemMonitoringProcess( monitoredHost );
-            } catch( MonitoringException e ) {
-                successfulOperation = false;
-                log.error( "Could not stop monitoring " + monitoredHost, e );
-            }
-        }
-
-        return successfulOperation;
-    }
-
-    private boolean stopMonitoringAgents( boolean getRemainingData ) {
-
-        boolean successfulOperation = true;
-
-        String monitoredAgentsString = Arrays.toString( monitoredAgents.toArray() );
-
-        // cancel the logging task
-        ScheduledFuture<?> loggerTaskFuture = loggerTasksPerHost.get( UserActivityLoggerTask.ATS_AGENT_HOSTS );
-        if( loggerTaskFuture != null ) {
-            log.debug( "Stopping the logging task for monitoring " + monitoredAgentsString
-                       + " ATS agent(s) " );
-            if( loggerTaskFuture.isCancelled() ) {
-                throw new MonitoringException( "Logging task for monitoring " + monitoredAgentsString
-                                               + " ATS agent(s) has been cancelled" );
-            }
-            loggerTaskFuture.cancel( false );
-
-            try {
-                // log any remaining results by explicitly calling the task to get the results
-                if( getRemainingData ) {
-                    AbstractLoggerTask loggerTask = new UserActivityLoggerTask( monitoredAgents,
-                                                                                lastUserActivityLoggerTask.getcollectTimesPerLoader() );
-                    loggerTask.run();
-                }
-            } catch( Exception e ) {
-                successfulOperation = false;
-                log.error( "Error getting final monitoring results for " + monitoredAgentsString
-                           + " ATS agent(s)", e );
-            }
-
-            // Stop the monitoring process on all agents
-            Iterator<String> monitoredAgentsIterator = monitoredAgents.iterator();
-            while( monitoredAgentsIterator.hasNext() ) {
-                String monitoredAgent = monitoredAgentsIterator.next();
-                try {
-                    stopMonitoringProcessOnAgent( monitoredAgent );
-                } catch( MonitoringException e ) {
-                    successfulOperation = false;
-                    log.error( e );
-                }
-            }
-        }
-        return successfulOperation;
-    }
-
-    private void checkTimeIntervals( int collectInterval, int loggingInterval ) {
-
-        if( collectInterval < 1 ) {
-            throw new MonitoringException( "The interval for collecting statistical data must be at least 1 second. You have specified "
-                                           + collectInterval + " seconds" );
-        }
-
-        if( loggingInterval < 10 ) {
-            throw new MonitoringException( "The interval for moving the statistical data to the logging server must be at least 10 seconds. You have specified "
-                                           + loggingInterval + " seconds" );
+        if( !this.configuredAgents.contains( monitoredHost ) ) {
+            // the agent was not configured, so configure it
+            this.configuredAgents.add( monitoredHost );
+            initializeDbConnection( monitoredHost );
+            joinTestcase( monitoredHost );
+            initializeMonitoring( monitoredHost );
         }
     }
 
-    private void initializeSystemMonitoringProcess( String monitoredHost,
-                                                    Set<FullReadingBean> readings ) throws MonitoringException {
+    /**
+     * Removes the PassiveDbAppender on the agent, that was appended via
+     * initializeDbConnection(), and leaves the current testcase.
+     */
+    private void performCleanup(
+                                 String monitoredHost ) {
 
-        log.debug( "Initializing the system monitoring process on " + monitoredHost );
-        try {
-            InternalSystemMonitoringOperations sysMonitoringActions = new InternalSystemMonitoringOperations( monitoredHost );
-            sysMonitoringActions.initializeMonitoring( new ArrayList<FullReadingBean>( readings ),
-                                                       startTimestamp, pollInterval );
-        } catch( AgentException e ) {
-            throw new MonitoringException( "Could not start the system monitoring process on " + monitoredHost
-                                           + ". For more details check loader logs on that machine", e );
-        }
+        leaveTestcase( monitoredHost );
+        // we don't want to explicitly remove any appender, attached on the agent from this caller 
+        deinitializeDbConenction( monitoredHost );
     }
 
-    private void startSystemMonitoringProcess( String monitoredHost ) throws MonitoringException {
+    private void initializeDbConnection(
+                                         String monitoredHost ) {
 
-        log.debug( "Starting the system monitoring process on " + monitoredHost );
-        try {
-            InternalSystemMonitoringOperations sysMonitoringActions = new InternalSystemMonitoringOperations( monitoredHost );
-            sysMonitoringActions.startMonitoring();
-        } catch( AgentException e ) {
-            throw new MonitoringException( "Could not start the system monitoring process on "
-                                           + monitoredHost, e );
-        }
+        DbAppenderConfiguration appenderConfiguration = ActiveDbAppender.getCurrentInstance()
+                                                                        .getAppenderConfig();
+
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
+        this.monitoredHosts.add( monitoredHost );
+
+        /*
+         * create RestHelper instance, ready to connect with the specified
+         * monitoredHost
+         */
+        RestHelper helper = new RestHelper();
+        helper.post( monitoredHost,
+                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                     RestHelper.INITIALIZE_DB_CONNECTION_RELATIVE_URI,
+                     new Object[]{ null,
+                                   appenderConfiguration.getHost(),
+                                   appenderConfiguration.getDatabase(),
+                                   appenderConfiguration.getUser(),
+                                   appenderConfiguration.getPassword(),
+                                   System.currentTimeMillis() } );
+
+        this.restHelpers.put( monitoredHost, helper );
+
     }
 
-    private void stopSystemMonitoringProcess( String monitoredHost ) throws MonitoringException {
+    private void initializeMonitoring(
+                                       String monitoredHost ) {
 
-        log.debug( "Stopping system monitoring on " + monitoredHost );
-        try {
-            InternalSystemMonitoringOperations sysMonitoringActions = new InternalSystemMonitoringOperations( monitoredHost );
-            sysMonitoringActions.stopMonitoring();
-            log.debug( "Successfully stopped system monitoring on " + monitoredHost );
-        } catch( AgentException e ) {
-            throw new MonitoringException( "Could not stop the system monitoring process on " + monitoredHost,
-                                           e );
-        }
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.INITIALIZE_MONITORING_RELATIVE_URI,
+                                    "There were errors while initializing monitoring",
+                                    new Object[]{ null } );
     }
 
-    private void stopMonitoringProcessOnAgent( String monitoredAgent ) throws MonitoringException {
+    private void joinTestcase(
+                               String monitoredHost ) {
 
-        try {
-            log.debug( "Stopping system monitoring on " + monitoredAgent + " agent" );
-            new AgentMonitoringClient( monitoredAgent ).stopMonitoring();
-            log.debug( "Successfully stopped monitoring " + monitoredAgent + " agent" );
-        } catch( AgentException e ) {
-            throw new MonitoringException( "Could not stop monitoring " + monitoredAgent + " agent", e );
-        }
+        TestCaseState testCaseState = AtsDbLogger.getLogger( SystemMonitor.class.getName() )
+                                                 .getCurrentTestCaseState();
+
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                                    RestHelper.JOIN_TESTCASE_RELATIVE_URI,
+                                    "There were errors while joining testcase",
+                                    new Object[]{ null,
+                                                  testCaseState.getRunId(),
+                                                  testCaseState.getTestcaseId() } );
     }
+
+    private void leaveTestcase(
+                                String monitoredHost ) {
+
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                                    RestHelper.LEAVE_TESTCASE_RELATIVE_URI,
+                                    "There were errors while leaving testcase",
+                                    new Object[]{ null } );
+    }
+
+    // this code if left commented for now
+    private void deinitializeDbConenction(
+                                           String monitoredHost ) {
+        // we don't want to explicitly remove any appender, attached on the agent from this caller
+        //        performMonitoringOperation( monitoredHost,
+        //                                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+        //                                    RestHelper.DEINITIALIZE_DB_CONNECTION_RELATIVE_URI,
+        //                                    "There were errors while deinitializing db connection",
+        //                                    new Object[]{ null } );
+    }
+
+    private void scheduleProcessOrChildProcessMonitoring(
+                                                          String monitoredHost,
+                                                          String parentProcess,
+                                                          String processPattern,
+                                                          String processAlias,
+                                                          String processUsername,
+                                                          String[] processReadingTypes ) {
+
+        // create JsonMonitoringUtils.constructXYZ() values
+        Object[] values = new Object[]{ null,
+                                        processPattern,
+                                        processAlias,
+                                        processUsername,
+                                        parentProcess,
+                                        processReadingTypes };
+        performMonitoringOperation( monitoredHost,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.SCHEDULE_PROCESS_MONITORING_RELATIVE_URI,
+                                    "There were errors while scheduling process monitoring",
+                                    values );
+    }
+
+    private void scheduleUserActivity(
+                                       String monitoredAgent ) {
+
+        Object[] values = new Object[]{ null };
+        // create JsonMonitoringUtils.constructXYZ() values
+        performMonitoringOperation( monitoredAgent,
+                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                    RestHelper.SCHEDULE_USER_ACTIVITY_RELATIVE_URI,
+                                    "There were errors while scheduling user activity",
+                                    values );
+    }
+
+    private String performMonitoringOperation(
+                                               String monitoredHost,
+                                               String baseUri,
+                                               String relativeUri,
+                                               String errorMessage,
+                                               Object[] values ) {
+
+        RestHelper helper = this.restHelpers.get( monitoredHost );
+        RestResponse response = helper.post( monitoredHost, baseUri, relativeUri, values );
+
+        if( response.getStatusCode() >= 400 ) {
+            log.error( errorMessage + " on '" + monitoredHost + "'" );
+            return response.getBodyAsJson().getString( "error" );
+        }
+
+        return null;
+    }
+
 }

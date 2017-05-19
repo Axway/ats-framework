@@ -236,7 +236,12 @@ public class HostUtils {
 
                                 ipList.add( ipv4 );
                                 if( exitOnFirstIPv4 ) {
-                                    break;
+                                	/* 
+                                	 * return list, containing the last added IP address,
+                                	 * which will be the first IPv4 address, that was found
+                                	*/
+                                	int listSize = ipList.size();
+                                    return ipList.subList( listSize - 1, listSize );
                                 }
                             }
                         } else //if( ip instanceof java.net.Inet6Address )

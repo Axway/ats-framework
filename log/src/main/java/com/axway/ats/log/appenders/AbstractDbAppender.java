@@ -35,8 +35,8 @@ import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 
 /**
- * This appender is capable of arranging the database storage and storing messages into it.
- * It works on the Test Executor side.
+ * This appender is capable of arranging the database storage and storing
+ * messages into it. It works on the Test Executor side.
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
 
@@ -61,17 +61,31 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     protected DbEventRequestProcessor             eventProcessor;
 
     /**
-     * Here we are caching the state of the currently executed test case.
-     * This way we do not need to go through the queue(which is in another thread)
+     * Here we are caching the state of the currently executed test case. This
+     * way we do not need to go through the queue(which is in another thread)
      */
     protected TestCaseState                       testCaseState;
 
     /**
-     * When true - we dump info about the usage of the events queue.
-     * It is targeted as a debug tool when cannot sent the events to the DB fast enough.
+     * When true - we dump info about the usage of the events queue. It is
+     * targeted as a debug tool when cannot sent the events to the DB fast
+     * enough.
      */
     private boolean                               isMonitoringEventsQueue;
     private long                                  lastQueueCapacityTick;
+
+    /**
+    
+     * The Test Executor time is the leading time.
+    
+     * The time offset value here keeps the time difference between Test Executor and a particular Agent.
+    
+     * So the offset will be zero on Test Executor side (where ActiveDbAppender is used) and
+    
+     * probably different then zero on the Agent side (where PassiveDbAppender is used)
+    
+     */
+    private long                                   timeOffset = 0;
 
     /**
      * Constructor
@@ -80,8 +94,8 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         super();
 
-        //init the appender configuration
-        //it will be populated when the setters are called
+        // init the appender configuration
+        // it will be populated when the setters are called
         appenderConfig = new DbAppenderConfiguration();
 
         testCaseState = new TestCaseState();
@@ -90,23 +104,25 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
                                                                             false );
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.log4j.AppenderSkeleton#activateOptions()
      */
     @Override
     public void activateOptions() {
 
-        //check whether the configuration is valid first
+        // check whether the configuration is valid first
         try {
             appenderConfig.validate();
         } catch( InvalidAppenderConfigurationException iace ) {
             throw new DbAppenederException( iace );
         }
 
-        //set the threshold if there is such
+        // set the threshold if there is such
         appenderConfig.setLoggingThreshold( getThreshold() );
 
-        //the logging queue
+        // the logging queue
         queue = new ArrayBlockingQueue<LogEventRequest>( getMaxNumberLogEvents() );
 
         // enable batch mode at ATS Agent side only
@@ -116,21 +132,31 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
             isBatchMode = isBatchMode();
         }
 
-        //create new event processor
+        // create new event processor
         try {
-            eventProcessor = new DbEventRequestProcessor( appenderConfig, layout,
-                                                          getEventRequestProcessorListener(), isBatchMode );
+            eventProcessor = new DbEventRequestProcessor( appenderConfig,
+                                                          layout,
+                                                          getEventRequestProcessorListener(),
+                                                          isBatchMode );
         } catch( DatabaseAccessException e ) {
             throw new RuntimeException( "Unable to create DB event processor", e );
         }
 
-        //start the logging thread
+        // start the logging thread
         queueLogger = new QueueLoggerThread( queue, eventProcessor, isBatchMode );
         queueLogger.setDaemon( true );
         queueLogger.start();
     }
 
-    protected void passEventToLoggerQueue( LogEventRequest packedEvent ) {
+    protected void passEventToLoggerQueue(
+                                           LogEventRequest packedEvent ) {
+
+        // Events on both Test Executor and Agent sides are processed here.
+
+        // Events on Agent get their timestamps alligned with Test Executor time.
+        if( timeOffset != 0 ) {
+            packedEvent.applyTimeOffset( timeOffset );
+        }
 
         if( isMonitoringEventsQueue ) {
             // Tell the user how many new events can be placed in the queue.
@@ -159,11 +185,14 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         }
     }
 
-    public abstract GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event );
+    public abstract GetCurrentTestCaseEvent getCurrentTestCaseState(
+                                                                     GetCurrentTestCaseEvent event );
 
     protected abstract EventRequestProcessorListener getEventRequestProcessorListener();
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.log4j.AppenderSkeleton#close()
      */
     public void close() {
@@ -174,7 +203,9 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.log4j.AppenderSkeleton#requiresLayout()
      */
     public boolean requiresLayout() {
@@ -182,26 +213,31 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.log4j.AppenderSkeleton#setLayout(org.apache.log4j.Layout)
      */
     @Override
-    public void setLayout( Layout layout ) {
+    public void setLayout(
+                           Layout layout ) {
 
         super.setLayout( layout );
 
-        //set the layout to the event processor as well
+        // set the layout to the event processor as well
         if( eventProcessor != null ) {
             eventProcessor.setLayout( layout );
         }
     }
 
     /**
-     * log4j system reads the "events" parameter from the log4j.xml and calls this method
+     * log4j system reads the "events" parameter from the log4j.xml and calls
+     * this method
      *
      * @param maxNumberLogEvents
      */
-    public void setEvents( String maxNumberLogEvents ) {
+    public void setEvents(
+                           String maxNumberLogEvents ) {
 
         this.appenderConfig.setMaxNumberLogEvents( maxNumberLogEvents );
     }
@@ -231,13 +267,15 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     }
 
     /**
-     * log4j system reads the "mode" parameter from the log4j.xml and calls this method
+     * log4j system reads the "mode" parameter from the log4j.xml and calls this
+     * method
      *
      * Expected value is "batch", everything else is skipped.
      *
      * @param mode
      */
-    public void setMode( String mode ) {
+    public void setMode(
+                         String mode ) {
 
         this.appenderConfig.setMode( mode );
     }
@@ -296,7 +334,8 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         return appenderConfig.getEnableCheckpoints();
     }
 
-    public void setEnableCheckpoints( boolean enableCheckpoints ) {
+    public void setEnableCheckpoints(
+                                      boolean enableCheckpoints ) {
 
         appenderConfig.setEnableCheckpoints( enableCheckpoints );
     }
@@ -306,9 +345,16 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         return appenderConfig;
     }
 
-    public void setAppenderConfig( DbAppenderConfiguration appenderConfig ) {
+    public void setAppenderConfig(
+                                   DbAppenderConfiguration appenderConfig ) {
 
         this.appenderConfig = appenderConfig;
         this.threshold = appenderConfig.getLoggingThreshold();
+    }
+
+    public void calculateTimeOffset(
+                                     long executorTimestamp ) {
+
+        this.timeOffset = ( System.currentTimeMillis() - executorTimestamp );
     }
 }

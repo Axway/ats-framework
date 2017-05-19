@@ -18,8 +18,7 @@ package com.axway.ats.common.performance.monitor;
 import java.util.List;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.performance.monitor.beans.BasicReadingBean;
-import com.axway.ats.common.performance.monitor.beans.FullReadingBean;
+import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 
 /**
  * A Monitor that can be used by the ATS Performance Monitor Service
@@ -49,7 +48,7 @@ public abstract class PerformanceMonitor {
      */
     @PublicAtsApi
     public abstract void init(
-                               FullReadingBean[] readings ) throws Exception;
+                               ReadingBean[] readings ) throws Exception;
 
     /**
      * Set polling interval in seconds
@@ -82,24 +81,21 @@ public abstract class PerformanceMonitor {
 
     /**
      * Called only once, then the pollNewData method is called repetitively in intervals specified by the user. 
-     * Must list of Full Reading Beans, which contains all the info a Basic Reading Bean contains pluse
-     * info about the name of the statistics and its measurement unit
      * 
      * @return the new data
      * @throws Exception
      */
     @PublicAtsApi
-    public abstract List<BasicReadingBean> pollNewDataForFirstTime() throws Exception;
+    public abstract List<ReadingBean> pollNewDataForFirstTime() throws Exception;
 
     /**
-     * Called repetitively in intervals specified by the user. 
-     * Must list of Basic Reading Beans which contain only unique reading id and a new value
+     * Called repetitively in intervals specified by the user.
      * 
      * @return the new data
      * @throws Exception
      */
     @PublicAtsApi
-    public abstract List<BasicReadingBean> pollNewData() throws Exception;
+    public abstract List<ReadingBean> pollNewData() throws Exception;
 
     /**
      * Called to do some clean up procedures, for example to release some resources allocated in the init() method

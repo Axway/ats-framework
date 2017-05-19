@@ -40,6 +40,7 @@ import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.InsertCheckpointEvent;
 import com.axway.ats.log.autodb.events.InsertMessageEvent;
 import com.axway.ats.log.autodb.events.InsertSystemStatisticEvent;
+import com.axway.ats.log.autodb.events.InsertUserActivityStatisticEvent;
 import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
 import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 import com.axway.ats.log.autodb.events.RegisterThreadWithLoadQueueEvent;
@@ -59,7 +60,7 @@ public class AtsDbLogger {
 
     private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
 
-    protected Logger              logger;
+    protected Logger            logger;
 
     private AtsDbLogger( Logger logger ) {
 
@@ -697,6 +698,28 @@ public class AtsDbLogger {
                                                    statisticIds,
                                                    statisticValues,
                                                    timestamp ) );
+    }
+
+    /**
+     * Insert user activity statistics identified by their DB IDs
+     *
+     * @param monitoredMachine the monitored machine
+     * @param statisticIds the statistics' DB IDs
+     * @param statisticValues the statistics' values
+     * @param timestamp the timestamp
+     */
+    public void insertUserActivityStatistcs(
+                                             String monitoredMachine,
+                                             String statisticIds,
+                                             String statisticValues,
+                                             long timestamp ) {
+
+        sendEvent( new InsertUserActivityStatisticEvent( ATS_DB_LOGGER_CLASS_NAME,
+                                                         logger,
+                                                         monitoredMachine,
+                                                         statisticIds,
+                                                         statisticValues,
+                                                         timestamp ) );
     }
 
     /**

@@ -46,4 +46,15 @@ public class LogEventRequest {
 
         return timestamp;
     }
+
+    /**
+    
+     * Used to align timestamp on events occuring on the Agent side with Test Executor time.
+    
+     */
+    public void applyTimeOffset(
+                                 long offset ) {
+
+        this.timestamp += offset;
+    }
 }
