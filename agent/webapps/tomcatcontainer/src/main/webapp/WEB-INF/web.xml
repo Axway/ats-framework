@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
 <!--
     The contents of this file are subject to the terms
     of the Common Development and Distribution License
@@ -19,7 +22,6 @@
     own identifying information: Portions Copyright [yyyy]
     [name of copyright owner]
 -->
-<web-app>
     <display-name>agentapp</display-name>
     <description>agentapp</description>
     <listener>
@@ -39,8 +41,8 @@
     </listener>
     <servlet>
         <servlet-name>agentservice_servlet</servlet-name>
-        <display-name>agentservice</display-name>
-        <description>JAX-WS endpoint - agentservice</description>
+        
+        
         <servlet-class>
             com.sun.xml.ws.transport.http.servlet.WSServlet
         </servlet-class>
@@ -56,4 +58,23 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+    
+    <servlet>
+		<servlet-name>ATS Agent REST Service</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>com.axway.ats.agent.webapp.restservice</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ATS Agent REST Service</servlet-name>
+		<url-pattern>/restservice/*</url-pattern>
+	</servlet-mapping>
+    
 </web-app>

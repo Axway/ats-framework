@@ -23,9 +23,9 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.common.performance.monitor.beans.BasicReadingBean;
-import com.axway.ats.common.performance.monitor.beans.FullReadingBean;
 import com.axway.ats.common.performance.monitor.beans.MonitorResults;
+import com.axway.ats.common.performance.monitor.beans.ReadingBean;
+import com.axway.ats.core.threads.ThreadsPerCaller;
 
 /**
  * A monitoring agent which collects and provides information about the Agent users activity
@@ -40,25 +40,21 @@ public class UserActionsMonitoringAgent {
     // a map which remembers how many users are currently running a particular action
     private Map<String, Integer>                           runningActionsMap;
 
-    // the information ready to be sent out
-    private List<MonitorResults>                           collectedResults;
-    private Map<String, FullReadingBean>                   knownReadingBeans;
-
-    //the id for the total number of running users must be the same among all Agents
-    private static final String                            TOTAL_USERS_READING_UNIQUE_ID = "1000000";
-
     // a simple clock which gets the info from the actions map and fills the collected data buffer
     // this is done on regular time intervals
     private MonitoringThread                               monitoringThread;
 
+    // this is the agent ip:port on which the current thread is started
+    private String                                         agentAddress;
+
     private UserActionsMonitoringAgent() {
 
         this.runningActionsMap = new HashMap<String, Integer>();
-        this.collectedResults = new ArrayList<MonitorResults>();
-        this.knownReadingBeans = new HashMap<String, FullReadingBean>();
+
     }
 
-    public static synchronized UserActionsMonitoringAgent getInstance( String caller ) {
+    public static synchronized UserActionsMonitoringAgent getInstance(
+                                                                       String caller ) {
 
         UserActionsMonitoringAgent instance = instances.get( caller );
         if( instance == null ) {
@@ -66,6 +62,12 @@ public class UserActionsMonitoringAgent {
             instances.put( caller, instance );
         }
         return instance;
+    }
+
+    public void setAgentAddress(
+                                 String agentAddress ) {
+
+        this.agentAddress = agentAddress;
     }
 
     /**
@@ -76,7 +78,9 @@ public class UserActionsMonitoringAgent {
      * @param startTimestamp the initial time stamp
      * @param pollInterval the polling interval
      */
-    public void startMonitoring( long startTimestamp, int pollInterval ) {
+    public void startMonitoring(
+                                 long startTimestamp,
+                                 int pollInterval ) {
 
         if( monitoringThread != null && monitoringThread.isAlive() ) {
             log.warn( "The user activity monitor is running from a previous run. We will stop it now" );
@@ -114,22 +118,6 @@ public class UserActionsMonitoringAgent {
     }
 
     /**
-     * This method is called by the external monitoring system.
-     *
-     * The collected data is retrieved from the buffer, the buffer is cleaned for new data
-     * @return
-     */
-    public synchronized List<MonitorResults> getMonitoringResults() {
-
-        // create a copy of the collected results and send them to the Test Executor
-        List<MonitorResults> collectedResultsToPass = new ArrayList<MonitorResults>( collectedResults );
-
-        // purge the collected data
-        collectedResults.clear();
-        return collectedResultsToPass;
-    }
-
-    /**
      * This method is called by the Agent action invoker
      *
      * Indicates an Agent action is started, so we increment
@@ -137,7 +125,8 @@ public class UserActionsMonitoringAgent {
      *
      * @param actionName the name of the action
      */
-    public synchronized void actionStarted( String actionName ) {
+    public synchronized void actionStarted(
+                                            String actionName ) {
 
         if( monitoringThread != null ) {
             Integer nRunning = runningActionsMap.get( actionName );
@@ -157,7 +146,8 @@ public class UserActionsMonitoringAgent {
      *
      * @param actionName the name of the action
      */
-    public synchronized void actionEnded( String actionName ) {
+    public synchronized void actionEnded(
+                                          String actionName ) {
 
         if( monitoringThread != null ) {
             Integer nRunning = runningActionsMap.get( actionName );
@@ -185,22 +175,11 @@ public class UserActionsMonitoringAgent {
     }
 
     /**
-     * Appends a new line with monitoring activity per timestamp
-     * @param newData the new data
-     */
-    private synchronized void appendCollectedData( MonitorResults newMonitoringResults ) {
-
-        collectedResults.add( newMonitoringResults );
-    }
-
-    /**
      * Resets the data buffers
      */
     private synchronized void resetTheMonitoringAgent() {
 
         runningActionsMap.clear();
-        collectedResults.clear();
-        knownReadingBeans.clear();
     }
 
     /**
@@ -213,19 +192,23 @@ public class UserActionsMonitoringAgent {
         private long      currentTimestamp;
         private final int pollInterval;
 
-        // we keep the collected data for up to 1 hour,
-        // if not collected yet - we discard this data
-        private final int collectedDataBufferLimit;
+        private String    callerId;
 
-        MonitoringThread( long currentTimestamp, int pollInterval ) {
+        MonitoringThread( long currentTimestamp,
+                          int pollInterval ) {
 
             this.currentTimestamp = currentTimestamp;
             this.pollInterval = 1000 * pollInterval;
-            this.collectedDataBufferLimit = 3600 / pollInterval;
+
+            this.callerId = ThreadsPerCaller.getCaller();
+
+            setName( "Monitoring-" + this.callerId );
         }
 
         @Override
         public void run() {
+
+            ThreadsPerCaller.registerThread( this.callerId );
 
             log.info( "Started monitoring user activity in intervals of " + pollInterval + " milliseconds" );
             try {
@@ -248,7 +231,7 @@ public class UserActionsMonitoringAgent {
 
                     long startPollingTime = System.currentTimeMillis();
 
-                    List<BasicReadingBean> newReadingBeans = new ArrayList<BasicReadingBean>();
+                    List<ReadingBean> newReadingBeans = new ArrayList<ReadingBean>();
                     // poll for new data
 
                     int totalUserActions = 0;
@@ -259,56 +242,45 @@ public class UserActionsMonitoringAgent {
 
                         int usersRunningThisAction = actionMapChunk.getValue();
 
-                        FullReadingBean knownReadingBean = knownReadingBeans.get( actionMapChunk.getKey() );
-                        if( knownReadingBean != null ) {
-                            newReadingBeans.add( new BasicReadingBean( knownReadingBean.getId(),
-                                                                       String.valueOf( usersRunningThisAction ) ) );
-                        } else {
-                            FullReadingBean newReadingBean = new FullReadingBean( null,
-                                                                                  "[users] " + actionMapChunk.getKey(),
-                                                                                  "Count" );
-                            newReadingBean.setId( actionMapChunk.getKey() );
-                            newReadingBean.setValue( String.valueOf( usersRunningThisAction ) );
-                            newReadingBeans.add( newReadingBean );
-
-                            knownReadingBeans.put( actionMapChunk.getKey(), newReadingBean );
-                        }
+                        ReadingBean newReadingBean = new ReadingBean( null,
+                                                                      "[users] " + actionMapChunk.getKey(),
+                                                                      "Count" );
+                        newReadingBean.setValue( String.valueOf( usersRunningThisAction ) );
+                        newReadingBeans.add( newReadingBean );
 
                         totalUserActions += usersRunningThisAction;
+
                     }
+
                     // register the total number of users, we always have this statistic
                     String totalUsers = "Total";
-                    FullReadingBean knownTotalUsersReadingBean = knownReadingBeans.get( totalUsers );
-                    if( knownTotalUsersReadingBean != null ) {
-                        newReadingBeans.add( new BasicReadingBean( knownTotalUsersReadingBean.getId(),
-                                                                   String.valueOf( totalUserActions ) ) );
-                    } else {
-                        FullReadingBean newTotalUsersReadingBean = new FullReadingBean( null,
-                                                                                        "[users] "
-                                                                                              + totalUsers,
-                                                                                        "Count" );
-                        newTotalUsersReadingBean.setId( TOTAL_USERS_READING_UNIQUE_ID );
-                        newTotalUsersReadingBean.setValue( String.valueOf( totalUserActions ) );
-                        newReadingBeans.add( newTotalUsersReadingBean );
+                    ReadingBean newTotalUsersReadingBean = new ReadingBean( null,
+                                                                                    "[users] "
+                                                                                          + totalUsers,
+                                                                                    "Count" );
 
-                        knownReadingBeans.put( totalUsers, newTotalUsersReadingBean );
-                    }
+                    newTotalUsersReadingBean.setValue( String.valueOf( totalUserActions ) );
+                    newReadingBeans.add( newTotalUsersReadingBean );
 
-                    appendCollectedData( new MonitorResults( currentTimestamp, newReadingBeans ) );
+
+                    MonitorResults newMonitorResults = new MonitorResults( currentTimestamp,
+                                                                           newReadingBeans );
 
                     lastPollTime = ( int ) ( System.currentTimeMillis() - startPollingTime );
 
-                    if( collectedResults.size() > collectedDataBufferLimit ) {
-                        log.warn( "The collected data was not requested for the last 1 hour, so we will discard it now" );
-                        collectedResults.clear();
-                    }
+                    // log the results in the DB
+                    UserActivityLoggingUtils.logCollectedResults( agentAddress, newMonitorResults );
+
                 }
             } catch( InterruptedException e ) {
                 // we have been stopped, this is expected
                 log.info( "Stopped monitoring the user activity" );
             } catch( Exception e ) {
                 log.error( "User activity monitoring is aborted due to unexpected error", e );
+            } finally {
+                ThreadsPerCaller.unregisterThread();
             }
         }
     }
+
 }

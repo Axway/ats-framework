@@ -8,7 +8,7 @@ before_install:
     #- mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.1.pom
      - rm ~/.m2/settings.xml
      - cp settings.xml ~/.m2
-script: mvn clean install deploy
+script: mvn clean install deploy -DskipTests=true
 cache:
   directories:
     - $HOME/.m2

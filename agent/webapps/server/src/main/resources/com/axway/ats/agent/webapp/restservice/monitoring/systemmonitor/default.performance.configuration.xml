@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+    <monitor class="com.axway.ats.agent.webapp.restservice.monitoring.systemmonitor.AtsSystemMonitor">
+
+        <!-- CPU load -->
+        <reading name="CPU average load - Last minute" unit="None" />
+        <reading name="CPU average load - Last 5 minutes" unit="None" />
+        <reading name="CPU average load - Last 15 minutes" unit="None" />
+
+        <!-- CPU percentage usage -->
+        <reading name="CPU usage - Total" unit="%" />
+        <reading name="CPU usage - Wait" unit="%" />
+        <reading name="CPU usage - Kernel" unit="%" />
+        <reading name="CPU usage - User" unit="%" />
+
+        <!-- Memory -->
+        <reading name="Memory - Actual Used" unit="MB" />
+        <reading name="Memory - Actual Free" unit="MB" />
+        <reading name="Memory - Used" unit="MB" />
+        <reading name="Memory - Free" unit="MB" />
+
+        <!-- Virtual Memory -->
+        <reading name="Virtual memory - Total" unit="MB"/>
+        <reading name="Virtual memory - Used" unit="MB" />
+        <reading name="Virtual memory - Free" unit="MB" />
+        <reading name="Virtual memory - Pages in" unit="Count" />
+        <reading name="Virtual memory - Pages out" unit="Count" />
+
+        <!-- IO -->
+        <reading name="IO Read bytes - All local devices" unit="MB/sec" />
+        <reading name="IO Write bytes - All local devices" unit="MB/sec" />
+
+        <!-- Network traffic -->
+        <reading name="NIC" unit="KB/sec" />
+        
+        <!-- Netstat statistics -->
+        <reading name="[Netstat] Active connection openings" unit="Count" />
+        <reading name="[Netstat] Passive connection openings" unit="Count" />
+        <reading name="[Netstat] Failed connection attempts" unit="Count" />
+	    <reading name="[Netstat] Reset connections ?" unit="Count" />
+	    <reading name="[Netstat] Current connections" unit="Count" />
+	    <reading name="[Netstat] Segments received" unit="Count" />
+	    <reading name="[Netstat] Segments sent" unit="Count" />
+	    <reading name="[Netstat] Segments retransmitted" unit="Count" />
+	    <reading name="[Netstat] Out resets ?" unit="Count" />
+	    <reading name="[Netstat] In errors ?" unit="Count" />
+
+        <!-- TCP statistics -->	    
+	    <reading name="[TCP] Close" unit="Count" />
+	    <reading name="[TCP] Listen" unit="Count" />
+	    <reading name="[TCP] SYN sent" unit="Count" />
+	    <reading name="[TCP] SYN received" unit="Count" />
+	    <reading name="[TCP] Established" unit="Count" />
+	    <reading name="[TCP] Close wait" unit="Count" />
+	    <reading name="[TCP] Last ACK" unit="Count" />
+	    <reading name="[TCP] FIN wait 1" unit="Count" />
+	    <reading name="[TCP] FIN wait 2" unit="Count" />
+	    <reading name="[TCP] Closing" unit="Count" />
+	    <reading name="[TCP] Time wait" unit="Count" />
+	    <reading name="[TCP] Bound" unit="Count" />
+	    <reading name="[TCP] Idle" unit="Count" />
+	    <reading name="[TCP] Total inbound" unit="Count" />
+	    <reading name="[TCP] Total outbound" unit="Count" />
+
+        <!-- System Process -->
+        <!-- CPU -->
+        <reading name="Process CPU usage - Kernel" unit="%" dynamic="true"/>
+        <reading name="Process CPU usage - User" unit="%" dynamic="true"/>
+        <reading name="Process CPU usage - Total" unit="%" dynamic="true"/>
+        <!-- Memory -->
+        <reading name="Process Memory - Virtual" unit="MB" dynamic="true"/>
+        <reading name="Process Memory - Resident" unit="MB" dynamic="true"/>
+        <reading name="Process Memory - Shared" unit="MB" dynamic="true"/>
+        <reading name="Process Memory - Page faults" unit="Count/sec" dynamic="true"/>
+    </monitor>
+    
+    <monitor class="com.axway.ats.agent.webapp.restservice.monitoring.jvmmonitor.AtsJvmMonitor">
+        <!-- JVM statistics -->	    
+	    <reading name="[JVM] Memory Heap" unit="MB" />
+	    <reading name="[JVM] Memory Heap - Young Generation - Eden" unit="MB" />
+	    <reading name="[JVM] Memory Heap - Young Generation - Survivor" unit="MB" />	    
+	    <reading name="[JVM] Memory Heap - Old Generation" unit="MB" />
+	    <reading name="[JVM] Memory - Permanent Generation" unit="MB" />
+	    <reading name="[JVM] Memory - Code Cache" unit="MB" />
+	    <reading name="[JVM] Loaded classes" unit="Count" />
+	    <reading name="[JVM] Threads" unit="Count" />
+	    <reading name="[JVM] Daemon threads" unit="Count" />
+	    <reading name="[JVM] CPU usage" unit="%" />
+    </monitor>    
+</configuration>

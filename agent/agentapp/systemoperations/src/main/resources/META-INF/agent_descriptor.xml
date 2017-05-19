@@ -16,6 +16,8 @@
         name="com.axway.ats.agent.components.system.operations.InternalProcessTalker" />        
 	<actionClass
         name="com.axway.ats.agent.components.system.operations.InternalRegistryOperations" />
+    <actionClass
+        name="com.axway.ats.agent.components.system.operations.MachineDescriptionOperations" />
         
     <cleanupHandler
         name="com.axway.ats.agent.components.system.operations.CleanupHandler" />

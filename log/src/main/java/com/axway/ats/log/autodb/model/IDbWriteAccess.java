@@ -118,6 +118,10 @@ public interface IDbWriteAccess {
     public void insertSystemStatistics( int testCaseId, String machine, String statisticIds,
                                         String statisticValues, long timestamp,
                                         boolean closeConnection ) throws DatabaseAccessException;
+    
+    public void insertUserActivityStatistics( int testCaseId, String machine, String statisticIds,
+            String statisticValues, long timestamp,
+            boolean closeConnection ) throws DatabaseAccessException;
 
     public int populateSystemStatisticDefinition( String name, String parentName, String internalName,
                                                   String unit, String params ) throws DatabaseAccessException;

@@ -10,6 +10,11 @@
     <artifactId>ats-agent-webapp-tomcatcontainer</artifactId>
     <packaging>war</packaging>
     <name>ATS-Agent-WebApp-TomcatContainer</name>
+    
+    <properties>
+    	<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+    	<org.glassfish.jersey.jersey-server.version>2.3.1</org.glassfish.jersey.jersey-server.version>
+    </properties>
 
     <build>
         <plugins>
@@ -183,5 +188,31 @@
             <artifactId>log4j</artifactId>
             <scope>provided</scope>
         </dependency>
+        
+        
+		<!-- REST dependencies -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${javax.ws.rs-api.version}</version>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${org.glassfish.jersey.jersey-server.version}</version>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${org.glassfish.jersey.jersey-server.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-moxy</artifactId>
+			<version>${org.glassfish.jersey.jersey-server.version}</version>
+		</dependency>
+        
     </dependencies>
 </project>

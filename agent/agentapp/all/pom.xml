@@ -180,13 +180,6 @@
         </dependency>
         <dependency>
             <groupId>com.axway.ats.framework.agent.standalone</groupId>
-            <artifactId>ats-agent-monitoring</artifactId>
-            <version>${project.version}</version>
-            <classifier>service</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.ats.framework.agent.standalone</groupId>
             <artifactId>ats-agent-systemoperations</artifactId>
             <version>${project.version}</version>
             <classifier>service</classifier>

@@ -23,11 +23,8 @@ import org.apache.log4j.Logger;
 
 /**
  * Shares some data between different reading types.
- * 
- * This bean is not traveling between the agent and the monitoring library, so it is not needed
- * to all its data serializable.
  */
-public class SharedReadingBean extends FullReadingBean {
+public class SharedReadingBean extends ReadingBean {
 
     private static final long          serialVersionUID           = 1L;
 

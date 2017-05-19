@@ -17,12 +17,9 @@ package com.axway.ats.common.performance.monitor.beans;
 
 /**
  * A bean containing info about a virtual process, which acts as a parent of other processes.
- * It is intended to get a picture of a whole product which is run as many single processes
- * 
- * This type of beans are created an the service side and are send just once to the 
- * monitoring client in the same way as a regular FullReadingBean is
+ * It is intended to get a picture of a whole product which is run as many single processes.
  */
-public class ParentProcessReadingBean extends FullReadingBean {
+public class ParentProcessReadingBean extends ReadingBean {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,7 +32,7 @@ public class ParentProcessReadingBean extends FullReadingBean {
 
     }
 
-    public ParentProcessReadingBean( String id,
+    public ParentProcessReadingBean( int dbId,
                                      String monitorClass,
                                      String nameOfThisParentProcess,
                                      String name,
@@ -43,7 +40,7 @@ public class ParentProcessReadingBean extends FullReadingBean {
 
         super( monitorClass, name, unit );
 
-        this.id = id;
+        this.dbId = dbId;
         this.nameOfThisParentProcess = nameOfThisParentProcess;
     }
 
@@ -56,11 +53,7 @@ public class ParentProcessReadingBean extends FullReadingBean {
 
         ParentProcessReadingBean newBean = new ParentProcessReadingBean();
 
-        // the basic bean info
-        newBean.id = this.id;
         newBean.value = this.value;
-
-        // the full bean info
         newBean.monitorClass = this.monitorClass;
         newBean.name = this.name;
         newBean.unit = this.unit;
