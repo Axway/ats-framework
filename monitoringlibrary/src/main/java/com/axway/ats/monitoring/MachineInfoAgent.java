@@ -17,7 +17,7 @@ package com.axway.ats.monitoring;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.agent.components.monitoring.operations.clients.MachineDescriptionOperations;
+import com.axway.ats.agent.components.system.operations.clients.MachineDescriptionOperations;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.validation.Validate;
@@ -43,7 +43,8 @@ public class MachineInfoAgent {
      * @throws Exception
      */
     @PublicAtsApi
-    public void updateMachineInfo( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
+    public void updateMachineInfo(
+                                   @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
                                    @Validate(name = "dbMachineName", type = ValidationType.STRING_NOT_EMPTY) String dbMachineName ) throws Exception {
 
         // validate input parameters

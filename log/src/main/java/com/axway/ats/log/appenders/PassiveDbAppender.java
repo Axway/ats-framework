@@ -23,7 +23,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.LogEventRequest;
+import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
@@ -163,5 +165,19 @@ public class PassiveDbAppender extends AbstractDbAppender {
         }
 
         return null;
+    }
+
+    /**
+     * Manually set the current testcaseState
+     */
+    public void setTestcaseState(
+                                  TestCaseState testCaseState ) {
+
+        this.testCaseState = testCaseState;
+    }
+
+    public DbEventRequestProcessor getDbEventRequestProcessor() {
+
+        return this.eventProcessor;
     }
 }

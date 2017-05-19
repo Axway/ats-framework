@@ -198,6 +198,7 @@
                    <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are treated as warnings -->
                    <!-- due to being not available in JDK 7, building it via it, will cause build error -->
                    <additionalparam>-Xdoclint:none</additionalparam>
+                   <quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
                </configuration>
                <executions>
                    <execution>

@@ -18,11 +18,42 @@ package com.axway.ats.core.monitoring;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class SystemMonitorDefinitions {
+	
 
     // The name of the Agent component we use for monitoring a physical system
     // It must be the same as in the corresponding agent_descriptor.xml file
     public static final String       ATS_SYSTEM_MONITORING_COMPONENT_NAME               = "auto-system-monitoring";
+    
+    // Combinet statistics for (CPU-only, Memory-only etc)
+    
+    /** All CPU related statistics */
+    public static final String READING_CPU                = "READING_CPU";
+
+    /** All MEMORY related statistics */
+    public static final String READING_MEMORY             = "READING_MEMORY";
+
+    /** All VIRTUAL MEMORY related statistics */
+    public static final String READING_VIRTUAL_MEMORY     = "READING_VIRTUAL_MEMORY";
+
+    /** All IO related statistics */
+    public static final String READING_IO                 = "READING_IO";
+
+    /** All network interfaces related statistics */
+    public static final String READING_NETWORK_INTERFACES = "READING_NICS";
+
+    /** All Netstat related statistics */
+    public static final String READING_NETSTAT            = "READING_NETSTAT";
+
+    /** All TCP related statistics */
+    public static final String READING_TCP                = "READING_TCP";
+
+    /** All PROCESS CPU related statistics */
+    public static final String READING_PROCESS_CPU        = "READING_PROCESS_CPU";
+
+    /** All PROCESS MEMORY related statistics */
+    public static final String READING_PROCESS_MEMORY     = "READING_PROCESS_MEMORY";
 
     // CPU related statistics
     private static final Set<String> ALL_CPU_READINGS;

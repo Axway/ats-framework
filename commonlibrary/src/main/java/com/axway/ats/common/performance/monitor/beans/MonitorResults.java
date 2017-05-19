@@ -26,10 +26,10 @@ public class MonitorResults implements Serializable {
     private static final long      serialVersionUID = 1L;
 
     private long                   timestamp;
-    private List<BasicReadingBean> readings;
+    private List<ReadingBean> readings;
 
     public MonitorResults( long timestamp,
-                           List<BasicReadingBean> readingBeans ) {
+                           List<ReadingBean> readingBeans ) {
 
         this.timestamp = timestamp;
         this.readings = readingBeans;
@@ -40,7 +40,7 @@ public class MonitorResults implements Serializable {
         return timestamp;
     }
 
-    public List<BasicReadingBean> getReadings() {
+    public List<ReadingBean> getReadings() {
 
         return readings;
     }
@@ -51,8 +51,8 @@ public class MonitorResults implements Serializable {
         StringBuilder result = new StringBuilder();
         result.append( timestamp );
         result.append( ": " );
-        for( BasicReadingBean reading : readings ) {
-            result.append( reading.getId() );
+        for( ReadingBean reading : readings ) {
+            result.append( reading.getName() );
             result.append( " = " );
             result.append( reading.getValue() );
             result.append( ", " );

@@ -136,6 +136,11 @@ public enum LoggingEventType {
     INSERT_SYSTEM_STAT,
 
     /**
+     * Insert an user activity statistic
+     */
+    INSERT_USER_ACTIVITY_STAT,
+
+    /**
      *
      */
     INSERT_MESSAGE

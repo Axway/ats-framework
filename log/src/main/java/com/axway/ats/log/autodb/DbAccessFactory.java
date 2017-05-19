@@ -17,7 +17,9 @@ package com.axway.ats.log.autodb;
 
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public class DbAccessFactory {
@@ -27,8 +29,8 @@ public class DbAccessFactory {
     }
 
     /**
-     * Retrieves the DB info from the log4j system
-     * and then creates a new instance for writing into the DB
+     * Retrieves the DB info from the log4j system and then creates a new
+     * instance for writing into the DB
      * 
      * @return
      * @throws DatabaseAccessException
@@ -50,4 +52,36 @@ public class DbAccessFactory {
         // Create the database access layer
         return new DbWriteAccess( dbConnection, false );
     }
+
+    /**
+     * Retrieves the DB info from the log4j system and then creates a new
+     * instance for writing into the DB
+     * This method differs from the getNewDbWriteAccessObject(), 
+     * because we use the PassiveDbAppender to retrieve the DB info
+     * 
+     * @return DbWriteAccess Object
+     * @throws DatabaseAccessException
+     */
+
+    public DbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender(
+                                                                        String callerId ) throws DatabaseAccessException {
+
+        PassiveDbAppender loggingAppender = PassiveDbAppender.getCurrentInstance( callerId );
+        if( loggingAppender == null ) {
+            throw new DatabaseAccessException( "Unable to initialize connection to the logging database as the ATS PassiveDbAppender for caller '"
+                                               + ThreadsPerCaller.getCaller()
+                                               + "' is not attached to log4j system" );
+        }
+
+        // Create DB connection based on the log4j system settings
+        DbConnection dbConnection = new DbConnSQLServer( loggingAppender.getAppenderConfig().getHost(),
+                                                         loggingAppender.getAppenderConfig().getDatabase(),
+                                                         loggingAppender.getAppenderConfig().getUser(),
+                                                         loggingAppender.getAppenderConfig().getPassword() );
+
+        // Create the database access layer
+        return new DbWriteAccess( dbConnection, false );
+
+    }
+
 }

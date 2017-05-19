@@ -56,19 +56,21 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     private boolean                      isBatchMode;
 
     /**
-     * When true - we dump info about the usage of the events queue.
-     * It is targeted as a debug tool when cannot sent the events to the DB fast enough.
+     * When true - we dump info about the usage of the events queue. It is
+     * targeted as a debug tool when cannot sent the events to the DB fast
+     * enough.
      */
     private boolean                      isMonitorEventsQueue;
 
-    public DbWriteAccess( DbConnection dbConnection, boolean isBatchMode ) throws DatabaseAccessException {
+    public DbWriteAccess( DbConnection dbConnection,
+                          boolean isBatchMode ) throws DatabaseAccessException {
 
         super( dbConnection );
         this.isBatchMode = isBatchMode;
         this.insertFactory = new InsertEventStatementsFactory( isBatchMode );
 
         if( isBatchMode ) {
-            //some events are sent to the DB in batch mode, we cache them here
+            // some events are sent to the DB in batch mode, we cache them here
             dbEventsCache = new DbEventsCache( this );
 
             isMonitorEventsQueue = AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
@@ -94,8 +96,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      *            name/IP of the machine , from which the run was started
      * @return
      */
-    public int startRun( String runName, String osName, String productName, String versionName,
-                         String buildName, long timestamp, String hostName,
+    public int startRun(
+                         String runName,
+                         String osName,
+                         String productName,
+                         String versionName,
+                         String buildName,
+                         long timestamp,
+                         String hostName,
                          boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to insert run with name " + runName;
@@ -150,7 +158,10 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * @param timestamp
      * @param runId
      */
-    public void endRun( long timestamp, int runId, boolean closeConnection ) throws DatabaseAccessException {
+    public void endRun(
+                        long timestamp,
+                        int runId,
+                        boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end run with id " + runId;
 
@@ -194,8 +205,15 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * @param hostName
      * @throws DatabaseAccessException
      */
-    public void updateRun( int runId, String runName, String osName, String productName, String versionName,
-                           String buildName, String userNote, String hostName,
+    public void updateRun(
+                           int runId,
+                           String runName,
+                           String osName,
+                           String productName,
+                           String versionName,
+                           String buildName,
+                           String userNote,
+                           String hostName,
                            boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to update run with name '" + runName + "' and id " + runId;
@@ -242,7 +260,10 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * @param closeConnection
      * @throws DatabaseAccessException
      */
-    public void addRunMetainfo( int runId, String metaKey, String metaValue,
+    public void addRunMetainfo(
+                                int runId,
+                                String metaKey,
+                                String metaValue,
                                 boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to add run meta info '" + metaKey + "=" + metaValue
@@ -276,7 +297,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public int startSuite( String packageName, String suiteName, long timestamp, int runId,
+    public int startSuite(
+                           String packageName,
+                           String suiteName,
+                           long timestamp,
+                           int runId,
                            boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to start suite with name " + suiteName;
@@ -329,7 +354,9 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void endSuite( long timestamp, int suiteId,
+    public void endSuite(
+                          long timestamp,
+                          int suiteId,
                           boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end suite with id " + suiteId;
@@ -362,14 +389,15 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     }
 
     /**
-     * Clear all meta info about an existing test scenario.
-     * Intended to be called prior to adding meta data about a scenario.
+     * Clear all meta info about an existing test scenario. Intended to be
+     * called prior to adding meta data about a scenario.
      *
      * @param scenarioId
      * @param closeConnection
      * @throws DatabaseAccessException
      */
-    public void clearScenarioMetainfo( int scenarioId,
+    public void clearScenarioMetainfo(
+                                       int scenarioId,
                                        boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to clear scenario meta info for scenario with id " + scenarioId;
@@ -397,8 +425,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     }
 
     /**
-     * Update meta info about an existing test scenario.
-     * This data is expected to come from java method annotations
+     * Update meta info about an existing test scenario. This data is expected
+     * to come from java method annotations
      *
      * @param testcaseId
      * @param metaKey
@@ -406,7 +434,10 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * @param closeConnection
      * @throws DatabaseAccessException
      */
-    public void addScenarioMetainfo( int testcaseId, String metaKey, String metaValue,
+    public void addScenarioMetainfo(
+                                     int testcaseId,
+                                     String metaKey,
+                                     String metaValue,
                                      boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to add scenario meta info '" + metaKey + "=" + metaValue
@@ -440,8 +471,13 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public int startTestCase( String suiteName, String scenarioName, String scenarioDescription,
-                              String testcaseName, long timestamp, int suiteId,
+    public int startTestCase(
+                              String suiteName,
+                              String scenarioName,
+                              String scenarioDescription,
+                              String testcaseName,
+                              long timestamp,
+                              int suiteId,
                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to start testcase with name " + testcaseName;
@@ -488,7 +524,10 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void endTestCase( int testcaseResult, long timestamp, int testcaseId,
+    public void endTestCase(
+                             int testcaseResult,
+                             long timestamp,
+                             int testcaseId,
                              boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end testcase with id " + testcaseId;
@@ -520,7 +559,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void deleteTestcase( List<Object> objectsToDelete ) throws DatabaseAccessException {
+    public void deleteTestcase(
+                                List<Object> objectsToDelete ) throws DatabaseAccessException {
 
         StringBuilder testcaseIds = new StringBuilder();
         for( Object obj : objectsToDelete ) {
@@ -544,10 +584,17 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public int startLoadQueue( String name, int sequence, String hostsList, String threadingPattern,
-                               int numberThreads, String machine, long timestamp, int testcaseId,
+    public int startLoadQueue(
+                               String name,
+                               int sequence,
+                               String hostsList,
+                               String threadingPattern,
+                               int numberThreads,
+                               String machine,
+                               long timestamp,
+                               int testcaseId,
                                boolean closeConnection ) throws DatabaseAccessException {
-        
+
         if( testcaseId < 1 ) {
             log.warn( "Load queue '" + name
                       + "' will not be registered because there is no database connection!" );
@@ -600,7 +647,10 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void endLoadQueue( int result, long timestamp, int loadQueueId,
+    public void endLoadQueue(
+                              int result,
+                              long timestamp,
+                              int loadQueueId,
                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end load queue with id " + loadQueueId;
@@ -633,8 +683,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public boolean insertMessage( String message, int level, boolean escapeHtml, String machineName,
-                                  String threadName, long timestamp, int testCaseId,
+    public boolean insertMessage(
+                                  String message,
+                                  int level,
+                                  boolean escapeHtml,
+                                  String machineName,
+                                  String threadName,
+                                  long timestamp,
+                                  int testCaseId,
                                   boolean closeConnection ) throws DatabaseAccessException {
 
         Connection currentConnection;
@@ -680,8 +736,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public boolean insertRunMessage( String message, int level, boolean escapeHtml, String machineName,
-                                     String threadName, long timestamp, int runId,
+    public boolean insertRunMessage(
+                                     String message,
+                                     int level,
+                                     boolean escapeHtml,
+                                     String machineName,
+                                     String threadName,
+                                     long timestamp,
+                                     int runId,
                                      boolean closeConnection ) throws DatabaseAccessException {
 
         String dbVersionString = getDatabaseVersion();
@@ -736,8 +798,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public boolean insertSuiteMessage( String message, int level, boolean escapeHtml, String machineName,
-                                       String threadName, long timestamp, int suiteId,
+    public boolean insertSuiteMessage(
+                                       String message,
+                                       int level,
+                                       boolean escapeHtml,
+                                       String machineName,
+                                       String threadName,
+                                       long timestamp,
+                                       int suiteId,
                                        boolean closeConnection ) throws DatabaseAccessException {
 
         String dbVersionString = getDatabaseVersion();
@@ -792,8 +860,15 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public boolean insertCheckpoint( String name, String threadName, long startTimestamp, long responseTime,
-                                     long transferSize, String transferUnit, int result, int loadQueueId,
+    public boolean insertCheckpoint(
+                                     String name,
+                                     String threadName,
+                                     long startTimestamp,
+                                     long responseTime,
+                                     long transferSize,
+                                     String transferUnit,
+                                     int result,
+                                     int loadQueueId,
                                      boolean closeConnection ) throws DatabaseAccessException {
 
         Connection currentConnection;
@@ -820,13 +895,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         } else {
             // execute this event now
             final String errMsg = "Unable to insert checkpoint '" + name + "'";
-            //            final int indexRowsInserted = 8;
+            // final int indexRowsInserted = 8;
 
             try {
                 insertCheckpointStatement.execute();
-                //                if( insertCheckpointStatement.getInt( indexRowsInserted ) < 1 ) {
-                //                    throw new DatabaseAccessException( errMsg );
-                //                }
+                // if( insertCheckpointStatement.getInt( indexRowsInserted ) < 1
+                // ) {
+                // throw new DatabaseAccessException( errMsg );
+                // }
             } catch( SQLException e ) {
                 throw new DatabaseAccessException( errMsg, e );
             } finally {
@@ -854,13 +930,18 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      *
      * @param checkpointLogLevel
      */
-    public static void setCheckpointLogLevel( CheckpointLogLevel newCheckpointLogLevel ) {
+    public static void setCheckpointLogLevel(
+                                              CheckpointLogLevel newCheckpointLogLevel ) {
 
         checkpointLogLevel = newCheckpointLogLevel;
     }
 
-    public CheckpointInfo startCheckpoint( String name, String threadName, long startTimestamp,
-                                           String transferUnit, int loadQueueId,
+    public CheckpointInfo startCheckpoint(
+                                           String name,
+                                           String threadName,
+                                           long startTimestamp,
+                                           String transferUnit,
+                                           int loadQueueId,
                                            boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to start checkpoint '" + name + "' for thread '" + threadName
@@ -909,8 +990,12 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void endCheckpoint( CheckpointInfo runningCheckpointInfo, long endTimestamp, long transferSize,
-                               int result, boolean closeConnection ) throws DatabaseAccessException {
+    public void endCheckpoint(
+                               CheckpointInfo runningCheckpointInfo,
+                               long endTimestamp,
+                               long transferSize,
+                               int result,
+                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end checkpoint with name '" + runningCheckpointInfo.getName()
                               + "', checkpoint summary id " + runningCheckpointInfo.getCheckpointSummaryId()
@@ -948,14 +1033,22 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void insertCheckpointSummary( String name,
+    public void insertCheckpointSummary(
+                                         String name,
 
-                                         int numRunning, int numPassed, int numFailed,
+                                         int numRunning,
+                                         int numPassed,
+                                         int numFailed,
 
-                                         int minResponseTime, float avgResponseTime, int maxResponseTime,
+                                         int minResponseTime,
+                                         float avgResponseTime,
+                                         int maxResponseTime,
 
-                                         float minTransferRate, float avgTransferRate, float maxTransferRate,
-                                         String transferRateUnit, int loadQueueId,
+                                         float minTransferRate,
+                                         float avgTransferRate,
+                                         float maxTransferRate,
+                                         String transferRateUnit,
+                                         int loadQueueId,
                                          boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to insert checkpoint summary '" + name + "' for load queue "
@@ -1001,8 +1094,12 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void insertSystemStatistics( int testCaseId, String machine, String statisticIds,
-                                        String statisticValues, long timestamp,
+    public void insertSystemStatistics(
+                                        int testCaseId,
+                                        String machine,
+                                        String statisticIds,
+                                        String statisticValues,
+                                        long timestamp,
                                         boolean closeConnection ) throws DatabaseAccessException {
 
         CallableStatement callableStatement = null;
@@ -1031,7 +1128,44 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public int populateSystemStatisticDefinition( String name, String parentName, String internalName,
+    public void insertUserActivityStatistics(
+                                              int testCaseId,
+                                              String machine,
+                                              String statisticIds,
+                                              String statisticValues,
+                                              long timestamp,
+                                              boolean closeConnection ) throws DatabaseAccessException {
+
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
+
+            callableStatement = connection.prepareCall( "{ call sp_insert_user_activity_statistic_by_ids(?, ?, ?, ?, ?) }" );
+            callableStatement.setString( 3, statisticIds );
+            callableStatement.setInt( 1, testCaseId );
+            callableStatement.setString( 2, machine );
+            callableStatement.setString( 4, statisticValues );
+            callableStatement.setTimestamp( 5, new Timestamp( timestamp ) );
+
+            callableStatement.execute();
+
+        } catch( Exception e ) {
+            String errMsg = "Unable to insert user activity statistics, statistic IDs '" + statisticIds
+                            + "', statistic values '" + statisticValues + "', timestamp " + timestamp;
+            throw new DatabaseAccessException( errMsg, e );
+        } finally {
+            if( closeConnection ) {
+                DbUtils.close( connection, callableStatement );
+            } else {
+                DbUtils.closeStatement( callableStatement );
+            }
+        }
+    }
+
+    public int populateSystemStatisticDefinition(
+                                                  String name,
+                                                  String parentName,
+                                                  String internalName,
                                                   String unit,
                                                   String params ) throws DatabaseAccessException {
 
@@ -1047,7 +1181,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         boolean useLocalConnection = false;
         try {
             if( connection == null || connection.isClosed() ) {
-                // connection not set externally so use new connection only for this method invocation
+                // connection not set externally so use new connection only for
+                // this method invocation
                 useLocalConnection = true;
                 con = getConnection();
             } else {
@@ -1079,7 +1214,9 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public void updateMachineInfo( String machineName, String machineInfo,
+    public void updateMachineInfo(
+                                   String machineName,
+                                   String machineInfo,
                                    boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to update the info about machine with name " + machineName;
@@ -1112,7 +1249,9 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public int getTestcaseIdByLabel( String label, boolean closeConnection ) throws DatabaseAccessException {
+    public int getTestcaseIdByLabel(
+                                     String label,
+                                     boolean closeConnection ) throws DatabaseAccessException {
 
         CallableStatement callableStatement = null;
 
@@ -1138,7 +1277,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
-    public boolean isRunPresent( int runId ) throws DatabaseAccessException {
+    public boolean isRunPresent(
+                                 int runId ) throws DatabaseAccessException {
 
         Connection connection = getConnection();
         PreparedStatement statement = null;
@@ -1159,7 +1299,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         return false;
     }
 
-    public boolean isSuitePresent( int suiteId ) throws DatabaseAccessException {
+    public boolean isSuitePresent(
+                                   int suiteId ) throws DatabaseAccessException {
 
         Connection connection = getConnection();
         PreparedStatement statement = null;
@@ -1182,7 +1323,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         return false;
     }
 
-    public boolean isTestcasePresent( int testcaseId ) throws DatabaseAccessException {
+    public boolean isTestcasePresent(
+                                      int testcaseId ) throws DatabaseAccessException {
 
         Connection connection = getConnection();
         PreparedStatement statement = null;
@@ -1206,8 +1348,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     }
 
     /**
-     * Expected to be called only in batch mode.
-     * Flush any pending events
+     * Expected to be called only in batch mode. Flush any pending events
      *
      * @throws DatabaseAccessException
      */
@@ -1217,9 +1358,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     }
 
     /**
-     * Expected to be called only in batch mode.
-     * Flush any pending events in case the
-     * cache is full or it is too old
+     * Expected to be called only in batch mode. Flush any pending events in
+     * case the cache is full or it is too old
      *
      * @throws DatabaseAccessException
      */
@@ -1229,7 +1369,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     }
 
     public void runDbSanityCheck() throws DatabaseAccessException {
-        
+
         DatabaseAccessException dbae = null;
 
         final String SANITY_PRODUCT = "SanityCheck(TestProduct)";
@@ -1274,29 +1414,67 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             long timestamp = Calendar.getInstance().getTimeInMillis();
 
             // start everything
-            int runId = startRun( SANITY_RUN, SANITY_OS, SANITY_PRODUCT, SANITY_VERSION, SANITY_BUILD,
-                                  timestamp, SANITY_HOSTNAME, false );
+            int runId = startRun( SANITY_RUN,
+                                  SANITY_OS,
+                                  SANITY_PRODUCT,
+                                  SANITY_VERSION,
+                                  SANITY_BUILD,
+                                  timestamp,
+                                  SANITY_HOSTNAME,
+                                  false );
             int suiteId = startSuite( "SANITY_PACKAGE", SANITY_SUITE, timestamp, runId, false );
-            int testcaseId = startTestCase( SANITY_SUITE, SANITY_SCENARIO, SANITY_DESCRIPTION,
-                                            SANITY_TESTCASE, timestamp, suiteId, false );
+            int testcaseId = startTestCase( SANITY_SUITE,
+                                            SANITY_SCENARIO,
+                                            SANITY_DESCRIPTION,
+                                            SANITY_TESTCASE,
+                                            timestamp,
+                                            suiteId,
+                                            false );
 
             // insert a test message
-            insertMessage( SANITY_MESSAGE, 5, false, "machine0", "group1-thread2", timestamp, testcaseId,
+            insertMessage( SANITY_MESSAGE,
+                           5,
+                           false,
+                           "machine0",
+                           "group1-thread2",
+                           timestamp,
+                           testcaseId,
                            false );
 
             // insert a checkpoint
-            int loadQueueId = startLoadQueue( SANITY_LOADQUEUE, 0, "127.0.0.1:8080", "AllAtOnce", 10,
-                                              "localhost", timestamp, testcaseId, false );
-            CheckpointInfo startedCheckpointInfo = startCheckpoint( SANITY_CHECKPOINT, "thread1", 1000, "KB",
-                                                                    loadQueueId, false );
+            int loadQueueId = startLoadQueue( SANITY_LOADQUEUE,
+                                              0,
+                                              "127.0.0.1:8080",
+                                              "AllAtOnce",
+                                              10,
+                                              "localhost",
+                                              timestamp,
+                                              testcaseId,
+                                              false );
+            CheckpointInfo startedCheckpointInfo = startCheckpoint( SANITY_CHECKPOINT,
+                                                                    "thread1",
+                                                                    1000,
+                                                                    "KB",
+                                                                    loadQueueId,
+                                                                    false );
             endCheckpoint( startedCheckpointInfo, 2000, 100, CheckpointResult.PASSED.toInt(), false );
 
-            int statisticId1 = populateSystemStatisticDefinition( "running users", "", "", "count",
+            int statisticId1 = populateSystemStatisticDefinition( "running users",
+                                                                  "",
+                                                                  "",
+                                                                  "count",
                                                                   "param1_1" );
-            int statisticId2 = populateSystemStatisticDefinition( "standby users", "", "", "count",
+            int statisticId2 = populateSystemStatisticDefinition( "standby users",
+                                                                  "",
+                                                                  "",
+                                                                  "count",
                                                                   "param2_1" );
-            insertSystemStatistics( testcaseId, "localhost", statisticId1 + "_" + statisticId2, "30_1",
-                                    System.currentTimeMillis(), false );
+            insertSystemStatistics( testcaseId,
+                                    "localhost",
+                                    statisticId1 + "_" + statisticId2,
+                                    "30_1",
+                                    System.currentTimeMillis(),
+                                    false );
 
             endLoadQueue( LoadQueueResult.PASSED.toInt(), timestamp, loadQueueId, false );
 
@@ -1312,7 +1490,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         } finally {
 
             if( dbEventsCache != null ) {
-                // it is in batch mode, we want to cleanup the events cached while running the sanity check
+                // it is in batch mode, we want to cleanup the events cached
+                // while running the sanity check
                 dbEventsCache.resetCache();
             }
 
@@ -1327,15 +1506,17 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 System.err.println( DbUtils.getFullSqlException( errorMessage, sqle ) );
                 if( dbae == null ) {
                     dbae = new DatabaseAccessException( errorMessage, sqle );
-                } else{
-                    log.error( "The transaction could not be rolled back, possible cause '" + dbae.getMessage() + "'" );
+                } else {
+                    log.error( "The transaction could not be rolled back, possible cause '"
+                               + dbae.getMessage() + "'" );
                 }
             } finally {
                 try {
                     if( connection != null ) {
                         connection.setAutoCommit( originalAutoCommitState );
                     }
-                } catch( SQLException e ) { // do not hide the possible exception in the rollback() catch block
+                } catch( SQLException e ) { // do not hide the possible exception
+                                                // in the rollback() catch block
                     System.err.println( DbUtils.getFullSqlException( "Could not restore connection's autocommit state",
                                                                      e ) );
                 } finally {
@@ -1343,7 +1524,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 }
             }
         }
-        // we check if there is thrown exception, the first thrown exception is with priority
+        // we check if there is thrown exception, the first thrown exception is
+        // with priority
         if( dbae != null ) {
             throw dbae;
         }
@@ -1364,9 +1546,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
     /**
      * Set connection for use in DbAccess methods only
+     * 
      * @param connection
      */
-    protected void setInternalConnection( Connection connection ) throws IllegalStateException,
+    protected void setInternalConnection(
+                                          Connection connection ) throws IllegalStateException,
                                                                   IllegalArgumentException {
 
         if( connection == null ) {
@@ -1404,7 +1588,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
         private DbWriteAccess     parent;
 
-        // temporary variables used for telling the user how long it takes to commit the cached events
+        // temporary variables used for telling the user how long it takes to
+        // commit the cached events
         private long              batchStartTime;
         private int               batchCheckpoints;
         private int               batchMessages;
@@ -1425,7 +1610,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             numberCachedCheckpoints = 0;
         }
 
-        private boolean addInsertRunMessageEventToBatch( CallableStatement insertMessageStatement ) throws DatabaseAccessException {
+        private boolean addInsertRunMessageEventToBatch(
+                                                         CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
             if( this.insertRunMessageStatement == null ) {
                 this.insertRunMessageStatement = insertMessageStatement;
@@ -1442,7 +1628,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             return flushCacheIfNeeded();
         }
 
-        private boolean addInsertSuiteMessageEventToBatch( CallableStatement insertMessageStatement ) throws DatabaseAccessException {
+        private boolean addInsertSuiteMessageEventToBatch(
+                                                           CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
             if( this.insertSuiteMessageStatement == null ) {
                 this.insertSuiteMessageStatement = insertMessageStatement;
@@ -1460,7 +1647,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             return flushCacheIfNeeded();
         }
 
-        private boolean addInsertTestcaseMessageEventToBatch( CallableStatement insertMessageStatement ) throws DatabaseAccessException {
+        private boolean addInsertTestcaseMessageEventToBatch(
+                                                              CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
             if( this.insertTestcaseMessageStatement == null ) {
                 this.insertTestcaseMessageStatement = insertMessageStatement;
@@ -1478,7 +1666,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             return flushCacheIfNeeded();
         }
 
-        private boolean addInsertCheckpointEventToBatch( CallableStatement insertCheckpointStatement ) throws DatabaseAccessException {
+        private boolean addInsertCheckpointEventToBatch(
+                                                         CallableStatement insertCheckpointStatement ) throws DatabaseAccessException {
 
             if( this.insertCheckpointStatement == null ) {
                 this.insertCheckpointStatement = insertCheckpointStatement;
@@ -1497,7 +1686,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
         private void updateCacheBirthtime() {
 
-            // if this is the first event, we have to remember the cache birth time
+            // if this is the first event, we have to remember the cache birth
+            // time
             if( numberCachedRunMessages + numberCachedSuiteMessages + numberCachedTestcaseMessages
                 + numberCachedCheckpoints == 1 ) {
                 cacheBirthTime = System.currentTimeMillis();
@@ -1568,11 +1758,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 connection.commit();
             } catch( Exception e ) {
 
-                /*  The next code is not used for now
-                    if( e instanceof BatchUpdateException ) {
-                        processUpdateCounts( ( BatchUpdateException ) e );
-                    }
-                */
+                /*
+                 * The next code is not used for now if( e instanceof
+                 * BatchUpdateException ) { processUpdateCounts( (
+                 * BatchUpdateException ) e ); }
+                 */
 
                 // rollback the entire transaction
                 try {
@@ -1615,11 +1805,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 connection.commit();
             } catch( Exception e ) {
 
-                /*  The next code is not used for now
-                    if( e instanceof BatchUpdateException ) {
-                        processUpdateCounts( ( BatchUpdateException ) e );
-                    }
-                */
+                /*
+                 * The next code is not used for now if( e instanceof
+                 * BatchUpdateException ) { processUpdateCounts( (
+                 * BatchUpdateException ) e ); }
+                 */
 
                 // rollback the entire transaction
                 try {
@@ -1662,11 +1852,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 connection.commit();
             } catch( Exception e ) {
 
-                /*  The next code is not used for now
-                    if( e instanceof BatchUpdateException ) {
-                        processUpdateCounts( ( BatchUpdateException ) e );
-                    }
-                */
+                /*
+                 * The next code is not used for now if( e instanceof
+                 * BatchUpdateException ) { processUpdateCounts( (
+                 * BatchUpdateException ) e ); }
+                 */
 
                 // rollback the entire transaction
                 try {
@@ -1709,11 +1899,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 connection.commit();
             } catch( Exception e ) {
 
-                /*  The next code is not used for now
-                    if( e instanceof BatchUpdateException ) {
-                        processUpdateCounts( ( BatchUpdateException ) e );
-                    }
-                */
+                /*
+                 * The next code is not used for now if( e instanceof
+                 * BatchUpdateException ) { processUpdateCounts( (
+                 * BatchUpdateException ) e ); }
+                 */
 
                 // rollback the entire transaction
                 try {
@@ -1795,27 +1985,23 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
 
         /*
-         NOT SURE IF WE NEED TO DO SUCH CHECKS
-        private static void processUpdateCounts(
-                                                 BatchUpdateException bue ) {
-        
-            int[] updateCounts = bue.getUpdateCounts();
-        
-            // Some databases will continue to execute after one fails.
-            // If so, updateCounts.length will equal the number of batched statements.
-            // If not, updateCounts.length will equal the number of successfully executed statements
-        
-            for( int i = 0; i < updateCounts.length; i++ ) {
-                if( updateCounts[i] >= 0 ) {
-                    // Successfully executed; the number represents number of affected rows
-                } else if( updateCounts[i] == Statement.SUCCESS_NO_INFO ) {
-                    // Successfully executed; number of affected rows not available
-                } else if( updateCounts[i] == Statement.EXECUTE_FAILED ) {
-                    // Failed to execute
-                }
-            }
-        }
-        */
+         * NOT SURE IF WE NEED TO DO SUCH CHECKS private static void
+         * processUpdateCounts( BatchUpdateException bue ) {
+         * 
+         * int[] updateCounts = bue.getUpdateCounts();
+         * 
+         * // Some databases will continue to execute after one fails. // If so,
+         * updateCounts.length will equal the number of batched statements. //
+         * If not, updateCounts.length will equal the number of successfully
+         * executed statements
+         * 
+         * for( int i = 0; i < updateCounts.length; i++ ) { if( updateCounts[i]
+         * >= 0 ) { // Successfully executed; the number represents number of
+         * affected rows } else if( updateCounts[i] == Statement.SUCCESS_NO_INFO
+         * ) { // Successfully executed; number of affected rows not available }
+         * else if( updateCounts[i] == Statement.EXECUTE_FAILED ) { // Failed to
+         * execute } } }
+         */
     }
 
     /**
@@ -1840,9 +2026,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             this.isBatchMode = isBatchMode;
         }
 
-        CallableStatement getInsertTestcaseMessageStatement( Connection connection, String message, int level,
-                                                             boolean escapeHtml, String machineName,
-                                                             String threadName, long timestamp,
+        CallableStatement getInsertTestcaseMessageStatement(
+                                                             Connection connection,
+                                                             String message,
+                                                             int level,
+                                                             boolean escapeHtml,
+                                                             String machineName,
+                                                             String threadName,
+                                                             long timestamp,
                                                              int testCaseId ) throws DatabaseAccessException {
 
             // get the statement
@@ -1881,9 +2072,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        CallableStatement getInsertRunMessageStatement( Connection connection, String message, int level,
-                                                        boolean escapeHtml, String machineName,
-                                                        String threadName, long timestamp,
+        CallableStatement getInsertRunMessageStatement(
+                                                        Connection connection,
+                                                        String message,
+                                                        int level,
+                                                        boolean escapeHtml,
+                                                        String machineName,
+                                                        String threadName,
+                                                        long timestamp,
                                                         int runId ) throws DatabaseAccessException {
 
             // get the statement
@@ -1922,9 +2118,14 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        CallableStatement getInsertSuiteMessageStatement( Connection connection, String message, int level,
-                                                          boolean escapeHtml, String machineName,
-                                                          String threadName, long timestamp,
+        CallableStatement getInsertSuiteMessageStatement(
+                                                          Connection connection,
+                                                          String message,
+                                                          int level,
+                                                          boolean escapeHtml,
+                                                          String machineName,
+                                                          String threadName,
+                                                          long timestamp,
                                                           int suiteId ) throws DatabaseAccessException {
 
             // get the statement
@@ -1963,9 +2164,15 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        CallableStatement getInsersCheckpointStatement( Connection connection, String name, String threadName,
-                                                        long responseTime, long endTimestamp,
-                                                        long transferSize, String transferUnit, int result,
+        CallableStatement getInsersCheckpointStatement(
+                                                        Connection connection,
+                                                        String name,
+                                                        String threadName,
+                                                        long responseTime,
+                                                        long endTimestamp,
+                                                        long transferSize,
+                                                        String transferUnit,
+                                                        int result,
                                                         CheckpointLogLevel checkpointLogLevel,
                                                         int loadQueueId ) throws DatabaseAccessException {
 
