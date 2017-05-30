@@ -98,8 +98,8 @@ public class RealHtmlLink extends HtmlLink {
 
     private void doClick() {
 
-            new RealHtmlElementState( this ).waitToBecomeExisting();
-            RealHtmlElementLocator.findElement( this ).click();
+        new RealHtmlElementState( this ).waitToBecomeExisting();
+        RealHtmlElementLocator.findElement( this ).click();
 
         UiEngineUtilities.sleep();
 

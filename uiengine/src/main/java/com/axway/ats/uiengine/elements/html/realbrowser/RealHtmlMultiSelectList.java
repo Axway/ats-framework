@@ -95,19 +95,19 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
 
         new RealHtmlElementState( this ).waitToBecomeExisting();
 
-            WebElement element = RealHtmlElementLocator.findElement( this );
-            Select select = new Select( element );
-            // select.deselectByVisibleText( value ); // this method doesn't throw an exception if the option doesn't exist
-            for( WebElement option : select.getOptions() ) {
-                if( option.getText().equals( value ) ) {
-                    if( option.isSelected() ) {
-                        option.click();
-                        UiEngineUtilities.sleep();
-                    }
-                    return;
+        WebElement element = RealHtmlElementLocator.findElement( this );
+        Select select = new Select( element );
+        // select.deselectByVisibleText( value ); // this method doesn't throw an exception if the option doesn't exist
+        for( WebElement option : select.getOptions() ) {
+            if( option.getText().equals( value ) ) {
+                if( option.isSelected() ) {
+                    option.click();
+                    UiEngineUtilities.sleep();
                 }
+                return;
             }
-            throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
+        }
+        throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
                                                   + this.toString() + ")" );
     }
 
@@ -120,15 +120,15 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
 
         new RealHtmlElementState( this ).waitToBecomeExisting();
 
-            WebElement element = RealHtmlElementLocator.findElement( this );
-            Select select = new Select( element );
-            List<WebElement> selectedOptions = select.getAllSelectedOptions();
-            String[] result = new String[selectedOptions.size()];
-            int i = 0;
-            for( WebElement selectedOption : selectedOptions ) {
-                result[i++] = selectedOption.getText();
-            }
-            return result;
+        WebElement element = RealHtmlElementLocator.findElement( this );
+        Select select = new Select( element );
+        List<WebElement> selectedOptions = select.getAllSelectedOptions();
+        String[] result = new String[selectedOptions.size()];
+        int i = 0;
+        for( WebElement selectedOption : selectedOptions ) {
+            result[i++] = selectedOption.getText();
+        }
+        return result;
     }
 
     /**

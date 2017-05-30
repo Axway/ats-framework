@@ -28,6 +28,7 @@ import org.openqa.selenium.interactions.internal.Coordinates;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.gargoylesoftware.htmlunit.ScriptException;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 
@@ -54,12 +55,12 @@ public class HiddenHtmlElementUtils {
             getElementForOperationMethod.setAccessible( true );
 
             moveOutIfNeededMethod = HtmlUnitMouse.class.getDeclaredMethod( "moveOutIfNeeded",
-                                                                           HtmlElement.class );
+                                                                           DomElement.class );
             moveOutIfNeededMethodAccessible = moveOutIfNeededMethod.isAccessible();
             moveOutIfNeededMethod.setAccessible( true );
 
             updateActiveElementMethod = HtmlUnitMouse.class.getDeclaredMethod( "updateActiveElement",
-                                                                               HtmlElement.class );
+                                                                               DomElement.class );
             updateActiveElementMethodAccessible = updateActiveElementMethod.isAccessible();
             updateActiveElementMethod.setAccessible( true );
 
