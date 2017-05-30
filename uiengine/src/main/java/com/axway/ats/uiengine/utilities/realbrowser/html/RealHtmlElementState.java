@@ -68,15 +68,16 @@ public class RealHtmlElementState implements IHtmlElementState {
      */
     @PublicAtsApi
     public void focus() {
-            // retrieve browser focus
-            webDriver.switchTo().window( webDriver.getWindowHandle() );
-            // now focus the target element
-            WebElement webElement = RealHtmlElementLocator.findElement( element );
-            if( "input".equals( webElement.getTagName() ) ) {
-                webElement.sendKeys( "" );
-            } else {
-                new Actions( webDriver ).moveToElement( webElement ).perform();
-            }
+            
+        // retrieve browser focus
+        webDriver.switchTo().window( webDriver.getWindowHandle() );
+        // now focus the target element
+        WebElement webElement = RealHtmlElementLocator.findElement( element );
+        if( "input".equals( webElement.getTagName() ) ) {
+            webElement.sendKeys( "" );
+        } else {
+            new Actions( webDriver ).moveToElement( webElement ).perform();
+        }
     }
 
     /**
@@ -371,24 +372,24 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public boolean isElementPresent() {
 
-            // with the current Selenium implementation we do not know whether the opened modal dialog
-            // is alert, prompt or confirmation
-            if( element instanceof UiAlert ) {
+        // with the current Selenium implementation we do not know whether the opened modal dialog
+        // is alert, prompt or confirmation
+        if( element instanceof UiAlert ) {
 
-                return getAlert() != null;
-            } else if( element instanceof UiPrompt ) {
+            return getAlert() != null;
+        } else if( element instanceof UiPrompt ) {
 
-                Alert prompt = getAlert();
-                return prompt != null && prompt.getText() != null;
-            } else if( element instanceof UiConfirm ) {
+            Alert prompt = getAlert();
+            return prompt != null && prompt.getText() != null;
+        } else if( element instanceof UiConfirm ) {
 
-                Alert confirm = getAlert();
-                return confirm != null && confirm.getText() != null;
-            }
+            Alert confirm = getAlert();
+            return confirm != null && confirm.getText() != null;
+        }
 
-            HtmlNavigator.getInstance().navigateToFrame( webDriver, element );
+        HtmlNavigator.getInstance().navigateToFrame( webDriver, element );
 
-            return RealHtmlElementLocator.findElements( element ).size() > 0;
+        return RealHtmlElementLocator.findElements( element ).size() > 0;
     }
 
     /**

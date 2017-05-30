@@ -80,7 +80,7 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
 
         new RealHtmlElementState( this ).waitToBecomeExisting();
 
-            return RealHtmlElementLocator.findElement( this ).getAttribute( "value" );
+        return RealHtmlElementLocator.findElement( this ).getAttribute( "value" );
     }
 
     /**

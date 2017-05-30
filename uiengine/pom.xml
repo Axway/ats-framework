@@ -14,9 +14,9 @@
     <url>https://github.com/Axway/ats-framework</url>
 
     <properties>
-        <selenium-java.version>3.0.1</selenium-java.version>
-        <selelnium-htmlunit-driver.version>2.23.1</selelnium-htmlunit-driver.version>
-        <selenium-supported.browser.versions>Firefox 50, IE 11, Safari 5.1+, Chrome 53, Edge(limited) </selenium-supported.browser.versions>
+        <selenium-java.version>3.4.0</selenium-java.version>
+        <selelnium-htmlunit-driver.version>2.26</selelnium-htmlunit-driver.version>
+        <selenium-supported.browser.versions>Firefox 53, IE 11, Safari 5.1+, Chrome 53, Edge(limited) </selenium-supported.browser.versions>
 
         <!-- use version referred from Selenium <htmlunit.version>2.12</htmlunit.version> -->
         <fest.swing.version>1.2.1</fest.swing.version>
@@ -217,13 +217,6 @@
                     <artifactId>gson</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- JSON dependencies for PerfLogger -->
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>${org.json.simple.version}</version>
         </dependency>
 
     </dependencies>

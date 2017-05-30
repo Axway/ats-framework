@@ -93,12 +93,12 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
 
         new RealHtmlElementState( this ).waitToBecomeExisting();
 
-            WebElement element = RealHtmlElementLocator.findElement( this );
-            Select select = new Select( element );
-            if( !select.getAllSelectedOptions().isEmpty() ) {
-                return select.getFirstSelectedOption().getText();
-            }
-            throw new SeleniumOperationException( "There is no selected 'option' in " + this.toString() );
+        WebElement element = RealHtmlElementLocator.findElement( this );
+        Select select = new Select( element );
+        if( !select.getAllSelectedOptions().isEmpty() ) {
+            return select.getFirstSelectedOption().getText();
+        }
+        throw new SeleniumOperationException( "There is no selected 'option' in " + this.toString() );
     }
 
     /**
@@ -111,17 +111,17 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
         List<String> values = new ArrayList<String>();
         new RealHtmlElementState( this ).waitToBecomeExisting();
 
-            WebElement element = RealHtmlElementLocator.findElement( this );
-            Select select = new Select( element );
-            Iterator<WebElement> iterator = select.getOptions().iterator();
+        WebElement element = RealHtmlElementLocator.findElement( this );
+        Select select = new Select( element );
+        Iterator<WebElement> iterator = select.getOptions().iterator();
 
-            if( !select.getAllSelectedOptions().isEmpty() ) {
-                while( iterator.hasNext() ) {
-                    values.add( iterator.next().getText() );
-                }
-                return values;
+        if( !select.getAllSelectedOptions().isEmpty() ) {
+            while( iterator.hasNext() ) {
+                values.add( iterator.next().getText() );
             }
-            throw new SeleniumOperationException( "There is no selectable 'option' in " + this.toString() );
+            return values;
+        }
+        throw new SeleniumOperationException( "There is no selectable 'option' in " + this.toString() );
     }
 
     /**

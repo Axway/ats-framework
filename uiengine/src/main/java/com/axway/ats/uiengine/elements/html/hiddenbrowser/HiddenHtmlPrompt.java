@@ -81,7 +81,8 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
             @Override
             public String handlePrompt(
                                         Page currentPage,
-                                        String promptText ) {
+                                        String promptText,
+                                        String defaultValue) {
 
                 isProcessed = true;
                 return promptValue;
@@ -101,7 +102,8 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
             @Override
             public String handlePrompt(
                                         Page currentPage,
-                                        String promptText ) {
+                                        String promptText,
+                                        String defaultValue ) {
 
                 isProcessed = true;
                 if( !promptText.equals( expectedText ) ) {
@@ -124,7 +126,8 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
             @Override
             public String handlePrompt(
                                         Page currentPage,
-                                        String promptText ) {
+                                        String promptText,
+                                        String defaultValue ) {
 
                 isProcessed = true;
                 return null;
@@ -143,7 +146,8 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
             @Override
             public String handlePrompt(
                                         Page currentPage,
-                                        String promptText ) {
+                                        String promptText,
+                                        String defaultValue ) {
 
                 isProcessed = true;
                 if( !promptText.equals( expectedText ) ) {

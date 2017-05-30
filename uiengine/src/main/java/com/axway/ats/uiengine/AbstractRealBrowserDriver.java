@@ -16,8 +16,6 @@
 package com.axway.ats.uiengine;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,26 +25,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
+
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -57,7 +50,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.core.utils.BackwardCompatibility;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.uiengine.configuration.UiEngineConfigurator;
@@ -214,13 +206,7 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
 				if (this.remoteSeleniumURL != null) {
 					webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
 				} else {
-					@BackwardCompatibility
-					String geckoDriverDir = (String) System.getProperties().get("webdriver.gecko.driver");
-					if (geckoDriverDir != null) {
-						webDriver = new FirefoxDriver(capabilities);
-					} else {
-						webDriver = new FirefoxDriver(capabilities);
-					}
+				    webDriver = new FirefoxDriver(capabilities);
 				}
 			}
 

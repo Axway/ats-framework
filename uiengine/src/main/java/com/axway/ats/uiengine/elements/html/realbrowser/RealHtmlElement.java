@@ -15,13 +15,14 @@
  */
 package com.axway.ats.uiengine.elements.html.realbrowser;
 
-import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.uiengine.AbstractRealBrowserDriver;
@@ -141,9 +142,9 @@ public class RealHtmlElement extends HtmlElement {
             WebElement element = RealHtmlElementLocator.findElement( this );
             try {
                 element.click();
-            } catch( ElementNotVisibleException enve ) {
+            } catch( ElementNotInteractableException enie ) {
                 if( !UiEngineConfigurator.getInstance().isWorkWithInvisibleElements() ) {
-                    throw enve;
+                    throw enie;
                 }
                 ( ( JavascriptExecutor ) webDriver ).executeScript( "arguments[0].click()", element );
             }
@@ -221,7 +222,12 @@ public class RealHtmlElement extends HtmlElement {
         new RealHtmlElementState( this ).waitToBecomeExisting();
 
         WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( Keys.RETURN );
+        if (webDriver instanceof PhantomJSDriver){
+            element.sendKeys( Keys.ENTER );
+        }
+        else{
+            element.sendKeys( Keys.RETURN );
+        }
     }
 
     /**
