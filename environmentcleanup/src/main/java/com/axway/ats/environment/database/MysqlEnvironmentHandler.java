@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -205,14 +206,11 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbTable table,
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException {
+        
+        writeDeleteStatements(fileWriter);
 
         if( this.addLocks && table.isLockTable() ) {
             fileWriter.write( "LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-        }
-
-        if( this.includeDeleteStatements ) {
-            fileWriter.write( "DELETE FROM `" + table.getTableName() + "`;" + EOL_MARKER
                               + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
         }
 
@@ -273,6 +271,26 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
         fileWriter.write( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
     }
+    
+    private void writeDeleteStatements(
+                                       FileWriter fileWriter ) throws IOException {
+       
+       if(this.deleteStatementsInserted){
+          return; 
+       }
+       
+       for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+           DbTable dbTable = entry.getValue();
+           if( this.includeDeleteStatements ) {
+               fileWriter.write( "DELETE FROM `" + dbTable.getTableName() + "`;" + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+           }
+       }
+       
+       this.deleteStatementsInserted = true;
+       
+   }
+
 
     // escapes the characters in the value string, according to the MySQL manual. This
     // method escape each symbol *even* if the symbol itself is part of an escape sequence

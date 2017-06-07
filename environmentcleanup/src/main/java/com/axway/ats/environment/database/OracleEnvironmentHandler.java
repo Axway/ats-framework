@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -116,9 +117,15 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
         // TODO : exclusive table locks START
 
-        if( this.includeDeleteStatements ) {
-            fileWriter.write( "DELETE FROM " + table.getTableName() + ";" + EOL_MARKER + LINE_SEPARATOR );
+        // write delete statements only
+        if( this.includeDeleteStatements && !this.deleteStatementsInserted) {
+            this.deleteStatementsInserted = true;
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER + LINE_SEPARATOR );
+            }
         }
+
 
         /*
          *  For reseting some sequence to given value (in this case 100), we need to execute something like this:

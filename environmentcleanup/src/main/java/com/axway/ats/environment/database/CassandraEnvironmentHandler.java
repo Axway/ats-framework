@@ -101,9 +101,15 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException, ParseException {
 
-        if( this.includeDeleteStatements ) {
-            fileWriter.write( "TRUNCATE " + table.getTableName() + ";" + EOL_MARKER
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        if( this.includeDeleteStatements && !this.deleteStatementsInserted ) {
+            
+            this.deleteStatementsInserted = true;
+            
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "TRUNCATE " + dbTable.getTableName() + ";" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
         }
 
         if( records.length > 0 ) {
@@ -297,7 +303,7 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                 }
             }
             insertStatement.append( "}" );
-        } else if( "Date".equalsIgnoreCase( column.getType() ) ) {
+        } else if( "Date".equalsIgnoreCase( column.getType() ) || "Timestamp".equalsIgnoreCase( column.getType() ) ) {
             insertStatement.append( '\'' );
             insertStatement.append( DATE_FORMATTER.format( fieldValue ) );
             insertStatement.append( '\'' );
