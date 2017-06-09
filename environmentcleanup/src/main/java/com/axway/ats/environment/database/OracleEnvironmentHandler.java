@@ -27,9 +27,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
@@ -116,8 +118,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
         // TODO : exclusive table locks START
 
-        if( this.includeDeleteStatements ) {
-            fileWriter.write( "DELETE FROM " + table.getTableName() + ";" + EOL_MARKER + LINE_SEPARATOR );
+        if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
 
         /*
@@ -153,21 +155,21 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
                 final String INDENTATION = "  ";
                 final String VAR_PREFIX = "binValue_";
-                StringBuilder stmtBlockBuilder = new StringBuilder( "DECLARE" + LINE_SEPARATOR );
+                StringBuilder stmtBlockBuilder = new StringBuilder( "DECLARE" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
 
                 int variableIndex = 0;
                 for( ColumnDescription column : columns ) {
                     if( column.isTypeBinary() ) {
                         stmtBlockBuilder.append( INDENTATION + VAR_PREFIX + ( variableIndex++ ) + " "
                                                  + table.getTableName() + "." + column.getName() + "%type;"
-                                                 + LINE_SEPARATOR );
+                                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
                     }
                 }
-                stmtBlockBuilder.append( "BEGIN" + LINE_SEPARATOR );
+                stmtBlockBuilder.append( "BEGIN" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
                 int stmtBlockStart = stmtBlockBuilder.length();
                 String insertBegin = INDENTATION + "INSERT INTO " + table.getTableName() + "("
                                      + getColumnsString( columns ) + ") VALUES (";
-                String insertEnd = ");" + LINE_SEPARATOR;
+                String insertEnd = ");" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
                 for( DbRecordValuesList record : records ) {
 
@@ -183,7 +185,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                         if( column.isTypeBinary() ) {
                             String varName = VAR_PREFIX + ( variableIndex++ );
                             stmtBlockBuilder.append( INDENTATION + varName + " := " + fieldValue + ";"
-                                                     + LINE_SEPARATOR );
+                                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
                             insertStatement.append( varName );
                         } else {
                             insertStatement.append( fieldValue );
@@ -196,7 +198,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                     stmtBlockBuilder.append( insertBegin );
                     stmtBlockBuilder.append( insertStatement.toString() );
                     stmtBlockBuilder.append( insertEnd );
-                    stmtBlockBuilder.append( "END;" + EOL_MARKER + LINE_SEPARATOR );
+                    stmtBlockBuilder.append( "END;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
                     fileWriter.write( stmtBlockBuilder.toString() );
                     fileWriter.flush();
 
@@ -208,7 +210,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                 StringBuilder insertStatement = new StringBuilder();
                 String insertBegin = "INSERT INTO " + table.getTableName() + "(" + getColumnsString( columns )
                                      + ") VALUES (";
-                String insertEnd = ");" + EOL_MARKER + LINE_SEPARATOR;
+                String insertEnd = ");" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
                 for( DbRecordValuesList record : records ) {
 
@@ -235,6 +237,20 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         // TODO : exclusive table locks END
     }
 
+    @Override
+    protected void writeDeleteStatements(
+                                          FileWriter fileWriter ) throws IOException {
+
+        if( this.includeDeleteStatements ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+            this.deleteStatementsInserted = true;
+        }
+    }
+
     private boolean containsBinaryTypes(
                                          List<ColumnDescription> columns ) {
 
@@ -249,7 +265,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     @Override
     protected String disableForeignKeyChecksStart() {
 
-        return "SET CONSTRAINTS ALL DEFERRED;" + EOL_MARKER + LINE_SEPARATOR;
+        return "SET CONSTRAINTS ALL DEFERRED;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
     }
 
     @Override
@@ -360,7 +376,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                     //add a new line
                     //FIXME: this code will add the system line ending - it
                     //is not guaranteed that this was the actual line ending
-                    sql.append( LINE_SEPARATOR );
+                    sql.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
                 }
 
                 line = backupReader.readLine();

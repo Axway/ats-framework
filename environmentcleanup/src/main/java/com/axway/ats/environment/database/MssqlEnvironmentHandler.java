@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -110,10 +111,10 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException, ParseException {
 
-        if( this.includeDeleteStatements ) {
-            fileWriter.write( "DELETE FROM " + table.getTableName() + ";" + EOL_MARKER
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
+
         if( table.getAutoIncrementResetValue() != null ) {
             fileWriter.write( "DBCC CHECKIDENT ('" + table.getTableName() + "', RESEED, "
                               + table.getAutoIncrementResetValue() + ");" + EOL_MARKER
@@ -188,6 +189,21 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         // Enable all constraints
         return "EXEC sp_msforeachtable @command1=\"ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all\";"
                + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
+    }
+
+    @Override
+    protected void writeDeleteStatements(
+                                          FileWriter fileWriter ) throws IOException {
+
+        if( this.includeDeleteStatements ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+            this.deleteStatementsInserted = true;
+        }
+
     }
 
     // extracts the specific value, considering it's type and the specifics associated with it

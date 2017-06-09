@@ -19,13 +19,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbQuery;
-import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbProvider;
@@ -50,14 +51,16 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected static final String ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String   DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
     protected static final String EOL_MARKER                 = " -- ATS EOL;";
-    protected static final String LINE_SEPARATOR             = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
-    protected boolean             addLocks;
-    protected boolean             disableForeignKeys;
-    protected boolean             includeDeleteStatements;
-    protected List<DbTable>       dbTables;
-    protected DbConnection        dbConnection;
-    protected DbProvider          dbProvider;
+    protected boolean              addLocks;
+    protected boolean              disableForeignKeys;
+    protected boolean              includeDeleteStatements;
+    protected Map<String, DbTable> dbTables;
+    protected DbConnection         dbConnection;
+    protected DbProvider           dbProvider;
+    // whether the delete statements are already written to file
+    protected boolean              deleteStatementsInserted;
+
 
     /**
      * Constructor
@@ -70,7 +73,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.addLocks = true;
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
-        this.dbTables = new ArrayList<DbTable>();
+        this.dbTables = new LinkedHashMap<>();
     }
 
     /**
@@ -82,6 +85,9 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      */
     public void createBackup(
                               String backupFileName ) throws DatabaseEnvironmentCleanupException {
+        
+        // reset flag, so delete statements will be inserted
+        this.deleteStatementsInserted = false;
 
         FileWriter fileWriter = null;
         try {
@@ -155,7 +161,9 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             fileWriter.write( disableForeignKeyChecksStart() );
         }
 
-        for( DbTable dbTable : dbTables ) {
+        for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+            DbTable dbTable = entry.getValue();
+
             if( log.isDebugEnabled() ) {
                 log.debug( "Preparing data for backup of table " + ( dbTable != null
                                                                                     ? dbTable.getTableName()
@@ -252,7 +260,12 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     public void addTable(
                           DbTable dbTable ) {
 
-        dbTables.add( dbTable );
+        if( dbTables.containsKey( dbTable.getTableName() ) ) {
+            log.warn( "DB table with name '" + dbTable.getTableName()
+                      + "' has already been added for backup." );
+        } else {
+            dbTables.put( dbTable.getTableName(), dbTable );
+        }
 
     }
 
@@ -299,7 +312,10 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.addLocks = lockTables;
 
     }
-    
+
+    protected abstract void writeDeleteStatements(
+                                                FileWriter fileWriter ) throws IOException;
+
     /**
      * Release the database connection
      */

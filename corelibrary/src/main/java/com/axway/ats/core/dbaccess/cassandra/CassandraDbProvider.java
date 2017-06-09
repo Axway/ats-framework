@@ -40,6 +40,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.validation.exceptions.NumberValidationException;
 import com.axway.ats.core.validation.exceptions.ValidationException;
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.ColumnDefinitions.Definition;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.DataType;
@@ -243,7 +244,7 @@ public class CassandraDbProvider implements DbProvider {
         Map<String, String> columnInfo = new HashMap<String, String>();
         for( Definition columnDefinition : results.getColumnDefinitions() ) {
             DataType dataType = columnDefinition.getType();
-            String dataTypeName = dataType.asJavaClass().getSimpleName();
+            String dataTypeName = dataType.getName().name();
             if( "Set".equalsIgnoreCase( dataTypeName ) ) {
                 dataTypeName = dataTypeName + "|" + dataType.getTypeArguments().get( 0 );
             } else if( "List".equalsIgnoreCase( dataTypeName ) ) {
@@ -290,6 +291,8 @@ public class CassandraDbProvider implements DbProvider {
                    || columnTypeName.equals( DataType.Name.VARCHAR ) ) {
             object = row.getString( columnName );
         } else if( columnTypeName.equals( DataType.Name.TIMESTAMP ) ) {
+            object = row.getTimestamp( columnName );
+        } else if( columnTypeName.equals( DataType.Name.DATE ) ) {
             object = row.getDate( columnName );
         } else if( columnTypeName.equals( DataType.Name.BLOB ) ) {
 
@@ -302,13 +305,30 @@ public class CassandraDbProvider implements DbProvider {
                 object = null;
             }
         } else if( columnTypeName.equals( DataType.Name.SET ) ) {
-            object = row.getSet( columnName, dataType.getTypeArguments().get( 0 ).asJavaClass() );
+            // this is the class of the set's elements (i.e. for a Set<String>, clazz variable will be equal to String.class)
+            Class<?> clazz = new CodecRegistry().codecFor( dataType.getTypeArguments().get( 0 ) )
+                                                .getJavaType()
+                                                .getRawType();
+            object = row.getSet( columnName, clazz );
         } else if( columnTypeName.equals( DataType.Name.LIST ) ) {
-            object = row.getList( columnName, dataType.getTypeArguments().get( 0 ).asJavaClass() );
+            // this is the class of the list's elements (i.e. for a Set<String>, clazz variable will be equal to String.class)
+            Class<?> clazz = new CodecRegistry().codecFor( dataType.getTypeArguments().get( 0 ) )
+                                                .getJavaType()
+                                                .getRawType();
+            object = row.getList( columnName, clazz );
         } else if( columnTypeName.equals( DataType.Name.MAP ) ) {
-            object = row.getMap( columnName,
-                                 dataType.getTypeArguments().get( 0 ).asJavaClass(),
-                                 dataType.getTypeArguments().get( 1 ).asJavaClass() );
+            /* this is the class of the map's key and value elements
+             * for a Map<Integer, String>,
+             * keyClazz variable will be equal to Integer.class
+             * and valueClazz variable will be equal to String.class
+             */
+            Class<?> keyClazz = new CodecRegistry().codecFor( dataType.getTypeArguments().get( 0 ) )
+                                                   .getJavaType()
+                                                   .getRawType();
+            Class<?> valueClazz = new CodecRegistry().codecFor( dataType.getTypeArguments().get( 1 ) )
+                                                     .getJavaType()
+                                                     .getRawType();
+            object = row.getMap( columnName, keyClazz, valueClazz );
         } else {
             throw new DbException( "Unsupported data type '" + columnDefinition.getType().toString()
                                    + "' for table '" + columnDefinition.getTable() + "' and column '"

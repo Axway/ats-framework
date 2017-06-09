@@ -21,7 +21,7 @@
 		<mysql.mysql-connector-java.version>5.1.13</mysql.mysql-connector-java.version>
 		<oracle.ojdbc.version>12.1.0.1</oracle.ojdbc.version>
 		<!-- jTDS dependency is defined in parent pom.xml -->
-		<com.datastax.cassandra.driver.version>2.0.1</com.datastax.cassandra.driver.version>
+		<com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
 		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
 			is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
 		<org.jvnet.winp.version>1.23</org.jvnet.winp.version>

@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -206,13 +207,12 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException {
 
-        if( this.addLocks && table.isLockTable() ) {
-            fileWriter.write( "LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
 
-        if( this.includeDeleteStatements ) {
-            fileWriter.write( "DELETE FROM `" + table.getTableName() + "`;" + EOL_MARKER
+        if( this.addLocks && table.isLockTable() ) {
+            fileWriter.write( "LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
                               + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
         }
 
@@ -272,6 +272,21 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             fileWriter.write( "UNLOCK TABLES;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
         }
         fileWriter.write( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+    }
+
+    @Override
+    protected void writeDeleteStatements(
+                                          FileWriter fileWriter ) throws IOException {
+
+        if( this.includeDeleteStatements ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "DELETE FROM `" + dbTable.getTableName() + "`;" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+            this.deleteStatementsInserted = true;
+        }
+
     }
 
     // escapes the characters in the value string, according to the MySQL manual. This

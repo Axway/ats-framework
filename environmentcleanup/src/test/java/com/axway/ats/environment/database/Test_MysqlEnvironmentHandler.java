@@ -374,8 +374,10 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
 
         mockFileWriter.write( "SET FOREIGN_KEY_CHECKS = 0;" + EOL_MARKER + LINE_SEPARATOR );
 
-        mockFileWriter.write( "LOCK TABLES `table1` WRITE;" + EOL_MARKER + LINE_SEPARATOR );
         mockFileWriter.write( "DELETE FROM `table1`;" + EOL_MARKER + LINE_SEPARATOR );
+        mockFileWriter.write( "DELETE FROM `table2`;" + EOL_MARKER + LINE_SEPARATOR );
+        
+        mockFileWriter.write( "LOCK TABLES `table1` WRITE;" + EOL_MARKER + LINE_SEPARATOR );
         mockFileWriter.write( "INSERT INTO `table1` (name1,name2,name3) VALUES('value1',NULL,0x1);"
                               + EOL_MARKER + LINE_SEPARATOR );
         mockFileWriter.flush();
