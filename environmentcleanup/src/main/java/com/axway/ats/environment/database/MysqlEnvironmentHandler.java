@@ -206,8 +206,10 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbTable table,
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException {
-        
-        writeDeleteStatements(fileWriter);
+
+        if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
+        }
 
         if( this.addLocks && table.isLockTable() ) {
             fileWriter.write( "LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
@@ -271,26 +273,21 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
         fileWriter.write( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
     }
-    
-    private void writeDeleteStatements(
-                                       FileWriter fileWriter ) throws IOException {
-       
-       if(this.deleteStatementsInserted){
-          return; 
-       }
-       
-       for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
-           DbTable dbTable = entry.getValue();
-           if( this.includeDeleteStatements ) {
-               fileWriter.write( "DELETE FROM `" + dbTable.getTableName() + "`;" + EOL_MARKER
-                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-           }
-       }
-       
-       this.deleteStatementsInserted = true;
-       
-   }
 
+    @Override
+    protected void writeDeleteStatements(
+                                          FileWriter fileWriter ) throws IOException {
+
+        if( this.includeDeleteStatements ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "DELETE FROM `" + dbTable.getTableName() + "`;" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+            this.deleteStatementsInserted = true;
+        }
+
+    }
 
     // escapes the characters in the value string, according to the MySQL manual. This
     // method escape each symbol *even* if the symbol itself is part of an escape sequence

@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbQuery;
-import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbProvider;
@@ -53,7 +51,6 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected static final String ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String   DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
     protected static final String EOL_MARKER                 = " -- ATS EOL;";
-    protected static final String LINE_SEPARATOR             = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
     protected boolean              addLocks;
     protected boolean              disableForeignKeys;
@@ -264,7 +261,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                           DbTable dbTable ) {
 
         if( dbTables.containsKey( dbTable.getTableName() ) ) {
-            log.warn( "DbTable with name '" + dbTable.getTableName()
+            log.warn( "DB table with name '" + dbTable.getTableName()
                       + "' has already been added for backup." );
         } else {
             dbTables.put( dbTable.getTableName(), dbTable );
@@ -315,7 +312,10 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.addLocks = lockTables;
 
     }
-    
+
+    protected abstract void writeDeleteStatements(
+                                                FileWriter fileWriter ) throws IOException;
+
     /**
      * Release the database connection
      */

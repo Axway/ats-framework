@@ -101,15 +101,8 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException, ParseException {
 
-        if( this.includeDeleteStatements && !this.deleteStatementsInserted ) {
-            
-            this.deleteStatementsInserted = true;
-            
-            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
-                DbTable dbTable = entry.getValue();
-                fileWriter.write( "TRUNCATE " + dbTable.getTableName() + ";" + EOL_MARKER
-                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-            }
+        if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
 
         if( records.length > 0 ) {
@@ -194,6 +187,21 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
         }
 
         return null;
+    }
+
+    @Override
+    protected void writeDeleteStatements(
+                                          FileWriter fileWriter ) throws IOException {
+
+        if( this.includeDeleteStatements ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "TRUNCATE " + dbTable.getTableName() + ";" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+            this.deleteStatementsInserted = true;
+        }
+
     }
 
     @Override
