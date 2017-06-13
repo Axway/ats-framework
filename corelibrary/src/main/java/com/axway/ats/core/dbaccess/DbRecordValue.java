@@ -18,13 +18,33 @@ package com.axway.ats.core.dbaccess;
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 
+import org.apache.log4j.Logger;
+
 /**
  * Class representing a value in a recordset
  */
 public class DbRecordValue {
 
-    private DbColumn dbColumn;
-    private Object   value;
+    private static final Logger log                         = Logger.getLogger( DbRecordValue.class );
+
+    private DbColumn            dbColumn;
+    private Object              value;
+
+    // flag, used to determine whether ojdbc (Oracle JDBC) driver is in JAVA class path
+    private static boolean      oracleJdbcDriverInClassPath = false;
+
+    static {
+        try {
+            Class<?> clazz = Class.forName( oracle.jdbc.OracleDriver.class.getName() );
+            if( clazz != null ) {
+                oracleJdbcDriverInClassPath = true;
+            } else {
+                oracleJdbcDriverInClassPath = false;
+            }
+        } catch( ClassNotFoundException | NoClassDefFoundError e ) {
+            oracleJdbcDriverInClassPath = false;
+        }
+    }
 
     /**
      * @param tableName     name of the DB table
@@ -87,14 +107,18 @@ public class DbRecordValue {
             return valueAsString.toString();
         }
 
-        // handle oracle time stamp
-        if( value instanceof oracle.sql.TIMESTAMP ) {
-            try {
-                return ( ( oracle.sql.TIMESTAMP ) value ).toJdbc().toString();
-            } catch( SQLException e ) {
-                // If get here, it is likely to break some functionality like Database Snapshots.
-                // Then we will have to revise this logic.
-                return value.toString();
+        if( oracleJdbcDriverInClassPath ) {
+            // handle oracle time stamp
+            if( value instanceof oracle.sql.TIMESTAMP ) {
+                try {
+                    return ( ( oracle.sql.TIMESTAMP ) value ).toJdbc().toString();
+                } catch( SQLException e ) {
+                    // If get here, it is likely to break some functionality like Database Snapshots.
+                    // Then we will have to revise this logic.
+                    log.warn( "There was error while parsing value as oracle.sql.TIMESTAMP."
+                              + "We will instead return the value as " + value.toString() + " .", e );
+                    return value.toString();
+                }
             }
         }
 
