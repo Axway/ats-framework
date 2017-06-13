@@ -1417,6 +1417,47 @@ public class FileSystemOperations {
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         operations.unzip( zipFilePath, outputDirPath );
     }
+    
+    /**
+     * Unzip gzip archive to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     *
+     * @param gzipFilePath the gzip file path
+     * @param outputDirPath output directory which is used as base directory for extracted files
+     * Temporary means that it will be automatically deleted.This will happen only when the JVM terminates normally.
+     */
+    @PublicAtsApi
+    public void gunzip(
+                       @Validate(name = "gzipFilePath", type = ValidationType.STRING_NOT_EMPTY ) String gzipFilePath,
+                       @Validate(name = "outputDirPath", type = ValidationType.STRING_NOT_EMPTY) String outputDirPath) throws FileSystemOperationException {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ gzipFilePath, outputDirPath } );
+
+        // execute action
+        IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
+        operations.gunzip( gzipFilePath, outputDirPath );
+    }
+    
+    /**
+     * Untar archive to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     *
+     * @param tarFilePath the tar file path
+     * @param outputDirPath output directory which is used as base directory for extracted files
+     * Temporary means that it will be automatically deleted.This will happen only when the JVM terminates normally.
+     */
+    @PublicAtsApi
+    public void untar(
+                       @Validate(name = "tarFilePath", type = ValidationType.STRING_NOT_EMPTY ) String tarFilePath,
+                       @Validate(name = "outputDirPath", type = ValidationType.STRING_NOT_EMPTY) String outputDirPath) throws FileSystemOperationException {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ tarFilePath, outputDirPath } );
+
+        // execute action
+        IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
+        operations.untar( tarFilePath, outputDirPath );
+    }
+
 
     private String getHostDescriptionSuffix() {
 

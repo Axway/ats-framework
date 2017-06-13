@@ -212,5 +212,13 @@ public interface IFileSystemOperations {
     public void unzip(
                        String zipFilePath,
                        String outputDirPath ) throws FileSystemOperationException;
+    
+    public void gunzip(
+                       String gzipFilePath,
+                       String outputDirPath ) throws FileSystemOperationException;
+
+    public void untar(
+                      String tarFilePath,
+                      String outputDirPath ) throws FileSystemOperationException;
 
 }

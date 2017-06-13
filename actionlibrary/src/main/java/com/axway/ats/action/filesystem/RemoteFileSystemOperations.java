@@ -785,4 +785,31 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
                                                     + outputDirPath + "'", e );
         }
     }
+    
+    @Override
+    public void gunzip(
+                       String gzipFilePath,
+                       String outputDirPath ) throws FileSystemOperationException {
+
+        try {
+            remoteFileSystemOperations.gunzip( gzipFilePath, outputDirPath );
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Error gunzipping '" + gzipFilePath + "' into '"
+                                                    + outputDirPath + "'", e );
+        }
+    }
+    
+    @Override
+    public void untar(
+                       String tarFilePath,
+                       String outputDirPath ) throws FileSystemOperationException {
+
+        try {
+            remoteFileSystemOperations.untar( tarFilePath, outputDirPath );
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Error untarring '" + tarFilePath + "' into '"
+                                                    + outputDirPath + "'", e );
+        }
+    }
+
 }
