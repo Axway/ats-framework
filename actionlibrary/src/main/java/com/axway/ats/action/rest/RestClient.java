@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -423,6 +425,63 @@ public class RestClient {
         requestHeaders.put( name, value );
 
         return this;
+    }
+
+    /**
+     * Remove a header from the request
+     * 
+     * @param name the name of the request header
+     * 
+     * @return this client's instance
+     */
+    @PublicAtsApi
+    public RestClient removeRequestHeader(
+                                           String name ) {
+
+        boolean atLeastOneHeaderFound = false;
+
+        Iterator<String> keys = this.requestHeaders.keySet().iterator();
+
+        while( keys.hasNext() ) {
+            String key = keys.next();
+            if( key.equalsIgnoreCase( name ) ) {
+                keys.remove();
+                atLeastOneHeaderFound = true;
+            }
+        }
+
+        if( !atLeastOneHeaderFound ) {
+            log.warn( "Header with name '" + name
+                      + "' will not be removed since it was not found in request headers." );
+        }
+
+        return this;
+    }
+
+    /**
+     * Remove one or more headers from the request
+     * 
+     * @param names the names of the request headers
+     * 
+     * @return this client's instance
+     */
+    @PublicAtsApi
+    public RestClient removeRequestHeaders(
+                                            String... names ) {
+
+        Iterator<String> keys = this.requestHeaders.keySet().iterator();
+
+        while( keys.hasNext() ) {
+            String key = keys.next();
+            for( String name : names ) {
+                if( key.equalsIgnoreCase( name ) ) {
+                    keys.remove();
+                }
+            }
+        }
+
+        return this;
+
     }
 
     /**
@@ -995,7 +1054,8 @@ public class RestClient {
                 requestMessage.append( context.getMethod() + " " + context.getUri() + " \n" );
 
                 for( Entry<String, List<Object>> reqHeaderEntry : reqHeaders.entrySet() ) {
-                    requestMessage.append( reqHeaderEntry.getKey() + ": " + reqHeaderEntry.getValue().get( 0 ) + " \n" );
+                    requestMessage.append( reqHeaderEntry.getKey() + ": "
+                                           + Arrays.toString( reqHeaderEntry.getValue().toArray() ) + " \n" );
                 }
             }
             if( ( this.debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY && context.hasEntity() ) {
@@ -1010,7 +1070,8 @@ public class RestClient {
             log.info( requestMessage );
         }
 
-        void setDebugLevel( int level ) {
+        void setDebugLevel(
+                            int level ) {
 
             this.debugLevel = level;
         }

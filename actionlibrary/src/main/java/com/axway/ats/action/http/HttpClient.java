@@ -391,6 +391,33 @@ public class HttpClient {
 
         addHeaderToList( requestHeaders, name, value );
     }
+    
+    /**
+     * Remove a a user-specified HTTP header.
+     * 
+     * @param name the header name
+     */
+    @PublicAtsApi
+    public void removeRequestHeader(
+                                     String name ) {
+
+        boolean atLeastOneHeaderFound = false;
+
+        for( int i = 0; i < this.requestHeaders.size(); i++ ) {
+            HttpHeader header = this.requestHeaders.get( i );
+            if( header.getKey().equalsIgnoreCase( name ) ) {
+                this.requestHeaders.remove( i );
+                atLeastOneHeaderFound = true;
+            }
+        }
+
+        if( !atLeastOneHeaderFound ) {
+            log.warn( "Header with name '" + name
+                      + "' will not be removed since it was not found in request headers." );
+        }
+
+    }
+
 
     /**
      * Set the user-specified HTTP request headers.
