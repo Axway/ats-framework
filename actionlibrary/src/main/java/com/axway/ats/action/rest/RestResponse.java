@@ -239,10 +239,9 @@ public class RestResponse {
 
     /**
      * Verify that the response contains header exact value.
-     * Be sure to use the right case, the search is case sensitive 
      * 
-     * @param header header name 
-     * @param value header value 
+     * @param header header name Header name search is case insensitive
+     * @param value header value Header value search is case sensitive 
      * @return 
      */
     @PublicAtsApi
