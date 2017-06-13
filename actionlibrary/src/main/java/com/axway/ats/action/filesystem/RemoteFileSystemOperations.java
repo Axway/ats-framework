@@ -15,6 +15,7 @@
  */
 package com.axway.ats.action.filesystem;
 
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -167,6 +168,13 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     public void copyFileTo( String fromFile, String toMachine, String toFile, boolean failOnError ) {
 
         try {
+            
+            // check if toFile exists
+            if( !remoteFileSystemOperations.doesFileExist( toFile ) ) {
+                throw new FileNotFoundException( "File '" + toFile + "' at '" + this.atsAgent
+                                                 + "' is missing. You have to create it first by calling FileSystemOperations.createFile() or via some other way." );
+            }
+
             Integer copyFileStartPort = getCopyFilePortProperty( ActionLibraryConfigurator.getInstance()
                                                                                           .getCopyFileStartPort() );
             Integer copyFileEndPort = getCopyFilePortProperty( ActionLibraryConfigurator.getInstance()
