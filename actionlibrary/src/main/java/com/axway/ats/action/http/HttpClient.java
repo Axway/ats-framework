@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -336,6 +337,51 @@ public class HttpClient {
             this.requestParameters.put( valueEntry.getKey(), valueEntry.getValue() );
         }
     }
+    
+    /**
+     * Remove a request(also called query) parameter<br/></br/>
+     *
+     * @param name the name of the parameter
+     */
+    @PublicAtsApi
+    public void removeRequestParameter(String name){
+
+        Iterator<String> keys = this.requestParameters.keySet().iterator();
+
+        while( keys.hasNext() ) {
+            String key = keys.next();
+            if( key.equals( name ) ) {
+                keys.remove();
+                return;
+            }
+        }
+        
+        log.warn( "Parameter with name '" + name
+                  + "' will not be removed since it was not found in request parameters." );
+        
+    }
+    
+    /**
+     * Remove one or more request(also called query) parameters<br/></br/>
+     *
+     * @param names the names of the parameters
+     */
+    @PublicAtsApi
+    public void removeRequestParameters(String... names){
+        
+        Iterator<String> keys = this.requestParameters.keySet().iterator();
+
+        while( keys.hasNext() ) {
+            String key = keys.next();
+            for( String name : names ) {
+                if( key.equals( name ) ) {
+                    keys.remove();
+                }
+            }
+        }
+        
+    }
+
 
     /**
      * Set timeouts. Timeouts default to zero, i.e. no timeout.
