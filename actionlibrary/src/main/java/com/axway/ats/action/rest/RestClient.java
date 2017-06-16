@@ -547,6 +547,59 @@ public class RestClient {
 
         return this;
     }
+    
+    /**
+     * Remove a request(also called query) parameter<br/></br/>
+     *
+     * @param name the name of the parameter
+     *
+     * @return this client's instance
+     */
+    @PublicAtsApi
+    public RestClient removeRequestParameter(String name){
+
+        Iterator<String> keys = this.requestParameters.keySet().iterator();
+
+        while( keys.hasNext() ) {
+            String key = keys.next();
+            if( key.equals( name ) ) {
+                keys.remove();
+                return this;
+            }
+        }
+        
+        log.warn( "Parameter with name '" + name
+                  + "' will not be removed since it was not found in request parameters." );
+
+        return this;
+        
+    }
+    
+    /**
+     * Remove one or more request(also called query) parameters<br/></br/>
+     *
+     * @param names the names of the parameters
+     *
+     * @return this client's instance
+     */
+    @PublicAtsApi
+    public RestClient removeRequestParameters(String... names){
+        
+        Iterator<String> keys = this.requestParameters.keySet().iterator();
+
+        while( keys.hasNext() ) {
+            String key = keys.next();
+            for( String name : names ) {
+                if( key.equals( name ) ) {
+                    keys.remove();
+                }
+            }
+        }
+
+        return this;
+        
+    }
+
 
     /**
      * Add a request cookie
