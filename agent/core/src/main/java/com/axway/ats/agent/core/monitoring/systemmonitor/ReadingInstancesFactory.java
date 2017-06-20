@@ -729,9 +729,6 @@ public class ReadingInstancesFactory {
                                                             SigarWrapper sigarWrapper,
                                                             ReadingBean reading ) throws SigarException {
 
-        // this reading can actually be expanded in more than one reading
-        int nextUniqueReadingId = 1;
-
         List<ReadingInstance> readingInstancesList = new ArrayList<ReadingInstance>();
 
         String[] ifNames = sigarWrapper.getSigarInstance().getNetInterfaceList();
@@ -749,8 +746,7 @@ public class ReadingInstancesFactory {
 
             final long txBytes = sigarWrapper.getSigarInstance().getNetInterfaceStat( ifName ).getTxBytes();
             readingInstancesList.add( new ReadingInstance( sigarWrapper,
-                                                           String.valueOf( reading.getDbId() ) + ", "
-                                                                         + ( nextUniqueReadingId++ ),
+                                                           String.valueOf( reading.getDbId() ),
                                                            reading.getMonitorName(),
                                                            reading.getName() + " " + ifName + " TX data",
                                                            reading.getUnit(),
@@ -788,8 +784,7 @@ public class ReadingInstancesFactory {
 
             final long rxBytes = sigarWrapper.getSigarInstance().getNetInterfaceStat( ifName ).getRxBytes();
             readingInstancesList.add( new ReadingInstance( sigarWrapper,
-                                                           String.valueOf( reading.getDbId() ) + ", "
-                                                                         + ( nextUniqueReadingId++ ),
+                                                           String.valueOf( reading.getDbId() ),
                                                            reading.getMonitorName(),
                                                            reading.getName() + " " + ifName + " RX data",
                                                            reading.getUnit(),
