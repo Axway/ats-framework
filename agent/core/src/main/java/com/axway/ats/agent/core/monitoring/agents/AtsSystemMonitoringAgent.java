@@ -185,7 +185,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
             this.executorTimeOffset = executorTimeOffset;
             this.callerId = ThreadsPerCaller.getCaller();
 
-            setName( "Monitoring-" + this.callerId );
+            setName( "Monitoring System Statistics - " + this.callerId );
 
             log.debug( "Monitoring thread started at timestamp " + currentTimestamp );
         }

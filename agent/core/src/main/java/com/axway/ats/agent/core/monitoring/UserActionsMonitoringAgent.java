@@ -202,7 +202,7 @@ public class UserActionsMonitoringAgent {
 
             this.callerId = ThreadsPerCaller.getCaller();
 
-            setName( "Monitoring-" + this.callerId );
+            setName( "Monitoring User Activity - " + this.callerId );
         }
 
         @Override
