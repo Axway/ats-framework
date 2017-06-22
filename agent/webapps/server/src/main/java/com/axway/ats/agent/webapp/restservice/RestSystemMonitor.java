@@ -381,7 +381,6 @@ public class RestSystemMonitor {
 
         if( logSystemStatistics ) {
             List<MonitoringException> errorsStartingMonitoringPhysicalHost = startMonitoringPhysicalHost( monitoredHost,
-                                                                                                          startTimestamp,
                                                                                                           pollInterval,
                                                                                                           executorTimeOffset );
             if( errorsStartingMonitoringPhysicalHost.size() > 0 ) {
@@ -486,7 +485,6 @@ public class RestSystemMonitor {
 
     private List<MonitoringException> startMonitoringPhysicalHost(
                                                                    String monitoredHost,
-                                                                   long startTimestamp,
                                                                    int pollingInterval,
                                                                    long executorTimeOffset ) {
 
@@ -502,7 +500,6 @@ public class RestSystemMonitor {
 
         try {
             initializeSystemMonitoringProcess( monitoredHost,
-                                               startTimestamp,
                                                pollingInterval,
                                                executorTimeOffset );
         } catch( MonitoringException e ) {
@@ -527,14 +524,12 @@ public class RestSystemMonitor {
 
     private void initializeSystemMonitoringProcess(
                                                     String monitoredHost,
-                                                    long startTimestamp,
                                                     int pollInterval,
                                                     long executorTimeOffset ) throws MonitoringException {
 
         log.debug( "Initializing the system monitoring process on " + monitoredHost );
         try {
             systemMonitor.initializeMonitoring( new ArrayList<ReadingBean>( this.readingTypes ),
-                                                startTimestamp,
                                                 pollInterval,
                                                 executorTimeOffset );
         } catch( Exception e ) {

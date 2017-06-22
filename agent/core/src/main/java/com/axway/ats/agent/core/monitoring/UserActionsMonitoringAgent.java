@@ -202,7 +202,7 @@ public class UserActionsMonitoringAgent {
 
             this.callerId = ThreadsPerCaller.getCaller();
 
-            setName( "Monitoring User Activity - " + this.callerId );
+            setName( "Monitoring_users-" + this.callerId );
         }
 
         @Override
@@ -267,7 +267,7 @@ public class UserActionsMonitoringAgent {
                                                                            newReadingBeans );
 
                     lastPollTime = ( int ) ( System.currentTimeMillis() - startPollingTime );
-
+                    
                     // log the results in the DB
                     UserActivityLoggingUtils.logCollectedResults( agentAddress, newMonitorResults );
 

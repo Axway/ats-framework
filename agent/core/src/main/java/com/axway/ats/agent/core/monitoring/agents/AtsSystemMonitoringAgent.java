@@ -55,16 +55,14 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     private MonitoringThread         monitoringThread;
     private Map<String, Integer>     pollErrors;
 
-    public AtsSystemMonitoringAgent( long startTimestamp,
-                                     int pollInterval,
+    public AtsSystemMonitoringAgent( int pollInterval,
                                      long executorTimeOffset ) {
 
         // we must have a completely clean instance when this method return
         this.monitors = new ArrayList<PerformanceMonitor>();
         this.pollErrors = new HashMap<String, Integer>();
 
-        // set the new start timestamp and polling interval
-        setStartTimestamp( startTimestamp );
+        // set the new start polling interval
         setPollInterval( pollInterval * 1000 ); // make it in seconds
         setExecutorTimeOffset( executorTimeOffset );
 
@@ -79,7 +77,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     @Override
     public void startMonitoring() {
 
-        monitoringThread = new MonitoringThread( startTimestamp, pollInterval, executorTimeOffset );
+        monitoringThread = new MonitoringThread( pollInterval, executorTimeOffset );
         monitoringThread.start();
     }
 
@@ -166,7 +164,6 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
         private Logger                  log = Logger.getLogger( MonitoringThread.class );
 
-        private long                    currentTimestamp;
         private final int               pollInterval;
         private long                    executorTimeOffset;
 
@@ -174,20 +171,18 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
         private String                  callerId;
 
-        MonitoringThread( long currentTimestamp,
-                          int pollInterval,
+        MonitoringThread( int pollInterval,
                           long executorTimeOffset ) {
 
             this.monitoringThreadState = MONITORING_THREAD_STATE.RUNNING;
 
-            this.currentTimestamp = currentTimestamp;
             this.pollInterval = pollInterval;
             this.executorTimeOffset = executorTimeOffset;
             this.callerId = ThreadsPerCaller.getCaller();
 
-            setName( "Monitoring System Statistics - " + this.callerId );
+            setName( "Monitoring_system-" + this.callerId );
 
-            log.debug( "Monitoring thread started at timestamp " + currentTimestamp );
+            log.debug( "Monitoring thread started at timestamp " + new Date() );
         }
 
         @Override
@@ -200,8 +195,6 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                 boolean hasFailureInPreviousPoll = false;
                 int lastPollDuration = 0;
                 while( monitoringThreadState == MONITORING_THREAD_STATE.RUNNING ) {
-
-                    this.currentTimestamp = System.currentTimeMillis() + this.executorTimeOffset;
 
                     int sleepTimeBeforeNextPoll = pollInterval - lastPollDuration;
                     if( sleepTimeBeforeNextPoll < 0 ) {
@@ -224,6 +217,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                     Thread.sleep( sleepTimeBeforeNextPoll );
 
                     long startPollingTime = System.currentTimeMillis();
+                    long currentTimestamp = System.currentTimeMillis() + this.executorTimeOffset;
 
                     // poll for new data
                     List<MonitorResults> newResults = new ArrayList<MonitorResults>();
