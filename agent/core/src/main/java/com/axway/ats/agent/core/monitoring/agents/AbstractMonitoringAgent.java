@@ -28,7 +28,6 @@ import com.axway.ats.agent.core.monitoring.exceptions.OperationUnsuccessfulExcep
 public abstract class AbstractMonitoringAgent {
 
     protected int  pollInterval;
-    protected long startTimestamp;
     protected long executorTimeOffset;
 
     /**
@@ -48,12 +47,6 @@ public abstract class AbstractMonitoringAgent {
                                           long executorTimeOffset ) {
 
         this.executorTimeOffset = executorTimeOffset;
-    }
-
-    protected void setStartTimestamp(
-                                      long startTimestamp ) {
-
-        this.startTimestamp = startTimestamp;
     }
 
     /**
