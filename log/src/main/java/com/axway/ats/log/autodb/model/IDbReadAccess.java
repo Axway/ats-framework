@@ -108,24 +108,21 @@ public interface IDbReadAccess {
     public int getSuiteMessagesCount(
                                       String whereClause ) throws DatabaseAccessException;
 
-    public List<StatisticDescription> getSystemStatisticDescriptions(
-                                                                      float timeOffset,
-                                                                      String testcaseIds,
-                                                                      Map<String, String> testcaseAliases ) throws DatabaseAccessException;
+	public List<StatisticDescription> getSystemStatisticDescriptions( 
+																	  float timeOffset, 
+																	  String wherClause,
+																	  Map<String, String> testcaseAliases) throws DatabaseAccessException;
 
     public List<StatisticDescription> getCheckpointStatisticDescriptions(
                                                                           float timeOffset,
-                                                                          String testcaseIds,
-                                                                          Map<String, String> testcaseAliases ) throws DatabaseAccessException;
+                                                                          String whereClause,
+                                                                          Set<String> expectedSingleActionUIDs ) throws DatabaseAccessException;
 
     public List<Statistic> getSystemStatistics(
                                                 float timeOffset,
                                                 String testcaseIds,
                                                 String machineIds,
-                                                String statsTypeIds,
-                                                Set<String> expectedStatisticUIDs,
-                                                Set<Integer> expectedSingleStatisticIDs,
-                                                Set<Integer> expectedCombinedStatisticIDs ) throws DatabaseAccessException;
+                                                String statsTypeIds) throws DatabaseAccessException;
 
     public List<Statistic> getSystemAggregatedStatistics(
                                                           float timeOffset,
@@ -139,6 +136,7 @@ public interface IDbReadAccess {
                                                     float timeOffset,
                                                     String testcaseIds,
                                                     String actionNames,
+                                                    String actionParents,
                                                     Set<String> expectedSingleActionUIDs,
                                                     Set<String> expectedCombinedActionUIDs ) throws DatabaseAccessException;
 

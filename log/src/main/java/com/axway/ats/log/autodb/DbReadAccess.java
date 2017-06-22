@@ -63,8 +63,6 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     private static final int   START_FAKE_ID_VALUE_FOR_CHECKPOINTS                  = Integer.MAX_VALUE;
     private static final int   START_FAKE_ID_VALUE_FOR_AGGREGATED_CHECKPOINTS       = START_FAKE_ID_VALUE_FOR_CHECKPOINTS
                                                                                       / 2;
-    private static final int   START_FAKE_ID_VALUE_FOR_AGGREGATED_SYSTEM_STATISTICS = START_FAKE_ID_VALUE_FOR_AGGREGATED_CHECKPOINTS
-                                                                                      / 2;
 
     public static final String MACHINE_NAME_FOR_ATS_AGENTS                          = "ATS Agents";
 
@@ -895,13 +893,15 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         }
     }
 
-    public List<StatisticDescription> getSystemStatisticDescriptions( float timeOffset, String testcaseIds,
+    public List<StatisticDescription> getSystemStatisticDescriptions( 
+                                                                      float timeOffset, 
+                                                                      String whereClause,
                                                                       Map<String, String> testcaseAliases ) throws DatabaseAccessException {
 
         List<StatisticDescription> statisticDescriptions = new ArrayList<StatisticDescription>();
 
         String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "testcase ids", testcaseIds )
+                                                 .add( "whereClause", whereClause )
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
@@ -910,7 +910,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
             callableStatement = connection.prepareCall( "{ call sp_get_system_statistic_descriptions(?, ?) }" );
             callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, testcaseIds );
+            callableStatement.setString( 2, whereClause );
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
@@ -961,13 +961,13 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     }
 
     public List<StatisticDescription> getCheckpointStatisticDescriptions( float timeOffset,
-                                                                          String testcaseIds,
-                                                                          Map<String, String> testcaseAliases ) throws DatabaseAccessException {
+                                                                          String whereClause,
+                                                                          Set<String> expectedSingleActionUIDs) throws DatabaseAccessException {
 
         List<StatisticDescription> statisticDescriptions = new ArrayList<StatisticDescription>();
 
         String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "testcase ids", testcaseIds )
+                                                 .add( "where clause", whereClause )
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
@@ -976,7 +976,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
             callableStatement = connection.prepareCall( "{ call sp_get_checkpoint_statistic_descriptions(?, ?) }" );
             callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, testcaseIds );
+            callableStatement.setString( 2, whereClause );
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
@@ -985,10 +985,6 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
                 statisticDescription.testcaseId = rs.getInt( "testcaseId" );
 
-                // if user has provided testcase alias - use it instead the original testcase name
-                if( testcaseAliases != null ) {
-                    statisticDescription.testcaseName = testcaseAliases.get( String.valueOf( statisticDescription.testcaseId ) );
-                }
                 if( statisticDescription.testcaseName == null ) {
                     statisticDescription.testcaseName = rs.getString( "testcaseName" );
                 }
@@ -1004,9 +1000,14 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 statisticDescription.statisticName = rs.getString( "name" );
                 statisticDescription.unit = "ms"; // "statsUnit" field is null for checkpoint statistics, because the action response times are always measured in "ms"
 
-                statisticDescriptions.add( statisticDescription );
-
-                numberRecords++;
+                String actionUid = statisticDescription.testcaseId + "->" + statisticDescription.machineId
+                                   + "->" + statisticDescription.queueName + "->"
+                                   + statisticDescription.statisticName;
+                // add to single statistics
+                if( expectedSingleActionUIDs.isEmpty() || expectedSingleActionUIDs.contains( actionUid ) ) {
+                    statisticDescriptions.add( statisticDescription );
+                    numberRecords++;
+                }
             }
 
             logQuerySuccess( sqlLog, "system statistic descriptions", numberRecords );
@@ -1020,10 +1021,11 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         return statisticDescriptions;
     }
 
-    public List<Statistic> getSystemStatistics( float timeOffset, String testcaseIds, String machineIds,
-                                                String statsTypeIds, Set<String> expectedStatisticUIDs,
-                                                Set<Integer> expectedSingleStatisticIDs,
-                                                Set<Integer> expectedCombinedStatisticIDs ) throws DatabaseAccessException {
+	public List<Statistic> getSystemStatistics( float timeOffset, 
+												String testcaseIds,
+												String machineIds,
+												String statsTypeIds)
+														throws DatabaseAccessException {
 
         List<Statistic> allStatistics = new ArrayList<Statistic>();
 
@@ -1032,18 +1034,6 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                                                  .add( "machine ids", machineIds )
                                                  .add( "stats type ids", statsTypeIds )
                                                  .format();
-
-        /*
-         * Combined statistics do not have real statistic IDs, but Test Explorer needs some.
-         * We must provide unique IDs
-         */
-        Map<String, Integer> statisticFakeIds = new HashMap<String, Integer>();
-
-        /*
-         * The DB does not contain combined statistics, so we must create them.
-         * All values of statistic with same statistic ID and timestamp are summed into 1 statistic
-         */
-        Map<String, Statistic> combinedStatistics = new HashMap<String, Statistic>();
 
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
@@ -1072,76 +1062,9 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 statistic.machineId = rs.getInt( "machineId" );
                 statistic.testcaseId = rs.getInt( "testcaseId" );
 
-                boolean theUidIsExpected = false;
-                if( expectedStatisticUIDs == null ) {
-                    // used when copying a testcase
-                    theUidIsExpected = true;
-                } else {
-                    String statisticUidToMatch = statistic.getUid().replace( "[", "" ).replace( "]", "" );
-                    for( String expectedStatisticUID : expectedStatisticUIDs ) {
-                        // we use matchers for combining statistics into virtual containers
-                        if( statisticUidToMatch.matches( expectedStatisticUID.replace( "[", "" )
-                                                                             .replace( "]", "" ) ) ) {
-                            theUidIsExpected = true;
-                            break;
-                        }
-                    }
-                }
-
-                if( theUidIsExpected ) {
-
-                    // add to single statistics
-                    if( expectedSingleStatisticIDs == null ) {
-                        // used when copying a testcase
-                        allStatistics.add( statistic );
-                    } else if( expectedSingleStatisticIDs.contains( statistic.statisticTypeId ) ) {
-                        allStatistics.add( statistic );
-                    }
-
-                    // add to combined statistics
-                    if( expectedCombinedStatisticIDs != null
-                        && expectedCombinedStatisticIDs.contains( statistic.statisticTypeId ) ) {
-
-                        String statisticTempKey = statistic.statisticTypeId + "->" + statistic.timestamp;
-                        Statistic combinedStatistic = combinedStatistics.get( statisticTempKey );
-                        if( combinedStatistic == null ) {
-                            // create a new combined statistic
-                            combinedStatistic = new Statistic();
-                            combinedStatistic.name = statistic.name;
-                            combinedStatistic.parentName = Statistic.COMBINED_STATISTICS_CONTAINER;
-                            combinedStatistic.unit = statistic.unit;
-                            combinedStatistic.timestamp = statistic.timestamp;
-                            combinedStatistic.machineId = statistic.machineId;
-                            combinedStatistic.testcaseId = statistic.testcaseId;
-                            combinedStatistic.statisticTypeId = getStatisticFakeId( DbReadAccess.START_FAKE_ID_VALUE_FOR_AGGREGATED_SYSTEM_STATISTICS,
-                                                                                    statisticFakeIds,
-                                                                                    combinedStatistic );
-
-                            combinedStatistics.put( statisticTempKey, combinedStatistic );
-                        }
-
-                        // calculate the combined value
-                        combinedStatistic.value = combinedStatistic.value + statistic.value;
-                    }
-
-                    numberRecords++;
-                }
-            }
-
-            if( combinedStatistics.size() > 0 ) {
-                // sort the combined statistics by their timestamps
-                List<Statistic> sortedStatistics = new ArrayList<Statistic>( combinedStatistics.values() );
-                Collections.sort( sortedStatistics, new Comparator<Statistic>() {
-
-                    @Override
-                    public int compare( Statistic stat1, Statistic stat2 ) {
-
-                        return ( int ) ( stat1.timestamp - stat2.timestamp );
-                    }
-                } );
-
+                numberRecords++;
                 // add the combined statistics to the others
-                allStatistics.addAll( sortedStatistics );
+                allStatistics.add( statistic );
             }
 
             logQuerySuccess( sqlLog, "system statistics", numberRecords );
@@ -1226,6 +1149,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     }
 
     public List<Statistic> getCheckpointStatistics( float timeOffset, String testcaseIds, String actionNames,
+                                                    String actionParents,
                                                     Set<String> expectedSingleActionUIDs,
                                                     Set<String> expectedCombinedActionUIDs ) throws DatabaseAccessException {
 
@@ -1234,6 +1158,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
                                                  .add( "testcase ids", testcaseIds )
                                                  .add( "checkpoint names", actionNames )
+                                                 .add( "checkpoint parents", actionParents )
                                                  .format();
 
         Map<String, Integer> fakeStatisticIds = new HashMap<String, Integer>();
@@ -1253,11 +1178,12 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_checkpoint_statistics(?, ?, ?) }" );
+            callableStatement = connection.prepareCall( "{ call sp_get_checkpoint_statistics(?, ?, ?, ?) }" );
 
             callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
             callableStatement.setString( 2, testcaseIds );
             callableStatement.setString( 3, actionNames );
+            callableStatement.setString( 4, actionParents );
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
