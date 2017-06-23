@@ -92,13 +92,14 @@ public class RestClient {
      * REST debug levels
      */
     public class RESTDebugLevel {
-        public static final int HEADERS = 0x01;
-        public static final int BODY    = 0x02;
-        public static final int NONE    = 0x00;
-        public static final int ALL     = HEADERS | BODY;
+        public static final int NONE       = 0x00;
+        public static final int TARGET_URI = 0x01;
+        public static final int HEADERS    = 0x02 | TARGET_URI;
+        public static final int BODY       = 0x03 | TARGET_URI;
+        public static final int ALL        = HEADERS | BODY;
     }
 
-    private int                        debugLevel         = RESTDebugLevel.NONE;
+    private int                        debugLevel         = RESTDebugLevel.TARGET_URI;
 
     private static final Logger        log                = Logger.getLogger( RestClient.class );
 
@@ -1017,7 +1018,9 @@ public class RestClient {
                 webTarget = webTarget.queryParam( requestParamEntry.getKey(), requestParamValue );
             }
         }
-        log.info( "We will " + descriptionToken + " " + webTarget.getUri() );
+        if(( debugLevel & RESTDebugLevel.TARGET_URI ) == RESTDebugLevel.TARGET_URI){
+            log.info( "We will " + descriptionToken + " " + webTarget.getUri() );
+        }
 
         Invocation.Builder invocationBuilder = webTarget.request();
 
