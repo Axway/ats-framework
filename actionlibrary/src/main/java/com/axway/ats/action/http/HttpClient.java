@@ -1286,7 +1286,7 @@ public class HttpClient {
             // add request parameters
             for( Entry<String, List<String>> reqParam : requestParameters.entrySet() ) {
                 for( String value : reqParam.getValue() ) {
-                    builder.setParameter( reqParam.getKey(), value );
+                    builder.addParameter( reqParam.getKey(), value );
                 }
             }
             return builder.build();

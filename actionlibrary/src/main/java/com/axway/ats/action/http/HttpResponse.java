@@ -30,7 +30,9 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 import com.axway.ats.action.exceptions.VerificationException;
+import com.axway.ats.action.json.JsonText;
 import com.axway.ats.action.objects.MimePackage;
+import com.axway.ats.action.xml.XmlText;
 import com.axway.ats.common.PublicAtsApi;
 
 /**
@@ -215,12 +217,12 @@ public class HttpResponse {
     }
 
     /**
-     * Get the response body an an XML Document. Note that Content-Type must indicate
+     * Get the response body as a XML Document. Note that Content-Type must indicate
      * that the body is XML, e.g. "text/xml", "application/soap+xml".
      * For multipart messages, the first part that has a Content-Type that indicates XML, (if any),
-     * will be converted to an XML Document and returned.
+     * will be converted to a XML Document and returned.
      *
-     * @return The body as an XML Document
+     * @return The body as a XML Document
      * @throws HttpException
      */
     @PublicAtsApi
@@ -267,6 +269,119 @@ public class HttpResponse {
 
         return null;
     }
+    
+    /**
+     * Get the response body as a XMLText object. Note that Content-Type must indicate
+     * that the body is XML, e.g. "text/xml", "application/soap+xml".
+     * For multipart messages, the first part that has a Content-Type that indicates XML, (if any),
+     * will be converted to a XMLText object and returned.
+     *
+     * @return The body as a XMLText object
+     * @throws HTTPException
+     */
+    
+    @PublicAtsApi
+    public XmlText getBodyAsXmlText(){
+        
+        if( body == null ) {
+            return null;
+        }
+        
+        String contentType = null;
+        for( HttpHeader header : headers ) {
+            if( header.getKey().equalsIgnoreCase( "Content-Type" ) ) {
+                contentType = header.getValue();
+                break;
+            }
+        }
+        
+        if( contentType != null ) {
+            if( contentType.contains( "xml" ) ) {
+                return new XmlText( new String( body ) );
+            } else if( contentType.contains( "multipart" ) ) {
+                // Get the first part of the multipart that has "xml" in its
+                // Content-Type header as a XMLText.
+                try {
+                    InputStream is = new ByteArrayInputStream( body );
+                    MimePackage mime = new MimePackage( is );
+                    List<MimePart> parts = mime.getMimeParts();
+                    for( MimePart part : parts ) {
+                        String[] partContentTypes = part.getHeader( "Content-Type" );
+                        for( String partContentType : partContentTypes ) {
+                            if( partContentType.contains( "xml" ) ) {
+                                // We have an XMLText object
+                                MimeBodyPart p = ( MimeBodyPart ) part;
+                                return new XmlText( new String(IOUtils.toByteArray( p.getRawInputStream() )) );
+                            }
+                        }
+                    }
+                } catch( Exception e ) {
+                    throw new HttpException( "Error while trying to convert multipart message's content to a XMLText object",
+                                             e );
+                }
+            }
+        }
+
+        return null;
+        
+    }
+    
+    /**
+     * Get the response body as a JSONText object. Note that Content-Type must indicate
+     * that the body is JSON, e.g. "application/json".
+     * For multipart messages, the first part that has a Content-Type that indicates JSON, (if any),
+     * will be converted to a JSONText object and returned.
+     *
+     * @return The body as a JSONText object
+     * @throws HTTPException
+     */
+    
+    @PublicAtsApi
+    public JsonText getBodyAsJsonText(){
+        
+        if( body == null ) {
+            return null;
+        }
+        
+        String contentType = null;
+        for( HttpHeader header : headers ) {
+            if( header.getKey().equalsIgnoreCase( "Content-Type" ) ) {
+                contentType = header.getValue();
+                break;
+            }
+        }
+        
+        if( contentType != null ) {
+            if( contentType.contains( "json" ) ) {
+                return new JsonText( new String( body ) );
+            } else if( contentType.contains( "multipart" ) ) {
+                // Get the first part of the multipart that has "json" in its
+                // Content-Type header as a JSONText.
+                try {
+                    InputStream is = new ByteArrayInputStream( body );
+                    MimePackage mime = new MimePackage( is );
+                    List<MimePart> parts = mime.getMimeParts();
+                    for( MimePart part : parts ) {
+                        String[] partContentTypes = part.getHeader( "Content-Type" );
+                        for( String partContentType : partContentTypes ) {
+                            if( partContentType.contains( "json" ) ) {
+                                // We have an JSONText object
+                                MimeBodyPart p = ( MimeBodyPart ) part;
+                                return new JsonText( new String(IOUtils.toByteArray( p.getRawInputStream() )) );
+                            }
+                        }
+                    }
+                } catch( Exception e ) {
+                    throw new HttpException( "Error while trying to convert multipart message's content to a JSONText object",
+                                             e );
+                }
+            }
+        }
+
+        return null;
+        
+    }
+
     
     /**
      * Verify that the response contains header exact value
