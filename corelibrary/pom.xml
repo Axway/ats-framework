@@ -16,8 +16,6 @@
 	<properties>
 		<!-- Apache FTP and FTPS Library -->
 		<org.apache.commons.net.version>3.5</org.apache.commons.net.version>
-
-		<!-- MySQL: in ivy was 5.1.7 but this is missing. 5.1.13 now in Artifactory -->
 		<mysql.mysql-connector-java.version>5.1.13</mysql.mysql-connector-java.version>
 		<oracle.ojdbc.version>12.1.0.1</oracle.ojdbc.version>
 		<!-- jTDS dependency is defined in parent pom.xml -->
@@ -62,7 +60,6 @@
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
@@ -106,13 +103,11 @@
 			<!-- <scope>system</scope>
 			<systemPath>${HOME}/.m2/repository/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar</systemPath> -->
 			<exclusions>
-                <exclusion>
-                    <groupId>com.oracle.jdbc</groupId>
-                    <artifactId>xmlparserv2</artifactId>
-                </exclusion>
-            </exclusions>
-			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
-				and loaded with reflection <scope>runtime</scope> -->
+                          <exclusion>
+                            <groupId>com.oracle.jdbc</groupId>
+                            <artifactId>xmlparserv2</artifactId>
+                          </exclusion>
+                        </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -131,8 +126,7 @@
 			<artifactId>winp</artifactId>
 			<version>${org.jvnet.winp.version}</version>
 		</dependency>
-		<!-- SFTP client dependencies -->
-		<dependency>
+		<dependency> <!-- SFTP client dependencies -->
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>${com.jcraft.jsch.version}</version>
