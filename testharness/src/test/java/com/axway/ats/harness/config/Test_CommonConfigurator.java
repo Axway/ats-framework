@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.junit.Test;
 import com.axway.ats.config.ConfigurationRepository;
 import com.axway.ats.config.exceptions.ConfigSourceDoesNotExistException;
 import com.axway.ats.config.exceptions.ConfigurationException;
+import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.harness.BaseTest;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.harness.config.MailServer;
@@ -251,5 +253,27 @@ public class Test_CommonConfigurator extends BaseTest {
         testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
 
         testDataConfigurator.getMailServer( "INVALID_MAIL_SERVER" );
+    }
+
+    @Test
+    public void testLocalHost_HostLocality() {
+        String host = "localhost";
+        CommonConfigurator.getInstance().setHostLocality( host, false );
+        boolean isLocal = HostUtils.isLocalHost( host );
+        HostUtils.setHostLocality( host, true); // revert before assert so fail should not leave modified locality globally
+        Assert.assertFalse( isLocal  );
+
+        host = "127.0.0.1";
+        CommonConfigurator.getInstance().setHostLocality( host, false );
+        isLocal = HostUtils.isLocalHost( host );
+        HostUtils.setHostLocality( host, true); // revert
+        Assert.assertFalse( isLocal );
+
+        host = "my.hostname.localD123";
+        CommonConfigurator.getInstance().setHostLocality( host, true );
+        isLocal = HostUtils.isLocalHost( host );
+        HostUtils.setHostLocality( host, false); // revert
+        Assert.assertTrue( isLocal );
+
     }
 }
