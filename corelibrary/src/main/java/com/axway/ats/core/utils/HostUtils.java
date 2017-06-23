@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,16 +63,16 @@ public class HostUtils {
 
     /**
      * List of public addresses of the local host. The remote Agent uses that address to connect to the local host.
-     * In case of many local network adapters, it may turn that different Agents will use different addresses 
+     * In case of many local network adapters, it may turn that different Agents will use different addresses
      * to connect to the local host.
-     * 
+     *
      * < [remote ATS Agent] , [public address of the local host] >
      */
     private static Map<String, InetAddress> localHostPublicAddresses = new HashMap<String, InetAddress>();
 
     /**
      * Allows specifying externally(from the test code) whether some host is a local or remote one
-     * 
+     *
      * @param host host name or IP address
      * @param isLocal whether this host should be treated as a local or remote one
      */
@@ -80,11 +80,13 @@ public class HostUtils {
 
         if( isLocal ) {
             localHosts.add( host );
+            nonlocalHosts.remove( host );
         } else {
             nonlocalHosts.add( host );
+            localHosts.remove( host );
         }
     }
-    
+
     /**
      * Get the local host name (e.g. someone.corp.axway.com)
      *
@@ -236,11 +238,11 @@ public class HostUtils {
 
                                 ipList.add( ipv4 );
                                 if( exitOnFirstIPv4 ) {
-                                	/* 
-                                	 * return list, containing the last added IP address,
-                                	 * which will be the first IPv4 address, that was found
-                                	*/
-                                	int listSize = ipList.size();
+                                    /*
+                                     * return list, containing the last added IP address,
+                                     * which will be the first IPv4 address, that was found
+                                    */
+                                    int listSize = ipList.size();
                                     return ipList.subList( listSize - 1, listSize );
                                 }
                             }
@@ -275,7 +277,7 @@ public class HostUtils {
     /**
      * Returns the public address of the local host.
      * It is used when a remote agent needs to initiates connection to the local host
-     * 
+     *
      * @param remoteAtsAgent the remote ATS agent
      * @return the public address of the local host
      */
@@ -290,7 +292,7 @@ public class HostUtils {
         synchronized( localHostPublicAddresses ) {
             localHostPublicAddress = localHostPublicAddresses.get( remoteAtsAgent );
 
-            // 1. try to make a WS connection with the remote ATS Agent, 
+            // 1. try to make a WS connection with the remote ATS Agent,
             // if succeed - we will find a good public IP
             if( localHostPublicAddress == null ) {
                 String[] atsAgentTokens = splitAddressHostAndPort( remoteAtsAgent );
@@ -411,7 +413,7 @@ public class HostUtils {
     /**
      * Returns the ATS agent addresses which contains its IP and port.
      * If a port is not passed, we will append the default one.
-     * 
+     *
      * @param atsAgents a list of agents
      * @return
      */
@@ -431,9 +433,9 @@ public class HostUtils {
 
     /**
      * Splits an Address into Host and Port.
-     * 
+     *
      * @param address the address to parse
-     * @return either { "host", "port" } or just { "host" }  
+     * @return either { "host", "port" } or just { "host" }
      */
     public static String[] splitAddressHostAndPort( String address ) {
 

@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -309,4 +309,40 @@ public class Test_Utils extends BaseTest {
         return "The expected array: " + Arrays.asList( expectedArgs ) + " is different from the actual: "
                + Arrays.asList( actualArgs );
     }
+
+    @Test
+    public void testLocalHost_HostLocality() {
+        String host = "localhost";
+        HostUtils.setHostLocality( host, true );
+        Assert.assertTrue( HostUtils.isLocalHost( host ) );
+
+        host = "localhost";
+        HostUtils.setHostLocality( host, false );
+        // this was failing up to 3.11.1-1-15
+        Assert.assertFalse( HostUtils.isLocalHost( host ) );
+        HostUtils.setHostLocality( host, true); // revert
+
+        host = "127.0.0.1";
+        HostUtils.setHostLocality( host, false );
+        Assert.assertFalse( HostUtils.isLocalHost( host ) );
+        HostUtils.setHostLocality( host, true); // revert
+
+        host = "192.168.1.1"; // 10.11.12.13
+        HostUtils.setHostLocality( host, false );
+        Assert.assertFalse( HostUtils.isLocalHost( host ) );
+        HostUtils.setHostLocality( host, true); // revert
+
+        host = "10.11.12.13"; // 10.11.12.13
+        HostUtils.setHostLocality( host, false );
+        Assert.assertFalse( HostUtils.isLocalHost( host ) );
+
+        host = "my.temp.domain";
+        HostUtils.setHostLocality( host, false );
+        Assert.assertFalse( HostUtils.isLocalHost( host ) );
+
+        host = "my.temp.domain";
+        HostUtils.setHostLocality( host, false );
+        Assert.assertFalse( HostUtils.isLocalAtsAgent( host + ":8089") );
+    }
+
 }
