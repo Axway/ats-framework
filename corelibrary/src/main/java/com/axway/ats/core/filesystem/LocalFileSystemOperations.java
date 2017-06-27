@@ -2427,11 +2427,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * Unzip file to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     * Unzip file to local or remote machine. If the machine is UNIX-like it will preserve the permissions
      *
      * @param zipFilePath the zip file path
-     * @param outputDirPath output directory
-     * @throws Exception
+     * @param outputDirPath output directory. The directory will be created if it does not exist
+     * @throws FileSystemOperationException
      */
     @Override
     public void unzip(
@@ -2481,10 +2481,10 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * Unzip gzip file to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     * Extract GZip file to local or remote machine, if the machine is UNIX-like it will preserve the permissions
      *
      * @param gzipFilePath the gzip file path
-     * @param outputDirPath output directory
+     * @param outputDirPath output directory. The directory will be created if it does not exist
      * @throws FileSystemOperationException
      */
     @Override
@@ -2497,14 +2497,15 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         } else if( gzipFilePath.endsWith( ".gz" ) ) {
             gunzipGzipFile( gzipFilePath, outputDirPath );
         } else if( gzipFilePath.endsWith( ".tar" ) ) {
-            throw new FileSystemOperationException( "Error while trying to gunzip " + gzipFilePath
-                                                    + ". You should use untar() mehod." );
+            throw new FileSystemOperationException( "Archive with path '" + gzipFilePath
+                                                    + "' seems to be a TAR file. You should use untar() mehod." );
         } else if( gzipFilePath.endsWith( ".zip" ) ) {
-            throw new FileSystemOperationException( "Error while trying to gunzip " + gzipFilePath
-                                                    + ". You should use unzip() mehod." );
+            throw new FileSystemOperationException( "Archive with path '" + gzipFilePath
+                                                    + "' seems to be a ZIP file. You should use unzip() mehod." );
         } else {
-            throw new FileSystemOperationException( "Error while trying to gunzip " + gzipFilePath
-                                                    + ". This compress format is not supported." );
+            log.info( "File with not expected extension '" + gzipFilePath + "' is passed to gunzip(). "
+                    + "Exception is expected if this is not a true GZip file." );
+            gunzipGzipFile( gzipFilePath, outputDirPath );
         }
 
     }
@@ -2548,12 +2549,16 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                  String outputDirPath ) {
 
         String outputFileName = new File( gzipFilePath ).getName();
-        outputFileName = outputFileName.substring( 0, outputFileName.lastIndexOf( ".gz" ) );
+        if(outputFileName.endsWith( ".gz" )){
+            outputFileName = outputFileName.substring( 0, outputFileName.lastIndexOf( ".gz" ) );
+        }
         String outputFilePath = outputDirPath + File.separator + outputFileName;
+        new File(outputDirPath).mkdirs();
+        InputStream in = null;
         try {
-            String filePermissions = this.getFilePermissions( gzipFilePath );
-            InputStream in = new GZIPInputStream( new FileInputStream( gzipFilePath ) );
-            OutputStream out = new FileOutputStream( outputFilePath );
+            String filePermissions = getFilePermissions( gzipFilePath );
+            in = new GZIPInputStream( new FileInputStream( gzipFilePath ) );
+            BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( outputFilePath ) );
 
             IoUtils.copyStream( in, out );
             if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
@@ -2565,15 +2570,17 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             String errorMsg = "Unable to gunzip " + gzipFilePath + ".Target directory '" + outputDirPath
                               + "' is in inconsistent state.";
             throw new FileSystemOperationException( errorMsg, e );
+        } finally {
+            IoUtils.closeStream( in ,"Could not close stream for file '" + gzipFilePath +"'");
         }
 
     }
 
     /**
-     * Untar file to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     * Extract TAR file to local or remote machine. If the machine is UNIX-like it will preserve the permissions
      *
      * @param tarFilePath the tar file path
-     * @param outputDirPath output directory
+     * @param outputDirPath output directory. The directory will be created if it does not exist
      * @throws FileSystemOperationException
      */
     @Override

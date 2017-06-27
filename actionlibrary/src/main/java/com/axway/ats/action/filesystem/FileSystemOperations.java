@@ -1419,11 +1419,12 @@ public class FileSystemOperations {
     }
     
     /**
-     * Unzip gzip archive to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     * Unzip gzip archive to local or remote machine.
+     * if the machine is UNIX-like it will preserve the permissions
      *
      * @param gzipFilePath the gzip file path
-     * @param outputDirPath output directory which is used as base directory for extracted files
-     * Temporary means that it will be automatically deleted.This will happen only when the JVM terminates normally.
+     * @param outputDirPath output directory which is used as a base directory for extracted files
+     * @throws FileSystemOperationException
      */
     @PublicAtsApi
     public void gunzip(
@@ -1439,11 +1440,12 @@ public class FileSystemOperations {
     }
     
     /**
-     * Untar archive to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     * Extract TAR archive to local or remote machine.
+     * If the machine is UNIX-like it will preserve the file permissions
      *
      * @param tarFilePath the tar file path
-     * @param outputDirPath output directory which is used as base directory for extracted files
-     * Temporary means that it will be automatically deleted.This will happen only when the JVM terminates normally.
+     * @param outputDirPath output directory which is used as a base directory for extracted files
+     * @throws FileSystemOperationException
      */
     @PublicAtsApi
     public void untar(
