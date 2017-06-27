@@ -291,12 +291,16 @@ public class IoUtils {
     *
     * @param input {@link InputStream}. The input stream is closed after copying.
     * @param output {@link OutputStream}. The output stream is closed after copying.
+    * @param closeInputStream. Whether to close the input stream after copying is complete.
+    * @param closeOutputStream. Whether to close the output stream after copying is complete.
     * @return the number of bytes copied
     * @throws IOException
     */
     public static long copyStream(
                                    InputStream input,
-                                   OutputStream output ) throws IOException {
+                                   OutputStream output,
+                                   boolean closeInputStream,
+                                   boolean closeOutputStream ) throws IOException {
 
         byte[] buffer = new byte[INTERNAL_BUFFER_SIZE];
         long count = 0;
@@ -307,10 +311,21 @@ public class IoUtils {
                 count += n;
             }
         } finally {
-            closeStream( output );
-            closeStream( input );
+            if( closeInputStream ) {
+                closeStream( input );
+            }
+            if( closeOutputStream ) {
+                closeStream( output );
+            }
         }
         return count;
+    }
+
+    public static long copyStream(
+                                   InputStream input,
+                                   OutputStream output ) throws IOException {
+
+        return copyStream( input, output, true, true );
     }
 
     /**
