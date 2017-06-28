@@ -17,10 +17,8 @@ package com.axway.ats.action.dbaccess.snapshot;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -30,6 +28,9 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipColumns;
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipContent;
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipRows;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
@@ -69,94 +70,88 @@ class DatabaseSnapshotBackupUtils {
         // TODO - add DTD or schema for manual creation and easy validation
         Element dbNode = doc.createElement( DatabaseSnapshotUtils.NODE_DB_SNAPSHOT );
         dbNode.setAttribute( DatabaseSnapshotUtils.ATTR_SNAPSHOT_NAME, snapshot.name );
-        // this timestamp comes when user takes a snapshot from database
+        // the timestamp comes when user takes a snapshot from database
         dbNode.setAttribute( DatabaseSnapshotUtils.ATTR_METADATA_TIME,
                              DatabaseSnapshotUtils.dateToString( snapshot.metadataTimestamp ) );
-        // this timestamp now
+        // the timestamp now
         snapshot.contentTimestamp = System.currentTimeMillis();
         dbNode.setAttribute( DatabaseSnapshotUtils.ATTR_CONTENT_TIME,
                              DatabaseSnapshotUtils.dateToString( snapshot.contentTimestamp ) );
         doc.appendChild( dbNode );
 
-        // append table descriptions
+        // append all table data
         for( TableDescription tableDescription : snapshot.tables ) {
             Element tableNode = doc.createElement( DatabaseSnapshotUtils.NODE_TABLE );
 
+            // append table meta data
             dbNode.appendChild( tableNode );
             tableDescription.toXmlNode( doc, tableNode );
-            
-            // if the current table is in the skipTableContent we will do not need to get its all data
-            if( snapshot.skipTableContent.contains( tableDescription.getName() ) ) {
-                // no rows have to be saved, so we skip this iteration
+
+            // check if table content is to be skipped
+            SkipContent skipTableContentOption = snapshot.skipContentPerTable.get( tableDescription.getName()
+                                                                                                   .toLowerCase() );
+            if( skipTableContentOption != null ) {
+                // we skip the table content
+                if( skipTableContentOption.isRememberNumberOfRows() ) {
+                    // ... but we want to persist the number of rows
+                    int numberRows = snapshot.loadTableLength( snapshot.name, tableDescription, null, null );
+                    tableNode.setAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS,
+                                            String.valueOf( numberRows ) );
+                }
+
                 continue;
             }
 
-            List<String> valuesList = new ArrayList<String>();
-            valuesList.addAll( snapshot.loadTableData( snapshot.name,
-                                                       tableDescription,
-                                                       snapshot.skipRulesPerTable,
-                                                       snapshot.skipRows,
-                                                       null,
-                                                       null ) );
+            // append table content
+            List<String> valuesList = snapshot.loadTableData( snapshot.name, tableDescription,
+                                                              snapshot.skipColumnsPerTable,
+                                                              snapshot.skipRowsPerTable, null, null );
             for( String values : valuesList ) {
                 Element rowNode = doc.createElement( DatabaseSnapshotUtils.NODE_ROW );
-                if( !skipRow( snapshot.skipRows.get( tableDescription.getName() ),
-                             values ) ) {
-                    rowNode.setTextContent( values );
-                }
+                rowNode.setTextContent( values );
 
                 tableNode.appendChild( rowNode );
             }
         }
 
-        // append skip rules
-        for( String tableName : snapshot.skipRulesPerTable.keySet() ) {
-            Element skipRuleNode = doc.createElement( DatabaseSnapshotUtils.NODE_SKIP_RULE );
-            dbNode.appendChild( skipRuleNode );
-            skipRuleNode.setAttribute( DatabaseSnapshotUtils.ATT_SKIP_RULE_TABLE, tableName );
+        // append any skip table content rules
+        for( SkipContent skipContent : snapshot.skipContentPerTable.values() ) {
+            skipContent.toXmlNode( doc, dbNode );
+        }
 
-            snapshot.skipRulesPerTable.get( tableName ).toXmlNode( doc, skipRuleNode );
+        // append any skip table column rules
+        for( SkipColumns skipColumns : snapshot.skipColumnsPerTable.values() ) {
+            skipColumns.toXmlNode( doc, dbNode );
+        }
+
+        // append any skip table row rules
+        for( SkipRows skipRows : snapshot.skipRowsPerTable.values() ) {
+            skipRows.toXmlNode( doc, dbNode );
         }
 
         // save the XML file
+        OutputStream fos = null;
         try {
             OutputFormat format = new OutputFormat( doc );
             format.setIndenting( true );
             format.setIndent( 4 );
             format.setLineWidth( 1000 );
 
-            XMLSerializer serializer = new XMLSerializer( new FileOutputStream( new File( backupFile ) ),
-                                                          format );
+            fos = new FileOutputStream( new File( backupFile ) );
+            XMLSerializer serializer = new XMLSerializer( fos, format );
+
             serializer.serialize( doc );
         } catch( Exception e ) {
             throw new DatabaseSnapshotException( "Error saving " + backupFile, e );
+        } finally {
+            IoUtils.closeStream( fos, "Error closing IO stream to file used for database snapshot backup "
+                                      + backupFile );
         }
 
         log.info( "Save database snapshot into file " + backupFile + " - END" );
 
         return doc;
     }
-    
-    public boolean skipRow(
-                           Map<String, String> skipTableRows,
-                           String rowValues ) {
-
-       if( skipTableRows != null ) {
-           for( Entry<String, String> columnRowValue : skipTableRows.entrySet() ) {
-
-               String rowValueToSkip = columnRowValue.getValue();
-               if( !rowValueToSkip.endsWith( "?" ) ) {
-                   rowValueToSkip += "?";
-               }
-               String[] matches = rowValues.split( "\\|" + columnRowValue.getKey() + "=" + rowValueToSkip
-                                                   + "\\|" );
-               if( matches.length > 1 ) {
-                   return true;
-               }
-           }
-       }
-       return false;
-   }
 
     /**
      * Load a snapshot from a file
@@ -202,9 +197,36 @@ class DatabaseSnapshotBackupUtils {
 
         // the tables
         List<Element> tableNodes = DatabaseSnapshotUtils.getChildrenByTagName( databaseNode,
-                                                                         DatabaseSnapshotUtils.NODE_TABLE );
+                                                                               DatabaseSnapshotUtils.NODE_TABLE );
         for( Element tableNode : tableNodes ) {
             snapshot.tables.add( TableDescription.fromXmlNode( snapshot.name, tableNode ) );
+        }
+
+        // any skip table content rules
+        snapshot.skipContentPerTable.clear();
+        List<Element> skipContentNodes = DatabaseSnapshotUtils.getChildrenByTagName( databaseNode,
+                                                                                     DatabaseSnapshotUtils.NODE_SKIP_CONTENT );
+        for( Element skipContentNode : skipContentNodes ) {
+            SkipContent skipContent = SkipContent.fromXmlNode( skipContentNode );
+            snapshot.skipContentPerTable.put( skipContent.getTable().toLowerCase(), skipContent );
+        }
+
+        // any skip table column rules
+        snapshot.skipColumnsPerTable.clear();
+        List<Element> skipColumnNodes = DatabaseSnapshotUtils.getChildrenByTagName( databaseNode,
+                                                                                    DatabaseSnapshotUtils.NODE_SKIP_COLUMNS );
+        for( Element skipColumnNode : skipColumnNodes ) {
+            SkipColumns skipColumns = SkipColumns.fromXmlNode( skipColumnNode );
+            snapshot.skipColumnsPerTable.put( skipColumns.getTable().toLowerCase(), skipColumns );
+        }
+
+        // any skip table row rules
+        snapshot.skipRowsPerTable.clear();
+        List<Element> skipRowNodes = DatabaseSnapshotUtils.getChildrenByTagName( databaseNode,
+                                                                                 DatabaseSnapshotUtils.NODE_SKIP_ROWS );
+        for( Element skipRowNode : skipRowNodes ) {
+            SkipRows skipRows = SkipRows.fromXmlNode( skipRowNode );
+            snapshot.skipRowsPerTable.put( skipRows.getTable().toLowerCase(), skipRows );
         }
 
         log.info( "Load database snapshot from file " + sourceFile + " - END" );

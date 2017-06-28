@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DB_SNAPSHOT content_timestamp="2017-05-26 14:56:00.900+0300" metadata_timestamp="2017-05-26 14:55:58.363+0300" name="snap1">
+
+    <TABLE name="AccountLocalKey" primaryKey="alias">
+        <column_descriptions>
+			<column_description>name=privateKey, type=BLOB, auto increment=NO, default=null, nullable=YES, size=2147483647</column_description>
+            <column_description>name=certPath, type=BLOB, auto increment=NO, default=null, nullable=NO, size=2147483647</column_description>
+        </column_descriptions>
+        <indexes>
+            <index name="PK__AccountL__8C585C05547A8E39">, Type=CLUSTERED, DataSpaceName=ST_DATA, DataSpaceType=FG, IsPrimaryKey=true, IsUnique=true, IsDuplicateKey=false, IsUniqueConstraint=false</index>
+        </indexes>
+        <row>alias=8a06c0825c34eb0c015c34f6a9bc0252</row>
+    </TABLE>
+	
+    <TABLE name="AddressBookAccountSource" primaryKey="id">
+        <column_descriptions>
+            
+            <column_description>name=enabled, type=TINYINT, auto increment=NO, default=null, nullable=NO, size=3</column_description>
+            <column_description>name=parentGroup, type=VARCHAR, auto increment=NO, default=null, nullable=NO, size=255</column_description>
+            <column_description>name=accountId, type=VARCHAR, auto increment=NO, default=null, nullable=YES, size=32</column_description>
+            <column_description>name=addressBookGlobalSourceId, type=VARCHAR, auto increment=NO, default=null, nullable=YES, size=32</column_description>
+            <column_description>name=customAttributesId, type=VARCHAR, auto increment=NO, default=null, nullable=YES, size=32</column_description>
+        </column_descriptions>
+        <indexes>
+            <index name="IDXABAccSource_AccountId"    >, Type=NONCLUSTERED, DataSpaceName=ST_DATA, DataSpaceType=FG, IsPrimaryKey=false, IsUnique=false, IsDuplicateKey=false, IsUniqueConstraint=false</index>
+            <index name="UK_AddrBookAccSource">, Type=NONCLUSTERED, DataSpaceName=ST_DATA, DataSpaceType=FG, IsPrimaryKey=false, IsUnique=true, IsDuplicateKey=false, IsUniqueConstraint=true</index>
+            <index name="IDXABAccSource_GlobalSourceId">, Type=NONCLUSTERED, DataSpaceName=ST_DATA, DataSpaceType=FG, IsPrimaryKey=false, IsUnique=false, IsDuplicateKey=false, IsUniqueConstraint=false</index>
+            <index name="PK__AddressB__3213E83F4486B0FE">, Type=CLUSTERED, DataSpaceName=ST_DATA, DataSpaceType=FG, IsPrimaryKey=true, IsUnique=true, IsDuplicateKey=false, IsUniqueConstraint=false</index>
+        </indexes>
+    </TABLE>
+	
+ </DB_SNAPSHOT>

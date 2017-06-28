@@ -30,6 +30,8 @@ public class SnapshotConfiguration implements Serializable {
     private boolean           checkMD5;
     private boolean           checkPermissions;
     private boolean           supportHidden;
+    private boolean           checkPropertyFilesContent;
+    private boolean           checkXmlFilesContent;
 
     public boolean isCheckModificationTime() {
 
@@ -86,4 +88,23 @@ public class SnapshotConfiguration implements Serializable {
         this.supportHidden = supportHidden;
     }
 
+    public boolean isCheckPropertyFilesContent() {
+
+        return checkPropertyFilesContent;
+    }
+
+    public void setCheckPropertyFilesContent( boolean checkPropertyFilesContent ) {
+
+        this.checkPropertyFilesContent = checkPropertyFilesContent;
+    }
+
+    public boolean isCheckXmlFilesContent() {
+
+        return checkXmlFilesContent;
+    }
+
+    public void setCheckXmlFilesContent( boolean checkXmlFilesContent ) {
+
+        this.checkXmlFilesContent = checkXmlFilesContent;
+    }
 }

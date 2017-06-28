@@ -27,7 +27,7 @@ import com.axway.ats.common.PublicAtsApi;
  * This structure can say how equal the snapshots are
  */
 @PublicAtsApi
-public class EqualityState implements Serializable {
+public class FileSystemEqualityState implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,11 @@ public class EqualityState implements Serializable {
     // list of different files
     private List<FileTrace>   differences;
 
-    public EqualityState( String firstSnapshotName, String secondSnapshotName ) {
+    // remember the agent addresses, there are cases we need them
+    private String            firstAtsAgent;
+    private String            secondAtsAgent;
+    
+    public FileSystemEqualityState( String firstSnapshotName, String secondSnapshotName ) {
 
         this.firstSnapshotName = firstSnapshotName;
         this.secondSnapshotName = secondSnapshotName;
@@ -45,12 +49,18 @@ public class EqualityState implements Serializable {
         differences = new ArrayList<FileTrace>();
     }
 
+    /**
+     * @return the name of the first snapshot
+     */
     @PublicAtsApi
     public String getFirstSnapshotName() {
 
         return firstSnapshotName;
     }
 
+    /**
+     * @return the name of the second snapshot
+     */
     @PublicAtsApi
     public String getSecondSnapshotName() {
 
@@ -58,7 +68,7 @@ public class EqualityState implements Serializable {
     }
 
     /**
-     * @return the differences sorted by their type
+     * @return list of differences sorted by their type
      */
     @PublicAtsApi
     public List<FileTrace> getDifferences() {
@@ -77,5 +87,25 @@ public class EqualityState implements Serializable {
     public void addDifference( FileTrace difference ) {
 
         differences.add( difference );
+    }
+
+    public String getFirstAtsAgent() {
+    
+        return firstAtsAgent;
+    }
+
+    public void setFirstAtsAgent( String firstAtsAgent ) {
+    
+        this.firstAtsAgent = firstAtsAgent;
+    }
+
+    public String getSecondAtsAgent() {
+    
+        return secondAtsAgent;
+    }
+
+    public void setSecondAtsAgent( String secondAtsAgent ) {
+    
+        this.secondAtsAgent = secondAtsAgent;
     }
 }

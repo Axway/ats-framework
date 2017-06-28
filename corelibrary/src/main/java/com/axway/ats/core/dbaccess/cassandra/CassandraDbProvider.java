@@ -468,7 +468,7 @@ public class CassandraDbProvider implements DbProvider {
     }
 
     @Override
-    public List<TableDescription> getTableDescriptions() {
+    public List<TableDescription> getTableDescriptions( List<String> tablesToSkip ) {
 
         throw new RuntimeException( "Method not implemented" );
     }

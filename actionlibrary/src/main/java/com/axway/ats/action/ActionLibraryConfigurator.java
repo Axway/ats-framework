@@ -17,6 +17,7 @@ package com.axway.ats.action;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.config.AbstractConfigurator;
+import com.axway.ats.config.exceptions.NoSuchPropertyException;
 import com.axway.ats.core.CoreLibraryConfigurator;
 
 /**
@@ -31,6 +32,10 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     private static final String              PACKAGE_LOADER_DEFAULT_BOX_KEY         = "actionlibrary.packageloader.defaultbox";
 
     private static final String              FILE_TRANSFER_VERBOSE_MODE             = "actionlibrary.filetransfer.verbosemode";
+    private static final String              FILE_TRANSFER_CONNECTION_TIMEOUT           = "actionlibrary.filetransfer.connection.timeout";
+    private static final String              FILE_TRANSFER_CONNECTION_ATTEMPTS          = "actionlibrary.filetransfer.connection.attempts";
+    private static final String              FILE_TRANSFER_CONNECTION_INTERVAL          = "actionlibrary.filetransfer.connection.interval";
+    private static final String              FILE_TRANSFER_CONNECTION_INITIAL_DELAY     = "actionlibrary.filetransfer.connection.initialdelay";    
 
     private static final String              FILE_SYSTEM_COPY_FILE_START_PORT       = "actionlibrary.filesystem.copyfile.start.port";
     private static final String              FILE_SYSTEM_COPY_FILE_END_PORT         = "actionlibrary.filesystem.copyfile.end.port";
@@ -49,6 +54,8 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     private static final String              FILE_SNAPSHOT_CHECK_MD5                = "actionlibrary.filesnapshot.check.md5";
     private static final String              FILE_SNAPSHOT_CHECK_PERMISSIONS        = "actionlibrary.filesnapshot.check.permissions";
     private static final String              FILE_SNAPSHOT_SUPPORT_HIDDEN           = "actionlibrary.filesnapshot.support.hidden";
+    private static final String              FILE_SNAPSHOT_CHECK_PROPERTY_FILES_CONTENT = "actionlibrary.filesnapshot.check.properties.content";
+    private static final String              FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT      = "actionlibrary.filesnapshot.check.xml.content";    
 
     private static final String              REST_DEFAULT_REQUEST_MEDIA_TYPE        = "actionlibrary.rest.default.request.media.type";
     private static final String              REST_DEFAULT_REQUEST_MEDIA_CHARSET     = "actionlibrary.rest.default.request.media.charset";
@@ -137,6 +144,98 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         setTempProperty( FILE_TRANSFER_VERBOSE_MODE, Boolean.toString( verboseMode ) );
     }
 
+    /**
+     * Get the file transfer connection timeout
+     * 
+     * @return the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public long getFileTransferConnectionTimeout() {
+
+        return getLongProperty( FILE_TRANSFER_CONNECTION_TIMEOUT );
+    }
+
+    /**
+     * Set the file transfer connection timeout
+     * 
+     * @param defaultMessageBox the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public void setFileTransferConnectionTimeout(
+                                                  long timeout ) {
+
+        setTempProperty( FILE_TRANSFER_CONNECTION_TIMEOUT, Long.toString( timeout ) );
+    }
+
+    /**
+     * Set the file transfer connection attempts
+     * 
+     * @param defaultMessageBox the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public void setFileTransferConnectionAttempts(
+                                                   int attempts ) {
+
+        setTempProperty( FILE_TRANSFER_CONNECTION_ATTEMPTS, Integer.toString( attempts ) );
+    }
+
+    /**
+     * Get the file transfer connection attempts
+     * 
+     * @return the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public int getFileTransferConnectionAttempts() {
+
+        return getIntegerProperty( FILE_TRANSFER_CONNECTION_ATTEMPTS );
+    }
+
+    /**
+     * Set the file transfer connection interval
+     * 
+     * @param defaultMessageBox the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public void setFileTransferConnectionInterval(
+                                                   long interval ) {
+
+        setTempProperty( FILE_TRANSFER_CONNECTION_INTERVAL, Long.toString( interval ) );
+    }
+
+    /**
+     * Get the file transfer connection interval
+     * 
+     * @return the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public long getFileTransferConnectionInterval() {
+
+        return getLongProperty( FILE_TRANSFER_CONNECTION_INTERVAL );
+    }
+
+    /**
+     * Set the file transfer connection initial delay
+     * 
+     * @param defaultMessageBox the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public void setFileTransferConnectionInitialDelay(
+                                                       long delay ) {
+
+        setTempProperty( FILE_TRANSFER_CONNECTION_INITIAL_DELAY, Long.toString( delay ) );
+    }
+
+    /**
+     * Get the file transfer connection initial delay
+     * 
+     * @return the file transfer connection timeout
+     */
+    @PublicAtsApi
+    public long getFileTransferConnectionInitialDelay() {
+
+        return getLongProperty( FILE_TRANSFER_CONNECTION_INITIAL_DELAY );
+    }
+    
     /**
      * Set the default HTTPS encryption protocols, for example "TLSv1.2".
      * You can specify more than one by using ',' as a delimiter
@@ -377,7 +476,11 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getFileSnapshotCheckModificationTime() {
 
-        return getBooleanProperty( FILE_SNAPSHOT_CHECK_MODIFICATION_TIME );
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_CHECK_MODIFICATION_TIME );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
     }
 
     @PublicAtsApi
@@ -390,7 +493,11 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getFileSnapshotCheckFileSize() {
 
-        return getBooleanProperty( FILE_SNAPSHOT_CHECK_SIZE );
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_CHECK_SIZE );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
     }
 
     @PublicAtsApi
@@ -403,7 +510,11 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getFileSnapshotCheckFileMd5() {
 
-        return getBooleanProperty( FILE_SNAPSHOT_CHECK_MD5 );
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_CHECK_MD5 );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
     }
 
     @PublicAtsApi
@@ -416,7 +527,11 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getFileSnapshotCheckFilePermissions() {
 
-        return getBooleanProperty( FILE_SNAPSHOT_CHECK_PERMISSIONS );
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_CHECK_PERMISSIONS );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
     }
 
     @PublicAtsApi
@@ -429,7 +544,11 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getFileSnapshotSupportHiddenFiles() {
 
-        return getBooleanProperty( FILE_SNAPSHOT_SUPPORT_HIDDEN );
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_SUPPORT_HIDDEN );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
     }
 
     @PublicAtsApi
@@ -437,6 +556,39 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
                                                    boolean supportHiddenFiles ) {
 
         setTempProperty( FILE_SNAPSHOT_SUPPORT_HIDDEN, Boolean.toString( supportHiddenFiles ) );
+    }
+
+    @PublicAtsApi
+    public boolean getFileSnapshotCheckPropertyFilesContent() {
+
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_CHECK_PROPERTY_FILES_CONTENT );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
+    }
+
+    @PublicAtsApi
+    public void setFileSnapshotCheckPropertyFilesContent( boolean checkPropertyFilesContent ) {
+
+        setTempProperty( FILE_SNAPSHOT_CHECK_PROPERTY_FILES_CONTENT,
+                         Boolean.toString( checkPropertyFilesContent ) );
+    }
+
+    @PublicAtsApi
+    public boolean getFileSnapshotCheckXmlFilesContent() {
+
+        try {
+            return getBooleanProperty( FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT );
+        } catch( NoSuchPropertyException nspe ) {
+            return true;
+        }
+    }
+
+    @PublicAtsApi
+    public void setFileSnapshotCheckXmlFilesContent( boolean checkXmlFilesContent ) {
+
+        setTempProperty( FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT, Boolean.toString( checkXmlFilesContent ) );
     }
 
     @PublicAtsApi

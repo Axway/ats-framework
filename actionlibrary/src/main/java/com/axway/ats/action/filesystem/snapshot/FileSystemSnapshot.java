@@ -21,6 +21,7 @@ import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.core.filesystem.snapshot.IFileSystemSnapshot;
 import com.axway.ats.core.filesystem.snapshot.LocalFileSystemSnapshot;
 import com.axway.ats.core.filesystem.snapshot.SnapshotConfiguration;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
 
@@ -38,6 +39,14 @@ public class FileSystemSnapshot {
 
     private IFileSystemSnapshot   fsSnapshotImpl;
 
+    /**
+     * These are the entry points for specifying what to do when comparing properties and XML files.
+     * They are intentionally made public, so user can easily come into the scope of these
+     * methods without messing with methods dealing with generic files
+     */
+    public PropertiesFile         properties;
+    public XmlFile                xml;
+    
     /**
      * Skip checking the size of a file
      */
@@ -99,9 +108,10 @@ public class FileSystemSnapshot {
 
         loadConfiguration();
 
-        this.fsSnapshotImpl = getOperationsImplementationFor( atsAgent, name, configuration );
         this.atsAgent = atsAgent;
-
+        this.fsSnapshotImpl = getOperationsImplementationFor( atsAgent, name, configuration );
+        this.properties = new PropertiesFile( this.fsSnapshotImpl );
+        this.xml = new XmlFile( this.fsSnapshotImpl );
     }
 
     /**
@@ -112,14 +122,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public FileSystemSnapshot( String name ) {
 
-        if( StringUtils.isNullOrEmpty( name ) ) {
-            throw new FileSystemSnapshotException( "Invalid snapshot name '" + name + "'" );
-        }
-
-        loadConfiguration();
-
-        this.fsSnapshotImpl = getOperationsImplementationFor( null, name, configuration );
-
+        this( null, name );
     }
 
     private FileSystemSnapshot() {
@@ -139,6 +142,8 @@ public class FileSystemSnapshot {
         configuration.setCheckMD5( configurator.getFileSnapshotCheckFileMd5() );
         configuration.setCheckPermissions( configurator.getFileSnapshotCheckFilePermissions() );
         configuration.setSupportHidden( configurator.getFileSnapshotSupportHiddenFiles() );
+        configuration.setCheckPropertyFilesContent( configurator.getFileSnapshotCheckPropertyFilesContent() );
+        configuration.setCheckXmlFilesContent( configurator.getFileSnapshotCheckXmlFilesContent() );
     }
 
     /**
@@ -255,6 +260,8 @@ public class FileSystemSnapshot {
             thisLocal = ( LocalFileSystemSnapshot ) this.fsSnapshotImpl;
         } else {
             thisLocal = ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).getFileSystemSnapshot();
+            // pass the agent address, there are cases we need it
+            thisLocal.setRemoteAgent( ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).getAtsAgent() );
         }
 
         LocalFileSystemSnapshot thatLocal;
@@ -262,6 +269,8 @@ public class FileSystemSnapshot {
             thatLocal = ( LocalFileSystemSnapshot ) that.fsSnapshotImpl;
         } else {
             thatLocal = ( ( RemoteFileSystemSnapshot ) that.fsSnapshotImpl ).getFileSystemSnapshot();
+            // pass the agent address, there are cases we need it
+            thatLocal.setRemoteAgent( ( ( RemoteFileSystemSnapshot ) that.fsSnapshotImpl ).getAtsAgent() );
         }
 
         thisLocal.compare( thatLocal );
@@ -373,4 +382,218 @@ public class FileSystemSnapshot {
             return new RemoteFileSystemSnapshot( atsAgent, name, configuration );
         }
     }
+    
+    
+    /**
+     * A class used to compare properties files 
+     */
+    class PropertiesFile {
+
+        private IFileSystemSnapshot fsSnapshotImpl;
+
+        public PropertiesFile( IFileSystemSnapshot fsSnapshotImpl ) {
+            this.fsSnapshotImpl = fsSnapshotImpl;
+        }
+
+        /**
+         * Skip a property by matching its key.
+         * The key is matched if it is the same as the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param key a token used to match a key
+         */
+        public void skipPropertyByKeyEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                                 String key ) {
+
+            this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
+                                                     SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its key.
+         * The key is matched if it contains the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param key a token used to match a key
+         */
+        public void skipPropertyByKeyContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                     String key ) {
+
+            this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
+                                                     SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its key.
+         * The key is matched if it matches the provided regular expression token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param key a token used to match a key
+         */
+        public void skipPropertyByKeyMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                   String key ) {
+
+            this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
+                                                     SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+        }
+
+        /**
+         * Skip a property by matching its value.
+         * The value is matched if it the same as the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param value a token used to match a value
+         */
+        public void skipPropertyByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                                   String value ) {
+
+            this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
+                                                       SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+        }
+        
+        /**
+         * Skip a property by matching its value.
+         * The value is matched if it contains the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param value a token used to match a value
+         */
+        public void skipPropertyByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                     String value ) {
+
+            this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
+                                                       SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its value.
+         * The value is matched if it matches the provided regular expression token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param value a token used to match a value
+         */
+        public void skipPropertyByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                   String value ) {
+
+            this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
+                                                       SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+        }
+    }
+    
+    /**
+     * A class used to compare XML files 
+     */
+    class XmlFile {
+
+        private IFileSystemSnapshot fsSnapshotImpl;
+
+        public XmlFile( IFileSystemSnapshot fsSnapshotImpl ) {
+            this.fsSnapshotImpl = fsSnapshotImpl;
+        }
+
+        /**
+         * Skip XML node if its attribute value is the same as the provided value.
+         * 
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param nodeXpath node XPATH
+         * @param attributeKey node attribute key
+         * @param attributeValue node attribute value
+         */
+        public void skipNodeByAttributeValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                                        String nodeXpath, String attributeKey,
+                                                        String attributeValue ) {
+
+            this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                     attributeKey, attributeValue,
+                                                     SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip XML node if its attribute value contains the provided value.
+         * 
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param nodeXpath node XPATH
+         * @param attributeKey node attribute key
+         * @param attributeValue node attribute value
+         */
+        public void skipNodeByAttributeValueContainingText( String rootDirectoryAlias,
+                                                            String relativeFilePath, String nodeXpath,
+                                                            String attributeKey, String attributeValue ) {
+
+            this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                     attributeKey, attributeValue,
+                                                     SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip XML node if its attribute value matches the provided regular expression value.
+         * 
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param nodeXpath node XPATH
+         * @param attributeKey node attribute key
+         * @param attributeValue node attribute value
+         */
+        public void skipNodeByAttributeValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                          String nodeXpath, String attributeKey,
+                                                          String attributeValue ) {
+
+            this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                     attributeKey, attributeValue,
+                                                     SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+        }
+
+        /**
+         * Skip XML node if its value is the same as the provided value.
+         * 
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param nodeXpath node XPATH
+         * @param value node value
+         */
+        public void skipNodeByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                               String nodeXpath, String value ) {
+
+            this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                                 SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip XML node if its value contains the provided value.
+         * 
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param nodeXpath node XPATH
+         * @param value node value
+         */
+        public void skipNodeByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                   String nodeXpath, String value ) {
+
+            this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                                 SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip XML node if its value matches the provided value.
+         * 
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param nodeXpath node XPATH
+         * @param value node value
+         */
+        public void skipNodeByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                 String nodeXpath, String value ) {
+
+            this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                                 SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+        }
+    }    
 }

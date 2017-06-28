@@ -35,7 +35,7 @@ public interface IFileSystemSnapshot {
                           String rootDirectoryAlias,
                           String relativeFilePath,
                           int... skipRules );
-
+    
     public void skipFileByRegex(
                                  String rootDirectoryAlias,
                                  String relativeFilePath,
@@ -46,6 +46,19 @@ public interface IFileSystemSnapshot {
                            String relativeFilePath,
                            int... checkRules );
 
+    public void skipPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String key,
+                                     String matchType );
+
+    public void skipPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String value,
+                                       String matchType );
+    
+    public void skipNodeByValue( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
+                                 String value, String matchType );
+    
+    public void skipNodeByAttribute( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
+                                     String attributeKey, String attributeValue,
+                                     String attributeValueMatchType );
+    
     public void takeSnapshot();
 
     public void loadFromFile(

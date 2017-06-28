@@ -142,6 +142,10 @@ public class Test_FileSystemSnapshot extends BaseTest {
         configurator.setFileSnapshotCheckFileMd5( true );
         configurator.setFileSnapshotCheckFilePermissions( false );
         configurator.setFileSnapshotSupportHiddenFiles( false );
+
+        // these tests do not worry about file content
+        configurator.setFileSnapshotCheckPropertyFilesContent( false );
+        configurator.setFileSnapshotCheckXmlFilesContent( false );
     }
 
     @Test
@@ -1016,14 +1020,13 @@ public class Test_FileSystemSnapshot extends BaseTest {
                 // we have 2 files with different properties, with different jdk versions we get the files
                 // in different order. So we will get the right file by checking its length 
                 if( token.length == 2 ) {
-                    assertTrue( token[0].trim().endsWith( "file2.xml:" ) );
+                    assertTrue( token[0].trim().endsWith( "file2.xml\":" ) );
                     expected.add( "Modification time:" );
                     assertTrue( compareEntities( expected, real, true ) );
                 } else if( token.length == 4 ) {
-                    assertTrue( token[0].trim().endsWith( "file1.xml:" ) );
+                    assertTrue( token[0].trim().endsWith( "file1.xml\":" ) );
                     expected.clear();
                     expected.add( "MD5 checksum:" );
-                    expected.add( "Size:" );
                     expected.add( "Modification time:" );
                     assertTrue( compareEntities( expected, real, true ) );
                 }

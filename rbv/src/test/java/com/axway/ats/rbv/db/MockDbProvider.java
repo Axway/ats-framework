@@ -228,7 +228,7 @@ public class MockDbProvider implements DbProvider {
     }
 
     @Override
-    public List<TableDescription> getTableDescriptions() {
+    public List<TableDescription> getTableDescriptions( List<String> tablesToSkip ) {
 
         return null;
     }

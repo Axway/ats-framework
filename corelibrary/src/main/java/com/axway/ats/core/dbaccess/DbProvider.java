@@ -39,9 +39,10 @@ public interface DbProvider {
     public DbConnection getDbConnection();
 
     /**
-     * @return description about all tables present in the database
+     * @param tablesToSkip list of some tables we are not interested in
+     * @return description about all important tables
      */
-    public List<TableDescription> getTableDescriptions();
+    public List<TableDescription> getTableDescriptions( List<String> tablesToSkip );
 
     /**
      * Get the JDBC database metadata.</p> 

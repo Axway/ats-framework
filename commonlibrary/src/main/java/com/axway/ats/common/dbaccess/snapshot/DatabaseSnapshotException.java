@@ -16,12 +16,9 @@
 package com.axway.ats.common.dbaccess.snapshot;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.dbaccess.snapshot.equality.EqualityState;
+import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 
 /**
  * Error while working with Database Snapshot
@@ -31,7 +28,7 @@ public class DatabaseSnapshotException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    private EqualityState     equality;
+    private DatabaseEqualityState     equality;
 
     public DatabaseSnapshotException( String arg0 ) {
 
@@ -48,7 +45,7 @@ public class DatabaseSnapshotException extends RuntimeException {
         super( arg0, arg1 );
     }
 
-    public DatabaseSnapshotException( EqualityState equality ) {
+    public DatabaseSnapshotException( DatabaseEqualityState equality ) {
 
         this.equality = equality;
     }
@@ -60,7 +57,7 @@ public class DatabaseSnapshotException extends RuntimeException {
      * @return the result of compare
      */
     @PublicAtsApi
-    public EqualityState getEqualityState() {
+    public DatabaseEqualityState getEqualityState() {
 
         return this.equality;
     }
@@ -73,193 +70,154 @@ public class DatabaseSnapshotException extends RuntimeException {
             // got a generic exception, not directly concerning the comparision
             return super.getMessage();
         } else {
-            String thisSnapshot = equality.getFirstSnapshotName();
-            String thatSnapshot = equality.getSecondSnapshotName();
+            String firstSnapshot = equality.getFirstSnapshotName();
+            String secondSnapshot = equality.getSecondSnapshotName();
 
             StringBuilder msg = new StringBuilder();
             msg.append( "Comparing [" );
-            msg.append( thisSnapshot );
+            msg.append( firstSnapshot );
             msg.append( "] and [" );
-            msg.append( thatSnapshot );
+            msg.append( secondSnapshot );
             msg.append( "] produced the following unexpected differences:" );
 
-            addInfoAboutTablesInOneSnapshotOnly( msg, equality, thisSnapshot );
-            addInfoAboutTablesInOneSnapshotOnly( msg, equality, thatSnapshot );
+            addInfoAboutTablesInOneSnapshotOnly( msg, equality, firstSnapshot );
+            addInfoAboutTablesInOneSnapshotOnly( msg, equality, secondSnapshot );
 
-            addInfoAboutDifferentPrimaryKeys( msg, equality );
+            addInfoAboutDifferentPrimaryKeys( msg, equality, firstSnapshot, secondSnapshot );
 
-            addInfoAboutDifferentNumberOfRows( msg, equality );
+            addInfoAboutDifferentNumberOfRows( msg, equality, firstSnapshot, secondSnapshot );
 
-            addInfoAboutColumnsInOneSnapshotOnly( msg, equality, thisSnapshot, thatSnapshot );
+            addInfoAboutColumnsInOneSnapshotOnly( msg, equality, firstSnapshot, secondSnapshot );
 
-            addInfoAboutIndexesInOneSnapshotOnly( msg, equality, thisSnapshot, thatSnapshot );
+            addInfoAboutIndexesInOneSnapshotOnly( msg, equality, firstSnapshot, secondSnapshot );
 
-            addInfoAboutRowsInOneSnapshotOnly( msg, equality, thisSnapshot, thatSnapshot );
+            addInfoAboutRowsInOneSnapshotOnly( msg, equality, firstSnapshot, secondSnapshot );
 
             msg.append( "\n" );
             return msg.toString();
         }
     }
 
-    private void addInfoAboutTablesInOneSnapshotOnly( StringBuilder msg, EqualityState equality,
+    private void addInfoAboutTablesInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
                                                       String snapshot ) {
 
-        StringBuilder tablesInThisSnapshotOnly = new StringBuilder();
-        List<String> tables = equality.getTablesPresentInOneSnapshotOnly( snapshot );
-        if( tables != null ) {
-            for( String table : tables ) {
-                tablesInThisSnapshotOnly.append( "\n\t" );
-                tablesInThisSnapshotOnly.append( table );
-            }
+        StringBuilder tablesInFirstSnapshotOnly = new StringBuilder();
+        for( String table : equality.getTablesPresentInOneSnapshotOnly( snapshot ) ) {
+            tablesInFirstSnapshotOnly.append( "\n\t" );
+            tablesInFirstSnapshotOnly.append( table );
         }
 
-        if( tablesInThisSnapshotOnly.length() > 0 ) {
+        if( tablesInFirstSnapshotOnly.length() > 0 ) {
             msg.append( "\nTables present in [" + snapshot + "] only:" );
-            msg.append( tablesInThisSnapshotOnly );
+            msg.append( tablesInFirstSnapshotOnly );
         }
     }
 
-    private void addInfoAboutDifferentPrimaryKeys( StringBuilder msg, EqualityState equality ) {
+    private void addInfoAboutDifferentPrimaryKeys( StringBuilder msg, DatabaseEqualityState equality,
+                                                   String firstSnapshot, String secondSnapshot ) {
 
-        StringBuilder differentPrimaryKeys = new StringBuilder();
-        List<String> primaryKeys = equality.getDifferentPrimaryKeys();
-        for( String key : primaryKeys ) {
-            differentPrimaryKeys.append( "\n\t" );
-            differentPrimaryKeys.append( key );
-        }
-
-        if( differentPrimaryKeys.length() > 0 ) {
+        List<String> tables = equality.getTablesWithDifferentPrimaryKeys( firstSnapshot );
+        if( tables.size() > 0 ) {
             msg.append( "\nDifferent primary keys:" );
-            msg.append( differentPrimaryKeys );
+
+            for( String table : tables ) {
+                msg.append( "\n\ttable '" + table + "', primary key column in [" + firstSnapshot + "] is '"
+                            + equality.getDifferentPrimaryKeys( firstSnapshot, table ) + "', while in ["
+                            + secondSnapshot + "] is '"
+                            + equality.getDifferentPrimaryKeys( secondSnapshot, table ) + "'" );
+            }
         }
     }
 
-    private void addInfoAboutDifferentNumberOfRows( StringBuilder msg, EqualityState equality ) {
+    private void addInfoAboutDifferentNumberOfRows( StringBuilder msg, DatabaseEqualityState equality,
+                                                    String firstSnapshot, String secondSnapshot ) {
 
-        StringBuilder differentNumberOfRows = new StringBuilder();
-        List<String> numberOfRows = equality.getDifferentNumberOfRows();
-        for( String number : numberOfRows ) {
-            differentNumberOfRows.append( "\n\t" );
-            differentNumberOfRows.append( number );
-        }
-
-        if( differentNumberOfRows.length() > 0 ) {
+        List<String> tables = equality.getTablesWithDifferentNumberOfRows( firstSnapshot );
+        if( tables.size() > 0 ) {
             msg.append( "\nDifferent number of rows" + ":" );
-            msg.append( differentNumberOfRows );
+
+            for( String table : tables ) {
+                msg.append( "\n\ttable '" + table + "', "
+                            + equality.getDifferentNumberOfRows( firstSnapshot, table ) + " rows in ["
+                            + firstSnapshot + "] and "
+                            + equality.getDifferentNumberOfRows( secondSnapshot, table ) + " in ["
+                            + secondSnapshot + "]" );
+            }
         }
     }
 
-    private void addInfoAboutColumnsInOneSnapshotOnly( StringBuilder msg, EqualityState equality,
-                                                       String thisSnapshot, String thatSnapshot ) {
+    private void addInfoAboutColumnsInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
+                                                       String firstSnapshot, String secondSnapshot ) {
 
-        Map<String, List<String>> thisColumnsPerTable = equality.getColumnsPresentInOneSnapshotOnly( thisSnapshot );
-        Map<String, List<String>> thatColumnsPerTable = equality.getColumnsPresentInOneSnapshotOnly( thatSnapshot );
+        List<String> tables = equality.getTablesWithColumnsPresentInOneSnapshotOnly( firstSnapshot );
+        if( tables.size() > 0 ) {
+            for( String table : tables ) {
+                // add different columns for one table at a time
+                msg.append( "\nTable columns for '" + table + "' table:" );
 
-        /*
-         * Here both lists we work with are coming from same tables, but from different snapshots
-         */
-        if( thisColumnsPerTable == null ) {
-            return;
-        }
-
-        Set<Entry<String, List<String>>> tableNamesSet = thisColumnsPerTable.entrySet();
-
-        for( Entry<String, List<String>> thisTableNameEntry : tableNamesSet ) {
-            // add different columns for one table at a time
-            if( tableNamesSet.size() > 0 ) {
-                msg.append( "\nTable columns for '" + thisTableNameEntry.getKey() + "' table:" );
-            }
-
-            List<String> thisColumns = thisTableNameEntry.getValue();
-            if( thisColumns != null && thisColumns.size() > 0 ) {
-                msg.append( "\n\t[" + thisSnapshot + "]:" );
-                for( String column : thisColumns ) {
+                List<String> firstColumns = equality.getColumnsPresentInOneSnapshotOnlyAsStrings( firstSnapshot,
+                                                                                                  table );
+                msg.append( "\n\t[" + firstSnapshot + "]:" );
+                for( String column : firstColumns ) {
                     msg.append( "\n\t\t" + column );
                 }
-            }
 
-            List<String> thatColumns = thatColumnsPerTable.get( thisTableNameEntry.getKey() );
-            if( thatColumns != null && thatColumns.size() > 0 ) {
-                msg.append( "\n\t[" + thatSnapshot + "]:" );
-                for( String column : thatColumns ) {
+                List<String> secondColumns = equality.getColumnsPresentInOneSnapshotOnlyAsStrings( secondSnapshot,
+                                                                                                   table );
+                msg.append( "\n\t[" + secondSnapshot + "]:" );
+                for( String column : secondColumns ) {
                     msg.append( "\n\t\t" + column );
                 }
             }
         }
     }
 
-    private void addInfoAboutIndexesInOneSnapshotOnly( StringBuilder msg, EqualityState equality,
-                                                       String thisSnapshot, String thatSnapshot ) {
+    private void addInfoAboutIndexesInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
+                                                       String firstSnapshot, String secondSnapshot ) {
 
-        Map<String, List<String>> thisIndexesPerTable = equality.getIndexesPresentInOneSnapshotOnly( thisSnapshot );
-        Map<String, List<String>> thatIndexesPerTable = equality.getIndexesPresentInOneSnapshotOnly( thatSnapshot );
+        List<String> tables = equality.getTablesWithIndexesPresentInOneSnapshotOnly( firstSnapshot );
+        if( tables.size() > 0 ) {
+            for( String table : tables ) {
+                // add different indexes for one table at a time
+                msg.append( "\nTable indexes for '" + table + "' table:" );
 
-        /*
-         * Here both lists we work with are coming from same tables, but from different snapshots
-         */
-        if( thisIndexesPerTable == null ) {
-            return;
-        }
-
-        Set<Entry<String, List<String>>> tableNames = thisIndexesPerTable.entrySet();
-
-        for( Entry<String, List<String>> thisTableNameEntry : tableNames ) {
-            // add different indexes for one table at a time
-            if( tableNames.size() > 0 ) {
-                msg.append( "\nTable indexes for '" + thisTableNameEntry.getKey() + "' table:" );
-            }
-
-            List<String> thisIndexes = thisTableNameEntry.getValue();
-            if( thisIndexes != null && thisIndexes.size() > 0 ) {
-                msg.append( "\n\t[" + thisSnapshot + "]:" );
-                for( String index : thisIndexes ) {
+                List<String> firstIndexes = equality.getIndexesPresentInOneSnapshotOnlyAsStrings( firstSnapshot,
+                                                                                                  table );
+                msg.append( "\n\t[" + firstSnapshot + "]:" );
+                for( String index : firstIndexes ) {
                     msg.append( "\n\t\t" + index );
                 }
-            }
 
-            List<String> thatIndexes = thatIndexesPerTable.get( thisTableNameEntry.getKey() );
-            if( thatIndexes != null && thatIndexes.size() > 0 ) {
-                msg.append( "\n\t[" + thatSnapshot + "]:" );
-                for( String index : thatIndexes ) {
+                List<String> secondIndexes = equality.getIndexesPresentInOneSnapshotOnlyAsStrings( secondSnapshot,
+                                                                                                   table );
+                msg.append( "\n\t[" + secondSnapshot + "]:" );
+                for( String index : secondIndexes ) {
                     msg.append( "\n\t\t" + index );
                 }
             }
         }
     }
 
-    private void addInfoAboutRowsInOneSnapshotOnly( StringBuilder msg, EqualityState equality,
-                                                    String thisSnapshot, String thatSnapshot ) {
+    private void addInfoAboutRowsInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
+                                                    String firstSnapshot, String secondSnapshot ) {
 
-        Map<String, List<String>> thisRowsPerTable = equality.getRowsPresentInOneSnapshotOnly( thisSnapshot );
-        Map<String, List<String>> thatRowsPerTable = equality.getRowsPresentInOneSnapshotOnly( thatSnapshot );
+        List<String> tables = equality.getTablesWithRowsPresentInOneSnapshotOnly( firstSnapshot );
+        if( tables.size() > 0 ) {
+            for( String table : tables ) {
+                // add different rows for one table at a time
+                msg.append( "\nTable rows for '" + table + "' table:" );
 
-        /*
-         * Here both lists we work with are coming from same tables, but from different snapshots
-         */
-        if( thisRowsPerTable == null ) {
-            return;
-        }
-
-        Set<Entry<String, List<String>>> tableNames = thisRowsPerTable.entrySet();
-
-        for( Entry<String, List<String>> thisTableNameEntry : tableNames ) {
-            // add different rows for one table at a time
-            if( tableNames.size() > 0 ) {
-                msg.append( "\nTable rows for '" + thisTableNameEntry.getKey() + "' table:" );
-            }
-
-            List<String> thisRows = thisTableNameEntry.getValue();
-            if( thisRows != null && thisRows.size() > 0 ) {
-                msg.append( "\n\t[" + thisSnapshot + "]:" );
-                for( String row : thisRows ) {
+                List<String> firstRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings( firstSnapshot,
+                                                                                            table );
+                msg.append( "\n\t[" + firstSnapshot + "]:" );
+                for( String row : firstRows ) {
                     msg.append( "\n\t\t" + row );
                 }
-            }
 
-            List<String> thatRows = thatRowsPerTable.get( thisTableNameEntry.getKey() );
-            if( thatRows != null && thatRows.size() > 0 ) {
-                msg.append( "\n\t[" + thatSnapshot + "]:" );
-                for( String row : thatRows ) {
+                List<String> secondRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings( secondSnapshot,
+                                                                                             table );
+                msg.append( "\n\t[" + secondSnapshot + "]:" );
+                for( String row : secondRows ) {
                     msg.append( "\n\t\t" + row );
                 }
             }

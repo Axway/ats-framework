@@ -17,6 +17,7 @@ package com.axway.ats.core.filesystem.snapshot;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,7 +37,10 @@ import org.w3c.dom.Element;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
-import com.axway.ats.common.filesystem.snapshot.equality.EqualityState;
+import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
+import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 
@@ -87,7 +91,7 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
      */
     @PublicAtsApi
     public static final int                CHECK_FILE_PERMISSIONS       = FindRules.CHECK_FILE_PERMISSIONS;
-
+    
     // XML nodes used when saving/loading snapshots from files
     static final String                    NODE_FILE_SYSTEM             = "FILE_SYSTEM_SNAPSHOT";
     static final String                    NODE_DIRECTORY               = "DIRECTORY";
@@ -105,10 +109,14 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     private Map<String, DirectorySnapshot> dirSnapshots                 = new HashMap<String, DirectorySnapshot>();
 
     // this structure can say how equal are the snapshots
-    private EqualityState                  equality;
+	private FileSystemEqualityState        equality;
 
     // define what which attributes we want to check
     private SnapshotConfiguration          configuration;
+    
+    // when a snapshot is taken on a remote host, we remember that host
+    // we need it when reading file content to compare
+    private String                         remoteAgent;
 
     public LocalFileSystemSnapshot( String name, SnapshotConfiguration configuration ) {
 
@@ -125,11 +133,16 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         LocalFileSystemSnapshot newFileSystemSnapshot = new LocalFileSystemSnapshot( newSnapshotName,
                                                                                      configuration );
 
-        for( Entry<String, DirectorySnapshot> dirSnapshotEntry : dirSnapshots.entrySet() ) {
-            newFileSystemSnapshot.addDirectory( dirSnapshotEntry.getKey(), dirSnapshotEntry.getValue().getPath() );
+        for( String dirAlias : dirSnapshots.keySet() ) {
+            newFileSystemSnapshot.addDirectory( dirAlias, dirSnapshots.get( dirAlias ).getPath() );
         }
 
         return newFileSystemSnapshot;
+    }
+
+    public void setRemoteAgent( String remoteAgent ) {
+    
+        this.remoteAgent = remoteAgent;
     }
 
     @Override
@@ -155,8 +168,8 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         directoryPath = parseDirectoryPath( directoryPath );
 
         if( dirSnapshots.keySet().contains( directoryAlias ) ) {
-            throw new FileSystemSnapshotException( "There is already a directory with alias '" + directoryAlias
-                                         + "' for snapshot '" + name + "'" );
+            throw new FileSystemSnapshotException( "There is already a directory with alias '"
+                                                   + directoryAlias + "' for snapshot '" + name + "'" );
         }
 
         dirSnapshots.put( directoryAlias, new DirectorySnapshot( directoryPath, equality ) );
@@ -170,8 +183,8 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
         DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
         if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                         + "'" );
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
+                                                   + rootDirectoryAlias + "'" );
         } else {
             dirSnapshot.skipSubDirectory( relativeDirectoryPath );
         }
@@ -188,8 +201,8 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
         DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
         if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                         + "'" );
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
+                                                   + rootDirectoryAlias + "'" );
         } else {
             if( skipRules.length == 0 ) {
                 skipRules = new int[]{ FindRules.SKIP_FILE_PATH };
@@ -197,7 +210,76 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
             dirSnapshot.addFindRules( relativeFilePath, skipRules );
         }
     }
+    
+    @Override
+    public void skipPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String key, String matchType ) {
 
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
+        if( dirSnapshot == null ) {
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
+                                           + "'" );
+        } else {
+            dirSnapshot.addSkipPropertyMatcher( rootDirectoryAlias, relativeFilePath, key, true,
+                                                SkipPropertyMatcher.MATCH_TYPE.valueOf( matchType ) );
+        }
+    }
+    
+    @Override
+    public void skipPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String value,
+                                       String matchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
+        if( dirSnapshot == null ) {
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
+                                           + "'" );
+        } else {
+            dirSnapshot.addSkipPropertyMatcher( rootDirectoryAlias, relativeFilePath, value, false,
+                                                SkipPropertyMatcher.MATCH_TYPE.valueOf( matchType ) );
+        }
+    }
+    
+    @Override
+    public void skipNodeByAttribute( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
+                                     String attributeKey, String attributeValue,
+                                     String attributeValueMatchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
+        if( dirSnapshot == null ) {
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
+                                           + "'" );
+        } else {
+            dirSnapshot.addSkipXmlNodeMatcher( rootDirectoryAlias, relativeFilePath, nodeXpath, attributeKey,
+                                             attributeValue,
+                                             SkipXmlNodeMatcher.MATCH_TYPE.valueOf( attributeValueMatchType ) );
+        }
+    }
+    
+    @Override
+    public void skipNodeByValue( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
+                                 String value, String matchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
+        if( dirSnapshot == null ) {
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
+                                           + "'" );
+        } else {
+            dirSnapshot.addSkipXmlNodeMatcher( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                               SkipXmlNodeMatcher.MATCH_TYPE.valueOf( matchType ) );
+        }
+    }
+    
     /**
      * When it is expected to have the files' sizes different, we know for sure
      * the MD5 sum is different too.
@@ -279,8 +361,8 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
         DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
         if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                         + "'" );
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
+                                                   + rootDirectoryAlias + "'" );
         } else {
             if( checkRules.length == 0 ) {
                 checkRules = new int[]{ FindRules.CHECK_FILE_ALL_ATTRIBUTES };
@@ -355,9 +437,10 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
                 default:
                     throw new FileSystemSnapshotException( "Invalid FIND RULE: " + rule
-                                                 + ". Please use one of the public "
-                                                 + this.getClass().getSimpleName() + ".SKIP_* or"
-                                                 + this.getClass().getSimpleName() + ".CHECK_* constants" );
+                                                           + ". Please use one of the public "
+                                                           + this.getClass().getSimpleName() + ".SKIP_* or"
+                                                           + this.getClass().getSimpleName()
+                                                           + ".CHECK_* constants" );
             }
         }
 
@@ -382,8 +465,8 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
         log.debug( "Start taking file system snapshot, snapshot name is " + name );
 
-        for( Entry<String, DirectorySnapshot> dirSnapshotEntry : dirSnapshots.entrySet() ) {
-            dirSnapshotEntry.getValue().takeSnapshot( configuration );
+        for( String dirAlias : dirSnapshots.keySet() ) {
+            dirSnapshots.get( dirAlias ).takeSnapshot( configuration );
         }
 
         log.debug( "End taking file system snapshot, snapshot name is " + name );
@@ -395,22 +478,26 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
             throw new FileSystemSnapshotException( "Snapshot to compare is null" );
         }
         if( this.name.equals( that.name ) ) {
-            throw new FileSystemSnapshotException( "You are trying to compare snapshots with same name: " + this.name );
+            throw new FileSystemSnapshotException( "You are trying to compare snapshots with same name: "
+                                                   + this.name );
         }
         if( this.snapshotTimestamp == -1 ) {
             throw new FileSystemSnapshotException( "You are trying to compare snapshots but [" + this.name
-                                         + "] snapshot is still not created" );
+                                                   + "] snapshot is still not created" );
         }
         if( that.snapshotTimestamp == -1 ) {
             throw new FileSystemSnapshotException( "You are trying to compare snapshots but [" + that.name
-                                         + "] snapshot is still not created" );
+                                                   + "] snapshot is still not created" );
         }
 
         log.debug( "Comparing snapshots [" + this.name + "] taken on "
                    + SnapshotUtils.dateToString( this.snapshotTimestamp ) + " and [" + that.name
                    + "] taken on " + SnapshotUtils.dateToString( that.snapshotTimestamp ) );
 
-        this.equality = new EqualityState( this.name, that.name );
+        this.equality = new FileSystemEqualityState( this.name, that.name );
+        // carry the remote agents to all that might need it
+        this.equality.setFirstAtsAgent( this.remoteAgent );
+        this.equality.setSecondAtsAgent( that.remoteAgent );
 
         SnapshotUtils.checkDirSnapshotsTopLevel( this.name, this.dirSnapshots, that.name, that.dirSnapshots,
                                                  equality );
@@ -442,8 +529,8 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         Element fileSystemNode = doc.getDocumentElement();
         if( !NODE_FILE_SYSTEM.equals( fileSystemNode.getNodeName() ) ) {
             throw new FileSystemSnapshotException( "Bad backup file. Root node name is expeced to be '"
-                                         + NODE_FILE_SYSTEM + "', but it is '" + fileSystemNode.getNodeName()
-                                         + "'" );
+                                                   + NODE_FILE_SYSTEM + "', but it is '"
+                                                   + fileSystemNode.getNodeName() + "'" );
         }
 
         // the file system snapshot
@@ -457,7 +544,7 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
             this.dirSnapshots.put( dirAlias,
                                    DirectorySnapshot.fromFile( dirNode,
-                                                               new EqualityState( this.name, null ) ) );
+                                                               new FileSystemEqualityState( this.name, null ) ) );
         }
 
         // Copy all rules (from sub-directories) to the top level directory snapshot
@@ -508,27 +595,31 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         fileSystemNode.setAttribute( "time", SnapshotUtils.dateToString( this.snapshotTimestamp ) );
         dom.appendChild( fileSystemNode );
 
-        for( Entry<String, DirectorySnapshot> dirSnapshotEntry : this.dirSnapshots.entrySet() ) {
+        for( String dirSnapshotName : this.dirSnapshots.keySet() ) {
 
             Element dirSnapshotNode = dom.createElement( NODE_DIRECTORY );
             fileSystemNode.appendChild( dirSnapshotNode );
 
-            dirSnapshotNode.setAttribute( "alias", dirSnapshotEntry.getKey() );
-            dirSnapshotEntry.getValue().toFile( dom, dirSnapshotNode );
+            dirSnapshotNode.setAttribute( "alias", dirSnapshotName );
+            this.dirSnapshots.get( dirSnapshotName ).toFile( dom, dirSnapshotNode );
         }
 
         // save the XML file
+        OutputStream fos = null;
         try {
             OutputFormat format = new OutputFormat( dom );
             format.setIndenting( true );
             format.setIndent( 4 );
             format.setLineWidth( 1000 );
 
-            XMLSerializer serializer = new XMLSerializer( new FileOutputStream( new File( backupFile ) ),
-                                                          format );
+            fos = new FileOutputStream( new File( backupFile ) );
+            XMLSerializer serializer = new XMLSerializer( fos, format );
             serializer.serialize( dom );
         } catch( Exception e ) {
             throw new FileSystemSnapshotException( "Error saving " + backupFile, e );
+        } finally {
+            IoUtils.closeStream( fos, "Error closing IO stream to file used for file system snapshot backup "
+                                      + backupFile );
         }
 
         log.info( "SAVE TO FILE " + backupFile + " - END" );

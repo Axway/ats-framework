@@ -23,6 +23,8 @@
 		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
 			is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
 		<org.jvnet.winp.version>1.23</org.jvnet.winp.version>
+		
+		<org.dom4j.version>1.6.1</org.dom4j.version>
 	</properties>
 
 	<dependencies>
@@ -71,6 +73,17 @@
 			<artifactId>xalan</artifactId>
 			<version>${apache.xalan.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>${org.dom4j.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions> 
+		</dependency>		
 		<!-- Needed for jTDS -->
 		<dependency>
 			<groupId>commons-dbcp</groupId>

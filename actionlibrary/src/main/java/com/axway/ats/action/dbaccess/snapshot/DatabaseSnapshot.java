@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,12 +28,15 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipColumns;
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipContent;
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipRows;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 import com.axway.ats.common.dbaccess.snapshot.IndexNameMatcher;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
-import com.axway.ats.common.dbaccess.snapshot.equality.EqualityState;
+import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
@@ -47,41 +49,45 @@ import com.axway.ats.harness.config.TestBox;
  */
 public class DatabaseSnapshot {
 
-    private static Logger       log               = Logger.getLogger( DatabaseSnapshot.class );
+    private static Logger         log                 = Logger.getLogger( DatabaseSnapshot.class );
 
     // the snapshot name
-    String                      name;
+    String                        name;
 
     // the time all meta data is taken
-    long                        metadataTimestamp = -1;
+    long                          metadataTimestamp   = -1;
     // the time all table contents is taken
-    long                        contentTimestamp  = -1;
+    long                          contentTimestamp    = -1;
 
-    Document                    backupXmlFile;
+    Document                      backupXmlFile;
 
     // DB connection parameters
-    private TestBox             testBox;
-    private Map<String, Object> customProperties;
+    private TestBox               testBox;
+    private Map<String, Object>   customProperties;
 
     // description of all tables of interest
-    List<TableDescription>      tables            = new ArrayList<>();
+    List<TableDescription>        tables              = new ArrayList<>();
 
     // this structure can say how equal the snapshots are
-    private EqualityState       equality;
+    private DatabaseEqualityState equality;
 
     // our DB connector
-    private DbProvider          dbProvider;
+    private DbProvider            dbProvider;
 
-    // rules used to specify what to ignore when comparing
-    // MAP< table name > < what to skip >
-    Map<String, SkipRules>      skipRulesPerTable = new HashMap<String, SkipRules>();
+    // specifies which table columns to be skipped
+    // MAP< table name(in lower case) , columns to skip >
+    Map<String, SkipColumns>      skipColumnsPerTable = new HashMap<>();
 
-    Set<String>      skipTableContent = new HashSet<String>();
+    // list of tables which content is not of importance
+    // MAP< table name(in lower case) , content to skip >
+    Map<String, SkipContent>      skipContentPerTable = new HashMap<>();
 
-    Map<String, Map<String, String>> skipRows          = new HashMap<>();
-    
+    // specifies which table rows to be skipped
+    // MAP< table name(in lower case) , rows to skip >
+    Map<String, SkipRows>         skipRowsPerTable    = new HashMap<>();
+
     //  An interface which tells whether some table index names should be treated as same or not
-    private IndexNameMatcher    indexNameMatcher;
+    private IndexNameMatcher      indexNameMatcher;
 
     /**
      * Constructor providing snapshot name and connection parameters
@@ -123,42 +129,65 @@ public class DatabaseSnapshot {
     public void skipTables( String... tables ) {
 
         for( String table : tables ) {
-            skipRulesPerTable.put( table, new SkipRules() );
+            skipColumnsPerTable.put( table.toLowerCase(), new SkipColumns( table ) );
         }
     }
-    
+
     /**
      * Specify a column which values will not be read when comparing the table content.
      * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
      * 
-     * @param tableName table name
-     * @param columnName column
+     * @param table table name
+     * @param columns column
      */
     @PublicAtsApi
-    public void skipTableColumn( String tableName, String columnName ) {
+    public void skipTableColumn( String table, String columns ) {
 
-        skipRulesPerTable.put( tableName, new SkipRules( columnName ) );
+        skipColumnsPerTable.put( table.toLowerCase(), new SkipColumns( table, columns ) );
     }
 
     /**
      * Specify columns which values will not be read when comparing the table content.
      * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
      * 
-     * @param tableName table name
-     * @param columnNames columns
+     * @param table table name
+     * @param columns columns
      */
     @PublicAtsApi
-    public void skipTableColumns( String tableName, String... columnNames ) {
+    public void skipTableColumns( String table, String... columns ) {
 
-        skipRulesPerTable.put( tableName, new SkipRules( columnNames ) );
+        skipColumnsPerTable.put( table.toLowerCase(), new SkipColumns( table, columns ) );
     }
-    
+
+    /**
+     * Specify table(s) which content (rows) will not be checked.
+     * Note that table meta-data is still checked.
+     * 
+     * @param tables one or many tables
+     */
     @PublicAtsApi
-    public void skipTableContent(
-                                   String... tables ) {
+    public void skipTableContent( String... tables ) {
 
         for( String table : tables ) {
-            skipTableContent.add( table.toLowerCase() );
+            skipContentPerTable.put( table.toLowerCase(), new SkipContent( table, false ) );
+        }
+    }
+
+    /**
+     * Specify table(s) which content (rows) will not be checked, but
+     * we will check whether the number of rows is same. </br>
+     * Some prefer to use this method for tables with changing binary data
+     * (for example some certificates), but they still
+     * want to verify the number of rows(for example number of certificates) is not changed. </br>
+     * Note that table meta-data is also checked.
+     * 
+     * @param tables one or many tables
+     */
+    @PublicAtsApi
+    public void skipTableContentWithCheckForNumberOfRows( String... tables ) {
+
+        for( String table : tables ) {
+            skipContentPerTable.put( table.toLowerCase(), new SkipContent( table, true ) );
         }
     }
 
@@ -177,12 +206,12 @@ public class DatabaseSnapshot {
     @PublicAtsApi
     public void skipTableRows( String table, String column, String value ) {
 
-        Map<String, String> skipRowsForThisTable = skipRows.get( table );
+        SkipRows skipRowsForThisTable = skipRowsPerTable.get( table.toLowerCase() );
         if( skipRowsForThisTable == null ) {
-            skipRowsForThisTable = new HashMap<>();
-            skipRows.put( table, skipRowsForThisTable );
+            skipRowsForThisTable = new SkipRows( table );
+            skipRowsPerTable.put( table.toLowerCase(), skipRowsForThisTable );
         }
-        skipRowsForThisTable.put( column, value );
+        skipRowsForThisTable.addRowToSkip( column, value );
     }
 
     /**
@@ -257,19 +286,18 @@ public class DatabaseSnapshot {
         log.info( "Start taking database meta information for snapshot [" + name + "] from "
                   + dbProvider.getDbConnection().getDescription() );
 
-        tables = dbProvider.getTableDescriptions();
+        // load info about all present tables
+        tables = dbProvider.getTableDescriptions( getSkippedTables() );
         if( tables.size() == 1 ) {
             log.warn( "No tables found for snapshot [" + name + "]" );
         }
 
-        for( Entry<String, SkipRules> tableToSkip : skipRulesPerTable.entrySet() ) {
-            if( tableToSkip.getValue().isSkipWholeTable() ) {
-                for( TableDescription table : tables ) {
-
-                    if( table.getName().equalsIgnoreCase( tableToSkip.getKey() ) ) {
-                        tables.remove( table );
-                        break;
-                    }
+        // remove the tables that are to be skipped
+        for( String tableToSkip : getAllTablesToSkip( skipColumnsPerTable ) ) {
+            for( TableDescription table : tables ) {
+                if( table.getName().equalsIgnoreCase( tableToSkip ) ) {
+                    tables.remove( table );
+                    break;
                 }
             }
         }
@@ -278,13 +306,17 @@ public class DatabaseSnapshot {
             table.setSnapshotName( this.name );
         }
 
+        // in case we have made a backup file, now it is time to forget about it
+        this.backupXmlFile = null;
+
         log.info( "End taking database meta information for snapshot with name " + name );
     }
 
     /**
-     * Compare both snapshots
-     * Both snapshots will be loaded from the database and compared table by table.
-     * But if they were saved in files, they will be loaded from the files and compared table by table
+     * Compare both snapshots and throw error if unexpected differences are found.
+     * Snapshots are compared table by table. 
+     * In the usual case the tables are loaded from database prior to comparing.
+     * But if a snapshot was saved into a file, then its tables are loaded from the file, not from the database.
      * 
      * @param that the snapshot to compare to
      * @throws DatabaseSnapshotException
@@ -313,28 +345,33 @@ public class DatabaseSnapshot {
                        + DatabaseSnapshotUtils.dateToString( this.metadataTimestamp ) + " and [" + that.name
                        + "] taken on " + DatabaseSnapshotUtils.dateToString( that.metadataTimestamp ) );
 
-            this.equality = new EqualityState( this.name, that.name );
+            this.equality = new DatabaseEqualityState( this.name, that.name );
 
             // make copies of the table info, as we will remove from these lists,
             // but we do not want to remove from the original table info lists
             List<TableDescription> thisTables = new ArrayList<TableDescription>( this.tables );
             List<TableDescription> thatTables = new ArrayList<TableDescription>( that.tables );
 
-            // Here we put all skip rules into one list. It doesn't make sense to ask people 
-            // to add same skip rules for same tables in both snapshot instances.
-            Map<String, SkipRules> allSkipRules = mergeSkipRules( that.skipRulesPerTable );
-            
-            Set<String> allTablesContentSkip = mergeTableContentToSkip(that.skipTableContent);
-            
-            Map<String, Map<String, String>> allSkipRows = mergeSkipRows( that.skipRows );
+            // Merge all skip rules from both snapshot instances, 
+            // so it is not needed to add same skip rules in both snapshot instances.
 
-            Set<String> allTablesToSkip = getAllTablesToSkip( allSkipRules );
+            // merge all columns to be skipped(per table)
+            Map<String, SkipColumns> skipColumns = mergeSkipColumns( that.skipColumnsPerTable );
+
+            // merge all content to be skipper(per table)
+            Map<String, SkipContent> skipContent = mergeSkipContent( that.skipContentPerTable );
+
+            // merge all rows to be skipped(per table)
+            Map<String, SkipRows> skipRows = mergeSkipRows( that.skipRowsPerTable );
+
+            Set<String> tablesToSkip = getAllTablesToSkip( skipColumns );
 
             // We can use just one index name matcher
             IndexNameMatcher actualIndexNameMatcher = mergeIndexNameMatchers( that.indexNameMatcher );
 
-            compareTables( this.name, thisTables, that.name, thatTables, that.dbProvider, allTablesToSkip,
-                           allSkipRules, allTablesContentSkip, allSkipRows, actualIndexNameMatcher, that.backupXmlFile, equality );
+            compareTables( this.name, thisTables, that.name, thatTables, that.dbProvider, tablesToSkip,
+                           skipColumns, skipContent, skipRows, actualIndexNameMatcher, that.backupXmlFile,
+                           equality );
 
             if( equality.hasDifferences() ) {
                 // there are some unexpected differences
@@ -345,9 +382,7 @@ public class DatabaseSnapshot {
         } finally {
             // close the database connections
             disconnect( this.dbProvider, "after comparing database snapshots" );
-            if( that != null ) {
-                disconnect( that.dbProvider, "after comparing database snapshots" );
-            }
+            disconnect( that.dbProvider, "after comparing database snapshots" );
         }
     }
 
@@ -389,23 +424,24 @@ public class DatabaseSnapshot {
      * @param thatSnapshotName
      * @param thatTables
      * @param thatDbProvider
-     * @param allTablesToSkip
-     * @param allSkipRules
+     * @param tablesToSkip
+     * @param skipColumns
+     * @param skipContent
+     * @param skipRows
      * @param indexNameMatcher
      * @param thatBackupXmlFile
      * @param equality
      */
     private void compareTables( String thisSnapshotName, List<TableDescription> thisTables,
                                 String thatSnapshotName, List<TableDescription> thatTables,
-                                DbProvider thatDbProvider, Set<String> allTablesToSkip,
-                                Map<String, SkipRules> allSkipRules, Set<String> allTablesContentSkip,
-								Map<String, Map<String, String>> allRowsToSkip,
-                                IndexNameMatcher indexNameMatcher, Document thatBackupXmlFile, 
-                                EqualityState equality ) {
+                                DbProvider thatDbProvider, Set<String> tablesToSkip,
+                                Map<String, SkipColumns> skipColumns, Map<String, SkipContent> skipContent,
+                                Map<String, SkipRows> skipRows, IndexNameMatcher indexNameMatcher,
+                                Document thatBackupXmlFile, DatabaseEqualityState equality ) {
 
         // make a list of tables present in both snapshots
         List<String> commonTables = getCommonTables( thisSnapshotName, thisTables, thatSnapshotName,
-                                                     thatTables, allTablesToSkip );
+                                                     thatTables, tablesToSkip );
 
         for( String tableName : commonTables ) {
             // get tables to compare
@@ -424,28 +460,56 @@ public class DatabaseSnapshot {
                 }
             }
 
-            SkipRules tableSkipRules = allSkipRules.get( thisTable.getName() );
-            if( tableSkipRules != null && tableSkipRules.isSkipWholeTable() ) {
+            SkipColumns skipColumnsPerTable = skipColumns.get( thisTable.getName() );
+            if( skipColumnsPerTable != null && skipColumnsPerTable.isSkipWholeTable() ) {
                 // if table is not of interest - skip it
                 continue;
             }
-
             List<String> thisValuesList = null;
             List<String> thatValuesList = null;
-            
-            if( !allTablesContentSkip.contains( tableName.toLowerCase() ) ) {
-                // load the content of this snapshot's table
-                thisValuesList = loadTableData( thisSnapshotName, thisTable, allSkipRules,
-                                                             allRowsToSkip, this.dbProvider, backupXmlFile );
-                // load the content of that snapshot's table
-                thatValuesList = loadTableData( thatSnapshotName, thatTable, allSkipRules, 
-                                                             allRowsToSkip, thatDbProvider, thatBackupXmlFile );
+
+            int thisNumberOfRows = -1;
+            int thatNumberOfRows = -1;
+            SkipContent skipContentForThisTable = skipContent.get( tableName.toLowerCase() );
+            if( skipContentForThisTable != null ) {
+                if( skipContentForThisTable.isRememberNumberOfRows() ) {
+                    // we do not compare the content of the tables,
+                    // but we still compare the number of rows
+                    thisNumberOfRows = loadTableLength( thisSnapshotName, thisTable, this.dbProvider,
+                                                        this.backupXmlFile );
+                    thatNumberOfRows = loadTableLength( thatSnapshotName, thatTable, thatDbProvider,
+                                                        thatBackupXmlFile );
+                }
+                // else -> we completely do not compare the content of the tables
+            } else {
+                // we want to compare the content of the tables,
+                // so load the table content
+                thisValuesList = loadTableData( thisSnapshotName, thisTable, skipColumns, skipRows,
+                                                this.dbProvider, this.backupXmlFile );
+                thatValuesList = loadTableData( thatSnapshotName, thatTable, skipColumns, skipRows,
+                                                thatDbProvider, thatBackupXmlFile );
             }
 
-            thisTable.compare( thatTable, thisValuesList, thatValuesList, indexNameMatcher, equality );
+            // do the actual comparison
+            thisTable.compare( thatTable, thisValuesList, thatValuesList, thisNumberOfRows, thatNumberOfRows,
+                               indexNameMatcher, equality );
         }
 
         thisTables.clear();
+    }
+
+    /**
+     * @return list of tables that are fully skipped(including their meta data)
+     */
+    private List<String> getSkippedTables() {
+
+        List<String> tablesToSkip = new ArrayList<String>();
+        for( SkipColumns tableToSkip : skipColumnsPerTable.values() ) {
+            if( tableToSkip.isSkipWholeTable() ) {
+                tablesToSkip.add( tableToSkip.getTable() );
+            }
+        }
+        return tablesToSkip;
     }
 
     /**
@@ -481,93 +545,130 @@ public class DatabaseSnapshot {
     }
 
     /**
-     * Here we put skip rules into from both snapshots into a single list.
+     * Here we merge skip table columns from both snapshots into a single list.
      * It doesn't make sense to ask people to add same skip rules for same tables in both snapshot instances.
      * 
-     * @param thatSkipRulesPerTable
+     * @param thatSkipColumnsPerTable
      * @return
      */
-    private Map<String, SkipRules> mergeSkipRules( Map<String, SkipRules> thatSkipRulesPerTable ) {
+    private Map<String, SkipColumns> mergeSkipColumns( Map<String, SkipColumns> thatSkipColumnsPerTable ) {
 
-        Map<String, SkipRules> allSkipRules = new HashMap<>();
-        allSkipRules.putAll( this.skipRulesPerTable );
+        // we will return a new instance containing all rules
+        Map<String, SkipColumns> allSkipColumnsPerTable = new HashMap<>();
 
-        for( Entry<String, SkipRules> table : thatSkipRulesPerTable.entrySet() ) {
-            if( allSkipRules.containsKey( table.getKey() ) ) {
-                SkipRules thisRule = this.skipRulesPerTable.get( table.getKey() );
-                SkipRules thatRule = table.getValue();
-                if( thisRule.isSkipWholeTable() ) {
+        // first add all rules for this instance
+        for( String table : this.skipColumnsPerTable.keySet() ) {
+            allSkipColumnsPerTable.put( table, this.skipColumnsPerTable.get( table ) );
+        }
+
+        // then add all rules for the other instance
+        for( String table : thatSkipColumnsPerTable.keySet() ) {
+            SkipColumns allSkipColumns = allSkipColumnsPerTable.get( table );
+            SkipColumns thatSkipColumns = thatSkipColumnsPerTable.get( table );
+
+            if( allSkipColumns != null ) {
+                // there is already a rule for this table
+                SkipColumns thisSkipColumns = this.skipColumnsPerTable.get( table );
+                if( thisSkipColumns.isSkipWholeTable() ) {
                     // nothing to do, the table will be skipped anyway
-                } else if( thatRule.isSkipWholeTable() ) {
+                } else if( thatSkipColumns.isSkipWholeTable() ) {
                     // replace the current rule, so skip the table
-                    allSkipRules.put( table.getKey(), thatRule );
+                    allSkipColumnsPerTable.put( table, thatSkipColumns );
                 } else {
-                    // just columns will be skipped, merge the list of columns
-                    for( String column : thatRule.getColumnsToSkip() ) {
-                        thisRule.addColumnToSkip( column );
+                    // just some columns will be skipped, merge the list of columns
+                    for( String column : thatSkipColumns.getColumnsToSkip() ) {
+                        allSkipColumns.addColumnToSkip( column );
                     }
                 }
             } else {
                 // no current rule for this table, now we add one
-                allSkipRules.put( table.getKey(), table.getValue() );
+                allSkipColumnsPerTable.put( table, thatSkipColumns );
             }
         }
 
-        return allSkipRules;
-    }
-    
-    private Set<String> mergeTableContentToSkip(
-                                                  Set<String> thatSkipTableContent ) {
-
-        Set<String> allTablesContentToSkip = new HashSet<String>();
-        allTablesContentToSkip.addAll( this.skipTableContent );
-        allTablesContentToSkip.addAll( thatSkipTableContent );
-        
-        return allTablesContentToSkip;
+        return allSkipColumnsPerTable;
     }
 
-    private Map<String, Map<String, String>> mergeSkipRows(
-                                                            Map<String, Map<String, String>> thatSkipRowsPerTable ) {
-
-        Map<String, Map<String, String>> allSkipRows = new HashMap<>();
-        allSkipRows.putAll( this.skipRows );
-
-        for( Entry<String, Map<String, String>> table : thatSkipRowsPerTable.entrySet() ) {
-            if( allSkipRows.containsKey( table.getKey() ) ) {
-                Map<String, String> thisRow = allSkipRows.get( table.getKey() );
-                for( Entry<String, String> column : thisRow.entrySet() ) {
-                    if( !table.getValue().containsKey( column.getKey() ) ) {
-                        thisRow.put( column.getKey(), table.getValue().get( column.getKey() ) );
-                        allSkipRows.put( table.getKey(), thisRow );
-                    }
-                }
-            } else {
-                // no current rule for this table, now we add one
-                allSkipRows.put( table.getKey(), table.getValue() );
-            }
-        }
-
-        return allSkipRows;
-    }
-    
     /**
      * Retrieve all tables that are to be skipped
      * 
-     * @param allSkipRules
+     * @param skipColumns
      * @return
      */
-    private Set<String> getAllTablesToSkip( Map<String, SkipRules> allSkipRules ) {
+    private Set<String> getAllTablesToSkip( Map<String, SkipColumns> skipColumns ) {
 
         Set<String> tablesToSkip = new HashSet<>();
 
-        for( String table : allSkipRules.keySet() ) {
-            SkipRules rule = allSkipRules.get( table );
+        for( String table : skipColumns.keySet() ) {
+            SkipColumns rule = skipColumns.get( table );
             if( rule.isSkipWholeTable() ) {
                 tablesToSkip.add( table );
             }
         }
 
         return tablesToSkip;
+    }
+
+    private Map<String, SkipRows> mergeSkipRows( Map<String, SkipRows> thatSkipRowsPerTable ) {
+
+        // we will return a new instance containing all rules
+        Map<String, SkipRows> allSkipRowsPerTable = new HashMap<>();
+
+        // first add all rules for this instance
+        for( String table : this.skipRowsPerTable.keySet() ) {
+            allSkipRowsPerTable.put( table, this.skipRowsPerTable.get( table ) );
+        }
+
+        // then add all rules for the other instance
+        for( String table : thatSkipRowsPerTable.keySet() ) {
+            SkipRows allSkipRows = allSkipRowsPerTable.get( table );
+            SkipRows thatSkipRows = thatSkipRowsPerTable.get( table );
+
+            if( allSkipRows != null ) {
+                // there is already a rule for this table
+                // we have to merge both rules
+                allSkipRows.addRowsToSkip( thatSkipRows.getSkipExpressions() );
+            } else {
+                // no current rule for this table, now we add one
+                allSkipRowsPerTable.put( table, thatSkipRows );
+            }
+        }
+
+        return allSkipRowsPerTable;
+    }
+
+    /**
+     * Merge skip table content rules from both snapshots into a single list.
+     * 
+     * @param thatSkipContentPerTable list with table names
+     * @return
+     */
+    private Map<String, SkipContent> mergeSkipContent( Map<String, SkipContent> thatSkipContentPerTable ) {
+
+        // we will return a new instance containing all rules
+        Map<String, SkipContent> allSkipContentPerTable = new HashMap<>();
+
+        // first add all rules for this instance
+        for( String table : this.skipContentPerTable.keySet() ) {
+            allSkipContentPerTable.put( table, this.skipContentPerTable.get( table ) );
+        }
+
+        // then add all rules for the other instance
+        for( String table : thatSkipContentPerTable.keySet() ) {
+            SkipContent allSkipContent = allSkipContentPerTable.get( table );
+            SkipContent thatSkipContent = thatSkipContentPerTable.get( table );
+
+            if( allSkipContent != null ) {
+                // there is already a rule for this table
+                // we have to merge both rules
+                allSkipContent.setRememberNumberOfRows( thatSkipContent.isRememberNumberOfRows() );
+            } else {
+                // no current rule for this table, now we add one
+                allSkipContentPerTable.put( table, thatSkipContent );
+            }
+        }
+
+        return allSkipContentPerTable;
     }
 
     private List<String> getCommonTables( String thisSnapshotName, List<TableDescription> thisTables,
@@ -621,128 +722,201 @@ public class DatabaseSnapshot {
         return commonTables;
     }
 
-    List<String> loadTableData(
-                                String snapshotName, TableDescription table,
-                                Map<String, SkipRules> allSkipRules,
-                                Map<String, Map<String, String>> allSkipRows,
+    /**
+     * Return list with all rows of some particular table
+     * 
+     * @param snapshotName snapshot name
+     * @param table the table of question
+     * @param skipColumns skip rules
+     * @param skipRows rows to skip
+     * @param dbProvider DB connection to use
+     * @param backupXmlFile backup file to use
+     * @return
+     */
+    List<String> loadTableData( String snapshotName, TableDescription table,
+                                Map<String, SkipColumns> skipColumns, Map<String, SkipRows> skipRows,
                                 DbProvider dbProvider, Document backupXmlFile ) {
-
-        if( dbProvider == null ) {
-            // DB provider not specified, use the one from this instance 
-            dbProvider = this.dbProvider;
-        }
 
         List<String> valuesList = new ArrayList<String>();
         if( backupXmlFile == null ) {
             // load table row data from database
-            String sqlQuery = construcSelectStatement( table, allSkipRules );
+
+            if( dbProvider == null ) {
+                // DB provider not specified, use the one from this instance 
+                dbProvider = this.dbProvider;
+            }
+
+            String sqlQuery = construcSelectStatement( table, skipColumns );
             if( sqlQuery != null ) {
                 for( DbRecordValuesList rowValues : dbProvider.select( sqlQuery ) ) {
                     // if there are rows for skipping we will find them and remove them from the list
                     String stringRowValue = rowValues.toString();
-                    
+
                     // escaping special characters that may 
-                    // cause some trouble while saving the snapshot into a file
+                    // cause some trouble while saving the snapshot into XML file
                     stringRowValue.replace( "&", "&amp;" );
                     stringRowValue.replace( "<", "&lt;" );
                     stringRowValue.replace( ">", "&gt;" );
-                    
-                    DatabaseSnapshotBackupUtils dbUtil = new DatabaseSnapshotBackupUtils();
-                    if( allSkipRows != null && !dbUtil.skipRow( allSkipRows.get( table.getName() ),
-                                                        stringRowValue ) ) {
-                        valuesList.add( stringRowValue );
 
+                    SkipRows skipRow = skipRows.get( table.getName().toLowerCase() );
+                    if( skipRow == null || !skipRow.skipRow( stringRowValue ) ) {
+                        valuesList.add( stringRowValue );
                     }
                 }
-                log.debug( "[" + snapshotName + " from database] Loaded " + valuesList.size()
-                           + " rows for table " + table.getName() );
+                log.debug( "[" + snapshotName + "] Loaded " + valuesList.size() + " rows for table "
+                           + table.getName() );
             } else {
-                log.warn( "Skip table " + table.getName() + " because of excluding all columns." );
+                log.warn( "[" + snapshotName + "] No data will be loaded for table " + table.getName()
+                          + " because all its columns are pointed to be skipped" );
             }
-            
         } else {
             // load table row data from backup file
-            List<Element> dbSnapshotNodeList = DatabaseSnapshotUtils.getChildrenByTagName( backupXmlFile,
-                                                                                           DatabaseSnapshotUtils.NODE_DB_SNAPSHOT );
-            if( dbSnapshotNodeList.size() != 1 ) {
-                throw new DatabaseSnapshotException( "Bad dabase snapshot backup file. It must have 1 '"
-                                                     + DatabaseSnapshotUtils.NODE_DB_SNAPSHOT
-                                                     + "' node, but it has" + dbSnapshotNodeList.size() );
-            }
+            Element tableNode = loadTableNode( table, backupXmlFile );
 
-            for( Element tableNode : DatabaseSnapshotUtils.getChildrenByTagName( dbSnapshotNodeList.get( 0 ),
-                                                                                 "TABLE" ) ) {
-                String tableName = tableNode.getAttribute( "name" );
-                if( table.getName().equalsIgnoreCase( tableName ) ) {
-
-                    List<Element> tableRows = DatabaseSnapshotUtils.getChildrenByTagName( tableNode, "row" );
-                    log.debug( "[" + snapshotName + " from file] Loaded " + tableRows.size()
-                               + " rows for table " + tableName );
-                    for( Element tableRow : DatabaseSnapshotUtils.getChildrenByTagName( tableNode, "row" ) ) {
-                        valuesList.add( tableRow.getTextContent() );
-                    }
-                    break;
-                }
+            List<Element> tableRows = DatabaseSnapshotUtils.getChildrenByTagName( tableNode, "row" );
+            log.debug( "[" + snapshotName + " from file] Loaded " + tableRows.size() + " rows for table "
+                       + table.getName() );
+            for( Element tableRow : DatabaseSnapshotUtils.getChildrenByTagName( tableNode, "row" ) ) {
+                valuesList.add( tableRow.getTextContent() );
             }
         }
 
         return valuesList;
     }
 
-    private String construcSelectStatement( TableDescription table, Map<String, SkipRules> allSkipRules ) {
+    /**
+     * Return the number of rows of some particular table
+     * 
+     * @param snapshotName snapshot name
+     * @param table the table of question
+     * @param dbProvider DB connection to use
+     * @param backupXmlFile backup file to use
+     * @return
+     */
+    int loadTableLength( String snapshotName, TableDescription table, DbProvider dbProvider,
+                         Document backupXmlFile ) {
 
-        Set<String> allColumns = table.getColumnNames();
+        if( backupXmlFile == null ) {
+            // load table length from database
 
-        // Search for skip rule for this table. The search must ignore the letters case
-        String tableToSkip = null;
-        for( String tableName : allSkipRules.keySet() ) {
+            if( dbProvider == null ) {
+                // DB provider not specified, use the one from this instance 
+                dbProvider = this.dbProvider;
+            }
+            DbRecordValuesList[] dbRecords = dbProvider.select( "SELECT COUNT(*) FROM " + table.getName() );
+            return Integer.parseInt( dbRecords[0].get( 0 ).getValueAsString() );
+        } else {
+            // load table length from backup file
+            Element tableNode = loadTableNode( table, backupXmlFile );
+
+            if( tableNode != null ) {
+                String numberRowsString = tableNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS );
+                if( numberRowsString != null && numberRowsString.trim().length() > 0 ) {
+                    // table length is provided as an attribute
+                    int numberRows;
+                    try {
+                        numberRows = Integer.parseInt( numberRowsString );
+                    } catch( NumberFormatException nfe ) {
+                        throw new DatabaseSnapshotException( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS
+                                                             + " attribute of table " + table.getName()
+                                                             + " is not a number: " + numberRowsString );
+                    }
+                    if( numberRows < 0 ) {
+                        throw new DatabaseSnapshotException( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS
+                                                             + " attribute of table " + table.getName()
+                                                             + " is not a positive number: "
+                                                             + numberRowsString );
+                    } else {
+                        return numberRows;
+                    }
+                } else {
+                    // count the number of rows
+                    return loadTableData( snapshotName, table, null, null, dbProvider, backupXmlFile ).size();
+                }
+            } else {
+                throw new DatabaseSnapshotException( "Table " + table.getName()
+                                                     + " not found in backup file " );
+            }
+        }
+    }
+
+    /**
+     * Load the XML node for some particular table
+     * @param table
+     * @param backupXmlFile
+     * @return
+     */
+    private Element loadTableNode( TableDescription table, Document backupXmlFile ) {
+
+        // load table row data from backup file
+        List<Element> dbSnapshotNodeList = DatabaseSnapshotUtils.getChildrenByTagName( backupXmlFile,
+                                                                                       DatabaseSnapshotUtils.NODE_DB_SNAPSHOT );
+        if( dbSnapshotNodeList.size() != 1 ) {
+            throw new DatabaseSnapshotException( "Bad dabase snapshot backup file. It must have 1 '"
+                                                 + DatabaseSnapshotUtils.NODE_DB_SNAPSHOT
+                                                 + "' node, but it has" + dbSnapshotNodeList.size() );
+        }
+
+        for( Element tableNode : DatabaseSnapshotUtils.getChildrenByTagName( dbSnapshotNodeList.get( 0 ),
+                                                                             "TABLE" ) ) {
+            String tableName = tableNode.getAttribute( "name" );
+            if( table.getName().equalsIgnoreCase( tableName ) ) {
+                return tableNode;
+            }
+        }
+
+        return null;
+    }
+
+    private String construcSelectStatement( TableDescription table, Map<String, SkipColumns> skipColumns ) {
+
+        Set<String> columns = table.getColumnNames();
+
+        // Search for skip columns for this table. The search must ignore the letters case
+        SkipColumns skipColumnsForThisTable = null;
+        for( String tableName : skipColumns.keySet() ) {
             if( tableName.equalsIgnoreCase( table.getName() ) ) {
-                tableToSkip = tableName;
+                skipColumnsForThisTable = skipColumns.get( tableName );
                 break;
             }
         }
 
-        if( tableToSkip == null ) {
+        if( skipColumnsForThisTable == null ) {
             String query = "SELECT * FROM ";
-            // no skip rules about this table, all columns are important
-            if(table.getSchema() != null){
+            // all columns are important
+            if( table.getSchema() != null ) {
                 query += table.getSchema() + ".";
             }
-            return  query + table.getName();
-        }
+            return query + table.getName();
+        } else {
+            // some columns must be skipped
+            StringBuilder sql = new StringBuilder( "SELECT" );
 
-        StringBuilder sql = new StringBuilder( "SELECT" );
-
-        Set<String> columnsToSkip = allSkipRules.get( tableToSkip ).getColumnsToSkip();
-        for( String column : allColumns ) {
-            // Search for column to skip. The search must ignore the letters case
-            boolean skipThisColumn = false;
-            for( String columnToSkip : columnsToSkip ) {
-                if( columnToSkip.equalsIgnoreCase( column ) ) {
-                    skipThisColumn = true;
-                    break;
+            // add all important columns
+            for( String column : columns ) {
+                if( !skipColumnsForThisTable.isSkipColumn( column ) ) {
+                    sql.append( " " + column + "," );
                 }
             }
 
-            if( !skipThisColumn ) {
-                sql.append( " " + column + "," );
+            if( "SELECT".equals( sql.toString() ) ) {
+                // user has specified to skip all table columns one by one,
+                // so no column are left for selection, so we won't select anything
+                return null;
+            } else {
+                // remove last comma
+                sql.setLength( sql.length() - 1 );
+                sql.append( " FROM " );
+
+                if( table.getSchema() != null ) {
+                    sql.append( table.getSchema() ).append( "." );
+                }
+                sql.append( table.getName() );
+                return sql.toString();
             }
         }
-        // no column left for selection, we will skip the table
-        if("SELECT".equals( sql.toString() )){
-            return null;
-        }
-        // remove last comma
-        sql.setLength( sql.length() - 1 );
-        sql.append( " FROM " );
-        
-        if( table.getSchema() != null ) {
-            sql.append( table.getSchema() ).append( "." );
-        }
-        sql.append( table.getName() );
-        return sql.toString();
     }
-    
+
     private void disconnect( DbProvider dbProvider, String when ) {
 
         // the DB provider is null if the snapshot is loaded from file, then do compare, then come in here

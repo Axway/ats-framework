@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.axway.ats.common.dbaccess.snapshot.equality.EqualityState;
+import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 
 /**
  * Meta information about a table. Used when comparing databases.
@@ -41,6 +41,7 @@ public class TableDescription {
     // table name
     private String              name;
     
+    //table schema
     private String              schema;
 
     // primary key column
@@ -79,16 +80,16 @@ public class TableDescription {
         this.name = name;
     }
 
-    public String getSchema(){
-        
+    public String getSchema() {
+
         return schema;
     }
 
-    public void setSchema( String schema ){
-        
+    public void setSchema( String schema ) {
+
         this.schema = schema;
     }
-    
+
     public String getPrimaryKeyColumn() {
 
         return primaryKeyColumn;
@@ -100,14 +101,14 @@ public class TableDescription {
             this.primaryKeyColumn = primaryKeyColumn;
         }
     }
-
+    
     public Set<String> getColumnNames() {
 
         Set<String> columns = new HashSet<>();
         for( String description : columnDescriptions ) {
             // we rely that the column description string starts with 'name=some_column,'
-            columns.add( description.substring( description.indexOf( '=' ) + 1,
-                                                description.indexOf( ',' ) ) );
+            columns.add( description.substring( description.indexOf( "=" ) + 1,
+                                                description.indexOf( "," ) ) );
         }
         return columns;
     }
@@ -141,7 +142,8 @@ public class TableDescription {
      * @param equality
      */
     public void compare( TableDescription that, List<String> thisValuesList, List<String> thatValuesList,
-                         IndexNameMatcher nameComparator, EqualityState equality ) {
+                         int thisNumberOfRows, int thatNumberOfRows, IndexNameMatcher nameComparator,
+                         DatabaseEqualityState equality ) {
 
         boolean tablesAreSame = true;
 
@@ -156,73 +158,82 @@ public class TableDescription {
         checkIndexes( that, nameComparator, equality );
 
         // check if columns are the same
-        boolean sameColumns = checkColumns( that, equality );
+        boolean sameColumnNames = checkColumns( that, equality );
 
-        // check the table content only if columns are same
-        if( thisValuesList != null && thatValuesList != null && sameColumns ) {
+        // check the table content only if columns are same or the value lists are not initialized
+        if( sameColumnNames ) {
+            if( thisValuesList != null && thatValuesList != null ) {
 
-            // check the table size
-            if( thisValuesList.size() != thatValuesList.size() ) {
-                tablesAreSame = false;
-                equality.addDifferentNumberOfRows( this.snapshotName, that.snapshotName,
-                                                   thisValuesList.size(), thatValuesList.size(), name );
-            }
-
-            // check the table content
-            // we use new instances of the row values, so the iterators do not
-            // get broken when removing elements
-            List<String> thisRows = new ArrayList<String>( thisValuesList );
-            List<String> thatRows = new ArrayList<String>( thatValuesList );
-            for( String thisRow : thisRows ) {
-                for( String thatRow : thatRows ) {
-                    if( thisRow.equals( thatRow ) ) {
-                        // same row found, remove if from both lists
-                        thisValuesList.remove( thisRow );
-                        thatValuesList.remove( thatRow );
-                        break;
-                    }
+                // check the table size
+                if( thisValuesList.size() != thatValuesList.size() ) {
+                    tablesAreSame = false;
+                    equality.addDifferentNumberOfRows( this.snapshotName, that.snapshotName,
+                                                       thisValuesList.size(), thatValuesList.size(), name );
                 }
-            }
 
-            thisRows = new ArrayList<String>( thisValuesList );
-            thatRows = new ArrayList<String>( thatValuesList );
-            for( String thatRow : thatRows ) {
+                // check the table content
+                // we use new instances of the row values, so the iterators do not
+                // get broken when removing elements
+                List<String> thisRows = new ArrayList<String>( thisValuesList );
+                List<String> thatRows = new ArrayList<String>( thatValuesList );
                 for( String thisRow : thisRows ) {
-                    if( thatRow.equals( thisRow ) ) {
-                        // same row found, remove if from both lists
-                        thisValuesList.remove( thisRow );
-                        thatValuesList.remove( thatRow );
-                        break;
+                    for( String thatRow : thatRows ) {
+                        if( thisRow.equals( thatRow ) ) {
+                            // same row found, remove if from both lists
+                            thisValuesList.remove( thisRow );
+                            thatValuesList.remove( thatRow );
+                            break;
+                        }
                     }
                 }
-            }
 
-            // now if there are left rows, we report them as unexpected
-            // differences
-            for( String row : thisValuesList ) {
-                tablesAreSame = false;
-                equality.addRowPresentInOneSnapshotOnly( this.snapshotName, name, row );
-            }
-            for( String row : thatValuesList ) {
-                tablesAreSame = false;
-                equality.addRowPresentInOneSnapshotOnly( that.snapshotName, name, row );
-            }
+                thisRows = new ArrayList<String>( thisValuesList );
+                thatRows = new ArrayList<String>( thatValuesList );
+                for( String thatRow : thatRows ) {
+                    for( String thisRow : thisRows ) {
+                        if( thatRow.equals( thisRow ) ) {
+                            // same row found, remove if from both lists
+                            thisValuesList.remove( thisRow );
+                            thatValuesList.remove( thatRow );
+                            break;
+                        }
+                    }
+                }
 
-            if( tablesAreSame ) {
-                log.info( "Same table: " + name );
+                // now if there are left rows, we report them as unexpected
+                // differences
+                for( String row : thisValuesList ) {
+                    tablesAreSame = false;
+                    equality.addRowPresentInOneSnapshotOnly( this.snapshotName, name, row );
+                }
+                for( String row : thatValuesList ) {
+                    tablesAreSame = false;
+                    equality.addRowPresentInOneSnapshotOnly( that.snapshotName, name, row );
+                }
             }
+        } else {
+            log.warn( "The content of table " + this.name
+                      + " will not be checked because there is at least one column with name not present in both snapshots" );
+        }
+        
+        if( thisNumberOfRows != -1 && thisNumberOfRows != thatNumberOfRows ) {
+            // in some unusual cases, the user does not want to check the table content, but
+            // wants to make sure the number of rows is same
+            equality.addDifferentNumberOfRows( this.snapshotName, that.snapshotName, thisNumberOfRows,
+                                               thatNumberOfRows, name );
+        }
+        
+        if( tablesAreSame ) {
+            log.info( "Same table: " + name );
         }
     }
 
-    private boolean checkColumns( TableDescription that, EqualityState equality ) {
-
-        boolean sameColumns = true;
+    private boolean checkColumns( TableDescription that, DatabaseEqualityState equality ) {
 
         // check if all columns from THIS snapshot are present in THAT
         for( String thisColumnDesc : this.columnDescriptions ) {
             if( !that.columnDescriptions.contains( thisColumnDesc ) ) {
                 equality.addColumnPresentInOneSnapshotOnly( this.snapshotName, name, thisColumnDesc );
-                sameColumns = false;
             }
         }
 
@@ -230,15 +241,40 @@ public class TableDescription {
         for( String thatColumnDesc : that.columnDescriptions ) {
             if( !this.columnDescriptions.contains( thatColumnDesc ) ) {
                 equality.addColumnPresentInOneSnapshotOnly( that.snapshotName, name, thatColumnDesc );
-                sameColumns = false;
             }
         }
 
-        return sameColumns;
+        return allColumnsHaveSameNames( that );
     }
 
+    /**
+     * @param that
+     * @return whether all columns of one table have same names
+     */
+    private boolean allColumnsHaveSameNames( TableDescription that ) {
+
+        Set<String> thisColunmNames = getColumnNames();
+        Set<String> thatColunmNames = that.getColumnNames();
+
+        for( String thisColunmName : thisColunmNames ) {
+            if( !thatColunmNames.contains( thisColunmName ) ) {
+                return false;
+            }
+        }
+
+        for( String thatColunmName : thatColunmNames ) {
+            if( !thisColunmNames.contains( thatColunmName ) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+   
+
     private void checkIndexes( TableDescription that, IndexNameMatcher nameComparator,
-                               EqualityState equality ) {
+                               DatabaseEqualityState equality ) {
 
         final Set<String> thisNames = this.indexes.keySet();
         final Set<String> thatNames = that.indexes.keySet();
@@ -326,14 +362,16 @@ public class TableDescription {
         }
 
         // append indexes
-        Element indexesNode = dom.createElement( DatabaseSnapshotUtils.NODE_INDEXES );
-        tableNode.appendChild( indexesNode );
+        if( indexes.keySet().size() > 0 ) {
+            Element indexesNode = dom.createElement( DatabaseSnapshotUtils.NODE_INDEXES );
+            tableNode.appendChild( indexesNode );
 
-        for( String indexName : indexes.keySet() ) {
-            Element indexNode = dom.createElement( DatabaseSnapshotUtils.NODE_INDEX );
-            indexNode.setAttribute( DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME, indexName );
-            indexNode.setTextContent( indexes.get( indexName ) );
-            indexesNode.appendChild( indexNode );
+            for( String indexName : indexes.keySet() ) {
+                Element indexNode = dom.createElement( DatabaseSnapshotUtils.NODE_INDEX );
+                indexNode.setAttribute( DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME, indexName );
+                indexNode.setTextContent( indexes.get( indexName ) );
+                indexesNode.appendChild( indexNode );
+            }
         }
     }
 
@@ -345,10 +383,10 @@ public class TableDescription {
         instance.setSnapshotName( snapshotName );
         instance.setName( tableNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME ) );
         instance.setPrimaryKeyColumn( tableNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_PRIMARY_KEY ) );
-
+        
         // add column descriptions
         List<Element> columnDescriptionsListNodes = DatabaseSnapshotUtils.getChildrenByTagName( tableNode,
-                                                                                                DatabaseSnapshotUtils.NODE_COLUMN_DESCRIPTIONS );
+                                                                                          DatabaseSnapshotUtils.NODE_COLUMN_DESCRIPTIONS );
         if( columnDescriptionsListNodes.size() != 1 ) {
             throw new DatabaseSnapshotException( "Bad dabase snapshot backup file. Table with name '"
                                                  + tableNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME )
@@ -358,7 +396,7 @@ public class TableDescription {
                                                  + columnDescriptionsListNodes.size() );
         }
         List<Element> columnDescriptionNodes = DatabaseSnapshotUtils.getChildrenByTagName( columnDescriptionsListNodes.get( 0 ),
-                                                                                           DatabaseSnapshotUtils.NODE_COLUMN_DESCRIPTION );
+                                                                                     DatabaseSnapshotUtils.NODE_COLUMN_DESCRIPTION );
         List<String> columnDescriptions = new ArrayList<>();
         for( Element columnDescriptionNode : columnDescriptionNodes ) {
             columnDescriptions.add( columnDescriptionNode.getTextContent() );
@@ -367,21 +405,23 @@ public class TableDescription {
 
         // add indexes
         List<Element> indexesListNodes = DatabaseSnapshotUtils.getChildrenByTagName( tableNode,
-                                                                                     DatabaseSnapshotUtils.NODE_INDEXES );
-        if( indexesListNodes.size() != 1 ) {
+                                                                               DatabaseSnapshotUtils.NODE_INDEXES );
+        if( indexesListNodes.size() > 1 ) {
             throw new DatabaseSnapshotException( "Bad dabase snapshot backup file. Table with name '"
                                                  + tableNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME )
-                                                 + "' must have 1 '" + DatabaseSnapshotUtils.NODE_INDEXES
+                                                 + "' must have 0 or 1 '" + DatabaseSnapshotUtils.NODE_INDEXES
                                                  + "' subnode, but it has" + indexesListNodes.size() );
         }
-        List<Element> indexNodes = DatabaseSnapshotUtils.getChildrenByTagName( indexesListNodes.get( 0 ),
-                                                                               DatabaseSnapshotUtils.NODE_INDEX );
-        Map<String, String> indexes = new HashMap<>();
-        for( Element indexNode : indexNodes ) {
-            indexes.put( indexNode.getAttribute( DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME ),
-                         indexNode.getTextContent() );
+        if( indexesListNodes.size() == 1 ) {
+            List<Element> indexNodes = DatabaseSnapshotUtils.getChildrenByTagName( indexesListNodes.get( 0 ),
+                                                                             DatabaseSnapshotUtils.NODE_INDEX );
+            Map<String, String> indexes = new HashMap<>();
+            for( Element indexNode : indexNodes ) {
+                indexes.put( indexNode.getAttribute( DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME ),
+                             indexNode.getTextContent() );
+            }
+            instance.setIndexes( indexes );
         }
-        instance.setIndexes( indexes );
 
         return instance;
     }

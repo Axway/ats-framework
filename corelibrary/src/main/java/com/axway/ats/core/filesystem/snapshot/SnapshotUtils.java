@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -31,8 +30,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
-import com.axway.ats.common.filesystem.snapshot.equality.EqualityState;
+import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
 import com.axway.ats.core.utils.IoUtils;
 
 public class SnapshotUtils {
@@ -65,7 +66,7 @@ public class SnapshotUtils {
                                            Map<String, DirectorySnapshot> thisDirSnapshots,
                                            String thatSnapshotName,
                                            Map<String, DirectorySnapshot> thatDirSnapshots,
-                                           EqualityState equality ) {
+                                           FileSystemEqualityState equality ) {
 
         // we will make another HashMap, because in checkDirSnapshotsInternal() we are removing
         // map keys using map.keySet().remove( key ), which actually removes an entry from the Map,
@@ -87,7 +88,7 @@ public class SnapshotUtils {
                                             Map<String, DirectorySnapshot> thisDirSnapshots,
                                             String thatSnapshotName,
                                             Map<String, DirectorySnapshot> thatDirSnapshots,
-                                            EqualityState equality ) {
+                                            FileSystemEqualityState equality ) {
 
         // we will make another HashMap, because in checkDirSnapshotsInternal() we are removing
         // map keys using map.keySet().remove( key ), which actually removes an entry from the Map,
@@ -109,7 +110,7 @@ public class SnapshotUtils {
                                                    Map<String, DirectorySnapshot> firstDirSnapshots,
                                                    String secondSnapshotName,
                                                    Map<String, DirectorySnapshot> secondDirSnapshots,
-                                                   boolean checkDirName, EqualityState equality,
+                                                   boolean checkDirName, FileSystemEqualityState equality,
                                                    boolean areSnapshotsReversed ) {
 
         Set<String> firstDirAliases = firstDirSnapshots.keySet();
@@ -135,6 +136,11 @@ public class SnapshotUtils {
             } else {
                 log.debug( "Compare [" + firstSnapshotName + "] " + firstDir.getPath() + " and ["
                            + secondSnapshotName + "] " + secondDir.getPath() );
+
+                // Before comparing directories, we need to make sure both instances have all matchers.
+                // This way the user does not need to add same matchers twice for each snapshot instance.
+                mergeSkipContentMatchers( firstDir, secondDir );
+
                 if( !areSnapshotsReversed ) {
                     firstDir.compare( firstSnapshotName, secondSnapshotName, secondDir, checkDirName,
                                       equality );
@@ -153,39 +159,96 @@ public class SnapshotUtils {
             secondDirAliases.remove( checkedDirAlias );
         }
     }
+    
+    private static void mergeSkipContentMatchers( DirectorySnapshot firstDir, DirectorySnapshot secondDir ) {
 
+        // merger all FIRST matchers in SECOND
+        for( Map.Entry<String, List<SkipPropertyMatcher>> entry : firstDir.getPropertyMatchersPerFile()
+                                                                          .entrySet() ) {
+            for( SkipPropertyMatcher matcher : entry.getValue() ) {
+                secondDir.addSkipPropertyMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+        for( Map.Entry<String, List<SkipXmlNodeMatcher>> entry : firstDir.getXmlNodeMatchersPerFile()
+                                                                         .entrySet() ) {
+            for( SkipXmlNodeMatcher matcher : entry.getValue() ) {
+                secondDir.addSkipXmlNodeMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+
+        // merger all SECOND matchers in FIRST
+        for( Map.Entry<String, List<SkipPropertyMatcher>> entry : secondDir.getPropertyMatchersPerFile()
+                                                                           .entrySet() ) {
+            for( SkipPropertyMatcher matcher : entry.getValue() ) {
+                firstDir.addSkipPropertyMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+        for( Map.Entry<String, List<SkipXmlNodeMatcher>> entry : secondDir.getXmlNodeMatchersPerFile()
+                                                                          .entrySet() ) {
+            for( SkipXmlNodeMatcher matcher : entry.getValue() ) {
+                firstDir.addSkipXmlNodeMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+    }
+    
     static void checkFileSnapshots( String firstSnapshotName,
                                     final Map<String, FileSnapshot> firstFileSnapshots,
                                     String secondSnapshotName,
                                     final Map<String, FileSnapshot> secondFileSnapshots,
-                                    EqualityState equality ) {
+                                    FileSystemEqualityState equality ) {
 
         // compare each FIRST file with its counterpart in SECOND files
-        for( Entry<String, FileSnapshot> fileSnapshotEntry : firstFileSnapshots.entrySet() ) {
-            log.debug( "Check file \"" + fileSnapshotEntry.getKey() + "\"" );
+        for( String fileAlias : firstFileSnapshots.keySet() ) {
+            log.debug( "Check file \"" + fileAlias + "\"" );
 
-            FileSnapshot firstFile = fileSnapshotEntry.getValue();
-            FileSnapshot secondFile = secondFileSnapshots.get( fileSnapshotEntry.getKey() );
+            FileSnapshot firstFile = firstFileSnapshots.get( fileAlias );
+            FileSnapshot secondFile = secondFileSnapshots.get( fileAlias );
 
             if( secondFile == null ) {
+                // SECOND file is not found
                 equality.addDifference( new FileTrace( firstSnapshotName, firstFile.getPath(),
-                                                       secondSnapshotName, null ) );
+                                                       secondSnapshotName, null, true ) );
             } else {
-                firstFile.compare( firstSnapshotName, secondSnapshotName, secondFile, equality );
+                // BOTH files are found, compare them
+                FileTrace fileTrace = new FileTrace( firstSnapshotName, firstFile.getPath(),
+                                                     secondSnapshotName, secondFile.getPath(), true );
+
+                // When comparing file content, we must make sure both instances are of same class.
+                // If user has specified matchers for one of the file snapshots only, we have to extend the 
+                // other snapshot to the wider class containing content check matchers
+                firstFile = extendSnapshotInstaceIfNeeded( firstFile, secondFile );
+                secondFile = extendSnapshotInstaceIfNeeded( secondFile, firstFile );
+
+                firstFile.compare( secondFile, equality, fileTrace );
             }
         }
 
         // now all compares here are done, but we want to check if SECOND has files that are not present in FIRST
         // if we find such file - it is a problem
-        for( Entry<String, FileSnapshot> fileEntry : secondFileSnapshots.entrySet() ) {
-            FileSnapshot firstFile = firstFileSnapshots.get( fileEntry.getKey() );
-            FileSnapshot secondFile = fileEntry.getValue();
+        for( String fileAlias : secondFileSnapshots.keySet() ) {
+            FileSnapshot firstFile = firstFileSnapshots.get( fileAlias );
+            FileSnapshot secondFile = secondFileSnapshots.get( fileAlias );
 
             if( firstFile == null ) {
+                // FIRST file is not found
                 equality.addDifference( new FileTrace( firstSnapshotName, null, secondSnapshotName,
-                                                       secondFile.getPath() ) );
+                                                       secondFile.getPath(), true ) );
             }
         }
+    }
+
+    private static FileSnapshot extendSnapshotInstaceIfNeeded( FileSnapshot snapshotToExtend,
+                                                               FileSnapshot snapshotToExtendTo ) {
+
+        if( snapshotToExtendTo instanceof PropertiesFileSnapshot
+            && snapshotToExtend.getClass() == FileSnapshot.class ) {
+            snapshotToExtend = ( ( PropertiesFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
+        } else if( snapshotToExtendTo instanceof XmlFileSnapshot
+                && snapshotToExtend.getClass() == FileSnapshot.class ) {
+                snapshotToExtend = ( ( XmlFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
+            }
+
+        return snapshotToExtend;
     }
 
     static boolean isFileFromThisDirectory( String dirPath, String filePath ) {

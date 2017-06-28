@@ -37,8 +37,11 @@ public class DatabaseSnapshotUtils {
     public static final String            NODE_TABLE               = "TABLE";
     public static final String            ATTR_TABLE_NAME          = "name";
     public static final String            ATTR_TABLE_PRIMARY_KEY   = "primaryKey";
+    public static final String            ATTR_TABLE_NUMBER_ROWS   = "numberRows";
 
-    public static final String            NODE_SKIP_RULE           = "SKIP_RULE";
+    public static final String            NODE_SKIP_CONTENT        = "SKIP_CONTENT";
+    public static final String            NODE_SKIP_COLUMNS        = "SKIP_COLUMNS";
+    public static final String            NODE_SKIP_ROWS           = "SKIP_ROWS";
     public static final String            ATT_SKIP_RULE_TABLE      = "table";
 
     public static final String            NODE_COLUMN_DESCRIPTIONS = "column_descriptions";
@@ -50,12 +53,14 @@ public class DatabaseSnapshotUtils {
 
     public static final String            NODE_ROW                 = "row";
 
-    public static String dateToString( long timeInMillis ) {
+    public static String dateToString(
+                                       long timeInMillis ) {
 
         return DATE_FORMAT.format( new Date( timeInMillis ) );
     }
 
-    public static long stringToDate( String timeString ) {
+    public static long stringToDate(
+                                     String timeString ) {
 
         try {
             return DATE_FORMAT.parse( timeString ).getTime();
@@ -64,7 +69,9 @@ public class DatabaseSnapshotUtils {
         }
     }
 
-    public static List<Element> getChildrenByTagName( Node parent, String name ) {
+    public static List<Element> getChildrenByTagName(
+                                                      Node parent,
+                                                      String name ) {
 
         List<Element> nodeList = new ArrayList<Element>();
         for( Node child = parent.getFirstChild(); child != null; child = child.getNextSibling() ) {

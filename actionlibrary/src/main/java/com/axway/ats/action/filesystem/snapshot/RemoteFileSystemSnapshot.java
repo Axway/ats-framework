@@ -51,7 +51,12 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
 
         return this.internalId;
     }
+    
+    public String getAtsAgent() {
 
+        return this.atsAgent;
+    }
+    
     /**
      * @return a remote snapshot
      */
@@ -172,6 +177,56 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
             throw new FileSystemSnapshotException( e );
         }
     }
+    
+    @Override
+    public void skipPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String key,
+                                     String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipPropertyWithKey( internalId, rootDirectoryAlias, relativeFilePath, key,
+                                                  matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+
+    @Override
+    public void skipPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String value,
+                                       String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipPropertyWithValue( internalId, rootDirectoryAlias, relativeFilePath, value,
+                                                    matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+    
+
+    @Override
+    public void skipNodeByValue( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
+                                 String value, String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipNodeByValue( internalId, rootDirectoryAlias, relativeFilePath, nodeXpath,value,
+                                                  matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+
+    @Override
+    public void skipNodeByAttribute( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
+                                     String attributeKey, String attributeValue,
+                                     String attributeValueMatchType ) {
+
+        try {
+            remoteFSSnapshot.skipNodeByAttribute( internalId, rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                  attributeKey, attributeValue, attributeValueMatchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }    
 
     @Override
     public void takeSnapshot() {

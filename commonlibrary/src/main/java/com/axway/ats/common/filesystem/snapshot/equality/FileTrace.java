@@ -16,8 +16,8 @@
 package com.axway.ats.common.filesystem.snapshot.equality;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.axway.ats.common.PublicAtsApi;
 
@@ -27,33 +27,23 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class FileTrace implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    // compared files or directories
-    private String            firstEntityDescription;
-    private String            secondEntityDescription;
+    private static final long   serialVersionUID = 1L;
 
     // snapshot names
-    private String            firstSnapshot;
-    private String            secondSnapshot;
+    private String              firstSnapshot;
+    private String              secondSnapshot;
 
-    // entity path
-    private String            firstEntityPath;
-    private String            secondEntityPath;
-
-    // whether comparing files or directories
-    private boolean           isComparingFiles;
+    // entity path(either files or directories)
+    private String              firstEntityPath;
+    private String              secondEntityPath;
 
     // list of differences about these files
-    private List<String>      differencies;
+    // note that we always have same keys in both maps
+    // < difference description, difference value >
+    private Map<String, String> firstSnapshotDifferencies;
+    private Map<String, String> secondSnapshotDifferencies;
 
-    private DifferenceType    differenceType;
-
-    public FileTrace( String firstSnapshot, String firstFilePath, String secondSnapshot,
-                      String secondFilePath ) {
-
-        this( firstSnapshot, firstFilePath, secondSnapshot, secondFilePath, true );
-    }
+    private DifferenceType      differenceType;
 
     public FileTrace( String firstSnapshot, String firstEntityPath, String secondSnapshot,
                       String secondEntityPath, boolean isComparingFiles ) {
@@ -63,22 +53,12 @@ public class FileTrace implements Serializable {
         this.secondSnapshot = secondSnapshot;
         this.secondEntityPath = secondEntityPath;
 
-        this.isComparingFiles = isComparingFiles;
-
-        this.differencies = new ArrayList<String>();
-        parseDifferenceType();
+        this.firstSnapshotDifferencies = new TreeMap<>();
+        this.secondSnapshotDifferencies = new TreeMap<>();
+        parseDifferenceType( isComparingFiles );
     }
 
-    public FileTrace( String firstFileDescription, String secondFileDescription ) {
-
-        this.firstEntityDescription = firstFileDescription;
-        this.secondEntityDescription = secondFileDescription;
-
-        this.differencies = new ArrayList<String>();
-        parseDifferenceType();
-    }
-
-    private void parseDifferenceType() {
+    private void parseDifferenceType( boolean isComparingFiles ) {
 
         if( firstEntityPath != null && secondEntityPath == null ) {
             // entity found in first snapshot only
@@ -97,32 +77,83 @@ public class FileTrace implements Serializable {
         }
     }
 
+    /**
+     * @return the name of the first snapshot
+     */
     @PublicAtsApi
     public String getFirstSnapshot() {
 
         return firstSnapshot;
     }
 
+    /**
+     * @return the name of the second snapshot
+     */
     @PublicAtsApi
     public String getSecondSnapshot() {
 
         return secondSnapshot;
     }
+    
+    /**
+     * @return path to the first different entity(file or directory)
+     */
+    @PublicAtsApi
+    public String getFirstEntityPath() {
+
+        return firstEntityPath;
+    }
+
+    /**
+     * @return path to the second different entity(file or directory)
+     */
+    @PublicAtsApi
+    public String getSecondEntityPath() {
+
+        return secondEntityPath;
+    }
 
     public void addDifference( String valueDescription, String srcValue, String dstValue ) {
 
-        differencies.add( valueDescription + ": " + srcValue + " - " + dstValue );
+        firstSnapshotDifferencies.put( valueDescription, srcValue );
+        secondSnapshotDifferencies.put( valueDescription, dstValue );
 
         // files are present, but they have some different attributes
         differenceType = DifferenceType.DIFFERENT_FILES;
     }
 
+    /**
+     * @return whether some differences are found
+     */
     @PublicAtsApi
-    public List<String> getDifferencies() {
+    public boolean hasDifferencies() {
 
-        return differencies;
+        return firstSnapshotDifferencies.size() + secondSnapshotDifferencies.size() > 0;
+    }
+    
+    /**
+     * Get what is present in the first snapshot only
+     * @return map with key (describing the difference) and value (the difference itself)
+     */
+    @PublicAtsApi
+    public Map<String, String> getFirstSnapshotDifferencies() {
+
+        return firstSnapshotDifferencies;
     }
 
+    /**
+     * Get what is present in the second snapshot only
+     * @return map with key (describing the difference) and value (the difference itself)
+     */
+    @PublicAtsApi
+    public Map<String, String> getSecondSnapshotDifferencies() {
+
+        return secondSnapshotDifferencies;
+    }
+    
+    /**
+     * @return the difference type
+     */
     @PublicAtsApi
     public DifferenceType getDifferenceType() {
 
@@ -130,26 +161,29 @@ public class FileTrace implements Serializable {
     }
 
     @Override
+    @PublicAtsApi
     public String toString() {
 
         StringBuilder msg = new StringBuilder();
 
         if( firstEntityPath != null && secondEntityPath == null ) {
-            // entity found in first snapshot only
+            // entity(file or directory) found in first snapshot only
             msg.append( firstEntityPath );
         } else if( firstEntityPath == null && secondEntityPath != null ) {
-            // entity found in second snapshot only
+            // entity(file or directory) found in second snapshot only
             msg.append( secondEntityPath );
         } else {
-            // files are present, but different
-            msg.append( firstEntityDescription );
-            msg.append( " - " );
-            msg.append( secondEntityDescription );
-            msg.append( ":" );
+            // files are present in both snapshots, but are different
+            msg.append( "[" + firstSnapshot + "] file \"" );
+            msg.append( firstEntityPath );
+            msg.append( "\" - " );
+            msg.append( "[" + secondSnapshot + "] file \"" );
+            msg.append( secondEntityPath );
+            msg.append( "\":" );
 
-            for( String diff : differencies ) {
-                msg.append( "\n\t" );
-                msg.append( diff );
+            for( String diffKey : firstSnapshotDifferencies.keySet() ) {
+                msg.append( "\n\t" + diffKey + ": " + firstSnapshotDifferencies.get( diffKey ) + " - "
+                            + secondSnapshotDifferencies.get( diffKey ) );
             }
         }
 

@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.snapshot.equality.DifferenceType;
-import com.axway.ats.common.filesystem.snapshot.equality.EqualityState;
+import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
 
 /**
@@ -31,7 +31,7 @@ public class FileSystemSnapshotException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    private EqualityState     equality;
+    private FileSystemEqualityState     equality;
 
     public FileSystemSnapshotException( String arg0 ) {
 
@@ -48,7 +48,7 @@ public class FileSystemSnapshotException extends RuntimeException {
         super( arg0, arg1 );
     }
 
-    public FileSystemSnapshotException( EqualityState equality ) {
+    public FileSystemSnapshotException( FileSystemEqualityState equality ) {
 
         this.equality = equality;
     }
@@ -60,7 +60,7 @@ public class FileSystemSnapshotException extends RuntimeException {
      * @return the result of compare
      */
     @PublicAtsApi
-    public EqualityState getEqualityState() {
+    public FileSystemEqualityState getEqualityState() {
 
         return this.equality;
     }
@@ -110,7 +110,6 @@ public class FileSystemSnapshotException extends RuntimeException {
      * @param snapshot snapshot name
      * @return list of matching directories
      */
-    @PublicAtsApi
     public List<String> getDirectoriesPresentInOneSnapshotOnly( String snapshot ) {
 
         DifferenceType searchedDiffType;
@@ -138,7 +137,6 @@ public class FileSystemSnapshotException extends RuntimeException {
      * @param snapshot snapshot name
      * @return list of matching files
      */
-    @PublicAtsApi
     public List<String> getFilesPresentInOneSnapshotOnly( String snapshot ) {
 
         DifferenceType searchedDiffType;
@@ -162,7 +160,6 @@ public class FileSystemSnapshotException extends RuntimeException {
     /**
      * @return list of files which are present in both snapshots, but are not same files.
      */
-    @PublicAtsApi
     public List<String> getDifferentFilesPresentInBothSnapshots() {
 
         List<String> files = new ArrayList<String>();

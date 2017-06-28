@@ -730,56 +730,68 @@ public abstract class AbstractDbProvider implements DbProvider {
     }
 
     /**
-     * @return description about all tables present in the database
+     * @param tablesToSkip list of some tables we are not interested in
+     * @return description about all important tables
      */
     @Override
-    public List<TableDescription> getTableDescriptions() {
+    public List<TableDescription> getTableDescriptions( List<String> tablesToSkip ) {
 
-        ResultSet tablesResultSet = null;
+        Connection connection = ConnectionPool.getConnection( dbConnection );
+
         List<TableDescription> tables = new ArrayList<TableDescription>();
 
-        try (Connection connection = ConnectionPool.getConnection( dbConnection )) {
+        if( tablesToSkip == null ) {
+            tablesToSkip = new ArrayList<>();
+        }
+        try {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            tablesResultSet = databaseMetaData.getTables( null, null, null, new String[]{ "TABLE" } );
+
+            
+            final String schemaPattern = ( this instanceof OracleDbProvider
+                                                                      ? dbConnection.getUser()
+                                                                      : null );
+
+            ResultSet tablesResultSet = databaseMetaData.getTables( null, schemaPattern, null,
+                                                                    new String[]{ "TABLE" } );
             while( tablesResultSet.next() ) {
 
-                if( this instanceof OracleDbProvider
-                    && !tablesResultSet.getString( 2 ).equalsIgnoreCase( dbConnection.user ) ) {
-                    // Oracle gives us all tables from all databases, we filter here only ours
+                String tableName = tablesResultSet.getString( 3 );
+
+                // check for tables the DB driver rejects to return
+                if( !isTableAccepted( tablesResultSet, dbConnection.db, tableName ) ) {
+                    continue;
+                }
+                // check for tables the user is not interested in
+                boolean skipThisTable = false;
+                for( String tableToSkip : tablesToSkip ) {
+                    if( tableName.equalsIgnoreCase( tableToSkip ) ) {
+                        skipThisTable = true;
+                        break;
+                    }
+                }
+                if( skipThisTable ) {
                     continue;
                 }
 
-                String tableName = tablesResultSet.getString( "TABLE_NAME" );
-                if( !isTableAccepted( tablesResultSet, dbConnection.db, tableName ) ) {
-                    // Table is skipped
-                    continue;
-                }
                 log.debug( "Extracting description about '" + tableName + "' table" );
 
                 TableDescription table = new TableDescription();
                 table.setName( tableName );
                 table.setSchema( tablesResultSet.getString( "TABLE_SCHEM" ) );
 
-                table.setPrimaryKeyColumn( exctractPrimaryKeyColumn( tableName, databaseMetaData ) );
+                table.setPrimaryKeyColumn( exctractPrimaryKeyColumn( tableName, databaseMetaData,
+                                                                     schemaPattern ) );
                 table.setIndexes( extractTableIndexes( tableName, databaseMetaData,
                                                        connection.getCatalog() ) );
 
                 List<String> columnDescriptions = new ArrayList<>();
-                extractTableColumns( tableName, databaseMetaData, columnDescriptions );
+                extractTableColumns( tableName, databaseMetaData, schemaPattern, columnDescriptions );
                 table.setColumnDescriptions( columnDescriptions );
 
                 tables.add( table );
             }
         } catch( SQLException sqle ) {
             throw new DbException( "Error extracting DB schema information", sqle );
-        } finally {
-            if( tablesResultSet != null ) {
-                try {
-                    tablesResultSet.close();
-                } catch( SQLException e ) {
-                    log.warn( "Result set resouce could not be closed!", e );
-                }
-            }
         }
 
         return tables;
@@ -798,136 +810,133 @@ public abstract class AbstractDbProvider implements DbProvider {
         return true;
     }
 
-    private String exctractPrimaryKeyColumn( String tableName,
-                                             DatabaseMetaData databaseMetaData ) throws SQLException {
+	private String exctractPrimaryKeyColumn(String tableName, DatabaseMetaData databaseMetaData, String schemaPattern)
+			throws SQLException {
 
-        ResultSet result = null;
-        try {
-            result = databaseMetaData.getPrimaryKeys( null, null, tableName );
-            while( result.next() ) {
-                return result.getString( 4 );
-            }
-        } finally {
-            if( result != null ) {
-                result.close();
-            }
-        }
+		ResultSet pkResultSet = databaseMetaData.getPrimaryKeys(null, schemaPattern, tableName);
+		while (pkResultSet.next()) {
+			// return the primary key column
+			return pkResultSet.getString(4);
+		}
 
-        return null;
-    }
+		// no primary key for this table
+		return null;
+	}
 
-    private void extractTableColumns( String tableName, DatabaseMetaData databaseMetaData,
-                                      List<String> columnDescription ) throws SQLException {
+	private void extractTableColumns(String tableName, DatabaseMetaData databaseMetaData, String schemaPattern,
+			List<String> columnDescription) throws SQLException {
 
-        ResultSet columnInformation = null;
-        try {
-            // Get info about all columns in the specified table.
-            // Specifying the user name is needed for Oracle, otherwise returns info about the specified table in all DBs.
-            // We can use an method overriding instead of checking this instance type.
-            columnInformation = databaseMetaData.getColumns( null, ( this instanceof OracleDbProvider
-                                                                                                      ? dbConnection.getUser()
-                                                                                                      : null ),
-                                                             tableName, "%" );
-            while( columnInformation.next() ) {
-                StringBuilder sb = new StringBuilder();
-                String columnName = columnInformation.getString( "COLUMN_NAME" );
+		// Get info about all columns in the specified table.
+		// Specifying the user name is needed for Oracle, otherwise returns info
+		// about the specified table in all DBs.
+		// We can use an method overriding instead of checking this instance
+		// type.
+		ResultSet columnInformation = databaseMetaData.getColumns(null, schemaPattern, tableName, "%");
+		while (columnInformation.next()) {
+			StringBuilder sb = new StringBuilder();
+			String columnName = columnInformation.getString("COLUMN_NAME");
 
-                sb.append( "name=" + columnName );
-                String type = SQL_COLUMN_TYPES.get( columnInformation.getInt( "DATA_TYPE" ) );
-                sb.append( ", type=" + type );
-                sb.append( extractResultSetAttribute( columnInformation, "IS_AUTOINCREMENT",
-                                                      "auto increment", tableName ) );
-                if( "BIT".equalsIgnoreCase( type ) ) {
-                    sb.append( extractBooleanResultSetAttribute( columnInformation, "COLUMN_DEF", "default" ) );
-                } else {
-                    sb.append( extractResultSetAttribute( columnInformation, "COLUMN_DEF", "default", tableName ) );
-                }
-                sb.append( extractResultSetAttribute( columnInformation, "IS_NULLABLE", "nullable", tableName ) );
-                sb.append( extractResultSetAttribute( columnInformation, "COLUMN_SIZE", "size", tableName ) );
-                //            sb.append( extractResultSetAttribute( columnInformation, "DECIMAL_DIGITS", "decimal digits" ) );
-                //            sb.append( extractResultSetAttribute( columnInformation, "NUM_PREC_RADIX", "radix" ) );
-                //            sb.append( extractResultSetAttribute( columnInformation, "ORDINAL_POSITION", "sequence number" ) );
-                //            sb.append( ", source data type=" + sqlTypeToString( columnInformation.getShort( "SOURCE_DATA_TYPE" ) ) );
+			sb.append("name=" + columnName);
+			String type = SQL_COLUMN_TYPES.get(columnInformation.getInt("DATA_TYPE"));
+			sb.append(", type=" + type);
+			sb.append(extractTableAttributeValue(columnInformation, "IS_AUTOINCREMENT", "auto increment", tableName,
+					columnName));
+			if (type.equalsIgnoreCase("BIT")) {
+				sb.append(extractBooleanResultSetAttribute(columnInformation, "COLUMN_DEF", "default"));
+			} else {
+				sb.append(
+						extractTableAttributeValue(columnInformation, "COLUMN_DEF", "default", tableName, columnName));
+			}
+			sb.append(extractTableAttributeValue(columnInformation, "IS_NULLABLE", "nullable", tableName, columnName));
+			sb.append(extractTableAttributeValue(columnInformation, "COLUMN_SIZE", "size", tableName, columnName));
+			// sb.append( extractResultSetAttribute( columnInformation,
+			// "DECIMAL_DIGITS", "decimal digits" ) );
+			// sb.append( extractResultSetAttribute( columnInformation,
+			// "NUM_PREC_RADIX", "radix" ) );
+			// sb.append( extractResultSetAttribute( columnInformation,
+			// "ORDINAL_POSITION", "sequence number" ) );
+			// sb.append( ", source data type=" + sqlTypeToString(
+			// columnInformation.getShort( "SOURCE_DATA_TYPE" ) ) );
+			columnDescription.add(sb.toString());
+		}
+	}
 
-                columnDescription.add( sb.toString() );
-            }
-        } finally {
-            if( columnInformation != null ) {
-                columnInformation.close();
-            }
-        }
-    }
+	protected Map<String, String> extractTableIndexes(String tableName, DatabaseMetaData databaseMetaData,
+			String catalog) throws DbException {
 
-    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
-                                                     String catalog ) throws DbException {
+		Map<String, String> indexes = new HashMap<>();
 
-        Map<String, String> indexes = new HashMap<>();
+		try {
+			ResultSet indexInformation = databaseMetaData.getIndexInfo(catalog, null, tableName, true, true);
+			while (indexInformation.next()) {
 
-        try {
-            ResultSet indexInformation = databaseMetaData.getIndexInfo( catalog, null, tableName, true,
-                                                                        true );
-            while( indexInformation.next() ) {
-                StringBuilder sb = new StringBuilder();
-                String indexName = indexInformation.getString( "INDEX_NAME" );
-                if( !StringUtils.isNullOrEmpty( indexName ) ) {
-                    sb.append( extractResultSetAttribute( indexInformation, "COLUMN_NAME", "column", tableName ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "INDEX_QUALIFIER",
-                                                          "index catalog", tableName ) );
-                    sb.append( ", type=" + SQL_COLUMN_TYPES.get( indexInformation.getInt( "TYPE" ) ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "ASC_OR_DESC", "asc/desc", tableName ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "NON_UNIQUE", "non-unique", tableName ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "FILTER_CONDITION",
-                                                          "filter condition", tableName ) );
-                    sb.append( extractResultSetAttribute( indexInformation, "ORDINAL_POSITION",
-                                                          "sequence number", tableName ) );
+				StringBuilder sb = new StringBuilder();
+				String indexName = indexInformation.getString("INDEX_NAME");
+				if (!StringUtils.isNullOrEmpty(indexName)) {
+					String columnName = indexInformation.getString("COLUMN_NAME");
 
-                    //                sb.append( extractIndexAttribute( indexInformation, "TABLE_NAME" ) );
-                    //                sb.append( extractResultSetAttribute( indexInformation, "TYPE", "type" ) );
-                    //                sb.append( extractIndexAttribute( indexInformation, "CARDINALITY" ) );
-                    //                sb.append( extractIndexAttribute( indexInformation, "PAGES" ) );
-                    indexes.put( indexName, sb.toString() );
-                }
-            }
-        } catch( SQLException e ) {
-            throw new DbException( "Error extracting table indexes info", e );
-        }
-        return indexes;
-    }
-    
-    private String extractBooleanResultSetAttribute(
-                                                     ResultSet resultSet,
-                                                     String attribute,
-                                                     String attributeNiceName ) {
+					sb.append("name=" + columnName);
+					sb.append(extractTableAttributeValue(indexInformation, "INDEX_QUALIFIER", "index catalog",
+							tableName, columnName));
+					sb.append(", type=" + SQL_COLUMN_TYPES.get(indexInformation.getInt("TYPE")));
+					sb.append(extractTableAttributeValue(indexInformation, "ASC_OR_DESC", "asc/desc", tableName,
+							columnName));
+					sb.append(extractTableAttributeValue(indexInformation, "NON_UNIQUE", "non-unique", tableName,
+							columnName));
+					sb.append(extractTableAttributeValue(indexInformation, "FILTER_CONDITION", "filter condition",
+							tableName, columnName));
+					sb.append(extractTableAttributeValue(indexInformation, "ORDINAL_POSITION", "sequence number",
+							tableName, columnName));
 
-        try {
-            return ", " + attributeNiceName + "=" + resultSet.getBoolean( attribute );
-        } catch( SQLException e ) {
-            return "";
-        }
-    }
+					// sb.append( extractIndexAttribute( indexInformation,
+					// "TABLE_NAME" ) );
+					// sb.append( extractResultSetAttribute( indexInformation,
+					// "TYPE", "type" ) );
+					// sb.append( extractIndexAttribute( indexInformation,
+					// "CARDINALITY" ) );
+					// sb.append( extractIndexAttribute( indexInformation,
+					// "PAGES" ) );
+					indexes.put(indexName, sb.toString());
+				}
+			}
+		} catch (SQLException e) {
+			throw new DbException("Error extracting table indexes info", e);
+		}
 
-    private String extractResultSetAttribute(
-                                             ResultSet resultSet,
-                                             String attribute,
-                                             String attributeNiceName,
-                                             String tableName ) {
+		return indexes;
+	}
 
-       try {
-           String result = resultSet.getString( attribute );
-            if( result != null ) {
-                char[] resultToChar = result.toCharArray();
-                if( resultToChar.length > 1 ) {
-                    if( ( int ) resultToChar[0] < 65 ) {
-                        log.warn( "Default value of '" + resultSet.getString( "COLUMN_NAME" )
-                                  + "' column in table '" + tableName
-                                  + "' contains special character that may cause some issues" );
-                    }
-                }
-            }
+	private String extractBooleanResultSetAttribute(ResultSet resultSet, String attribute, String attributeNiceName) {
 
-           return ", " + attributeNiceName + "=" + result;
-       } catch( SQLException e ) {
-           return "";
-       }
-   }
+		try {
+			return ", " + attributeNiceName + "=" + resultSet.getBoolean(attribute);
+		} catch (SQLException e) {
+			return "";
+		}
+	}
+
+	private String extractTableAttributeValue(ResultSet resultSet, String attribute, String attributeNiceName,
+			String tableName, String columnName) {
+
+		try {
+			String result = resultSet.getString(attribute);
+			if (result != null) {
+				char[] chars = result.toCharArray();
+				for (int i = 0; i < chars.length; i++) {
+					// the presence of symbols before white space (code 32 in
+					// ASCII table) is suspicious
+					if (chars[i] < 32) {
+						log.warn("A special character that may cause some issues is found: Table '" + tableName
+								+ "', column '" + columnName + "', attribute name '" + attribute + "', the " + (i + 1)
+								+ "th character of the attribute value '" + result + "'");
+						break;
+					}
+				}
+			}
+
+			return ", " + attributeNiceName + "=" + result;
+		} catch (SQLException e) {
+			return "";
+		}
+	}
 }

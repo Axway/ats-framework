@@ -45,8 +45,7 @@ public class MockGeneralDatabaseOperations extends DatabaseOperations {
 class MockDbProvider implements DbProvider {
 
     @Override
-    public int executeUpdate(
-                              String query ) throws DbException {
+    public int executeUpdate( String query ) throws DbException {
 
         return 0;
     }
@@ -58,54 +57,45 @@ class MockDbProvider implements DbProvider {
     }
 
     @Override
-    public int insertRow(
-                          String tableName,
-                          Map<String, String> columns ) throws DbException {
+    public int insertRow( String tableName, Map<String, String> columns ) throws DbException {
 
         return 0;
     }
 
     @Override
-    public boolean isReservedWord(
-                                   String value ) {
+    public boolean isReservedWord( String value ) {
 
         return false;
     }
 
     @Override
-    public int rowCount(
-                         String tableName ) throws DbException, NumberValidationException {
+    public int rowCount( String tableName ) throws DbException, NumberValidationException {
 
         return 0;
     }
 
     @Override
-    public int rowCount(
-                         String tableName,
-                         String columnNameWhere,
+    public int rowCount( String tableName, String columnNameWhere,
                          String whereValue ) throws DbException, NumberValidationException {
 
         return 0;
     }
 
     @Override
-    public int rowCount(
-                         String tableName,
-                         String whereCondition ) throws DbException, NumberValidationException {
+    public int rowCount( String tableName, String whereCondition ) throws DbException,
+                                                                   NumberValidationException {
 
         return 0;
     }
 
     @Override
-    public DbRecordValuesList[] select(
-                                        String query ) throws DbException {
+    public DbRecordValuesList[] select( String query ) throws DbException {
 
         return this.select( new DbQuery( query, new ArrayList<Object>() ) );
     }
 
     @Override
-    public DbRecordValuesList[] select(
-                                        DbQuery dbQuery ) throws DbException {
+    public DbRecordValuesList[] select( DbQuery dbQuery ) throws DbException {
 
         DbRecordValuesList[] resultSet = null;
         DbRecordValuesList result = new DbRecordValuesList();
@@ -159,49 +149,34 @@ class MockDbProvider implements DbProvider {
     }
 
     @Override
-    public DbRecordValuesList[] select(
-                                        DbQuery dbQuery,
-                                        DbReturnModes dbReturnMode ) throws DbException {
+    public DbRecordValuesList[] select( DbQuery dbQuery, DbReturnModes dbReturnMode ) throws DbException {
 
         return null;
     }
 
     @Override
-    public InputStream selectValue(
-                                    String tableName,
-                                    String keyColumn,
-                                    String keyValue,
+    public InputStream selectValue( String tableName, String keyColumn, String keyValue,
                                     String queryColumn ) throws DbException {
 
         return null;
     }
 
     @Override
-    public InputStream selectValue(
-                                    String tableName,
-                                    String keyColumn,
-                                    String keyValue,
-                                    String queryColumn,
+    public InputStream selectValue( String tableName, String keyColumn, String keyValue, String queryColumn,
                                     int recordNumber ) throws DbException {
 
         return null;
     }
 
     @Override
-    public InputStream selectValue(
-                                    String tableName,
-                                    String[] keyColumns,
-                                    String[] keyValues,
+    public InputStream selectValue( String tableName, String[] keyColumns, String[] keyValues,
                                     String queryColumn ) throws DbException, ValidationException {
 
         return null;
     }
 
     @Override
-    public InputStream selectValue(
-                                    String tableName,
-                                    String[] keyColumns,
-                                    String[] keyValues,
+    public InputStream selectValue( String tableName, String[] keyColumns, String[] keyValues,
                                     String queryColumn,
                                     int recordNumber ) throws DbException, ValidationException {
 
@@ -213,10 +188,11 @@ class MockDbProvider implements DbProvider {
 
     }
 
-	@Override
-	public List<TableDescription> getTableDescriptions() {
-		return null;
-	}
+    @Override
+    public List<TableDescription> getTableDescriptions( List<String> tablesToSkip ) {
+
+        return null;
+    }
 
     @Override
     public DatabaseMetaData getDatabaseMetaData() throws DbException {

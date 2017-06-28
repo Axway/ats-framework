@@ -24,26 +24,27 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.axway.ats.common.filesystem.Md5SumMode;
-import com.axway.ats.common.filesystem.snapshot.equality.EqualityState;
+import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.filesystem.exceptions.AttributeNotSupportedException;
+import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
 import com.axway.ats.core.utils.IoUtils;
 
 class FileSnapshot implements Serializable {
 
-    private static final long     serialVersionUID = 1L;
+    private static final long       serialVersionUID = 1L;
 
-    private static final Logger   log              = Logger.getLogger( FileSnapshot.class );
+    private static final Logger     log              = Logger.getLogger( FileSnapshot.class );
 
     // list of important file attributes
-    private String                path;
-    private long                  size             = -1;
-    private long                  timeModified     = -1;
-    private String                md5              = null;
-    private String                permissions      = null;
+    protected String                path;
+    protected long                  size             = -1;
+    protected long                  timeModified     = -1;
+    protected String                md5              = null;
+    protected String                permissions      = null;
 
-    private SnapshotConfiguration configuration;
+    protected SnapshotConfiguration configuration;
 
     /**
      * Constructor called when taking the actual snapshot.
@@ -52,7 +53,9 @@ class FileSnapshot implements Serializable {
      * @param path
      * @param fileRule
      */
-    FileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule ) {
+    FileSnapshot( SnapshotConfiguration configuration,
+                  String path,
+                  FindRules fileRule ) {
 
         this.configuration = configuration;
 
@@ -89,7 +92,11 @@ class FileSnapshot implements Serializable {
      * @param timeModified
      * @param md5
      */
-    FileSnapshot( String path, long size, long timeModified, String md5, String permissions ) {
+    FileSnapshot( String path,
+                  long size,
+                  long timeModified,
+                  String md5,
+                  String permissions ) {
 
         this.path = IoUtils.normalizeUnixFile( path );
 
@@ -103,7 +110,8 @@ class FileSnapshot implements Serializable {
      * Create an instance from a file
      * @param fileNode
      */
-    static FileSnapshot fromFile( Element fileNode ) {
+    static FileSnapshot fromFile(
+                                 Element fileNode ) {
 
         NamedNodeMap fileAttributes = fileNode.getAttributes();
 
@@ -129,7 +137,10 @@ class FileSnapshot implements Serializable {
         if( permissionsNode != null ) {
             filePermissions = permissionsNode.getNodeValue();
         }
-        FileSnapshot fileSnapshot = new FileSnapshot( pathAtt, fileSize, fileTimeModified, fileMD5,
+        FileSnapshot fileSnapshot = new FileSnapshot( pathAtt,
+                                                      fileSize,
+                                                      fileTimeModified,
+                                                      fileMD5,
                                                       filePermissions );
 
         log.debug( "Add " + fileSnapshot.toString() );
@@ -142,46 +153,61 @@ class FileSnapshot implements Serializable {
         return path;
     }
 
-    void compare( String thisSnapshotName, String thatSnapshotName, FileSnapshot that,
-                  EqualityState equality ) {
+    void compare(
+                 FileSnapshot that,
+                 FileSystemEqualityState equality,
+                 FileTrace fileTrace) {
 
-        // path is already checked, check the rest
+        boolean checkingContent = this instanceof PropertiesFileSnapshot;
 
-        FileTrace fileTrace = new FileTrace( "[" + thisSnapshotName + "] file \"" + this.path,
-                                             "[" + thatSnapshotName + "] file \"" + that.path );
+        fileTrace = compareFileAttributes( that, fileTrace, checkingContent );
 
-        // check the file MD5
-        if( ( this.md5 == null && that.md5 != null )
-            || ( this.md5 != null && !this.md5.equals( that.md5 ) ) ) {
-            fileTrace.addDifference( "MD5 checksum", String.valueOf( this.md5 ), String.valueOf( that.md5 ) );
-        }
-
-        // check the file size
-        if( this.size != that.size ) {
-            fileTrace.addDifference( "Size", String.valueOf( this.size ), String.valueOf( that.size ) );
-        }
-
-        // check the file modification time
-        if( this.timeModified != that.timeModified ) {
-            fileTrace.addDifference( "Modification time", String.valueOf( this.timeModified ),
-                                     String.valueOf( that.timeModified ) );
-        }
-
-        if( ( this.permissions == null && that.permissions != null )
-            || ( this.permissions != null && !this.permissions.equals( that.permissions ) ) ) {
-            fileTrace.addDifference( "Permissions", String.valueOf( this.permissions ),
-                                     String.valueOf( that.permissions ) );
-        }
-
-        if( fileTrace.getDifferencies().size() > 0 ) {
+        if( fileTrace.hasDifferencies() ) {
             // files are different
             equality.addDifference( fileTrace );
         } else {
-            log.debug( "Same files: " + this.getPath() + " and " + that.getPath() );
+            if( !checkingContent ) {
+                log.debug( "Same files: " + this.getPath() + " and " + that.getPath() );
+            }
         }
     }
 
-    private boolean doWeCheckFileSize( FindRules fileRule ) {
+    protected FileTrace compareFileAttributes( FileSnapshot that, FileTrace fileTrace,
+                                               boolean checkingContent ) {
+
+        // path is already checked, check the rest
+
+        // check file MD5
+        if( !checkingContent && ( ( this.md5 == null && that.md5 != null )
+                                  || ( this.md5 != null && !this.md5.equals( that.md5 ) ) ) ) {
+            fileTrace.addDifference( "MD5 checksum", String.valueOf( this.md5 ), String.valueOf( that.md5 ) );
+        }
+
+        // check file size
+        if( !checkingContent && this.size != that.size ) {
+            fileTrace.addDifference( "Size", String.valueOf( this.size ), String.valueOf( that.size ) );
+        }
+
+        // check file modification time
+        if( this.timeModified != that.timeModified ) {
+            fileTrace.addDifference( "Modification time",
+                                     String.valueOf( this.timeModified ),
+                                     String.valueOf( that.timeModified ) );
+        }
+
+        // check file permissions
+        if( ( this.permissions == null && that.permissions != null )
+            || ( this.permissions != null && !this.permissions.equals( that.permissions ) ) ) {
+            fileTrace.addDifference( "Permissions",
+                                     String.valueOf( this.permissions ),
+                                     String.valueOf( that.permissions ) );
+        }
+
+        return fileTrace;
+    }
+
+    private boolean doWeCheckFileSize(
+                                      FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFileSize() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -196,7 +222,8 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFileSize();
     }
 
-    private boolean doWeCheckFileModificationTime( FindRules fileRule ) {
+    private boolean doWeCheckFileModificationTime(
+                                                  FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFileModificationTime() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -211,7 +238,8 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFileModificationTime();
     }
 
-    private boolean doWeCheckFileMD5( FindRules fileRule ) {
+    private boolean doWeCheckFileMD5(
+                                     FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFileMd5() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -226,7 +254,8 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFileMd5();
     }
 
-    private boolean doWeCheckFilePermissions( FindRules fileRule ) {
+    private boolean doWeCheckFilePermissions(
+                                             FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFilePermissions() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -241,7 +270,9 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFilePermissions();
     }
 
-    Element toFile( Document dom, Element fileSnapshotNode ) {
+    Element toFile(
+                   Document dom,
+                   Element fileSnapshotNode ) {
 
         fileSnapshotNode.setAttribute( "path", this.path );
         if( this.size > -1 ) {
@@ -272,8 +303,10 @@ class FileSnapshot implements Serializable {
             sb.append( "modified: " + SnapshotUtils.dateToString( this.timeModified ) + ", " );
         }
         if( this.md5 != null ) {
-            sb.append( "md5: " + this.md5 );
+            sb.append( "md5: " + this.md5 + ", " );
         }
-        return sb.toString();
+
+        // remove the ',' end char
+        return sb.substring( 0, sb.length() - 2 );
     }
 }

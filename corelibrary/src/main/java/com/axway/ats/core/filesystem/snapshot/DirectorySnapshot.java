@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -29,42 +28,62 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
-import com.axway.ats.common.filesystem.snapshot.equality.EqualityState;
+import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
+import com.axway.ats.core.filesystem.snapshot.matchers.FileMatchersContainer;
+import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher.MATCH_TYPE;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
 import com.axway.ats.core.utils.IoUtils;
 
 public class DirectorySnapshot implements Serializable {
 
-    private static final long                   serialVersionUID = 1L;
+    private static final long              serialVersionUID  = 1L;
 
-    private static final Logger                 log              = Logger.getLogger( DirectorySnapshot.class );
+    private static final Logger            log               = Logger.getLogger( DirectorySnapshot.class );
 
-    private String                              path;
+    // absolute path to this directory
+    private String                         path;
 
-    private Map<String, DirectorySnapshot>      dirSnapshots     = new HashMap<String, DirectorySnapshot>();
-    private Map<String, FileSnapshot>           fileSnapshots    = new HashMap<String, FileSnapshot>();
+    // <path, sub-directory snapshot>
+    private Map<String, DirectorySnapshot> subdirSnapshots   = new HashMap<String, DirectorySnapshot>();
+    // <path, file snapshot>
+    private Map<String, FileSnapshot>      fileSnapshots     = new HashMap<String, FileSnapshot>();
 
-    private Map<String, FindRules>              fileRules        = new HashMap<String, FindRules>();
-    private Map<String, Map<String, FindRules>> subDirFileRules  = new HashMap<String, Map<String, FindRules>>();
+    // container for all matchers for all files in this directory
+    private FileMatchersContainer          matchersContainer = new FileMatchersContainer();
 
-    private Set<String>                         skippedSubDirs   = new HashSet<String>();
+    // sub-directories to skip
+    private Set<String>                    skippedSubDirs    = new HashSet<String>();
 
-    private EqualityState                       equality;
+    // keeps info how equal both directories are 
+    private FileSystemEqualityState                equality;
 
-    DirectorySnapshot( String path, EqualityState equality ) {
+    DirectorySnapshot( String path,
+                       FileSystemEqualityState equality ) {
 
         this.path = IoUtils.normalizeUnixDir( path.trim() );
         this.equality = equality;
     }
 
-    DirectorySnapshot( String path, Map<String, FindRules> fileRules, EqualityState equality ) {
+    DirectorySnapshot( String path,
+                       FileMatchersContainer matchersContainer,
+                       FileSystemEqualityState equality ) {
 
         this.path = IoUtils.normalizeUnixDir( path.trim() );
         this.equality = equality;
-        if( fileRules != null && !fileRules.isEmpty() ) {
-            this.fileRules.putAll( fileRules );
+        if( matchersContainer != null ) {
+            this.matchersContainer = matchersContainer;
         }
+    }
+    
+    DirectorySnapshot( String path,
+                       Map<String, FindRules> fileRules,
+                       FileSystemEqualityState equality ) {
 
-        log.debug( "Add " + this.toString().trim() );
+        this.path = IoUtils.normalizeUnixDir( path.trim() );
+        this.equality = equality;
+        this.matchersContainer.addFileAttributesMap( fileRules );
     }
 
     /**
@@ -72,7 +91,9 @@ public class DirectorySnapshot implements Serializable {
      * @param dirNode
      * @param equality
      */
-    static DirectorySnapshot fromFile( Element dirNode, EqualityState equality ) {
+    static DirectorySnapshot fromFile(
+                                      Element dirNode,
+                                      FileSystemEqualityState equality ) {
 
         // this dir
         String dirPath = dirNode.getAttributes().getNamedItem( "path" ).getNodeValue();
@@ -83,9 +104,8 @@ public class DirectorySnapshot implements Serializable {
         List<Element> fileRuleNodes = SnapshotUtils.getChildrenByTagName( dirNode,
                                                                           LocalFileSystemSnapshot.NODE_FILE_RULE );
         for( Element fileRuleNode : fileRuleNodes ) {
-
-            dirSnapshot.fileRules.put( fileRuleNode.getAttribute( "file" ),
-                                       FindRules.getFromString( fileRuleNode.getAttribute( "rules" ) ) );
+            dirSnapshot.matchersContainer.addFileAttributes( fileRuleNode.getAttribute( "file" ),
+                                                             FindRules.getFromString( fileRuleNode.getAttribute( "rules" ) ) );
         }
 
         // its skipped sub-directories
@@ -111,8 +131,8 @@ public class DirectorySnapshot implements Serializable {
         for( Element subdirNode : subdirNodes ) {
 
             DirectorySnapshot subdirSnapshot = DirectorySnapshot.fromFile( subdirNode, equality );
-            dirSnapshot.dirSnapshots.put( SnapshotUtils.getDirPathLastToken( subdirSnapshot.getPath() ),
-                                          subdirSnapshot );
+            dirSnapshot.subdirSnapshots.put( SnapshotUtils.getDirPathLastToken( subdirSnapshot.getPath() ),
+                                             subdirSnapshot );
         }
 
         return dirSnapshot;
@@ -123,7 +143,8 @@ public class DirectorySnapshot implements Serializable {
         return this.path;
     }
 
-    void skipSubDirectory( String dirPath ) {
+    void skipSubDirectory(
+                          String dirPath ) {
 
         /*
          * This method is called only for top level directories.
@@ -141,136 +162,140 @@ public class DirectorySnapshot implements Serializable {
         return skippedSubDirs;
     }
 
-    void addFindRules( String filePathInThisDirectory, int... rules ) {
+    void addFindRules(
+                      String filePathInThisDirectory,
+                      int... rules ) {
 
         /*
          * This method is called only for top level directories.
          *
          * Prior to taking the snapshot, we do not know the content of this root directory.
-         * So here we just remember the rules, but we will apply them later.
-         *
+         * So here we just remember the rules, but we will apply them later on the sub directories.
          */
-        fileRules.put( filePathInThisDirectory, new FindRules( rules ) );
+        this.matchersContainer.addFileAttributes( filePathInThisDirectory, new FindRules( rules ) );
+    }
+
+    void addSkipPropertyMatcher( String directoryAlias, String filePathInThisDirectory,
+                                 SkipPropertyMatcher matcher ) {
+
+        Map<String, MATCH_TYPE> keysMap = matcher.getKeysMap();
+        for( String key : keysMap.keySet() ) {
+            addSkipPropertyMatcher( directoryAlias, filePathInThisDirectory, key, true, keysMap.get( key ) );
+        }
+
+        Map<String, MATCH_TYPE> valuesMap = matcher.getValuesMap();
+        for( String value : valuesMap.keySet() ) {
+            addSkipPropertyMatcher( directoryAlias, filePathInThisDirectory, value, false,
+                                    valuesMap.get( value ) );
+        }
+    }
+
+    void addSkipPropertyMatcher( String directoryAlias, String filePathInThisDirectory, String token,
+                                 boolean isMatchingKey, SkipPropertyMatcher.MATCH_TYPE matchType ) {
+
+        matchersContainer.addSkipPropertyMatcher( directoryAlias, filePathInThisDirectory, token,
+                                                  isMatchingKey, matchType );
+    }
+
+    void addSkipXmlNodeMatcher( String directoryAlias, String filePathInThisDirectory,
+                                SkipXmlNodeMatcher matcher ) {
+
+        for( SkipXmlNodeMatcher.NodeValueMatcher nodeMatcher : matcher.getNodeValueMatchers() ) {
+            addSkipXmlNodeMatcher( directoryAlias, filePathInThisDirectory, nodeMatcher.getXpath(),
+                                   nodeMatcher.getValue(), nodeMatcher.getMatchType() );
+        }
+    }
+
+    void addSkipXmlNodeMatcher( String directoryAlias, String filePathInThisDirectory, String nodeXpath,
+                                String value, SkipXmlNodeMatcher.MATCH_TYPE matchType ) {
+
+        matchersContainer.addSkipXmlNodeValueMatcher( directoryAlias, filePathInThisDirectory, nodeXpath,
+                                                      value, matchType );
+    }
+
+    public void addSkipXmlNodeMatcher( String directoryAlias, String filePathInThisDirectory,
+                                       String nodeXpath, String attributeKey, String attributeValue,
+                                       SkipXmlNodeMatcher.MATCH_TYPE matchType ) {
+
+        matchersContainer.addSkipXmlNodeAttributeMatcher( directoryAlias, filePathInThisDirectory, nodeXpath,
+                                                          attributeKey, attributeValue, matchType );
+
     }
 
     void takeSnapshot( SnapshotConfiguration configuration ) {
 
         log.debug( "Add directory " + this.path );
 
-        // do some cleanup - in case user call this method for a second time
-        dirSnapshots.clear();
+        // do some cleanup - in case user call this method more than once
+        subdirSnapshots.clear();
         fileSnapshots.clear();
 
-        // take the snapshot now
         if( !new File( this.path ).exists() ) {
             throw new FileSystemSnapshotException( "Directory '" + this.path + "' does not exist" );
         }
 
-        // check current dir files;  add their absolute path;  distribute sub-directory rules
-        Map<String, FindRules> tmpFilesRules = new HashMap<String, FindRules>( fileRules );
-        for( Entry<String, FindRules> fileRuleEntry : tmpFilesRules.entrySet() ) {
-
-            // if takeSnapshot() was already called, the fileName is actually a file absolute path
-            String fileAbsPath = fileRuleEntry.getKey();
-            if( !fileRuleEntry.getKey().startsWith( this.path ) ) {
-                fileAbsPath = IoUtils.normalizeUnixFile( this.path + fileRuleEntry.getKey() );
-            }
-            FindRules rules = fileRuleEntry.getValue();
-            if( !rules.isSearchFilenameByRegex() && !new File( fileAbsPath ).exists() ) {
-
-                log.warn( "File \"" + fileAbsPath + "\" doesn't exist, but there is a rule for it!" );
-                continue;
-            } else {
-
-                if( SnapshotUtils.isFileFromThisDirectory( this.path, fileAbsPath ) ) {
-                    fileRules.put( fileAbsPath, rules );
-                } else {
-
-                    // the rule belongs to a sub-directory, so we will add it to subDirFileRules
-                    int subDirEndIndex = fileAbsPath.indexOf( IoUtils.FORWARD_SLASH, this.path.length() );
-                    String subDirPath = fileAbsPath.substring( 0, subDirEndIndex );
-                    // because it is a sub-dir, we have to skip the following /, that is why we have that '+ 1' at the end
-                    String subDirPathRest = fileAbsPath.substring( subDirPath.length() + 1 );
-
-                    if( !subDirFileRules.containsKey( subDirPath ) ) {
-                        subDirFileRules.put( subDirPath, new HashMap<String, FindRules>() );
+        // take the snapshot now by traversing all files and sub-directories
+        for( File fsEntity : new File( this.path ).listFiles() ) {
+            if( !fsEntity.isHidden() || configuration.isSupportHidden() ) {
+                if( fsEntity.isDirectory() ) {
+                    // make a directory snapshot
+                    String unixDirName = IoUtils.normalizeUnixDir( fsEntity.getName() ); // skipped dirs are also in UnixDir (ends with '/') format
+                    if( skippedSubDirs.contains( unixDirName ) ) {
+                        continue; // skip this sub directory
                     }
-                    subDirFileRules.get( subDirPath ).put( subDirPathRest, rules );
+                    DirectorySnapshot subdirSnapshot = generateSubDirectorySnapshot( unixDirName, fsEntity );
+                    subdirSnapshot.takeSnapshot( configuration );
+                    subdirSnapshots.put( fsEntity.getName(), subdirSnapshot );
+                } else {
+                    // make a file snapshot
+                    FileSnapshot fileSnapshot = generateFileSnapshot( configuration, fsEntity );
+                    if( fileSnapshot != null ) { // if the file is not skipped
+                        log.debug( "Add " + fileSnapshot.toString() );
+                        fileSnapshots.put( fsEntity.getName(), fileSnapshot );
+                    }
                 }
-            }
-            fileRules.remove( fileRuleEntry.getKey() );
-        }
-
-        boolean supportHiddenFiles = configuration.isSupportHidden();
-        File[] files = new File( this.path ).listFiles();
-        if( files != null ) {
-            for( File file : files ) {
-                if( !file.isHidden() || supportHiddenFiles ) {
-                    if( file.isDirectory() ) {
-
-                        String unixDirName = IoUtils.normalizeUnixDir( file.getName() ); // skipped dirs are also in UnixDir (ends with '/') format
-                        if( skippedSubDirs.contains( unixDirName ) ) {
-                            continue; // skip the sub directory
-                        }
-                        DirectorySnapshot dirSnapshot = generateDirectorySnapshot( unixDirName, file );
-                        dirSnapshot.takeSnapshot( configuration );
-                        dirSnapshots.put( file.getName(), dirSnapshot );
-                    } else {
-
-                        FileSnapshot fileSnapshot = generateFileSnapshot( configuration, file );
-                        if( fileSnapshot != null ) { // if the file is not skipped
-                            log.debug( "Add file " + fileSnapshot.toString() );
-                            fileSnapshots.put( file.getName(), fileSnapshot );
-                        }
-                    }
-                } else {
-                    log.debug( "The hidden " + ( file.isDirectory()
+            } else {
+                log.debug( "The hidden " + ( fsEntity.isDirectory()
                                                                     ? "directory"
                                                                     : "file" )
-                               + " '" + file.getAbsolutePath() + "' will not be processed" );
-                }
+                           + " '" + fsEntity.getAbsolutePath() + "' will not be processed" );
             }
         }
     }
 
-    private DirectorySnapshot generateDirectorySnapshot( String unixDirName, File file ) {
+    private DirectorySnapshot generateSubDirectorySnapshot( String unixDirName, File file ) {
 
-        DirectorySnapshot dirSnapshot = new DirectorySnapshot( file.getAbsolutePath(),
-                                                               subDirFileRules.get( IoUtils.normalizeUnixFile( file.getAbsolutePath() ) ),
-                                                               equality );
+        // extract the matchers for this sub-directory(if any)
+        FileMatchersContainer subDirMatchersContainer = this.matchersContainer.getMatchersContainerForSubdir( unixDirName );
+        DirectorySnapshot subDirSnapshot = new DirectorySnapshot( file.getAbsolutePath(),
+                                                                  subDirMatchersContainer, equality );
 
         // pass sub-dir skipped directories
         for( String skippedSubDir : skippedSubDirs ) {
             if( skippedSubDir.startsWith( unixDirName ) ) { // dirName ends with '/', so skippedSubDir contains sub-dir of dirName
                 String subDirToSkip = skippedSubDir.substring( unixDirName.length() );
-                dirSnapshot.skipSubDirectory( subDirToSkip );
+                subDirSnapshot.skipSubDirectory( subDirToSkip );
             }
         }
 
-        // pass sub-dir file rules
-        for( Entry<String, FindRules> fileRuleEntry : fileRules.entrySet() ) {
-            if( fileRuleEntry.getKey().startsWith( unixDirName ) ) { // it is a subdir file rule
-                dirSnapshot.addFindRules( fileRuleEntry.getKey().substring( unixDirName.length() ),
-                                          fileRuleEntry.getValue().getRules() );
-            }
-        }
-        return dirSnapshot;
+        return subDirSnapshot;
     }
 
-    private FileSnapshot generateFileSnapshot( SnapshotConfiguration configuration, File file ) {
+    private FileSnapshot generateFileSnapshot(
+                                              SnapshotConfiguration configuration,
+                                              File file ) {
 
         // find file rules and check whether the file is skipped
         FindRules rules = null;
-        for( Entry<String, FindRules> fileRuleEntry : fileRules.entrySet() ) {
+        for( String fileName : this.matchersContainer.fileAttributesMap.keySet() ) {
 
-            FindRules currentRules = fileRuleEntry.getValue();
+            FindRules currentRules = this.matchersContainer.fileAttributesMap.get( fileName );
             if( currentRules.isSearchFilenameByRegex() ) {
-                if( IoUtils.normalizeUnixFile( file.getAbsolutePath() ).matches( fileRuleEntry.getKey() ) ) {
+                if( file.getName().matches( fileName ) ) {
                     rules = currentRules;
                     break;
                 }
-            } else if( IoUtils.normalizeUnixFile( fileRuleEntry.getKey() )
-                                .equals( IoUtils.normalizeUnixFile( file.getAbsolutePath() ) ) ) {
+            } else if( fileName.equals( file.getName() ) ) {
                 rules = currentRules;
                 break;
             }
@@ -280,11 +305,29 @@ public class DirectorySnapshot implements Serializable {
             return null;
         }
 
-        return new FileSnapshot( configuration, file.getAbsolutePath(), rules );
+        // create the right type of file snapshot
+        if( configuration.isCheckPropertyFilesContent()
+            && file.getName().toLowerCase().endsWith( ".properties" ) ) {
+            // it is a properties file
+            return new PropertiesFileSnapshot( configuration, file.getAbsolutePath(), rules,
+                                               this.matchersContainer.getPropertyMatchers( file.getName() ) );
+        } else if( configuration.isCheckXmlFilesContent()
+                   && file.getName().toLowerCase().endsWith( ".xml" ) ) {
+            // it is a properties file
+            return new XmlFileSnapshot( configuration, file.getAbsolutePath(), rules,
+                                        this.matchersContainer.getXmlNodeMatchers( file.getName() ) );
+        } else {
+            // it is a regular file
+            return new FileSnapshot( configuration, file.getAbsolutePath(), rules );
+        }
     }
 
-    void compare( String thisSnapshotName, String thatSnapshotName, DirectorySnapshot that,
-                  boolean checkDirName, EqualityState equality ) {
+    void compare(
+                 String thisSnapshotName,
+                 String thatSnapshotName,
+                 DirectorySnapshot that,
+                 boolean checkDirName,
+                 FileSystemEqualityState equality ) {
 
         // check the last entity in the dir path
         if( checkDirName ) {
@@ -293,39 +336,43 @@ public class DirectorySnapshot implements Serializable {
 
             if( !thisDirName.equals( thatDirName ) ) {
                 throw new FileSystemSnapshotException( "Directory name " + thisDirName + " of " + this.path
-                                             + " is not the same as directory name " + thatDirName + " of "
-                                             + that.path );
+                                               + " is not the same as directory name " + thatDirName + " of "
+                                               + that.path );
             }
         }
 
         // check the files in this directory
-        SnapshotUtils.checkFileSnapshots( thisSnapshotName, this.fileSnapshots, thatSnapshotName,
-                                          that.fileSnapshots, equality );
+        SnapshotUtils.checkFileSnapshots( thisSnapshotName,
+                                          this.fileSnapshots,
+                                          thatSnapshotName,
+                                          that.fileSnapshots,
+                                          equality );
 
         // check the sub-directories
-        SnapshotUtils.checkDirSnapshotsDeepLevel( thisSnapshotName, this.dirSnapshots, thatSnapshotName,
-                                                  that.dirSnapshots, equality );
+        SnapshotUtils.checkDirSnapshotsDeepLevel( thisSnapshotName,
+                                                  this.subdirSnapshots,
+                                                  thatSnapshotName,
+                                                  that.subdirSnapshots,
+                                                  equality );
     }
 
-    void toFile( Document dom, Element dirSnapshotNode ) {
+    void toFile(
+                Document dom,
+                Element dirSnapshotNode ) {
 
         // this dir
         dirSnapshotNode.setAttribute( "path", this.path );
 
         // its file find rules
-        for( Entry<String, FindRules> fileRuleEntry : this.fileRules.entrySet() ) {
+        for( String fileName : this.matchersContainer.fileAttributesMap.keySet() ) {
 
-            String fileNameKey = fileRuleEntry.getKey();
             Element fileRuleNode = dom.createElement( LocalFileSystemSnapshot.NODE_FILE_RULE );
             dirSnapshotNode.appendChild( fileRuleNode );
 
-            fileRuleNode.setAttribute( "rules", fileRuleEntry.getValue().getAsString() );
+            fileRuleNode.setAttribute( "rules",
+                                       this.matchersContainer.getFileAtrtibutes( fileName ).getAsString() );
 
-            if( !fileRuleEntry.getValue().isSearchFilenameByRegex() ) {
-                fileNameKey = fileNameKey.substring( this.path.length() );
-            }
-            fileRuleNode.setAttribute( "file", fileNameKey );
-
+            fileRuleNode.setAttribute( "file", fileName );
         }
 
         // its skipped sub-directories
@@ -338,35 +385,45 @@ public class DirectorySnapshot implements Serializable {
         }
 
         // its files
-        for( Entry<String, FileSnapshot> fileSnapshotEntry : this.fileSnapshots.entrySet() ) {
+        for( String fileAlias : this.fileSnapshots.keySet() ) {
 
             Element fileSnapshotNode = dom.createElement( LocalFileSystemSnapshot.NODE_FILE );
             dirSnapshotNode.appendChild( fileSnapshotNode );
 
-            fileSnapshotNode.setAttribute( "alias", fileSnapshotEntry.getKey() );
-            fileSnapshotNode = fileSnapshotEntry.getValue().toFile( dom, fileSnapshotNode );
+            fileSnapshotNode.setAttribute( "alias", fileAlias );
+            fileSnapshotNode = this.fileSnapshots.get( fileAlias ).toFile( dom, fileSnapshotNode );
 
         }
 
         // its subdirs
-        for( Entry<String, DirectorySnapshot> dirSnapshotNameEntry : this.dirSnapshots.entrySet() ) {
+        for( String dirSnapshotName : this.subdirSnapshots.keySet() ) {
 
             Element subdirSnapshotNode = dom.createElement( LocalFileSystemSnapshot.NODE_DIRECTORY );
             dirSnapshotNode.appendChild( subdirSnapshotNode );
 
-            subdirSnapshotNode.setAttribute( "alias", dirSnapshotNameEntry.getKey() );
-            dirSnapshotNameEntry.getValue().toFile( dom, subdirSnapshotNode );
+            subdirSnapshotNode.setAttribute( "alias", dirSnapshotName );
+            this.subdirSnapshots.get( dirSnapshotName ).toFile( dom, subdirSnapshotNode );
         }
     }
 
     public Map<String, DirectorySnapshot> getDirSnapshots() {
 
-        return this.dirSnapshots;
+        return this.subdirSnapshots;
     }
 
     public Map<String, FindRules> getFileRules() {
 
-        return this.fileRules;
+        return this.matchersContainer.fileAttributesMap;
+    }
+
+    public Map<String, List<SkipPropertyMatcher>> getPropertyMatchersPerFile() {
+
+        return this.matchersContainer.getPropertyMatchersMap();
+    }
+
+    public Map<String, List<SkipXmlNodeMatcher>> getXmlNodeMatchersPerFile() {
+
+        return this.matchersContainer.getXmlNodeMatchersMap();
     }
 
     /**
@@ -382,7 +439,7 @@ public class DirectorySnapshot implements Serializable {
             sb.append( f.toString() + "\n" );
         }
 
-        for( DirectorySnapshot d : dirSnapshots.values() ) {
+        for( DirectorySnapshot d : subdirSnapshots.values() ) {
             sb.append( d.toString() );
         }
         return sb.toString();
