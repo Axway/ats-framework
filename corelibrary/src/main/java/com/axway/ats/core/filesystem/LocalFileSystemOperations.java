@@ -999,6 +999,30 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         return fileExists;
     }
+    
+    @Override
+    public boolean doesDirectoryExist(
+                                       String dirName ) {
+
+        File file = new File( dirName );
+        // check if the file/directory exists
+        boolean fileExists = file.exists();
+
+        if( fileExists ) {
+            // check if the file is a directory
+            boolean isDirectory = file.isDirectory();
+            if( !isDirectory ) {
+                // the file, referred by dirName, does exist, but it is not a directory
+                log.error( "File '" + dirName + "' is not a directory" );
+                throw new IllegalArgumentException( "'" + dirName + "' does not point to a directory" );
+            } else {
+                // the file, referred by dirName, does exist and is a directory
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public String getFilePermissions(
@@ -1058,7 +1082,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                     ioe );
         }
 
-        return String.valueOf( ownerPermissions ) + String.valueOf( groupPermissions )
+        return "0"+String.valueOf( ownerPermissions ) + String.valueOf( groupPermissions )
                + String.valueOf( othersPermissions );
     }
 
@@ -2467,7 +2491,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
                     // set file/dir permissions, after it is created
                     Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getPosixFilePermission( octalToDecimal( unixPermissions ) ) );
+                                                   getPosixFilePermission( unixPermissions ) );
                 }
             }
         } catch( Exception e ) {
@@ -2618,20 +2642,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         }
     }
 
-    private int octalToDecimal(
-                                int octal ) {
-
-        int decnum = 0, i = 0;
-
-        while( octal != 0 ) {
-            decnum = decnum + ( octal % 10 ) * ( int ) Math.pow( 8, i );
-            i++;
-            octal = octal / 10;
-        }
-
-        return decnum;
-    }
-
     private Set<PosixFilePermission> getPosixFilePermission(
                                                              int permissions ) {
 
@@ -2712,4 +2722,50 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         return new String[]{ stdOut, stdErr, exitCode };
     }
 
+    /**
+     * This is method for internal use only.
+     * Currently used on the agent when copying files from the executor
+     * 
+     * @param srcFilename the file name without path, existing on the executor
+     * @param dstFilePath the target file path - desired file location (directory or directory + file name)
+     * 
+     * @return full file path on the agent, used for file copy operations
+     * */
+    public String constructDestinationFilePath(
+                                                String srcFileName,
+                                                String dstFilePath ) throws Exception {
+
+        File dstFile = new File( dstFilePath );
+
+        // check if file exists
+        if( dstFile.exists() ) {
+            // check if dstFile is indeed a File
+            if( dstFile.isFile() ) {
+                log.debug( " will overwrite '" + dstFilePath + "'" );
+                return dstFilePath;
+            } else if( dstFile.isDirectory() ) {// check if dstFile is a directory
+                dstFilePath = new File( dstFilePath, srcFileName ).getAbsolutePath();
+                return dstFilePath;
+            } else {
+                throw new IllegalArgumentException( "File '" + dstFilePath
+                                                    + "' is neither file nor directory" );
+            }
+        } else {
+            // check if dstFile points to a directory (which is not existing)
+            if( dstFilePath.endsWith( File.separator ) ) {
+                throw new FileNotFoundException( "File path '" + dstFilePath
+                                                 + "' points to a non-existing directory" );
+            } else {
+                // dstFile points to a non-existing file
+                // check if dstFile's parent exists and is directory
+                File dstFileParent = new File( dstFilePath ).getParentFile();
+                if( dstFileParent.exists() && dstFileParent.isDirectory()) {
+                    return dstFilePath;
+                } else {
+                    throw new FileNotFoundException( "Directory '" + dstFileParent.getAbsolutePath()
+                                                     + "' does not exist or is a regular file" );
+                }
+            }
+        }
+    }
 }

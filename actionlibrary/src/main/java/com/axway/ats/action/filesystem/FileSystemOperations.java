@@ -15,6 +15,8 @@
  */
 package com.axway.ats.action.filesystem;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -500,6 +502,12 @@ public class FileSystemOperations {
 
         // validate input parameters
         new Validator().validateMethodParameters( new Object[]{ fromFile, toFile } );
+        
+        try {
+            checkIfFileExistsAndIsFile( fromFile );
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Unable to copy '" + fromFile + "' to '" + toFile + "'" , e);
+        }
 
         // execute action
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
@@ -1315,6 +1323,25 @@ public class FileSystemOperations {
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         return operations.doesFileExist( filePath );
     }
+    
+    /**
+     * Check if a directory exists
+     *
+     * @param dirPath the target directory path
+     * @return <code>true</code> if the directory exists and <code>false</code> if it doesn't
+     * @throws IllegalArgumentExeption if the file exists, but it is not a directory
+     */
+    @PublicAtsApi
+    public boolean doesDirectoryExist(
+                                       @Validate(name = "dirPath", type = ValidationType.STRING_NOT_EMPTY) String dirPath ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ dirPath } );
+
+        // execute action
+        IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
+        return operations.doesDirectoryExist( dirPath );
+    }
 
     /**
      * <pre>
@@ -1458,6 +1485,24 @@ public class FileSystemOperations {
         // execute action
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         operations.untar( tarFilePath, outputDirPath );
+    }
+    
+    // checks if file exists and is a file
+    private void checkIfFileExistsAndIsFile(
+                                             String filePath ) throws FileNotFoundException {
+
+        File file = new File( filePath );
+
+        // check if file exists
+        if( file.exists() ) {
+            // check if the filePath does NOT point to a file
+            if( !file.isFile() ) {
+                throw new IllegalArgumentException( "'" + filePath + "' does not point to a regular file" );
+            }
+        } else {
+            throw new FileNotFoundException( "'" + filePath + "' does not exist" );
+        }
+
     }
 
 

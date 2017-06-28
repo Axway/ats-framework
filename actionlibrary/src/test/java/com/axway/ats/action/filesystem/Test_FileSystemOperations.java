@@ -76,6 +76,8 @@ public class Test_FileSystemOperations extends BaseTest {
     public void setUpTest_FileSystemOperations() {
 
         fileSystemOperationsLocal = new FileSystemOperations();
+        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID, "" );
+        fileSystemOperationsLocal.createFile( DESTINATION_FILE_NAME_VALID, "" );
         fileSystemOperationsRemote = new FileSystemOperations( REMOTE_HOST_NAME_VALID );
         localFSOperationsMock = createMock( LocalFileSystemOperations.class );
         remoteFSOperationsMock = createMock( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID );

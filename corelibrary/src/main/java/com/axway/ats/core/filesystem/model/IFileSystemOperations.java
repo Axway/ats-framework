@@ -91,6 +91,10 @@ public interface IFileSystemOperations {
 
     public boolean doesFileExist(
                                   String fileName );
+    
+    public boolean doesDirectoryExist(
+                                      String dirName );
+
 
     public String getFilePermissions(
                                       String sourceFile );

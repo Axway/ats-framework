@@ -15,6 +15,7 @@
  */
 package com.axway.ats.action.filesystem;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -139,6 +140,12 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     public void copyFile( String fromFile, String toFile, boolean failOnError ) {
 
         try {
+
+            // construct toFile final full filepath
+            // action is performed to check toFile existence and file type (file/dir)
+            toFile = this.remoteFileSystemOperations.constructDestinationFilePath( new File( fromFile ).getName(),
+                                                                                   toFile );
+
             Integer copyFileStartPort = getCopyFilePortProperty( ActionLibraryConfigurator.getInstance()
                                                                                           .getCopyFileStartPort() );
             Integer copyFileEndPort = getCopyFilePortProperty( ActionLibraryConfigurator.getInstance()
@@ -168,12 +175,6 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     public void copyFileTo( String fromFile, String toMachine, String toFile, boolean failOnError ) {
 
         try {
-            
-            // check if toFile exists
-            if( !remoteFileSystemOperations.doesFileExist( toFile ) ) {
-                throw new FileNotFoundException( "File '" + toFile + "' at '" + this.atsAgent
-                                                 + "' is missing. You have to create it first by calling FileSystemOperations.createFile() or via some other way." );
-            }
 
             Integer copyFileStartPort = getCopyFilePortProperty( ActionLibraryConfigurator.getInstance()
                                                                                           .getCopyFileStartPort() );
@@ -417,6 +418,17 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     }
 
     @Override
+    public boolean doesDirectoryExist( String dirName ) {
+
+        try {
+            return remoteFileSystemOperations.doesDirectoryExist( dirName );
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Unable to check if directory " + dirName + " exists on "
+                                                    + this.atsAgent, e );
+        }
+    }
+
+    @Override
     public String getFilePermissions( String sourceFile ) {
 
         try {
@@ -614,11 +626,11 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
 
     }
 
-    public String[] getLastLinesFromFile( String fileName, int numLinesToRead){
-        
+    public String[] getLastLinesFromFile( String fileName, int numLinesToRead ) {
+
         return getLastLinesFromFile( fileName, numLinesToRead, StandardCharsets.ISO_8859_1 );
     }
-    
+
     public String[] getLastLinesFromFile( String fileName, int numLinesToRead, Charset chartset ) {
 
         try {
@@ -634,7 +646,6 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
             throw new FileSystemOperationException( message, e );
         }
     }
-    
 
     @Override
     public String[] fileGrep( String fileName, String searchPattern, boolean isSimpleMode ) {
@@ -793,7 +804,7 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
                                                     + outputDirPath + "'", e );
         }
     }
-    
+
     @Override
     public void gunzip(
                        String gzipFilePath,
@@ -806,7 +817,7 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
                                                     + outputDirPath + "'", e );
         }
     }
-    
+
     @Override
     public void untar(
                        String tarFilePath,

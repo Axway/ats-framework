@@ -82,6 +82,13 @@ public class InternalFileSystemOperations {
 
         return localFSOperations.doesFileExist( fileName );
     }
+    
+    @Action(name = "Internal File System Operations does Directory Exist")
+    public boolean doesDirectoryExist(
+                                       @Parameter(name = "dirName") String dirName ) {
+
+        return localFSOperations.doesDirectoryExist( dirName );
+    }
 
     @Action(name = "Internal File System Operations set File U I D")
     public void setFileUID( @Parameter(name = "fileName") String fileName,
@@ -388,5 +395,13 @@ public class InternalFileSystemOperations {
                        @Parameter(name = "outputDirPath") String outputDirPath) throws Exception {
 
         localFSOperations.untar( tarFilePath, outputDirPath );
+    }
+    
+    @Action(name = "Internal File System Operations construct destination file path") 
+    public String constructDestinationFilePath(
+                                           @Parameter(name= "srcFileName") String srcFileName, 
+                                           @Parameter(name="dstFilePath") String dstFilePath ) throws Exception {
+        
+       return localFSOperations.constructDestinationFilePath(srcFileName, dstFilePath);
     }
 }
