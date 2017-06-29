@@ -485,6 +485,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                         + "\" and the source file \"" + sourceFile
                                                         + "\" missmatch!" );
             }
+            
+            if( osType.isUnix() ) {
+                // set the original file permission to the new file
+                setFilePermissions( destinationFile, getFilePermissions( sourceFile ) );
+            }
+
         } catch( IOException e ) {
             throw new FileSystemOperationException( "Unable to copy file '" + sourceFile + "' to '"
                                                     + destinationFile + "'", e );
@@ -2104,6 +2110,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 throw new FileSystemOperationException( "Could not create target directory "
                                                         + to.getAbsolutePath() );
             }
+        }
+        
+        if( osType.isUnix() ) {
+            // set the original file permission to the new file
+            setFilePermissions( to.getAbsolutePath(), getFilePermissions( from.getAbsolutePath() ) );
         }
 
         String[] list = from.list();

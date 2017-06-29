@@ -440,6 +440,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testCopyFile() throws Exception {
 
