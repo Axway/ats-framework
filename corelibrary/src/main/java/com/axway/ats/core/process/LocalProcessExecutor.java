@@ -71,7 +71,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     private boolean             doNotUseStandardInput;
 
     private String              caller;
-
+    
     public LocalProcessExecutor( String caller, String command, String... commandArguments ) {
 
         this.caller = caller;
@@ -124,11 +124,11 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
             errorReaderThread = new ProcessOutputReader( caller, "ERROR OUTPUT", this.theProcess,
                                                          this.theProcess.getErrorStream(), logErrorOutput,
-                                                         errorOutputFile, waitForCompletion );
+                                                         errorOutputFile );
 
             outputReaderThread = new ProcessOutputReader( caller, "STANDARD OUTPUT", this.theProcess,
                                                           this.theProcess.getInputStream(), logStandardOutput,
-                                                          standardOutputFile, waitForCompletion );
+                                                          standardOutputFile );
 
             errorReaderThread.start();
             outputReaderThread.start();
@@ -145,10 +145,6 @@ public class LocalProcessExecutor implements IProcessExecutor {
                     log.info( "The execution of '" + commandDescription + "' finished with exit code "
                               + this.theProcess.exitValue() );
                 }
-
-                // tell the stream readers to stop reading
-                errorReaderThread.setExternalProcessIsOver();
-                outputReaderThread.setExternalProcessIsOver();
             }
         } catch( Exception e ) {
             String message = "Error executing '" + commandDescription + "': " + e.getMessage();
@@ -471,18 +467,16 @@ public class LocalProcessExecutor implements IProcessExecutor {
         private String              type;
 
         private Process             externalProcess;
-        private boolean             waitForCompletion;
 
         private CountDownLatch      countdownLatchForExternalProcessCompletion;
 
         ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
-                             boolean logOutput, String outputFile, boolean waitForCompletion ) {
+                             boolean logOutput, String outputFile ) {
 
             log = Logger.getLogger( ProcessOutputReader.class.getSimpleName() + " <" + type + ">" );
 
             this.caller = caller;
 
-            this.waitForCompletion = waitForCompletion;
             this.externalProcess = externalProcess;
 
             this.is = is;
@@ -518,19 +512,14 @@ public class LocalProcessExecutor implements IProcessExecutor {
          */
         private boolean isExternalProcessOver() {
 
-            if( waitForCompletion ) {
-                // the parent thread tells us whether the external process is over
-                return countdownLatchForExternalProcessCompletion.getCount() < 1;
-            } else {
-                // we have to check whether the external process is over, we do this by asking about the exit code
-                try {
-                    externalProcess.exitValue();
-                    // it is over
-                    return true;
-                } catch( IllegalThreadStateException e ) {
-                    // not a really elegant way to understand the external process is still running
-                    return false;
-                }
+            // we have to check whether the external process is over, we do this by asking about the exit code
+            try {
+                externalProcess.exitValue();
+                // it is over
+                return true;
+            } catch( IllegalThreadStateException e ) {
+                // not a really elegant way to understand the external process is still running
+                return false;
             }
         }
 
@@ -544,7 +533,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
                     String line = null;
                     String dataToLeave = null;
                     bufReaderStream = new BufferedReader( new InputStreamReader( is ) );
-
+                    
                     while( true ) {
 
                         // wait for data available in the stream we are attached to
@@ -569,7 +558,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
                                 }
                             }
                         }
-
+                        
                         // read next line from the stream we are attached to
                         // it cannot return null as we know there is data available
                         // This call potentially could block if there are chars available but CR/LF could not be there yet
