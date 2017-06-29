@@ -17,7 +17,7 @@
 		<!-- Apache FTP and FTPS Library -->
 		<org.apache.commons.net.version>3.5</org.apache.commons.net.version>
 		<mysql.mysql-connector-java.version>5.1.13</mysql.mysql-connector-java.version>
-		<oracle.ojdbc.version>12.1.0.1</oracle.ojdbc.version>
+		<oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 		<!-- jTDS dependency is defined in parent pom.xml -->
 		<com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
 		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
