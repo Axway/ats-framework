@@ -284,6 +284,9 @@ class FileSnapshot implements Serializable {
         if( this.md5 != null ) {
             fileSnapshotNode.setAttribute( "md5", this.md5 );
         }
+        if( this.permissions != null ) {
+            fileSnapshotNode.setAttribute( "permissions", this.permissions );
+        }
         return fileSnapshotNode;
     }
 
