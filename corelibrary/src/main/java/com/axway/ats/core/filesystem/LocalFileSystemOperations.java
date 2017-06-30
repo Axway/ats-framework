@@ -2539,10 +2539,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         } else if( archiveFilePath.endsWith( ".tar" ) ) {
             extractTar( archiveFilePath, outputDirPath );
         } else {
-            String[] filenameTokens = IoUtils.getFileName( archiveFilePath ).split( "." );
-            throw new FileSystemOperationException( "Archive with format '"
-                                                    + filenameTokens[filenameTokens.length - 1]
-                                                    + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' ." );
+            String[] filenameTokens = IoUtils.getFileName( archiveFilePath ).split( "\\." );
+            if( filenameTokens.length <= 1 ) {
+                throw new FileSystemOperationException( "Archive format was not provided." );
+            } else {
+                throw new FileSystemOperationException( "Archive with format '"
+                                                        + filenameTokens[filenameTokens.length - 1]
+                                                        + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' ." );
+            }
         }
 
     }

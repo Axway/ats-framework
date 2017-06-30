@@ -31,6 +31,7 @@ import com.axway.ats.common.filesystem.Md5SumMode;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.filesystem.model.IFileSystemOperations;
 import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
@@ -1459,12 +1460,37 @@ public class FileSystemOperations {
 
         // validate input parameters
         new Validator().validateMethodParameters( new Object[]{ archiveFilePath, outputDirPath } );
+        
+        checkIfArchiveFormatIsSupported(archiveFilePath);
 
         // execute action
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         operations.extract( archiveFilePath, outputDirPath );
     }
     
+    private void checkIfArchiveFormatIsSupported( String archiveFilePath ) {
+
+        if( archiveFilePath.endsWith( ".zip" ) ) {
+            return;
+        } else if( archiveFilePath.endsWith( ".gz" ) && !archiveFilePath.endsWith( ".tar.gz" ) ) {
+            return;
+        } else if( archiveFilePath.endsWith( "tar.gz" ) ) {
+            return;
+        } else if( archiveFilePath.endsWith( ".tar" ) ) {
+            return;
+        } else {
+            String[] filenameTokens = IoUtils.getFileName( archiveFilePath ).split( "\\." );
+            if( filenameTokens.length <= 1 ) {
+                throw new FileSystemOperationException( "Archive format was not provided." );
+            } else {
+                throw new FileSystemOperationException( "Archive with format '"
+                                                        + filenameTokens[filenameTokens.length - 1]
+                                                        + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' ." );
+            }
+        }
+        
+    }
+
     // checks if file exists and is a file
     private void checkIfFileExistsAndIsFile(
                                              String filePath ) throws FileNotFoundException {
