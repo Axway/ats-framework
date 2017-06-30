@@ -2468,6 +2468,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * @param outputDirPath output directory. The directory will be created if it does not exist
      * @throws FileSystemOperationException
      */
+    @Deprecated
     @Override
     public void unzip(
                        String zipFilePath,
@@ -2483,7 +2484,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
             while( entries.hasMoreElements() ) {
                 zipEntry = entries.nextElement();
-                log.debug( "Extracting " + zipEntry.getName() );
+                if( log.isDebugEnabled() ) {
+                    log.debug( "Extracting " + zipEntry.getName() );
+                }
                 File entryDestination = new File( outputDirPath, zipEntry.getName() );
 
                 unixPermissions = zipEntry.getUnixMode();
@@ -2516,117 +2519,42 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * Extract GZip file to local or remote machine, if the machine is UNIX-like it will preserve the permissions
+     * Extract archive file to local or remote machine.
+     * Supported file formats are Zip, GZip, TAR and TAR GZip
+     * If the machine is UNIX-like it will preserve the permissions
      *
-     * @param gzipFilePath the gzip file path
+     * @param archiveFilePath the archive file path
      * @param outputDirPath output directory. The directory will be created if it does not exist
      * @throws FileSystemOperationException
      */
     @Override
-    public void gunzip(
-                        String gzipFilePath,
-                        String outputDirPath ) throws FileSystemOperationException {
+    public void extract( String archiveFilePath, String outputDirPath ) throws FileSystemOperationException {
 
-        if( gzipFilePath.endsWith( ".tar.gz" ) ) {
-            gunzipTarGzipFile( gzipFilePath, outputDirPath );
-        } else if( gzipFilePath.endsWith( ".gz" ) ) {
-            gunzipGzipFile( gzipFilePath, outputDirPath );
-        } else if( gzipFilePath.endsWith( ".tar" ) ) {
-            throw new FileSystemOperationException( "Archive with path '" + gzipFilePath
-                                                    + "' seems to be a TAR file. You should use untar() mehod." );
-        } else if( gzipFilePath.endsWith( ".zip" ) ) {
-            throw new FileSystemOperationException( "Archive with path '" + gzipFilePath
-                                                    + "' seems to be a ZIP file. You should use unzip() mehod." );
+        if( archiveFilePath.endsWith( ".zip" ) ) {
+            extractZip( archiveFilePath, outputDirPath );
+        } else if( archiveFilePath.endsWith( ".gz" ) && !archiveFilePath.endsWith( ".tar.gz" ) ) {
+            extractGZip( archiveFilePath, outputDirPath );
+        } else if( archiveFilePath.endsWith( "tar.gz" ) ) {
+            extractTarGZip( archiveFilePath, outputDirPath );
+        } else if( archiveFilePath.endsWith( ".tar" ) ) {
+            extractTar( archiveFilePath, outputDirPath );
         } else {
-            log.info( "File with not expected extension '" + gzipFilePath + "' is passed to gunzip(). "
-                    + "Exception is expected if this is not a true GZip file." );
-            gunzipGzipFile( gzipFilePath, outputDirPath );
+            String[] filenameTokens = IoUtils.getFileName( archiveFilePath ).split( "." );
+            throw new FileSystemOperationException( "Archive with format '"
+                                                    + filenameTokens[filenameTokens.length - 1]
+                                                    + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' ." );
         }
 
     }
 
-    private void gunzipTarGzipFile(
-                                    String gzipFilePath,
-                                    String outputDirPath ) throws FileSystemOperationException {
-
-        TarArchiveEntry entry = null;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream( new GzipCompressorInputStream( new FileInputStream( gzipFilePath ) ) )) {
-            while( ( entry = ( TarArchiveEntry ) tis.getNextEntry() ) != null ) {
-                log.debug( "Extracting " + entry.getName() );
-                File entryDestination = new File( outputDirPath, entry.getName() );
-                if( entry.isDirectory() ) {
-                    entryDestination.mkdirs();
-                } else {
-                    entryDestination.getParentFile().mkdirs();
-                    OutputStream out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
-                    IoUtils.copyStream( tis, out, false, true );
-                }
-                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
-                    // set file/dir permissions, after it is created
-                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getPosixFilePermission( entry.getMode() ) );
-                }
-            }
-        } catch( Exception e ) {
-            String errorMsg = null;
-            if( entry != null ) {
-                errorMsg = "Unable to gunzip " + entry.getName() + " from " + gzipFilePath
-                           + ".Target directory '" + outputDirPath + "' is in inconsistent state.";
-            } else {
-                errorMsg = "Could not read data from " + gzipFilePath;
-            }
-            throw new FileSystemOperationException( errorMsg, e );
-        }
-    }
-
-    private void gunzipGzipFile(
-                                 String gzipFilePath,
-                                 String outputDirPath ) {
-
-        String outputFileName = new File( gzipFilePath ).getName();
-        if(outputFileName.endsWith( ".gz" )){
-            outputFileName = outputFileName.substring( 0, outputFileName.lastIndexOf( ".gz" ) );
-        }
-        String outputFilePath = outputDirPath + File.separator + outputFileName;
-        new File(outputDirPath).mkdirs();
-        InputStream in = null;
-        try {
-            String filePermissions = getFilePermissions( gzipFilePath );
-            in = new GZIPInputStream( new FileInputStream( gzipFilePath ) );
-            BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( outputFilePath ) );
-
-            IoUtils.copyStream( in, out );
-            if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
-                // set file permissions, after it is created
-                this.setFilePermissions( outputFilePath, filePermissions );
-            }
-
-        } catch( Exception e ) {
-            String errorMsg = "Unable to gunzip " + gzipFilePath + ".Target directory '" + outputDirPath
-                              + "' is in inconsistent state.";
-            throw new FileSystemOperationException( errorMsg, e );
-        } finally {
-            IoUtils.closeStream( in ,"Could not close stream for file '" + gzipFilePath +"'");
-        }
-
-    }
-
-    /**
-     * Extract TAR file to local or remote machine. If the machine is UNIX-like it will preserve the permissions
-     *
-     * @param tarFilePath the tar file path
-     * @param outputDirPath output directory. The directory will be created if it does not exist
-     * @throws FileSystemOperationException
-     */
-    @Override
-    public void untar(
-                       String tarFilePath,
-                       String outputDirPath ) throws FileSystemOperationException {
+    private void extractTar( String tarFilePath, String outputDirPath ) {
 
         TarArchiveEntry entry = null;
         try (TarArchiveInputStream tis = new TarArchiveInputStream( new FileInputStream( tarFilePath ) )) {
             while( ( entry = ( TarArchiveEntry ) tis.getNextEntry() ) != null ) {
-                log.debug( "Extracting " + entry.getName() );
+                if( log.isDebugEnabled() ) {
+                    log.debug( "Extracting " + entry.getName() );
+                }
                 File entryDestination = new File( outputDirPath, entry.getName() );
                 if( entry.isDirectory() ) {
                     entryDestination.mkdirs();
@@ -2651,6 +2579,117 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             }
             throw new FileSystemOperationException( errorMsg, e );
         }
+
+    }
+
+    private void extractTarGZip( String tarGzipFilePath, String outputDirPath ) {
+
+        TarArchiveEntry entry = null;
+        try (TarArchiveInputStream tis = new TarArchiveInputStream( new GzipCompressorInputStream( new FileInputStream( tarGzipFilePath ) ) )) {
+            while( ( entry = ( TarArchiveEntry ) tis.getNextEntry() ) != null ) {
+                if( log.isDebugEnabled() ) {
+                    log.debug( "Extracting " + entry.getName() );
+                }
+                File entryDestination = new File( outputDirPath, entry.getName() );
+                if( entry.isDirectory() ) {
+                    entryDestination.mkdirs();
+                } else {
+                    entryDestination.getParentFile().mkdirs();
+                    OutputStream out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
+                    IoUtils.copyStream( tis, out, false, true );
+                }
+                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                    // set file/dir permissions, after it is created
+                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
+                                                   getPosixFilePermission( entry.getMode() ) );
+                }
+            }
+        } catch( Exception e ) {
+            String errorMsg = null;
+            if( entry != null ) {
+                errorMsg = "Unable to gunzip " + entry.getName() + " from " + tarGzipFilePath
+                           + ".Target directory '" + outputDirPath + "' is in inconsistent state.";
+            } else {
+                errorMsg = "Could not read data from " + tarGzipFilePath;
+            }
+            throw new FileSystemOperationException( errorMsg, e );
+        }
+
+    }
+
+    private void extractGZip( String gzipFilePath, String outputDirPath ) {
+
+        String outputFileName = new File( gzipFilePath ).getName();
+        outputFileName = outputFileName.substring( 0, outputFileName.lastIndexOf( ".gz" ) );
+        String outputFilePath = outputDirPath + File.separator + outputFileName;
+        new File( outputDirPath ).mkdirs();
+        InputStream in = null;
+        try {
+            String filePermissions = getFilePermissions( gzipFilePath );
+            in = new GZIPInputStream( new FileInputStream( gzipFilePath ) );
+            BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( outputFilePath ) );
+
+            IoUtils.copyStream( in, out );
+            if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                // set file permissions, after it is created
+                this.setFilePermissions( outputFilePath, filePermissions );
+            }
+
+        } catch( Exception e ) {
+            String errorMsg = "Unable to gunzip " + gzipFilePath + ".Target directory '" + outputDirPath
+                              + "' is in inconsistent state.";
+            throw new FileSystemOperationException( errorMsg, e );
+        } finally {
+            IoUtils.closeStream( in, "Could not close stream for file '" + gzipFilePath + "'" );
+        }
+
+    }
+
+    private void extractZip( String zipFilePath, String outputDirPath ) {
+
+        ZipArchiveEntry zipEntry = null;
+        File outputDir = new File( outputDirPath );
+        outputDir.mkdirs();//check if the dir is created
+
+        try (ZipFile zipFile = new ZipFile( zipFilePath )) {
+            Enumeration<? extends ZipArchiveEntry> entries = zipFile.getEntries();
+            int unixPermissions = 0;
+
+            while( entries.hasMoreElements() ) {
+                zipEntry = entries.nextElement();
+                if( log.isDebugEnabled() ) {
+                    log.debug( "Extracting " + zipEntry.getName() );
+                }
+                File entryDestination = new File( outputDirPath, zipEntry.getName() );
+
+                unixPermissions = zipEntry.getUnixMode();
+                if( zipEntry.isDirectory() ) {
+                    entryDestination.mkdirs();
+                } else {
+                    entryDestination.getParentFile().mkdirs();
+                    InputStream in = null;
+                    OutputStream out = null;
+
+                    in = zipFile.getInputStream( zipEntry );
+                    out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
+
+                    IoUtils.copyStream( in, out );
+                }
+                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                    // set file/dir permissions, after it is created
+                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
+                                                   getPosixFilePermission( unixPermissions ) );
+                }
+            }
+        } catch( Exception e ) {
+            String errorMsg = "Unable to unzip " + ( ( zipEntry != null )
+                                                                          ? zipEntry.getName() + " from "
+                                                                          : "" )
+                              + zipFilePath + ".Target directory '" + outputDirPath
+                              + "' is in inconsistent state.";
+            throw new FileSystemOperationException( errorMsg, e );
+        }
+
     }
 
     private Set<PosixFilePermission> getPosixFilePermission(

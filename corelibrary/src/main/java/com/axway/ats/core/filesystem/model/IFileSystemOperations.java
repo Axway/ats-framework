@@ -213,16 +213,13 @@ public interface IFileSystemOperations {
                                   String fileName,
                                   long fromBytePosition );
 
+    @Deprecated
     public void unzip(
                        String zipFilePath,
                        String outputDirPath ) throws FileSystemOperationException;
     
-    public void gunzip(
-                       String gzipFilePath,
-                       String outputDirPath ) throws FileSystemOperationException;
-
-    public void untar(
-                      String tarFilePath,
-                      String outputDirPath ) throws FileSystemOperationException;
+    public void extract(
+                         String archiveFilePath, 
+                         String outputDirPath ) throws FileSystemOperationException;
 
 }

@@ -381,21 +381,13 @@ public class InternalFileSystemOperations {
         localFSOperations.unzip( zipFilePath, outputDirPath );
     }
     
-    @Action(name = "Internal File System Operations gunzip")
-    public void gunzip(
-                       @Parameter(name = "gzipFilePath" ) String gzipFilePath,
-                       @Parameter(name = "outputDirPath") String outputDirPath) throws Exception {
+    @Action(name = "Internal File System Operations extract")
+    public void extract( @Parameter(name = "archiveFilePath") String archiveFilePath,
+                       @Parameter(name = "outputDirPath") String outputDirPath ) throws Exception {
 
-        localFSOperations.gunzip( gzipFilePath, outputDirPath );
+        localFSOperations.extract( archiveFilePath, outputDirPath );
     }
     
-    @Action(name = "Internal File System Operations untar")
-    public void untar(
-                       @Parameter(name = "tarFilePath" ) String tarFilePath,
-                       @Parameter(name = "outputDirPath") String outputDirPath) throws Exception {
-
-        localFSOperations.untar( tarFilePath, outputDirPath );
-    }
     
     @Action(name = "Internal File System Operations construct destination file path") 
     public String constructDestinationFilePath(

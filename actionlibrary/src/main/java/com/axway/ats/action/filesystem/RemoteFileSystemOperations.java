@@ -794,6 +794,7 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
         }
     }
 
+    @Deprecated
     @Override
     public void unzip( String zipFilePath, String outputDirPath ) throws FileSystemOperationException {
 
@@ -806,29 +807,15 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     }
 
     @Override
-    public void gunzip(
-                       String gzipFilePath,
-                       String outputDirPath ) throws FileSystemOperationException {
+    public void extract( String archiveFilePath, String outputDirPath ) throws FileSystemOperationException {
 
         try {
-            remoteFileSystemOperations.gunzip( gzipFilePath, outputDirPath );
+            remoteFileSystemOperations.extract( archiveFilePath, outputDirPath );
         } catch( Exception e ) {
-            throw new FileSystemOperationException( "Error gunzipping '" + gzipFilePath + "' into '"
+            throw new FileSystemOperationException( "Error while extracting '" + archiveFilePath + "' into '"
                                                     + outputDirPath + "'", e );
         }
-    }
-
-    @Override
-    public void untar(
-                       String tarFilePath,
-                       String outputDirPath ) throws FileSystemOperationException {
-
-        try {
-            remoteFileSystemOperations.untar( tarFilePath, outputDirPath );
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Error untarring '" + tarFilePath + "' into '"
-                                                    + outputDirPath + "'", e );
-        }
+        
     }
 
 }
