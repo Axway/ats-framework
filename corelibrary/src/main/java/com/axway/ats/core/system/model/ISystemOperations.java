@@ -88,6 +88,11 @@ public interface ISystemOperations {
     public ISystemInputOperations getInputOperations();
 
     /**
+     * @return machine hostname
+     */
+    public String getHostname();
+    
+    /**
      * ClassPath list all JARs in current application's ClassPath
      * 
      * @return array of all detected JARs from ClassPath

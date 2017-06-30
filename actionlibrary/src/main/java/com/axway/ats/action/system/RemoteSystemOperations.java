@@ -138,6 +138,16 @@ public class RemoteSystemOperations implements ISystemOperations {
         }
         return inputOperatins;
     }
+    
+    @Override
+    public String getHostname() {
+
+        try {
+            return remoteSystemOperations.getHostname();
+        } catch( AgentException e ) {
+            throw new SystemOperationException( "Could not get Hostname on agent: " + atsAgent, e );
+        }
+    }
 
     @Override
     public String[] getClassPath() {

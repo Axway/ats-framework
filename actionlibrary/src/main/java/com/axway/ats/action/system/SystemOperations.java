@@ -312,6 +312,17 @@ public class SystemOperations {
                 }
         }
     }
+    
+    /**
+     * @return Machine hostname
+     */
+    @PublicAtsApi
+    public String getHostname() {
+
+        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        return operations.getHostname();
+
+    }
 
     private ISystemOperations getOperationsImplementationFor(
                                                               String atsAgent ) {

@@ -278,6 +278,11 @@ public class LocalSystemOperations implements ISystemOperations {
         }
         return inputOperations;
     }
+    
+    public String getHostname(){
+        
+        return HostUtils.getLocalHostName();
+    }
 
     public String[] getClassPath() {
 

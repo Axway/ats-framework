@@ -76,6 +76,12 @@ public class InternalSystemOperations {
 
         return localSystemOperations.createScreenshot( filePath );
     }
+    
+    @Action(name = "Internal System Operations get Hostname")
+    public String getHostname(){
+        
+        return localSystemOperations.getHostname();
+    }
 
     @Action(name = "Internal System Operations get Class Path")
     public String[] getClassPath() {
