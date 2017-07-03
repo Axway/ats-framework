@@ -241,11 +241,13 @@ public class DbConnOracle extends DbConnection {
                             this.customProperties.get(OracleKeys.KEY_STORE_PASSWORD).toString());
                     dataSource.setConnectionProperties(sslConnectionProperties);
                 } else {
-                    log.warn( "Could not prepare secure connection to Oracle DB "
-                            + "because not all custom properties starting as DbConnection.KEY_STORE_XXX are set!" );
-
-                    Certificate[] certs = SslUtils.getCertificatesFromSocket(host, String.valueOf(port));
-                    dataSource.setConnectionProperties(SslUtils.createKeyStore(certs[0], this.host, this.db, "", "", ""));
+                    log.info( "Not all custom properties starting as DbConnection.KEY_STORE_XXX are set. We will try to prepare a default secure connection to Oracle DB" );
+                    try{
+                        Certificate[] certs = SslUtils.getCertificatesFromSocket(host, String.valueOf(port));
+                        dataSource.setConnectionProperties(SslUtils.createKeyStore(certs[0], this.host, this.db, "", "", ""));
+                    } catch (Exception e) {
+                        throw new DbException( "Secure connection to Oracle DB could not be prepared due to failure in creating default certificate.", e );
+                    }
                 }
             }
 
