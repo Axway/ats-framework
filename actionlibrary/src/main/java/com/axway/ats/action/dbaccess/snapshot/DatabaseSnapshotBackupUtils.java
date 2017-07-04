@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipColumns;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipContent;
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipIndexAttributes;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipRows;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
@@ -122,6 +123,11 @@ class DatabaseSnapshotBackupUtils {
         // append any skip table column rules
         for( SkipColumns skipColumns : snapshot.skipColumnsPerTable.values() ) {
             skipColumns.toXmlNode( doc, dbNode );
+        }
+
+        // append any skip index attribute rules
+        for( SkipIndexAttributes skipIndexAttributes : snapshot.skipIndexAttributesPerTable.values() ) {
+            skipIndexAttributes.toXmlNode( doc, dbNode );
         }
 
         // append any skip table row rules
@@ -218,6 +224,16 @@ class DatabaseSnapshotBackupUtils {
         for( Element skipColumnNode : skipColumnNodes ) {
             SkipColumns skipColumns = SkipColumns.fromXmlNode( skipColumnNode );
             snapshot.skipColumnsPerTable.put( skipColumns.getTable().toLowerCase(), skipColumns );
+        }
+        
+        // any skip index attribute rules
+        snapshot.skipIndexAttributesPerTable.clear();
+        List<Element> skipIndexAttributesNodes = DatabaseSnapshotUtils.getChildrenByTagName( databaseNode,
+                                                                                             DatabaseSnapshotUtils.NODE_SKIP_INDEX_ATTRIBUTES );
+        for( Element skipIndexAttributesNode : skipIndexAttributesNodes ) {
+            SkipIndexAttributes skipIndexAttributes = SkipIndexAttributes.fromXmlNode( skipIndexAttributesNode );
+            snapshot.skipIndexAttributesPerTable.put( skipIndexAttributes.getTable().toLowerCase(),
+                                                      skipIndexAttributes );
         }
 
         // any skip table row rules

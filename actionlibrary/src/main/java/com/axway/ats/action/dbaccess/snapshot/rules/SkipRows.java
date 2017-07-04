@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 
 /**
- * Defines some table rows to be skipped
+ * Defines some rows to be skipped per table
  */
 public class SkipRows extends SkipRule {
 
@@ -47,20 +47,6 @@ public class SkipRows extends SkipRule {
         this( table );
 
         this.skipExpressions.put( column, value );
-    }
-
-    public static SkipRows fromXmlNode( Element skipRowsNode ) {
-
-        SkipRows skipRows = new SkipRows( skipRowsNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME ) );
-
-        List<Element> expressionNodes = DatabaseSnapshotUtils.getChildrenByTagName( skipRowsNode,
-                                                                                    "expression" );
-        for( Element expressionNode : expressionNodes ) {
-            skipRows.skipExpressions.put( expressionNode.getAttribute( "column" ),
-                                          expressionNode.getAttribute( "value" ) );
-        }
-
-        return skipRows;
     }
 
     public void addRowToSkip( String column, String value ) {
@@ -113,18 +99,20 @@ public class SkipRows extends SkipRule {
         return false;
     }
 
-    @Override
-    public String toString() {
+    public static SkipRows fromXmlNode( Element skipRowsNode ) {
 
-        StringBuilder sb = new StringBuilder( "Table " + table + ": " );
+        SkipRows skipRows = new SkipRows( skipRowsNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME ) );
 
-        for( String column : skipExpressions.keySet() ) {
-            sb.append( "\nskip row where '" + column + "' matches '" + skipExpressions.get( column ) + "'" );
+        List<Element> expressionNodes = DatabaseSnapshotUtils.getChildrenByTagName( skipRowsNode,
+                                                                                    "expression" );
+        for( Element expressionNode : expressionNodes ) {
+            skipRows.skipExpressions.put( expressionNode.getAttribute( "column" ),
+                                          expressionNode.getAttribute( "value" ) );
         }
 
-        return sb.toString();
+        return skipRows;
     }
-
+    
     public void toXmlNode( Document dom, Element parentNode ) {
 
         Element skipRowsNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_ROWS );
@@ -138,5 +126,17 @@ public class SkipRows extends SkipRule {
             expressionNode.setAttribute( "value", skipExpressions.get( column ) );
             skipRowsNode.appendChild( expressionNode );
         }
+    }
+    
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder( "Table " + table + ": " );
+
+        for( String column : skipExpressions.keySet() ) {
+            sb.append( "\nskip row where '" + column + "' matches '" + skipExpressions.get( column ) + "'" );
+        }
+
+        return sb.toString();
     }
 }

@@ -26,32 +26,33 @@ import org.w3c.dom.Node;
 
 public class DatabaseSnapshotUtils {
 
-    private static final SimpleDateFormat DATE_FORMAT              = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSSZ" );
+    private static final SimpleDateFormat DATE_FORMAT                = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSSZ" );
 
     // XML nodes used when saving/loading snapshots from files
-    public static final String            NODE_DB_SNAPSHOT         = "DB_SNAPSHOT";
-    public static final String            ATTR_SNAPSHOT_NAME       = "name";
-    public static final String            ATTR_METADATA_TIME       = "metadata_timestamp";
-    public static final String            ATTR_CONTENT_TIME        = "content_timestamp";
+    public static final String            NODE_DB_SNAPSHOT           = "DB_SNAPSHOT";
+    public static final String            ATTR_SNAPSHOT_NAME         = "name";
+    public static final String            ATTR_METADATA_TIME         = "metadata_timestamp";
+    public static final String            ATTR_CONTENT_TIME          = "content_timestamp";
 
-    public static final String            NODE_TABLE               = "TABLE";
-    public static final String            ATTR_TABLE_NAME          = "name";
-    public static final String            ATTR_TABLE_PRIMARY_KEY   = "primaryKey";
-    public static final String            ATTR_TABLE_NUMBER_ROWS   = "numberRows";
+    public static final String            NODE_TABLE                 = "TABLE";
+    public static final String            ATTR_TABLE_NAME            = "name";
+    public static final String            ATTR_TABLE_PRIMARY_KEY     = "primaryKey";
+    public static final String            ATTR_TABLE_NUMBER_ROWS     = "numberRows";
 
-    public static final String            NODE_SKIP_CONTENT        = "SKIP_CONTENT";
-    public static final String            NODE_SKIP_COLUMNS        = "SKIP_COLUMNS";
-    public static final String            NODE_SKIP_ROWS           = "SKIP_ROWS";
-    public static final String            ATT_SKIP_RULE_TABLE      = "table";
+    public static final String            NODE_SKIP_CONTENT          = "SKIP_CONTENT";
+    public static final String            NODE_SKIP_COLUMNS          = "SKIP_COLUMNS";
+    public static final String            NODE_SKIP_ROWS             = "SKIP_ROWS";
+    public static final String            NODE_SKIP_INDEX_ATTRIBUTES = "SKIP_INDEX_ATTRIBUTES";
+    public static final String            ATT_SKIP_RULE_TABLE        = "table";
 
-    public static final String            NODE_COLUMN_DESCRIPTIONS = "column_descriptions";
-    public static final String            NODE_COLUMN_DESCRIPTION  = "column_description";
+    public static final String            NODE_COLUMN_DESCRIPTIONS   = "column_descriptions";
+    public static final String            NODE_COLUMN_DESCRIPTION    = "column_description";
 
-    public static final String            NODE_INDEXES             = "indexes";
-    public static final String            NODE_INDEX               = "index";
-    public static final String            ATTR_NODE_INDEX_NAME     = "name";
+    public static final String            NODE_INDEXES               = "indexes";
+    public static final String            NODE_INDEX                 = "index";
+    public static final String            ATTR_NODE_INDEX_NAME       = "name";
 
-    public static final String            NODE_ROW                 = "row";
+    public static final String            NODE_ROW                   = "row";
 
     public static String dateToString(
                                        long timeInMillis ) {

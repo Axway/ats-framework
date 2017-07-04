@@ -130,6 +130,7 @@ public class MysqlDbProvider extends AbstractDbProvider {
         Map<String, String> indexes = new HashMap<>();
         for( DbRecordValuesList valueList : select( sql ) ) {
             StringBuilder info = new StringBuilder();
+            boolean firstTime = true;
             for( DbRecordValue dbValue : valueList ) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
@@ -137,6 +138,12 @@ public class MysqlDbProvider extends AbstractDbProvider {
                     indexName = value;
                 } else {
                     info.append( ", " + name + "=" + value );
+                    if( firstTime ) {
+                        firstTime = false;
+                        info.append( name + "=" + value );
+                    } else {
+                        info.append( ", " + name + "=" + value );
+                    }
                 }
             }
 

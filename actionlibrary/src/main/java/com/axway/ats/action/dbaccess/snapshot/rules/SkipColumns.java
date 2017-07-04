@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 
 /**
- * Defines some table columns to be skipped
+ * Defines some columns to be skipped per table
  */
 public class SkipColumns extends SkipRule {
 
@@ -47,18 +47,6 @@ public class SkipColumns extends SkipRule {
         for( String column : columnsToSkip ) {
             this.columnsToSkip.add( column );
         }
-    }
-
-    public static SkipColumns fromXmlNode( Element skipColumnNode ) {
-
-        SkipColumns skipColumns = new SkipColumns( skipColumnNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME ) );
-
-        List<Element> columnNodes = DatabaseSnapshotUtils.getChildrenByTagName( skipColumnNode, "column" );
-        for( Element columnNode : columnNodes ) {
-            skipColumns.columnsToSkip.add( columnNode.getTextContent() );
-        }
-
-        return skipColumns;
     }
 
     /**
@@ -97,6 +85,32 @@ public class SkipColumns extends SkipRule {
         return columnsToSkip;
     }
 
+    public static SkipColumns fromXmlNode( Element skipColumnNode ) {
+
+        SkipColumns skipColumns = new SkipColumns( skipColumnNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME ) );
+
+        List<Element> columnNodes = DatabaseSnapshotUtils.getChildrenByTagName( skipColumnNode, "column" );
+        for( Element columnNode : columnNodes ) {
+            skipColumns.columnsToSkip.add( columnNode.getTextContent() );
+        }
+
+        return skipColumns;
+    }
+
+    public void toXmlNode( Document dom, Element parentNode ) {
+
+        Element skipColumnsNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_COLUMNS );
+        parentNode.appendChild( skipColumnsNode );
+        skipColumnsNode.setAttribute( "table", table );
+
+        // append columns to skip
+        for( String column : columnsToSkip ) {
+            Element columnNode = dom.createElement( "column" );
+            columnNode.setTextContent( column );
+            skipColumnsNode.appendChild( columnNode );
+        }
+    }
+
     @Override
     public String toString() {
 
@@ -113,19 +127,5 @@ public class SkipColumns extends SkipRule {
         }
 
         return sb.toString();
-    }
-
-    public void toXmlNode( Document dom, Element parentNode ) {
-
-        Element skipColumnsNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_COLUMNS );
-        parentNode.appendChild( skipColumnsNode );
-        skipColumnsNode.setAttribute( "table", table );
-
-        // append columns to skip
-        for( String column : columnsToSkip ) {
-            Element columnNode = dom.createElement( "column" );
-            columnNode.setTextContent( column );
-            skipColumnsNode.appendChild( columnNode );
-        }
     }
 }

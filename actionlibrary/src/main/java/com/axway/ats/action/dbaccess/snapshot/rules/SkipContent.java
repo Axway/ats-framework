@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 
 /**
- * Defines if the table content is to be skipped.
+ * Defines if the content to be skipped per table
  */
 public class SkipContent extends SkipRule {
 
@@ -35,12 +35,6 @@ public class SkipContent extends SkipRule {
         this.rememberNumberOfRows = rememberNumberOfRows;
     }
 
-    public static SkipContent fromXmlNode( Element skipContentNode ) {
-
-        return new SkipContent( skipContentNode.getAttribute( "table" ),
-                                Boolean.parseBoolean( skipContentNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS ) ) );
-    }
-
     public boolean isRememberNumberOfRows() {
 
         return rememberNumberOfRows;
@@ -49,6 +43,21 @@ public class SkipContent extends SkipRule {
     public void setRememberNumberOfRows( boolean rememberNumberOfRows ) {
 
         this.rememberNumberOfRows = rememberNumberOfRows;
+    }
+
+    public static SkipContent fromXmlNode( Element skipContentNode ) {
+
+        return new SkipContent( skipContentNode.getAttribute( "table" ),
+                                Boolean.parseBoolean( skipContentNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS ) ) );
+    }
+
+    public void toXmlNode( Document dom, Element parentNode ) {
+
+        Element skipContentNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_CONTENT );
+        parentNode.appendChild( skipContentNode );
+        skipContentNode.setAttribute( "table", table );
+        skipContentNode.setAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS,
+                                      String.valueOf( rememberNumberOfRows ) );
     }
 
     @Override
@@ -65,12 +74,4 @@ public class SkipContent extends SkipRule {
         return sb.toString();
     }
 
-    public void toXmlNode( Document dom, Element parentNode ) {
-
-        Element skipContentNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_CONTENT );
-        parentNode.appendChild( skipContentNode );
-        skipContentNode.setAttribute( "table", table );
-        skipContentNode.setAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS,
-                                      String.valueOf( rememberNumberOfRows ) );
-    }
 }

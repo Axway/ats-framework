@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipColumns;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipContent;
+import com.axway.ats.action.dbaccess.snapshot.rules.SkipIndexAttributes;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipRows;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
@@ -85,6 +86,9 @@ public class DatabaseSnapshot {
     // specifies which table rows to be skipped
     // MAP< table name(in lower case) , rows to skip >
     Map<String, SkipRows>         skipRowsPerTable    = new HashMap<>();
+    
+    // MAP< table name(in lower case) , index attributes to skip >
+    Map<String, SkipIndexAttributes> skipIndexAttributesPerTable = new HashMap<>();
 
     //  An interface which tells whether some table index names should be treated as same or not
     private IndexNameMatcher      indexNameMatcher;
@@ -215,6 +219,24 @@ public class DatabaseSnapshot {
     }
 
     /**
+     * Allows skipping attributes of some index of some table
+     * 
+     * @param table the table
+     * @param index the index
+     * @param attribute the index attribute name
+     */
+    @PublicAtsApi
+    public void skipIndexAttributes( String table, String index, String attribute ) {
+
+        SkipIndexAttributes skipIndexAttributes = this.skipIndexAttributesPerTable.get( table.toLowerCase() );
+        if( skipIndexAttributes == null ) {
+            skipIndexAttributes = new SkipIndexAttributes( table.toLowerCase() );
+            this.skipIndexAttributesPerTable.put( table.toLowerCase(), skipIndexAttributes );
+        }
+        skipIndexAttributes.setAttributeToSkip( index.toLowerCase(), attribute );
+    }
+
+    /**
      * Provide instance of this interface which will define 
      * whether some table index names should be treated as same or not.</br></br>
      * 
@@ -301,6 +323,9 @@ public class DatabaseSnapshot {
                 }
             }
         }
+        
+        // we have loaded all index info, strip some if needed
+        stripIndexAttributes( tables );
 
         for( TableDescription table : tables ) {
             table.setSnapshotName( this.name );
@@ -669,6 +694,63 @@ public class DatabaseSnapshot {
         }
 
         return allSkipContentPerTable;
+    }
+
+    /**
+     * After we have loaded all table indexes, here we remove the not wanted attributes.
+     * 
+     * The cleaner way would be to not even load all the not wanted attributes, but in such case
+     * we would have to pass all those attributes down to all DB provided implementations.
+     * 
+     * @param tables
+     */
+    private void stripIndexAttributes( List<TableDescription> tables ) {
+
+        // cycle all tables
+        for( TableDescription table : tables ) {
+            SkipIndexAttributes skipIndexAttributes = this.skipIndexAttributesPerTable.get( table.getName()
+                                                                                                 .toLowerCase() );
+            if( skipIndexAttributes != null ) {
+                // there is some index attribute to be skipped for this table
+                // cycle all indexes of this table
+                Map<String, String> indexes = table.getIndexes();
+                for( String indexName : indexes.keySet() ) {
+                    List<String> attributes = skipIndexAttributes.getAttributesToSkip( indexName.toLowerCase() );
+                    if( attributes != null ) {
+                        // there is some attribute to be skipped for this index
+                        // split the index description string into tokens of attributes
+                        String indexDescription = indexes.get( indexName );
+                        String[] tokens = indexDescription.split( "," );
+                        indexDescription = ""; // we will update the index description without the stripped attributes
+                        boolean firstTime = true;
+                        for( String token : tokens ) {
+                            if( !StringUtils.isNullOrEmpty( token ) ) {
+
+                                boolean attributeFound = false;
+                                for( String attribute : attributes ) {
+                                    if( token.trim()
+                                             .toLowerCase()
+                                             .startsWith( attribute.toLowerCase() + "=" ) ) {
+                                        attributeFound = true;
+                                        break;
+                                    }
+                                }
+
+                                if( !attributeFound ) {
+                                    if( firstTime ) {
+                                        firstTime = false;
+                                        indexDescription += token.trim();
+                                    } else {
+                                        indexDescription += ", " + token.trim();
+                                    }
+                                }
+                            }
+                        }
+                        indexes.put( indexName, indexDescription );
+                    }
+                }
+            }
+        }
     }
 
     private List<String> getCommonTables( String thisSnapshotName, List<TableDescription> thisTables,
