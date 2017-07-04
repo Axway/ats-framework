@@ -37,6 +37,19 @@ public class StartSuiteEvent extends AbstractLoggingEvent {
         this.suiteName = suiteName;
         this.packageName = packageName;
     }
+    
+    public StartSuiteEvent( String loggerFQCN,
+                            Logger logger,
+                            String message,
+                            String suiteName,
+                            String packageName,
+                            LoggingEventType loggingEventType ) {
+
+        super( loggerFQCN, logger, message, loggingEventType );
+
+        this.suiteName = suiteName;
+        this.packageName = packageName;
+    }
 
     public String getSuiteName() {
 

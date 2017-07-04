@@ -203,6 +203,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * @param buildName
      * @param userNote
      * @param hostName
+     * @param closeConnection
      * @throws DatabaseAccessException
      */
     public void updateRun(
@@ -386,6 +387,52 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                 DbUtils.closeStatement( callableStatement );
             }
         }
+    }
+    
+    /**
+     * Update the static information about an existing suite
+     *
+     * @param suiteId
+     * @param suiteName
+     * @param userNote
+     * @param closeConnection
+     * @throws DatabaseAccessException
+     */
+    @Override
+    public void updateSuite(
+                             int suiteId,
+                             String suiteName,
+                             String userNote,
+                             boolean closeConnection ) throws DatabaseAccessException {
+
+        final String errMsg = "Unable to update suite with name '" + suiteName + "' and id " + suiteId;
+
+        final int indexRowsUpdate = 4;
+
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
+
+            callableStatement = connection.prepareCall( "{ call sp_update_suite(?, ?, ?, ?) }" );
+            callableStatement.setInt( 1, suiteId );
+            callableStatement.setString( 2, suiteName );
+            callableStatement.setString( 3, userNote );
+            callableStatement.registerOutParameter( indexRowsUpdate, Types.INTEGER );
+
+            callableStatement.execute();
+            if( callableStatement.getInt( indexRowsUpdate ) != 1 ) {
+                throw new DatabaseAccessException( errMsg );
+            }
+        } catch( Exception e ) {
+            throw new DatabaseAccessException( errMsg, e );
+        } finally {
+            if( closeConnection ) {
+                DbUtils.close( connection, callableStatement );
+            } else {
+                DbUtils.closeStatement( callableStatement );
+            }
+        }
+        
     }
 
     /**

@@ -125,6 +125,15 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                                                 expectedState,
                                                                 actualState );
                 }
+            } else if( expectedState == LifeCycleState.ATLEAST_SUITE_STARTED ) {
+                if( actualState == LifeCycleState.INITIALIZED
+                    || actualState == LifeCycleState.ATLEAST_RUN_STARTED
+                    || actualState == LifeCycleState.RUN_STARTED ) {
+                    throw new IncorrectProcessorStateException( "Cannot execute event "
+                                                                + this.getClass().getSimpleName()
+                                                                + " at this time as suite is not yet started",
+                                                                expectedState, actualState );
+                }
             }
             // strict expectations about the state
             else if( expectedState != actualState ) {

@@ -48,6 +48,7 @@ import com.axway.ats.log.autodb.events.StartRunEvent;
 import com.axway.ats.log.autodb.events.StartSuiteEvent;
 import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.events.UpdateRunEvent;
+import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
 
 /**
  * The class which wraps the log4j Logger and adds all custom functionality
@@ -297,6 +298,23 @@ public class AutoLogger {
     public void endSuite() {
 
         sendEvent( new EndSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+    }
+    
+    /**
+     * Update the static information about the current suite.
+     * <br><b>NOTE</b>: This method can be called at any time after a suite is started.
+     *
+     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     *
+     * @param suiteName name of the suite
+     * @param userNote user note of the suite
+     */
+    public void updateSuite(
+                             String suiteName,
+                             String userNote ) {
+
+        sendEvent( new UpdateSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger, suiteName, userNote ) );
+
     }
 
     /**

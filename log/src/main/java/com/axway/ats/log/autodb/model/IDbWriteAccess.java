@@ -76,6 +76,18 @@ public interface IDbWriteAccess {
     public void endSuite( long timestamp, int suiteId,
                           boolean closeConnection ) throws DatabaseAccessException;
 
+    /**
+     * Update the static information about an existing suite
+     *
+     * @param suiteId
+     * @param suiteName
+     * @param userNote
+     * @param closeConnection
+     * @throws DatabaseAccessException
+     */
+    public void updateSuite( int suiteId, String suiteName, String userNote,
+                             boolean closeConnection ) throws DatabaseAccessException;
+
     public void addScenarioMetainfo( int scenarioId, String metaKey, String metaValue,
                                      boolean closeConnection ) throws DatabaseAccessException;
 
@@ -118,10 +130,10 @@ public interface IDbWriteAccess {
     public void insertSystemStatistics( int testCaseId, String machine, String statisticIds,
                                         String statisticValues, long timestamp,
                                         boolean closeConnection ) throws DatabaseAccessException;
-    
+
     public void insertUserActivityStatistics( int testCaseId, String machine, String statisticIds,
-            String statisticValues, long timestamp,
-            boolean closeConnection ) throws DatabaseAccessException;
+                                              String statisticValues, long timestamp,
+                                              boolean closeConnection ) throws DatabaseAccessException;
 
     public int populateSystemStatisticDefinition( String name, String parentName, String internalName,
                                                   String unit, String params ) throws DatabaseAccessException;

@@ -44,7 +44,12 @@ public enum LifeCycleState {
      * 
      */
     ATLEAST_RUN_STARTED,
-
+    
+    /**
+     * 
+     */
+    ATLEAST_SUITE_STARTED,
+    
     /**
      * 
      */

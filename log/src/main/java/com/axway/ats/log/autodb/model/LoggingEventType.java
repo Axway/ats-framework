@@ -49,6 +49,11 @@ public enum LoggingEventType {
      * End a suite
      */
     END_SUITE,
+    
+    /**
+     * Update a suite
+     */
+    UPDATE_SUITE,
 
     /**
      * Clear scenario meta info
