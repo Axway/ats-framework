@@ -241,6 +241,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             } else if( dbAppenderEvent instanceof UpdateRunEvent ) {
                 try {
                     dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
+                    pendingUpdateRunEvent = ( UpdateRunEvent ) dbAppenderEvent;
                 } catch( IncorrectProcessorStateException e ) {
                     /* Run not started yet, 
                      * so save the current event as pending 
@@ -262,9 +263,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             switch( dbAppenderEvent.getEventType() ){
                 case START_RUN:
                     startRun( ( StartRunEvent ) event, eventRequest.getTimestamp() );
+                    /*
+                     * If update run event is received, apply it every time run is started.
+                     * This is workaround for case when nested runs are executed,
+                     * e.g. the suite XML file contains other suite XML files
+                     * */
                     if( pendingUpdateRunEvent != null ) {
                         updateRun( pendingUpdateRunEvent );
-                        pendingUpdateRunEvent = null;
                     }
                     break;
                 case END_RUN:
