@@ -45,9 +45,6 @@ public class UpdateSuiteEvent extends StartSuiteEvent {
         return this.userNote;
     }
 
-    /* (non-Javadoc)
-     * @see com.tumbleweed.automation.log.autodb.model.AbstractLoggingEvent#getExpectedLifeCycleState()
-     */
     @Override
     protected LifeCycleState getExpectedLifeCycleState(
                                                         LifeCycleState event ) {
