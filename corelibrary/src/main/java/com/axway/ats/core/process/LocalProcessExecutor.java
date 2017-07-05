@@ -500,14 +500,6 @@ public class LocalProcessExecutor implements IProcessExecutor {
         }
 
         /**
-         * The parent thread informs the external process is over
-         */
-        void setExternalProcessIsOver() {
-
-            countdownLatchForExternalProcessCompletion.countDown();
-        }
-
-        /**
          * @return whether the external process is over
          */
         private boolean isExternalProcessOver() {
@@ -526,80 +518,79 @@ public class LocalProcessExecutor implements IProcessExecutor {
         @Override
         public void run() {
 
-                ThreadsPerCaller.registerThread( caller );
+            ThreadsPerCaller.registerThread( caller );
 
-                BufferedReader bufReaderStream = null;
-                try {
-                    String line = null;
-                    String dataToLeave = null;
-                    bufReaderStream = new BufferedReader( new InputStreamReader( is ) );
-                    
-                    while( true ) {
+            BufferedReader bufReaderStream = null;
+            try {
+                String line = null;
+                String dataToLeave = null;
+                bufReaderStream = new BufferedReader( new InputStreamReader( is ) );
 
-                        // wait for data available in the stream we are attached to
-                        // or exit if the external process is over
-                        while( !bufReaderStream.ready() ) {
-                            // no bytes available to read
+                while( true ) {
 
-                            if( isExternalProcessOver() ) {
-                                // the external process is over, exit this thread
-                                log.debug( "External process is over, stop reading its stream for " + type ); // STANDARD or ERROR OUTPUT
-                                return;
-                            } else {
-                                /*
-                                 * We sleep here for some time before cycle again.
-                                 *      If sleep time is too short - too often we will get exceptions when asking for the exit code a few lines above.
-                                 *      If sleep time is too long - it may take a long after external process is over and the moment we exit this thread.
-                                 */
-                                try {
-                                    Thread.sleep( 500 );
-                                } catch( InterruptedException ee ) {
-                                    // continue with next iteration
-                                }
+                    // wait for data available in the stream we are attached to
+                    // or exit if the external process is over
+                    while( !bufReaderStream.ready() ) {
+                        // no bytes available to read
+
+                        if( isExternalProcessOver() ) {
+                            // the external process is over, exit this thread
+                            log.debug( "External process is over, stop reading its stream for " + type ); // STANDARD or ERROR OUTPUT
+                            return;
+                        } else {
+                            /*
+                             * We sleep here for some time before cycle again.
+                             *      If sleep time is too short - too often we will get exceptions when asking for the exit code a few lines above.
+                             *      If sleep time is too long - it may take a long after external process is over and the moment we exit this thread.
+                             */
+                            try {
+                                Thread.sleep( 500 );
+                            } catch( InterruptedException ee ) {
+                                // continue with next iteration
                             }
                         }
-                        
-                        // read next line from the stream we are attached to
-                        // it cannot return null as we know there is data available
-                        // This call potentially could block if there are chars available but CR/LF could not be there yet
-                        line = bufReaderStream.readLine();
-
-                        // append to internal content buffer
-                        // limit buffer to about MAX_STRING_SIZE + current line length
-                        if( this.content.length() > MAX_STRING_SIZE ) {
-                            dataToLeave = this.content.substring( this.content.length() - MAX_STRING_SIZE );
-                            this.content.setLength( MAX_STRING_SIZE );
-                            this.content.replace( 0, SKIPPED_CHARACTERS_LENGTH, SKIPPED_CHARACTERS );
-                            this.content.replace( SKIPPED_CHARACTERS_LENGTH,
-                                              dataToLeave.length() + SKIPPED_CHARACTERS_LENGTH, dataToLeave );
-                        }
-                        this.content.append( line );
-                        this.content.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-
-                        // send to the logging system
-                        if( this.logOutput ) {
-                            log.debug( line );
-                        }
-
-                        // append to some file
-                        if( this.bufWriterStream != null ) {
-                            this.bufWriterStream.write( line );
-                            this.bufWriterStream.newLine();
-                            this.bufWriterStream.flush();
-                        }
                     }
-                } catch( IOException ioe ) {
-                    log.error( "Error working with the process output", ioe );
-                } finally {
-                    // release the file handles
-                    IoUtils.closeStream( this.bufWriterStream );
-                    IoUtils.closeStream( bufReaderStream );
 
-                ThreadsPerCaller.unregisterThread();
+                    // read next line from the stream we are attached to
+                    // it cannot return null as we know there is data available
+                    // This call potentially could block if there are chars available but CR/LF could not be there yet
+                    line = bufReaderStream.readLine();
+
+                    // append to internal content buffer
+                    // limit buffer to about MAX_STRING_SIZE + current line length
+                    if( this.content.length() > MAX_STRING_SIZE ) {
+                        dataToLeave = this.content.substring( this.content.length() - MAX_STRING_SIZE );
+                        this.content.setLength( MAX_STRING_SIZE );
+                        this.content.replace( 0, SKIPPED_CHARACTERS_LENGTH, SKIPPED_CHARACTERS );
+                        this.content.replace( SKIPPED_CHARACTERS_LENGTH,
+                                              dataToLeave.length() + SKIPPED_CHARACTERS_LENGTH, dataToLeave );
+                    }
+                    this.content.append( line );
+                    this.content.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+
+                    // send to the logging system
+                    if( this.logOutput ) {
+                        log.debug( line );
+                    }
+
+                    // append to some file
+                    if( this.bufWriterStream != null ) {
+                        this.bufWriterStream.write( line );
+                        this.bufWriterStream.newLine();
+                        this.bufWriterStream.flush();
+                    }
+                }
+            } catch( IOException ioe ) {
+                log.error( "Error working with the process output", ioe );
+            } finally {
+                // release the file handles
+                IoUtils.closeStream( this.bufWriterStream );
+                IoUtils.closeStream( bufReaderStream );
 
                 countdownLatchForExternalProcessCompletion.countDown();
-                }
+                ThreadsPerCaller.unregisterThread();
             }
+        }
 
         boolean isStreamFullyRead() {
 
