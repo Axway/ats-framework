@@ -1612,7 +1612,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     /**
      * The events cache processor
      */
-    class DbEventsCache {
+    protected class DbEventsCache {
 
         private static final int  MAX_EVENTS                     = 2000;
         private static final long MAX_CACHE_AGE                  = 10 * 1000; // 10 seconds
@@ -1656,8 +1656,12 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             numberCachedTestcaseMessages = 0;
             numberCachedCheckpoints = 0;
         }
+        
+        public Connection getConnection(){
+            return this.connection;
+        }
 
-        private boolean addInsertRunMessageEventToBatch(
+        public boolean addInsertRunMessageEventToBatch(
                                                          CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
             if( this.insertRunMessageStatement == null ) {
@@ -1675,7 +1679,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             return flushCacheIfNeeded();
         }
 
-        private boolean addInsertSuiteMessageEventToBatch(
+        public boolean addInsertSuiteMessageEventToBatch(
                                                            CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
             if( this.insertSuiteMessageStatement == null ) {
@@ -1694,7 +1698,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             return flushCacheIfNeeded();
         }
 
-        private boolean addInsertTestcaseMessageEventToBatch(
+        public boolean addInsertTestcaseMessageEventToBatch(
                                                               CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
             if( this.insertTestcaseMessageStatement == null ) {
@@ -1741,7 +1745,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        private void flushCache() throws DatabaseAccessException {
+        public void flushCache() throws DatabaseAccessException {
 
             if( numberCachedRunMessages + numberCachedSuiteMessages + numberCachedTestcaseMessages
                 + numberCachedCheckpoints == 0 ) {
@@ -2054,7 +2058,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     /**
      * Provides the event statements
      */
-    class InsertEventStatementsFactory {
+    protected class InsertEventStatementsFactory {
 
         private boolean             isBatchMode;
 
@@ -2068,12 +2072,12 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?, ?) }";
         private static final String SP_INSERT_CHECKPOINT       = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
-        InsertEventStatementsFactory( boolean isBatchMode ) {
+        public InsertEventStatementsFactory( boolean isBatchMode ) {
 
             this.isBatchMode = isBatchMode;
         }
 
-        CallableStatement getInsertTestcaseMessageStatement(
+        public CallableStatement getInsertTestcaseMessageStatement(
                                                              Connection connection,
                                                              String message,
                                                              int level,
@@ -2119,7 +2123,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        CallableStatement getInsertRunMessageStatement(
+        public CallableStatement getInsertRunMessageStatement(
                                                         Connection connection,
                                                         String message,
                                                         int level,
@@ -2165,7 +2169,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        CallableStatement getInsertSuiteMessageStatement(
+        public CallableStatement getInsertSuiteMessageStatement(
                                                           Connection connection,
                                                           String message,
                                                           int level,
