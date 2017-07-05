@@ -126,18 +126,16 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private List<Integer>                 deletedTestcases        = new ArrayList<Integer>();
 
     /**
-     * Due to some limitations in receiving events from TestNG,
-     * trying to update suite in methods with annotation @BeforeClass or @BeforeTest,
-     * will result in an exception thrown, because by the time TestNG executed the code in those methods,
-     * the event processor state is RUN_STARTED (e.g suite is not yet started)
-     * So the last UpdateSuiteEvent, before starting a suite will be saved and fired right after the first suite is created
+     * Due to specifics in firing test harness events, 
+     * it is possible to receive a "update suite event" before a suite is actually started. 
+     * For such case we keep this event here and execute it right after having a suite started.
      * */
     private UpdateSuiteEvent              pendingUpdateSuiteEvent = null;
 
     /**
-     * If the logic to updateRun is executed in a static block,
-     * run won't be yet started and it will be impossible to update a run,
-     * so by saving the UpdateRunEvent, ATS can fire it right after run was started.
+     * Due to specifics in firing test harness events, 
+     * it is possible to receive a "update suite event" before a suite is actually started. 
+     * For such case we keep this event here and execute it right after having a suite started.
      * */
     private UpdateRunEvent                pendingUpdateRunEvent   = null;
 
@@ -228,7 +226,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         LoggingEvent event = eventRequest.getEvent();
         if( event instanceof AbstractLoggingEvent ) {
             AbstractLoggingEvent dbAppenderEvent = ( AbstractLoggingEvent ) event;
-
+            //first check if we can process the event at all
             if( dbAppenderEvent instanceof UpdateSuiteEvent ) {
                 try {
                     dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
@@ -252,7 +250,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     return;
                 }
             } else {
-                //first check if we can process the event at all
                 dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
             }
 
