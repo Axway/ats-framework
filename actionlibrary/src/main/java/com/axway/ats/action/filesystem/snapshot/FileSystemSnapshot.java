@@ -403,6 +403,7 @@ public class FileSystemSnapshot {
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param key a token used to match a key
          */
+        @PublicAtsApi
         public void skipPropertyByKeyEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                  String key ) {
 
@@ -418,6 +419,7 @@ public class FileSystemSnapshot {
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param key a token used to match a key
          */
+        @PublicAtsApi
         public void skipPropertyByKeyContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                      String key ) {
 
@@ -433,6 +435,7 @@ public class FileSystemSnapshot {
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param key a token used to match a key
          */
+        @PublicAtsApi
         public void skipPropertyByKeyMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                    String key ) {
 
@@ -448,6 +451,7 @@ public class FileSystemSnapshot {
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param value a token used to match a value
          */
+        @PublicAtsApi
         public void skipPropertyByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                    String value ) {
 
@@ -463,6 +467,7 @@ public class FileSystemSnapshot {
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param value a token used to match a value
          */
+        @PublicAtsApi
         public void skipPropertyByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                      String value ) {
 
@@ -478,6 +483,7 @@ public class FileSystemSnapshot {
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param value a token used to match a value
          */
+        @PublicAtsApi
         public void skipPropertyByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                    String value ) {
 
@@ -506,6 +512,7 @@ public class FileSystemSnapshot {
          * @param attributeKey node attribute key
          * @param attributeValue node attribute value
          */
+        @PublicAtsApi
         public void skipNodeByAttributeValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                         String nodeXpath, String attributeKey,
                                                         String attributeValue ) {
@@ -524,6 +531,7 @@ public class FileSystemSnapshot {
          * @param attributeKey node attribute key
          * @param attributeValue node attribute value
          */
+        @PublicAtsApi
         public void skipNodeByAttributeValueContainingText( String rootDirectoryAlias,
                                                             String relativeFilePath, String nodeXpath,
                                                             String attributeKey, String attributeValue ) {
@@ -542,6 +550,7 @@ public class FileSystemSnapshot {
          * @param attributeKey node attribute key
          * @param attributeValue node attribute value
          */
+        @PublicAtsApi
         public void skipNodeByAttributeValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                           String nodeXpath, String attributeKey,
                                                           String attributeValue ) {
@@ -559,6 +568,7 @@ public class FileSystemSnapshot {
          * @param nodeXpath node XPATH
          * @param value node value
          */
+        @PublicAtsApi
         public void skipNodeByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                String nodeXpath, String value ) {
 
@@ -574,6 +584,7 @@ public class FileSystemSnapshot {
          * @param nodeXpath node XPATH
          * @param value node value
          */
+        @PublicAtsApi
         public void skipNodeByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                    String nodeXpath, String value ) {
 
@@ -589,11 +600,12 @@ public class FileSystemSnapshot {
          * @param nodeXpath node XPATH
          * @param value node value
          */
+        @PublicAtsApi
         public void skipNodeByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                  String nodeXpath, String value ) {
 
             this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
                                                  SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
         }
-    }    
+    }
 }

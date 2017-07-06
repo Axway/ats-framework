@@ -111,7 +111,11 @@ public class XmlNode {
         }
 
         sb.append( "\n" + this.getSignature( indent ) );
-        sb.append( this.getValue() + "</" + this.name + ">" );
+        if( attributes.size() != 0 ) {
+            // if there are no attributes, then the node value is already added as part of the signature
+            sb.append( this.getValue() );
+        }
+        sb.append( "</" + this.name + ">" );
 
         return sb.toString();
     }
