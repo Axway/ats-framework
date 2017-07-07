@@ -68,12 +68,13 @@ public class AtsSystemMonitor extends PerformanceMonitor {
                 if( parentProcessName != null ) {
                     final String parentProcessId = parentProcessName + "-" + reading.getName();
                     if( !parentProcessReadingInstances.containsKey( parentProcessId ) ) {
-                        parentProcessReadingInstances.put( parentProcessId,
-                                                           new ParentProcessReadingBean( reading.getDbId(),
-                                                                                         reading.getMonitorName(),
-                                                                                         parentProcessName,
-                                                                                         reading.getName(),
-                                                                                         reading.getUnit() ) );
+                        ParentProcessReadingBean prentProcessBean = new ParentProcessReadingBean( reading.getId(),
+                                                                                                  reading.getMonitorName(),
+                                                                                                  parentProcessName,
+                                                                                                  reading.getName(),
+                                                                                                  reading.getUnit() );
+                        prentProcessBean.setParameters( reading.getParameters() );
+                        parentProcessReadingInstances.put( parentProcessId, prentProcessBean );
                     }
                 }
                 dynamicReadings.add( reading );

@@ -349,12 +349,12 @@ public class SystemMonitor {
                                            String[] processReadingTypes ) {
 
         performSetup( monitoredHost );
-        scheduleProcessOrChildProcessMonitoring( monitoredHost,
-                                                 null,
-                                                 processPattern,
-                                                 processAlias,
-                                                 null,
-                                                 processReadingTypes );
+        scheduleProcessMonitoring( monitoredHost,
+                                   null,
+                                   processPattern,
+                                   processAlias,
+                                   null,
+                                   processReadingTypes );
     }
 
     /**
@@ -379,12 +379,12 @@ public class SystemMonitor {
                                            String[] processReadingTypes ) {
 
         performSetup( monitoredHost );
-        scheduleProcessOrChildProcessMonitoring( monitoredHost,
-                                                 null,
-                                                 processPattern,
-                                                 processAlias,
-                                                 processUsername,
-                                                 processReadingTypes );
+        scheduleProcessMonitoring( monitoredHost,
+                                   null,
+                                   processPattern,
+                                   processAlias,
+                                   processUsername,
+                                   processReadingTypes );
     }
 
     /**
@@ -410,12 +410,12 @@ public class SystemMonitor {
                                                 String[] processReadingTypes ) {
 
         performSetup( monitoredHost );
-        scheduleProcessOrChildProcessMonitoring( monitoredHost,
-                                                 parentProcess,
-                                                 processPattern,
-                                                 processAlias,
-                                                 null,
-                                                 processReadingTypes );
+        scheduleParentProcessMonitoring( monitoredHost,
+                                         parentProcess,
+                                         processPattern,
+                                         processAlias,
+                                         null,
+                                         processReadingTypes );
     }
 
     /**
@@ -443,12 +443,12 @@ public class SystemMonitor {
                                                 String[] processReadingTypes ) {
 
         performSetup( monitoredHost );
-        scheduleProcessOrChildProcessMonitoring( monitoredHost,
-                                                 parentProcess,
-                                                 processPattern,
-                                                 processAlias,
-                                                 processUsername,
-                                                 processReadingTypes );
+        scheduleParentProcessMonitoring( monitoredHost,
+                                         parentProcess,
+                                         processPattern,
+                                         processAlias,
+                                         processUsername,
+                                         processReadingTypes );
     }
 
     /**
@@ -720,14 +720,36 @@ public class SystemMonitor {
         //                                    "There were errors while deinitializing db connection",
         //                                    new Object[]{ null } );
     }
+    
+    private void scheduleProcessMonitoring(
+                                             String monitoredHost,
+                                             String parentProcess,
+                                             String processPattern,
+                                             String processAlias,
+                                             String processUsername,
+                                             String[] processReadingTypes ) {
 
-    private void scheduleProcessOrChildProcessMonitoring(
-                                                          String monitoredHost,
-                                                          String parentProcess,
-                                                          String processPattern,
-                                                          String processAlias,
-                                                          String processUsername,
-                                                          String[] processReadingTypes ) {
+       // create JsonMonitoringUtils.constructXYZ() values
+       Object[] values = new Object[]{ null,
+                                       processPattern,
+                                       processAlias,
+                                       processUsername,
+                                       parentProcess,
+                                       processReadingTypes };
+       performMonitoringOperation( monitoredHost,
+                                   RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                   RestHelper.SCHEDULE_PROCESS_MONITORING_RELATIVE_URI,
+                                   "There were errors while scheduling process monitoring",
+                                   values );
+   }
+
+    private void scheduleParentProcessMonitoring(
+                                                String monitoredHost,
+                                                String parentProcess,
+                                                String processPattern,
+                                                String processAlias,
+                                                String processUsername,
+                                                String[] processReadingTypes ) {
 
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null,
@@ -738,8 +760,8 @@ public class SystemMonitor {
                                         processReadingTypes };
         performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_PROCESS_MONITORING_RELATIVE_URI,
-                                    "There were errors while scheduling process monitoring",
+                                    RestHelper.SCHEDULE_CHILD_PROCESS_MONITORING_RELATIVE_URI,
+                                    "There were errors while scheduling child process monitoring",
                                     values );
     }
 

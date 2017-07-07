@@ -97,7 +97,6 @@ public class BaseRestServiceImpl {
                     // initializeDbConnection REST method
                     if( generateNewIUD ) {
                         uid = UUID.randomUUID().toString();
-                        basePojo.setUid( uid );
                     }
                 } else {
                     throw new SessionNotFoundException( ApplicationContext.ATS_UID_SESSION_TOKEN
@@ -105,6 +104,7 @@ public class BaseRestServiceImpl {
                 }
             }
         }
+        basePojo.setUid( uid );
 
         return uid;
     }

@@ -164,7 +164,7 @@ public class RestSystemMonitor {
                                                        @Validate(name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
                                                        @Validate(name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
                                                        @Validate(name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                       @Validate(name = "processUsername", type = ValidationType.STRING_NOT_EMPTY) String processUsername,
+                                                       @Validate(name = "processUsername", type = ValidationType.NONE) String processUsername,
                                                        @Validate(name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
 
         // validate input parameters
@@ -211,7 +211,7 @@ public class RestSystemMonitor {
                                                             @Validate(name = "parentProcess", type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
                                                             @Validate(name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
                                                             @Validate(name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                            @Validate(name = "processUsername", type = ValidationType.STRING_NOT_EMPTY) String processUsername,
+                                                            @Validate(name = "processUsername", type = ValidationType.NONE) String processUsername,
                                                             @Validate(name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
 
         // validate input parameters
