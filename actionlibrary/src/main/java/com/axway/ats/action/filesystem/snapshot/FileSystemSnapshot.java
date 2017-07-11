@@ -387,7 +387,7 @@ public class FileSystemSnapshot {
     /**
      * A class used to compare properties files 
      */
-    class PropertiesFile {
+    public class PropertiesFile {
 
         private IFileSystemSnapshot fsSnapshotImpl;
 
@@ -493,9 +493,10 @@ public class FileSystemSnapshot {
     }
     
     /**
-     * A class used to compare XML files 
+     * A class used to compare XML files.
+     * Note that DTD validation is skipped.
      */
-    class XmlFile {
+    public class XmlFile {
 
         private IFileSystemSnapshot fsSnapshotImpl;
 

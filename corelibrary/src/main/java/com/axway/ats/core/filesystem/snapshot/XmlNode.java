@@ -22,7 +22,10 @@ import java.util.TreeMap;
 
 import org.dom4j.Attribute;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 import org.w3c.dom.Node;
+
+import com.axway.ats.core.utils.StringUtils;
 
 public class XmlNode {
 
@@ -51,7 +54,13 @@ public class XmlNode {
     public XmlNode( XmlNode parent, Element node ) {
 
         this.node = node;
-        this.name = node.getName();
+
+        Namespace nodeNamespace = node.getNamespace();
+        if( nodeNamespace != null && !StringUtils.isNullOrEmpty( nodeNamespace.getPrefix() ) ) {
+            this.name = nodeNamespace.getPrefix() + ":" + node.getName();
+        } else {
+            this.name = node.getName();
+        }
 
         this.attributes = new TreeMap<>();
         for( int i = 0; i < node.attributes().size(); i++ ) {

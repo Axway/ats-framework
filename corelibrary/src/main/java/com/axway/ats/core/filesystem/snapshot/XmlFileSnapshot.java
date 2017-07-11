@@ -15,6 +15,7 @@
  */
 package com.axway.ats.core.filesystem.snapshot;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.axway.ats.common.filesystem.FileSystemOperationException;
 import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
@@ -192,7 +196,20 @@ public class XmlFileSnapshot extends FileSnapshot {
     public Document loadXmlDocument( String xmlFileContent ) throws XMLException {
 
         try {
-            return new SAXReader().read( new StringReader( xmlFileContent ) );
+            SAXReader reader = new SAXReader();
+
+            // following code prevents dom4j from running DTD XML validation
+            reader.setEntityResolver( new EntityResolver() {
+
+                @Override
+                public InputSource resolveEntity( String publicId, String systemId ) throws SAXException,
+                                                                                     IOException {
+
+                    return new InputSource( new StringReader( "" ) );
+                }
+            } );
+
+            return reader.read( new StringReader( xmlFileContent ) );
         } catch( XMLException | DocumentException e ) {
             throw new XMLException( "Error parsing XML file: " + xmlFileContent, e );
         }
