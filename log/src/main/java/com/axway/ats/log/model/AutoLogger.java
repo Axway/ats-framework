@@ -56,7 +56,7 @@ import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
  */
 public class AutoLogger {
 
-    private final static String AUTO_LOGGER_CLASS_NAME = AutoLogger.class.getName();
+    public final static String AUTO_LOGGER_CLASS_NAME = AutoLogger.class.getName();
 
     private Logger              logger;
 

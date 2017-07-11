@@ -20,6 +20,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,13 +31,17 @@ import java.util.Map;
 
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
+import com.axway.ats.core.dbaccess.ConnectionPool;
+import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
 import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
@@ -110,7 +117,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      *
      * key = <suite name>; value = <suite ID>
      */
-    private static Map<String, Integer>   suiteIdsCache           = new HashMap<String, Integer>();
+    private static Map<String, Integer>   suiteIdsCache              = new HashMap<String, Integer>();
 
     private boolean                       isBatchMode;
 
@@ -118,26 +125,28 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * When rerunning a testcase, we have to delete the faulty one.
      * The main thread passes here the id of the test to be deleted.
      */
-    private int                           testcaseToDelete        = -1;
+    private int                           testcaseToDelete           = -1;
     /*
      * This is a list with all deleted tests.
      * We use it in order to skip going to the DB as we know the operation will fail.
      */
-    private List<Integer>                 deletedTestcases        = new ArrayList<Integer>();
+    private List<Integer>                 deletedTestcases           = new ArrayList<Integer>();
 
-    /**
-     * Due to specifics in firing test harness events, 
-     * it is possible to receive a "update suite event" before a suite is actually started. 
-     * For such case we keep this event here and execute it right after having a suite started.
+    /*
+     * If the current state of the DbEventProcessor could not process UpdateSuiteEvent,
+     * preserve this event and fire it right after StartSuiteEvent is received
      * */
-    private UpdateSuiteEvent              pendingUpdateSuiteEvent = null;
+    private UpdateSuiteEvent              pendingUpdateSuiteEvent    = null;
 
-    /**
-     * Due to specifics in firing test harness events, 
-     * it is possible to receive a "update suite event" before a suite is actually started. 
-     * For such case we keep this event here and execute it right after having a suite started.
+    /*
+     * The UpdateRunEvent, fired from the user.
      * */
-    private UpdateRunEvent                pendingUpdateRunEvent   = null;
+    private UpdateRunEvent                userProvidedUpdateRunEvent = null;
+
+    /*
+     * The actual UpdateRunEvent that will be processed and executed
+     * */
+    private UpdateRunEvent                actualUpdateRunEvent       = null;
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     boolean isBatchMode ) throws DatabaseAccessException {
@@ -226,7 +235,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         LoggingEvent event = eventRequest.getEvent();
         if( event instanceof AbstractLoggingEvent ) {
             AbstractLoggingEvent dbAppenderEvent = ( AbstractLoggingEvent ) event;
-            //first check if we can process the event at all
+
             if( dbAppenderEvent instanceof UpdateSuiteEvent ) {
                 try {
                     dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
@@ -240,17 +249,20 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 }
             } else if( dbAppenderEvent instanceof UpdateRunEvent ) {
                 try {
-                    dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
-                    pendingUpdateRunEvent = ( UpdateRunEvent ) dbAppenderEvent;
-                } catch( IncorrectProcessorStateException e ) {
-                    /* Run not started yet, 
-                     * so save the current event as pending 
-                     * and fired it right after StartRunEvent is received
+                    /* Run not started yet.
+                     * We will fire the event after StartRunEvent is received
                     */
-                    pendingUpdateRunEvent = ( UpdateRunEvent ) dbAppenderEvent;
+                    userProvidedUpdateRunEvent = ( UpdateRunEvent ) dbAppenderEvent;
+                    dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
+                } catch( IncorrectProcessorStateException e ) {
+                    /*
+                     * If we get an exception, do no process the event any further.
+                     * We will fire it after StartRunEvent is received.
+                     * */
                     return;
                 }
             } else {
+                //first check if we can process the event at all
                 dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
             }
 
@@ -263,20 +275,21 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             switch( dbAppenderEvent.getEventType() ){
                 case START_RUN:
                     startRun( ( StartRunEvent ) event, eventRequest.getTimestamp() );
-                    /*
-                     * If update run event is received, apply it every time run is started.
-                     * This is workaround for case when nested runs are executed,
-                     * e.g. the suite XML file contains other suite XML files
-                     * */
-                    if( pendingUpdateRunEvent != null ) {
-                        updateRun( pendingUpdateRunEvent );
+                    if( userProvidedUpdateRunEvent != null ) {
+                        constructUpdateRunEvent();
+                        updateRun( actualUpdateRunEvent );
                     }
                     break;
                 case END_RUN:
                     endRun( eventRequest.getTimestamp() );
                     break;
                 case UPDATE_RUN:
-                    updateRun( ( UpdateRunEvent ) event );
+                    /*
+                     * By using data from the latest UpdateRunEvent and the current run info,
+                     * construct a pending UpdateRunEvent
+                     * */
+                    constructUpdateRunEvent();
+                    updateRun( actualUpdateRunEvent );
                     break;
                 case ADD_RUN_METAINFO:
                     addRunMetainfo( ( AddRunMetainfoEvent ) event );
@@ -981,5 +994,91 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     public void setEventProcessorState( EventProcessorState eventProcessorState ) {
 
         this.eventProcessorState = eventProcessorState;
+    }
+
+    private void constructUpdateRunEvent() {
+
+        try {
+
+            if( userProvidedUpdateRunEvent != null ) {
+
+                // get current run info from database
+                Run run = getLatestRun();
+
+                // replace the missing fields, received by the latest UpdateRunEvent with the one from the DB
+                String runName = ( userProvidedUpdateRunEvent.getRunName() != null )
+                                                                                     ? userProvidedUpdateRunEvent.getRunName()
+                                                                                     : run.runName;
+                String osName = ( userProvidedUpdateRunEvent.getOsName() != null )
+                                                                                   ? userProvidedUpdateRunEvent.getOsName()
+                                                                                   : run.os;
+                String productName = ( userProvidedUpdateRunEvent.getProductName() != null )
+                                                                                             ? userProvidedUpdateRunEvent.getProductName()
+                                                                                             : run.productName;
+                String versionName = ( userProvidedUpdateRunEvent.getVersionName() != null )
+                                                                                             ? userProvidedUpdateRunEvent.getVersionName()
+                                                                                             : run.versionName;
+                String buildName = ( userProvidedUpdateRunEvent.getBuildName() != null )
+                                                                                         ? userProvidedUpdateRunEvent.getBuildName()
+                                                                                         : run.buildName;
+                String userNote = ( userProvidedUpdateRunEvent.getUserNote() != null )
+                                                                                       ? userProvidedUpdateRunEvent.getUserNote()
+                                                                                       : run.userNote;
+                String hostName = ( userProvidedUpdateRunEvent.getHostName() != null )
+                                                                                       ? userProvidedUpdateRunEvent.getHostName()
+                                                                                       : run.hostName;
+
+                // construct the new pending UpdateRunEvent
+                actualUpdateRunEvent = new UpdateRunEvent( userProvidedUpdateRunEvent.getFQNOfLoggerClass(),
+                                                           ( Logger ) userProvidedUpdateRunEvent.getLogger(),
+                                                           runName, osName, productName, versionName,
+                                                           buildName, userNote, hostName );
+
+            }
+
+        } catch( SQLException e ) {
+            /*  
+             * Could not obtain run info from database.
+             * No exception will be logged, because the event processor is busy handling the UpdateRunEvent
+             * and will not be able to handle the log message event as well
+            */
+        }
+
+    }
+
+    private Run getLatestRun() throws SQLException {
+
+        PreparedStatement stmt = null;
+
+        Run run = new Run();
+
+        try {
+
+            Connection tmpConn = ConnectionPool.getConnection( dbConnection );
+
+            stmt = tmpConn.prepareStatement( "SELECT * FROM tRuns WHERE runId="
+                                             + eventProcessorState.getRunId() );
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            run.runId = rs.getString( "runId" );
+            run.productName = rs.getString( "productName" );
+            run.versionName = rs.getString( "versionName" );
+            run.buildName = rs.getString( "buildName" );
+            run.runName = rs.getString( "runName" );
+            run.os = rs.getString( "OS" );
+            run.hostName = rs.getString( "hostName" );
+            if( run.hostName == null ) {
+                run.hostName = "";
+            }
+            run.userNote = rs.getString( "userNote" );
+            if( run.userNote == null ) {
+                run.userNote = "";
+            }
+
+        } finally {
+            DbUtils.closeStatement( stmt );
+        }
+
+        return run;
     }
 }
