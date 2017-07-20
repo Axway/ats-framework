@@ -72,7 +72,7 @@ public class RestSystemMonitor {
         try {
             log.debug( "Initializing monitoring context..." );
             systemMonitor.initializeMonitoringContext();
-            log.info( "Monotoring context initialized." );
+            log.info( "Monitoring context initialized." );
         } catch( Exception e ) {
             log.error( "Could not initialize monitoring context.", e );
             throw new MonitorConfigurationException( "Could not initialize monitoring context", e );
