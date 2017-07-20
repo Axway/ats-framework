@@ -95,21 +95,21 @@ public class RestClient {
         public static final int NONE       = 0x00;
         public static final int TARGET_URI = 0x01;
         public static final int HEADERS    = 0x02 | TARGET_URI;
-        public static final int BODY       = 0x03 | TARGET_URI;
+        public static final int BODY       = 0x04 | TARGET_URI;
         public static final int ALL        = HEADERS | BODY;
     }
 
-    private int                        debugLevel         = RESTDebugLevel.TARGET_URI;
+    private int                        debugLevel                     = RESTDebugLevel.TARGET_URI;
 
-    private static final Logger        log                = Logger.getLogger( RestClient.class );
+    private static final Logger        log                            = Logger.getLogger( RestClient.class );
 
     private Client                     client;
 
     private String                     uri;
-    private List<String>               resourcePath       = new ArrayList<String>();
-    private Map<String, Object>        requestHeaders     = new HashMap<String, Object>();
+    private List<String>               resourcePath                   = new ArrayList<String>();
+    private Map<String, Object>        requestHeaders                 = new HashMap<String, Object>();
 
-    private Map<String, List<String>>  requestParameters  = new HashMap<String, List<String>>();
+    private Map<String, List<String>>  requestParameters              = new HashMap<String, List<String>>();
 
     private String                     requestMediaType;
     private String                     requestMediaCharset;
@@ -117,15 +117,19 @@ public class RestClient {
     private String                     responseMediaType;
     private String                     responseMediaCharset;
 
-    private List<Cookie>               cookies            = new ArrayList<Cookie>();
+    private List<Cookie>               cookies                        = new ArrayList<Cookie>();
 
     // Basic authorization info
     private String                     username;
     private String                     password;
 
-    private String[]                   supportedProtocols = new String[]{ "TLSv1.2" };
+    private String[]                   supportedProtocols             = new String[]{ "TLSv1.2" };
 
-    private RestClientConfigurator     clientConfigurator = new RestClientConfigurator();
+    private RestClientConfigurator     clientConfigurator             = new RestClientConfigurator();
+
+    private boolean                    requestFilterNeedsRegistration = false;
+
+    private boolean                    requestFilterAlreadyRegistered = false;
 
     /**
      * There is a memory leak in the way Jersey uses HK2's PerThreadContext class
@@ -147,10 +151,10 @@ public class RestClient {
      *
      *  FIXME: remove this code when the fix is available
      */
-    private static Map<String, Client> clients            = new HashMap<String, Client>();
+    private static Map<String, Client> clients                        = new HashMap<String, Client>();
 
     /* Used to remove JerseyClient instance from map, when disconnect() is invoked */
-    private String                     finalClientIdKey   = null;
+    private String                     finalClientIdKey               = null;
 
     /**
      * Constructor not specifying the target URI.
@@ -232,7 +236,8 @@ public class RestClient {
 
         newClient.requestParameters = new HashMap<String, List<String>>();
         for( Entry<String, List<String>> requestParameterEntry : this.requestParameters.entrySet() ) {
-            newClient.requestParameters.put( requestParameterEntry.getKey(), new ArrayList<String>( requestParameterEntry.getValue() ) );
+            newClient.requestParameters.put( requestParameterEntry.getKey(),
+                                             new ArrayList<String>( requestParameterEntry.getValue() ) );
         }
 
         newClient.requestMediaType = this.requestMediaType;
@@ -436,8 +441,7 @@ public class RestClient {
      * @return this client's instance
      */
     @PublicAtsApi
-    public RestClient removeRequestHeader(
-                                           String name ) {
+    public RestClient removeRequestHeader( String name ) {
 
         boolean atLeastOneHeaderFound = false;
 
@@ -467,8 +471,7 @@ public class RestClient {
      * @return this client's instance
      */
     @PublicAtsApi
-    public RestClient removeRequestHeaders(
-                                            String... names ) {
+    public RestClient removeRequestHeaders( String... names ) {
 
         Iterator<String> keys = this.requestHeaders.keySet().iterator();
 
@@ -548,7 +551,7 @@ public class RestClient {
 
         return this;
     }
-    
+
     /**
      * Remove a request(also called query) parameter<br/></br/>
      *
@@ -557,7 +560,7 @@ public class RestClient {
      * @return this client's instance
      */
     @PublicAtsApi
-    public RestClient removeRequestParameter(String name){
+    public RestClient removeRequestParameter( String name ) {
 
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
@@ -568,14 +571,14 @@ public class RestClient {
                 return this;
             }
         }
-        
+
         log.warn( "Parameter with name '" + name
                   + "' will not be removed since it was not found in request parameters." );
 
         return this;
-        
+
     }
-    
+
     /**
      * Remove one or more request(also called query) parameters<br/></br/>
      *
@@ -584,8 +587,8 @@ public class RestClient {
      * @return this client's instance
      */
     @PublicAtsApi
-    public RestClient removeRequestParameters(String... names){
-        
+    public RestClient removeRequestParameters( String... names ) {
+
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
         while( keys.hasNext() ) {
@@ -598,9 +601,8 @@ public class RestClient {
         }
 
         return this;
-        
-    }
 
+    }
 
     /**
      * Add a request cookie
@@ -935,6 +937,9 @@ public class RestClient {
     public void setVerboseMode( int level ) {
 
         debugLevel = level;
+        if( debugLevel != RESTDebugLevel.NONE && debugLevel != RESTDebugLevel.TARGET_URI ) {
+            requestFilterNeedsRegistration = true;
+        }
     }
 
     private Invocation.Builder constructInvocationBuilder( String descriptionToken ) {
@@ -999,10 +1004,11 @@ public class RestClient {
 
         // now create the client
         client = getClient( clientIdKeys, clientBuilder );
-        if( debugLevel != RESTDebugLevel.NONE ) {
+        if( requestFilterNeedsRegistration && !requestFilterAlreadyRegistered ) {
             RequestFilter requestFilter = new RequestFilter();
-            requestFilter.setDebugLevel( debugLevel );
             client.register( requestFilter );
+            requestFilterNeedsRegistration = false;
+            requestFilterAlreadyRegistered = true;
         }
 
         WebTarget webTarget = client.target( this.uri );
@@ -1018,7 +1024,7 @@ public class RestClient {
                 webTarget = webTarget.queryParam( requestParamEntry.getKey(), requestParamValue );
             }
         }
-        if(( debugLevel & RESTDebugLevel.TARGET_URI ) == RESTDebugLevel.TARGET_URI){
+        if( ( debugLevel & RESTDebugLevel.TARGET_URI ) == RESTDebugLevel.TARGET_URI ) {
             log.info( "We will " + descriptionToken + " " + webTarget.getUri() );
         }
 
@@ -1060,7 +1066,7 @@ public class RestClient {
 
     private void logRESTResponse( RestResponse response ) {
 
-        if( debugLevel == RESTDebugLevel.NONE ) {
+        if( debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI ) {
             return;
         }
 
@@ -1072,15 +1078,16 @@ public class RestClient {
                 responseMessage.append( headerName.getKey() + ": " + headerName.getValue() + "\n" );
             }
         }
-        if( ( debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY && response.getContentLength() != -1 ) {
+        if( ( debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY
+            && response.getContentLength() != -1 ) {
             //log response body
             if( response.getContentLength() <= RestResponse.MAX_RESPONSE_SIZE ) {
                 responseMessage.append( "Body: " + response.getBodyAsString() + "\n" );
             } else {
                 // if the content-length is greater than RESTResponse.MAX_RESPONSE_SIZE, truncate the response's body
                 responseMessage.append( "Body: "
-                                        + response.getBodyAsString()
-                                                  .substring( 0, RestResponse.MAX_RESPONSE_SIZE )
+                                        + response.getBodyAsString().substring( 0,
+                                                                                RestResponse.MAX_RESPONSE_SIZE )
                                         + "... [Response body truncated.]" + "\n" );
             }
         }
@@ -1092,14 +1099,12 @@ public class RestClient {
 
     private class RequestFilter implements ClientRequestFilter {
 
-        private Logger log        = Logger.getLogger( RestClient.class );
-        private int    debugLevel = RESTDebugLevel.NONE;
+        private Logger log = Logger.getLogger( RestClient.class );
 
         @Override
-        public void filter(
-                            ClientRequestContext context ) throws IOException {
+        public void filter( ClientRequestContext context ) throws IOException {
 
-            if( debugLevel == RESTDebugLevel.NONE ) {
+            if( debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI ) {
                 return;
             }
 
@@ -1114,7 +1119,7 @@ public class RestClient {
                                            + Arrays.toString( reqHeaderEntry.getValue().toArray() ) + " \n" );
                 }
             }
-            if( ( this.debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY && context.hasEntity() ) {
+            if( ( debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY && context.hasEntity() ) {
                 //log request body
                 Object entity = context.getEntity();
                 if( entity instanceof Form ) {
@@ -1126,10 +1131,5 @@ public class RestClient {
             log.info( requestMessage );
         }
 
-        void setDebugLevel(
-                            int level ) {
-
-            this.debugLevel = level;
-        }
     }
 }
