@@ -996,6 +996,10 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 statisticDescription.queueName = rs.getString( "queueName" );
 
                 statisticDescription.numberMeasurements = rs.getInt( "statsNumberMeasurements" );
+                
+                statisticDescription.minValue = rs.getInt( "statsMinValue" );
+                statisticDescription.avgValue = rs.getInt( "statsAvgValue" );
+                statisticDescription.maxValue = rs.getInt( "statsMaxValue" );
 
                 statisticDescription.statisticName = rs.getString( "name" );
                 statisticDescription.unit = "ms"; // "statsUnit" field is null for checkpoint statistics, because the action response times are always measured in "ms"
