@@ -23,7 +23,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
@@ -107,6 +109,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                          boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to insert run with name " + runName;
+        
+        timestamp = inUTC(timestamp);
 
         // then start the run
         final int indexRowsInserted = 8;
@@ -166,6 +170,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         final String errMsg = "Unable to end run with id " + runId;
 
         final int indexRowsInserted = 3;
+        
+        timestamp = inUTC(timestamp);
 
         CallableStatement callableStatement = null;
         try {
@@ -308,6 +314,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         final String errMsg = "Unable to start suite with name " + suiteName;
         // create a new suite
 
+        timestamp = inUTC(timestamp);
+        
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
@@ -362,6 +370,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
         final String errMsg = "Unable to end suite with id " + suiteId;
 
+        timestamp = inUTC(timestamp);
+        
         final int indexRowsInserted = 3;
 
         CallableStatement callableStatement = null;
@@ -528,6 +538,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to start testcase with name " + testcaseName;
+        
+        timestamp = inUTC(timestamp);
 
         // start a new test case
         final int indexRowsInserted = 7;
@@ -578,6 +590,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                              boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end testcase with id " + testcaseId;
+        
+        timestamp = inUTC(timestamp);
 
         final int indexRowsInserted = 4;
         CallableStatement callableStatement = null;
@@ -647,6 +661,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                       + "' will not be registered because there is no database connection!" );
             return -1;
         }
+        
+        timestamp = inUTC(timestamp);
 
         final String errMsg = "Unable to start load queue with name " + name;
 
@@ -701,6 +717,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end load queue with id " + loadQueueId;
+        
+        timestamp = inUTC(timestamp);
 
         final int indexRowsInserted = 4;
 
@@ -739,6 +757,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                                   long timestamp,
                                   int testCaseId,
                                   boolean closeConnection ) throws DatabaseAccessException {
+        
+        timestamp = inUTC(timestamp);
 
         Connection currentConnection;
         if( !isBatchMode ) {
@@ -800,6 +820,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
             return false;
         } else {
+            
+            timestamp = inUTC(timestamp);
 
             Connection currentConnection;
             if( !isBatchMode ) {
@@ -862,6 +884,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
             return false;
         } else {
+            
+            timestamp = inUTC(timestamp);
 
             Connection currentConnection;
             if( !isBatchMode ) {
@@ -918,6 +942,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                                      int loadQueueId,
                                      boolean closeConnection ) throws DatabaseAccessException {
 
+        startTimestamp = inUTC(startTimestamp);
+        
         Connection currentConnection;
         if( !isBatchMode ) {
             currentConnection = refreshInternalConnection();
@@ -993,6 +1019,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
         final String errMsg = "Unable to start checkpoint '" + name + "' for thread '" + threadName
                               + "' in load queue " + loadQueueId;
+        
+        startTimestamp = inUTC(startTimestamp);
 
         final int indexCheckpointSummaryId = 6;
         final int indexCheckpointId = 7;
@@ -1047,6 +1075,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         final String errMsg = "Unable to end checkpoint with name '" + runningCheckpointInfo.getName()
                               + "', checkpoint summary id " + runningCheckpointInfo.getCheckpointSummaryId()
                               + ", id " + runningCheckpointInfo.getCheckpointId();
+        
+        endTimestamp = inUTC(endTimestamp);
 
         final int indexRowsInserted = 8;
 
@@ -1149,6 +1179,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                                         long timestamp,
                                         boolean closeConnection ) throws DatabaseAccessException {
 
+        timestamp = inUTC(timestamp);
+        
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
@@ -1182,6 +1214,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                                               String statisticValues,
                                               long timestamp,
                                               boolean closeConnection ) throws DatabaseAccessException {
+        
+        timestamp = inUTC(timestamp);
 
         CallableStatement callableStatement = null;
         try {
@@ -1607,6 +1641,11 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             throw new IllegalStateException( "Trying to set new connection when previous is not cleared. Check if connection is cleared immediately after db access work is completed." );
         }
         this.connection = connection;
+    }
+    
+    protected long inUTC( long timestamp ) {
+        
+        return timestamp - TimeZone.getDefault().getOffset( timestamp );
     }
 
     /**

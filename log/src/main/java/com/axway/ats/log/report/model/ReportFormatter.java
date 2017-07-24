@@ -230,9 +230,9 @@ public class ReportFormatter {
             tableBody.append( START_TBL_CELL + run.testcasesPassedPercent + END_TBL_CELL );
             tableBody.append( START_TBL_CELL + run.testcasesFailed + END_TBL_CELL );
 
-            tableBody.append( START_TBL_CELL + run.dateStart + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.dateEnd + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.duration + END_TBL_CELL );
+            tableBody.append( START_TBL_CELL + run.getDateStart() + END_TBL_CELL );
+            tableBody.append( START_TBL_CELL + run.getDateEnd() + END_TBL_CELL );
+            tableBody.append( START_TBL_CELL + run.getDuration(0) + END_TBL_CELL );
 
             tableBody.append( START_TBL_CELL + ( run.userNote == null
                                                               ? ""
@@ -306,9 +306,9 @@ public class ReportFormatter {
                 tableBody.append( START_TBL_CELL + suite.testcasesPassedPercent + END_TBL_CELL );
                 tableBody.append( START_TBL_CELL + suite.testcasesFailed + END_TBL_CELL );
 
-                tableBody.append( START_TBL_CELL + suite.dateStart + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.dateEnd + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.duration + END_TBL_CELL );
+                tableBody.append( START_TBL_CELL + suite.getDateStart() + END_TBL_CELL );
+                tableBody.append( START_TBL_CELL + suite.getDateEnd() + END_TBL_CELL );
+                tableBody.append( START_TBL_CELL + suite.getDuration( 0 ) + END_TBL_CELL );
 
                 tableBody.append( "<td align=center>" + ( suite.userNote == null
                                                                          ? ""

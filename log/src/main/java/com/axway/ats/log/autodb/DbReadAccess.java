@@ -20,8 +20,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,10 +44,18 @@ import com.axway.ats.log.autodb.entities.Suite;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
-import com.axway.ats.log.autodb.model.StatisticAggregatedType;
+
 
 public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
+    /*  Some methods has an argument 'dayLightSavingOn'.
+     *  This argument is used to align the time stamp for Time zones, that have Day-light saving 
+     *  Another common arguments is timeOffset.
+     *  This argument is the current time zone offset from UTC.
+     *  Since all time stamps are send to the Database in UTC format, via this argument,
+     *  all received time stamps will be with proper time localization.
+     * */
+    
     /*
      *  Test Explorer needs some statistic id in order to quickly distinguish between different statistics.
      *  Some statistics do not have a type ID from the DB, like:
@@ -61,8 +67,6 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
      *  starting from MAX_INTEGER and going down
      */
     private static final int   START_FAKE_ID_VALUE_FOR_CHECKPOINTS                  = Integer.MAX_VALUE;
-    private static final int   START_FAKE_ID_VALUE_FOR_AGGREGATED_CHECKPOINTS       = START_FAKE_ID_VALUE_FOR_CHECKPOINTS
-                                                                                      / 2;
 
     public static final String MACHINE_NAME_FOR_ATS_AGENTS                          = "ATS Agents";
 
@@ -73,7 +77,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     @BackwardCompatibility
     public List<Run> getRuns( int startRecord, int recordsCount, String whereClause, String sortColumn,
-                              boolean ascending ) throws DatabaseAccessException {
+                              boolean ascending, int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Run> runs = new ArrayList<Run>();
 
@@ -124,22 +128,13 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                     log.warn( "Error parsing dbInternalVersion. ", nfe );
                 }
 
-                Timestamp dateStartTimestamp = rs.getTimestamp( "dateStart" );
-                run.dateStart = formatDateNoYear( dateStartTimestamp );
-                run.dateStartLong = formatDate( dateStartTimestamp );
-
-                Timestamp dateEndTimestamp = rs.getTimestamp( "dateEnd" );
-                run.dateEnd = formatDateNoYear( dateEndTimestamp );
-                run.dateEndLong = formatDate( dateEndTimestamp );
-
-                int duration = rs.getInt( "duration" );
-                if( duration < 0 ) {
-                    // this may happen when the run is not ended and the time of the log server
-                    // is behind with the time of the test executor host
-                    duration = 0;
+                if ( rs.getTimestamp( "dateStart" ) != null ) {
+                    run.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
                 }
-                run.durationSeconds = duration;
-                run.duration = formatTimeDiffereceFromSecondsToString( duration );
+                if ( rs.getTimestamp( "dateEnd" ) != null ) {
+                    run.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );   
+                }
+                run.setTimeOffset( utcTimeOffset );
 
                 run.scenariosTotal = rs.getInt( "scenariosTotal" );
                 run.scenariosFailed = rs.getInt( "scenariosFailed" );
@@ -205,7 +200,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     @BackwardCompatibility
     public List<Suite> getSuites( int startRecord, int recordsCount, String whereClause, String sortColumn,
                                   boolean ascending,
-                                  boolean dateFormatNoYear ) throws DatabaseAccessException {
+                                  int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Suite> suites = new ArrayList<Suite>();
 
@@ -248,21 +243,14 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                     log.warn( "Error parsing dbInternalVersion. ", nfe );
                 }
                 suite.name = rs.getString( "name" );
-                if( dateFormatNoYear ) {
-                    suite.dateStart = formatDateNoYear( rs.getTimestamp( "dateStart" ) );
-                    suite.dateEnd = formatDateNoYear( rs.getTimestamp( "dateEnd" ) );
-                } else {
-                    suite.dateStart = formatDate( rs.getTimestamp( "dateStart" ) );
-                    suite.dateEnd = formatDate( rs.getTimestamp( "dateEnd" ) );
+                
+                if ( rs.getTimestamp( "dateStart" ) != null ) {
+                    suite.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
                 }
-
-                int duration = rs.getInt( "duration" );
-                if( duration < 0 ) {
-                    // this may happen when the suite is not ended and the time of the log server
-                    // is behind with the time of the test executor host
-                    duration = 0;
+                if ( rs.getTimestamp( "dateEnd" ) != null ) {
+                    suite.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
                 }
-                suite.duration = formatTimeDiffereceFromSecondsToString( duration );
+                suite.setTimeOffset( utcTimeOffset );
 
                 suite.scenariosTotal = rs.getInt( "scenariosTotal" );
                 suite.scenariosFailed = rs.getInt( "scenariosFailed" );
@@ -338,7 +326,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     public List<Scenario> getScenarios( int startRecord, int recordsCount, String whereClause,
                                         String sortColumn, boolean ascending,
-                                        boolean dateFormatNoYear ) throws DatabaseAccessException {
+                                        int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Scenario> scenarios = new ArrayList<Scenario>();
 
@@ -377,21 +365,13 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                                                   + "%";
                 scenario.testcaseIsRunning = rs.getBoolean( "testcaseIsRunning" );
 
-                if( dateFormatNoYear ) {
-                    scenario.dateStart = formatDateNoYear( rs.getTimestamp( "dateStart" ) );
-                    scenario.dateEnd = formatDateNoYear( rs.getTimestamp( "dateEnd" ) );
-                } else {
-                    scenario.dateStart = formatDate( rs.getTimestamp( "dateStart" ) );
-                    scenario.dateEnd = formatDate( rs.getTimestamp( "dateEnd" ) );
+                if ( rs.getTimestamp( "dateStart" ) != null ) {
+                    scenario.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
                 }
-
-                int duration = rs.getInt( "duration" );
-                if( duration < 0 ) {
-                    // this may happen when the scenario is not ended and the time of the log server
-                    // is behind with the time of the test executor host
-                    duration = 0;
+                if ( rs.getTimestamp( "dateEnd" ) != null ) {
+                    scenario.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
                 }
-                scenario.duration = formatTimeDiffereceFromSecondsToString( duration );
+                scenario.setTimeOffset( utcTimeOffset );
 
                 scenario.result = rs.getInt( "result" );
                 /*
@@ -466,7 +446,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     public List<Testcase> getTestcases( int startRecord, int recordsCount, String whereClause,
                                         String sortColumn, boolean ascending,
-                                        boolean dateFormatNoYear ) throws DatabaseAccessException {
+                                        int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Testcase> testcases = new ArrayList<Testcase>();
 
@@ -500,21 +480,14 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
                 testcase.name = rs.getString( "name" );
 
-                if( dateFormatNoYear ) {
-                    testcase.dateStart = formatDateNoYear( rs.getTimestamp( "dateStart" ) );
-                    testcase.dateEnd = formatDateNoYear( rs.getTimestamp( "dateEnd" ) );
-                } else {
-                    testcase.dateStart = formatDate( rs.getTimestamp( "dateStart" ) );
-                    testcase.dateEnd = formatDate( rs.getTimestamp( "dateEnd" ) );
+                if ( rs.getTimestamp( "dateStart" ) != null ) {
+                    testcase.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
                 }
-
-                int duration = rs.getInt( "duration" );
-                if( duration < 0 ) {
-                    // this may happen when the test case is not ended and the time of the log server
-                    // is behind with the time of the test executor host
-                    duration = 0;
+                if ( rs.getTimestamp( "dateEnd" ) != null ) {
+                    testcase.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
                 }
-                testcase.duration = formatTimeDiffereceFromSecondsToString( duration );
+                testcase.setTimeOffset( utcTimeOffset );
+                
 
                 testcase.result = rs.getInt( "result" );
                 /*
@@ -614,12 +587,10 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     }
 
     public List<Message> getMessages( int startRecord, int recordsCount, String whereClause,
-                                      String sortColumn, boolean ascending ) throws DatabaseAccessException {
+                                      String sortColumn, boolean ascending,
+                                      int utcTimeOffset) throws DatabaseAccessException {
 
         List<Message> messages = new ArrayList<Message>();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "MMM dd" );
-        SimpleDateFormat timeFormat = new SimpleDateFormat( "HH:mm:ss:S" );
 
         String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
                                                  .add( "records", recordsCount )
@@ -649,10 +620,12 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 message.messageId = rs.getInt( "messageId" );
                 message.messageContent = rs.getString( "message" );
                 message.messageType = rs.getString( "typeName" );
-
-                Timestamp timestamp = rs.getTimestamp( "timestamp" );
-                message.date = dateFormat.format( timestamp );
-                message.time = timeFormat.format( timestamp );
+                
+                if ( rs.getTimestamp( "timestamp" ) != null ){
+                    message.setStartTimestamp( rs.getTimestamp( "timestamp" ).getTime() );
+                }
+                
+                message.setTimeOffset( utcTimeOffset );
 
                 message.machineName = rs.getString( "machineName" );
                 message.threadName = rs.getString( "threadName" );
@@ -696,12 +669,10 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     public List<Message> getRunMessages( int startRecord, int recordsCount, String whereClause,
                                          String sortColumn,
-                                         boolean ascending ) throws DatabaseAccessException {
+                                         boolean ascending,
+                                         int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Message> runMessages = new ArrayList<Message>();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "MMM dd" );
-        SimpleDateFormat timeFormat = new SimpleDateFormat( "HH:mm:ss:S" );
 
         String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
                                                  .add( "records", recordsCount )
@@ -731,9 +702,10 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 runMessage.messageContent = rs.getString( "message" );
                 runMessage.messageType = rs.getString( "typeName" );
 
-                Timestamp timestamp = rs.getTimestamp( "timestamp" );
-                runMessage.date = dateFormat.format( timestamp );
-                runMessage.time = timeFormat.format( timestamp );
+                if ( rs.getTimestamp( "timestamp" ) != null ) {
+                    runMessage.setStartTimestamp( rs.getTimestamp( "timestamp" ).getTime() );   
+                }
+                runMessage.setTimeOffset( utcTimeOffset );
 
                 runMessage.machineName = rs.getString( "machineName" );
                 runMessage.threadName = rs.getString( "threadName" );
@@ -755,12 +727,10 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     public List<Message> getSuiteMessages( int startRecord, int recordsCount, String whereClause,
                                            String sortColumn,
-                                           boolean ascending ) throws DatabaseAccessException {
+                                           boolean ascending,
+                                           int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Message> suiteMessages = new ArrayList<Message>();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "MMM dd" );
-        SimpleDateFormat timeFormat = new SimpleDateFormat( "HH:mm:ss:S" );
 
         String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
                                                  .add( "records", recordsCount )
@@ -789,10 +759,12 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 suiteMessage.messageId = rs.getInt( "suiteMessageId" );
                 suiteMessage.messageContent = rs.getString( "message" );
                 suiteMessage.messageType = rs.getString( "typeName" );
-
-                Timestamp timestamp = rs.getTimestamp( "timestamp" );
-                suiteMessage.date = dateFormat.format( timestamp );
-                suiteMessage.time = timeFormat.format( timestamp );
+                
+                if ( rs.getTimestamp( "timestamp" ) != null ) {
+                    suiteMessage.setStartTimestamp( rs.getTimestamp( "timestamp" ).getTime() );
+                }
+                
+                suiteMessage.setTimeOffset( utcTimeOffset );
 
                 suiteMessage.machineName = rs.getString( "machineName" );
                 suiteMessage.threadName = rs.getString( "threadName" );
@@ -896,7 +868,9 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     public List<StatisticDescription> getSystemStatisticDescriptions( 
                                                                       float timeOffset, 
                                                                       String whereClause,
-                                                                      Map<String, String> testcaseAliases ) throws DatabaseAccessException {
+                                                                      Map<String, String> testcaseAliases,
+                                                                      int utcTimeOffset,
+                                                                      boolean dayLightSavingOn ) throws DatabaseAccessException {
 
         List<StatisticDescription> statisticDescriptions = new ArrayList<StatisticDescription>();
 
@@ -926,7 +900,13 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 if( statisticDescription.testcaseName == null ) {
                     statisticDescription.testcaseName = rs.getString( "testcaseName" );
                 }
-                statisticDescription.testcaseStarttime = rs.getInt( "testcaseStarttime" );
+                
+                long startTimestamp = rs.getInt( "testcaseStarttime" );
+                if(dayLightSavingOn){
+                    startTimestamp += 3600; // add 1h to time stamp
+                }
+                statisticDescription.setStartTimestamp( startTimestamp );
+                statisticDescription.setTimeOffset( utcTimeOffset );
 
                 statisticDescription.machineId = rs.getInt( "machineId" );
                 statisticDescription.machineName = rs.getString( "machineName" );
@@ -962,7 +942,9 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     public List<StatisticDescription> getCheckpointStatisticDescriptions( float timeOffset,
                                                                           String whereClause,
-                                                                          Set<String> expectedSingleActionUIDs) throws DatabaseAccessException {
+                                                                          Set<String> expectedSingleActionUIDs, 
+                                                                          int utcTimeOffset,
+                                                                          boolean dayLightSavingOn ) throws DatabaseAccessException {
 
         List<StatisticDescription> statisticDescriptions = new ArrayList<StatisticDescription>();
 
@@ -988,7 +970,13 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 if( statisticDescription.testcaseName == null ) {
                     statisticDescription.testcaseName = rs.getString( "testcaseName" );
                 }
-                statisticDescription.testcaseStarttime = rs.getInt( "testcaseStarttime" );
+                
+                long startTimestamp = rs.getInt( "testcaseStarttime" );
+                if(dayLightSavingOn){
+                    startTimestamp += 3600; // add 1h to time stamp
+                }
+                statisticDescription.setStartTimestamp( startTimestamp );
+                statisticDescription.setTimeOffset( utcTimeOffset );
 
                 statisticDescription.machineId = 0; // Checkpoints will be collected and displayed for testcase
                 statisticDescription.machineName = MACHINE_NAME_FOR_ATS_AGENTS;
@@ -1028,7 +1016,9 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 	public List<Statistic> getSystemStatistics( float timeOffset, 
 												String testcaseIds,
 												String machineIds,
-												String statsTypeIds)
+												String statsTypeIds, 
+												int utcTimeOffset,
+                                                boolean dayLightSavingOn )
 														throws DatabaseAccessException {
 
         List<Statistic> allStatistics = new ArrayList<Statistic>();
@@ -1060,8 +1050,14 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 statistic.parentName = rs.getString( "statsParent" );
                 statistic.unit = rs.getString( "statsUnit" );
                 statistic.value = rs.getFloat( "value" );
-                statistic.date = rs.getString( "statsAxis" );
-                statistic.timestamp = rs.getInt( "statsAxisTimestamp" );
+                statistic.setDate ( rs.getString( "statsAxis" ) );
+                
+                long startTimestamp = rs.getInt( "statsAxisTimestamp" );
+                if(dayLightSavingOn){
+                    startTimestamp += 3600; // add 1h to time stamp
+                }
+                statistic.setStartTimestamp( startTimestamp );
+                statistic.setTimeOffset( utcTimeOffset );
 
                 statistic.machineId = rs.getInt( "machineId" );
                 statistic.testcaseId = rs.getInt( "testcaseId" );
@@ -1082,80 +1078,12 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         return allStatistics;
     }
 
-    public List<Statistic> getSystemAggregatedStatistics( float timeOffset, String testcaseIds,
-                                                          String machineIds, String statsTypeIds,
-                                                          int interval,
-                                                          int mode ) throws DatabaseAccessException {
-
-        List<Statistic> statistics = new ArrayList<Statistic>();
-
-        String sqlLog = new SqlRequestFormatter().add( "testcase ids", testcaseIds )
-                                                 .add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "machine ids", machineIds )
-                                                 .add( "stats type ids", statsTypeIds )
-                                                 .add( "inverval (seconds)", interval )
-                                                 .add( "mode (AVG-0001,SUM-0010,TOTALS-0100,COUNT-1000)",
-                                                       mode )
-                                                 .format();
-        Connection connection = getConnection();
-        CallableStatement callableStatement = null;
-        ResultSet rs = null;
-        try {
-
-            callableStatement = connection.prepareCall( "{ call sp_get_system_aggregated_statistics(?, ?, ?, ?, ?, ?) }" );
-
-            callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, testcaseIds );
-            callableStatement.setString( 3, machineIds );
-            callableStatement.setString( 4, statsTypeIds );
-            callableStatement.setInt( 5, interval );
-            callableStatement.setInt( 6, mode );
-
-            rs = callableStatement.executeQuery();
-            Map<Integer, Float> totalSumValues = new HashMap<Integer, Float>();
-            int numberRecords = 0;
-            while( rs.next() ) {
-                Statistic statistic = new Statistic();
-                statistic.statisticTypeId = rs.getInt( "statsTypeId" );
-                statistic.name = rs.getString( "statsName" );
-                statistic.unit = rs.getString( "statsUnit" );
-                statistic.avgValue = rs.getFloat( "avgValue" );
-                statistic.sumValue = rs.getFloat( "sumValue" );
-                statistic.countValue = rs.getFloat( "countValue" );
-                if( StatisticAggregatedType.isTotals( mode ) ) { // total sum value
-
-                    float totalSumValue = statistic.sumValue;
-                    if( totalSumValues.containsKey( statistic.statisticTypeId ) ) {
-                        totalSumValue += totalSumValues.get( statistic.statisticTypeId );
-                    }
-                    totalSumValues.put( statistic.statisticTypeId, totalSumValue );
-                    statistic.totalValue = totalSumValue;
-                }
-                statistic.timestamp = rs.getInt( "timestamp" );
-
-                statistic.machineId = rs.getInt( "machineId" );
-                statistic.testcaseId = rs.getInt( "testcaseId" );
-
-                statistics.add( statistic );
-
-                numberRecords++;
-            }
-
-            logQuerySuccess( sqlLog, "system aggregated statistics", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
-        } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
-        }
-
-        return statistics;
-    }
-
     public List<Statistic> getCheckpointStatistics( float timeOffset, String testcaseIds, String actionNames,
                                                     String actionParents,
                                                     Set<String> expectedSingleActionUIDs,
-                                                    Set<String> expectedCombinedActionUIDs ) throws DatabaseAccessException {
+                                                    Set<String> expectedCombinedActionUIDs,
+                                                    int utcTimeOffset,
+                                                    boolean dayLightSavingOn ) throws DatabaseAccessException {
 
         List<Statistic> allStatistics = new ArrayList<Statistic>();
 
@@ -1199,7 +1127,15 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 statistic.parentName = rs.getString( "queueName" );
                 statistic.unit = "ms";
                 statistic.value = rs.getFloat( "value" );
-                statistic.timestamp = rs.getLong( "statsAxisTimestamp" );
+                if(dayLightSavingOn){
+                    statistic.setStartTimestamp( rs.getLong( "statsAxisTimestamp" ) + 3600 ); // add 1h to time stamp
+                }
+                else{
+                    statistic.setStartTimestamp( rs.getLong( "statsAxisTimestamp" ) );
+                }
+                
+                statistic.setTimeOffset( utcTimeOffset );
+                
                 statistic.machineId = 0; // Checkpoints will be collected and displayed for testcase
                 statistic.testcaseId = rs.getInt( "testcaseId" );
 
@@ -1214,7 +1150,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 // add to combined statistics
                 if( expectedCombinedActionUIDs.contains( statistic.getCombinedStatisticUid() ) ) {
 
-                    String statisticKey = statistic.timestamp + "->" + statistic.name;
+                    String statisticKey = statistic.getStartTimestamp() + "->" + statistic.name;
                     Integer timesHaveThisStatisticAtThisTimestamp = combinedStatisticHitsAtSameTimestamp.get( statisticKey );
 
                     Statistic combinedStatistic;
@@ -1224,7 +1160,10 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                         combinedStatistic.name = statistic.name;
                         combinedStatistic.parentName = Statistic.COMBINED_STATISTICS_CONTAINER;
                         combinedStatistic.unit = statistic.unit;
-                        combinedStatistic.timestamp = statistic.timestamp;
+                        
+                        combinedStatistic.setStartTimestamp( statistic.getStartTimestamp() );
+                        combinedStatistic.setTimeOffset( statistic.getTimeOffset() );
+                        
                         combinedStatistic.machineId = statistic.machineId;
                         combinedStatistic.testcaseId = statistic.testcaseId;
 
@@ -1265,7 +1204,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                     @Override
                     public int compare( Statistic stat1, Statistic stat2 ) {
 
-                        return ( int ) ( stat1.timestamp - stat2.timestamp );
+                        return ( int ) ( stat1.getStartTimestamp() - stat2.getStartTimestamp() );
                     }
                 } );
 
@@ -1305,136 +1244,8 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         return statisticId;
     }
 
-    public List<Statistic> getCheckpointAggregatedStatistics( float timeOffset, String testcaseIds,
-                                                              String actionNames,
-                                                              Set<String> expectedSingleActionUIDs,
-                                                              Set<String> expectedCombinedActionUIDs,
-                                                              int interval,
-                                                              int mode ) throws DatabaseAccessException {
-
-        List<Statistic> allStatistics = new ArrayList<Statistic>();
-
-        String sqlLog = new SqlRequestFormatter().add( "testcase ids", testcaseIds )
-                                                 .add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "checkpoint names", actionNames )
-                                                 .add( "inverval (seconds)", interval )
-                                                 .add( "mode (AVG-0001,SUM-0010,TOTALS-0100,COUNT-1000)",
-                                                       mode )
-                                                 .format();
-
-        Map<String, Integer> fakeStatisticIds = new HashMap<String, Integer>();
-
-        /*
-         * The DB does not contain combined statistics, so we must create them.
-         * All values of statistic with same name and timestamp are summed into 1 statistic
-         */
-        Map<String, Statistic> combinedStatistics = new HashMap<String, Statistic>();
-
-        Connection connection = getConnection();
-        CallableStatement callableStatement = null;
-        ResultSet rs = null;
-        try {
-
-            callableStatement = connection.prepareCall( "{ call sp_get_checkpoint_aggregated_statistics(?, ?, ?, ?, ?) }" );
-
-            callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, testcaseIds );
-            callableStatement.setString( 3, actionNames );
-            callableStatement.setInt( 4, interval );
-            callableStatement.setInt( 5, mode );
-
-            int numberRecords = 0;
-            Map<String, Float> totalSumValues = new HashMap<String, Float>();
-            rs = callableStatement.executeQuery();
-            while( rs.next() ) {
-
-                Statistic statistic = new Statistic();
-                statistic.name = rs.getString( "statsName" );
-                statistic.parentName = rs.getString( "queueName" );
-                statistic.unit = "ms";// "statsUnit" field is null for checkpoint statistics, because the action response times are always measured in "ms"
-                statistic.avgValue = rs.getFloat( "avgValue" );
-                statistic.sumValue = rs.getFloat( "sumValue" );
-                statistic.countValue = rs.getFloat( "countValue" );
-                if( StatisticAggregatedType.isTotals( mode ) ) { // total sum value
-
-                    float totalSumValue = statistic.sumValue;
-                    if( totalSumValues.containsKey( statistic.name ) ) {
-                        totalSumValue += totalSumValues.get( statistic.name );
-                    }
-                    totalSumValues.put( statistic.name, totalSumValue );
-                    statistic.totalValue = totalSumValue;
-                }
-                statistic.timestamp = rs.getLong( "timestamp" );
-                statistic.machineId = 0; // Checkpoints will be collected and displayed for testcase
-                statistic.testcaseId = rs.getInt( "testcaseId" );
-                statistic.statisticTypeId = getStatisticFakeId( START_FAKE_ID_VALUE_FOR_AGGREGATED_CHECKPOINTS,
-                                                                fakeStatisticIds, statistic );
-
-                // add to single statistics
-                if( expectedSingleActionUIDs.contains( statistic.getUid() ) ) {
-                    allStatistics.add( statistic );
-                }
-
-                // add to combined statistics
-                if( expectedCombinedActionUIDs.contains( statistic.getCombinedStatisticUid() ) ) {
-
-                    String statisticTempKey = statistic.timestamp + "->" + statistic.name;
-                    Statistic combinedStatistic = combinedStatistics.get( statisticTempKey );
-                    if( combinedStatistic == null ) {
-                        // create a new combined statistic
-                        combinedStatistic = new Statistic();
-                        combinedStatistic.name = statistic.name;
-                        combinedStatistic.parentName = Statistic.COMBINED_STATISTICS_CONTAINER;
-                        combinedStatistic.unit = statistic.unit;
-                        combinedStatistic.timestamp = statistic.timestamp;
-                        combinedStatistic.machineId = statistic.machineId;
-                        combinedStatistic.testcaseId = statistic.testcaseId;
-                        combinedStatistic.statisticTypeId = getStatisticFakeId( START_FAKE_ID_VALUE_FOR_AGGREGATED_CHECKPOINTS,
-                                                                                fakeStatisticIds,
-                                                                                combinedStatistic );
-
-                        combinedStatistics.put( statisticTempKey, combinedStatistic );
-                    }
-
-                    // calculate the combined value
-                    combinedStatistic.avgValue = combinedStatistic.avgValue + statistic.avgValue;
-                    combinedStatistic.sumValue = combinedStatistic.sumValue + statistic.sumValue;
-                    combinedStatistic.countValue = combinedStatistic.countValue + statistic.countValue;
-                    combinedStatistic.totalValue = combinedStatistic.totalValue + statistic.totalValue;
-                }
-
-                numberRecords++;
-            }
-
-            if( combinedStatistics.size() > 0 ) {
-                // sort the combined statistics by their timestamps
-                List<Statistic> sortedStatistics = new ArrayList<Statistic>( combinedStatistics.values() );
-                Collections.sort( sortedStatistics, new Comparator<Statistic>() {
-
-                    @Override
-                    public int compare( Statistic stat1, Statistic stat2 ) {
-
-                        return ( int ) ( stat1.timestamp - stat2.timestamp );
-                    }
-                } );
-
-                // add the combined statistics to the others
-                allStatistics.addAll( sortedStatistics );
-            }
-
-            logQuerySuccess( sqlLog, "checkpoint aggregated statistics", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
-        } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
-        }
-
-        return allStatistics;
-    }
-
     public List<LoadQueue> getLoadQueues( String whereClause, String sortColumn, boolean ascending,
-                                          boolean dateFormatNoYear ) throws DatabaseAccessException {
+                                          int utcTimeOffset ) throws DatabaseAccessException {
 
         List<LoadQueue> loadQueues = new ArrayList<LoadQueue>();
 
@@ -1468,22 +1279,15 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                     loadQueue.threadingPattern = loadQueue.threadingPattern.replace( "<number_threads>",
                                                                                      String.valueOf( loadQueue.numberThreads ) );
                 }
-
-                if( dateFormatNoYear ) {
-                    loadQueue.dateStart = formatDateNoYear( rs.getTimestamp( "dateStart" ) );
-                    loadQueue.dateEnd = formatDateNoYear( rs.getTimestamp( "dateEnd" ) );
-                } else {
-                    loadQueue.dateStart = formatDate( rs.getTimestamp( "dateStart" ) );
-                    loadQueue.dateEnd = formatDate( rs.getTimestamp( "dateEnd" ) );
+                
+                if ( rs.getTimestamp( "dateStart" ) != null ) {
+                    loadQueue.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
                 }
-
-                int duration = rs.getInt( "duration" );
-                if( duration < 0 ) {
-                    // this may happen when the load queue is not ended and the time of the log server
-                    // is behind with the time of the test executor host
-                    duration = 0;
+                if ( rs.getTimestamp( "dateEnd" ) != null ) {
+                    loadQueue.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
                 }
-                loadQueue.duration = formatTimeDiffereceFromSecondsToString( duration );
+                loadQueue.setTimeOffset( utcTimeOffset );
+
                 loadQueue.result = rs.getInt( "result" );
                 /*
                  *   -- 0 FAILED
@@ -1589,7 +1393,9 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
     }
 
     public List<Checkpoint> getCheckpoints( String testcaseId,
-                                            String checkpointName ) throws DatabaseAccessException {
+                                            String checkpointName,
+                                            int utcTimeOffset,
+                                            boolean dayLightSavingOn ) throws DatabaseAccessException {
 
         List<Checkpoint> checkpoints = new ArrayList<Checkpoint>();
 
@@ -1622,7 +1428,13 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 checkpoint.transferRate = rs.getFloat( "transferRate" );
                 checkpoint.transferRateUnit = rs.getString( "transferRateUnit" );
                 checkpoint.result = rs.getInt( "result" );
-                checkpoint.endTime = rs.getLong( "endTime" );
+                
+                if( dayLightSavingOn ){
+                    checkpoint.setEndTimestamp( rs.getLong( "endTime" ) + 3600 ); // add 1h
+                }else{
+                    checkpoint.setEndTimestamp( rs.getLong( "endTime" ) );
+                }
+                checkpoint.setTimeOffset( utcTimeOffset );
 
                 checkpoints.add( checkpoint );
             }

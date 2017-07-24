@@ -15,9 +15,7 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import java.io.Serializable;
-
-public class Checkpoint implements Serializable {
+public class Checkpoint extends DbEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,5 +27,4 @@ public class Checkpoint implements Serializable {
     public String             transferRateUnit;
 
     public int                result;
-    public long               endTime;
 }

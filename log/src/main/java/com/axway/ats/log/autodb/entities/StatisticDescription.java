@@ -15,15 +15,12 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import java.io.Serializable;
-
-public class StatisticDescription implements Serializable {
+public class StatisticDescription extends DbEntity {
 
     private static final long serialVersionUID = 1L;
 
     public int                testcaseId;
     public String             testcaseName;
-    public long               testcaseStarttime;
 
     public int                machineId;
     public String             machineName;

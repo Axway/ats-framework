@@ -15,9 +15,7 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import java.io.Serializable;
-
-public class Run implements Serializable {
+public class Run extends DbEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,13 +26,6 @@ public class Run implements Serializable {
     public String             runName;
     public String             os;
     public String             hostName;
-
-    public String             dateStart;
-    public String             dateStartLong;
-    public String             dateEnd;
-    public String             dateEndLong;
-    public String             duration;
-    public int                durationSeconds;
 
     public int                scenariosTotal;
     public int                scenariosFailed;

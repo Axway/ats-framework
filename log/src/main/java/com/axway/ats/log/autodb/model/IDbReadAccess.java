@@ -38,7 +38,8 @@ public interface IDbReadAccess {
                               int recordsCount,
                               String whereClause,
                               String sortColumn,
-                              boolean ascending ) throws DatabaseAccessException;
+                              boolean ascending,
+                              int utcTimeOffset ) throws DatabaseAccessException;
 
     public int getRunsCount(
                              String whereClause ) throws DatabaseAccessException;
@@ -49,7 +50,7 @@ public interface IDbReadAccess {
                                   String whereClause,
                                   String sortColumn,
                                   boolean ascending,
-                                  boolean dateFormatNoYear ) throws DatabaseAccessException;
+                                  int utcTimeOffset ) throws DatabaseAccessException;
 
     public int getSuitesCount(
                                String whereClause ) throws DatabaseAccessException;
@@ -60,7 +61,7 @@ public interface IDbReadAccess {
                                         String whereClause,
                                         String sortColumn,
                                         boolean ascending,
-                                        boolean dateFormatNoYear ) throws DatabaseAccessException;
+                                        int utcTimeOffset ) throws DatabaseAccessException;
 
     public int getScenariosCount(
                                   String whereClause ) throws DatabaseAccessException;
@@ -71,7 +72,7 @@ public interface IDbReadAccess {
                                         String whereClause,
                                         String sortColumn,
                                         boolean ascending,
-                                        boolean dateFormatNoYear ) throws DatabaseAccessException;
+                                        int utcTimeOffset ) throws DatabaseAccessException;
 
     public int getTestcasesCount(
                                   String whereClause ) throws DatabaseAccessException;
@@ -83,21 +84,24 @@ public interface IDbReadAccess {
                                       int recordsCount,
                                       String whereClause,
                                       String sortColumn,
-                                      boolean ascending ) throws DatabaseAccessException;
+                                      boolean ascending,
+                                      int utcTimeOffset ) throws DatabaseAccessException;
 
     public List<Message> getRunMessages(
                                          int startRecord,
                                          int recordsCount,
                                          String whereClause,
                                          String sortColumn,
-                                         boolean ascending ) throws DatabaseAccessException;
+                                         boolean ascending,
+                                         int utcTimeOffset ) throws DatabaseAccessException;
 
     public List<Message> getSuiteMessages(
                                            int startRecord,
                                            int recordsCount,
                                            String whereClause,
                                            String sortColumn,
-                                           boolean ascending ) throws DatabaseAccessException;
+                                           boolean ascending,
+                                           int utcTimeOffset ) throws DatabaseAccessException;
 
     public int getMessagesCount(
                                  String whereClause ) throws DatabaseAccessException;
@@ -111,26 +115,24 @@ public interface IDbReadAccess {
 	public List<StatisticDescription> getSystemStatisticDescriptions( 
 																	  float timeOffset, 
 																	  String wherClause,
-																	  Map<String, String> testcaseAliases) throws DatabaseAccessException;
+																	  Map<String, String> testcaseAliases,
+																	  int utcTimeOffset,
+                                                                      boolean dayLightSavingOn ) throws DatabaseAccessException;
 
     public List<StatisticDescription> getCheckpointStatisticDescriptions(
                                                                           float timeOffset,
                                                                           String whereClause,
-                                                                          Set<String> expectedSingleActionUIDs ) throws DatabaseAccessException;
+                                                                          Set<String> expectedSingleActionUIDs,
+                                                                          int utcTimeOffset,
+                                                                          boolean dayLightSavingOn ) throws DatabaseAccessException;
 
     public List<Statistic> getSystemStatistics(
                                                 float timeOffset,
                                                 String testcaseIds,
                                                 String machineIds,
-                                                String statsTypeIds) throws DatabaseAccessException;
-
-    public List<Statistic> getSystemAggregatedStatistics(
-                                                          float timeOffset,
-                                                          String testcaseIds,
-                                                          String machineIds,
-                                                          String statsTypeIds,
-                                                          int interval,
-                                                          int mode ) throws DatabaseAccessException;
+                                                String statsTypeIds,
+                                                int utcTimeOffset,
+                                                boolean dayLightSavingOn ) throws DatabaseAccessException;
 
     public List<Statistic> getCheckpointStatistics(
                                                     float timeOffset,
@@ -138,22 +140,16 @@ public interface IDbReadAccess {
                                                     String actionNames,
                                                     String actionParents,
                                                     Set<String> expectedSingleActionUIDs,
-                                                    Set<String> expectedCombinedActionUIDs ) throws DatabaseAccessException;
+                                                    Set<String> expectedCombinedActionUIDs,
+                                                    int utcTimeOffset,
+                                                    boolean dayLightSavingOn ) throws DatabaseAccessException;
 
-    public List<Statistic> getCheckpointAggregatedStatistics(
-                                                              float timeOffset,
-                                                              String testcaseIds,
-                                                              String actionNames,
-                                                              Set<String> expectedSingleActionUIDs,
-                                                              Set<String> expectedCombinedActionUIDs,
-                                                              int interval,
-                                                              int mode ) throws DatabaseAccessException;
 
     public List<LoadQueue> getLoadQueues(
                                             String whereClause,
                                             String sortColumn,
                                             boolean ascending,
-                                            boolean dateFormatNoYear ) throws DatabaseAccessException;
+                                            int utcTimeOffset ) throws DatabaseAccessException;
 
     public List<CheckpointSummary> getCheckpointsSummary(
                                                           String whereClause,

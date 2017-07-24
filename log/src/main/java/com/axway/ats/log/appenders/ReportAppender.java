@@ -16,10 +16,8 @@
 
 package com.axway.ats.log.appenders;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.axway.ats.log.autodb.AbstractDbAccess;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.events.EndRunEvent;
 import com.axway.ats.log.autodb.events.EndSuiteEvent;
@@ -39,7 +36,6 @@ import com.axway.ats.log.autodb.events.StartRunEvent;
 import com.axway.ats.log.autodb.events.StartSuiteEvent;
 import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
-import com.axway.ats.log.model.TestCaseResult;
 import com.axway.ats.log.report.model.MailReportSender;
 import com.axway.ats.log.report.model.ReportFormatter;
 import com.axway.ats.log.report.model.RunWrapper;
@@ -52,7 +48,6 @@ import com.axway.ats.log.report.model.SuiteWrapper;
 public class ReportAppender extends AppenderSkeleton {
 
     private static final SimpleDateFormat TIME_FORMAT   = new SimpleDateFormat( "HH:mm:ss" );
-    private static final int              MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
 
     static {
         // we must 'zero' the this formatter, or unexpected time differences appear
@@ -156,7 +151,7 @@ public class ReportAppender extends AppenderSkeleton {
                     run.buildName = startRunEvent.getBuildName();
                     run.os = startRunEvent.getOsName();
                     run.runName = startRunEvent.getRunName();
-                    run.dateStart = AbstractDbAccess.DATE_FORMAT_NO_YEAR.format( startRunEvent.getTimeStamp() );
+                    run.setStartTimestamp( startRunEvent.getTimeStamp() );
                     break;
 
                 case START_SUITE:
@@ -167,7 +162,7 @@ public class ReportAppender extends AppenderSkeleton {
                         SuiteWrapper newSuite = new SuiteWrapper();
                         newSuite.name = startSuiteEvent.getSuiteName();
                         newSuite.packageName = startSuiteEvent.getPackage();
-                        newSuite.dateStart = AbstractDbAccess.DATE_FORMAT_NO_YEAR.format( startSuiteEvent.getTimeStamp() );
+                        newSuite.setStartTimestamp( startSuiteEvent.getTimeStamp() );
                         suitesMap.put( newSuite.packageName + "." + newSuite.name, newSuite );
 
                         run.addSuite( newSuite );
@@ -208,10 +203,8 @@ public class ReportAppender extends AppenderSkeleton {
 
                     SuiteWrapper currentSuite = getCurrentSuite();
                     if( currentSuite != null ) {
-                    	currentSuite.calculateFinalStatistics();
-                        currentSuite.dateEnd = AbstractDbAccess.DATE_FORMAT_NO_YEAR.format( endSuiteEvent.getTimeStamp() );
-                        currentSuite.duration = calculateDuration( currentSuite.dateStart,
-                                                                   currentSuite.dateEnd );
+                        currentSuite.calculateFinalStatistics();
+                        currentSuite.setEndTimestamp( endSuiteEvent.getTimeStamp() );
                         currentSuite.testcasesPassedPercent = "0";
                         if( currentSuite.testcasesTotal > 0 ) {
                             currentSuite.testcasesPassedPercent = String.valueOf( ( currentSuite.testcasesTotal
@@ -233,8 +226,7 @@ public class ReportAppender extends AppenderSkeleton {
                     EndRunEvent endRunEvent = ( EndRunEvent ) event;
 
                     run.calculateFinalStatistics();
-                    run.dateEnd = AbstractDbAccess.DATE_FORMAT_NO_YEAR.format( endRunEvent.getTimeStamp() );
-                    run.duration = calculateDuration( run.dateStart, run.dateEnd );
+                    run.setEndTimestamp( endRunEvent.getTimeStamp() );
                     run.testcasesPassedPercent = "0";
                     if( run.testcasesTotal > 0 ) {
                         run.testcasesPassedPercent = String.valueOf( ( run.testcasesTotal
@@ -292,29 +284,6 @@ public class ReportAppender extends AppenderSkeleton {
         } else {
             return suitesMap.get( lastPlayedSuite );
         }
-    }
-
-    private String calculateDuration(
-                                      String dateStart,
-                                      String dateEnd ) {
-
-        String duration = "";
-        long timeDifferenceInMillis;
-        try {
-            timeDifferenceInMillis = AbstractDbAccess.DATE_FORMAT_NO_YEAR.parse( dateEnd ).getTime()
-                                     - AbstractDbAccess.DATE_FORMAT_NO_YEAR.parse( dateStart ).getTime();
-        } catch( ParseException e ) {
-            return "";
-        }
-
-        long timeDifferenceInDays = timeDifferenceInMillis / MILLIS_IN_DAY;
-
-        duration = ( timeDifferenceInDays > 0
-                                              ? timeDifferenceInDays + " days, "
-                                              : "" )
-                   + TIME_FORMAT.format( new Date( timeDifferenceInMillis ) );
-
-        return duration;
     }
 
     private String generateMailSubject(

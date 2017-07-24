@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.log.report.model.MailReportSender;
-import com.axway.ats.log.report.model.ReportExtactor;
+import com.axway.ats.log.report.model.ReportExtractor;
 import com.axway.ats.log.report.model.ReportFormatter;
 import com.axway.ats.log.report.model.RunWrapper;
 
@@ -96,7 +96,7 @@ public class LogReportMailer {
     public void send() {
 
         // get runs from log database
-        ReportExtactor reportExtactor = new ReportExtactor( dbHost, dbName, dbUser, dbPassword );
+        ReportExtractor reportExtactor = new ReportExtractor( dbHost, dbName, dbUser, dbPassword );
         List<RunWrapper> runs = reportExtactor.extract( runIds );
 
         // format the report

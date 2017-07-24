@@ -52,9 +52,7 @@ public class RunWrapper extends Run {
         this.os = run.os;
         this.hostName = run.hostName;
 
-        this.dateStart = run.dateStart;
-        this.dateEnd = run.dateEnd;
-        this.duration = run.duration;
+        this.startTimestamp = run.getStartTimestamp();
 
         this.scenariosTotal = run.scenariosTotal;
         this.scenariosFailed = run.scenariosFailed;

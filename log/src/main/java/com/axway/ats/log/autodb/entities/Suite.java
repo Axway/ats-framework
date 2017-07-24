@@ -15,19 +15,13 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import java.io.Serializable;
-
-public class Suite implements Serializable {
+public class Suite extends DbEntity {
 
     private static final long serialVersionUID = 1L;
 
     public String             suiteId;
     public String             runId;
     public String             name;
-
-    public String             dateStart;
-    public String             dateEnd;
-    public String             duration;
 
     public int                scenariosTotal;
     public int                scenariosFailed;

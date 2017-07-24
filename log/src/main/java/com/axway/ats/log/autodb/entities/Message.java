@@ -15,21 +15,34 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class Message implements Serializable {
+public class Message extends DbEntity {
 
-    private static final long serialVersionUID = 1L;
+    private static final long       serialVersionUID = 1L;
 
-    public int                messageId;
-    public int                parentMessageId;
-    public String             messageContent;
-    public String             messageType;
+    private static SimpleDateFormat dateFormat       = new SimpleDateFormat( "MMM dd" );
+    private static SimpleDateFormat timeFormat       = new SimpleDateFormat( "HH:mm:ss:S" );
 
-    public String             date;
-    public String             time;
-    public boolean            escapeHtml;
+    public int                      messageId;
+    public int                      parentMessageId;
+    public String                   messageContent;
+    public String                   messageType;
 
-    public String             machineName;
-    public String             threadName;
+    public boolean                  escapeHtml;
+
+    public String                   machineName;
+    public String                   threadName;
+
+    public String getDate() {
+
+        return dateFormat.format( new Date( getStartTimestamp() ) );
+    }
+
+    public String getTime() {
+
+        return timeFormat.format( new Date( getStartTimestamp() ) );
+    }
+
 }

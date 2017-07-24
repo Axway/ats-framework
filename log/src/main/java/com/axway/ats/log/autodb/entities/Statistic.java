@@ -15,9 +15,12 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import java.io.Serializable;
+import java.text.ParseException;
+import java.util.Date;
 
-public class Statistic implements Serializable {
+import com.axway.ats.log.autodb.AbstractDbAccess;
+
+public class Statistic extends DbEntity {
 
     private static final long  serialVersionUID              = 1L;
 
@@ -40,15 +43,31 @@ public class Statistic implements Serializable {
 
     public float               transferSize;
 
-    public long                timestamp;
-
-    public String              date;
+    // This date is in UTC format
+    private String             date;
 
     public int                 machineId;
 
     public int                 testcaseId;
 
     public int                 result;
+    
+    public void setDate( String date ) {
+
+        this.date = date;
+    }
+
+    public String getDate() {
+
+        try {
+            long utcMillis = AbstractDbAccess.DATE_FORMAT.parse( this.date ).getTime();
+            Date localDate = new Date( utcMillis - timeOffset );
+            return AbstractDbAccess.DATE_FORMAT.format( localDate );
+        } catch( ParseException e ) {
+            return "";
+        }
+
+    }
 
     @Override
     public String toString() {
@@ -61,8 +80,8 @@ public class Statistic implements Serializable {
         msg.append( ", value=" + value );
         msg.append( ", transferSize=" + transferSize );
         msg.append( ", statisticTypeId=" + statisticTypeId );
-        msg.append( ", timestamp=" + timestamp );
-        msg.append( ", date=" + date );
+        msg.append( ", timestamp=" + getStartTimestamp() );
+        msg.append( ", date=" + getDate() );
 
         return msg.toString();
     }
@@ -77,7 +96,8 @@ public class Statistic implements Serializable {
         newStatistic.name = this.name;
         newStatistic.parentName = this.parentName;
         newStatistic.unit = this.unit;
-        newStatistic.timestamp = this.timestamp;
+        newStatistic.startTimestamp = this.startTimestamp;
+        newStatistic.timeOffset = this.timeOffset;
         newStatistic.date = this.date;
         newStatistic.machineId = this.machineId;
         newStatistic.testcaseId = this.testcaseId;

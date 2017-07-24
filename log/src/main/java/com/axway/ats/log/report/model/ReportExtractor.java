@@ -28,7 +28,7 @@ import com.axway.ats.log.report.exceptions.ReportExtractorException;
 /**
  * Extracts runs from provided database host and name
  */
-public class ReportExtactor {
+public class ReportExtractor {
 
     private DbReadAccess        dbReadAccess;
 
@@ -38,7 +38,7 @@ public class ReportExtactor {
      * @param dbUser the user name used for authentication to the database
      * @param dbPassword the user password used for authentication to the database
      */
-    public ReportExtactor( String dbHost,
+    public ReportExtractor( String dbHost,
                            String dbName,
                            String dbUser,
                            String dbPassword) {
@@ -83,7 +83,7 @@ public class ReportExtactor {
 
         List<Run> dbRuns;
         try {
-            dbRuns = dbReadAccess.getRuns( 0, 10000, whereClause.toString(), "runId", true );
+            dbRuns = dbReadAccess.getRuns( 0, 10000, whereClause.toString(), "runId", true, 0 );
         } catch( DatabaseAccessException e ) {
             throw new ReportExtractorException( "Error loading runs " + whereClause, e );
         }
@@ -98,8 +98,7 @@ public class ReportExtactor {
                                                  10000,
                                                  "WHERE runId=" + dbRun.runId,
                                                  "suiteId",
-                                                 true,
-                                                 false );
+                                                 true, 0 );
             } catch( DatabaseAccessException e ) {
                 throw new ReportExtractorException( "Error loading suites for run with id " + dbRun.runId,
                                                     e );

@@ -294,7 +294,8 @@ public class SystemMonitor {
     public void scheduleSystemMonitoring(
                                           String monitoredHost,
                                           String[] systemReadingTypes ) {
-
+        
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, systemReadingTypes };
@@ -319,6 +320,7 @@ public class SystemMonitor {
                                     String readingType,
                                     Map<String, String> readingParameters ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ readingType, readingParameters };
@@ -348,6 +350,7 @@ public class SystemMonitor {
                                            String processAlias,
                                            String[] processReadingTypes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         scheduleProcessMonitoring( monitoredHost,
                                    null,
@@ -378,6 +381,7 @@ public class SystemMonitor {
                                            String processUsername,
                                            String[] processReadingTypes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         scheduleProcessMonitoring( monitoredHost,
                                    null,
@@ -409,6 +413,7 @@ public class SystemMonitor {
                                                 String processAlias,
                                                 String[] processReadingTypes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         scheduleParentProcessMonitoring( monitoredHost,
                                          parentProcess,
@@ -442,6 +447,7 @@ public class SystemMonitor {
                                                 String processUsername,
                                                 String[] processReadingTypes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         scheduleParentProcessMonitoring( monitoredHost,
                                          parentProcess,
@@ -467,6 +473,7 @@ public class SystemMonitor {
                                        String jvmPort,
                                        String[] jvmReadingTypes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         scheduleJvmMonitoring( monitoredHost, jvmPort, "", jvmReadingTypes );
     }
 
@@ -488,6 +495,7 @@ public class SystemMonitor {
                                        String alias,
                                        String[] jvmReadingTypes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, jvmPort, alias, jvmReadingTypes };
@@ -524,6 +532,7 @@ public class SystemMonitor {
                                              String unit,
                                              String... mbeanAttributes ) {
 
+        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, jmxPort, alias, mbeanName, unit, mbeanAttributes };
@@ -544,6 +553,7 @@ public class SystemMonitor {
     public void scheduleUserActivityMonitoring(
                                                 String atsAgent ) {
 
+        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
         monitoredAgents.add( atsAgent );
 
         performSetup( atsAgent );
