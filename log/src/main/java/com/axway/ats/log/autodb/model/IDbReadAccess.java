@@ -114,7 +114,7 @@ public interface IDbReadAccess {
 
 	public List<StatisticDescription> getSystemStatisticDescriptions( 
 																	  float timeOffset, 
-																	  String wherClause,
+																	  String whereClause,
 																	  Map<String, String> testcaseAliases,
 																	  int utcTimeOffset,
                                                                       boolean dayLightSavingOn ) throws DatabaseAccessException;
