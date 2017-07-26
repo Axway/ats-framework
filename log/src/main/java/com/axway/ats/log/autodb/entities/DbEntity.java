@@ -49,7 +49,7 @@ public class DbEntity implements Serializable {
     }
 
     public void setEndTimestamp( long endTimestamp ) {
-
+        
         this.endTimestamp = endTimestamp;
     }
 
@@ -126,7 +126,7 @@ public class DbEntity implements Serializable {
         long durationSeconds = getDuration( currentTimestamp ) / 1000;
         
         // any duration, less than one second is assumed to be one second
-        if( durationSeconds == 0 ) {
+        if( durationSeconds <= 0 ) {
             durationSeconds = 1;
         }
 
