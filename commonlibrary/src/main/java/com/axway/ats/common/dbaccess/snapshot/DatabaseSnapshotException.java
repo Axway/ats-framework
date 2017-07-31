@@ -26,9 +26,9 @@ import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 @PublicAtsApi
 public class DatabaseSnapshotException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long     serialVersionUID = 1L;
 
-    private DatabaseEqualityState     equality;
+    private DatabaseEqualityState equality;
 
     public DatabaseSnapshotException( String arg0 ) {
 
@@ -157,16 +157,20 @@ public class DatabaseSnapshotException extends RuntimeException {
 
                 List<String> firstColumns = equality.getColumnsPresentInOneSnapshotOnlyAsStrings( firstSnapshot,
                                                                                                   table );
-                msg.append( "\n\t[" + firstSnapshot + "]:" );
-                for( String column : firstColumns ) {
-                    msg.append( "\n\t\t" + column );
+                if( firstColumns != null && firstColumns.size() > 0 ) {
+                    msg.append( "\n\t[" + firstSnapshot + "]:" );
+                    for( String column : firstColumns ) {
+                        msg.append( "\n\t\t" + column );
+                    }
                 }
 
                 List<String> secondColumns = equality.getColumnsPresentInOneSnapshotOnlyAsStrings( secondSnapshot,
                                                                                                    table );
-                msg.append( "\n\t[" + secondSnapshot + "]:" );
-                for( String column : secondColumns ) {
-                    msg.append( "\n\t\t" + column );
+                if( secondColumns != null && secondColumns.size() > 0 ) {
+                    msg.append( "\n\t[" + secondSnapshot + "]:" );
+                    for( String column : secondColumns ) {
+                        msg.append( "\n\t\t" + column );
+                    }
                 }
             }
         }
@@ -209,16 +213,20 @@ public class DatabaseSnapshotException extends RuntimeException {
 
                 List<String> firstRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings( firstSnapshot,
                                                                                             table );
-                msg.append( "\n\t[" + firstSnapshot + "]:" );
-                for( String row : firstRows ) {
-                    msg.append( "\n\t\t" + row );
+                if( firstRows != null && firstRows.size() > 0 ) {
+                    msg.append( "\n\t[" + firstSnapshot + "]:" );
+                    for( String row : firstRows ) {
+                        msg.append( "\n\t\t" + row );
+                    }
                 }
 
                 List<String> secondRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings( secondSnapshot,
                                                                                              table );
-                msg.append( "\n\t[" + secondSnapshot + "]:" );
-                for( String row : secondRows ) {
-                    msg.append( "\n\t\t" + row );
+                if( secondRows != null && secondRows.size() > 0 ) {
+                    msg.append( "\n\t[" + secondSnapshot + "]:" );
+                    for( String row : secondRows ) {
+                        msg.append( "\n\t\t" + row );
+                    }
                 }
             }
         }
