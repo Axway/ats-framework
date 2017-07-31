@@ -50,6 +50,7 @@ import com.axway.ats.log.autodb.events.StartRunEvent;
 import com.axway.ats.log.autodb.events.StartSuiteEvent;
 import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.events.UpdateRunEvent;
+import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
 import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
 import com.axway.ats.log.model.SystemLogLevel;
@@ -400,6 +401,7 @@ public class AtsDbLogger {
     /**
      * Start a new suite
      *
+     * @param packageName name of the package
      * @param suiteName name of the suite
      */
     public void startSuite(
@@ -407,6 +409,18 @@ public class AtsDbLogger {
                             String suiteName ) {
 
         sendEvent( new StartSuiteEvent( ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, packageName ) );
+    }
+    
+    /**
+     * Updates a suite
+     * 
+     * @param packageName new name for the package
+     * @param suiteName new name for the suite
+     */
+    public void updateSuite( String packageName,
+                            String suiteName ) {
+        
+        sendEvent( new UpdateSuiteEvent( ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, packageName ) );
     }
 
     /**
