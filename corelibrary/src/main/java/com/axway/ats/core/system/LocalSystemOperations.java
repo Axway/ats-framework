@@ -311,6 +311,9 @@ public class LocalSystemOperations implements ISystemOperations {
      */
     private void setWindowsTime( Calendar calendar ) throws Exception {
 
+        
+        // we are using the default date format and the system specific time format
+
         // set the date
         String dateArguments = String.format( "%1$02d-%2$02d-%3$02d", calendar.get( Calendar.DAY_OF_MONTH ),
                                               calendar.get( Calendar.MONTH ) + 1,
@@ -321,9 +324,7 @@ public class LocalSystemOperations implements ISystemOperations {
         processExecutor.execute();
 
         // set the time
-        String timeArguments = String.format( "%1$02d:%2$02d:%3$02d", calendar.get( Calendar.HOUR_OF_DAY ),
-                                              calendar.get( Calendar.MINUTE ),
-                                              calendar.get( Calendar.SECOND ) );
+        String timeArguments = SimpleDateFormat.getTimeInstance().format( calendar.getTime() );
         processExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4,
                                                     "cmd /c time " + timeArguments );
         processExecutor.execute();
