@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,8 +38,8 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
-import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
-import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipContentMatcher.MATCH_TYPE;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipIniMatcher.MATCH_ENTITY;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 
@@ -181,13 +180,9 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeDirectoryPath = makePathRelative( parseDirectoryPath( relativeDirectoryPath ) );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
-                                                   + rootDirectoryAlias + "'" );
-        } else {
-            dirSnapshot.skipSubDirectory( relativeDirectoryPath );
-        }
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.skipSubDirectory( relativeDirectoryPath );
     }
 
     @Override
@@ -199,16 +194,12 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
         skipRules = skipMd5IfWantToSkipFileSize( skipRules );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
-                                                   + rootDirectoryAlias + "'" );
-        } else {
-            if( skipRules.length == 0 ) {
-                skipRules = new int[]{ FindRules.SKIP_FILE_PATH };
-            }
-            dirSnapshot.addFindRules( relativeFilePath, skipRules );
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+        
+        if( skipRules.length == 0 ) {
+            skipRules = new int[]{ FindRules.SKIP_FILE_PATH };
         }
+        dirSnapshot.addFindRules( relativeFilePath, skipRules );
     }
     
     @Override
@@ -217,14 +208,10 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                           + "'" );
-        } else {
-            dirSnapshot.addSkipPropertyMatcher( rootDirectoryAlias, relativeFilePath, key, true,
-                                                SkipPropertyMatcher.MATCH_TYPE.valueOf( matchType ) );
-        }
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipPropertyMatcher( rootDirectoryAlias, relativeFilePath, key, true,
+                                            MATCH_TYPE.valueOf( matchType ) );
     }
     
     @Override
@@ -234,14 +221,10 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                           + "'" );
-        } else {
-            dirSnapshot.addSkipPropertyMatcher( rootDirectoryAlias, relativeFilePath, value, false,
-                                                SkipPropertyMatcher.MATCH_TYPE.valueOf( matchType ) );
-        }
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipPropertyMatcher( rootDirectoryAlias, relativeFilePath, value, false,
+                                            MATCH_TYPE.valueOf( matchType ) );
     }
     
     @Override
@@ -252,15 +235,11 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                           + "'" );
-        } else {
-            dirSnapshot.addSkipXmlNodeMatcher( rootDirectoryAlias, relativeFilePath, nodeXpath, attributeKey,
-                                             attributeValue,
-                                             SkipXmlNodeMatcher.MATCH_TYPE.valueOf( attributeValueMatchType ) );
-        }
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipXmlNodeMatcher( rootDirectoryAlias, relativeFilePath, nodeXpath, attributeKey,
+                                           attributeValue,
+                                           MATCH_TYPE.valueOf( attributeValueMatchType ) );
     }
     
     @Override
@@ -270,14 +249,64 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '" + rootDirectoryAlias
-                                           + "'" );
-        } else {
-            dirSnapshot.addSkipXmlNodeMatcher( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                               SkipXmlNodeMatcher.MATCH_TYPE.valueOf( matchType ) );
-        }
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+        
+        dirSnapshot.addSkipXmlNodeMatcher( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                           MATCH_TYPE.valueOf( matchType ) );
+    }    
+
+    @Override
+    public void skipIniSection( String rootDirectoryAlias, String relativeFilePath, String section,
+                                String matchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipIniMatcher( rootDirectoryAlias, relativeFilePath, section, null,
+                                       MATCH_ENTITY.SECTION,
+                                       MATCH_TYPE.valueOf( matchType ) );
+    }
+
+    @Override
+    public void skipIniPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String section,
+                                        String propertyKey, String matchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipIniMatcher( rootDirectoryAlias, relativeFilePath, section, propertyKey,
+                                       MATCH_ENTITY.KEY,
+                                       MATCH_TYPE.valueOf( matchType ) );
+    }
+
+    @Override
+    public void skipIniPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String section,
+                                          String propertyValue, String matchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipIniMatcher( rootDirectoryAlias, relativeFilePath, section, propertyValue, MATCH_ENTITY.VALUE,
+                                       MATCH_TYPE.valueOf( matchType ) );
+    }
+    
+    @Override
+    public void skipTextLine( String rootDirectoryAlias, String relativeFilePath, String line,
+                              String matchType ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
+
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.addSkipTextLineMatcher( rootDirectoryAlias, relativeFilePath, line,
+                                            MATCH_TYPE.valueOf( matchType ) );
     }
     
     /**
@@ -359,16 +388,12 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
         checkRules = parseFindRules( checkRules );
 
-        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
-        if( dirSnapshot == null ) {
-            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
-                                                   + rootDirectoryAlias + "'" );
-        } else {
-            if( checkRules.length == 0 ) {
-                checkRules = new int[]{ FindRules.CHECK_FILE_ALL_ATTRIBUTES };
-            }
-            dirSnapshot.addFindRules( relativeFilePath, checkRules );
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+        
+        if( checkRules.length == 0 ) {
+            checkRules = new int[]{ FindRules.CHECK_FILE_ALL_ATTRIBUTES };
         }
+        dirSnapshot.addFindRules( relativeFilePath, checkRules );
     }
 
     private String parseDirectoryAlias( String directoryAlias ) {
@@ -398,6 +423,17 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
             path = path.substring( 1 );
         }
         return path;
+    }
+    
+    private DirectorySnapshot getDirectorySnapshot( String rootDirectoryAlias ) {
+
+        DirectorySnapshot dirSnapshot = this.dirSnapshots.get( rootDirectoryAlias );
+        if( dirSnapshot == null ) {
+            throw new FileSystemSnapshotException( "There is no directory snapshot with alias '"
+                                                   + rootDirectoryAlias + "'" );
+        } else {
+            return dirSnapshot;
+        }
     }
 
     private String parseFilePath( String filePath ) {

@@ -65,9 +65,9 @@ public class Test_PropertyFilesSnapshot extends BaseTest {
                      + Test_PropertyFilesSnapshot.class.getPackage().getName().replace( '.', '/' )
                      + "/check_content/properties/";
 
-        ActionLibraryConfigurator.getInstance().setFileSnapshotCheckModificationTime( false );
-        ActionLibraryConfigurator.getInstance().setFileSnapshotCheckPropertyFilesContent( true );
-        ActionLibraryConfigurator.getInstance().setFileSnapshotCheckXmlFilesContent( false );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime( false );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckPropertiesFilesContent( true );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent( false );
     }
 
     @Test

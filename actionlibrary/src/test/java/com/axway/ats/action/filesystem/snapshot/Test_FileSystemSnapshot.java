@@ -137,15 +137,15 @@ public class Test_FileSystemSnapshot extends BaseTest {
     public void setUp() {
 
         // restore the default configuration settings
-        configurator.setFileSnapshotCheckFileSize( true );
-        configurator.setFileSnapshotCheckModificationTime( true );
-        configurator.setFileSnapshotCheckFileMd5( true );
-        configurator.setFileSnapshotCheckFilePermissions( false );
-        configurator.setFileSnapshotSupportHiddenFiles( false );
+        configurator.snapshots.setCheckFileSize( true );
+        configurator.snapshots.setCheckModificationTime( true );
+        configurator.snapshots.setCheckFileMd5( true );
+        configurator.snapshots.setCheckFilePermissions( false );
+        configurator.snapshots.setSupportHiddenFiles( false );
 
         // these tests do not worry about file content
-        configurator.setFileSnapshotCheckPropertyFilesContent( false );
-        configurator.setFileSnapshotCheckXmlFilesContent( false );
+        configurator.snapshots.setCheckPropertiesFilesContent( false );
+        configurator.snapshots.setCheckXmlFilesContent( false );
     }
 
     @Test
@@ -636,10 +636,10 @@ public class Test_FileSystemSnapshot extends BaseTest {
 
         // when the files have different sizes, they will have different MD5.
         // so globally disable checking the file MD5 as we do not want to deal with it in this test
-        configurator.setFileSnapshotCheckFileMd5( false );
+        configurator.snapshots.setCheckFileMd5( false );
 
         // globally disable checking the file size
-        configurator.setFileSnapshotCheckFileSize( false );
+        configurator.snapshots.setCheckFileSize( false );
 
         // TEST1: One pair of files have different sizes, but we have disabled the check, so no
         // error will be thrown when comparing
@@ -654,7 +654,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
         snapshot1.compare( snapshot2 );
 
         // globally enable checking the file size
-        configurator.setFileSnapshotCheckFileSize( true );
+        configurator.snapshots.setCheckFileSize( true );
 
         // TEST2: Now we will do the check and error must be registered
         FileSystemSnapshot snapshot3 = new FileSystemSnapshot( "snap1" );
@@ -678,10 +678,10 @@ public class Test_FileSystemSnapshot extends BaseTest {
 
         // when the files have different sizes, they will have different MD5.
         // so globally disable checking the file MD5 as we do not want to deal with it in this test
-        configurator.setFileSnapshotCheckFileMd5( false );
+        configurator.snapshots.setCheckFileMd5( false );
 
         // globally disable checking the file size
-        configurator.setFileSnapshotCheckFileSize( false );
+        configurator.snapshots.setCheckFileSize( false );
 
         // TEST1: One pair of files have different sizes, but we have disabled the check, so no
         // error will be thrown when comparing
@@ -718,7 +718,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
     public void skipModificationTimeGlobally() {
 
         // globally disable checking the modification time
-        configurator.setFileSnapshotCheckModificationTime( false );
+        configurator.snapshots.setCheckModificationTime( false );
 
         // TEST1: One pair of files have different modification times, but we have disabled the check, so no
         // error will be thrown when comparing
@@ -733,7 +733,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
         snapshot1.compare( snapshot2 );
 
         // globally enable checking the modification time
-        configurator.setFileSnapshotCheckModificationTime( true );
+        configurator.snapshots.setCheckModificationTime( true );
 
         // TEST2: Now we will do the check and error must be registered
         FileSystemSnapshot snapshot3 = new FileSystemSnapshot( "snap1" );
@@ -756,7 +756,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
     public void skipModificationTimeGloballyButCheckOneParticularFile() {
 
         // globally disable checking the modification time
-        configurator.setFileSnapshotCheckModificationTime( false );
+        configurator.snapshots.setCheckModificationTime( false );
 
         // TEST1: One pair of files have different modification times, but we have disabled the check, so no
         // error will be thrown when comparing
@@ -793,7 +793,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
     public void skipMd5Globally() {
 
         // globally disable checking the file MD5
-        configurator.setFileSnapshotCheckFileMd5( false );
+        configurator.snapshots.setCheckFileMd5( false );
 
         // TEST1: One pair of files have different MD5, but we have disabled the check, so no
         // error will be thrown when comparing
@@ -808,7 +808,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
         snapshot1.compare( snapshot2 );
 
         // globally enable checking the file MD5
-        configurator.setFileSnapshotCheckFileMd5( true );
+        configurator.snapshots.setCheckFileMd5( true );
 
         // TEST2: Now we will do the check and error must be registered
         FileSystemSnapshot snapshot3 = new FileSystemSnapshot( "snap1" );
@@ -831,7 +831,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
     public void skipMd5GloballyButCheckOneParticularFile() {
 
         // globally disable checking the file MD5
-        configurator.setFileSnapshotCheckFileMd5( false );
+        configurator.snapshots.setCheckFileMd5( false );
 
         // TEST1: One pair of files have MD5, but we have disabled the check, so no
         // error will be thrown when comparing
@@ -875,10 +875,10 @@ public class Test_FileSystemSnapshot extends BaseTest {
         }
 
         // disable all checks
-        configurator.setFileSnapshotCheckFileSize( false );
-        configurator.setFileSnapshotCheckModificationTime( false );
-        configurator.setFileSnapshotCheckFileMd5( false );
-        configurator.setFileSnapshotCheckFilePermissions( false );
+        configurator.snapshots.setCheckFileSize( false );
+        configurator.snapshots.setCheckModificationTime( false );
+        configurator.snapshots.setCheckFileMd5( false );
+        configurator.snapshots.setCheckFilePermissions( false );
 
         // we work with 2 files only
         String firstFile = FILES_ROOT + "permissions/sub-dir1/file3.xml";
@@ -906,7 +906,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
             snapshot1.compare( snapshot2 );
 
             // globally enable checking the file permissions
-            configurator.setFileSnapshotCheckFilePermissions( true );
+            configurator.snapshots.setCheckFilePermissions( true );
 
             // TEST2: Now we will do the check and error must be registered
             FileSystemSnapshot snapshot3 = new FileSystemSnapshot( "snap1" );
@@ -955,7 +955,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
     @Test
     public void hiddenDir() {
 
-        configurator.setFileSnapshotSupportHiddenFiles( true );
+        configurator.snapshots.setSupportHiddenFiles( true );
 
         FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
         snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );

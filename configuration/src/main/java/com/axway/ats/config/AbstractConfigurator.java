@@ -140,6 +140,25 @@ public abstract class AbstractConfigurator {
                                               + propertyValue + "'" );
         }
     }
+    
+    /**
+     * Get a property by name and convert it to a char.
+     * <br>Valid values are 1 character long Strings
+     * 
+     * @param name the name of the property
+     * @return the property converted to char
+     * @throws ConfigurationException if a not valid property is provided 
+     */
+    protected final char getCharProperty( String name ) {
+
+        String propertyValue = configRepository.getProperty( name );
+        if( propertyValue.length() == 1 ) {
+            return propertyValue.toCharArray()[0];
+        } else {
+            throw new ConfigurationException( "Configuration setting '" + name + "' is not a char: '"
+                                              + propertyValue + "'" );
+        }
+    }
 
     /**
      * Use setTempProperty() method instead this one.

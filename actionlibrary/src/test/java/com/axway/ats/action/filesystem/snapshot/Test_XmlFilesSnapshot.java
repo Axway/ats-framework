@@ -66,8 +66,8 @@ public class Test_XmlFilesSnapshot extends BaseTest {
                      + Test_XmlFilesSnapshot.class.getPackage().getName().replace( '.', '/' )
                      + "/check_content/xml/";
 
-        ActionLibraryConfigurator.getInstance().setFileSnapshotCheckModificationTime( false );
-        ActionLibraryConfigurator.getInstance().setFileSnapshotCheckXmlFilesContent( true );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime( false );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent( true );
     }
 
     @Test

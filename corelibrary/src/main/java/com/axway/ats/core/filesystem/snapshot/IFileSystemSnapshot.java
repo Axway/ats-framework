@@ -59,6 +59,18 @@ public interface IFileSystemSnapshot {
                                      String attributeKey, String attributeValue,
                                      String attributeValueMatchType );
     
+    public void skipIniSection( String rootDirectoryAlias, String relativeFilePath, String section,
+                                String matchType );
+
+    public void skipIniPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String section,
+                                        String propertyKey, String matchType );
+
+    public void skipIniPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String section,
+                                          String propertyValue, String matchType );
+
+    public void skipTextLine( String rootDirectoryAlias, String relativeFilePath, String line,
+                              String matchType );
+    
     public void takeSnapshot();
 
     public void loadFromFile(

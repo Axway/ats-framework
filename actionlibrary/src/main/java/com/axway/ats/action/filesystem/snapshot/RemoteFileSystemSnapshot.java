@@ -226,7 +226,56 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
         } catch( AgentException e ) {
             throw new FileSystemSnapshotException( e );
         }
-    }    
+    }
+
+    @Override
+    public void skipIniSection( String rootDirectoryAlias, String relativeFilePath, String section,
+                                String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipIniSection( internalId, rootDirectoryAlias, relativeFilePath, section,
+                                             matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+
+    @Override
+    public void skipIniPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String section,
+                                        String key, String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipIniPropertyWithKey( internalId, rootDirectoryAlias, relativeFilePath,
+                                                     section, key, matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+
+    @Override
+    public void skipIniPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String section,
+                                          String value, String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipIniPropertyWithValue( internalId, rootDirectoryAlias, relativeFilePath,
+                                                       section, value, matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+    
+    @Override
+    public void skipTextLine( String rootDirectoryAlias, String relativeFilePath, String line,
+                                String matchType ) {
+
+        try {
+            remoteFSSnapshot.skipTextLine( internalId, rootDirectoryAlias, relativeFilePath, line,
+                                             matchType );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }      
+    }
+
 
     @Override
     public void takeSnapshot() {

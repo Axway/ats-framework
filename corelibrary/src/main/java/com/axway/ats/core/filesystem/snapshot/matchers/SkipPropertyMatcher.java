@@ -15,7 +15,6 @@
  */
 package com.axway.ats.core.filesystem.snapshot.matchers;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,44 +30,9 @@ import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
  * Used to decide whether some properties are to be skipped due to some
  * match in there key or value
  */
-public class SkipPropertyMatcher implements Serializable {
+public class SkipPropertyMatcher extends SkipContentMatcher {
 
-    private static final long   serialVersionUID = 1L;
-
-    private static final Logger log              = Logger.getLogger( SkipPropertyMatcher.class );
-
-    public enum MATCH_TYPE {
-        TEXT, CONTAINS_TEXT, REGEX;
-
-        public boolean isPlainText() {
-
-            return this == TEXT;
-        }
-
-        public boolean isContainingText() {
-
-            return this == CONTAINS_TEXT;
-        }
-
-        public boolean isRegex() {
-
-            return this == REGEX;
-        }
-
-        public String getDescription() {
-
-            if( this == TEXT ) {
-                return "exact text";
-            } else if( this == CONTAINS_TEXT ) {
-                return "contains text";
-            } else {
-                return "regullar expression";
-            }
-        }
-    }
-
-    public String                   directoryAlias;
-    public String                   filePath;
+    private static final Logger     log = Logger.getLogger( SkipPropertyMatcher.class );
 
     // < property key , match type >
     private Map<String, MATCH_TYPE> keysMap;
@@ -77,8 +41,7 @@ public class SkipPropertyMatcher implements Serializable {
 
     public SkipPropertyMatcher( String directoryAlias, String filePath ) {
 
-        this.directoryAlias = directoryAlias;
-        this.filePath = filePath;
+        super( directoryAlias, filePath );
 
         this.keysMap = new HashMap<>();
         this.valuesMap = new HashMap<>();

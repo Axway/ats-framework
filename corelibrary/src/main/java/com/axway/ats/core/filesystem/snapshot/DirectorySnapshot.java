@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -31,9 +32,17 @@ import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.core.filesystem.snapshot.matchers.FileMatchersContainer;
 import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipContentMatcher.MATCH_TYPE;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipIniMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipIniMatcher.MATCH_ENTITY;
 import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
-import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher.MATCH_TYPE;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipTextLineMatcher;
 import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
+import com.axway.ats.core.filesystem.snapshot.types.FileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.IniFileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.PropertiesFileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.TextFileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.XmlFileSnapshot;
 import com.axway.ats.core.utils.IoUtils;
 
 public class DirectorySnapshot implements Serializable {
@@ -178,11 +187,13 @@ public class DirectorySnapshot implements Serializable {
     void addSkipPropertyMatcher( String directoryAlias, String filePathInThisDirectory,
                                  SkipPropertyMatcher matcher ) {
 
+        // keys
         Map<String, MATCH_TYPE> keysMap = matcher.getKeysMap();
         for( String key : keysMap.keySet() ) {
             addSkipPropertyMatcher( directoryAlias, filePathInThisDirectory, key, true, keysMap.get( key ) );
         }
 
+        // values
         Map<String, MATCH_TYPE> valuesMap = matcher.getValuesMap();
         for( String value : valuesMap.keySet() ) {
             addSkipPropertyMatcher( directoryAlias, filePathInThisDirectory, value, false,
@@ -213,13 +224,68 @@ public class DirectorySnapshot implements Serializable {
                                                       value, matchType );
     }
 
-    public void addSkipXmlNodeMatcher( String directoryAlias, String filePathInThisDirectory,
+    void addSkipXmlNodeMatcher( String directoryAlias, String filePathInThisDirectory,
                                        String nodeXpath, String attributeKey, String attributeValue,
                                        SkipXmlNodeMatcher.MATCH_TYPE matchType ) {
 
         matchersContainer.addSkipXmlNodeAttributeMatcher( directoryAlias, filePathInThisDirectory, nodeXpath,
                                                           attributeKey, attributeValue, matchType );
+    }
 
+    void addSkipIniMatcher( String directoryAlias, String filePathInThisDirectory, SkipIniMatcher matcher ) {
+
+        // sections
+        for( Entry<String, MATCH_TYPE> sectionEntity : matcher.getSectionsMap().entrySet() ) {
+            String section = sectionEntity.getKey();
+            MATCH_TYPE matchType = sectionEntity.getValue();
+            addSkipIniMatcher( directoryAlias, filePathInThisDirectory, section, null, MATCH_ENTITY.SECTION,
+                               matchType );
+        }
+
+        // keys
+        for( Entry<String, Map<String, MATCH_TYPE>> sectionEntity : matcher.getKeysMap().entrySet() ) {
+            String section = sectionEntity.getKey();
+            for( Entry<String, MATCH_TYPE> propertyEntity : sectionEntity.getValue().entrySet() ) {
+                String key = propertyEntity.getKey();
+                MATCH_TYPE matchType = propertyEntity.getValue();
+                addSkipIniMatcher( directoryAlias, filePathInThisDirectory, section, key, MATCH_ENTITY.KEY,
+                                   matchType );
+            }
+        }
+
+        // values
+        for( Entry<String, Map<String, MATCH_TYPE>> sectionEntity : matcher.getValuesMap().entrySet() ) {
+            String section = sectionEntity.getKey();
+            for( Entry<String, MATCH_TYPE> propertyEntity : sectionEntity.getValue().entrySet() ) {
+                String value = propertyEntity.getKey();
+                MATCH_TYPE matchType = propertyEntity.getValue();
+                addSkipIniMatcher( directoryAlias, filePathInThisDirectory, section, value,
+                                   MATCH_ENTITY.VALUE, matchType );
+            }
+        }
+    }
+
+    void addSkipIniMatcher( String directoryAlias, String filePathInThisDirectory, String section,
+                            String token, MATCH_ENTITY matchEntity, MATCH_TYPE matchType ) {
+
+        matchersContainer.addSkipIniMatcher( directoryAlias, filePathInThisDirectory, section, token,
+                                             matchEntity, matchType );
+    }
+    
+    void addSkipTextLineMatcher( String directoryAlias, String filePathInThisDirectory, String line,
+                                 MATCH_TYPE matchType ) {
+
+        matchersContainer.addSkipTextLineMatcher( directoryAlias, filePathInThisDirectory, line, matchType );
+    }
+    
+    void addSkipTextLineMatcher( String directoryAlias, String filePathInThisDirectory,
+                                 SkipTextLineMatcher matcher ) {
+
+        for( Entry<String, MATCH_TYPE> entity : matcher.getMatchersMap().entrySet() ) {
+            String line = entity.getKey();
+            MATCH_TYPE matchType = entity.getValue();
+            addSkipTextLineMatcher( directoryAlias, filePathInThisDirectory, line, matchType );
+        }
     }
 
     void takeSnapshot( SnapshotConfiguration configuration ) {
@@ -306,19 +372,21 @@ public class DirectorySnapshot implements Serializable {
         }
 
         // create the right type of file snapshot
-        if( configuration.isCheckPropertyFilesContent()
-            && file.getName().toLowerCase().endsWith( ".properties" ) ) {
-            // it is a properties file
-            return new PropertiesFileSnapshot( configuration, file.getAbsolutePath(), rules,
-                                               this.matchersContainer.getPropertyMatchers( file.getName() ) );
-        } else if( configuration.isCheckXmlFilesContent()
-                   && file.getName().toLowerCase().endsWith( ".xml" ) ) {
-            // it is a properties file
-            return new XmlFileSnapshot( configuration, file.getAbsolutePath(), rules,
-                                        this.matchersContainer.getXmlNodeMatchers( file.getName() ) );
-        } else {
-            // it is a regular file
-            return new FileSnapshot( configuration, file.getAbsolutePath(), rules );
+        switch( configuration.getFileType( file.getName().toLowerCase() ) ){
+            case PROPERTIES:
+                return new PropertiesFileSnapshot( configuration, file.getAbsolutePath(), rules,
+                                                   this.matchersContainer.getPropertyMatchers( file.getName() ) );
+            case XML:
+                return new XmlFileSnapshot( configuration, file.getAbsolutePath(), rules,
+                                            this.matchersContainer.getXmlNodeMatchers( file.getName() ) );
+            case INI:
+                return new IniFileSnapshot( configuration, file.getAbsolutePath(), rules,
+                                            this.matchersContainer.getIniMatchers( file.getName() ) );
+            case TEXT:
+                return new TextFileSnapshot( configuration, file.getAbsolutePath(), rules,
+                                            this.matchersContainer.getTextLineMatchers( file.getName() ) );
+            default:
+                return new FileSnapshot( configuration, file.getAbsolutePath(), rules );
         }
     }
 
@@ -424,6 +492,16 @@ public class DirectorySnapshot implements Serializable {
     public Map<String, List<SkipXmlNodeMatcher>> getXmlNodeMatchersPerFile() {
 
         return this.matchersContainer.getXmlNodeMatchersMap();
+    }
+    
+    public Map<String, List<SkipIniMatcher>> getIniMatchersPerFile() {
+
+        return this.matchersContainer.getIniMatchersMap();
+    }
+    
+    public Map<String, List<SkipTextLineMatcher>> getTextLineMatchersPerFile() {
+
+        return this.matchersContainer.getTextLineMatchersMap();
     }
 
     /**

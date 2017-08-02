@@ -21,7 +21,7 @@ import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.core.filesystem.snapshot.IFileSystemSnapshot;
 import com.axway.ats.core.filesystem.snapshot.LocalFileSystemSnapshot;
 import com.axway.ats.core.filesystem.snapshot.SnapshotConfiguration;
-import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipContentMatcher.MATCH_TYPE;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
 
@@ -46,6 +46,8 @@ public class FileSystemSnapshot {
      */
     public PropertiesFile         properties;
     public XmlFile                xml;
+    public IniFile                ini;
+    public TextFile               text;
     
     /**
      * Skip checking the size of a file
@@ -112,6 +114,8 @@ public class FileSystemSnapshot {
         this.fsSnapshotImpl = getOperationsImplementationFor( atsAgent, name, configuration );
         this.properties = new PropertiesFile( this.fsSnapshotImpl );
         this.xml = new XmlFile( this.fsSnapshotImpl );
+        this.ini = new IniFile( this.fsSnapshotImpl );
+        this.text = new TextFile( this.fsSnapshotImpl );
     }
 
     /**
@@ -137,13 +141,42 @@ public class FileSystemSnapshot {
 
         ActionLibraryConfigurator configurator = ActionLibraryConfigurator.getInstance();
         configuration = new SnapshotConfiguration();
-        configuration.setCheckModificationTime( configurator.getFileSnapshotCheckModificationTime() );
-        configuration.setCheckSize( configurator.getFileSnapshotCheckFileSize() );
-        configuration.setCheckMD5( configurator.getFileSnapshotCheckFileMd5() );
-        configuration.setCheckPermissions( configurator.getFileSnapshotCheckFilePermissions() );
-        configuration.setSupportHidden( configurator.getFileSnapshotSupportHiddenFiles() );
-        configuration.setCheckPropertyFilesContent( configurator.getFileSnapshotCheckPropertyFilesContent() );
-        configuration.setCheckXmlFilesContent( configurator.getFileSnapshotCheckXmlFilesContent() );
+        configuration.setCheckModificationTime( configurator.snapshots.getCheckModificationTime() );
+        configuration.setCheckSize( configurator.snapshots.getCheckFileSize() );
+        configuration.setCheckMD5( configurator.snapshots.getCheckFileMd5() );
+        configuration.setCheckPermissions( configurator.snapshots.getCheckFilePermissions() );
+        configuration.setSupportHidden( configurator.snapshots.getSupportHiddenFiles() );
+        
+        // Properties files
+        configuration.setCheckPropertiesFilesContent( configurator.snapshots.getCheckPropertiesFilesContent() );
+        String propertiesExtensions = configurator.snapshots.getPropertiesFileExtensions();
+        if( !StringUtils.isNullOrEmpty( propertiesExtensions ) ) {
+            configuration.setPropertiesFileExtensions( propertiesExtensions.split( "," ) );
+        }
+        
+        // XML files
+        configuration.setCheckXmlFilesContent( configurator.snapshots.getCheckXmlFilesContent() );
+        String xmlExtensions = configurator.snapshots.getXmlFileExtensions();
+        if( !StringUtils.isNullOrEmpty( xmlExtensions ) ) {
+            configuration.setXmlFileExtensions( xmlExtensions.split( "," ) );
+        }
+        
+        // INI files
+        configuration.setCheckIniFilesContent( configurator.snapshots.getCheckIniFilesContent() );
+        configuration.setIniFileStartSectionCharacter( configurator.snapshots.getIniFilesStartSectionChar() );
+        configuration.setIniFileStartCommentCharacter( configurator.snapshots.getIniFilesStartCommentChar() );
+        configuration.setIniFileDelimiterCharacter( configurator.snapshots.getIniFilesDelimeterChar() );
+        String iniExtensions = configurator.snapshots.getIniFileExtensions();
+        if( !StringUtils.isNullOrEmpty( iniExtensions ) ) {
+            configuration.setIniFileExtensions( iniExtensions.split( "," ) );
+        }
+        
+        // TEXT files
+        configuration.setCheckTextFilesContent( configurator.snapshots.getCheckTextFilesContent() );
+        String textExtensions = configurator.snapshots.getTextFileExtensions();
+        if( !StringUtils.isNullOrEmpty( textExtensions ) ) {
+            configuration.setTextFileExtensions( textExtensions.split( "," ) );
+        }
     }
 
     /**
@@ -382,8 +415,7 @@ public class FileSystemSnapshot {
             return new RemoteFileSystemSnapshot( atsAgent, name, configuration );
         }
     }
-    
-    
+
     /**
      * A class used to compare properties files 
      */
@@ -408,7 +440,7 @@ public class FileSystemSnapshot {
                                                  String key ) {
 
             this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
-                                                     SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+                                                     MATCH_TYPE.TEXT.toString() );
         }
 
         /**
@@ -424,7 +456,7 @@ public class FileSystemSnapshot {
                                                      String key ) {
 
             this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
-                                                     SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+                                                     MATCH_TYPE.CONTAINS_TEXT.toString() );
         }
 
         /**
@@ -440,7 +472,7 @@ public class FileSystemSnapshot {
                                                    String key ) {
 
             this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
-                                                     SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+                                                     MATCH_TYPE.REGEX.toString() );
         }
 
         /**
@@ -456,9 +488,9 @@ public class FileSystemSnapshot {
                                                    String value ) {
 
             this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
-                                                       SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+                                                       MATCH_TYPE.TEXT.toString() );
         }
-        
+
         /**
          * Skip a property by matching its value.
          * The value is matched if it contains the provided token
@@ -469,10 +501,10 @@ public class FileSystemSnapshot {
          */
         @PublicAtsApi
         public void skipPropertyByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
-                                                     String value ) {
+                                                       String value ) {
 
             this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
-                                                       SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+                                                       MATCH_TYPE.CONTAINS_TEXT.toString() );
         }
 
         /**
@@ -485,13 +517,13 @@ public class FileSystemSnapshot {
          */
         @PublicAtsApi
         public void skipPropertyByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
-                                                   String value ) {
+                                                     String value ) {
 
             this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
-                                                       SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+                                                       MATCH_TYPE.REGEX.toString() );
         }
     }
-    
+
     /**
      * A class used to compare XML files.
      * Note that DTD validation is skipped.
@@ -520,7 +552,7 @@ public class FileSystemSnapshot {
 
             this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
                                                      attributeKey, attributeValue,
-                                                     SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+                                                     MATCH_TYPE.TEXT.toString() );
         }
 
         /**
@@ -539,7 +571,7 @@ public class FileSystemSnapshot {
 
             this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
                                                      attributeKey, attributeValue,
-                                                     SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+                                                     MATCH_TYPE.CONTAINS_TEXT.toString() );
         }
 
         /**
@@ -558,7 +590,7 @@ public class FileSystemSnapshot {
 
             this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
                                                      attributeKey, attributeValue,
-                                                     SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+                                                     MATCH_TYPE.REGEX.toString() );
         }
 
         /**
@@ -574,7 +606,7 @@ public class FileSystemSnapshot {
                                                String nodeXpath, String value ) {
 
             this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                                 SkipPropertyMatcher.MATCH_TYPE.TEXT.toString() );
+                                                 MATCH_TYPE.TEXT.toString() );
         }
 
         /**
@@ -590,7 +622,7 @@ public class FileSystemSnapshot {
                                                    String nodeXpath, String value ) {
 
             this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                                 SkipPropertyMatcher.MATCH_TYPE.CONTAINS_TEXT.toString() );
+                                                 MATCH_TYPE.CONTAINS_TEXT.toString() );
         }
 
         /**
@@ -606,7 +638,229 @@ public class FileSystemSnapshot {
                                                  String nodeXpath, String value ) {
 
             this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                                 SkipPropertyMatcher.MATCH_TYPE.REGEX.toString() );
+                                                 MATCH_TYPE.REGEX.toString() );
+        }
+    }
+
+    /**
+     * A class used to compare INI files 
+     */
+    public class IniFile {
+
+        private IFileSystemSnapshot fsSnapshotImpl;
+
+        public IniFile( IFileSystemSnapshot fsSnapshotImpl ) {
+            this.fsSnapshotImpl = fsSnapshotImpl;
+        }
+
+        /**
+         * Skip a whole INI section.
+         * The section is matched if it is the same as the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this key belongs to
+         */
+        @PublicAtsApi
+        public void skipIniSectionEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                              String section ) {
+
+            this.fsSnapshotImpl.skipIniSection( rootDirectoryAlias, relativeFilePath, section,
+                                                MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip a whole INI section.
+         * The section is matched if it contains the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this key belongs to
+         */
+        @PublicAtsApi
+        public void skipIniSectionContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                  String section ) {
+
+            this.fsSnapshotImpl.skipIniSection( rootDirectoryAlias, relativeFilePath, section,
+                                                MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip a whole INI section.
+         * The section is matched if it matches the provided regular expression token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this key belongs to
+         */
+        @PublicAtsApi
+        public void skipIniSectionMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                String section ) {
+
+            this.fsSnapshotImpl.skipIniSection( rootDirectoryAlias, relativeFilePath, section,
+                                                MATCH_TYPE.REGEX.toString() );
+        }
+
+        /**
+         * Skip a property by matching its section and key.
+         * The key is matched if it is the same as the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this key belongs to
+         * @param key a token used to match a key
+         */
+        @PublicAtsApi
+        public void skipIniPropertyByKeyEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                                    String section, String key ) {
+
+            this.fsSnapshotImpl.skipIniPropertyWithKey( rootDirectoryAlias, relativeFilePath, section, key,
+                                                        MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its section and key.
+         * The key is matched if it contains the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this key belongs to
+         * @param key a token used to match a key
+         */
+        @PublicAtsApi
+        public void skipIniPropertyByKeyContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                        String section, String key ) {
+
+            this.fsSnapshotImpl.skipIniPropertyWithKey( rootDirectoryAlias, relativeFilePath, section, key,
+                                                        MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its section and key.
+         * The key is matched if it matches the provided regular expression token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this key belongs to
+         * @param key a token used to match a key
+         */
+        @PublicAtsApi
+        public void skipIniPropertyByKeyMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                      String section, String key ) {
+
+            this.fsSnapshotImpl.skipIniPropertyWithKey( rootDirectoryAlias, relativeFilePath, section, key,
+                                                        MATCH_TYPE.REGEX.toString() );
+        }
+
+        /**
+         * Skip a property by matching its section and value.
+         * The value is matched if it the same as the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this value belongs to
+         * @param value a token used to match a value
+         */
+        @PublicAtsApi
+        public void skipIniPropertyByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                                      String section, String value ) {
+
+            this.fsSnapshotImpl.skipIniPropertyWithValue( rootDirectoryAlias, relativeFilePath, section,
+                                                          value, MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its section and value.
+         * The value is matched if it contains the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this value belongs to
+         * @param value a token used to match a value
+         */
+        @PublicAtsApi
+        public void skipIniPropertyByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                          String section, String value ) {
+
+            this.fsSnapshotImpl.skipIniPropertyWithValue( rootDirectoryAlias, relativeFilePath, section,
+                                                          value, MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip a property by matching its section and value.
+         * The value is matched if it matches the provided regular expression token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param section the section this value belongs to
+         * @param value a token used to match a value
+         */
+        @PublicAtsApi
+        public void skipIniPropertyByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                                        String section, String value ) {
+
+            this.fsSnapshotImpl.skipIniPropertyWithValue( rootDirectoryAlias, relativeFilePath, section,
+                                                          value, MATCH_TYPE.REGEX.toString() );
+        }
+    }
+
+    /**
+     * A class used to compare plain TEXT files 
+     */
+    public class TextFile {
+
+        private IFileSystemSnapshot fsSnapshotImpl;
+
+        public TextFile( IFileSystemSnapshot fsSnapshotImpl ) {
+            this.fsSnapshotImpl = fsSnapshotImpl;
+        }
+
+        /**
+         * Skip a text line.
+         * The line is matched if it is the same as the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param line the line
+         */
+        @PublicAtsApi
+        public void skipTextLineEqualsText( String rootDirectoryAlias, String relativeFilePath,
+                                            String line ) {
+
+            this.fsSnapshotImpl.skipTextLine( rootDirectoryAlias, relativeFilePath, line,
+                                              MATCH_TYPE.TEXT.toString() );
+        }
+
+        /**
+         * Skip a text line.
+         * The line is matched if it contains the provided token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param line the line
+         */
+        @PublicAtsApi
+        public void skipTextLineContainingText( String rootDirectoryAlias, String relativeFilePath,
+                                                String line ) {
+
+            this.fsSnapshotImpl.skipTextLine( rootDirectoryAlias, relativeFilePath, line,
+                                                MATCH_TYPE.CONTAINS_TEXT.toString() );
+        }
+
+        /**
+         * Skip a text line.
+         * The line is matched if it matches the provided regular expression token
+         *  
+         * @param rootDirectoryAlias the alias of the root directory
+         * @param relativeFilePath path to this file relative to the directory with provided alias
+         * @param line the line
+         */
+        @PublicAtsApi
+        public void skipTextLineMatchingText( String rootDirectoryAlias, String relativeFilePath,
+                                              String line ) {
+
+            this.fsSnapshotImpl.skipTextLine( rootDirectoryAlias, relativeFilePath, line,
+                                                MATCH_TYPE.REGEX.toString() );
         }
     }
 }

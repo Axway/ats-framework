@@ -220,6 +220,66 @@ public class InternalFileSystemSnapshot extends CallerRelatedAction {
     }
 
     @Action
+    public void skipIniSection( @Parameter(name = "internalProcessId") String internalProcessId,
+                                @Parameter(name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                @Parameter(name = "relativeFilePath") String relativeFilePath,
+                                @Parameter(name = "section") String section,
+                                @Parameter(name = "matchType") String matchType ) {
+
+        ( ( LocalFileSystemSnapshot ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                          + internalProcessId ) ).skipIniSection( rootDirectoryAlias,
+                                                                                                  relativeFilePath,
+                                                                                                  section,
+                                                                                                  matchType );
+    }
+
+    @Action
+    public void skipIniPropertyWithKey( @Parameter(name = "internalProcessId") String internalProcessId,
+                                        @Parameter(name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                        @Parameter(name = "relativeFilePath") String relativeFilePath,
+                                        @Parameter(name = "section") String section,
+                                        @Parameter(name = "key") String key,
+                                        @Parameter(name = "matchType") String matchType ) {
+
+        ( ( LocalFileSystemSnapshot ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                          + internalProcessId ) ).skipIniPropertyWithKey( rootDirectoryAlias,
+                                                                                                          relativeFilePath,
+                                                                                                          section,
+                                                                                                          key,
+                                                                                                          matchType );
+    }
+
+    @Action
+    public void skipIniPropertyWithValue( @Parameter(name = "internalProcessId") String internalProcessId,
+                                          @Parameter(name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                          @Parameter(name = "relativeFilePath") String relativeFilePath,
+                                          @Parameter(name = "section") String section,
+                                          @Parameter(name = "value") String value,
+                                          @Parameter(name = "matchType") String matchType ) {
+
+        ( ( LocalFileSystemSnapshot ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                          + internalProcessId ) ).skipIniPropertyWithValue( rootDirectoryAlias,
+                                                                                                            relativeFilePath,
+                                                                                                            section,
+                                                                                                            value,
+                                                                                                            matchType );
+    }
+
+    @Action
+    public void skipTextLine( @Parameter(name = "internalProcessId") String internalProcessId,
+                              @Parameter(name = "rootDirectoryAlias") String rootDirectoryAlias,
+                              @Parameter(name = "relativeFilePath") String relativeFilePath,
+                              @Parameter(name = "line") String line,
+                              @Parameter(name = "matchType") String matchType ) {
+
+        ( ( LocalFileSystemSnapshot ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                          + internalProcessId ) ).skipTextLine( rootDirectoryAlias,
+                                                                                                relativeFilePath,
+                                                                                                line,
+                                                                                                matchType );
+    }
+
+    @Action
     public void takeSnapshot(
                               @Parameter(name = "internalProcessId") String internalProcessId ) {
 

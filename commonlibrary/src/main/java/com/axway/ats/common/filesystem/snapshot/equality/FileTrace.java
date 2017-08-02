@@ -43,15 +43,20 @@ public class FileTrace implements Serializable {
     private Map<String, String> firstSnapshotDifferencies;
     private Map<String, String> secondSnapshotDifferencies;
 
+    // describe the file we are dealing with
+    private String entityType;
+    
     private DifferenceType      differenceType;
 
     public FileTrace( String firstSnapshot, String firstEntityPath, String secondSnapshot,
-                      String secondEntityPath, boolean isComparingFiles ) {
+                      String secondEntityPath, String entityType, boolean isComparingFiles ) {
 
         this.firstSnapshot = firstSnapshot;
         this.firstEntityPath = firstEntityPath;
         this.secondSnapshot = secondSnapshot;
         this.secondEntityPath = secondEntityPath;
+        
+        this.entityType = entityType;
 
         this.firstSnapshotDifferencies = new TreeMap<>();
         this.secondSnapshotDifferencies = new TreeMap<>();
@@ -174,10 +179,12 @@ public class FileTrace implements Serializable {
             msg.append( secondEntityPath );
         } else {
             // files are present in both snapshots, but are different
-            msg.append( "[" + firstSnapshot + "] file \"" );
+            msg.append( "[" + firstSnapshot + "] " );
+            msg.append( entityType + " \"" );
             msg.append( firstEntityPath );
             msg.append( "\" - " );
-            msg.append( "[" + secondSnapshot + "] file \"" );
+            msg.append( "[" + secondSnapshot + "] " );
+            msg.append( entityType + " \"" );
             msg.append( secondEntityPath );
             msg.append( "\":" );
 

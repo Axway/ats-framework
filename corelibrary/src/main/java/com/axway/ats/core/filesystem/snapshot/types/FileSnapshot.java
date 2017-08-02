@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.core.filesystem.snapshot;
+package com.axway.ats.core.filesystem.snapshot.types;
 
 import java.io.Serializable;
 
@@ -28,10 +28,12 @@ import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.filesystem.exceptions.AttributeNotSupportedException;
+import com.axway.ats.core.filesystem.snapshot.SnapshotConfiguration;
+import com.axway.ats.core.filesystem.snapshot.SnapshotUtils;
 import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
 import com.axway.ats.core.utils.IoUtils;
 
-class FileSnapshot implements Serializable {
+public class FileSnapshot implements Serializable {
 
     private static final long       serialVersionUID = 1L;
 
@@ -53,9 +55,7 @@ class FileSnapshot implements Serializable {
      * @param path
      * @param fileRule
      */
-    FileSnapshot( SnapshotConfiguration configuration,
-                  String path,
-                  FindRules fileRule ) {
+    public FileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule ) {
 
         this.configuration = configuration;
 
@@ -92,11 +92,7 @@ class FileSnapshot implements Serializable {
      * @param timeModified
      * @param md5
      */
-    FileSnapshot( String path,
-                  long size,
-                  long timeModified,
-                  String md5,
-                  String permissions ) {
+    FileSnapshot( String path, long size, long timeModified, String md5, String permissions ) {
 
         this.path = IoUtils.normalizeUnixFile( path );
 
@@ -110,8 +106,7 @@ class FileSnapshot implements Serializable {
      * Create an instance from a file
      * @param fileNode
      */
-    static FileSnapshot fromFile(
-                                 Element fileNode ) {
+    public static FileSnapshot fromFile( Element fileNode ) {
 
         NamedNodeMap fileAttributes = fileNode.getAttributes();
 
@@ -137,10 +132,7 @@ class FileSnapshot implements Serializable {
         if( permissionsNode != null ) {
             filePermissions = permissionsNode.getNodeValue();
         }
-        FileSnapshot fileSnapshot = new FileSnapshot( pathAtt,
-                                                      fileSize,
-                                                      fileTimeModified,
-                                                      fileMD5,
+        FileSnapshot fileSnapshot = new FileSnapshot( pathAtt, fileSize, fileTimeModified, fileMD5,
                                                       filePermissions );
 
         log.debug( "Add " + fileSnapshot.toString() );
@@ -148,15 +140,12 @@ class FileSnapshot implements Serializable {
         return fileSnapshot;
     }
 
-    String getPath() {
+    public String getPath() {
 
         return path;
     }
 
-    void compare(
-                 FileSnapshot that,
-                 FileSystemEqualityState equality,
-                 FileTrace fileTrace) {
+    public void compare( FileSnapshot that, FileSystemEqualityState equality, FileTrace fileTrace ) {
 
         boolean checkingContent = this instanceof PropertiesFileSnapshot;
 
@@ -190,24 +179,21 @@ class FileSnapshot implements Serializable {
 
         // check file modification time
         if( this.timeModified != that.timeModified ) {
-            fileTrace.addDifference( "Modification time",
-                                     String.valueOf( this.timeModified ),
+            fileTrace.addDifference( "Modification time", String.valueOf( this.timeModified ),
                                      String.valueOf( that.timeModified ) );
         }
 
         // check file permissions
         if( ( this.permissions == null && that.permissions != null )
             || ( this.permissions != null && !this.permissions.equals( that.permissions ) ) ) {
-            fileTrace.addDifference( "Permissions",
-                                     String.valueOf( this.permissions ),
+            fileTrace.addDifference( "Permissions", String.valueOf( this.permissions ),
                                      String.valueOf( that.permissions ) );
         }
 
         return fileTrace;
     }
 
-    private boolean doWeCheckFileSize(
-                                      FindRules fileRule ) {
+    private boolean doWeCheckFileSize( FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFileSize() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -222,8 +208,7 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFileSize();
     }
 
-    private boolean doWeCheckFileModificationTime(
-                                                  FindRules fileRule ) {
+    private boolean doWeCheckFileModificationTime( FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFileModificationTime() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -238,8 +223,7 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFileModificationTime();
     }
 
-    private boolean doWeCheckFileMD5(
-                                     FindRules fileRule ) {
+    private boolean doWeCheckFileMD5( FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFileMd5() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -254,8 +238,7 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFileMd5();
     }
 
-    private boolean doWeCheckFilePermissions(
-                                             FindRules fileRule ) {
+    private boolean doWeCheckFilePermissions( FindRules fileRule ) {
 
         if( fileRule != null && fileRule.isCheckFilePermissions() ) {
             // user explicitly wanted to check this attribute on this file, ignore any global settings
@@ -270,9 +253,7 @@ class FileSnapshot implements Serializable {
         return fileRule == null || !fileRule.isSkipFilePermissions();
     }
 
-    Element toFile(
-                   Document dom,
-                   Element fileSnapshotNode ) {
+    public Element toFile( Document dom, Element fileSnapshotNode ) {
 
         fileSnapshotNode.setAttribute( "path", this.path );
         if( this.size > -1 ) {
@@ -290,6 +271,11 @@ class FileSnapshot implements Serializable {
         return fileSnapshotNode;
     }
 
+    public String getFileType() {
+
+        return "file";
+    }
+    
     /**
      * This method is good for debug purpose
      */

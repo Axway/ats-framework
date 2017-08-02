@@ -32,8 +32,15 @@ import org.w3c.dom.Node;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipIniMatcher;
 import com.axway.ats.core.filesystem.snapshot.matchers.SkipPropertyMatcher;
+import com.axway.ats.core.filesystem.snapshot.matchers.SkipTextLineMatcher;
 import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
+import com.axway.ats.core.filesystem.snapshot.types.FileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.IniFileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.PropertiesFileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.TextFileSnapshot;
+import com.axway.ats.core.filesystem.snapshot.types.XmlFileSnapshot;
 import com.axway.ats.core.utils.IoUtils;
 
 public class SnapshotUtils {
@@ -42,12 +49,12 @@ public class SnapshotUtils {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSSZ" );
 
-    static String dateToString( long timeInMillis ) {
+    public static String dateToString( long timeInMillis ) {
 
         return DATE_FORMAT.format( new Date( timeInMillis ) );
     }
 
-    static long stringToDate( String timeString ) {
+    public static long stringToDate( String timeString ) {
 
         try {
             return DATE_FORMAT.parse( timeString ).getTime();
@@ -56,7 +63,7 @@ public class SnapshotUtils {
         }
     }
 
-    static String getDirPathLastToken( String path ) {
+    public static String getDirPathLastToken( String path ) {
 
         String[] tokens = path.split( IoUtils.FORWARD_SLASH );
         return tokens[tokens.length - 1];
@@ -128,10 +135,10 @@ public class SnapshotUtils {
                 // Second snapshot does not have a directory to match
                 if( !areSnapshotsReversed ) {
                     equality.addDifference( new FileTrace( firstSnapshotName, firstDir.getPath(),
-                                                           secondSnapshotName, null, false ) );
+                                                           secondSnapshotName, null, "dir", false ) );
                 } else {
                     equality.addDifference( new FileTrace( secondSnapshotName, null, firstSnapshotName,
-                                                           firstDir.getPath(), false ) );
+                                                           firstDir.getPath(), "dir", false ) );
                 }
             } else {
                 log.debug( "Compare [" + firstSnapshotName + "] " + firstDir.getPath() + " and ["
@@ -175,6 +182,17 @@ public class SnapshotUtils {
                 secondDir.addSkipXmlNodeMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
             }
         }
+        for( Map.Entry<String, List<SkipIniMatcher>> entry : firstDir.getIniMatchersPerFile().entrySet() ) {
+            for( SkipIniMatcher matcher : entry.getValue() ) {
+                secondDir.addSkipIniMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+        for( Map.Entry<String, List<SkipTextLineMatcher>> entry : firstDir.getTextLineMatchersPerFile()
+                                                                          .entrySet() ) {
+            for( SkipTextLineMatcher matcher : entry.getValue() ) {
+                secondDir.addSkipTextLineMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
 
         // merger all SECOND matchers in FIRST
         for( Map.Entry<String, List<SkipPropertyMatcher>> entry : secondDir.getPropertyMatchersPerFile()
@@ -187,6 +205,17 @@ public class SnapshotUtils {
                                                                           .entrySet() ) {
             for( SkipXmlNodeMatcher matcher : entry.getValue() ) {
                 firstDir.addSkipXmlNodeMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+        for( Map.Entry<String, List<SkipIniMatcher>> entry : secondDir.getIniMatchersPerFile().entrySet() ) {
+            for( SkipIniMatcher matcher : entry.getValue() ) {
+                firstDir.addSkipIniMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
+            }
+        }
+        for( Map.Entry<String, List<SkipTextLineMatcher>> entry : secondDir.getTextLineMatchersPerFile()
+                                                                           .entrySet() ) {
+            for( SkipTextLineMatcher matcher : entry.getValue() ) {
+                firstDir.addSkipTextLineMatcher( matcher.getDirectoryAlias(), entry.getKey(), matcher );
             }
         }
     }
@@ -207,11 +236,13 @@ public class SnapshotUtils {
             if( secondFile == null ) {
                 // SECOND file is not found
                 equality.addDifference( new FileTrace( firstSnapshotName, firstFile.getPath(),
-                                                       secondSnapshotName, null, true ) );
+                                                       secondSnapshotName, null, firstFile.getFileType(),
+                                                       true ) );
             } else {
                 // BOTH files are found, compare them
                 FileTrace fileTrace = new FileTrace( firstSnapshotName, firstFile.getPath(),
-                                                     secondSnapshotName, secondFile.getPath(), true );
+                                                     secondSnapshotName, secondFile.getPath(),
+                                                     firstFile.getFileType(), true );
 
                 // When comparing file content, we must make sure both instances are of same class.
                 // If user has specified matchers for one of the file snapshots only, we have to extend the 
@@ -232,7 +263,8 @@ public class SnapshotUtils {
             if( firstFile == null ) {
                 // FIRST file is not found
                 equality.addDifference( new FileTrace( firstSnapshotName, null, secondSnapshotName,
-                                                       secondFile.getPath(), true ) );
+                                                       secondFile.getPath(), secondFile.getFileType(),
+                                                       true ) );
             }
         }
     }
@@ -244,9 +276,15 @@ public class SnapshotUtils {
             && snapshotToExtend.getClass() == FileSnapshot.class ) {
             snapshotToExtend = ( ( PropertiesFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
         } else if( snapshotToExtendTo instanceof XmlFileSnapshot
-                && snapshotToExtend.getClass() == FileSnapshot.class ) {
-                snapshotToExtend = ( ( XmlFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
-            }
+                   && snapshotToExtend.getClass() == FileSnapshot.class ) {
+            snapshotToExtend = ( ( XmlFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
+        } else if( snapshotToExtendTo instanceof IniFileSnapshot
+                   && snapshotToExtend.getClass() == FileSnapshot.class ) {
+            snapshotToExtend = ( ( IniFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
+        } else if( snapshotToExtendTo instanceof TextFileSnapshot
+                   && snapshotToExtend.getClass() == FileSnapshot.class ) {
+            snapshotToExtend = ( ( TextFileSnapshot ) snapshotToExtendTo ).getNewInstance( snapshotToExtend );
+        }
 
         return snapshotToExtend;
     }

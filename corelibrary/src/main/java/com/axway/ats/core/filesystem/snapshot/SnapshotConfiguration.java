@@ -16,6 +16,8 @@
 package com.axway.ats.core.filesystem.snapshot;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The configuration values used when taking a snapshot.
@@ -23,23 +25,64 @@ import java.io.Serializable;
  */
 public class SnapshotConfiguration implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID     = 1L;
 
     private boolean           checkModificationTime;
     private boolean           checkSize;
     private boolean           checkMD5;
     private boolean           checkPermissions;
     private boolean           supportHidden;
-    private boolean           checkPropertyFilesContent;
+
+    // settings for working with file content
+    // Property files
+    private boolean           checkPropertiesFilesContent;
+    private Set<String>       propertiesFileExtensions;
+
+    // XML files
     private boolean           checkXmlFilesContent;
+    private Set<String>       xmlFileExtensions;
+    
+    // INI files    
+    private boolean           checkIniFilesContent;
+    private char              iniFilesStartComment = '#';
+    private char              iniFilesStartSection = '[';
+    private char              iniFilesDelimiter    = '=';
+    private Set<String>       iniFileExtensions;
+    
+    // TEXT files
+    private boolean           checkTextFilesContent;
+    private Set<String>       textFileExtensions;
+
+    public SnapshotConfiguration() {
+        // set default values
+
+        propertiesFileExtensions = new HashSet<>();
+        propertiesFileExtensions.add( ".properties" );
+
+        xmlFileExtensions = new HashSet<>();
+        xmlFileExtensions.add( ".xml" );
+
+        iniFileExtensions = new HashSet<>();
+        iniFileExtensions.add( ".ini" );
+        
+        textFileExtensions = new HashSet<>();
+        textFileExtensions.add( ".txt" );
+
+        iniFilesStartComment = '#';
+        iniFilesStartSection = '[';
+        iniFilesDelimiter = '=';
+    }
+
+    public enum FileType {
+        REGULAR, XML, PROPERTIES, INI, TEXT
+    }
 
     public boolean isCheckModificationTime() {
 
         return checkModificationTime;
     }
 
-    public void setCheckModificationTime(
-                                          boolean checkModificationTime ) {
+    public void setCheckModificationTime( boolean checkModificationTime ) {
 
         this.checkModificationTime = checkModificationTime;
     }
@@ -49,10 +92,12 @@ public class SnapshotConfiguration implements Serializable {
         return checkSize;
     }
 
-    public void setCheckSize(
-                              boolean checkSize ) {
+    public SnapshotConfiguration setCheckSize( boolean checkSize ) {
 
         this.checkSize = checkSize;
+
+        // return this instance, so we can use it in constructor call
+        return this;
     }
 
     public boolean isCheckMD5() {
@@ -60,10 +105,12 @@ public class SnapshotConfiguration implements Serializable {
         return checkMD5;
     }
 
-    public void setCheckMD5(
-                             boolean checkMD5 ) {
+    public SnapshotConfiguration setCheckMD5( boolean checkMD5 ) {
 
         this.checkMD5 = checkMD5;
+
+        // return this instance, so we can use it in constructor call
+        return this;
     }
 
     public boolean isCheckPermissions() {
@@ -71,8 +118,7 @@ public class SnapshotConfiguration implements Serializable {
         return checkPermissions;
     }
 
-    public void setCheckPermissions(
-                                     boolean checkPermissions ) {
+    public void setCheckPermissions( boolean checkPermissions ) {
 
         this.checkPermissions = checkPermissions;
     }
@@ -82,20 +128,19 @@ public class SnapshotConfiguration implements Serializable {
         return supportHidden;
     }
 
-    public void setSupportHidden(
-                                  boolean supportHidden ) {
+    public void setSupportHidden( boolean supportHidden ) {
 
         this.supportHidden = supportHidden;
     }
 
-    public boolean isCheckPropertyFilesContent() {
+    public boolean isCheckPropertiesFilesContent() {
 
-        return checkPropertyFilesContent;
+        return checkPropertiesFilesContent;
     }
 
-    public void setCheckPropertyFilesContent( boolean checkPropertyFilesContent ) {
+    public void setCheckPropertiesFilesContent( boolean checkPropertyFilesContent ) {
 
-        this.checkPropertyFilesContent = checkPropertyFilesContent;
+        this.checkPropertiesFilesContent = checkPropertyFilesContent;
     }
 
     public boolean isCheckXmlFilesContent() {
@@ -106,5 +151,154 @@ public class SnapshotConfiguration implements Serializable {
     public void setCheckXmlFilesContent( boolean checkXmlFilesContent ) {
 
         this.checkXmlFilesContent = checkXmlFilesContent;
+    }
+
+    public boolean isCheckIniFilesContent() {
+
+        return checkIniFilesContent;
+    }
+
+    public void setCheckIniFilesContent( boolean iniFilesCheckContent ) {
+
+        this.checkIniFilesContent = iniFilesCheckContent;
+    }
+
+    public char getIniFileStartCommentCharacter() {
+
+        return iniFilesStartComment;
+    }
+
+    public void setIniFileStartCommentCharacter( char iniFilesStartCommentLine ) {
+
+        this.iniFilesStartComment = iniFilesStartCommentLine;
+    }
+
+    public char getIniFileStartSectionCharacter() {
+
+        return iniFilesStartSection;
+    }
+
+    public void setIniFileStartSectionCharacter( char iniFilesStartSectionLine ) {
+
+        this.iniFilesStartSection = iniFilesStartSectionLine;
+    }
+
+    public char getIniFileDelimiterCharacter() {
+
+        return iniFilesDelimiter;
+    }
+
+    public void setIniFileDelimiterCharacter( char iniFilesPropertyDelimiter ) {
+
+        this.iniFilesDelimiter = iniFilesPropertyDelimiter;
+    }
+    
+
+    public boolean isCheckTextFilesContent() {
+
+        return checkTextFilesContent;
+    }
+
+    public void setCheckTextFilesContent( boolean textFilesCheckContent ) {
+
+        this.checkTextFilesContent = textFilesCheckContent;
+    }
+
+    /**
+     * Set file extensions that will be treated as Properties files.
+     * Default extension is '.properties'
+     * @param extensions new extensions
+     */
+    public void setPropertiesFileExtensions( String[] extensions ) {
+
+        propertiesFileExtensions.clear();
+        for( String extension : extensions ) {
+            propertiesFileExtensions.add( extension );
+        }
+    }
+
+    /**
+     * Set file extensions that will be treated as XML files.
+     * Default extension is '.xml'
+     * @param extensions new extensions
+     */
+    public void setXmlFileExtensions( String[] extensions ) {
+
+        xmlFileExtensions.clear();
+        for( String extension : extensions ) {
+            xmlFileExtensions.add( extension );
+        }
+    }
+
+    /**
+     * Set file extensions that will be treated as INI files.
+     * Default extension is '.ini'
+     * @param extensions new extensions
+     */
+    public void setIniFileExtensions( String[] extensions ) {
+
+        iniFileExtensions.clear();
+        for( String extension : extensions ) {
+            iniFileExtensions.add( extension );
+        }
+    }
+    
+    /**
+     * Set file extensions that will be treated as TEXT files.
+     * Default extension is '.text'
+     * @param extensions new extensions
+     */
+    public void setTextFileExtensions( String[] extensions ) {
+
+        textFileExtensions.clear();
+        for( String extension : extensions ) {
+            textFileExtensions.add( extension );
+        }
+    }
+
+    /**
+     * @param filePath
+     * @return what type of file we are dealing with
+     */
+    public FileType getFileType( String filePath ) {
+
+        for( String xmlExt : xmlFileExtensions ) {
+            if( filePath.endsWith( xmlExt ) ) {
+                // it is XML file
+                return checkXmlFilesContent
+                                            ? FileType.XML
+                                            : FileType.REGULAR;
+            }
+        }
+
+        for( String propertiesExt : propertiesFileExtensions ) {
+            if( filePath.endsWith( propertiesExt ) ) {
+                // it is Properties file
+                return checkPropertiesFilesContent
+                                                 ? FileType.PROPERTIES
+                                                 : FileType.REGULAR;
+            }
+        }
+
+        for( String iniExt : iniFileExtensions ) {
+            if( filePath.endsWith( iniExt ) ) {
+                // it is INI file
+                return checkIniFilesContent
+                                            ? FileType.INI
+                                            : FileType.REGULAR;
+            }
+        }
+        
+        for( String textExt : textFileExtensions ) {
+            if( filePath.endsWith( textExt ) ) {
+                // it is INI file
+                return checkTextFilesContent
+                                             ? FileType.TEXT
+                                             : FileType.REGULAR;
+            }
+        }
+
+        // it is a regular file
+        return FileType.REGULAR;
     }
 }

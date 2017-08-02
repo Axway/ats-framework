@@ -28,71 +28,19 @@ import com.axway.ats.core.filesystem.snapshot.XmlNode;
 /**
  * Used to decide whether some XML nodes are to be skipped
  */
-public class SkipXmlNodeMatcher implements Serializable {
+public class SkipXmlNodeMatcher extends SkipContentMatcher {
 
-    private static final long          serialVersionUID = 1L;
-
-    private static final Logger        log              = Logger.getLogger( SkipXmlNodeMatcher.class );
-
-    public String                      directoryAlias;
-    public String                      filePath;
+    private static final Logger        log = Logger.getLogger( SkipXmlNodeMatcher.class );
 
     // list of node matchers
     private List<NodeValueMatcher>     nodeValueMatchers;
     private List<NodeAttributeMatcher> nodeAttributeMatchers;
 
-    public enum MATCH_TYPE {
-        TEXT, CONTAINS_TEXT, REGEX;
-
-        public boolean isPlainText() {
-
-            return this == TEXT;
-        }
-
-        public boolean isContainingText() {
-
-            return this == CONTAINS_TEXT;
-        }
-
-        public boolean isRegex() {
-
-            return this == REGEX;
-        }
-
-        public String getDescription() {
-
-            if( this == TEXT ) {
-                return "exact text";
-            } else if( this == CONTAINS_TEXT ) {
-                return "contains text";
-            } else {
-                return "regullar expression";
-            }
-        }
-    }
-
     public SkipXmlNodeMatcher( String directoryAlias, String filePath ) {
-
-        this.directoryAlias = directoryAlias;
-        this.filePath = filePath;
+        super( directoryAlias, filePath );
 
         this.nodeAttributeMatchers = new ArrayList<>();
         this.nodeValueMatchers = new ArrayList<>();
-    }
-
-    public String getFilePath() {
-
-        return filePath;
-    }
-
-    public void setFilePath( String filePath ) {
-
-        this.filePath = filePath;
-    }
-
-    public String getDirectoryAlias() {
-
-        return directoryAlias;
     }
 
     public List<NodeAttributeMatcher> getNodeAttributeMatchers() {

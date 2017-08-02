@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.core.filesystem.snapshot;
+package com.axway.ats.core.filesystem.snapshot.types;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,31 +28,28 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.axway.ats.common.filesystem.FileSystemOperationException;
 import com.axway.ats.common.filesystem.snapshot.equality.FileSystemEqualityState;
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
 import com.axway.ats.common.xml.XMLException;
-import com.axway.ats.core.filesystem.LocalFileSystemOperations;
+import com.axway.ats.core.filesystem.snapshot.SnapshotConfiguration;
+import com.axway.ats.core.filesystem.snapshot.XmlNode;
 import com.axway.ats.core.filesystem.snapshot.matchers.FindRules;
 import com.axway.ats.core.filesystem.snapshot.matchers.SkipXmlNodeMatcher;
 
 /**
  * Compares the content of XML files
  */
-public class XmlFileSnapshot extends FileSnapshot {
+public class XmlFileSnapshot extends ContentFileSnapshot {
 
-    private static final Logger      log              = Logger.getLogger( FileSnapshot.class );
+    private static final Logger      log              = Logger.getLogger( XmlFileSnapshot.class );
 
     private static final long        serialVersionUID = 1L;
 
     private List<SkipXmlNodeMatcher> matchers         = new ArrayList<>();
 
-    XmlFileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule,
-                     List<SkipXmlNodeMatcher> fileMatchers ) {
+    public XmlFileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule,
+                            List<SkipXmlNodeMatcher> fileMatchers ) {
         super( configuration, path, fileRule );
-
-        configuration.setCheckMD5( false );
-        configuration.setCheckSize( false );
 
         if( fileMatchers == null ) {
             fileMatchers = new ArrayList<SkipXmlNodeMatcher>();
@@ -65,11 +61,6 @@ public class XmlFileSnapshot extends FileSnapshot {
 
     XmlFileSnapshot( String path, long size, long timeModified, String md5, String permissions ) {
         super( path, size, timeModified, md5, permissions );
-
-        if( configuration != null ) {
-            configuration.setCheckMD5( false );
-            configuration.setCheckSize( false );
-        }
     }
 
     /**
@@ -79,7 +70,7 @@ public class XmlFileSnapshot extends FileSnapshot {
      * @param fileSnapshot the instance to extend
      * @return the extended instance
      */
-    XmlFileSnapshot getNewInstance( FileSnapshot fileSnapshot ) {
+    public XmlFileSnapshot getNewInstance( FileSnapshot fileSnapshot ) {
 
         XmlFileSnapshot instance = new XmlFileSnapshot( fileSnapshot.path, fileSnapshot.size,
                                                         fileSnapshot.timeModified, fileSnapshot.md5,
@@ -90,7 +81,7 @@ public class XmlFileSnapshot extends FileSnapshot {
     }
 
     @Override
-    void compare( FileSnapshot that, FileSystemEqualityState equality, FileTrace fileTrace ) {
+    public void compare( FileSnapshot that, FileSystemEqualityState equality, FileTrace fileTrace ) {
 
         // first compare the regular file attributes
         fileTrace = super.compareFileAttributes( that, fileTrace, true );
@@ -101,6 +92,7 @@ public class XmlFileSnapshot extends FileSnapshot {
         XmlNode thisXmlNode = loadXmlFile( equality.getFirstAtsAgent(), this.getPath() );
         XmlNode thatXmlNode = loadXmlFile( equality.getSecondAtsAgent(), that.getPath() );
 
+        // remove matched nodes
         // we currently call all matchers on both files,
         // so it does not matter if a matcher is provided for first or second snapshot
         for( SkipXmlNodeMatcher matcher : this.matchers ) {
@@ -186,14 +178,10 @@ public class XmlFileSnapshot extends FileSnapshot {
         }
     }
 
-    /**
-     * Makes XML Document from text
-     *  
-     * @param xmlFileContent
-     * @return
-     * @throws XMLException
-     */
-    public Document loadXmlDocument( String xmlFileContent ) throws XMLException {
+    private XmlNode loadXmlFile( String agent, String filePath ) {
+
+        // load the file as a String
+        String fileContent = loadFileContent( agent, filePath );
 
         try {
             SAXReader reader = new SAXReader();
@@ -209,48 +197,16 @@ public class XmlFileSnapshot extends FileSnapshot {
                 }
             } );
 
-            return reader.read( new StringReader( xmlFileContent ) );
+            // load XML document
+            Document xmlDocument = reader.read( new StringReader( fileContent ) );
+            return new XmlNode( null, xmlDocument.getRootElement() );
         } catch( XMLException | DocumentException e ) {
-            throw new XMLException( "Error parsing XML file: " + xmlFileContent, e );
+            throw new XMLException( "Error parsing XML file: " + filePath, e );
         }
     }
+    
+    public String getFileType() {
 
-    private XmlNode loadXmlFile( String agent, String filePath ) {
-
-        String xmlFileContent;
-        if( agent == null ) {
-            // It is a local file
-            try {
-                xmlFileContent = new LocalFileSystemOperations().readFile( filePath, "UTF-8" );
-            } catch( Exception e ) {
-                // this will cancel the comparison
-                // the other option is to add a difference to the FileTrace object, instead of throwing an exception here
-                throw new FileSystemOperationException( "Error loading '" + filePath + "' XML file." );
-            }
-        } else {
-            // It is a remote file.
-            // As we need to use Action Library code in order to get the file content, here we use
-            // java reflection, so do not need to introduce compile dependency
-            try {
-                Class<?> fileSystemOperationsClass = Class.forName( "com.tumbleweed.automation.actions.filesystem.RemoteFileSystemOperations" );
-                Object fileSystemOperationsInstance = fileSystemOperationsClass.getConstructor( String.class )
-                                                                               .newInstance( agent );
-
-                //call the printIt method
-                Method readFileMethod = fileSystemOperationsClass.getDeclaredMethod( "readFile", String.class,
-                                                                                     String.class );
-                xmlFileContent = readFileMethod.invoke( fileSystemOperationsInstance, filePath, "UTF-8" )
-                                               .toString();
-            } catch( Exception e ) {
-                // this will cancel the comparison
-                // the other option is to add a difference to the FileTrace object, instead of throwing an exception here
-                throw new FileSystemOperationException( "Error loading '" + filePath + "' XML file from "
-                                                        + agent );
-            }
-        }
-
-        Document xmlDocument = loadXmlDocument( xmlFileContent );
-
-        return new XmlNode( null, xmlDocument.getRootElement() );
+        return "xml file";
     }
 }
