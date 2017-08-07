@@ -14,7 +14,7 @@
 	
     <TABLE name="AddressBookAccountSource" primaryKey="id">
         <column_descriptions>
-            <column_description>name=id, type=VARCHAR, auto increment=NO, default=null, nullable=NO, size=32</column_description>
+            
             <column_description>name=enabled, type=TINYINT, auto increment=NO, default=null, nullable=NO, size=3</column_description>
             <column_description>name=parentGroup, type=VARCHAR, auto increment=NO, default=null, nullable=NO, size=255</column_description>
             <column_description>name=accountId, type=VARCHAR, auto increment=NO, default=null, nullable=YES, size=32</column_description>

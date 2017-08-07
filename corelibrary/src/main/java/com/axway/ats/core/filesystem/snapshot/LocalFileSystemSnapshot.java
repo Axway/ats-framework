@@ -272,6 +272,14 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     @Override
     public void skipIniPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String section,
                                         String propertyKey, String matchType ) {
+        
+        if(StringUtils.isNullOrEmpty( propertyKey )){
+            throw new FileSystemSnapshotException( "The matching key could not be null or empty." );
+        }
+        
+        if(StringUtils.isNullOrEmpty( section )){
+            throw new FileSystemSnapshotException( "The ini file section could not be null or empty." );
+        }
 
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
@@ -286,6 +294,14 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     @Override
     public void skipIniPropertyWithValue( String rootDirectoryAlias, String relativeFilePath, String section,
                                           String propertyValue, String matchType ) {
+        
+        if(StringUtils.isNullOrEmpty( propertyValue )){
+            throw new FileSystemSnapshotException( "The matching value could not be null or empty." );
+        }
+        
+        if(StringUtils.isNullOrEmpty( section )){
+            throw new FileSystemSnapshotException( "The ini file section could not be null or empty." );
+        }
 
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
@@ -300,6 +316,10 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     public void skipTextLine( String rootDirectoryAlias, String relativeFilePath, String line,
                               String matchType ) {
 
+        if( StringUtils.isNullOrEmpty( line ) ) {
+            throw new FileSystemSnapshotException( "The matching string could not be null or empty." );
+        }
+        
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
         relativeFilePath = makePathRelative( parseFilePath( relativeFilePath ) );
 

@@ -22,10 +22,12 @@ import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.MockRepository;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -68,7 +70,7 @@ public class Test_FileSystemOperations extends BaseTest {
     private FileSystemOperations       fileSystemOperationsRemote     = null;
     private LocalFileSystemOperations  localFSOperationsMock;
     private RemoteFileSystemOperations remoteFSOperationsMock;
-
+    
     /**
      * Setup method
      */
@@ -81,6 +83,17 @@ public class Test_FileSystemOperations extends BaseTest {
         fileSystemOperationsRemote = new FileSystemOperations( REMOTE_HOST_NAME_VALID );
         localFSOperationsMock = createMock( LocalFileSystemOperations.class );
         remoteFSOperationsMock = createMock( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID );
+    }
+    
+    @After
+    public void setDownTest_FileSystemOperations() throws Exception {
+
+        // we have to clean the mock repository, otherwise this method fails 
+        // mock check see it as another class invocation and throws an exception
+        MockRepository.remove( LocalFileSystemOperations.class );
+
+        fileSystemOperationsLocal.deleteFile( SOURCE_FILE_NAME_VALID );
+        fileSystemOperationsLocal.deleteFile( DESTINATION_FILE_NAME_VALID );
     }
 
     /**
