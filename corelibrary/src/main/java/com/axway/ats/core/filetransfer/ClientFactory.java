@@ -74,7 +74,7 @@ public class ClientFactory {
     }
 
     /**
-     * Returns the {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
+     * Returns a product specific {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
      * 
      * @param protocol the {@link TransferProtocol} to use
      * @param port a custom port to use when connecting
@@ -85,24 +85,6 @@ public class ClientFactory {
     public IFileTransferClient getClient(
                                          TransferProtocol protocol,
                                          int port ) throws FileTransferException {
-
-        return getClient( protocol, port, null );
-    }
-
-    /**
-     * Returns a product specific {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
-     * 
-     * @param protocol the {@link TransferProtocol} to use
-     * @param port a custom port to use when connecting
-     * @param customFileTransferClient the class name of the custom client
-     * @return the {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}
-     * @throws FileTransferException 
-     * @see {@link TransferProtocol}
-     */
-    public IFileTransferClient getClient(
-                                         TransferProtocol protocol,
-                                         int port,
-                                         String customFileTransferClient ) throws FileTransferException {
 
         switch( protocol ){
             case FTP:
@@ -115,19 +97,30 @@ public class ClientFactory {
                 return new HttpClient( port );
             case HTTPS:
                 return new HttpsClient( port );
-            case HTTP_CUSTOM:
-            case HTTPS_CUSTOM:
-            case PESIT_CUSTOM:
-            case CUSTOM:
-                // load the custom client
-                IFileTransferClient client = loadCustomClient( customFileTransferClient );
-                client.setCustomPort( port );
-
-                return client;
             default:
                 throw new FileTransferException( "No implementation for the " + protocol
                                                        + " protocol is currently available" );
         }
+    }
+    
+    /**
+     * Returns a product specific {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
+     * 
+     * @param protocol the {@link TransferProtocol} to use
+     * @param port a custom port to use when connecting
+     * @param customFileTransferClient the class name of the custom client
+     * @return the {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}
+     * @throws FileTransferException 
+     * @see {@link TransferProtocol}
+     */
+    public IFileTransferClient getClient( String customFileTransferClient,
+                                          int port ) throws FileTransferException {
+
+        // load the custom client
+        IFileTransferClient client = loadCustomClient( customFileTransferClient );
+        client.setCustomPort( port );
+
+        return client;
     }
 
     /**

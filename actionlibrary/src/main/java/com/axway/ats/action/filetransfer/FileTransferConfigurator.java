@@ -16,9 +16,13 @@
 
 package com.axway.ats.action.filetransfer;
 
-import com.axway.ats.common.filetransfer.TransferProtocol;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.axway.ats.config.AbstractConfigurator;
 import com.axway.ats.config.exceptions.NoSuchPropertyException;
+import com.axway.ats.core.utils.StringUtils;
 
 /**
  * This class is used to read configuration properties defining custom file transfer clients
@@ -27,17 +31,10 @@ public class FileTransferConfigurator extends AbstractConfigurator {
 
     private static final String ATS_ADAPTERS_FILE = "/ats-adapters.properties";
 
-    private static final String HTTP_FILE_TRANSFER_CLIENT  = "actionlibrary.filetransfer.http.client";
-    private static final String HTTPS_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.https.client";
-    private static final String PESIT_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.pesit.client";
-    private static final String CUSTOM_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.custom.client";
-    private static final String CUSTOM_FILE_TRANSFER_PORT = "actionlibrary.filetransfer.custom.port";
+    private static final String CUSTOM_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.client.";
 
-    private String httpFileTransferClient;
-    private String httpsFileTransferClient;
-    private String pesitFileTransferClient;
-    private String customFileTransferClient;
-
+    private Map<String, String> fileTransferClientsMap = new HashMap<String, String>();
+    
     /**
      * The singleton instance for this configurator
      */
@@ -76,83 +73,41 @@ public class FileTransferConfigurator extends AbstractConfigurator {
     protected void reloadData() {
 
         // We load all properties as optional. Error will be thrown when a needed property is requested, but not present.
+        Map<String, String> transferClientCustomProps = null;
         try {
-            httpFileTransferClient = getProperty( HTTP_FILE_TRANSFER_CLIENT );
+            transferClientCustomProps = getProperties( CUSTOM_FILE_TRANSFER_CLIENT );
         } catch( NoSuchPropertyException e ) {}
 
-        try {
-            httpsFileTransferClient = getProperty( HTTPS_FILE_TRANSFER_CLIENT );
-        } catch( NoSuchPropertyException e ) {}
+        if( transferClientCustomProps != null ) {
+            for( Entry<String, String> entry : transferClientCustomProps.entrySet() ) {
+                fileTransferClientsMap.put( entry.getKey(), entry.getValue() );
+            }
+        }
 
-        try {
-            pesitFileTransferClient = getProperty( PESIT_FILE_TRANSFER_CLIENT );
-        } catch( NoSuchPropertyException e ) {}
-        
-        try {
-            customFileTransferClient = getProperty( CUSTOM_FILE_TRANSFER_CLIENT );
-        } catch( NoSuchPropertyException e ) {}
-        
     }
 
     /**
      * @return the custom class for the given transfer protocol.
      * @throws FileTransferConfiguratorException if could not load the needed custom class name from the properties file.
      */
-    public String getFileTransferClient(
-                                         TransferProtocol protocol ) {
+    public String getFileTransferClient( String customProtocol ) {
 
-        switch( protocol ){
-            case HTTP_CUSTOM:
-                if( httpFileTransferClient == null ) {
-                    throw new FileTransferConfiguratorException( "Uknown custom client for " + protocol
+        for( Entry<String, String> entry : fileTransferClientsMap.entrySet() ) {
+            if( entry.getKey().equalsIgnoreCase( CUSTOM_FILE_TRANSFER_CLIENT + customProtocol ) ) {
+                if( StringUtils.isNullOrEmpty( entry.getValue() ) ) {
+                    throw new FileTransferConfiguratorException( "Uknown custom client for " + customProtocol
                                                                  + " protocol. Either " + ATS_ADAPTERS_FILE
                                                                  + " file is not in the classpath or "
-                                                                 + HTTP_FILE_TRANSFER_CLIENT
+                                                                 + entry.getKey()
                                                                  + " property is missing/empty!" );
                 }
-                return httpFileTransferClient;
-            case HTTPS_CUSTOM:
-                if( httpsFileTransferClient == null ) {
-                    throw new FileTransferConfiguratorException( "Uknown custom client for " + protocol
-                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
-                                                                 + " file is not in the classpath or "
-                                                                 + HTTPS_FILE_TRANSFER_CLIENT
-                                                                 + " property is missing/empty!" );
-                }
-                return httpsFileTransferClient;
-            case PESIT_CUSTOM:
-                if( pesitFileTransferClient == null ) {
-                    throw new FileTransferConfiguratorException( "Uknown custom client for " + protocol
-                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
-                                                                 + " file is not in the classpath or "
-                                                                 + PESIT_FILE_TRANSFER_CLIENT
-                                                                 + " property is missing/empty!" );
-                }
-                return pesitFileTransferClient;
-            case CUSTOM:
-            	if( customFileTransferClient == null ) {
-                    throw new FileTransferConfiguratorException( "Uknown custom client for " + protocol
-                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
-                                                                 + " file is not in the classpath or "
-                                                                 + CUSTOM_FILE_TRANSFER_CLIENT
-                                                                 + " property is missing/empty!" );
-                }
-            	return customFileTransferClient;
-            default:
-                throw new FileTransferConfiguratorException( "No custom client implementation for " + protocol
-                                                             + " protocol" );
+                log.info( "Transfers over '" + customProtocol + "' will be served by " + entry.getValue() );
+
+                return entry.getValue();
+            }
         }
-    }
-    
-    /**
-     * @return the custom port for the custom transfer protocol, as specified in ats-adapters.properties.
-     */
-    public int getPort(){
-    	try{
-    		String port = getProperty( CUSTOM_FILE_TRANSFER_PORT );
-    		return Integer.valueOf(port);
-    	}catch (NoSuchPropertyException e) {
-    		return -1;
-		}
+
+        throw new FileTransferConfiguratorException( "No custom client implementation for " + customProtocol
+                                                     + " protocol" );
     }
 }

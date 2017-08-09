@@ -30,21 +30,11 @@ public enum TransferProtocol {
 
     /** Hypertext Transfer Protocol type*/
     @PublicAtsApi HTTP,
-    /** Custom Hypertext Transfer Protocol type*/
-    @PublicAtsApi HTTP_CUSTOM,
     /** Hypertext Transfer Protocol over SSL type*/
     @PublicAtsApi HTTPS,
-    /** Custom Hypertext Transfer Protocol Over SSL type*/
-    @PublicAtsApi HTTPS_CUSTOM,
 
     /** SSH File Transfer Protocol type*/
-    @PublicAtsApi SFTP,
-
-    /** Custom PeSIT type*/
-    @PublicAtsApi PESIT_CUSTOM,
-
-    /** Custom file transfer type*/
-    @PublicAtsApi CUSTOM;
+    @PublicAtsApi SFTP;
 
     /**
      * @return the default port for the current protocol
@@ -55,20 +45,13 @@ public enum TransferProtocol {
             case FTP:
                 return 21;
             case HTTP:
-            case HTTP_CUSTOM:
                 return 80;
-            case PESIT_CUSTOM:
-                return 17617;
-
             case SFTP:
                 return 22;
             case FTPS:
                 return 21;
             case HTTPS:
-            case HTTPS_CUSTOM:
                 return 443;
-            case CUSTOM:
-                return -1;
             default:
                 throw new RuntimeException( "No default port is set for the protocol" + this );
         }

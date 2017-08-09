@@ -156,8 +156,7 @@ public class FileTransferClient {
      * Creates a new file transfer client, which would work with the specified
      * {@link TransferProtocol}
      *
-     * @param protocol
-     *            the {@link TransferProtocol} the client would work with
+     * @param protocol the {@link TransferProtocol} the client would work with
      */
     @PublicAtsApi
     public FileTransferClient( TransferProtocol protocol ) {
@@ -165,27 +164,63 @@ public class FileTransferClient {
         try {
             int port = protocol.getDefaultPort();
 
-            if( !protocol.toString().contains( "CUSTOM" ) ) {
+            // a product specific client
+            this.client = ClientFactory.getInstance().getClient( protocol, port );
+
+            this.client.setDebugMode( ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode() );
+
+        } catch( Exception e ) {
+            throw new FileTransferException( e );
+        }
+    }
+    
+    /**
+     * Creates a new file transfer client, which would work with the specified custom protocol
+     *
+     * @param protocol the transfer protocol the client would work with
+     * or the ending token of the property 
+     * <p>
+     * e.g. 'my_protocol_name' from actionlibrary.filetransfer.client.my_protocol_name in ats-adapters.properties file
+     * @param port     the port to use
+     */
+    @PublicAtsApi
+    public FileTransferClient( String protocol, int port ) {
+
+        try {
+            TransferProtocol transferProtocol = checkTransferProtocolType( protocol );
+            if( transferProtocol != null ) {
                 // a regular client we develop
-                this.client = ClientFactory.getInstance().getClient( protocol, port );
+                this.client = ClientFactory.getInstance().getClient( transferProtocol, port );
             } else {
-            	int customPort = FileTransferConfigurator.getInstance().getPort();
-            	if (customPort == -1){
-            		log.warn("No custom port was found for '"+protocol+"'. We will use the default one '"+port+"'");
-            		customPort = port;
-            	}
                 // a product specific client
                 String customFileTransferClient = FileTransferConfigurator.getInstance()
                                                                           .getFileTransferClient( protocol );
 
-                this.client = ClientFactory.getInstance().getClient( protocol, customPort,
-                                                                     customFileTransferClient );
+                this.client = ClientFactory.getInstance().getClient( customFileTransferClient, port );
             }
 
             this.client.setDebugMode( ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode() );
 
         } catch( Exception e ) {
             throw new FileTransferException( e );
+        }
+    }
+    
+    private TransferProtocol checkTransferProtocolType( String transferProtocol ) {
+
+        switch( transferProtocol.toUpperCase() ){
+            case "FTP":
+                return TransferProtocol.FTP;
+            case "HTTP":
+                return TransferProtocol.HTTP;
+            case "SFTP":
+                return TransferProtocol.SFTP;
+            case "FTPS":
+                return TransferProtocol.FTPS;
+            case "HTTPS":
+                return TransferProtocol.HTTPS;
+            default:
+                return null;
         }
     }
 

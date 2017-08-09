@@ -113,7 +113,7 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testConnectUsingCustomClientNegative() throws Exception {
 
         try {
-            mockedTestObject = new FileTransferClient( TransferProtocol.HTTP_CUSTOM );
+            mockedTestObject = new FileTransferClient( "HTTP", 80 );
         } catch( FileTransferException e ) {
             Assert.assertEquals( e.getMessage(),
                                  "com.axway.ats.action.filetransfer.FileTransferConfiguratorException: Uknown custom client for HTTP_CUSTOM protocol. Either /ats-adapters.properties file is not in the classpath or actionlibrary.filetransfer.http.client property is missing/empty!" );
@@ -131,19 +131,17 @@ public class Test_GenericTransferClient extends BaseTest {
         mockStatic( FileTransferConfigurator.class );
         FileTransferConfigurator mockFileTransferConfigurator = createMock( FileTransferConfigurator.class );
         expect( FileTransferConfigurator.getInstance() ).andReturn( mockFileTransferConfigurator );
-        expect( mockFileTransferConfigurator.getFileTransferClient( TransferProtocol.HTTP_CUSTOM ) ).andReturn( customFileTransferClientName );
+        expect( mockFileTransferConfigurator.getFileTransferClient( "HTTP" ) ).andReturn( customFileTransferClientName );
 
         IFileTransferClient basicClient = createMock( IFileTransferClient.class );
 
         mockStatic( ClientFactory.class );
         expect( ClientFactory.getInstance() ).andReturn( factoryMock );
-        expect( factoryMock.getClient( TransferProtocol.HTTP_CUSTOM,
-                                       TransferProtocol.HTTP_CUSTOM.getDefaultPort(),
-                                       customFileTransferClientName ) ).andReturn( basicClient );
+        expect( factoryMock.getClient( "HTTP", 80 ) ).andReturn( basicClient );
         basicClient.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
         replayAll();
 
-        mockedTestObject = new FileTransferClient( TransferProtocol.HTTP_CUSTOM );
+        mockedTestObject = new FileTransferClient( "HTTP", 80 );
         mockedTestObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
 
         verifyAll();
