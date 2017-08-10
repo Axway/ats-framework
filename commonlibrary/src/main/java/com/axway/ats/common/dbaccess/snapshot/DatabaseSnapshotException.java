@@ -15,7 +15,9 @@
  */
 package com.axway.ats.common.dbaccess.snapshot;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
@@ -101,22 +103,25 @@ public class DatabaseSnapshotException extends RuntimeException {
     private void addInfoAboutTablesInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
                                                       String snapshot ) {
 
-        StringBuilder tablesInFirstSnapshotOnly = new StringBuilder();
+        StringBuilder tablesInOneSnapshotOnly = new StringBuilder();
         for( String table : equality.getTablesPresentInOneSnapshotOnly( snapshot ) ) {
-            tablesInFirstSnapshotOnly.append( "\n\t" );
-            tablesInFirstSnapshotOnly.append( table );
+            tablesInOneSnapshotOnly.append( "\n\t" );
+            tablesInOneSnapshotOnly.append( table );
         }
 
-        if( tablesInFirstSnapshotOnly.length() > 0 ) {
+        if( tablesInOneSnapshotOnly.length() > 0 ) {
             msg.append( "\nTables present in [" + snapshot + "] only:" );
-            msg.append( tablesInFirstSnapshotOnly );
+            msg.append( tablesInOneSnapshotOnly );
         }
     }
 
     private void addInfoAboutDifferentPrimaryKeys( StringBuilder msg, DatabaseEqualityState equality,
                                                    String firstSnapshot, String secondSnapshot ) {
 
-        List<String> tables = equality.getTablesWithDifferentPrimaryKeys( firstSnapshot );
+        Set<String> tables = new HashSet<>();
+        tables.addAll( equality.getTablesWithDifferentPrimaryKeys( firstSnapshot ) );
+        tables.addAll( equality.getTablesWithDifferentPrimaryKeys( secondSnapshot ) );
+        
         if( tables.size() > 0 ) {
             msg.append( "\nDifferent primary keys:" );
 
@@ -132,7 +137,10 @@ public class DatabaseSnapshotException extends RuntimeException {
     private void addInfoAboutDifferentNumberOfRows( StringBuilder msg, DatabaseEqualityState equality,
                                                     String firstSnapshot, String secondSnapshot ) {
 
-        List<String> tables = equality.getTablesWithDifferentNumberOfRows( firstSnapshot );
+        Set<String> tables = new HashSet<>();
+        tables.addAll( equality.getTablesWithDifferentNumberOfRows( firstSnapshot ) );
+        tables.addAll( equality.getTablesWithDifferentNumberOfRows( secondSnapshot ) );
+        
         if( tables.size() > 0 ) {
             msg.append( "\nDifferent number of rows" + ":" );
 
@@ -149,7 +157,10 @@ public class DatabaseSnapshotException extends RuntimeException {
     private void addInfoAboutColumnsInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
                                                        String firstSnapshot, String secondSnapshot ) {
 
-        List<String> tables = equality.getTablesWithColumnsPresentInOneSnapshotOnly( firstSnapshot );
+        Set<String> tables = new HashSet<>();
+        tables.addAll( equality.getTablesWithColumnsPresentInOneSnapshotOnly( firstSnapshot ) );
+        tables.addAll( equality.getTablesWithColumnsPresentInOneSnapshotOnly( secondSnapshot ) );
+        
         if( tables.size() > 0 ) {
             for( String table : tables ) {
                 // add different columns for one table at a time
@@ -179,7 +190,10 @@ public class DatabaseSnapshotException extends RuntimeException {
     private void addInfoAboutIndexesInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
                                                        String firstSnapshot, String secondSnapshot ) {
 
-        List<String> tables = equality.getTablesWithIndexesPresentInOneSnapshotOnly( firstSnapshot );
+        Set<String> tables = new HashSet<>();
+        tables.addAll( equality.getTablesWithIndexesPresentInOneSnapshotOnly( firstSnapshot ) );
+        tables.addAll( equality.getTablesWithIndexesPresentInOneSnapshotOnly( secondSnapshot ) );
+        
         if( tables.size() > 0 ) {
             for( String table : tables ) {
                 // add different indexes for one table at a time
@@ -205,7 +219,10 @@ public class DatabaseSnapshotException extends RuntimeException {
     private void addInfoAboutRowsInOneSnapshotOnly( StringBuilder msg, DatabaseEqualityState equality,
                                                     String firstSnapshot, String secondSnapshot ) {
 
-        List<String> tables = equality.getTablesWithRowsPresentInOneSnapshotOnly( firstSnapshot );
+        Set<String> tables = new HashSet<>();
+        tables.addAll( equality.getTablesWithRowsPresentInOneSnapshotOnly( firstSnapshot ) );
+        tables.addAll( equality.getTablesWithRowsPresentInOneSnapshotOnly( secondSnapshot ) );
+        
         if( tables.size() > 0 ) {
             for( String table : tables ) {
                 // add different rows for one table at a time

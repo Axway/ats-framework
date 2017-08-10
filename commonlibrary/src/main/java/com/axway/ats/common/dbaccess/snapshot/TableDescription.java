@@ -18,6 +18,7 @@ package com.axway.ats.common.dbaccess.snapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -172,33 +173,8 @@ public class TableDescription {
                 }
 
                 // check the table content
-                // we use new instances of the row values, so the iterators do not
-                // get broken when removing elements
-                List<String> thisRows = new ArrayList<String>( thisValuesList );
-                List<String> thatRows = new ArrayList<String>( thatValuesList );
-                for( String thisRow : thisRows ) {
-                    for( String thatRow : thatRows ) {
-                        if( thisRow.equals( thatRow ) ) {
-                            // same row found, remove if from both lists
-                            thisValuesList.remove( thisRow );
-                            thatValuesList.remove( thatRow );
-                            break;
-                        }
-                    }
-                }
-
-                thisRows = new ArrayList<String>( thisValuesList );
-                thatRows = new ArrayList<String>( thatValuesList );
-                for( String thatRow : thatRows ) {
-                    for( String thisRow : thisRows ) {
-                        if( thatRow.equals( thisRow ) ) {
-                            // same row found, remove if from both lists
-                            thisValuesList.remove( thisRow );
-                            thatValuesList.remove( thatRow );
-                            break;
-                        }
-                    }
-                }
+                removeSameRows( thisValuesList, thatValuesList );
+                removeSameRows( thatValuesList, thisValuesList );
 
                 // now if there are left rows, we report them as unexpected
                 // differences
@@ -225,6 +201,23 @@ public class TableDescription {
         
         if( tablesAreSame ) {
             log.info( "Same table: " + name );
+        }
+    }
+    
+    private void removeSameRows(List<String> someRows, List<String> otherRows){
+        Iterator<String> someIt = someRows.iterator();
+        while(someIt.hasNext()){
+            String someRow = someIt.next();
+            
+            Iterator<String> otherIt = otherRows.iterator();
+            while(otherIt.hasNext()){
+                String otherRow = otherIt.next();
+                if( someRow.equals( otherRow ) ) {
+                    someIt.remove();
+                    otherIt.remove();
+                    break;
+                }
+            }
         }
     }
 
