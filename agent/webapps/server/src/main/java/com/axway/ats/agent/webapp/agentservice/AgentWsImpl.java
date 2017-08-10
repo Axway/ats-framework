@@ -53,6 +53,7 @@ import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
+import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
@@ -746,6 +747,46 @@ public class AgentWsImpl {
         }
 
         return -1;
+    }
+    
+    /**
+     * Return array of all detected JARs from classpath
+     */
+    @WebMethod
+    public String[] getClassPath() {
+
+        LocalSystemOperations operations = new LocalSystemOperations();
+        return operations.getClassPath();
+    }
+
+    /**
+     * Log all JARs in current application's ClassPath
+     */
+    @WebMethod
+    public void logClassPath() {
+
+        LocalSystemOperations operations = new LocalSystemOperations();
+        operations.logClassPath();
+    }
+
+    /**
+     * Return array containing all duplicated jars in the ClassPath
+     */
+    @WebMethod
+    public String[] getDuplicatedJars() {
+
+        LocalSystemOperations operations = new LocalSystemOperations();
+        return operations.getDuplicatedJars();
+    }
+
+    /**
+     * Log all duplicated JARs in current application's ClassPath
+     */
+    @WebMethod
+    public void logDuplicatedJars() {
+
+        LocalSystemOperations operations = new LocalSystemOperations();
+        operations.logDuplicatedJars();
     }
 
     /**

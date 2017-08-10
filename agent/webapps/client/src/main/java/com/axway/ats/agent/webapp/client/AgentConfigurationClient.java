@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -34,6 +35,7 @@ import com.axway.ats.agent.webapp.client.executors.AbstractClientExecutor;
 import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
@@ -181,6 +183,70 @@ public final class AgentConfigurationClient extends ActionClient {
     }
 
     /**
+     * Return array of all detected JARs from classpath
+     * @throws AgentException 
+     */
+    @PublicAtsApi
+    public List<String> getClassPath() throws AgentException {
+
+        if( atsAgent.equals( LOCAL_JVM ) ) {
+            LocalSystemOperations operations = new LocalSystemOperations();
+            return Arrays.asList( operations.getClassPath() );
+        } else {
+            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            return remoteExecutor.getClassPath();
+        }
+    }
+
+    /**
+     * Log all JARs in current application's ClassPath
+     * @throws AgentException 
+     */
+    @PublicAtsApi
+    public void logClassPath() throws AgentException {
+
+        if( atsAgent.equals( LOCAL_JVM ) ) {
+            LocalSystemOperations operations = new LocalSystemOperations();
+            operations.logClassPath();
+        } else {
+            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            remoteExecutor.logClassPath();
+        }
+    }
+
+    /**
+     * Return array containing all duplicated jars in the ClassPath
+     * @throws AgentException 
+     */
+    @PublicAtsApi
+    public List<String> getDuplicatedJars() throws AgentException {
+
+        if( atsAgent.equals( LOCAL_JVM ) ) {
+            LocalSystemOperations operations = new LocalSystemOperations();
+            return Arrays.asList( operations.getDuplicatedJars() );
+        } else {
+            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            return remoteExecutor.getDuplicatedJars();
+        }
+    }
+
+    /**
+     * Log all duplicated JARs in current application's ClassPath
+     * @throws AgentException 
+     */
+    @PublicAtsApi
+    public void logDuplicatedJars() throws AgentException {
+
+        if( atsAgent.equals( LOCAL_JVM ) ) {
+            LocalSystemOperations operations = new LocalSystemOperations();
+            operations.logDuplicatedJars();
+        } else {
+            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            remoteExecutor.logDuplicatedJars();
+        }
+    }
+
+    /**
      * When set to 'false', the "Queue Execution Time" will be missing on the Test Explorer UI
      * 
      * @param enable
@@ -219,7 +285,7 @@ public final class AgentConfigurationClient extends ActionClient {
 
         AgentConfigurator.setConnectionProtocol( atsAgent, "https" );
     }
-
+    
     /**
      * Apply the new settings
      *

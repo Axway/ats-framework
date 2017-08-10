@@ -178,6 +178,26 @@ public class RemoteExecutor extends AbstractClientExecutor {
         }
     }
 
+    public List<String> getClassPath() throws AgentException {
+
+        return AgentServicePool.getInstance().getClient( atsAgent ).getClassPath();
+    }
+    
+    public void logClassPath() throws AgentException {
+
+        AgentServicePool.getInstance().getClient( atsAgent ).logClassPath();
+    }
+    
+    public List<String> getDuplicatedJars() throws AgentException {
+
+        return AgentServicePool.getInstance().getClient( atsAgent ).getDuplicatedJars();
+    }
+    
+    public void logDuplicatedJars() throws AgentException {
+
+        AgentServicePool.getInstance().getClient( atsAgent ).logDuplicatedJars();
+    }
+    
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
