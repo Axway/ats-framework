@@ -29,6 +29,9 @@
     SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=%DEBUG_PORT%,suspend=n
 )
 
+:: log events queue (true/false)
+@SET LOG_EVENTS_QUEUE=false
+
 :: allow JMX connections (0/1)
 @SET JMX=0
 @SET JMX_PORT=1099
@@ -132,6 +135,7 @@ TITLE %TITLE%
 !JAVA_EXEC! -showversion ^
 -Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" -Djava.endorsed.dirs=ats-agent/endorsed ^
 %JMX_OPTIONS% ^
+-Dats.log.monitor.events.queue=%LOG_EVENTS_QUEUE% ^
 -Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
 -Dlogging.severity="%LOGGING_SEVERITY%" ^
 -Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
