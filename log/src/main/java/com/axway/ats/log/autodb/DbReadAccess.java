@@ -371,6 +371,8 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                 if ( rs.getTimestamp( "dateEnd" ) != null ) {
                     scenario.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
                 }
+                scenario.duration = rs.getInt( "duration" );
+                
                 scenario.setTimeOffset( utcTimeOffset );
 
                 scenario.result = rs.getInt( "result" );
