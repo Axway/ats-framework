@@ -229,6 +229,23 @@ a, a:visited, a:focus, a:hover, a:active, a.blogHeading {
     margin-left:5px;
 }
 
+table {
+    border-collapse: collapse;
+	margin-top: 10px;
+}
+
+th, td {
+	border: 1px solid #ddd;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;	
+}
+
+.confluenceTh {
+	background: #f0f0f0 none no-repeat scroll right center;
+}
+
+
 /* NOTE */
 .confluence-information-macro-note {
 	margin: 10px 0 1em;

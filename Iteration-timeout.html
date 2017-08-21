@@ -18,7 +18,10 @@
                                 <span><a href="index.html">ATS</a></span>
                             </li>
                                                     <li>
-                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
                             </li>
                                                     <li>
                                 <span><a href="ATS-Guide.html">ATS Guide</a></span>
@@ -47,13 +50,13 @@
     
         
         
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 10, 2017
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on May 10, 2017
                         </div>
                     <div id="main-content" class="wiki-content group">
-                    <h1 id="Iterationtimeout-Introduction">Introduction</h1><p>In some cases some of your action(s) may hang for a long period of time or for ever.</p><p>If it hangs for a long period of time, the result will be that your test will wait for this queue completion way too long than expected. <br/>Imagine you are running 100 threads for 1 hour, but one of them complete in 4 hours. This means you will load your Application under test for 1 hour and then will wait 3 more hours until the last thread is done.</p><p>If you get an action hanging for ever then your test will never finish.</p><p> </p><hr/><h1 id="Iterationtimeout-Setmaxiterationtimeoutperiod">Set max iteration timeout period</h1><p>All <a href="Threading-patterns.html">threading patterns</a> support setting max time (in seconds) for iteration execution:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+                    <h1 id="Iterationtimeout-Introduction">Introduction</h1><p>In some cases some of your action(s) may hang for a long period of time or for ever.</p><p>If it hangs for a long period of time, the result will be that your test will wait for this queue completion way too long than expected. <br/>Imagine you are running 100 threads for 1 hour, but one of them complete in 4 hours. This means you will load your Application under test for 1 hour and then will wait 3 more hours until the last thread is done.</p><p>If you get an action hanging for ever then your test will never finish.</p><p><br/></p><hr/><h1 id="Iterationtimeout-Setmaxiterationtimeoutperiod">Set max iteration timeout period</h1><p>All <a href="Threading-patterns.html">threading patterns</a> support setting max time (in seconds) for iteration execution:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// set max iteration timeout period to 5 minutes
 pattern.setIterationTimeout( 5 * 60 );</pre>
-</div></div><p>In our example we will not allow an iteration to last longer than 5 minutes. If timeout is reached an error is logged and the thread goes to the next iteration(if there is such left).</p><p> </p><hr/><h1 id="Iterationtimeout-Maxqueuetimeout">Max queue timeout</h1><p>There is one more way to achieve something similar. Please see the next code and read carefully its comments:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p>In our example we will not allow an iteration to last longer than 5 minutes.</p><p>If timeout is reached the currently running action is canceled and marked as failed in Test Explorer UI. An error is logged about the iteration timeout and the thread goes to the next iteration(if there is such left).</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>In order to stop the too long running iteration we actually interrupt its thread.</p><p>Thread interruption is an expensive operation, so if it happens very often you may experience significant CPU usage.</p></div></div><p><br/></p><hr/><h1 id="Iterationtimeout-Maxqueuetimeout">Max queue timeout</h1><p>There is one more way to achieve something similar. Please see the next code and read carefully its comments:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.webapp.client.ActionQueue;
 import com.axway.ats.agent.core.threading.patterns.FixedDurationAllAtOncePattern;
 
@@ -79,7 +82,7 @@ ActionQueue.cancelQueue( &quot;My running queue&quot; );</pre>
                 </div>             </div> 
             <div id="footer" role="contentinfo">
                 <section class="footer-body">
-                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
                     <div id="footer-logo"></div>
                 </section>
             </div>

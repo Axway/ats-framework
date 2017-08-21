@@ -1,0 +1,128 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.myproduct</groupId>
+  <artifactId>agent.actions</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>agent.actions</name>
+
+  <properties>
+    <jv.version>1.7</jv.version>
+    <java.version>1.7</java.version>
+  	<ats.version>4.0.0</ats.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+    <maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
+  </properties>
+
+	<build>
+        <plugins>
+            <!-- Run ant on build.xml. Generate client and server libraries -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+                                <property name="compile_classpath" refid="maven.compile.classpath" />
+                                
+                                <echo message="compile classpath: ${compile_classpath}" />
+
+                                <ant antfile="build.xml" target="all" />
+                            </target>
+                            
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Publish client if wanted -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>deploy-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/dist/myproduct-autoclient.jar</file>
+                                    <type>jar</type>
+                                    <classifier>client</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/dist/myproduct-autoserver.jar</file>
+                                    <type>jar</type>
+                                    <classifier>service</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.apache.maven.plugins
+        								</groupId>
+        								<artifactId>
+        									maven-antrun-plugin
+        								</artifactId>
+        								<versionRange>[1.3,)</versionRange>
+        								<goals>
+        									<goal>run</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
+    </build>
+    
+  <dependencies>
+      <dependency>
+          <groupId>com.axway.ats.framework</groupId>
+          <artifactId>ats-rbv</artifactId>
+          <version>${ats.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-uiengine</artifactId>
+        <version>${ats.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-monitoringlibrary</artifactId>
+        <version>${ats.version}</version>
+      </dependency>       
+  </dependencies>
+</project>

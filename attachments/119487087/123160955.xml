@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="auto-functional-tests" basedir="." xmlns="antlib:org.apache.tools.ant"
+	xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:ant-contrib="antlib:net.sf.antcontrib"
+	default="all" >
+
+	<!-- give a name of the Agent component -->
+	<property name="component.name" value="myproduct" />
+	
+    <property name="build.compiler" value="extJavac"/>
+    <property name="ant.build.javac.source" value="1.7" />
+    <property name="ant.build.javac.target" value="1.7" />
+
+	<!-- specify a folder where the 2 Agent jars will be placed -->
+    <property name="distribution.dir" value="target/dist" />
+
+    <!-- The classpath -->
+    <path id="component.compile.classpath" >
+    	<!-- this entry is set from Maven prior to calling this Ant file -->
+    	<pathelement path="${compile_classpath}"/>
+    </path>
+
+    <!-- this code is used to create the java source files of the client stubs -->
+    <macrodef name="run-acgen">
+        <attribute name="src.dir" />
+        <attribute name="dest.dir" />
+        <attribute name="descriptor.xml" />
+        <attribute name="package" />
+        <attribute name="sourcePackage" />
+        <sequential>
+            <mkdir dir="@{dest.dir}" />
+            <taskdef name="acgen" classname="com.axway.ats.agent.core.ant.ACGen">
+                <classpath>
+                    <pathelement path="target/${component.name}-server-classes" />
+                	<pathelement path="${compile_classpath}"/>
+                </classpath>
+            </taskdef>
+            <acgen
+            	descriptor="@{descriptor.xml}"
+            	sourcedir="@{src.dir}"
+            	destdir="@{dest.dir}"
+            	package="@{package}"
+            	sourcePackage="@{sourcePackage}">
+            </acgen>
+        </sequential>
+    </macrodef>
+
+    <target name="all" depends=		"clean, 
+    								agent-component-compile-server,
+									agent-component-generate-client,
+									agent-component-compile-client,
+									agent-component-jar" >
+    </target>
+
+
+   	<!-- cleanup the distribution directory -->
+    <target name="clean">
+        <deltree dir="${distribution.dir}" />
+        <mkdir dir="${distribution.dir}" />
+    </target>
+
+	<!-- compile the user created Action classes, 
+	they are called server side classes as will be used on a remote Agent -->
+    <target name="agent-component-compile-server">
+
+        <mkdir dir="target/${component.name}-server-classes" />
+        <javac srcdir="${basedir}/src/main/java"
+            destdir="target/${component.name}-server-classes"
+            classpathref="component.compile.classpath"
+            debug="on"
+            debuglevel="lines,vars,source"
+            deprecation="on"
+        />
+    </target>
+
+	<!-- generate a client side class for each server side class, 
+	they are called client side classes as will be used on the Test Executor -->
+    <target name="agent-component-generate-client">
+
+        <run-acgen src.dir="${basedir}/src/main/java"
+                   dest.dir="target/${component.name}-client-sources"
+                   descriptor.xml="${basedir}/src/main/resources/agent_descriptor.xml"
+                   package="com.myproduct.actions.clients"
+                   sourcePackage="com.myproduct.actions" />
+    </target>
+
+	<!-- compile the client side classes -->
+    <target name="agent-component-compile-client">
+        <mkdir dir="target/${component.name}-client-classes" />
+        <javac
+        	srcdir="target/${component.name}-client-sources"
+        	destdir="target/${component.name}-client-classes"
+        	classpathref="component.compile.classpath" />
+    </target>
+
+    <!-- package the client and server side classes into separate jars -->
+    <target name="agent-component-jar">
+        <jar destfile="${distribution.dir}/${component.name}-autoclient.jar">
+            <fileset dir="target/${component.name}-client-classes" />
+            <fileset dir="target/${component.name}-client-sources" />
+        </jar>
+
+        <jar destfile="${distribution.dir}/${component.name}-autoserver.jar">
+            <fileset dir="target/${component.name}-server-classes" />
+            <fileset dir="${basedir}/src/main/java" />
+            <metainf file="${basedir}/src/main/resources/agent_descriptor.xml" />
+        </jar>
+    </target>
+
+</project>

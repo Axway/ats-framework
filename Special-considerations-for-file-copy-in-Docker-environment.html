@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Special considerations for file copy in Docker environment</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="File-System-Operations.html">File System Operations</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Special considerations for file copy in Docker environment
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Svilen Dikov</span>, last modified on Jul 11, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="SpecialconsiderationsforfilecopyinDockerenvironment-Introduction">Introduction</h1><p>This page outlines some specifics when you want to use ATS in a <a class="external-link" href="https://www.docker.com/" rel="nofollow">Docker</a> environment. They are related only to some of the file copy operations.</p><h1 id="SpecialconsiderationsforfilecopyinDockerenvironment-Details">Details</h1><p>ATS is designed as a network independent tool, i.e. it works in same way both locally and remotely. That is why usually you should not expect test modifications when using Docker. There is just one detail that should be considered and it is related to the fact that <strong>containers may need exposing of network ports</strong>. Common picture is outlined below.</p><p>There the <em>host</em> is on the left and the container <em>C2</em> is on the right. The needed configuration step is for the incoming link to C2 where internal port 80 is mapped to external (host) port 5000:</p><p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/125484651/125484812.png" data-image-src="attachments/125484651/125484812.png" data-unresolved-comment-count="0" data-linked-resource-id="125484812" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="Docker_NAT_.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="125484651" data-linked-resource-container-version="4"></span></p><p>Source: <a class="external-link" href="https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Designing_Scalable%2C_Portable_Docker_Container_Networks#External_Access_for_Standalone_Containers" rel="nofollow">docker.com</a></p><p>Affected ATS functionality is when copying files from outside to some Docker container. This is because the accepting part (the ATS agent) should be accessible from the sending part (usually the Test Executor like Eclipse or Maven process). In order to achieve this you may need to:</p><p><strong>1. Export some port range</strong> of the container to be visible from outside. This range could be set for later use for file copy operations in two ways: </p><ul><li><strong>programatically</strong>, via ActionLibraryConfigurator.getInstance().setCopyFileStartPort() and ActionLibraryConfigurator.getInstance().setCopyFileEndPort();</li><li>via<strong> properties file</strong>. These &quot;port range&quot; properties are:</li><ul><li><em>actionlibrary.filesystem.copyfile.start.port</em></li><li><em>actionlibrary.filesystem.copyfile.end.port</em> <br/> You need to load them either via <em>CommonConfigurator.registerConfigFile(fileName)</em> or <em>CommonConfigurator.registerConfigFileFromClasspath(fileName)</em>;</li></ul><li>Then you should to the same in Docker configuration. The specific command is not described here.</li></ul><p><strong>2. If Test Executor is on the same host</strong> where the Docker containers reside then you should do <strong>additional configuration</strong>. This is because all ATS agent operations have a check whether target agent is on the same IP (host). In such case ATS shortcuts to use operations in same JVM instead of contacting agent remotely via socket. To avoid this ATS team has developed a new method <em>CommonConfigurator.getInstance().setHostLocality()</em>. Note that this method affects all operations to agent with such name/IP.</p><p><strong>Recommendation</strong></p><p>ATS team recommends usage of a homogeneous environment, i.e. in this case all involved test machines to be containers, even test executor. This way all containers will be in same net and will NOT require declaration of open ports or the use of <em>setHostLocality()</em> method.</p><p>When this is not possible then you may need the configuration steps mentioned above.</p><p><strong>Links</strong></p><ul><li><a href="https://techweb.axway.com/confluence/display/ATS/File+System+Operations#FileSystemOperations-Specialconsiderationswhencopyingfilesanddirectories" rel="nofollow">https://techweb.axway.com/confluence/display/ATS/File+System+Operations#FileSystemOperations-Specialconsiderationswhenco…</a> </li><li><a class="external-link" href="https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Designing_Scalable%2C_Portable_Docker_Container_Networks" rel="nofollow">Docker Reference Architecture: Designing Scalable, Portable Docker Container Networks - Docker, Inc.</a> </li></ul><p><br/></p><hr/>
+                    </div>
+
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

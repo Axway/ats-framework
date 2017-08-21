@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : UI Testing</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : UI Testing
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 19, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="UITesting-Introduction">Introduction</h1><p>Often, it is good to test the UI behavior of your application as this is the front-end your customers see.</p><p>ATS is able to interact with various UI applications so it can be successfully used for UI automation testing. Different third party libraries are used under the hood for for each type of Tested Application.</p><p>Here are some of its features:</p><ul><li>Very intuitive public API</li><li>Same look and feel for all supported applications</li><li>Large list of supported applications:<ul><li>Web applications build with HTML and JavaScript. You can choose between different real system browsers (like Firefox) or a hidden browser with no visual UI (good for CI tests).</li><li>Applications developed using Swing GUI.</li><li>Mobile аpplications developed for Android and iOS</li></ul></li></ul><p>We call <em> <strong>UI Engine</strong> </em> the ATS library used for UI testing</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>When you are doing UI tests you are not limited to working with UIs only.</p><p>For example, you may have lines in the test which do some preparation of the test environment (this can be achieved by using other ATS libraries or own code), then you can use the <em>UI Engine</em> to do the core test steps and lastly you can have other lines which verify if the application behaved as expected (again by using other ATS libraries or own code).</p><p>In other words the UI Engine can be used at any phase of the test - configuration, action or verification.</p></div></div><div class="confluence-information-macro confluence-information-macro-note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>The UI Engine is not appropriate for performance testing and the reason is that bringing up many browser instances is too heavy and this effectively makes any test results meaningless</p></div></div><p> </p><hr/><h1 id="UITesting-Quickexample">Quick example</h1><p>Here we will take a look at a simple example to see how UI Engine tests look like</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// 1. initialize the browser
+FirefoxDriver driver = UiDriver.getFirefoxDriver( &quot;SOME URL&quot; );
+
+// 2. start the browser
+driver.start();
+
+// 3. get the engine to work with
+RealHtmlEngine engine = browserDriver.getHtmlEngine();
+
+// 4. specify the file describing the UI components we want to work with
+engine.loadMapFile( &quot;MyUiComponents.map&quot;, &quot;login&quot; );
+
+// 5. work with some UI components
+engine.getTextBox( &quot;userNameTB&quot; ).setValue( &quot;admin&quot; );
+engine.getTextBox( &quot;userPasswordTB&quot; ).setValue( &quot;admin&quot; );
+engine.getButton( &quot;loginB&quot; ).click();
+
+// 6. stop the browser
+driver.stop();
+</pre>
+</div></div><p>This example basically does the following:</p><ol><li><p>Initialize the browser. We specify we will be working with Firefox browser and provide the URL of our tested application</p><div class="confluence-information-macro confluence-information-macro-note"><p class="title">IPv6 addresses</p><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>For URLs with IPv6 addresses inside you should enclose address in square brackets like this: <em> <strong>http://[2001::22cc]:8080/myContext/</strong> </em></p><p>For Windows you should use the reserved ipv6-literal.net domain as described <a class="external-link" href="http://en.wikipedia.org/wiki/IPv6_address#Literal_IPv6_addresses_in_UNC_path_names" rel="nofollow">here</a></p></div></div></li><li>Start the browser</li><li>Get a reference to the used later engine, in this example this is an <em>RealHtmlEngine</em> as we will be testing an HTML/JavaScript application in a real browser (not a hidden one)</li><li>Specify the file describing the UI components we want to work with. In our example we suppose we have some map file which defines the UI components of interest. We also have a dedicated section in that file called &quot;login&quot; which contains the UI components at the login page of our application</li><li>Work with some UI components. In our case we:<br/> - set the value of a Text Box with our user name<br/> - set the value of a Text Box with our user password<br/> - click a login Button</li><li>Stop the browser</li></ol><p> </p><hr/><h1 id="UITesting-Terminology">Terminology</h1><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup> <col/> <col/> </colgroup><tbody><tr><th class="confluenceTh"><p>Term</p></th><th class="confluenceTh"><p>Description</p></th></tr><tr><td class="confluenceTd"><p>Driver</p></td><td class="confluenceTd"><p>It is bound to the specifics of the tested application and the way we interact with it. <br class="atl-forced-newline"/> For example in order to automate some HTML application you could use <strong> <em>FirefoxDriver</em> </strong>  or <strong> <em>ChromeDriver</em> </strong></p></td></tr><tr><td class="confluenceTd"><p>Engine</p></td><td class="confluenceTd"><p>This is the single entry point you use to get instances of UI elements. For example you can call <strong> <em>getLink()</em> </strong> method so can work with a <em>Link</em> UI element.</p></td></tr><tr><td class="confluenceTd"><p>UI element</p></td><td class="confluenceTd"><p>A representation of a UI element. Each particular type has its own methods. For example you can call <strong> <em>click()</em> </strong> on a <strong> <em>Link</em> </strong> and <strong> <em>setValue()</em> </strong> on a <strong> <em>TextBox</em> </strong>.</p></td></tr><tr><td class="confluenceTd"><p>Utilities</p></td><td class="confluenceTd"><p>Some utility classes that allow doing specific actions. These are all specific to each tested application.</p></td></tr></tbody></table></div><p> </p><hr/><h1 id="UITesting-StarttheUIEngine">Start the UI Engine</h1><p>Once you have constructed your driver, you can start it by calling the <strong> <em>start()</em> </strong> method. It could do something easy to view (for example starting a real browser) or it could do nothing, but it is always good to run this method before taking any further actions.</p><p>Then you can get a reference to your Engine class and start sending commands to the tested application.</p><p> </p><hr/><h1 id="UITesting-StoptheUIEngine">Stop the UI Engine</h1><p>This is done by calling the <strong> <em>stop()</em> </strong> method of the used driver. It releases any resources, for example it shuts down a browser.</p><p> </p><hr/><h1 id="UITesting-CallingUIelements&#39;methods">Calling UI elements' methods</h1><p>You get instances of the UI elements of interest using the variety get methods like:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get an instance of a button and then work with that instance
+UiButton loginButton = engine.getButton( &quot;loginB&quot; );
+loginButton.click();
+
+// or you can use the short form when you need to run just one action on this element
+engine.getButton( &quot;loginB&quot; ).click();
+</pre>
+</div></div><p> </p><hr/><h1 id="UITesting-ProvidingdefinitionofUIelements">Providing definition of UI elements</h1><p>In order to find a UI element, you must give us some identification properties like <em>ID</em>, <em>name</em>, <em>value</em> etc.</p><p><a href="UI-elements-definition.html">Here</a> are the details</p><p> </p><hr/><h1 id="UITesting-TestingHTML/JavaScriptapplications">Testing HTML/JavaScript applications</h1><p><a href="Automated-testing-of-HTML-and-Javascript-application.html">Here</a> are the details</p><p> </p><hr/><h1 id="UITesting-Testingmobileapplications">Testing mobile applications</h1><p><a href="Automated-testing-of-Android-or-iOS-application.html">Here</a> are the details</p><p> </p><hr/><h1 id="UITesting-TestingSwingapplications">Testing Swing applications</h1><p><a href="Automated-testing-of-Swing-application.html">Here</a> are the details</p><p> </p><hr/><h1 id="UITesting-ConfiguringtheUIEngine">Configuring the UI Engine</h1><p>On startup the UI Engine is configured with its default values.</p><p><a href="ATS-libraries-configuration.html">Here</a> is the list with all supported configuration options - see the <em>UI Engine configuration</em> section.</p><p>The configuration values can be retrieved and changed using the <strong> <em>UiEngineConfigurator</em> </strong> <em>class.</em></p><p> </p><hr/><h1 id="UITesting-Utilities">Utilities</h1><p><strong> <em>UiEngineUtilities</em> </strong> is a generic utility class, but each engine may provide its own utility classes through its <strong> <em>getUtilsXYZ()</em> </strong> methods.</p><p> </p><hr/><h1 id="UITesting-ImplementingcustomUIDriver">Implementing custom UI Driver</h1><p><a href="Custom-UI-Driver.html">Here</a> you can see how to create your own UI Driver(not very likely to need it)</p><p> </p><hr/><p>Back to <a href="ATS-Guide.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : File System Snapshots - Inspect the content of some file types</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="File-System-Snapshots.html">File System Snapshots</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : File System Snapshots - Inspect the content of some file types
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Jun 29, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Introduction">Introduction</h1><p>Sometimes comparing files attributes is not enough.</p><p>Imagine you have instances of an XML file with identical content. If some of the XML nodes are moved around, we will tell you the files are different in terms of size and MD5, but the meaningful content is the same indeed.</p><p>This page shows how to compare the content of XML and Properties files without worrying about the file size and MD5 checksum.</p><hr/><h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Comparingpropertiesfiles">Comparing properties files</h1><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Skippeddatawhilecomparing">Skipped data while comparing</h3><p>Following is some data that will not be taken into consideration while comparing:</p><ul><li>order of the key-value pairs</li><li>empty spaces around keys and values</li><li>commented lines</li></ul><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Samplesfilestocompare">Samples files to compare</h3><p>Here is the first properties file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">db.parameters.host=127.0.0.1
+db.parameters.port=3306
+db.parameters.name=testdb
+db.parameters.username=ATSUser
+db.parameters.password=bestPa$$w0rd</pre>
+</div></div><p>And here is the second one:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">db.parameters.host=127.0.0.1
+db.parameters.port  =         3306
+
+# this is some comment
+db.parameters.password=bestPassword
+
+db.parameters.name=testdb
+db.parameters.username=ATSUser</pre>
+</div></div><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Compareresult">Compare result</h3><p>If both example XML files are present in your snapshot comparison, you will get some output like:</p><p><br/></p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Comparing [snap1] and [snap2] produced the following unexpected differences:
+
+Different files:
+[snap1] file &quot;C:/dir1/dbconnection.properties&quot; - [snap2] file &quot;D:/dir2/dbconnection.properties&quot;:
+    property key &#39;db.parameters.password&#39;: &#39;bestPa$$w0rd&#39; - &#39;bestPassword&#39;</pre>
+</div></div><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Donotcomparesomeproperties">Do not compare some properties</h3><p>If some properties are not of interest, there are ways to skip them while checking the content of the file</p><p>You can skip properties with some keys:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Skip a property which key equals some value. Check does not count the letter case
+snapshot1.properties.skipPropertyByKeyEqualsText( &quot;F1&quot;, &quot;dbconnection.properties&quot;, &quot;db.parameters.password&quot; );
+
+// Skip a property which key contains some value. Check does not count the letter case
+snapshot1.properties.skipPropertyByKeyContainingText( &quot;F1&quot;, &quot;dbconnection.properties&quot;, &quot;password&quot; );
+
+// Skip a property which key matches some java regular expression
+snapshot1.properties.skipPropertyByKeyMatchingText( &quot;F1&quot;, &quot;dbconnection.properties&quot;, &quot;.*pass.*&quot; );</pre>
+</div></div><p>You can skip properties with some values:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Skip a property which value equals some value. Check does not count the letter case
+snapshot1.properties.skipPropertyByValueEqualsText( &quot;F1&quot;, &quot;dbconnection.properties&quot;, &quot;bestPassword&quot; );
+
+// Skip a property which value contains some value. Check does not count the letter case
+snapshot1.properties.skipPropertyByValueContainingText( &quot;F1&quot;, &quot;dbconnection.properties&quot;, &quot;BEST&quot; );
+
+// Skip a property which value matches some java regular expression
+snapshot1.properties.skipPropertyByValueMatchingText( &quot;F1&quot;, &quot;dbconnection.properties&quot;, &quot;best.*&quot; );
+
+</pre>
+</div></div><hr/><h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-ComparingXMLfiles">Comparing XML files</h1><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Skippeddatawhilecomparing.1">Skipped data while comparing</h3><p>Note that the following data that will not be taken into consideration while comparing:</p><ul><li>order of the same XML nodes</li><li>empty spaces outside of XML nodes</li><li>commented nodes</li><li>double vs single empty nodes - for example &quot;&lt;building&gt;&lt;/building&gt;&quot; vs &quot;&lt;building/&gt;&quot;</li></ul><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Samplesfilestocompare.1">Samples files to compare</h3><p>Here is the first XML file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;
+&lt;employees&gt;
+    &lt;employee id=&quot;007&quot;&gt;
+        &lt;name&gt;Will Smith&lt;/name&gt;
+        &lt;title&gt;Showman&lt;/title&gt;
+        &lt;division&gt;Hollywood&lt;/division&gt;
+        &lt;building&gt;&lt;/building&gt;
+    &lt;/employee&gt;
+    &lt;employee id=&quot;009&quot;&gt;
+        &lt;name&gt;Indiana Jones&lt;/name&gt;
+        &lt;title&gt;Adventurer&lt;/title&gt;
+        
+        &lt;building&gt;&lt;/building&gt;
+    &lt;/employee&gt;
+&lt;/employees&gt;</pre>
+</div></div><p>And here is the second one:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;
+&lt;employees&gt;
+    &lt;employee id=&quot;008&quot;&gt;
+        &lt;name&gt;Will Smith&lt;/name&gt;
+        &lt;title&gt;Showman&lt;/title&gt;
+        &lt;division&gt;Hollywood&lt;/division&gt;
+        &lt;building/&gt;
+    &lt;/employee&gt;
+    &lt;employee id=&quot;009&quot;&gt;
+        &lt;name&gt;Indiana Jones&lt;/name&gt;
+        &lt;title&gt;Adventurer&lt;/title&gt;
+        &lt;division&gt;Hollywood&lt;/division&gt;
+        &lt;building&gt;&lt;/building&gt;
+    &lt;/employee&gt;
+&lt;/employees&gt;</pre>
+</div></div><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Compareresult.1">Compare result</h3><p>If both example XML files are present in your snapshot comparison, you will get some output like:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Comparing [snap1] and [snap2] produced the following unexpected differences:
+
+Different files:
+[snap1] file &quot;C:/dir1/employees.xml&quot; - [snap2] file &quot;C:/dir2/employees.xml&quot;:
+    Presence of XML node 
+    &lt;employees&gt;
+        &lt;employee id=&quot;007&quot;&gt;&lt;/employee&gt;: 
+    YES - NO
+
+    Presence of XML node 
+    &lt;employees&gt;
+        &lt;employee id=&quot;008&quot;&gt;&lt;/employee&gt;: 
+    NO - YES
+
+    Presence of XML node 
+    &lt;employees&gt;
+        &lt;employee id=&quot;009&quot;&gt;
+            &lt;division&gt;Hollywood&lt;/division&gt;: 
+    NO - YES</pre>
+</div></div><p>You see that:</p><ul><li>employee with id &quot;007&quot; is present in first snapshot, but not present second snapshot</li><li>employee with id &quot;008&quot; is present in second snapshot, but not present first snapshot</li><li>employee with id &quot;009&quot; has a &lt;division&gt; sub-node in second snapshot, but not in first snapshot</li></ul><h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Donotcomparesomenodes">Do not compare some nodes</h3><p>If some nodes are not of interest, there are ways to skip them while checking the content of the file</p><p>You can skip nodes with some specific attributes:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Skip a node with attribute value equal to some specified value. Check does not count the letter case
+snapshot1.xml.skipNodeByAttributeValueEqualsText( &quot;F1&quot;, &quot;employees.xml&quot;, &quot;//employees/employee&quot;, &quot;id&quot;, &quot;009&quot; );
+
+// Skip a node with attribute value containing some specified value. Check does not count the letter case
+snapshot1.xml.skipNodeByAttributeValueContainingText( &quot;F1&quot;, &quot;employees.xml&quot;, &quot;//employees/employee&quot;, &quot;id&quot;, &quot;09&quot; );
+
+// Skip a node with attribute value matching some java regular expression
+snapshot1.xml.skipNodeByAttributeValueMatchingText( &quot;F1&quot;, &quot;employees.xml&quot;, &quot;//employees/employee&quot;, &quot;id&quot;, &quot;.*9&quot; );</pre>
+</div></div><p>You can skip nodes with some values:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Skip a node with value equal to some specified value. Check does not count the letter case
+snapshot1.xml.skipNodeByValueEqualsText( &quot;F1&quot;, &quot;employees.xml&quot;, &quot;//employees/employee/division&quot;, &quot;hollyWOOD&quot; );
+
+// Skip a node with value containing some specified value. Check does not count the letter case
+snapshot1.xml.skipNodeByValueContainingText( &quot;F1&quot;, &quot;employees.xml&quot;, &quot;//employees/employee[@id=\&quot;009\&quot;]/division&quot;, &quot;Hollywood&quot; );
+
+// Skip a node with value matching some java regular expression
+snapshot1.xml.skipNodeByValueMatchingText( &quot;F1&quot;, &quot;employees.xml&quot;, &quot;//division&quot;, &quot;.*wood&quot; );
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The 3rd argument is XPATH pointing to the node to skip.</p><p>Please refer <a class="external-link" href="https://www.w3schools.com/xml/xpath_syntax.asp" rel="nofollow">here</a> to see how to construct xpath expressions.</p></div></div><hr/><p>Back to <a href="File-System-Snapshots.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

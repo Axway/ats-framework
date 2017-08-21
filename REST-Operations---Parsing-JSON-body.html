@@ -18,7 +18,10 @@
                                 <span><a href="index.html">ATS</a></span>
                             </li>
                                                     <li>
-                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
                             </li>
                                                     <li>
                                 <span><a href="ATS-Guide.html">ATS Guide</a></span>
@@ -47,7 +50,7 @@
     
         
         
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 05, 2017
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified by <span class='editor'> Dragoslav Slaveykov</span> on Jun 13, 2017
                         </div>
                     <div id="main-content" class="wiki-content group">
                     <h1 id="RESTOperations-ParsingJSONbody-Introduction">Introduction</h1><p><a class="external-link" href="http://en.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a> (JavaScript Object Notation) is a text-based open standard designed for human-readable data interchange similar to XML and YAML.</p><p>In this page we will use mostly the following example:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
@@ -57,7 +60,7 @@
 	&quot;age&quot;:10
 }
 </pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-DifferentwaystospecifytheJSONbody">Different ways to specify the JSON body</h1><h3 id="RESTOperations-ParsingJSONbody-Javaobject:">Java object:</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-DifferentwaystospecifytheJSONbody">Different ways to specify the JSON body</h1><h3 id="RESTOperations-ParsingJSONbody-Javaobject:">Java object:</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Person jsonBody = new Person();
 jsonBody.setFirstName( &quot;Indiana&quot; );
 jsonBody.setLastName( &quot;Johnes&quot; );
@@ -77,7 +80,7 @@ jsonBody.add( &quot;age&quot;, 10 );
 </div></div><p>In this example we are using our <em>JsonText</em> class provided by ATS. You still do not need the corresponding java class, but the working with this class is much easier compared to regular String.</p><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>All presented 3 examples above send the request in the same way:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestResponse response = client.postObject( jsonBody );
 </pre>
-</div></div></div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-ConstructingJsonText">Constructing JsonText</h1><h3 id="RESTOperations-ParsingJSONbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div></div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-ConstructingJsonText">Constructing JsonText</h1><h3 id="RESTOperations-ParsingJSONbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
 </pre>
 </div></div><h3 id="RESTOperations-ParsingJSONbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
@@ -136,7 +139,7 @@ jsonBody.add( &quot;firstName&quot;, &quot;Indiana&quot; );
 jsonBody.add( &quot;lastName&quot;, &quot;Johnes&quot; );
 jsonBody.add( &quot;age&quot;, 10 );
 </pre>
-</div></div></div></div><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>The above java code may look complex, but the actual output is complex too.</p><p>Using this approach is good when you are taking some programmatic approach in constructing your JSON body. For example if the input comes from some template file or some user interaction - then you can use this approach to add the needed content.</p></div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-RetrievingcontentfromJsonText">Retrieving content from JsonText</h1><p>Here is how you can get some JSON value:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div></div></div><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>The above java code may look complex, but the actual output is complex too.</p><p>Using this approach is good when you are taking some programmatic approach in constructing your JSON body. For example if the input comes from some template file or some user interaction - then you can use this approach to add the needed content.</p></div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-RetrievingcontentfromJsonText">Retrieving content from JsonText</h1><p>Here is how you can get some JSON value:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
 
 // get a String value
@@ -155,7 +158,7 @@ jsonBody.replace( &quot;age&quot;, 35 );
 
 jsonBody.remove( &quot;age&quot; );
 </pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1><p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1><p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// this will return 10
 jsonBody.getString( &quot;department/totalPeople&quot; );
 
@@ -165,7 +168,7 @@ jsonBody.getString( &quot;department/people[0]/firstName&quot; );
 // this will return 11
 jsonBody.getInt( &quot;department/temperature-this-week[3]&quot; );
 </pre>
-</div></div><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>All methods use same approach to point to a key of interest - <em>getValue()</em>, <em>replace()</em> or <em>remove()</em></p></div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-JSONtoplevelarrays">JSON top level arrays</h1><p>In some cases you may need to work with JSON content which top level is an array of JSON objects like the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>All methods use same approach to point to a key of interest - <em>getValue()</em>, <em>replace()</em> or <em>remove()</em></p></div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-JSONtoplevelarrays">JSON top level arrays</h1><p>In some cases you may need to work with JSON content which top level is an array of JSON objects like the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">[
 	{
 		&quot;firstName&quot; : &quot;Indiana&quot;,
@@ -186,7 +189,7 @@ jsonBody.getString( &quot;[0]/lastName&quot; );
 // this will return Smith
 jsonBody.getString( &quot;[1]/lastName&quot; );
 </pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-NicelyformattingtheJSONtext">Nicely formatting the JSON text</h1><p>You have the option to print the JSON text as regular or as a well formatted text.</p><p>For example using the <em>toString()</em> method may give you output like the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-NicelyformattingtheJSONtext">Nicely formatting the JSON text</h1><p>You have the option to print the JSON text as regular or as a well formatted text.</p><p>For example using the <em>toString()</em> method may give you output like the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{&quot;department&quot;:{&quot;totalPeople&quot;:10,&quot;temperature-this-week&quot;:[20,23,12,11,36],&quot;people&quot;:[{&quot;lastName&quot;:&quot;Johnes&quot;,&quot;age&quot;:10,&quot;firstName&quot;:&quot;Indiana&quot;},{&quot;lastName&quot;:&quot;Smith&quot;,&quot;age&quot;:20,&quot;firstName&quot;:&quot;Will&quot;}]}}
 </pre>
 </div></div><p>while using the <em>toFormattedString()</em> method for the same JSON text will give you output like the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
@@ -211,7 +214,7 @@ jsonBody.getString( &quot;[1]/lastName&quot; );
 	}
 }
 </pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-ParsingJSONbody-IteratingovertheJSONtextcontent">Iterating over the JSON text content</h1><p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p><br/></p><hr/><h1 id="RESTOperations-ParsingJSONbody-IteratingovertheJSONtextcontent">Iterating over the JSON text content</h1><p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">if( jsonBody.isTopLevelObject() ) {
 	// we are dealing with a JSON object
 
@@ -222,7 +225,7 @@ jsonBody.getString( &quot;[1]/lastName&quot; );
 		System.out.println( name + &quot; : &quot; + jsonBody.getString( name ) );
 
 		// or we can navigate to it
-		JsonText someJsonText = jsonBody.scopeTo( name );
+		JsonText someJsonText = jsonBody.get( name );
     }
 } else {
 	// we are dealing with a JSON array
@@ -234,7 +237,7 @@ jsonBody.getString( &quot;[1]/lastName&quot; );
 	for( int i = 0; i &lt; topLevelNumberOfElements; i++ ) {
 
 		// get the next JSON object
-		JsonText jsonInternalElement = jsonBody.scopeTo( &quot;[&quot; + i + &quot;]&quot; );
+		JsonText jsonInternalElement = jsonBody.get( &quot;[&quot; + i + &quot;]&quot; );
 
 		// iterate the elements using their names
 		for( String name : jsonInternalElement.getElementNames() ) {
@@ -245,7 +248,7 @@ jsonBody.getString( &quot;[1]/lastName&quot; );
 	}
 }
 </pre>
-</div></div><p> </p><hr/><p>Back to <a href="REST-Operations.html">parent page</a></p><hr/>
+</div></div><p><br/></p><hr/><p>Back to <a href="REST-Operations.html">parent page</a></p><hr/>
                     </div>
 
                     
@@ -253,7 +256,7 @@ jsonBody.getString( &quot;[1]/lastName&quot; );
                 </div>             </div> 
             <div id="footer" role="contentinfo">
                 <section class="footer-body">
-                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
                     <div id="footer-logo"></div>
                 </section>
             </div>

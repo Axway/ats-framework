@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : HTML Engine configuration</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="UI-Testing.html">UI Testing</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Automated-testing-of-HTML-and-Javascript-application.html">Automated testing of HTML and Javascript application</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : HTML Engine configuration
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 18, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="HTMLEngineconfiguration-Introduction">Introduction</h1><p>This page shows some useful configuration options when the UI Engine is used for testing HTML/Javascript applications</p><p> </p><hr/><h1 id="HTMLEngineconfiguration-Basicconfiguration">Basic configuration</h1><p>Using the <em> <strong>UiEngineConfigurator</strong> </em> class you can do some changes to the UI Engine behavior.</p><p>Following are some examples, look at the available setter methods for all options.</p><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.uiengine.configuration.UiEngineConfigurator;
+
+UiEngineConfigurator configurator = UiEngineConfigurator.getInstance();
+
+// by default we will not allow access to invisible UI elements
+configurator.setWorkWithInvisibleElements( true );
+
+// Highlight the element we work with - good for debugging purpose
+configurator.setHighlightElements( true );
+
+// set some sleep time between element interactions - good for debugging purpose
+configurator.setCommandDelay( 2000 );
+
+// path to a folder where the browser will save downloaded files
+configurator.setBrowserDownloadDir( DIR_PATH );</pre>
+</div></div><p> </p><hr/><h1 id="HTMLEngineconfiguration-PhantomJSconfiguration">PhantomJS configuration</h1><p>Following are options applicable PhantomJS driver only</p><h3 id="HTMLEngineconfiguration-Pagesettings">Page settings</h3><p>You can modify any of the supported by PhantomJS page settings, which are described <a class="external-link" href="http://phantomjs.org/api/webpage/property/settings.html" rel="nofollow">here</a>.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Single settings format:
+// System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, &quot;settingName: value&quot; );
+// Multiple settings format:
+// System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, &quot;{settingName: value}, {other setting: value 2}&quot; );
+
+// Example
+System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, &quot;userAgent: Mozilla/5.0 (Windows NT 5.1; rv:24.0) Gecko/20100101 Firefox/24.0&quot; );
+</pre>
+</div></div><h3 id="HTMLEngineconfiguration-Customheaders">Custom headers</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Single settings format:
+// System.setProperty( PhantomJSDriver.CUSTOM_HEADERS_PROPERTY, &quot;header name: value&quot; );&lt;/b&gt;
+// Multiple headers format:
+// System.setProperty( PhantomJSDriver.CUSTOM_HEADERS_PROPERTY, &quot;{header X: value X}, {header Y: value Y}&quot; );
+
+// Example
+System.setProperty( PhantomJSDriver.CUSTOM_HEADERS_PROPERTY, &quot;Accept-Language: en-US,en;q=0.5&quot; );
+</pre>
+</div></div><h3 id="HTMLEngineconfiguration-SpecificSSLProtocolfortheconnectionhandshake">Specific SSL Protocol for the connection handshake</h3><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// possible options are SSLv3, SSLv2, TLSv1, any (default)
+System.setProperty( PhantomJSDriver.SSL_PROTOCOL_PROPERTY, &quot;TLSv1&quot; );
+</pre>
+</div></div><p> </p><hr/><p>Back to <a href="Automated-testing-of-HTML-and-Javascript-application.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : Custom UI Driver</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="UI-Testing.html">UI Testing</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : Custom UI Driver
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Dragoslav Slaveykov</span>, last modified by <span class='editor'> Nikolay Gogovski</span> on Apr 18, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="CustomUIDriver-Introduction"><span class="toc-item-body">Introduction</span></h1><p>This page shows how to create your own custom UI Driver, UI Engine and UI Element classes (Button, TextBox, etc.)</p><p>The you will see a simple automation test using all these custom classes.</p><p> </p><hr/><h1 id="CustomUIDriver-UIDriverexample">UI Driver example</h1><p>Here we will take a look at a simple example on how to create a custom UI Driver.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">public class MyCustomDriver extends UiDriver {
+    
+	// create a logger, so we can debug the driver execution if we want
+    private static Logger log = Logger.getLogger(MyCustomDriver.class);
+    
+	// if needed, we can do some initialization here
+    // this code will be called before we obtain our custom engine
+    @Override
+    public void start() {
+        log.info(&quot;Starting MyCustomDriver...&quot;);
+    }
+
+	// if needed, we can do some cleanup here
+    // this code will be called before the driver is stopped
+    @Override
+    public void stop() {
+        log.info(&quot;Stopping MyCustomDriver...&quot;);
+    }
+    
+	// get the custom engine, so we can locate the custom UI elements
+    public MyCustomEngine getEngine(){
+        return new MyCustomEngine(this);
+    }
+}</pre>
+</div></div><p> </p><hr/><h1 id="CustomUIDriver-UIEngineexample">UI Engine example</h1><p>Here we will take a look at a simple example on how to create a custom UI Engine.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">public class MyCustomEngine extends AbstractEngine implements IMyCustomEngine {
+
+	// the factory, used to get custom UI elements from the map file
+    private MyCustomElementsFactory myCustomElementsFactory;
+
+    public MyCustomEngine(MyCustomDriver myCustomDriver) {
+        super(myCustomDriver, MyCustomElementsFactory.getInstance());
+        this.myCustomElementsFactory = (MyCustomElementsFactory) elementsFactory;
+    }
+
+	// get custom element by locating it via UiElementProperties properties object
+    public MyCustomElement getElement(UiElementProperties properties) {
+        return new MyCustomElement(uiDriver, properties);
+    }
+
+	// get custom element by locating it via mapId
+    public MyCustomElement getElement(String mapId) {
+        return this.myCustomElementsFactory.getElement(mapId, uiDriver);
+    }
+}
+
+// additional engine interface, for getting custom UI elements
+interface IMyCustomEngine{
+	public MyCustomElement getElement(UiElementProperties properties);
+    public MyCustomElement getElement(String mapId);
+}</pre>
+</div></div><p> </p><hr/><h1 id="CustomUIDriver-UIelementsexample">UI elements example</h1><p><span class="toc-item-body"> <span class="toc-item-body"> <span class="toc-item-body">Here we will take a look at a simple example on how to create a custom UI ElementsFactory and custom <span class="toc-item-body"> <span class="toc-item-body"> <span class="toc-item-body">UI</span> </span> </span> Element</span> </span> </span></p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">public class MyCustomElementsFactory extends AbstractElementsFactory {
+
+    private static MyCustomElementsFactory instance;
+
+    public static MyCustomElementsFactory getInstance() {
+        
+        if (instance == null) {
+            instance = new MyCustomElementsFactory();
+        }
+        
+        return instance;
+    }
+
+	// get custom element by locating it via UiElementProperties properties object
+    public MyCustomElement getElement(UiElementProperties properties, UiDriver uiDriver) {
+        return new MyCustomElement(uiDriver, properties);
+    }
+
+	// get custom element by locating it via mapId
+    public MyCustomElement getElement(String mapId, UiDriver uiDriver) {
+        return getElement(elementsMap.getElementProperties(mapId), uiDriver);
+    }
+}
+
+// the custom UIElement
+class MyCustomElement extends UiElement {
+
+    public MyCustomElement(UiDriver uiDriver, UiElementProperties properties) {
+        super(uiDriver, properties);
+    }
+}
+</pre>
+</div></div><p> </p><hr/><h1 id="CustomUIDriver-Testexample">Test example</h1><p>First you must load you custom driver, here are the extra steps compared to the already known UI engine examples:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// the full name of your custom UiDriver class
+String driverClassName = MyCustomUiDriver.class.getName();
+// the parameter types for the constructor you want to use in order to instantiate the custom UiDriver
+Class[] constructorParameterTypes = new Class[]{String.class};
+// arguments to be passed to the constructor
+Object[] constructorArguments = new Object[]{&quot;http://www.someurl.com&quot;};
+
+// load the custom UiDriver class
+MyCustomDriver driver = (MyCustomDriver) UiDriver.getCustomDriver(driverClassName, constructorParameterTypes, constructorArguments);
+</pre>
+</div></div><p> </p><p>And now you can use it in the regular way:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// start the driver
+driver.start();
+
+// get the custom driver&#39;s engine
+MyCustomEngine engine = driver.getEngine();
+
+// set the properties, which will be used to get the custom UiButton
+UiElementProperies properties = new UiElementProperties(&#39;id&#39;,&#39;sayHelloButton&#39;);
+// get the button
+MyUiButton sayHelloButton = engine.getButton(properties);
+sayHelloButton.click();
+
+// stop the driver
+driver.stop()</pre>
+</div></div><p> </p><hr/><p>Back to <a href="UI-Testing.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+

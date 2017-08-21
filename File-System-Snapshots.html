@@ -18,7 +18,10 @@
                                 <span><a href="index.html">ATS</a></span>
                             </li>
                                                     <li>
-                                <span><a href="ATS-OS-Documentation.html">ATS OS Documentation</a></span>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
                             </li>
                                                     <li>
                                 <span><a href="ATS-Guide.html">ATS Guide</a></span>
@@ -44,12 +47,12 @@
     
         
         
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 04, 2017
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified by <span class='editor'> Svilen Dikov</span> on Aug 02, 2017
                         </div>
                     <div id="main-content" class="wiki-content group">
-                    <h1 id="FileSystemSnapshots-Introduction">Introduction</h1><p>In some cases you might be interested to know what changes were made on some file system.</p><p>The regular example is when you want to test whether an upgrade of your Application Under Tet did not cause any unwanted changes on the file system.</p><p> </p><hr/><h1 id="FileSystemSnapshots-Makesurethereisnochangeonthefilesystem">Make sure there is no change on the file system</h1><p>The following example makes a snapshot of some directory, then the real testing work (this could be a product upgrade for example) is done which might change this directory. Then another snapshot is made and both snapshots are compared.</p><p>All files and sub-directories of the pointed directory are checked and they must match - otherwise an error is thrown and the test fails</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">com.axway.ats.action.filesystem.snapshot.FileSystemSnapshot;
-
+                    <h1 id="FileSystemSnapshots-Introduction">Introduction</h1><p>In some cases you might be interested to know what changes were made on some file system.</p><p>The regular example is when you want to test whether an upgrade of your Application Under Test did not cause any unwanted changes on the file system.</p><p> </p><hr/><h1 id="FileSystemSnapshots-Makesurethereisnochangeonthefilesystem">Make sure there is no change on the file system</h1><p>The following example makes a snapshot of some directory, then the real testing work (this could be a product upgrade for example) is done which might change this directory. Then another snapshot is made and both snapshots are compared.</p><p>All files and sub-directories of the pointed directory are checked and they must match - otherwise an error is thrown and the test fails</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.filesystem.snapshot.FileSystemSnapshot;
+...
 // take first snapshot
 FileSystemSnapshot snapshot1 = new FileSystemSnapshot( &quot;snap1&quot; );
 snapshot1.addDirectory( &quot;F1&quot;, &quot;C:/dir1&quot; );
@@ -102,7 +105,7 @@ snapshot1.checkFile( &quot;F1&quot;, &quot;important_file.xml&quot;, FileSystemS
 // second way - specify all supported attributes are important for this file
 snapshot1.checkFile( &quot;F1&quot;, &quot;important_file.xml&quot; );
 </pre>
-</div></div><p> </p><hr/><h1 id="FileSystemSnapshots-Keepthesnapshotinfoinafile">Keep the snapshot info in a file</h1><p>You can persist the snapshot into an XML file and retrieve it when needed.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><p> </p><hr/><h1 id="FileSystemSnapshots-Keepthesnapshotintoinafile">Keep the snapshot into in a file</h1><p>You can persist the snapshot into an XML file and retrieve it when needed.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">FileSystemSnapshot snapshot1 = new FileSystemSnapshot( &quot;snap1&quot; );
 snapshot1.addDirectory( &quot;F1&quot;, &quot;C:/dir1&quot; );
 snapshot1.takeSnapshot();
@@ -120,7 +123,7 @@ newSnapshot.takeSnapshot();
 // compare both snapshots
 newSnapshot.compare( oldSnapshot );
 </pre>
-</div></div><div class="confluence-information-macro confluence-information-macro-information"><p class="title">Local and Remote files</p><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p><em>toLocalFile</em> and <em>fromLocalFile</em> methods work on the local host</p><p>In similar way you can use <em>toRemoteFile</em> and <em>fromRemoteFile</em> methods from remote host</p></div></div><p> </p><hr/><h1 id="FileSystemSnapshots-Maketwoidenticalsnapshotswithoutduplicatingthecode">Make two identical snapshots without duplicating the code</h1><p>In real life you may need to use lots of methods in order to describe properly all the files and directories that are to be checked and this will lead to longer code than the presented in this guide.<br/> If you need to have 2 snapshots with same internal structure, but only taken at a different time, you will need to duplicate a lot of code.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+</div></div><div class="confluence-information-macro confluence-information-macro-information"><p class="title">Local and Remote files</p><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p><em>toLocalFile</em> and <em>fromLocalFile</em> methods work on the local host</p><p>In similar way you can use <em>toRemoteFile</em> and <em>fromRemoteFile</em> methods from remote host</p></div></div><p> </p><hr/><h1 id="FileSystemSnapshots-Maketwoidenticalsnapshotswithoutduplicatingthecode">Make two identical snapshots without duplicating the code</h1><p>In real life you may need to use lots of methods in order to describe properly all the files and directories that are to be checked and this will lead to longer code than the presented in this guide.<br/> If you need to have 2 snapshots with same internal structure, but only taken at a different time, you will need to duplicate a lot of code.</p><p>Instead of repeating the same long code for the second snapshot, you can use a handy method:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create the initial snapshot
 FileSystemSnapshot snapshot1 = new FileSystemSnapshot( &quot;snap1&quot; );
 snapshot1.addDirectory( &quot;F1&quot;, &quot;C:/dir1&quot; );
@@ -132,16 +135,14 @@ snapshot1.skipDirectory( &quot;F1&quot;, &quot;sub-dir1/another_not_important_di
 snapshot1.skipFile( &quot;F1&quot;, &quot;sub-dir2/changing_file.xml&quot; );
 snapshot1.skipFile( &quot;F1&quot;, &quot;sub-dir1/.*xml&quot; );
 snapshot1.takeSnapshot();
-</pre>
-</div></div><p>Now instead of repeating the same long code for the second snapshot, you can use another handy method</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create the second snapshot
+
+// create the second snapshot
 FileSystemSnapshot snapshot2 = snapshot1.newSnapshot( &quot;snap2&quot; );
 snapshot2.takeSnapshot();
 
 // now compare them
-snapshot1.compare( snapshot2);
-</pre>
-</div></div><p> </p><hr/><h1 id="FileSystemSnapshots-Makeyourownreportaboutthefounddifferences">Make your own report about the found differences</h1><p>If you do not like the way we present the found differences, you can make your own:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+snapshot1.compare( snapshot2); </pre>
+</div></div><p><br/></p><hr/><h1 id="FileSystemSnapshots-Comparesomefiles&#39;contentinsteadoftheirfileattributes">Compare some files' content instead of their file attributes</h1><p>Imagine you have some configuration properties or XML file. The file got change in a way that a line is moved a little down. We tell you it is a different file(as long as it size and MD5 checksum do not match), but you tell us the files have same content indeed.</p><p><a href="File-System-Snapshots---Inspect-the-content-of-some-file-types.html">Here</a> is how to deal with such files.</p><p><br/></p><hr/><h1 id="FileSystemSnapshots-Makeyourownreportaboutthefounddifferences">Make your own report about the found differences</h1><p>If you do not like the way we present the found differences, you can make your own:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
 <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.common.filesystem.snapshot.equality.EqualityState;
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
@@ -154,7 +155,7 @@ try {
 } catch ( FileSystemSnapshotException e ) {
     // if not expected differences are found, you will get this exception
     // you catch it here so can extract the differences out of the exception
-    EqualityState equalityState = e.getEqualityState();
+    FileSystemEqualityState equalityState = e.getEqualityState();
 
     // now use the available method to get the list of differences and construct your own report style
     List&lt;FileTrace&gt; differentFiles = equalityState.getDifferentFiles();
@@ -171,7 +172,7 @@ try {
                 </div>             </div> 
             <div id="footer" role="contentinfo">
                 <section class="footer-body">
-                    <p>Document generated by Confluence on Apr 11, 2017 16:15</p>
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
                     <div id="footer-logo"></div>
                 </section>
             </div>

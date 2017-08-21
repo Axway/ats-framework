@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ATS : UI elements definition</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
+
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">ATS</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="UI-Testing.html">UI Testing</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            ATS : UI elements definition
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 18, 2017
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h1 id="UIelementsdefinition-Introduction">Introduction</h1><p>In order to find a UI element, we need to know some identification properties like <em>ID</em>, <em>name</em>, <em>value</em> etc.</p><p>The UI Engine supports two ways of providing these properties - using a map file or directly specifying the list of properties in the test code.</p><p> </p><hr/><h1 id="UIelementsdefinition-Usingamapfile">Using a map file</h1><p>Here is an example of a so called map file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;Map&gt;
+     &lt;Section name=&quot;login&quot;&gt;
+          &lt;Element mapID=&quot;userNameTB&quot; type=&quot;Textbox&quot; id=&quot;_a_user_name_&quot;/&gt;
+          &lt;Element mapID=&quot;userPasswordTB&quot; type=&quot;Textbox&quot; name=&quot;password&quot;/&gt;
+          &lt;Element mapID=&quot;loginB&quot; type=&quot;Button&quot; name=&quot;a_login_btn_name&quot; value=&quot;Log in&quot;/&gt;
+     &lt;/Section&gt;
+&lt;/Map&gt;
+</pre>
+</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>We recommend to use some common naming convention for your <em><strong>map IDs</strong></em>.</p><p>For example <strong><em>userPasswordTB</em></strong> is a <strong><em>Text Box</em></strong>, while <em><strong>loginB</strong></em> is a <em><strong>Button</strong></em> etc.</p></div></div><p> </p><p>And here is how you can use it in your tests:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">engine.loadMapFile( &quot;MyUiComponents.map&quot;, &quot;login&quot; );
+
+engine.getTextBox( &quot;userNameTB&quot; ).setValue( &quot;admin&quot; );
+engine.getTextBox( &quot;userPasswordTB&quot; ).setValue( &quot;admin&quot; );
+engine.getButton( &quot;loginB&quot; ).click();
+</pre>
+</div></div><p>So basically you use a map file to describe the elements you will use in your tests. You put all the needed attributes and then refer to your elements in the test by its mapId only.</p><p>The benefits of using a map file are:</p><ul><li>cleaner tests as each element is identified by its mapId only</li><li>central storage for all UI elements involved in the tests</li><li>more intuitive names are used for identifying an element. For example the developer may specify an id for a login button called &quot;_this_is_some_gadget_doing_something&quot;, but you can still use &quot;loginB&quot; as identifier in your tests</li><li>changes in the application affect only the map file, once it is fixed the tests works again</li><li>multiple map files and multiple map sections are supported. Imagine you have 10 menus on your web application and you can have 10 map sections for each menu, thus you can use same mapIds for elements from different web pages</li></ul><p> </p><hr/><h1 id="UIelementsdefinition-Usingalistofpropertiesinthejavacode">Using a list of properties in the java code</h1><p>If you insist to not use a map file for some reason, you can directly provide the UI element properties using Java only:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// provide &quot;id&quot; of a button
+UiElementProperties loginButtonProperties = new UiElementProperties().addProperty( &quot;id&quot;, &quot;a_login_btn_id&quot; );
+// or provide &quot;name&quot; and &quot;value&quot; of a button
+UiElementProperties loginButtonProperties = new UiElementProperties().addProperty( &quot;name&quot;, &quot;a_login_btn_name&quot; ).addProperty( &quot;value&quot;, &quot;Log in&quot; );
+
+// now construct the button and click it
+engine.getButton( loginButtonProperties ).click();
+</pre>
+</div></div><p>Of course you can mix the usage of map files and java properties.</p><p>Maybe most of your UI elements will be defined in a map file and will be used multiple times in your test code. But few of UI elements will be defined in the java only because you use them just once.</p><p> </p><hr/><p>Back to <a href="UI-Testing.html">parent page</a></p><hr/>
+                    </div>
+
+                    
+                                                      
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
+                    <div id="footer-logo"></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
+
+
