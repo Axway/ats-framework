@@ -19,7 +19,7 @@ public class OracleColumnDescription extends ColumnDescription {
 
     public OracleColumnDescription(
                                     String name, String type ) {
-        super( name, type );
+        super( name.toLowerCase(), type.toLowerCase() );
     }
 
     // for information about all data types in Oracle

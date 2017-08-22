@@ -150,19 +150,29 @@ public class OracleDbProvider extends AbstractDbProvider {
     }
 
     @Override
-    protected DbRecordValue parseDbRecordAsObject( DbColumn dbColumn, ResultSet res, int columnIndex )
-            throws IOException, SQLException {
+    protected DbRecordValue parseDbRecordAsObject( DbColumn dbColumn, ResultSet res,
+                                                   int columnIndex ) throws IOException, SQLException {
 
         DbRecordValue recordValue = null;
-        String type = dbColumn.getColumnType().toLowerCase();
-        String name = dbColumn.getColumnName().toLowerCase();
 
-        OracleColumnDescription columnDescription = new OracleColumnDescription( name, type );
-
-        if( columnDescription.isTypeBinary() ) {
-            recordValue = new DbRecordValue( dbColumn, res.getString( columnIndex ) );
+        Object valueAsObject = res.getObject( columnIndex );
+        if( valueAsObject == null ) {
+            // null object
+            recordValue = new DbRecordValue( dbColumn, null );
+        } else if( valueAsObject instanceof Blob ) {
+            // a blob, it is binary type, but we need to read in some special way as hex string
+            StringBuilder stringValue = addBinDataAsHexAndCloseStream( new StringBuilder(),
+                                                                       ( ( Blob ) valueAsObject ).getBinaryStream() );
+            recordValue = new DbRecordValue( dbColumn, stringValue.toString() );
         } else {
-            recordValue = new DbRecordValue( dbColumn, res.getObject( columnIndex ) );
+            // it is not binary or it is a non-blob binary
+            OracleColumnDescription columnDescription = new OracleColumnDescription( dbColumn.getColumnName(),
+                                                                                     dbColumn.getColumnType() );
+            if( columnDescription.isTypeBinary() ) {
+                recordValue = new DbRecordValue( dbColumn, res.getString( columnIndex ) );
+            } else {
+                recordValue = new DbRecordValue( dbColumn, valueAsObject );
+            }
         }
 
         return recordValue;
