@@ -431,4 +431,21 @@
         </developer>
     </developers>
 
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>fast</id>
+            <!-- Use this profile with "mvn goal -P fast" if you want quick build without running tests and generating JavaDoc -->
+            <properties>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <!-- Uncomment this if you want to compile tests but not to run them <skipTests>true</skipTests> -->
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>
