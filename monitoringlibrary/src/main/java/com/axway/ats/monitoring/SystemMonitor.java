@@ -30,6 +30,7 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.monitoring.MonitoringException;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
@@ -299,11 +300,14 @@ public class SystemMonitor {
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, systemReadingTypes };
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_SYSTEM_MONITORING_RELATIVE_URI,
                                     "There were errors while scheduling system monitoring",
                                     values );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     /**
@@ -324,11 +328,14 @@ public class SystemMonitor {
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, readingType, readingParameters };
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_MONITORING_RELATIVE_URI,
                                     "There were errors while scheduling monitoring",
                                     values );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     /**
@@ -358,6 +365,7 @@ public class SystemMonitor {
                                    processAlias,
                                    null,
                                    processReadingTypes );
+        
     }
 
     /**
@@ -499,11 +507,14 @@ public class SystemMonitor {
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, jvmPort, alias, jvmReadingTypes };
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_JVM_MONITORING_RELATIVE_URI,
                                     "There were errors while scheduling jvm monitoring",
                                     values );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     /**
@@ -536,11 +547,14 @@ public class SystemMonitor {
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, jmxPort, alias, mbeanName, unit, mbeanAttributes };
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_CUSTOM_JVM_MONITORING_RELATIVE_URI,
                                     "There were errors while scheduling custom jvm monitoring",
                                     values );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     /**
@@ -607,11 +621,14 @@ public class SystemMonitor {
         Iterator<String> it = this.monitoredHosts.iterator();
         while( it.hasNext() ) {
             String monitoredHost = it.next();
-            performMonitoringOperation( monitoredHost,
+            String errorMsg = performMonitoringOperation( monitoredHost,
                                         RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                         RestHelper.STOP_MONITORING_RELATIVE_URI,
                                         "There were errors while stopping monitoring",
                                         new Object[]{ null } );
+            if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+            	throw new MonitoringException(errorMsg);
+            }
             performCleanup( monitoredHost );
         }
 
@@ -688,11 +705,14 @@ public class SystemMonitor {
     private void initializeMonitoring(
                                        String monitoredHost ) {
 
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.INITIALIZE_MONITORING_RELATIVE_URI,
                                     "There were errors while initializing monitoring",
                                     new Object[]{ null } );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     private void joinTestcase(
@@ -701,23 +721,29 @@ public class SystemMonitor {
         TestCaseState testCaseState = AtsDbLogger.getLogger( SystemMonitor.class.getName() )
                                                  .getCurrentTestCaseState();
 
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
                                     RestHelper.JOIN_TESTCASE_RELATIVE_URI,
                                     "There were errors while joining testcase",
                                     new Object[]{ null,
                                                   testCaseState.getRunId(),
                                                   testCaseState.getTestcaseId() } );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     private void leaveTestcase(
                                 String monitoredHost ) {
 
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
                                     RestHelper.LEAVE_TESTCASE_RELATIVE_URI,
                                     "There were errors while leaving testcase",
                                     new Object[]{ null } );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     // this code if left commented for now
@@ -746,11 +772,14 @@ public class SystemMonitor {
                                        processUsername,
                                        parentProcess,
                                        processReadingTypes };
-       performMonitoringOperation( monitoredHost,
+       String errorMsg = performMonitoringOperation( monitoredHost,
                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                    RestHelper.SCHEDULE_PROCESS_MONITORING_RELATIVE_URI,
                                    "There were errors while scheduling process monitoring",
                                    values );
+       if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+           throw new MonitoringException(errorMsg);
+       }
    }
 
     private void scheduleParentProcessMonitoring(
@@ -768,11 +797,14 @@ public class SystemMonitor {
                                         processUsername,
                                         parentProcess,
                                         processReadingTypes };
-        performMonitoringOperation( monitoredHost,
+        String errorMsg = performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_CHILD_PROCESS_MONITORING_RELATIVE_URI,
                                     "There were errors while scheduling child process monitoring",
                                     values );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
     private void scheduleUserActivity(
@@ -780,13 +812,21 @@ public class SystemMonitor {
 
         Object[] values = new Object[]{ null };
         // create JsonMonitoringUtils.constructXYZ() values
-        performMonitoringOperation( monitoredAgent,
+        String errorMsg = performMonitoringOperation( monitoredAgent,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_USER_ACTIVITY_RELATIVE_URI,
                                     "There were errors while scheduling user activity",
                                     values );
+        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
+        	throw new MonitoringException(errorMsg);
+        }
     }
 
+    /**
+     * Executes specific monitoring service REST call
+     * If an error is returned/occurred, the error message is returned, 
+     * else null is returned, which means no errors occurred
+     * */
     private String performMonitoringOperation(
                                                String monitoredHost,
                                                String baseUri,
@@ -794,15 +834,20 @@ public class SystemMonitor {
                                                String errorMessage,
                                                Object[] values ) {
 
-        RestHelper helper = this.restHelpers.get( monitoredHost );
-        RestResponse response = helper.post( monitoredHost, baseUri, relativeUri, values );
+    	RestHelper helper = null;
+    	RestResponse response = null;
+    	try {
+    		helper = this.restHelpers.get( monitoredHost );
+            response = helper.post( monitoredHost, baseUri, relativeUri, values );
 
-        if( response.getStatusCode() >= 400 ) {
-            log.error( errorMessage + " on '" + monitoredHost + "'" );
-            return response.getBodyAsJson().getString( "error" );
-        }
-
-        return null;
+            if( response.getStatusCode() >= 400 ) {
+                log.error( errorMessage + " on '" + monitoredHost + "'" );
+                return response.getBodyAsJson().getString( "error" );
+            }
+            return null;	
+    	} finally {
+    		helper.disconnect();
+		}
     }
 
 }
