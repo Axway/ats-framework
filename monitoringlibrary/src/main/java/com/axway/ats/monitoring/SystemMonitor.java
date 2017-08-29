@@ -323,7 +323,7 @@ public class SystemMonitor {
         monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         performSetup( monitoredHost );
         // create JsonMonitoringUtils.constructXYZ() values
-        Object[] values = new Object[]{ readingType, readingParameters };
+        Object[] values = new Object[]{ null, readingType, readingParameters };
         performMonitoringOperation( monitoredHost,
                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                     RestHelper.SCHEDULE_MONITORING_RELATIVE_URI,

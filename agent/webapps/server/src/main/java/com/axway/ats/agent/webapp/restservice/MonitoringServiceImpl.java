@@ -139,11 +139,11 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
 
             Set<ReadingBean> readings = restSystemMonitor.scheduleMonitoring( agent,
                                                                                   monitoringPojo.getReading(),
-                                                                                  monitoringPojo.getReadingParameters() );
+                                                                                  monitoringPojo.getReadingParametersAsMap() );
 
             restSystemMonitor.setScheduledReadingTypes( readings );
 
-            String readingParametersAsString = entrySetAsString( monitoringPojo.getReadingParameters() );
+            String readingParametersAsString = entrySetAsString( monitoringPojo.getReadingParametersAsMap() );
 
             return Response.ok( "{\"status\":\"scheduled monitoring for reading '"
                                 + monitoringPojo.getReading() + "' and readingParameters '"

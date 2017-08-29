@@ -15,6 +15,7 @@
  */
 package com.axway.ats.monitoring;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -217,7 +218,32 @@ public class JsonMonitoringUtils {
                     sb = new StringBuilder( sb.subSequence( 0, sb.length() - 1 ) );
                     sb.append( "]" );
                 } else if( value instanceof Map ) {
-                    
+                	/* 
+                	 * In order to serialize java.util.Map object to JSON,
+                	 * transform it to a JSON array, and each array element will contains a JSON object (the key-value pair of each map entry)
+                	 * Example: 
+                	 *     Map<String, String> someMap = new HashMap<String, String>();
+						   someMap.put("dbHost", "127.0.0.1");
+						   someMap.put("dbPort", "5555");
+					   will be transformed to
+					   { 
+					       ...
+					       'map':[
+					         {'key':'dbHost',value':'127.0.0.1'},
+					         {'key':'dbPort',value':'5555'}
+					       ]
+					       ...
+					   }
+                	 * */
+                	sb.append("[");
+					for ( Map.Entry<String, String> mapEntry : (( Map<String, String> ) value).entrySet() ) {
+						sb.append("{");
+						sb.append("\"").append("key").append("\"").append(":").append("\"").append(mapEntry.getKey()).append("\"").append(",");
+						sb.append("\"").append("value").append("\"").append(":").append("\"").append(mapEntry.getValue()).append("\"");
+						sb.append("},");
+					}
+                	sb = new StringBuilder(sb.subSequence(0, sb.length() - 1));
+					sb.append("]");
                 } else {
                     throw new IllegalArgumentException( "Error running '" + action
                                                         + "'. Invallid value type '"
