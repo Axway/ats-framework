@@ -80,9 +80,8 @@ public class SftpClient extends AbstractFileTransferClient {
 
         super( portNumber );
 
-        // add BoncyCastle provider
-        Security.addProvider( new BouncyCastleProvider() );
-
+        // add BoncyCastle provider as the first one, before any default JRE providers
+        Security.insertProviderAt( new BouncyCastleProvider(), 1 );
     }
 
     @Override
@@ -159,6 +158,14 @@ public class SftpClient extends AbstractFileTransferClient {
                                        this.keystorePassword.getBytes() );
                 this.session = this.jsch.getSession( this.username, this.hostname, this.port );
             }
+            
+            /*
+             * At the time of writing this code, the used JSCH library is version 0.1.50
+             * and connection attempts fail when running with Java 7.
+             * The internally used client version 'SSH-2.0-JSCH-0.1.54' needs to be changed to 'SSH-2.0-OpenSSH_2.5.3'
+             */
+            this.session.setClientVersion( "SSH-2.0-OpenSSH_2.5.3" );
+            
             // skip checking of known hosts and verifying RSA keys
             this.session.setConfig( "StrictHostKeyChecking", "no" );
             // make keyboard-interactive last authentication method
@@ -387,5 +394,4 @@ public class SftpClient extends AbstractFileTransferClient {
         log.debug( "Adding cipher " + cipher + " to the SFTP connection configuration" );
         this.ciphers.add( cipher );
     }
-
 }
