@@ -510,6 +510,7 @@ public class SMimePackageEncryptor implements PackageEncryptor {
         return new SMimePackageEncryptor( null, null ).checkSignature( sourcePackage, null, null, null );
     }
 
+    @SuppressWarnings("unchecked")
     private boolean checkSignature( Package sourcePackage, String keystoreLocation, String keystorePassword,
                                     String keystoreAlias ) throws ActionException {
 
@@ -540,7 +541,7 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             if( keystoreLocation == null ) { // extract public keys from the signature
 
                 // a Store containing the public key certificates passed in the signature
-                Store<?> certs = signedMessage.getCertificates();
+                Store certs = signedMessage.getCertificates();
 
                 // Note: mail could be signed by multiple users. Currently we search for one/first signature match
                 while( it.hasNext() ) {
