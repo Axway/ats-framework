@@ -19,18 +19,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.axway.ats.action.objects.MimePackage;
+import com.axway.ats.action.security.PackageEncryptor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.executors.MetaExecutor;
+import com.axway.ats.rbv.imap.ImapEncryptedFolderSearchTerm;
 import com.axway.ats.rbv.imap.ImapFolderSearchTerm;
 import com.axway.ats.rbv.imap.ImapMetaData;
 import com.axway.ats.rbv.imap.ImapStorage;
 import com.axway.ats.rbv.imap.rules.AttachmentNameRule;
 import com.axway.ats.rbv.imap.rules.HeaderRule;
+import com.axway.ats.rbv.imap.rules.HeaderRule.HeaderMatchMode;
 import com.axway.ats.rbv.imap.rules.MimePartCountRule;
+import com.axway.ats.rbv.imap.rules.SMimeSignatureRule;
 import com.axway.ats.rbv.imap.rules.StringInMimePartRule;
 import com.axway.ats.rbv.imap.rules.SubjectRule;
-import com.axway.ats.rbv.imap.rules.HeaderRule.HeaderMatchMode;
 import com.axway.ats.rbv.imap.rules.SubjectRule.SubjectMatchMode;
 import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.storage.Matchable;
@@ -75,6 +78,30 @@ public class ImapVerification extends VerificationSkeleton {
 
         ImapStorage storage = new ImapStorage( imapServer );
         folder = storage.getFolder( new ImapFolderSearchTerm( userName, password ) );
+        this.executor = new MetaExecutor();
+    }
+    
+    /**
+     * Create an IMAP verification component for encrypted message
+     *
+     * @param imapServer    the IMAP server
+     * @param userName      the IMAP user name
+     * @param password      the password of the IMAP user
+     * @param packageEncryptor encryptor to use in order to decrypt the message
+     * @throws RBVException
+     */
+    @PublicAtsApi
+    public ImapVerification( String imapServer,
+                             String userName,
+                             String password,
+                             PackageEncryptor packageEncryptor ) throws RbvException {
+
+        super();
+
+        this.monitorName += userName;
+
+        ImapStorage storage = new ImapStorage( imapServer );
+        folder = storage.getFolder( new ImapEncryptedFolderSearchTerm( userName, password, packageEncryptor ) );
         this.executor = new MetaExecutor();
     }
 
@@ -548,6 +575,60 @@ public class ImapVerification extends VerificationSkeleton {
                                                    "checkSubject"
                                                            + getNestedMimePackagePathDescription( nestedPackagePath ),
                                                    true );
+        rootRule.addRule( subjectRule );
+    }
+
+    /**
+     * Check the signature of a signed message using the embedded public keys.
+     *
+     */
+    @PublicAtsApi
+    public void checkSignature() {
+
+        checkSignature( new int[0], null );
+    }
+
+    /**
+     * Check the signature of a signed nested message using the embedded public keys.
+     *
+     * @param nestedPackagePath path to the nested message
+     */
+    @PublicAtsApi
+    public void checkSignature(
+                                int[] nestedPackagePath ) {
+
+        checkSignature( nestedPackagePath, null );
+    }
+
+    /**
+     * Check the signature of a signed message using the provided signer.
+     *
+     * @param signer the signer to use
+     */
+    @PublicAtsApi
+    public void checkSignature(
+                                PackageEncryptor signer ) {
+
+        checkSignature( new int[0], signer );
+    }
+
+    /**
+     * Check the signature of a signed nested message using the provided signer.
+     *
+     * @param nestedPackagePath path to the nested message
+     * @param signer the signer to use
+     */
+    @PublicAtsApi
+    public void checkSignature(
+                                int[] nestedPackagePath,
+                                PackageEncryptor signer ) {
+
+        //create the rule
+        SMimeSignatureRule subjectRule = new SMimeSignatureRule( nestedPackagePath,
+                                                                 signer,
+                                                                 "checkSignature"
+                                                                         + getNestedMimePackagePathDescription( nestedPackagePath ),
+                                                                 true );
         rootRule.addRule( subjectRule );
     }
 

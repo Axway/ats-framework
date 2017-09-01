@@ -38,6 +38,7 @@ import com.axway.ats.action.objects.model.Package;
 import com.axway.ats.action.objects.model.PackageException;
 import com.axway.ats.action.objects.model.RecipientType;
 import com.axway.ats.action.objects.model.WrongPackageException;
+import com.axway.ats.action.security.PackageEncryptor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.config.exceptions.NoSuchPropertyException;
 import com.axway.ats.core.utils.StringUtils;
@@ -66,7 +67,10 @@ public class MailSender extends PackageSender {
     private long                            mailPort;
 
     protected Properties                    mailProperties = new Properties();
+    
+    private PackageEncryptor                encryptor;
 
+    private PackageEncryptor                signer;
 
     /**
      * Generic constructor. It sets the mail(SMTP) host and port using the default values taken from the
@@ -136,6 +140,12 @@ public class MailSender extends PackageSender {
 
         // tag the package
         mimePackage.tag();
+        
+        // sign the package if needed
+        mimePackage = sign( mimePackage );
+
+        // encrypt the package if needed
+        mimePackage = encrypt( mimePackage );
 
         // then send
         final DELIVERY_STATE messageDeliveryState;
@@ -181,6 +191,28 @@ public class MailSender extends PackageSender {
         }
     }
 
+    /**
+     * Specify a package signer
+     *
+     * @param signer
+     */
+    @PublicAtsApi
+    public void setSigner( PackageEncryptor signer ) {
+
+        this.signer = signer;
+    }
+
+    /**
+     * Specify a package encryptor
+     *
+     * @param encryptor
+     */
+    @PublicAtsApi
+    public void setEncryptor( PackageEncryptor encryptor ) {
+
+        this.encryptor = encryptor;
+    }
+
 
     /**
      * Set mail session property.<br/>
@@ -212,6 +244,39 @@ public class MailSender extends PackageSender {
             transport = session.getTransport( "smtp" );
         } catch( NoSuchProviderException e ) {
             throw new ActionException( e );
+        }
+    }
+    /**
+     * Sign the package before sending
+     *
+     * @param mimePackage
+     * @return
+     * @throws ActionException
+     */
+    private MimePackage sign(
+                              MimePackage mimePackage ) throws ActionException {
+
+        if( signer != null ) {
+            return ( MimePackage ) signer.sign( mimePackage );
+        } else {
+            return mimePackage;
+        }
+    }
+
+    /**
+     * Encrypt the package before sending
+     *
+     * @param mimePackage
+     * @return
+     * @throws ActionException
+     */
+    private MimePackage encrypt(
+                                 MimePackage mimePackage ) throws ActionException {
+
+        if( encryptor != null ) {
+            return ( MimePackage ) encryptor.encrypt( mimePackage );
+        } else {
+            return mimePackage;
         }
     }
 
