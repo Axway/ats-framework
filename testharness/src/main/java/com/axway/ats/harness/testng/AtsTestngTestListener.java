@@ -147,7 +147,11 @@ public class AtsTestngTestListener extends TestListenerAdapter {
             // if this is an assertion error, we need to log it
             Throwable failureException = testResult.getThrowable();
             if( failureException instanceof AssertionError ) {
-                logger.error( failureException.getMessage() );
+                if( failureException.getMessage() != null ) {
+                    logger.error( failureException.getMessage() );
+                } else {
+                    logger.error( "Received java.lang.AssertionError with null message" );
+                }
             } else {
                 logger.error( MSG__TEST_FAILED, testResult.getThrowable() );
             }
