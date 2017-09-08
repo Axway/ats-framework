@@ -104,8 +104,6 @@ public class SMimePackageEncryptor implements PackageEncryptor {
     private ASN1ObjectIdentifier encryptionCipher              = null;
     private String               signatureAlgorithm            = null;
     
-    private KeyStore             ks                            = null;
-
     @PublicAtsApi
     public static class Cipher {
 
@@ -293,15 +291,13 @@ public class SMimePackageEncryptor implements PackageEncryptor {
 
     private KeyStore getKeystore() throws Exception {
 
-        if( ks == null ) {
-            ks = KeyStore.getInstance( PKCS12_KEYSTORE_TYPE, BouncyCastleProvider.PROVIDER_NAME );
-            ks.load( new FileInputStream( certLocation ), certPassword.toCharArray() );
+        KeyStore ks = KeyStore.getInstance( PKCS12_KEYSTORE_TYPE, BouncyCastleProvider.PROVIDER_NAME );
+        ks.load( new FileInputStream( certLocation ), certPassword.toCharArray() );
 
-            if( aliasOrCN == null ) {
-                Enumeration<String> aliases = ks.aliases();
-                String alias = aliases.nextElement();
-                aliasOrCN = alias;
-            }
+        if( aliasOrCN == null ) {
+            Enumeration<String> aliases = ks.aliases();
+            String alias = aliases.nextElement();
+            aliasOrCN = alias;
         }
 
         return ks;
@@ -335,7 +331,7 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             KeyStore ks = getKeystore();
             RecipientId recId = new JceKeyTransRecipientId( ( X509Certificate ) ks.getCertificate( aliasOrCN ) );
 
-            MimeMessage msg = new MimeMessage( ( ( MimePackage ) sourcePackage ).getMimeMessage() );
+            MimeMessage msg = getMimeMessage( sourcePackage );
             SMIMEEnveloped m = new SMIMEEnveloped( msg );
 
             RecipientInformationStore recipients = m.getRecipientInfos();
@@ -360,12 +356,17 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             SMIMESigned signedMessage = null;
             MimeMessage decryptedMsg = new MimeMessage( Session.getInstance( new Properties() ) );
             if( result != null ) {
-                MimeMultipart multipart = new MimeMultipart();
-                multipart.addBodyPart( result );
-                decryptedMsg.setContent( multipart );
+                Object content = result.getContent();
+                Enumeration<?> hLineEnum = msg.getAllHeaderLines();
+                while( hLineEnum.hasMoreElements() ) {
+                    decryptedMsg.addHeaderLine( ( String ) hLineEnum.nextElement() );
+                }
+                decryptedMsg.setContent( content, result.getContentType() );
+                
+                // in order getPlainTextBody getHtmlTextBody to work as they do not work with attachments
+                decryptedMsg.removeHeader( "Content-Disposition" );
 
                 // check if the message is signed
-                Object content = result.getContent();
                 try {
                     if( content instanceof MimeMultipart ) {
                         MimeMultipart multipartContent = ( MimeMultipart ) content;
@@ -441,19 +442,23 @@ public class SMimePackageEncryptor implements PackageEncryptor {
                                                                                                   cer.getSerialNumber() ) ) );
             attributes.add( new SMIMECapabilitiesAttribute( capabilities ) );
 
+            if( signatureAlgorithm == null ) {
+                signatureAlgorithm = SignatureAlgorithm.DSA.equals( privateKey.getAlgorithm() )
+                                                                                                ? "SHA1withDSA"
+                                                                                                : "MD5withRSA";
+            }
+
             SMIMESignedGenerator signer = new SMIMESignedGenerator();
-            signer.addSignerInfoGenerator( new JcaSimpleSignerInfoGeneratorBuilder().setProvider( BouncyCastleProvider.PROVIDER_NAME )
-                                                                                    .setSignedAttributeGenerator( new AttributeTable( attributes ) )
-                                                                                    .build( signatureAlgorithm != null
-                                                                                                                       ? signatureAlgorithm
-                                                                                                                       : SMIMESignedGenerator.DIGEST_SHA1,
-                                                                                            privateKey,
-                                                                                            cer ) );
+            JcaSimpleSignerInfoGeneratorBuilder signerGeneratorBuilder = new JcaSimpleSignerInfoGeneratorBuilder();
+            signerGeneratorBuilder.setProvider( BouncyCastleProvider.PROVIDER_NAME );
+            signerGeneratorBuilder.setSignedAttributeGenerator( new AttributeTable( attributes ) );
+            signer.addSignerInfoGenerator( signerGeneratorBuilder.build( signatureAlgorithm, privateKey,
+                                                                         cer ) );
 
             /* Add the list of certs to the generator */
             List<X509Certificate> certList = new ArrayList<X509Certificate>();
             certList.add( cer );
-            Store certs = new JcaCertStore( certList );
+            Store<?> certs = new JcaCertStore( certList );
             signer.addCertificates( certs );
 
             /* Sign the message */
@@ -541,7 +546,7 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             if( keystoreLocation == null ) { // extract public keys from the signature
 
                 // a Store containing the public key certificates passed in the signature
-                Store certs = signedMessage.getCertificates();
+                Store<?> certs = signedMessage.getCertificates();
 
                 // Note: mail could be signed by multiple users. Currently we search for one/first signature match
                 while( it.hasNext() ) {

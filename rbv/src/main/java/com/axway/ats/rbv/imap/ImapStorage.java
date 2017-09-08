@@ -95,6 +95,17 @@ public class ImapStorage implements Storage {
                                        imapSearchTerm.getFolderName(),
                                        imapSearchTerm.getUserName(),
                                        imapSearchTerm.getPassword() );
+            } else if( searchTerm.getClass().getName().equals( ImapEncryptedFolderSearchTerm.class.getName() ) ) {
+
+                ImapEncryptedFolderSearchTerm imapSearchTerm = ( ImapEncryptedFolderSearchTerm ) searchTerm;
+                Store store = session.getStore( "imap" );
+
+                return new ImapEncryptedFolder( store,
+                                                imapServerHost,
+                                                imapSearchTerm.getFolderName(),
+                                                imapSearchTerm.getUserName(),
+                                                imapSearchTerm.getPassword(),
+                                                imapSearchTerm.getEncryptor() );
             } else {
                 throw new RbvStorageException( "Search term " + searchTerm.getClass().getSimpleName()
                                                + " is not supported" );
