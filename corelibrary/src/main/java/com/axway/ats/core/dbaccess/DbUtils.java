@@ -18,11 +18,15 @@ package com.axway.ats.core.dbaccess;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.log4j.Logger;
+
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 
 /**
  * Utilities to close Database connection, statement
@@ -122,6 +126,80 @@ public class DbUtils {
         }
         return sb.toString();
     }
+    
+    /**
+     * Checks if ATS Log MSSQL database is available for connection
+     * @param dbHost the database host
+     * @param dbName the database name
+     * @param dbUser the database user name used for login
+     * @param dbPassword the database password used for login
+     * @return true if MSSQL database is available
+     * */
+   public static boolean isMSSQLDatabaseAvailable( String dbHost, String dbName, String dbUser, String dbPassword ) {
+       
+       DbConnSQLServer conn = null;
+       PreparedStatement ps = null;
+       
+       try {
+           conn = new DbConnSQLServer( dbHost, dbName, dbUser, dbPassword );
+           Connection c = conn.getDataSource().getConnection();
+           ps = c.prepareStatement( "SELECT value FROM tInternal WHERE [key] = 'version'" );
+           ResultSet rs = ps.executeQuery();
+           // we expect only one record
+           if( rs.next() ) {
+               rs.getString( 1 ); // execute it just to be sure that the database we found is ATS Log database as much as possible
+           } else {
+               throw new Exception( "Could not fetch the database version from MSSQL database using URL '" + conn.getURL()+"'" );
+           }
+           return true;
+       } catch ( Exception e ) {
+           return false;
+       } finally {
+            closeStatement( ps );
+            try {
+                closeConnection( conn.getDataSource().getConnection() );
+            } catch( SQLException e ) {
+                //log.error( "Could not close connection to MSSQL database using URL '" + conn.getURL() + "'" );
+            }
+       }
+   }
+   
+   /**
+    * Check if ATS log PostgreSQL database is available for connection
+    * @param dbHost the database host
+    * @param dbName the database name
+    * @param dbUser the database user name used for login
+    * @param dbPassword the database password used for login
+    * @return true if PostgreSQL database is available
+    * */
+  public static boolean isPostgreSQLDatabaseAvailable( String dbHost, String dbName, String dbUser, String dbPassword ) {
+      
+      DbConnPostgreSQL conn = null;
+      PreparedStatement ps = null;
+      
+      try {
+          conn = new DbConnPostgreSQL( dbHost, dbName, dbUser, dbPassword );
+          Connection c = conn.getDataSource().getConnection();
+          ps = c.prepareStatement( "SELECT value FROM \"tInternal\" WHERE key = 'version'" );
+          ResultSet rs = ps.executeQuery();
+          // we expect only one record
+          if( rs.next() ) {
+              rs.getString( 1 ); // execute it just to be sure that the database we found is ATS Log database as much as possible
+          } else {
+              throw new Exception( "Could not fetch the database version from PostgreSQL database using URL '" + conn.getURL()+"'" );
+          }
+          return true;
+      } catch ( Exception e ) {
+          return false;
+      } finally {
+           closeStatement( ps );
+           try {
+               closeConnection( conn.getDataSource().getConnection() );
+           } catch( SQLException e ) {
+               //log.error( "Could not close connection to PostgreSQL database using URL '" + conn.getURL() + "'" );
+           }
+      }
+  }
 
     /**
      * Adds single SQLException details and returns reference to the nested one

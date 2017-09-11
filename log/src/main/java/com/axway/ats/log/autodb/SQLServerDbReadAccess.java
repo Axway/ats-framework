@@ -37,7 +37,9 @@ import com.axway.ats.log.autodb.entities.LoadQueue;
 import com.axway.ats.log.autodb.entities.Machine;
 import com.axway.ats.log.autodb.entities.Message;
 import com.axway.ats.log.autodb.entities.Run;
+import com.axway.ats.log.autodb.entities.RunMetaInfo;
 import com.axway.ats.log.autodb.entities.Scenario;
+import com.axway.ats.log.autodb.entities.ScenarioMetaInfo;
 import com.axway.ats.log.autodb.entities.Statistic;
 import com.axway.ats.log.autodb.entities.StatisticDescription;
 import com.axway.ats.log.autodb.entities.Suite;
@@ -46,7 +48,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 
-public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
+public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     /*  Some methods has an argument 'dayLightSavingOn'.
      *  This argument is used to align the time stamp for Time zones, that have Day-light saving 
@@ -70,7 +72,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     public static final String MACHINE_NAME_FOR_ATS_AGENTS                          = "ATS Agents";
 
-    public DbReadAccess( DbConnection dbConnection ) {
+    public SQLServerDbReadAccess( DbConnection dbConnection ) {
 
         super( dbConnection );
     }
@@ -1410,8 +1412,9 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
         try {
 
             statement = connection.prepareStatement( "SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
-                                                     + " DATEDIFF(second, CONVERT( datetime, '1970-01-01 00:00:00', 20), ch.endTime) as endTime "
-                                                     + "FROM tCheckpoints ch"
+                                                     + " DATEDIFF(second, CONVERT( datetime, '1970-01-01 00:00:00', 20), ch.endTime) as endTime,"
+                                                     + " ch.endtime AS copyEndTime"
+                                                     + " FROM tCheckpoints ch"
                                                      + " INNER JOIN tCheckpointsSummary chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
                                                      + " INNER JOIN tLoadQueues c on (c.loadQueueId = chs.loadQueueId)"
                                                      + " INNER JOIN tTestcases tt on (tt.testcaseId = c.testcaseId) "
@@ -1437,6 +1440,7 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
                     checkpoint.setEndTimestamp( rs.getLong( "endTime" ) );
                 }
                 checkpoint.setTimeOffset( utcTimeOffset );
+                checkpoint.copyEndTimestamp = rs.getTimestamp("copyEndTime" ).getTime();
 
                 checkpoints.add( checkpoint );
             }
@@ -1462,6 +1466,62 @@ public class DbReadAccess extends AbstractDbAccess implements IDbReadAccess {
             // of being inserted, but the transaction is still not completed
         }
         return connection;
+    }
+
+    @Override
+    public List<RunMetaInfo> getRunMetaInfo( int runId ) throws DatabaseAccessException {
+
+        List<RunMetaInfo> runMetaInfoList = new ArrayList<>();
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement( "SELECT * FROM tRunMetainfo WHERE runId = " + runId );
+            rs = statement.executeQuery();
+            while( rs.next() ) {
+                RunMetaInfo runMetainfo = new RunMetaInfo();
+                runMetainfo.metaInfoId = rs.getInt( "metaInfoId" );
+                runMetainfo.runId = rs.getInt( "runId" );
+                runMetainfo.name = rs.getString( "name" );
+                runMetainfo.value = rs.getString( "value" );
+                runMetaInfoList.add( runMetainfo );
+            }
+        } catch( Exception e ) {
+            throw new DatabaseAccessException( "Error retrieving run metainfo for run with id '" + runId +"'", e );
+        } finally {
+            DbUtils.closeResultSet( rs );
+            DbUtils.close( connection, statement );
+        }
+
+        return runMetaInfoList;
+    }
+
+    @Override
+    public List<ScenarioMetaInfo> getScenarioMetaInfo( int scenarioId ) throws DatabaseAccessException {
+
+        List<ScenarioMetaInfo> scenarioMetaInfoList = new ArrayList<>();
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement( "SELECT * FROM tScenarioMetainfo WHERE scenarioId = " + scenarioId );
+            rs = statement.executeQuery();
+            while( rs.next() ) {
+                ScenarioMetaInfo runMetainfo = new ScenarioMetaInfo();
+                runMetainfo.metaInfoId = rs.getInt( "metaInfoId" );
+                runMetainfo.scenarioId = rs.getInt( "scenarioId" );
+                runMetainfo.name = rs.getString( "name" );
+                runMetainfo.value = rs.getString( "value" );
+                scenarioMetaInfoList.add( runMetainfo );
+            }
+        } catch( Exception e ) {
+            throw new DatabaseAccessException( "Error retrieving scenario metainfo for scenario with id '" + scenarioId +"'", e );
+        } finally {
+            DbUtils.closeResultSet( rs );
+            DbUtils.close( connection, statement );
+        }
+
+        return scenarioMetaInfoList;
     }
 
 }

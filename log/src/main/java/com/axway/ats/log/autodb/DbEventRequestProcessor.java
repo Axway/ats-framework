@@ -36,8 +36,10 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
 import com.axway.ats.core.dbaccess.ConnectionPool;
+import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
@@ -73,6 +75,7 @@ import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.CacheableEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessor;
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
+import com.axway.ats.log.autodb.model.IDbWriteAccess;
 import com.axway.ats.log.model.SystemLogLevel;
 
 public class DbEventRequestProcessor implements EventRequestProcessor {
@@ -85,12 +88,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     /**
      * The connection information
      */
-    private DbConnSQLServer               dbConnection;
+    private DbConnection                  dbConnection;
 
     /**
      * The DB access instance
      */
-    private DbWriteAccess                 dbAccess;
+    private IDbWriteAccess                dbAccess;
 
     /**
      * The layout according to which to format events
@@ -159,13 +162,36 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                     boolean isBatchMode ) throws DatabaseAccessException {
 
         this.appenderConfig = appenderConfig;
-        this.dbConnection = new DbConnSQLServer( appenderConfig.getHost(), appenderConfig.getDatabase(),
-                                                 appenderConfig.getUser(), appenderConfig.getPassword() );
-
         this.isBatchMode = isBatchMode;
+        
+        if( DbUtils.isMSSQLDatabaseAvailable( appenderConfig.getHost(), 
+                                              appenderConfig.getDatabase(), 
+                                              appenderConfig.getUser(),
+                                              appenderConfig.getPassword() ) ) {
+            
+            this.dbConnection = new DbConnSQLServer( appenderConfig.getHost(), appenderConfig.getDatabase(),
+                                                     appenderConfig.getUser(), appenderConfig.getPassword() );
+            
+            //create the db access layer
+            this.dbAccess = new SQLServerDbWriteAccess( ( DbConnSQLServer ) dbConnection, isBatchMode );
+            
+        } else if ( DbUtils.isPostgreSQLDatabaseAvailable( appenderConfig.getHost(), 
+                                                           appenderConfig.getDatabase(), 
+                                                           appenderConfig.getUser(),
+                                                           appenderConfig.getPassword() ) ) {
+            
+            this.dbConnection = new DbConnPostgreSQL( appenderConfig.getHost(), appenderConfig.getDatabase(),
+                                                      appenderConfig.getUser(), appenderConfig.getPassword() );
+            
+            //create the db access layer
+            this.dbAccess = new PGDbWriteAccess( ( DbConnPostgreSQL ) dbConnection, isBatchMode );
+            
+        } else {
+            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() 
+                             + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
+            throw new DatabaseAccessException( errMsg );
+        }
 
-        //create the db access layer
-        this.dbAccess = new DbWriteAccess( dbConnection, isBatchMode );
         this.eventProcessorState = new EventProcessorState();
         this.layout = layout;
         this.listener = listener;
@@ -768,7 +794,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             if( !deletedTestcases.contains( testcaseId ) ) {
                 try {
                     dbAccess.insertCheckpoint( insertCheckpointEvent.getName(),
-                                               insertCheckpointEvent.getThread(),
                                                insertCheckpointEvent.getStartTimestamp(),
                                                insertCheckpointEvent.getResponseTime(),
                                                insertCheckpointEvent.getTransferSize(),

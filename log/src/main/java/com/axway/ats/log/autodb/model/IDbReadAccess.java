@@ -19,12 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.axway.ats.log.autodb.entities.Checkpoint;
 import com.axway.ats.log.autodb.entities.CheckpointSummary;
 import com.axway.ats.log.autodb.entities.LoadQueue;
 import com.axway.ats.log.autodb.entities.Machine;
 import com.axway.ats.log.autodb.entities.Message;
 import com.axway.ats.log.autodb.entities.Run;
+import com.axway.ats.log.autodb.entities.RunMetaInfo;
 import com.axway.ats.log.autodb.entities.Scenario;
+import com.axway.ats.log.autodb.entities.ScenarioMetaInfo;
 import com.axway.ats.log.autodb.entities.Statistic;
 import com.axway.ats.log.autodb.entities.StatisticDescription;
 import com.axway.ats.log.autodb.entities.Suite;
@@ -133,6 +136,11 @@ public interface IDbReadAccess {
                                                 String statsTypeIds,
                                                 int utcTimeOffset,
                                                 boolean dayLightSavingOn ) throws DatabaseAccessException;
+    
+    public List<Checkpoint> getCheckpoints( String testcaseId,
+                                            String checkpointName,
+                                            int utcTimeOffset,
+                                            boolean dayLightSavingOn ) throws DatabaseAccessException;
 
     public List<Statistic> getCheckpointStatistics(
                                                     float timeOffset,
@@ -155,4 +163,10 @@ public interface IDbReadAccess {
                                                           String whereClause,
                                                           String sortColumn,
                                                           boolean ascending ) throws DatabaseAccessException;
+    
+    public List<RunMetaInfo> getRunMetaInfo( int runId ) throws DatabaseAccessException;
+    
+    public List<ScenarioMetaInfo> getScenarioMetaInfo( int scenarioId ) throws DatabaseAccessException;
+    
+    
 }

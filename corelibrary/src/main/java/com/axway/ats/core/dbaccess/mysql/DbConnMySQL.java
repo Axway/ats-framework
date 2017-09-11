@@ -32,7 +32,7 @@ public class DbConnMySQL extends DbConnection {
     /**
      * Default DB port
      */
-    private static final int    DEFAULT_PORT      = 3306;
+    public static final int    DEFAULT_PORT      = 3306;
 
     /**
      * The JDBC MySQL prefix string

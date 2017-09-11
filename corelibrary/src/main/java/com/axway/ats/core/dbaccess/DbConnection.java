@@ -28,7 +28,7 @@ public abstract class DbConnection {
     /**
      * The type of the database
      */
-    protected String        dbType;
+    protected String              dbType;
 
     //required attributes
     protected String              host;

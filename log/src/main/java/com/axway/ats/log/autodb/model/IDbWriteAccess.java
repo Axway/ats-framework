@@ -15,6 +15,8 @@
  */
 package com.axway.ats.log.autodb.model;
 
+import java.util.List;
+
 import com.axway.ats.log.autodb.CheckpointInfo;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
@@ -66,6 +68,9 @@ public interface IDbWriteAccess {
     public void updateRun( int runId, String runName, String osName, String productName, String versionName,
                            String buildName, String userNote, String hostName,
                            boolean closeConnection ) throws DatabaseAccessException;
+    
+    public void deleteTestcase(
+                               List<Object> objectsToDelete ) throws DatabaseAccessException;
 
     public void addRunMetainfo( int runId, String metaKey, String metaValue,
                                 boolean closeConnection ) throws DatabaseAccessException;
@@ -90,6 +95,10 @@ public interface IDbWriteAccess {
 
     public void addScenarioMetainfo( int scenarioId, String metaKey, String metaValue,
                                      boolean closeConnection ) throws DatabaseAccessException;
+    
+    public void clearScenarioMetainfo(
+                                      int scenarioId,
+                                      boolean closeConnection ) throws DatabaseAccessException;
 
     public int startTestCase( String suiteName, String scenarioName, String scenarioDescription,
                               String testCaseName, long timestamp, int suiteId,
@@ -101,12 +110,39 @@ public interface IDbWriteAccess {
     public int startLoadQueue( String name, int sequence, String hostsList, String threadingPattern,
                                int numberThreads, String machine, long timestamp, int testcaseId,
                                boolean closeConnection ) throws DatabaseAccessException;
+    
+    public void endLoadQueue(
+                             int result,
+                             long timestamp,
+                             int loadQueueId,
+                             boolean closeConnection ) throws DatabaseAccessException;
 
     public boolean insertMessage( String message, int level, boolean escapeHtml, String machineName,
                                   String threadName, long timestamp, int testCaseId,
                                   boolean closeConnection ) throws DatabaseAccessException;
+    
+    public boolean insertRunMessage(
+                                    String message,
+                                    int level,
+                                    boolean escapeHtml,
+                                    String machineName,
+                                    String threadName,
+                                    long timestamp,
+                                    int runId,
+                                    boolean closeConnection ) throws DatabaseAccessException;
+    
+    public boolean insertSuiteMessage(
+                                      String message,
+                                      int level,
+                                      boolean escapeHtml,
+                                      String machineName,
+                                      String threadName,
+                                      long timestamp,
+                                      int suiteId,
+                                      boolean closeConnection ) throws DatabaseAccessException;
+    
 
-    public boolean insertCheckpoint( String name, String threadName, long startTimestamp, long responseTime,
+    public boolean insertCheckpoint( String name, long startTimestamp, long responseTime,
                                      long transferSize, String transferUnit, int result, int loadQueueId,
                                      boolean closeConnection ) throws DatabaseAccessException;
 
@@ -137,11 +173,21 @@ public interface IDbWriteAccess {
 
     public int populateSystemStatisticDefinition( String name, String parentName, String internalName,
                                                   String unit, String params ) throws DatabaseAccessException;
+    
+    public int populateCheckpointSummary( int loadQueueId, String name, String transferRateUnit,
+                                          boolean closeConnection ) throws DatabaseAccessException;
 
     public void updateMachineInfo( String machineName, String machineInfo,
                                    boolean closeConnection ) throws DatabaseAccessException;
-
-    public int getTestcaseIdByLabel( String label, boolean closeConnection ) throws DatabaseAccessException;
+    
+    public boolean isRunPresent(
+                                int runId ) throws DatabaseAccessException;
+    
+    public boolean isSuitePresent(
+                                  int suiteId ) throws DatabaseAccessException;
+    
+    public boolean isTestcasePresent(
+                                     int testcaseId ) throws DatabaseAccessException;
 
     /**
      * Expected to be called only in batch mode.
@@ -159,5 +205,7 @@ public interface IDbWriteAccess {
      * @throws DatabaseAccessException
      */
     public void flushCacheIfNeeded() throws DatabaseAccessException;
+
+    public void runDbSanityCheck() throws DatabaseAccessException;
 
 }

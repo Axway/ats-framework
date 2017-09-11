@@ -15,20 +15,13 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-public class Checkpoint extends DbEntity {
+public class RunMetaInfo extends DbEntity {
 
     private static final long serialVersionUID = 1L;
-
-    public int                checkpointId;
-    public String             name;
-
-    public int                responseTime;
-    public float              transferRate;
-    public String             transferRateUnit;
-
-    public int                result;
-    // used when checkpoint is copied from one db to another
-    public long               copyEndTimestamp;
     
-    
+    public int metaInfoId;
+    public int runId;
+    public String name;
+    public String value;
+
 }

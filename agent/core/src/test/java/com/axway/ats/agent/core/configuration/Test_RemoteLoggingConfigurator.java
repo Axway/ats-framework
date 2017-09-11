@@ -73,6 +73,10 @@ public class Test_RemoteLoggingConfigurator {
         assertTrue( remoteLoggingConfig.needsApplying() );
     }
 
+    /**
+     * Testing {@link RemoteLoggingConfigurator#needsApplying()} functionality ( must return true, after appender is removed form log4j )
+     * and 
+     * */
     @Test
     public void testApplyPositiveRootLogger() {
 
@@ -95,10 +99,28 @@ public class Test_RemoteLoggingConfigurator {
         // so the next "apply" method will work as expected
         assertTrue( remoteLoggingConfig.needsApplying() );
 
-        //apply the appender
-        remoteLoggingConfig.apply();
-
-        assertTrue( log.getAllAppenders().hasMoreElements() );
+        
+        boolean hasDbCheckError = false;
+        
+        try {
+            //apply the appender
+            //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
+            remoteLoggingConfig.apply();
+        } catch (Exception e) {
+            if (!e.getCause()
+                 .getMessage()
+                  .contains( "Neither MSSQL, nor PostgreSQL server at 'test' contains ATS log database with name 'test'." )) {
+                // an exception was caught, but its cause is not the expected one
+                // re-throw the exception
+                throw e;
+            }
+            else {
+                // expected exception was caught
+                hasDbCheckError = true;
+            }
+        }
+        
+        assertTrue( hasDbCheckError );
     }
 
     @Test
@@ -148,10 +170,27 @@ public class Test_RemoteLoggingConfigurator {
         // so the next "apply" method will work as expected
         assertTrue( remoteLoggingConfig.needsApplying() );
 
-        //apply the appender
-        remoteLoggingConfig.apply();
-
-        assertTrue( log.getAllAppenders().hasMoreElements() );
+        boolean hasDbCheckError = false;
+        
+        try {
+            //apply the appender
+            //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
+            remoteLoggingConfig.apply();
+        } catch (Exception e) {
+            if (!e.getCause()
+                 .getMessage()
+                  .contains( "Neither MSSQL, nor PostgreSQL server at 'test' contains ATS log database with name 'test'." )) {
+                // an exception was caught, but its cause is not the expected one
+                // re-throw the exception
+                throw e;
+            }
+            else {
+                // expected exception was caught
+                hasDbCheckError = true;
+            }
+        }
+        
+        assertTrue( hasDbCheckError );
     }
 
     @Test

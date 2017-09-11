@@ -64,6 +64,8 @@
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
         <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
         <net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
+        <!-- PostgreSQL driver dependency version -->
+        <org.postgresql.postgresql.version>42.1.3</org.postgresql.postgresql.version>
 
         <junit.version>4.12</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
         <org.powermock.powermock-easymock.version>1.6.2</org.powermock.powermock-easymock.version>

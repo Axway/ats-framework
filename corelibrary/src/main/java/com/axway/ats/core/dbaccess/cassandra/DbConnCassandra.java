@@ -34,7 +34,7 @@ public class DbConnCassandra extends DbConnection {
     /**
      * Default DB port
      */
-    private static final int   DEFAULT_PORT    = 9042;
+    public static final int   DEFAULT_PORT    = 9042;
 
     public static final String DATABASE_TYPE = "CASSANDRA";
 

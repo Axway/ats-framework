@@ -95,6 +95,9 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         // start queue in the database and retrieve its ID
         int queueId = retrieveQueueId( queueSequence, getHostsList() );
+        
+        // populate checkpoint summaries for actions
+        populateCheckpointsSummary(queueId, actionRequests);
 
         //call the web service now
         try {

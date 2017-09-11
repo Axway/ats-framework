@@ -30,9 +30,15 @@ import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.utils.BackwardCompatibility;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+
+/**
+ * Class containing methods, shared between {@link SQLServerDbWriteAccess} and {@link PGDbWriteAccess}.
+ * */
 
 public abstract class AbstractDbAccess {
 
@@ -126,8 +132,9 @@ public abstract class AbstractDbAccess {
             Connection connection = getConnection();
             PreparedStatement statement = null;
             ResultSet rs = null;
+            String sql = createGetDatabaseVersionStatementQuery();
             try {
-                statement = connection.prepareStatement( "SELECT value from tInternal where [key] = 'version'" );
+                statement = connection.prepareStatement( sql );
                 rs = statement.executeQuery();
 
                 // we expect only one record
@@ -146,7 +153,16 @@ public abstract class AbstractDbAccess {
         return dbVersion;
     }
 
-    @BackwardCompatibility
+    private String createGetDatabaseVersionStatementQuery() {
+        if ( this.dbConnectionFactory instanceof DbConnSQLServer ) {
+            return "SELECT value from tInternal where [key] = 'version'";
+        } else if ( this.dbConnectionFactory instanceof DbConnPostgreSQL ) {
+            return "SELECT value from \"tInternal\" where key = 'version'";
+        } else { 
+           throw new UnsupportedOperationException("Could not construct statement query for getting database version for connection of class '" + this.connection.getClass().getName() + "'");   
+        }
+    }
+
     public int getDatabaseInternalVersion() throws NumberFormatException {
 
         if( dbInternalVersion == -1 ) { // not yet tried to be extracted from DB
@@ -154,9 +170,10 @@ public abstract class AbstractDbAccess {
             Connection connection = null;
             PreparedStatement statement = null;
             ResultSet rs = null;
+            String sql = createGetInternalVersionStatementQuery();
             try {
                 connection = getConnection();
-                statement = connection.prepareStatement( "SELECT value from tInternal where [key] = 'internalVersion'" );
+                statement = connection.prepareStatement( sql );
                 rs = statement.executeQuery();
 
                 // we expect only one record
@@ -171,7 +188,7 @@ public abstract class AbstractDbAccess {
                     dbInternalVersion = 0;
                 }
                 if( dbInternalVersion == 0 ) {
-                    log.debug( "DB internalVersion not found." ); //Seems to be pre 3.10.0 version
+                    log.debug( "DB internalVersion not found." );
                 }
             } catch( NumberFormatException nfe ) {
                 throw new NumberFormatException( "Error parsing DB internalVersion" );
@@ -187,7 +204,16 @@ public abstract class AbstractDbAccess {
         return dbInternalVersion;
     }
 
-    @BackwardCompatibility
+    private String createGetInternalVersionStatementQuery() {
+        if ( this.dbConnectionFactory instanceof DbConnSQLServer ) {
+            return "SELECT value FROM tInternal WHERE [key] = 'internalVersion'";
+        } else if ( this.dbConnectionFactory instanceof DbConnPostgreSQL ) {
+            return "SELECT value FROM \"tInternal\" WHERE key = 'internalVersion'";
+        } else { 
+           throw new UnsupportedOperationException("Could not construct statement query for getting internal database version for connection of class '" + this.connection.getClass().getName() + "'");   
+        }   
+    }
+
     public int getDatabaseInitialVersion() throws NumberFormatException {
 
         if( dbInitialVersion == -1 ) { // not yet tried to be extracted from DB
@@ -195,9 +221,10 @@ public abstract class AbstractDbAccess {
             Connection connection = null;
             PreparedStatement statement = null;
             ResultSet rs = null;
+            String sql = createGetInitialVersionStatementQuery();
             try {
                 connection = getConnection();
-                statement = connection.prepareStatement( "SELECT value from tInternal where [key] = 'initialVersion'" );
+                statement = connection.prepareStatement( sql );
                 rs = statement.executeQuery();
 
                 // we expect only one record
@@ -212,7 +239,7 @@ public abstract class AbstractDbAccess {
                     dbInitialVersion = 0;
                 }
                 if( dbInitialVersion == 0 ) {
-                    log.debug( "DB initialVersion not found." ); //Seems to be pre 3.10.0 version
+                    log.debug( "DB initialVersion not found." );
                 }
             } catch( NumberFormatException nfe ) {
                 throw new NumberFormatException( "Error parsing DB initialVersion" );
@@ -226,6 +253,16 @@ public abstract class AbstractDbAccess {
 
         }
         return dbInitialVersion;
+    }
+
+    private String createGetInitialVersionStatementQuery() {
+        if ( this.dbConnectionFactory instanceof DbConnSQLServer ) {
+            return "SELECT value from tInternal where [key] = 'initialVersion'";
+        } else if ( this.dbConnectionFactory instanceof DbConnPostgreSQL ) {
+            return "SELECT value from \"tInternal\" where key = 'initialVersion'";
+        } else { 
+           throw new UnsupportedOperationException("Could not construct statement query for getting initial database version for connection of class '" + this.connection.getClass().getName() + "'");   
+        }   
     }
 
     protected String formatDate( Timestamp timestamp ) {

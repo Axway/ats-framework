@@ -16,7 +16,7 @@
 package com.axway.ats.agent.core.configuration;
 
 import com.axway.ats.agent.core.threading.AbstractActionTask;
-import com.axway.ats.log.autodb.DbWriteAccess;
+import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
 /**
@@ -57,7 +57,7 @@ public class GenericAgentConfigurator implements Configurator {
          *              - in many cases the events queue will not have pending events
          */
         if( this.checkpointLogLevel != null ) {
-            DbWriteAccess.setCheckpointLogLevel( checkpointLogLevel );
+            SQLServerDbWriteAccess.setCheckpointLogLevel( checkpointLogLevel );
         }
 
         if( this.registerActionsInQueueExecutionTime != null ) {

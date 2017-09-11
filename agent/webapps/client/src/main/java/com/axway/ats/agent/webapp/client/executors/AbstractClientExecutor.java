@@ -20,12 +20,13 @@ import java.util.List;
 
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
+import com.axway.ats.agent.core.threading.AbstractActionTask;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.DbAccessFactory;
-import com.axway.ats.log.autodb.DbWriteAccess;
+import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public abstract class AbstractClientExecutor implements ClientExecutor {
@@ -38,7 +39,7 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
     protected LoaderDataConfig   loaderDataConfig;
     protected ThreadingPattern   threadingPattern;
 
-    private static DbWriteAccess dbAccess;
+    private static SQLServerDbWriteAccess dbAccess;
 
     protected AbstractClientExecutor() {
 
@@ -113,5 +114,29 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
         }
 
         return queueId;
+    }
+    
+    /**
+     * Insert checkpoints summaries for each action request
+     * @return the checkpoints IDs
+     * @throws AgentException
+     */
+    public void populateCheckpointsSummary(int loadQueueId, List<ActionRequest> actionRequests ) throws AgentException {
+        
+        try {
+            
+            if( dbAccess == null ) {
+                dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
+            }
+            
+            for(ActionRequest actionRequest : actionRequests) {
+                dbAccess.populateCheckpointSummary( loadQueueId, actionRequest.getActionName(), "", true );
+            }
+            
+            dbAccess.populateCheckpointSummary( loadQueueId, AbstractActionTask.ATS_ACTION__QUEUE_EXECUTION_TIME, "", true );
+        } catch ( DatabaseAccessException e ) {
+            throw new AgentException( "Unable to populate checkpoint summary data for queued actions", e );
+        }
+        
     }
 }

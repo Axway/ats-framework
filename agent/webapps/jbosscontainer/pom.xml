@@ -113,6 +113,12 @@
             <artifactId>jtds</artifactId>
             <version>${net.sourceforge.jtds.version}</version>
         </dependency>
+        
+        <dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${org.postgresql.postgresql.version}</version>
+		</dependency>
 
         <dependency>
             <groupId>com.axway.ats.framework.agent</groupId>

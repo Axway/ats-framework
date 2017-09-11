@@ -40,22 +40,22 @@ import com.axway.ats.log.model.CheckpointLogLevel;
 import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
 
-public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
+public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
     // the checkpoint log level
-    private static CheckpointLogLevel    checkpointLogLevel = CheckpointLogLevel.SHORT;
+    protected static CheckpointLogLevel    checkpointLogLevel = CheckpointLogLevel.SHORT;
 
     // when we start we do a quick sanity check
     boolean                              sanityRun          = false;
 
     // the events cache
-    private DbEventsCache                dbEventsCache;
+    protected DbEventsCache              dbEventsCache;
 
     // the DB statements provider
     private InsertEventStatementsFactory insertFactory;
 
     // if we are using batch mode
-    private boolean                      isBatchMode;
+    protected boolean                    isBatchMode;
 
     /**
      * When true - we dump info about the usage of the events queue. It is
@@ -63,8 +63,15 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * enough.
      */
     private boolean                      isMonitorEventsQueue;
+    
+    /**
+     * When copying runs/suites/etc, the timestamps are already in UTC.
+     * Due to that any further conversion to UTC, will just strip additional hours from the already processed timestamp,
+     * leading to incorrect time stamp
+     * */
+    protected boolean skipUTCConversion = false;
 
-    public DbWriteAccess( DbConnection dbConnection,
+    public SQLServerDbWriteAccess( DbConnection dbConnection,
                           boolean isBatchMode ) throws DatabaseAccessException {
 
         super( dbConnection );
@@ -933,7 +940,6 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
     public boolean insertCheckpoint(
                                      String name,
-                                     String threadName,
                                      long startTimestamp,
                                      long responseTime,
                                      long transferSize,
@@ -951,9 +957,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             currentConnection = dbEventsCache.connection;
         }
 
-        CallableStatement insertCheckpointStatement = insertFactory.getInsersCheckpointStatement( currentConnection,
+        CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement( currentConnection,
                                                                                                   name,
-                                                                                                  threadName,
                                                                                                   responseTime,
                                                                                                   startTimestamp + responseTime,
                                                                                                   transferSize,
@@ -1017,26 +1022,26 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                                            int loadQueueId,
                                            boolean closeConnection ) throws DatabaseAccessException {
 
-        final String errMsg = "Unable to start checkpoint '" + name + "' for thread '" + threadName
-                              + "' in load queue " + loadQueueId;
-        
-        startTimestamp = inUTC(startTimestamp);
+        final String errMsg = "Unable to start checkpoint '" + name + "' in load queue " + loadQueueId;
 
-        final int indexCheckpointSummaryId = 6;
-        final int indexCheckpointId = 7;
+        startTimestamp = inUTC( startTimestamp );
+
+        final int indexCheckpointSummaryId = 5;
+        final int indexCheckpointId = 6;
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_start_checkpoint(?, ?, ?, ?, ?, ?, ?) }" );
+            callableStatement = connection.prepareCall( "{ call sp_start_checkpoint(?, ?, ?, ?, ?, ?) }" );
             callableStatement.setInt( 1, loadQueueId );
-            callableStatement.setString( 2, threadName );
-            callableStatement.setString( 3, name );
-            callableStatement.setInt( 4, checkpointLogLevel.toInt() );
-            callableStatement.setString( 5, transferUnit );
+            callableStatement.setString( 2, name );
+            callableStatement.setInt( 3, checkpointLogLevel.toInt() );
+            callableStatement.setString( 4, transferUnit );
             callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
             callableStatement.registerOutParameter( indexCheckpointId, Types.INTEGER );
+            
+            System.out.println( new Date().toString()+" -> [START_CHECKPOINT]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 
@@ -1044,6 +1049,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             if( callableStatement.getInt( indexCheckpointSummaryId ) == 0 ) {
                 throw new DatabaseAccessException( errMsg + " - checkpoint summary ID returned was 0" );
             }
+
             // we update the checkpoint table only in FULL mode
             if( checkpointLogLevel == CheckpointLogLevel.FULL
                 && callableStatement.getInt( indexCheckpointId ) == 0 ) {
@@ -1054,6 +1060,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             int checkpointId = callableStatement.getInt( indexCheckpointId );
 
             return new CheckpointInfo( name, checkpointSummaryId, checkpointId, startTimestamp );
+
         } catch( Exception e ) {
             throw new DatabaseAccessException( errMsg, e );
         } finally {
@@ -1094,6 +1101,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             callableStatement.setInt( 6, checkpointLogLevel.toInt() );
             callableStatement.setTimestamp( 7, new Timestamp( endTimestamp ) );
             callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            
+            System.out.println( new Date().toString()+" -> [END_CHECKPOINT]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
             if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
@@ -1243,6 +1252,44 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         }
     }
 
+    public int populateCheckpointSummary( int loadQueueId, String name, String transferRateUnit,
+                                          boolean closeConnection ) throws DatabaseAccessException {
+
+        final String errMsg = "Unable to populate checkpoint summary '" + name + "' in load queue " + loadQueueId;
+
+        final int indexCheckpointSummaryId = 4;
+
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
+
+            callableStatement = connection.prepareCall( "{ call sp_populate_checkpoint_summary(?, ?, ?, ?) }" );
+            callableStatement.setInt( 1, loadQueueId );
+            callableStatement.setString( 2, name );
+            callableStatement.setString( 3, transferRateUnit );
+            callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
+            
+            System.out.println( new Date().toString()+" -> [populateCheckpointSummary]: ("+callableStatement.toString() +")" );
+
+            callableStatement.execute();
+
+           if( callableStatement.getInt( indexCheckpointSummaryId ) == 0 ) {
+               throw new DatabaseAccessException( errMsg + " - checkpoint summary ID returned was 0" );
+           }
+
+           return callableStatement.getInt( indexCheckpointSummaryId );
+
+       } catch( Exception e ) {
+           throw new DatabaseAccessException( errMsg, e );
+       } finally {
+           if( closeConnection ) {
+               DbUtils.close( connection, callableStatement );
+           } else {
+               DbUtils.closeStatement( callableStatement );
+           }
+       }
+    }
+    
     public int populateSystemStatisticDefinition(
                                                   String name,
                                                   String parentName,
@@ -1278,6 +1325,8 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             callableStatement.setString( 4, unit );
             callableStatement.setString( 5, params );
             callableStatement.registerOutParameter( statisticId, Types.INTEGER );
+            
+            System.out.println( new Date().toString()+" -> [populateSystemStatisticDefinition]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 
@@ -1321,34 +1370,6 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
         } catch( Exception e ) {
             throw new DatabaseAccessException( errMsg, e );
-        } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
-            } else {
-                DbUtils.closeStatement( callableStatement );
-            }
-        }
-    }
-
-    public int getTestcaseIdByLabel(
-                                     String label,
-                                     boolean closeConnection ) throws DatabaseAccessException {
-
-        CallableStatement callableStatement = null;
-
-        final int indexTestcaseId = 2;
-        try {
-            refreshInternalConnection();
-
-            callableStatement = connection.prepareCall( "{ call sp_get_testcase_id_by_label(?, ?) }" );
-            callableStatement.setString( 1, label );
-            callableStatement.registerOutParameter( 2, Types.INTEGER );
-
-            callableStatement.execute();
-
-            return callableStatement.getInt( indexTestcaseId );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error getting testcase id for testcase label " + label, e );
         } finally {
             if( closeConnection ) {
                 DbUtils.close( connection, callableStatement );
@@ -1532,6 +1553,9 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
                                               timestamp,
                                               testcaseId,
                                               false );
+            
+            populateCheckpointSummary( loadQueueId, SANITY_CHECKPOINT, "KB", false );
+            
             CheckpointInfo startedCheckpointInfo = startCheckpoint( SANITY_CHECKPOINT,
                                                                     "thread1",
                                                                     1000,
@@ -1616,7 +1640,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
      * @return the current connection object
      * @throws DatabaseAccessException
      */
-    private Connection refreshInternalConnection() throws DatabaseAccessException {
+    protected Connection refreshInternalConnection() throws DatabaseAccessException {
 
         if( !sanityRun ) {
             this.connection = getConnection();
@@ -1645,7 +1669,17 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
     
     protected long inUTC( long timestamp ) {
         
-        return timestamp - TimeZone.getDefault().getOffset( timestamp );
+        if ( !skipUTCConversion ) {
+            
+            return timestamp - TimeZone.getDefault().getOffset( timestamp );
+        }
+        
+        return timestamp;
+    }
+    
+    public void setSkipUTCConversion( boolean skip ) {
+        
+        this.skipUTCConversion = skip;
     }
 
     /**
@@ -1658,7 +1692,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
         private long              cacheBirthTime;
 
-        private Connection        connection;
+        protected Connection      connection;
 
         private CallableStatement insertRunMessageStatement      = null;
         private int               numberCachedRunMessages;
@@ -1672,7 +1706,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         private CallableStatement insertCheckpointStatement      = null;
         private int               numberCachedCheckpoints;
 
-        private DbWriteAccess     parent;
+        private SQLServerDbWriteAccess     parent;
 
         // temporary variables used for telling the user how long it takes to
         // commit the cached events
@@ -1680,7 +1714,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         private int               batchCheckpoints;
         private int               batchMessages;
 
-        public DbEventsCache( DbWriteAccess parent ) throws DatabaseAccessException {
+        public DbEventsCache( SQLServerDbWriteAccess parent ) throws DatabaseAccessException {
 
             this.parent = parent;
             this.connection = this.parent.getConnection();
@@ -1756,7 +1790,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             return flushCacheIfNeeded();
         }
 
-        private boolean addInsertCheckpointEventToBatch(
+        protected boolean addInsertCheckpointEventToBatch(
                                                          CallableStatement insertCheckpointStatement ) throws DatabaseAccessException {
 
             if( this.insertCheckpointStatement == null ) {
@@ -2022,7 +2056,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        private void resetCache() {
+        protected void resetCache() {
 
             resetRunMessagesCache();
             resetSuiteMessagesCache();
@@ -2109,7 +2143,7 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
         private static final String SP_INSERT_RUN_MESSAGE      = "{ call sp_insert_run_message(?, ?, ?, ?, ?, ?, ?, ?) }";
         private static final String SP_INSERT_SUITE_MESSAGE    = "{ call sp_insert_suite_message(?, ?, ?, ?, ?, ?, ?, ?) }";
         private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?, ?) }";
-        private static final String SP_INSERT_CHECKPOINT       = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_CHECKPOINT       = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }";
 
         public InsertEventStatementsFactory( boolean isBatchMode ) {
 
@@ -2254,10 +2288,9 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             }
         }
 
-        CallableStatement getInsersCheckpointStatement(
+        CallableStatement getInsertCheckpointStatement(
                                                         Connection connection,
                                                         String name,
-                                                        String threadName,
                                                         long responseTime,
                                                         long endTimestamp,
                                                         long transferSize,
@@ -2285,14 +2318,13 @@ public class DbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
             // apply statement parameters
             try {
                 theStatement.setInt( 1, loadQueueId );
-                theStatement.setString( 2, threadName );
-                theStatement.setString( 3, name );
-                theStatement.setLong( 4, responseTime );
-                theStatement.setTimestamp( 5, new Timestamp( endTimestamp ) );
-                theStatement.setLong( 6, transferSize );
-                theStatement.setString( 7, transferUnit );
-                theStatement.setInt( 8, result );
-                theStatement.setInt( 9, checkpointLogLevel.toInt() );
+                theStatement.setString( 2, name );
+                theStatement.setLong( 3, responseTime );
+                theStatement.setTimestamp( 4, new Timestamp( endTimestamp ) );
+                theStatement.setLong( 5, transferSize );
+                theStatement.setString( 6, transferUnit );
+                theStatement.setInt( 7, result );
+                theStatement.setInt( 8, checkpointLogLevel.toInt() );
 
                 return theStatement;
             } catch( Exception e ) {

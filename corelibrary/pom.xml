@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -23,8 +24,10 @@
 		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
 			is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
 		<org.jvnet.winp.version>1.23</org.jvnet.winp.version>
-		
+
 		<org.dom4j.version>1.6.1</org.dom4j.version>
+		<!-- PostgreSQL dependency is defined in parent pom.xml -->
+		<ats-expectj.version>2.0.7</ats-expectj.version>
 	</properties>
 
 	<dependencies>
@@ -82,8 +85,8 @@
 					<groupId>xml-apis</groupId>
 					<artifactId>xml-apis</artifactId>
 				</exclusion>
-			</exclusions> 
-		</dependency>		
+			</exclusions>
+		</dependency>
 		<!-- Needed for jTDS -->
 		<dependency>
 			<groupId>commons-dbcp</groupId>
@@ -113,14 +116,13 @@
 			<artifactId>ojdbc7</artifactId>
 			<version>${oracle.ojdbc.version}</version>
 			<optional>true</optional> <!-- only needed for connections to Oracle DB -->
-			<!-- <scope>system</scope>
-			<systemPath>${HOME}/.m2/repository/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar</systemPath> -->
+			<!-- <scope>system</scope> <systemPath>${HOME}/.m2/repository/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar</systemPath> -->
 			<exclusions>
-                          <exclusion>
-                            <groupId>com.oracle.jdbc</groupId>
-                            <artifactId>xmlparserv2</artifactId>
-                          </exclusion>
-                        </exclusions>
+				<exclusion>
+					<groupId>com.oracle.jdbc</groupId>
+					<artifactId>xmlparserv2</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -128,6 +130,12 @@
 			<version>${mysql.mysql-connector-java.version}</version>
 			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
 				and loaded with reflection <scope>runtime</scope> -->
+		</dependency>
+		<!-- dependency for working with PostgreSQL databases -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${org.postgresql.postgresql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-net</groupId>
@@ -168,7 +176,7 @@
 		<dependency>
 			<groupId>com.axway.ats.expectj</groupId>
 			<artifactId>ats-expectj</artifactId>
-			<version>2.0.7</version>
+			<version>${ats-expectj.version}</version>
 		</dependency>
 		<!-- TEST dependencies -->
 		<dependency>

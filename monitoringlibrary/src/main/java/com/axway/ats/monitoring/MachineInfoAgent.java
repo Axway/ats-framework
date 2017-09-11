@@ -24,7 +24,7 @@ import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 import com.axway.ats.log.autodb.DbAccessFactory;
-import com.axway.ats.log.autodb.DbWriteAccess;
+import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 
 /**
  * Allows retrieving static info about a machine
@@ -57,7 +57,7 @@ public class MachineInfoAgent {
         String machineDescriptionString = mm.getDescription();
 
         log.info( "Saving retrieved info about " + dbMachineName + " into the Test Explorer database" );
-        DbWriteAccess dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
+        SQLServerDbWriteAccess dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
         dbAccess.updateMachineInfo( dbMachineName, machineDescriptionString, true );
 
         log.info( "Successfully updated the info about " + dbMachineName );

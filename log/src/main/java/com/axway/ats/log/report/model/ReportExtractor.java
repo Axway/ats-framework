@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
-import com.axway.ats.log.autodb.DbReadAccess;
+import com.axway.ats.log.autodb.SQLServerDbReadAccess;
 import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Suite;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
@@ -30,7 +30,7 @@ import com.axway.ats.log.report.exceptions.ReportExtractorException;
  */
 public class ReportExtractor {
 
-    private DbReadAccess        dbReadAccess;
+    private SQLServerDbReadAccess        dbReadAccess;
 
     /**
      * @param dbHost the database host to get runs from
@@ -44,7 +44,7 @@ public class ReportExtractor {
                            String dbPassword) {
 
         DbConnSQLServer dbConnection = new DbConnSQLServer( dbHost, dbName, dbUser, dbPassword );
-        dbReadAccess = new DbReadAccess( dbConnection );
+        dbReadAccess = new SQLServerDbReadAccess( dbConnection );
     }
 
     /**

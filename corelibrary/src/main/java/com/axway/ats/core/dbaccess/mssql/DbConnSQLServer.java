@@ -74,7 +74,7 @@ public class DbConnSQLServer extends DbConnection {
     /**
      * Default DB port
      */
-    private static final int                   DEFAULT_PORT                          = 1433;
+    public static final int                   DEFAULT_PORT                          = 1433;
 
     /**
      * The connection URL

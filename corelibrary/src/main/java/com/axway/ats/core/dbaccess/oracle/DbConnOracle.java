@@ -48,7 +48,7 @@ public class DbConnOracle extends DbConnection {
     /**
      * Default DB port
      */
-    private static final int    DEFAULT_PORT     = 1521;
+    public static final int    DEFAULT_PORT     = 1521;
 
     /**
      * Default SID

@@ -26,7 +26,7 @@ import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.autodb.DbAccessFactory;
-import com.axway.ats.log.autodb.DbWriteAccess;
+import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 /**
@@ -37,7 +37,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class DatabaseReadingsRepository {
 
-    private static DbWriteAccess        dbAccess          = null;
+    private static SQLServerDbWriteAccess        dbAccess          = null;
 
     //this map keeps track of the ReadingBean(s) that already have a dbId assigned
     private static Map<String, Integer> knownReadingBeans = new HashMap<>();
