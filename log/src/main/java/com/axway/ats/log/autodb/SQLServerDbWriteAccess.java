@@ -1040,8 +1040,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             callableStatement.setString( 4, transferUnit );
             callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
             callableStatement.registerOutParameter( indexCheckpointId, Types.INTEGER );
-            
-            System.out.println( new Date().toString()+" -> [START_CHECKPOINT]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 
@@ -1101,8 +1099,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             callableStatement.setInt( 6, checkpointLogLevel.toInt() );
             callableStatement.setTimestamp( 7, new Timestamp( endTimestamp ) );
             callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
-            
-            System.out.println( new Date().toString()+" -> [END_CHECKPOINT]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
             if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
@@ -1268,8 +1264,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             callableStatement.setString( 2, name );
             callableStatement.setString( 3, transferRateUnit );
             callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
-            
-            System.out.println( new Date().toString()+" -> [populateCheckpointSummary]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 
@@ -1325,8 +1319,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             callableStatement.setString( 4, unit );
             callableStatement.setString( 5, params );
             callableStatement.registerOutParameter( statisticId, Types.INTEGER );
-            
-            System.out.println( new Date().toString()+" -> [populateSystemStatisticDefinition]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 

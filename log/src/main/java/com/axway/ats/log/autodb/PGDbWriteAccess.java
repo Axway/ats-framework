@@ -334,8 +334,6 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             callableStatement.setString( 4, transferRateUnit );
             callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
             callableStatement.registerOutParameter( indexCheckpointId, Types.INTEGER );
-            
-            System.out.println( new Date().toString()+" -> [START_CHECKPOINT]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 
@@ -388,8 +386,6 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
                                                                                                   result,
                                                                                                   checkpointLogLevel,
                                                                                                   loadQueueId );
-        
-        System.out.println( new Date().toString()+" -> [INSERT_CHECKPOINT]: ("+insertCheckpointStatement.toString() +")" );
 
         if( isBatchMode ) {
             // schedule this event for batch execution
@@ -431,8 +427,6 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             callableStatement.setString( 3, statisticIds );
             callableStatement.setString( 4, statisticValues );
             callableStatement.setTimestamp( 5, new Timestamp( timestamp ) );
-            
-            System.out.println( new Date().toString()+" -> [INSERT_USER_ACTIVITY_STATISTICS]: ("+callableStatement.toString() +")" );
 
             callableStatement.execute();
 
