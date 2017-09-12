@@ -15,8 +15,6 @@
  */
 package com.axway.ats.log.autodb.entities;
 
-import com.axway.ats.log.autodb.AbstractDbAccess;
-
 public class Scenario extends DbEntity {
 
     private static final long serialVersionUID = 1L;
@@ -33,40 +31,7 @@ public class Scenario extends DbEntity {
     
     public int                result;
     public String             state;
-    
-    public int                duration;
 
     public String             userNote;
     
-    @Override
-    public long getDuration( long currentTimestamp ) {
-
-        if( endTimestamp != -1 ) {
-
-            // both start and end timestamp are received from the DB,
-            // so they are both in UTC locale and timeOffset is not needed
-            return duration;
-
-        } else {
-            
-            long duration = currentTimestamp - getStartTimestamp();
-
-            return duration / 1000;
-        }
-
-    }
-    
-    @Override
-    public String getDurationAsString( long currentTimestamp ) {
-
-        long durationSeconds = getDuration( currentTimestamp );
-        
-        // any duration, less than one second is assumed to be one second
-        if( durationSeconds <= 0 ) {
-            durationSeconds = 1;
-        }
-
-        return AbstractDbAccess.formatTimeDiffereceFromSecondsToString( ( int ) durationSeconds );
-
-    }
 }

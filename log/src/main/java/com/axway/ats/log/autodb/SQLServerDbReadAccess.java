@@ -373,7 +373,6 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                 if ( rs.getTimestamp( "dateEnd" ) != null ) {
                     scenario.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
                 }
-                scenario.duration = rs.getInt( "duration" );
                 
                 scenario.setTimeOffset( utcTimeOffset );
 

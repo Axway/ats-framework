@@ -93,7 +93,7 @@ public interface IDbWriteAccess {
     public void updateSuite( int suiteId, String suiteName, String userNote,
                              boolean closeConnection ) throws DatabaseAccessException;
 
-    public void addScenarioMetainfo( int scenarioId, String metaKey, String metaValue,
+    public void addScenarioMetainfo( int testcaseId, String metaKey, String metaValue,
                                      boolean closeConnection ) throws DatabaseAccessException;
     
     public void clearScenarioMetainfo(

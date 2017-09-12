@@ -75,7 +75,7 @@ public class Statistic extends DbEntity {
         StringBuilder msg = new StringBuilder( "Statistic description: " );
         msg.append( "name=" + name );
         if( parentName != null ) {
-            msg.append( "parentName=" + parentName );
+            msg.append( ", parentName=" + parentName );
         }
         msg.append( ", value=" + value );
         msg.append( ", transferSize=" + transferSize );
