@@ -236,14 +236,20 @@ public class JsonMonitoringUtils {
 					   }
                 	 * */
                 	sb.append("[");
-					for ( Map.Entry<String, String> mapEntry : (( Map<String, String> ) value).entrySet() ) {
-						sb.append("{");
-						sb.append("\"").append("key").append("\"").append(":").append("\"").append(mapEntry.getKey()).append("\"").append(",");
-						sb.append("\"").append("value").append("\"").append(":").append("\"").append(mapEntry.getValue()).append("\"");
-						sb.append("},");
-					}
-                	sb = new StringBuilder(sb.subSequence(0, sb.length() - 1));
-					sb.append("]");
+                	Map<String, String> map = (( Map<String, String> ) value);
+                	if ( map.isEmpty() ) {
+                	    sb.append("]");
+                	} else {
+                	    for ( Map.Entry<String, String> mapEntry : map.entrySet() ) {
+                            sb.append("{");
+                            sb.append("\"").append("key").append("\"").append(":").append("\"").append(mapEntry.getKey()).append("\"").append(",");
+                            sb.append("\"").append("value").append("\"").append(":").append("\"").append(mapEntry.getValue()).append("\"");
+                            sb.append("},");
+                        }
+                        sb = new StringBuilder(sb.subSequence(0, sb.length() - 1));
+                        sb.append("]");
+                	}
+					
                 } else {
                     throw new IllegalArgumentException( "Error running '" + action
                                                         + "'. Invallid value type '"
