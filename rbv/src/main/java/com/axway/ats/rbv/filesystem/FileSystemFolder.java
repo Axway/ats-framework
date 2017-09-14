@@ -27,6 +27,7 @@ import com.axway.ats.action.objects.model.PackageException;
 import com.axway.ats.action.system.SystemOperations;
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.MatchableAlreadyOpenException;
 import com.axway.ats.rbv.model.MatchableNotOpenException;
@@ -186,9 +187,17 @@ public class FileSystemFolder implements Matchable {
 
     public String getDescription() {
 
-        if( atsAgent.equals( FileSystemStorage.LOCAL_AGENT ) ) {
-            return "File system folder '" + path + "' on the local machine";
+        String description;
+        if( StringUtils.isNullOrEmpty( fileName ) ) {
+            description = "folder '" + path + "'";
+        } else {
+            description = "file '" + path + fileName + "'";
         }
-        return "File system folder '" + path + "' on server '" + atsAgent + "'";
+
+        if( atsAgent.equals( FileSystemStorage.LOCAL_AGENT ) ) {
+            return description;
+        } else {
+            return description + " on '" + atsAgent + "'";
+        }
     }
 }

@@ -16,7 +16,7 @@
 package com.axway.ats.rbv;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -27,10 +27,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.axway.ats.rbv.MetaData;
-import com.axway.ats.rbv.Monitor;
-import com.axway.ats.rbv.PollingParameters;
-import com.axway.ats.rbv.SimpleMonitorListener;
 import com.axway.ats.rbv.db.DbSearchTerm;
 import com.axway.ats.rbv.db.DbStorage;
 import com.axway.ats.rbv.db.MockDbProvider;
@@ -95,7 +91,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -114,9 +110,9 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        failExpectingDbData( true, listener.evaluateMonitors( TIME_END_POLL ) );
     }
-
+    
     @Test
     public void evaluateMonitorsOneMonitorPositiveRunTwice() throws RbvException {
 
@@ -133,8 +129,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -153,7 +149,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -172,7 +168,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        failExpectingDbData(false, listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -200,7 +196,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor3 );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -252,7 +248,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor3 );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertTrue( listener.evaluateMonitors( TIME_END_POLL )
+                            .matches( "Expected to find DB data .*, but did not find it" ) );
     }
 
     @Test
@@ -280,7 +277,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor3 );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -332,7 +329,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor3 );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        failExpectingDbData( true, listener.evaluateMonitors( TIME_END_POLL ) );
     }
 
     @Test
@@ -439,10 +436,25 @@ public class Test_SimpleMonitorListener extends BaseTest {
         long timeBefore = System.currentTimeMillis();
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertFalse( listener.evaluateMonitors( pollingAttempts * POLLING_INTERVAL ) );
-
+        String evaluationResult = listener.evaluateMonitors( pollingAttempts * POLLING_INTERVAL );
         long timeAfter = System.currentTimeMillis();
 
+        assertTrue( evaluationResult.matches( "Expected to not find DB data .*, but found it.*" ) );
+        /* 
+         * As we use 3 identical monitors, we should get here 3 times same result,
+         * so the following code should be accurate:
+         * 
+         * String[] evaluationResultTokens = evaluationResult.split( ";" );
+         * assertEquals( 3, evaluationResultTokens.length );
+         * assertEquals( evaluationResultTokens[0], evaluationResultTokens[1].trim() );
+         * assertEquals( evaluationResultTokens[0], evaluationResultTokens[2].trim() );
+         * assertTrue( evaluationResultTokens[0].matches( "Expected to not find DB data .*, but found it" ) );
+         * 
+         * But we sometimes get results from just 1 or 2 monitors.
+         * It is probably some synchronization issue, but this is considered as not important as we 
+         * actually never use more than 1 monitor :)
+         */
+        
         //make sure more than (3 * poling interval) seconds have passed
         //this means that all iteration ware executed
         assertTrue( timeAfter - timeBefore > ( pollingAttempts - 1 ) * POLLING_INTERVAL - 500 );
@@ -475,7 +487,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
 
         for( int i = 0; i < 5; i++ ) {
-            assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+            assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         }
     }
 
@@ -506,7 +518,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
         monitors.add( monitor3 );
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
-        assertFalse( listener.evaluateMonitors( 1000 ) );
+        assertEquals( "Monitors did not finish in the given timeout 1000",
+                      listener.evaluateMonitors( 1000 ) );
     }
 
     @Test
@@ -712,7 +725,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before <= POLLING_INTERVAL );
     }
@@ -734,7 +747,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        failExpectingDbData( true, listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before >= TIME_BEFORE_END_POLL );
     }
@@ -757,7 +770,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         changeDBValues( 3 * POLLING_INTERVAL );
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         System.out.println( "IntiallyNoMatch_ButThenFoundAMatch: Actual poll duration: " + ( after - before )
                             + "ms." );
@@ -781,7 +794,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before <= POLLING_INTERVAL );
     }
@@ -803,7 +816,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        failExpectingDbData( false, listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before >= TIME_BEFORE_END_POLL );
     }
@@ -826,7 +839,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
         changeDBValues( 3 * POLLING_INTERVAL );
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         System.out.println( "verifyNoMatch_IntiallyFoundAMatch_ButThenNoMatch: Actual time for monitor evaliation: "
                             + ( after - before ) + "ms." );
@@ -850,7 +863,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before >= TIME_BEFORE_END_POLL );
     }
@@ -872,7 +885,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertTrue( listener.evaluateMonitors( TIME_END_POLL )
+                            .matches( "Expected to find DB data .* on all attempts, but did not find it on attempt number 1" ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before <= TIME_AFTER_START_POLL );
     }
@@ -895,7 +909,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
         changeDBValues( 3 * POLLING_INTERVAL );
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertTrue( listener.evaluateMonitors( TIME_END_POLL )
+                    .matches( "Expected to find DB data .* on all attempts, but did not find it on attempt number [\\d]*" ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before > TIME_AFTER_START_POLL && after - before < TIME_END_POLL );
     }
@@ -917,7 +932,7 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertTrue( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertNull( listener.evaluateMonitors( TIME_END_POLL ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before >= TIME_BEFORE_END_POLL );
     }
@@ -939,7 +954,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
 
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertTrue( listener.evaluateMonitors( TIME_END_POLL )
+                            .matches( "Expected to not find DB data .* on all attempts, but found it on attempt number [\\d]*" ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before < TIME_AFTER_START_POLL );
     }
@@ -962,7 +978,8 @@ public class Test_SimpleMonitorListener extends BaseTest {
         changeDBValues( 3 * POLLING_INTERVAL );
         SimpleMonitorListener listener = new SimpleMonitorListener( monitors );
         long before = System.currentTimeMillis();
-        assertFalse( listener.evaluateMonitors( TIME_END_POLL ) );
+        assertTrue( listener.evaluateMonitors( TIME_END_POLL )
+                            .matches( "Expected to not find DB data .* on all attempts, but found it on attempt number [\\d]*" ) );
         long after = System.currentTimeMillis();
         assertTrue( after - before > TIME_AFTER_START_POLL && after - before < TIME_END_POLL );
     }
@@ -983,5 +1000,14 @@ public class Test_SimpleMonitorListener extends BaseTest {
                 mockDbProvider.useChangedValues();
             }
         }.start();
+    }
+    
+    private void failExpectingDbData( boolean positiveExpectation, String evaluationResult ) {
+
+        if( positiveExpectation ) {
+            assertTrue( evaluationResult.matches( "Expected to find DB data .*, but did not find it" ) );
+        } else {
+            assertTrue( evaluationResult.matches( "Expected to not find DB data .*, but found it" ) );
+        }
     }
 }

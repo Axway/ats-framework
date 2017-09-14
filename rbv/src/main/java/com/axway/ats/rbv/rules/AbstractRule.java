@@ -100,12 +100,10 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
 
         boolean actualResult = performMatch( metaData );
         if( actualResult == expectedResult ) {
-            log.info( "Matched this rule!" );
+            log.info( "Matched rule " + ruleDescription );
         } else {
-            log.info( "Did not match this rule!" );
+            log.info( "Did not match rule " + ruleDescription );
         }
-
-        log.info( "Finished evaluation of rule " + ruleDescription );
 
         return actualResult == expectedResult;
     }

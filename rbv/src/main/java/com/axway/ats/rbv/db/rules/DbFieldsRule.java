@@ -66,7 +66,10 @@ public abstract class DbFieldsRule extends AbstractRule {
         StringBuilder ruleDescription = new StringBuilder();
 
         ruleDescription.append( "on table '" + expectedMetaDataKey.getTableName() + "'," );
-        ruleDescription.append( " column '" + expectedMetaDataKey.getColumnName() + "', " );
+        ruleDescription.append( " column '" + expectedMetaDataKey.getColumnName() + "'," );
+        if( !getExpectedResult() ) {
+            ruleDescription.append( " not" );
+        }
         ruleDescription.append( " expected value '" + expectedValue + "'" );
 
         return ruleDescription.toString();

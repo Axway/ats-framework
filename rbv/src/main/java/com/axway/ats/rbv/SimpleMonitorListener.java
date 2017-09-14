@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.rbv.model.RbvException;
+import com.mysql.jdbc.StringUtils;
 
 public class SimpleMonitorListener implements MonitorListener {
 
@@ -28,7 +29,6 @@ public class SimpleMonitorListener implements MonitorListener {
     private List<Monitor>       monitors;
     private int                 totalNumMonitors;
     private int                 numFinishedMonitors;
-    private boolean             evaluationResult;
     private boolean             isEvaluating;
 
     public SimpleMonitorListener( List<Monitor> monitors ) {
@@ -37,7 +37,14 @@ public class SimpleMonitorListener implements MonitorListener {
         isEvaluating = false;
     }
 
-    public boolean evaluateMonitors(
+    /**
+     * Run evaluation on all monitors
+     * 
+     * @param timeout
+     * @return the last error reported by each monitor or null if no error
+     * @throws RbvException
+     */
+    public String evaluateMonitors(
                                      long timeout ) throws RbvException {
 
         if( isEvaluating ) {
@@ -46,7 +53,6 @@ public class SimpleMonitorListener implements MonitorListener {
 
         totalNumMonitors = monitors.size();
         numFinishedMonitors = 0;
-        evaluationResult = true;
         isEvaluating = true;
 
         try {
@@ -69,14 +75,33 @@ public class SimpleMonitorListener implements MonitorListener {
                 log.error( "Monitors did not finish in the given timeout " + timeout );
 
                 isEvaluating = false;
-                return false;
+                return "Monitors did not finish in the given timeout " + timeout;
             }
 
         } catch( InterruptedException ie ) {
             log.debug( "InterruptedException has been thrown" );
         }
 
-        return evaluationResult;
+        // we will return null if no error appeared
+        boolean first = true;
+        StringBuilder error = new StringBuilder();
+        for( Monitor monitor : monitors ) {
+            String lastError = monitor.getLastError();
+            if( !StringUtils.isNullOrEmpty( lastError ) ) {
+                if( first ) {
+                    first = false;
+                } else {
+                    error.append( "; " );
+                }
+                error.append( lastError );
+            }
+        }
+
+        if( error.length() == 0 ) {
+            return null;
+        } else {
+            return error.toString();
+        }
     }
 
     public void setFinished(
@@ -106,7 +131,6 @@ public class SimpleMonitorListener implements MonitorListener {
 
             synchronized( this ) {
                 //notify the waiting thread
-                evaluationResult = false;
                 isEvaluating = false;
 
                 notify();

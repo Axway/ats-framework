@@ -38,6 +38,7 @@ public class Monitor {
     private final Executor    executor;
     private PollingParameters pollingParameters;
     private int               pollAttemptsLeft;
+    private int               pollAttemptsDone = 0;
     private MonitorListener   monitorListener;
     private boolean           expectedResult;
     private boolean           actualResult;
@@ -49,8 +50,10 @@ public class Monitor {
     private boolean isActive;
 
     private String lastRuleName;
+    private String lastError;
 
     private List<MetaData> matchedMetaData;
+    
 
     public Monitor( String name,
                     Matchable matchable,
@@ -117,11 +120,14 @@ public class Monitor {
     }
 
     private synchronized void end(
-                                   boolean didErrorOccur ) {
+                                   boolean didErrorOccur, String errorMessage ) {
 
-        if( executor instanceof BasicExecutor )
+        this.lastError = errorMessage;
+        
+        if( executor instanceof BasicExecutor ) {
             lastRuleName = ( ( BasicExecutor ) executor ).getLastRuleName();
-
+        }
+            
         if( isActive ) {
             try {
                 timer.cancel();
@@ -189,6 +195,11 @@ public class Monitor {
         return lastRuleName;
     }
 
+    public String getLastError() {
+
+        return this.lastError;
+    }
+
     private void logExpectedBehaviour() {
 
         StringBuilder msg = new StringBuilder();
@@ -225,6 +236,7 @@ public class Monitor {
                         return;
                     }
 
+                    ++pollAttemptsDone;
                     log.info( name + " polling for " + matchable.getDescription() + ", attempts left: "
                               + pollAttemptsLeft );
 
@@ -236,19 +248,29 @@ public class Monitor {
                     }
                     log.info( name + " " + matchable.getMetaDataCounts() );
 
+                    String status = null;
                     if( expectedResult == true ) {
+                        // expecting to match data
+                        
                         // evaluate using the proper matchable executor
                         List<MetaData> meta = executor.evaluate( metaDataReceived );
                         if( meta != null && !meta.isEmpty() ) {
                             matchedMetaData = meta;
                             if( endOnFirstMatch ) {
-                                end( false );
+                                end( false, "" );
                                 return;
                             }
                         } else if( endOnFirstFailure ) {
-                            end( true );
+                            status = "Expected to find " + matchable.getDescription()
+                                     + " on all attempts, but did not find it on attempt number " + pollAttemptsDone;
+                            end( true, status );
+                        } else {
+                            status = "Expected to find " + matchable.getDescription()
+                                     + ", but did not find it";
                         }
                     } else {
+                        // expecting to not match data
+                        
                         matchedMetaData = executor.evaluate( metaDataReceived );
                         if( matchedMetaData == null || matchedMetaData.isEmpty() ) {
                             //nothing was matched
@@ -258,11 +280,16 @@ public class Monitor {
                             //this means that we don't expect any meta data to match
                             //so if endOnFirstMatch is true, we should end immediately
                             if( endOnFirstMatch ) {
-                                end( false );
+                                end( false, "" );
                                 return;
                             }
                         } else if( endOnFirstFailure ) {
-                            end( true );
+                            status = "Expected to not find " + matchable.getDescription()
+                            + " on all attempts, but found it on attempt number " + pollAttemptsDone;
+                            end( true, status );
+                        } else {
+                            status = "Expected to not find " + matchable.getDescription()
+                                     + ", but found it";
                         }
                     }
 
@@ -272,11 +299,11 @@ public class Monitor {
                     //check if we should end
                     if( pollAttemptsLeft == 0 ) {
                         log.info( name + " no more attempts left - done" );
-                        end( false );
+                        end( false, status );
                     }
                 } catch( Exception e ) {
                     log.error( "Exception during monitor execution", e );
-                    end( true );
+                    end( true, "Exception during monitor execution: " + e.getMessage() );
                 }
             }
         }

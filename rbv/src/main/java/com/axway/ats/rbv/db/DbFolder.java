@@ -188,6 +188,6 @@ public class DbFolder implements Matchable {
 
     public String getDescription() {
 
-        return "DB folder with connection string " + dbProvider.getDbConnection().getDescription();
+        return "DB data with " + dbProvider.getDbConnection().getDescription();
     }
 }

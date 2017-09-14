@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.config.exceptions.ConfigurationException;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.Monitor;
 import com.axway.ats.rbv.PollingParameters;
@@ -131,34 +132,17 @@ public abstract class VerificationSkeleton {
             ArrayList<Monitor> monitors = new ArrayList<Monitor>();
             monitors.add( monitor );
 
-            SimpleMonitorListener monitorListener = new SimpleMonitorListener( monitors );
-            boolean evaluationPassed = monitorListener.evaluateMonitors( pollingTimeout );
-            String lastRuleName = monitor.getLastRuleName();
-            String classSimpleName = getClass().getSimpleName();
+            // run the actual evaluation
+            String evaluationProblem = new SimpleMonitorListener( monitors ).evaluateMonitors( pollingTimeout );
 
-            if( "FileSystemVerification".equals( classSimpleName ) && !expectedResult ) {
-                lastRuleName = "File do exist!";
-            } else if( lastRuleName != null ) {
-                lastRuleName = "Rule failed '" + lastRuleName + "'!";
-            } else {
-                if( "DbVerification".equals( classSimpleName ) ) {
-                    lastRuleName = "Database connection problem!";
-                } else if( "FileSystemVerification".equals( classSimpleName ) && expectedResult ) {
-                    lastRuleName = "File does not exist!";
-                } else {
-                    lastRuleName = "Server connection problem!";
-                }
-            }
-
-            if( evaluationPassed == false ) {
-                throw new RbvVerificationException( "Verification failed. " + lastRuleName );
+            if( !StringUtils.isNullOrEmpty( evaluationProblem ) ) {
+                throw new RbvVerificationException( "Verification failed - " + monitor.getLastError() );
             }
 
             return monitor.getAllMatchedMetaData();
         } catch( ConfigurationException ce ) {
             throw new RbvException( "RBV configuration error", ce );
         }
-
     }
     
     private void applyConfigurationSettings(){

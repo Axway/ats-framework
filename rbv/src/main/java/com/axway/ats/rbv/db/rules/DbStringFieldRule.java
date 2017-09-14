@@ -21,6 +21,7 @@ import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.db.DbEncryptor;
 import com.axway.ats.rbv.db.DbMetaData;
 import com.axway.ats.rbv.model.MetaDataIncorrectException;
+import com.axway.ats.rbv.model.NoSuchMetaDataKeyException;
 import com.axway.ats.rbv.model.RbvException;
 
 public class DbStringFieldRule extends DbFieldsRule {
@@ -77,6 +78,9 @@ public class DbStringFieldRule extends DbFieldsRule {
                 actualValue = dbEncryptor.decrypt( actualValue );
             }
             log.info( "Actual value is '" + actualValue + "'" );
+        } catch( NoSuchMetaDataKeyException nsmdke ) {
+            log.warn( nsmdke.getMessage() );
+            return false;
         } catch( ClassCastException cce ) {
             throw new MetaDataIncorrectException( "Meta data is incorrect - expected String" );
         }
@@ -110,8 +114,11 @@ public class DbStringFieldRule extends DbFieldsRule {
         StringBuilder ruleDescription = new StringBuilder();
 
         ruleDescription.append( "on table '" + expectedMetaDataKey.getTableName() + "'," );
-        ruleDescription.append( " column '" + expectedMetaDataKey.getColumnName() + "', " );
-        ruleDescription.append( " expected value '" + expectedValue + "', " );
+        ruleDescription.append( " column '" + expectedMetaDataKey.getColumnName() + "'," );
+        if( !getExpectedResult() ) {
+            ruleDescription.append( " not" );
+        }
+        ruleDescription.append( " expected value '" + expectedValue + "'," );
         ruleDescription.append( " with match relation '" + relation.toString() + "'" );
 
         return ruleDescription.toString();

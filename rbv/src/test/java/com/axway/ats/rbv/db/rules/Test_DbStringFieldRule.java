@@ -262,7 +262,7 @@ public class Test_DbStringFieldRule extends BaseTest {
         assertFalse( andRule.isMatch( metaData ) );
     }
 
-    @Test(expected = NoSuchMetaDataKeyException.class)
+    @Test
     public void isMatchExpectedFalseMultipleRulesPositiveNoMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();

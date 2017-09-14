@@ -228,8 +228,11 @@ public class DbDateFieldRule extends DbFieldsRule {
         StringBuilder ruleDescription = new StringBuilder();
 
         ruleDescription.append( "on table '" + this.expectedMetaDataKey.getTableName() + "'," );
-        ruleDescription.append( " column '" + this.expectedMetaDataKey.getColumnName() + "', " );
-        ruleDescription.append( " expected value '" + this.expectedValue + "', " );
+        ruleDescription.append( " column '" + this.expectedMetaDataKey.getColumnName() + "'," );
+        if( !getExpectedResult() ) {
+            ruleDescription.append( " not" );
+        }
+        ruleDescription.append( " expected value '" + this.expectedValue + "'," );
         ruleDescription.append( " with match relation '" + this.relation.toString() + "'" );
 
         return ruleDescription.toString();
