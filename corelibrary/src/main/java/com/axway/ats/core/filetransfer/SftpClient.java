@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,10 +81,35 @@ public class SftpClient extends AbstractFileTransferClient {
 
         super( portNumber );
 
-        // add BoncyCastle provider as the first one, before any default JRE providers
-        Security.insertProviderAt( new BouncyCastleProvider(), 1 );
-    }
+        // Add BoncyCastle provider as the first one, before any default JRE providers.
+        // We remove it first, because in case the provider is already present as not-the-first-one,
+        // the insertion will not do any change
 
+        boolean needToInsert = true;
+        boolean needToRemove = false;
+
+        Provider bcProvider = new BouncyCastleProvider();
+        Provider[] providers = Security.getProviders();
+
+        for( int i = 0; i < providers.length; i++ ) {
+            if( providers[i].getName().equalsIgnoreCase( bcProvider.getName() ) ) {
+                if( i == 0 ) {
+                    needToInsert = false;
+                } else {
+                    needToRemove = true;
+                }
+                break;
+            }
+        }
+
+        if( needToInsert ) {
+            if( needToRemove ) {
+                Security.removeProvider( bcProvider.getName() );
+            }
+            Security.insertProviderAt( bcProvider, 1 );
+        }
+    }
+    
     @Override
     public void connect( String hostname, String userName, String password ) throws FileTransferException {
 
