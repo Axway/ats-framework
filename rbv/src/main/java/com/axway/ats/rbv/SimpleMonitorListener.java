@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.model.RbvException;
-import com.mysql.jdbc.StringUtils;
 
 public class SimpleMonitorListener implements MonitorListener {
 
