@@ -35,7 +35,6 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
 
     private static final String              FILE_TRANSFER_VERBOSE_MODE                 = "actionlibrary.filetransfer.verbosemode";
     private static final String              FILE_TRANSFER_CONNECTION_TIMEOUT           = "actionlibrary.filetransfer.connection.timeout";
-    private static final String              FILE_TRANSFER_CONNECTION_ATTEMPTS          = "actionlibrary.filetransfer.connection.attempts";
     private static final String              FILE_TRANSFER_CONNECTION_INTERVAL          = "actionlibrary.filetransfer.connection.interval";
     private static final String              FILE_TRANSFER_CONNECTION_INITIAL_DELAY     = "actionlibrary.filetransfer.connection.initialdelay";
 
@@ -178,29 +177,6 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
                                                   long timeout ) {
 
         setTempProperty( FILE_TRANSFER_CONNECTION_TIMEOUT, Long.toString( timeout ) );
-    }
-
-    /**
-     * Set the file transfer connection attempts
-     * 
-     * @param defaultMessageBox the file transfer connection timeout
-     */
-    @PublicAtsApi
-    public void setFileTransferConnectionAttempts(
-                                                   int attempts ) {
-
-        setTempProperty( FILE_TRANSFER_CONNECTION_ATTEMPTS, Integer.toString( attempts ) );
-    }
-
-    /**
-     * Get the file transfer connection attempts
-     * 
-     * @return the file transfer connection timeout
-     */
-    @PublicAtsApi
-    public int getFileTransferConnectionAttempts() {
-
-        return getIntegerProperty( FILE_TRANSFER_CONNECTION_ATTEMPTS );
     }
 
     /**
