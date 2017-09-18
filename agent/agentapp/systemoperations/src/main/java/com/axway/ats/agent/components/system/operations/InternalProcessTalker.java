@@ -109,6 +109,17 @@ public class InternalProcessTalker extends CallerRelatedAction {
                                                      + internalProcessId ) ).expect( pattern,
                                                                                      timeoutSeconds );
     }
+    
+    @Action
+    public void expectErr(
+                        @Parameter(name = "internalProcessId" ) String internalProcessId,
+                        @Parameter(name = "pattern") String pattern,
+                        @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+
+        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                     + internalProcessId ) ).expectErr( pattern,
+                                                                                     timeoutSeconds );
+    }
 
     @Action
     public void expectByRegex(
@@ -118,6 +129,17 @@ public class InternalProcessTalker extends CallerRelatedAction {
 
         ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
                                                      + internalProcessId ) ).expectByRegex( pattern,
+                                                                                            timeoutSeconds );
+    }
+    
+    @Action
+    public void expectErrByRegex(
+                               @Parameter(name = "internalProcessId" ) String internalProcessId,
+                               @Parameter(name = "pattern") String pattern,
+                               @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+
+        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                     + internalProcessId ) ).expectErrByRegex( pattern,
                                                                                             timeoutSeconds );
     }
 
@@ -184,6 +206,17 @@ public class InternalProcessTalker extends CallerRelatedAction {
                                                             + internalProcessId ) ).expectAny( patterns,
                                                                                                timeoutSeconds );
     }
+    
+    @Action
+    public int expectErrAny(
+                          @Parameter(name = "internalProcessId" ) String internalProcessId,
+                          @Parameter(name = "patterns") String[] patterns,
+                          @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+
+        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                            + internalProcessId ) ).expectErrAny( patterns,
+                                                                                               timeoutSeconds );
+    }
 
     @Action
     public int expectAnyByRegex(
@@ -202,6 +235,17 @@ public class InternalProcessTalker extends CallerRelatedAction {
 
         return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
                                                             + internalProcessId ) ).expectAnyByRegex( regexPatterns,
+                                                                                                      timeoutSeconds );
+    }
+    
+    @Action
+    public int expectErrAnyByRegex(
+                                 @Parameter(name = "internalProcessId" ) String internalProcessId,
+                                 @Parameter(name = "regexPatterns") String[] regexPatterns,
+                                 @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+
+        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                            + internalProcessId ) ).expectErrAnyByRegex( regexPatterns,
                                                                                                       timeoutSeconds );
     }
 
@@ -224,6 +268,17 @@ public class InternalProcessTalker extends CallerRelatedAction {
                                                      + internalProcessId ) ).expectAll( patterns,
                                                                                         timeoutSeconds );
     }
+    
+    @Action
+    public void expectErrAll(
+                           @Parameter(name = "internalProcessId" ) String internalProcessId,
+                           @Parameter(name = "patterns") String[] patterns,
+                           @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+
+        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                     + internalProcessId ) ).expectErrAll( patterns,
+                                                                                        timeoutSeconds );
+    }
 
     @Action
     public void expectAllByRegex(
@@ -242,6 +297,17 @@ public class InternalProcessTalker extends CallerRelatedAction {
 
         ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
                                                      + internalProcessId ) ).expectAnyByRegex( regexPatterns,
+                                                                                               timeoutSeconds );
+    }
+    
+    @Action
+    public void expectErrAllByRegex(
+                                  @Parameter(name = "internalProcessId" ) String internalProcessId,
+                                  @Parameter(name = "regexPatterns") String[] regexPatterns,
+                                  @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+
+        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
+                                                     + internalProcessId ) ).expectErrAnyByRegex( regexPatterns,
                                                                                                timeoutSeconds );
     }
 

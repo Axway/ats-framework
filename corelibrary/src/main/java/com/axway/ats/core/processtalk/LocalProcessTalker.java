@@ -107,6 +107,21 @@ public class LocalProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
         }
     }
+    
+    @Override
+    public void expectErr( String pattern, int timeoutSeconds ) {
+
+        checkCommandIsGiven();
+
+        try {
+            shell.expectErr( pattern, false, timeoutSeconds );
+        } catch( IOException e ) {
+            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+        } catch( TimeoutException e ) {
+            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+        }
+        
+    }
 
     public void expectByRegex(
                                String pattern ) throws ProcessTalkException {
@@ -127,6 +142,21 @@ public class LocalProcessTalker implements IProcessTalker {
         } catch( TimeoutException e ) {
             throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
         }
+    }
+    
+    @Override
+    public void expectErrByRegex( String pattern, int timeoutSeconds ) {
+
+        checkCommandIsGiven();
+
+        try {
+            shell.expectErr( pattern, true, timeoutSeconds );
+        } catch( IOException e ) {
+            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+        } catch( TimeoutException e ) {
+            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+        }
+        
     }
 
     public int expectAny(
@@ -149,6 +179,30 @@ public class LocalProcessTalker implements IProcessTalker {
              * so it throws a java.lang.UnsupportedOperationException
              */
             return shell.expectAny( new ArrayList<String>( Arrays.asList( patterns ) ),
+                                    false,
+                                    timeoutSeconds );
+        } catch( IOException e ) {
+            throw new ProcessTalkException( "Error expecting any of the following patterns '"
+                                            + Arrays.toString( patterns ) + "'", e );
+        } catch( ExpectJException e ) {
+            throw new ProcessTalkException( "Error expecting any of the following patterns '"
+                                            + Arrays.toString( patterns ) + "'", e );
+        }
+    }
+    
+    @Override
+    public int expectErrAny( String[] patterns, int timeoutSeconds ) {
+
+        checkCommandIsGiven();
+
+        try {
+            /*
+             * In some of the methods we convert String[] into List<String>
+             * We cannot simply use Arrays.asList() as it creates a fixed size list
+             * and while matching the patterns we cannot remove them from the list
+             * so it throws a java.lang.UnsupportedOperationException
+             */
+            return shell.expectErrAny( new ArrayList<String>( Arrays.asList( patterns ) ),
                                     false,
                                     timeoutSeconds );
         } catch( IOException e ) {
@@ -184,6 +238,24 @@ public class LocalProcessTalker implements IProcessTalker {
                                             + Arrays.toString( regexPatterns ) + "'", e );
         }
     }
+    
+    @Override
+    public int expectErrAnyByRegex( String[] regexPatterns, int timeoutSeconds ) {
+
+        checkCommandIsGiven();
+
+        try {
+            return shell.expectErrAny( new ArrayList<String>( Arrays.asList( regexPatterns ) ),
+                                    true,
+                                    timeoutSeconds );
+        } catch( IOException e ) {
+            throw new ProcessTalkException( "Error expecting any of the following regex patterns '"
+                                            + Arrays.toString( regexPatterns ) + "'", e );
+        } catch( ExpectJException e ) {
+            throw new ProcessTalkException( "Error expecting any of the following regex patterns '"
+                                            + Arrays.toString( regexPatterns ) + "'", e );
+        }
+    }
 
     public void expectAll(
                            String[] patterns ) throws ProcessTalkException {
@@ -207,6 +279,23 @@ public class LocalProcessTalker implements IProcessTalker {
                                             + Arrays.toString( patterns ) + "'", e );
         }
     }
+    
+    @Override
+    public void expectErrAll( String[] patterns, int timeoutSeconds ) {
+
+        checkCommandIsGiven();
+
+        try {
+            shell.expectErrAll( new ArrayList<String>( Arrays.asList( patterns ) ), false, timeoutSeconds );
+        } catch( IOException e ) {
+            throw new ProcessTalkException( "Error expecting the following patterns '"
+                                            + Arrays.toString( patterns ) + "'", e );
+        } catch( TimeoutException e ) {
+            throw new ProcessTalkException( "Error expecting the following patterns '"
+                                            + Arrays.toString( patterns ) + "'", e );
+        }
+        
+    }
 
     public void expectAllByRegex(
                                   String[] regexPatterns ) throws ProcessTalkException {
@@ -229,6 +318,23 @@ public class LocalProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( "Error expecting the following regex patterns '"
                                             + Arrays.toString( regexPatterns ) + "'", e );
         }
+    }
+    
+    @Override
+    public void expectErrAllByRegex( String[] regexPatterns, int timeoutSeconds ) {
+
+        checkCommandIsGiven();
+
+        try {
+            shell.expectErrAll( new ArrayList<String>( Arrays.asList( regexPatterns ) ), true, timeoutSeconds );
+        } catch( IOException e ) {
+            throw new ProcessTalkException( "Error expecting the following regex patterns '"
+                                            + Arrays.toString( regexPatterns ) + "'", e );
+        } catch( TimeoutException e ) {
+            throw new ProcessTalkException( "Error expecting the following regex patterns '"
+                                            + Arrays.toString( regexPatterns ) + "'", e );
+        }
+        
     }
 
     public void send(

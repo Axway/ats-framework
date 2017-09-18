@@ -27,7 +27,7 @@
 
 		<org.dom4j.version>1.6.1</org.dom4j.version>
 		<!-- PostgreSQL dependency is defined in parent pom.xml -->
-		<ats-expectj.version>2.0.7</ats-expectj.version>
+		<!-- ExpectJ dependency is defined in parent pom.xml -->
 	</properties>
 
 	<dependencies>

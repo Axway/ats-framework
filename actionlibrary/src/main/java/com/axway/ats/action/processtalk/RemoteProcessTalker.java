@@ -115,6 +115,17 @@ public class RemoteProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( e );
         }
     }
+    
+    @Override
+    public void expectErr( String pattern, int timeoutSeconds ) {
+
+        try {
+            remoteProcessTalker.expectErr( internalId, pattern, timeoutSeconds );
+        } catch( AgentException e ) {
+            throw new ProcessTalkException( e );
+        }
+        
+    }
 
     @Override
     public void expectByRegex(
@@ -138,6 +149,18 @@ public class RemoteProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( e );
         }
     }
+    
+    @Override
+    public void expectErrByRegex( String pattern, int timeoutSeconds ) {
+
+        try {
+            remoteProcessTalker.expectErrByRegex( internalId, pattern, timeoutSeconds );
+        } catch( AgentException e ) {
+            throw new ProcessTalkException( e );
+        }
+        
+    }
+
 
     @Override
     public int expectAny(
@@ -161,6 +184,17 @@ public class RemoteProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( e );
         }
     }
+    
+    @Override
+    public int expectErrAny( String[] patterns, int timeoutSeconds ) {
+
+        try {
+            return remoteProcessTalker.expectErrAny( internalId, patterns, timeoutSeconds );
+        } catch( AgentException e ) {
+            throw new ProcessTalkException( e );
+        }
+    }
+
 
     @Override
     public int expectAnyByRegex(
@@ -180,6 +214,16 @@ public class RemoteProcessTalker implements IProcessTalker {
 
         try {
             return remoteProcessTalker.expectAnyByRegex( internalId, regexPatterns, timeoutSeconds );
+        } catch( AgentException e ) {
+            throw new ProcessTalkException( e );
+        }
+    }
+    
+    @Override
+    public int expectErrAnyByRegex( String[] regexPatterns, int timeoutSeconds ) {
+
+        try {
+            return remoteProcessTalker.expectErrAnyByRegex( internalId, regexPatterns, timeoutSeconds );
         } catch( AgentException e ) {
             throw new ProcessTalkException( e );
         }
@@ -207,6 +251,17 @@ public class RemoteProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( e );
         }
     }
+    
+    @Override
+    public void expectErrAll( String[] patterns, int timeoutSeconds ) {
+
+        try {
+            remoteProcessTalker.expectErrAll( internalId, patterns, timeoutSeconds );
+        } catch( AgentException e ) {
+            throw new ProcessTalkException( e );
+        }
+        
+    }
 
     @Override
     public void expectAllByRegex(
@@ -230,6 +285,18 @@ public class RemoteProcessTalker implements IProcessTalker {
             throw new ProcessTalkException( e );
         }
     }
+    
+    @Override
+    public void expectErrAllByRegex( String[] regexPatterns, int timeoutSeconds ) {
+
+        try {
+            remoteProcessTalker.expectErrAllByRegex( internalId, regexPatterns, timeoutSeconds );
+        } catch( AgentException e ) {
+            throw new ProcessTalkException( e );
+        }
+        
+    }
+
 
     @Override
     public void send(

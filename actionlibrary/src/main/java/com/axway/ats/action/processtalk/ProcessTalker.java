@@ -175,6 +175,21 @@ public class ProcessTalker {
 
         this.processTalker.expect( pattern, timeoutSeconds );
     }
+    
+    /**
+     * Expect to match a pattern from standard error
+     * 
+     * @param pattern the pattern to match
+     * @param timeoutSeconds timeout waiting for the match
+     * @throws ProcessTalkException
+     */
+    @PublicAtsApi
+    public void expectErr(
+                        String pattern,
+                        int timeoutSeconds ) throws ProcessTalkException {
+
+        this.processTalker.expectErr( pattern, timeoutSeconds );
+    }
 
     /**
      * Expect to match a regex pattern
@@ -199,6 +214,21 @@ public class ProcessTalker {
     public void expectByRegex( String pattern, int timeoutSeconds ) throws ProcessTalkException {
 
         this.processTalker.expectByRegex( pattern, timeoutSeconds );
+    }
+    
+    /**
+     * Expect to match a regex pattern from standard error
+     * 
+     * @param pattern the regex pattern to match
+     * @param timeoutSeconds timeout waiting for the match
+     * @throws ProcessTalkException
+     */
+    @PublicAtsApi
+    public void expectErrByRegex(
+                               String pattern,
+                               int timeoutSeconds ) throws ProcessTalkException {
+
+        this.processTalker.expectErrByRegex( pattern, timeoutSeconds );
     }
 
     /**
@@ -226,6 +256,22 @@ public class ProcessTalker {
     public int expectAny( String[] patterns, int timeoutSeconds ) throws ProcessTalkException {
 
         return this.processTalker.expectAny( patterns, timeoutSeconds );
+    }
+    
+    /**
+     * Cycles all of the provided patterns and exits when match any one of them
+     * 
+     * @param patterns list of patterns to match
+     * @param timeoutSeconds timeout waiting for the match
+     * @return the matched pattern index
+     * @throws ProcessTalkException
+     */
+    @PublicAtsApi
+    public int expectErrAny(
+                          String[] patterns,
+                          int timeoutSeconds ) throws ProcessTalkException {
+
+        return this.processTalker.expectErrAny( patterns, timeoutSeconds );
     }
 
     /**
@@ -256,6 +302,23 @@ public class ProcessTalker {
 
         return this.processTalker.expectAnyByRegex( regexPatterns, timeoutSeconds );
     }
+    
+    /**
+     * Cycles all of the provided regex patterns and exits when match any one of
+     * them
+     * 
+     * @param regexPatterns list of patterns to match
+     * @param timeoutSeconds timeout waiting for the match
+     * @return the matched pattern index
+     * @throws ProcessTalkException
+     */
+    @PublicAtsApi
+    public int expectErrAnyByRegex(
+                                 String[] regexPatterns,
+                                 int timeoutSeconds ) throws ProcessTalkException {
+
+        return this.processTalker.expectErrAnyByRegex( regexPatterns, timeoutSeconds );
+    }
 
     /**
      * Passes if match all of the provided patterns
@@ -281,6 +344,21 @@ public class ProcessTalker {
 
         this.processTalker.expectAll( patterns, timeoutSeconds );
     }
+    
+    /**
+     * Passes if match all of the provided patterns
+     * 
+     * @param patterns list of patterns to match
+     * @param timeoutSeconds timeout waiting for the match
+     * @throws ProcessTalkException
+     */
+    @PublicAtsApi
+    public void expectErrAll(
+                           String[] patterns,
+                           int timeoutSeconds ) throws ProcessTalkException {
+
+        this.processTalker.expectErrAll( patterns, timeoutSeconds );
+    }
 
     /**
      * Passes if match all of the provided regular expressions
@@ -305,6 +383,21 @@ public class ProcessTalker {
     public void expectAllByRegex( String[] regexPatterns, int timeoutSeconds ) throws ProcessTalkException {
 
         this.processTalker.expectAllByRegex( regexPatterns, timeoutSeconds );
+    }
+    
+    /**
+     * Passes if match all of the provided regular expressions
+     * 
+     * @param regexPatterns list of patterns to match
+     * @param timeoutSeconds timeout waiting for the match
+     * @throws ProcessTalkException
+     */
+    @PublicAtsApi
+    public void expectErrAllByRegex(
+                                  String[] regexPatterns,
+                                  int timeoutSeconds ) throws ProcessTalkException {
+
+        this.processTalker.expectErrAllByRegex( regexPatterns, timeoutSeconds );
     }
 
     /**
