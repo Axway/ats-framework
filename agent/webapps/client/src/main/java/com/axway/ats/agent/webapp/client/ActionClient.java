@@ -47,7 +47,7 @@ public abstract class ActionClient extends AbstractAgentClient {
     }
 
     /**
-     * Execute the given action
+     * Execute the given action. The action will not be populated in the database
      *
      * @param actionName
      *            name of the action
@@ -57,12 +57,40 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @throws AgentException
      *             if exception occurs during action execution
      */
+    protected Object executeActionWithoutRegister( String actionName,
+                                                   Object[] arguments ) throws AgentException {
+
+        return getActionResult( actionName, arguments, false );
+    }
+
+    /**
+     * Execute the given action. The action will be populated in the database
+     *
+     * @param actionName
+     *            name of the action
+     * @param arguments
+     *            arguments for the action
+     * @param registerAction
+     *            register action in the database
+     * @return result of the action execution
+     * @throws AgentException
+     *             if exception occurs during action execution
+     */
     protected Object executeAction(
                                     String actionName,
                                     Object[] arguments ) throws AgentException {
 
+        return getActionResult( actionName, arguments, true );
+    }
+    
+    private Object getActionResult( 
+                                    String actionName, 
+                                    Object[] arguments,
+                                    boolean registerAction ) throws AgentException {
+
         // construct an action request
         ActionRequest actionRequest = new ActionRequest( component, actionName, arguments );
+        actionRequest.setRegisterActionExecution( registerAction );
 
         // the returned result
         Object result = null;

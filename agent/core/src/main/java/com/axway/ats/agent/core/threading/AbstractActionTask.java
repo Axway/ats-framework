@@ -90,9 +90,6 @@ public abstract class AbstractActionTask implements Runnable {
     //remember if we are logging some events in batch mode
     private boolean                       isLoggingInBatchMode;
 
-    //when 'false', the Queue Execution Time will be missing on the Test Explorer UI
-    private static boolean                registerActionsInQueueExecutionTime = true;
-
     // manager watching for too long iterations
     protected IterationTimeoutManager     itManager;
 
@@ -193,11 +190,6 @@ public abstract class AbstractActionTask implements Runnable {
         }
 
         this.itManager = itManager;
-    }
-
-    public static void setRegisterActionsInQueueExecutionTime( boolean registerActionsInQueueExecutionTime ) {
-
-        AbstractActionTask.registerActionsInQueueExecutionTime = registerActionsInQueueExecutionTime;
     }
 
     /**
@@ -458,9 +450,7 @@ public abstract class AbstractActionTask implements Runnable {
             }
         }
 
-        if( registerActionsInQueueExecutionTime ) {
-            log.insertCheckpoint( ATS_ACTION__QUEUE_EXECUTION_TIME, queueDuration, CheckpointResult.PASSED );
-        }
+        log.insertCheckpoint( ATS_ACTION__QUEUE_EXECUTION_TIME, queueDuration, CheckpointResult.PASSED );
     }
 
     /**

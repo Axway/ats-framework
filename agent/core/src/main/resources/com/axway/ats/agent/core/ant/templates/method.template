@@ -2,6 +2,6 @@
     @PublicAtsApi
     public $RETURN_TYPE$ $METHOD_NAME$( $PARAMETERS$ ) throws AgentException {
 
-        $EXEC_RETURN_DEFINITION$executeAction( "$ACTION_NAME$", new Object[]{ $ARGUMENTS$ } );
+        $EXEC_RETURN_DEFINITION$$EXECUTE_ACTION$( "$ACTION_NAME$", new Object[]{ $ARGUMENTS$ } );
 
     }

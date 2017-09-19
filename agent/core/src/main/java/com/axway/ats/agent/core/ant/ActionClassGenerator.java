@@ -265,7 +265,11 @@ class ActionClassGenerator {
                     }
 
                     //then process the method body and append it
-                    String actionDefinition = generateActionDefinition( actionName, actionClassMethod );
+                    boolean registerActionExecution = true;
+                    if( actionAnnotation != null ){
+                        registerActionExecution = actionAnnotation.registerActionExecution(); 
+                    }
+                    String actionDefinition = generateActionDefinition( actionName, actionClassMethod, registerActionExecution );
                     methodsDefinition.append( actionDefinition );
 
                     //get any enum constants
@@ -456,7 +460,9 @@ class ActionClassGenerator {
         return enumConstantsBuilder;
     }
 
-    private String generateActionDefinition( String actionName, Method actionImplementation ) {
+    private String generateActionDefinition( String actionName, 
+                                             Method actionImplementation,
+                                             boolean registerAction ) {
 
         log.info( "Generating method implementation for action '" + actionName + "'" );
 
@@ -505,8 +511,8 @@ class ActionClassGenerator {
         boolean isDeprecated = ( deprecatedAnnotation != null );
 
         try {
-            return new MethodTemplateProcessor( actionImplementation, actionName, paramNames, paramTypes,
-                                                isDeprecated ).processTemplate();
+            return new MethodTemplateProcessor( actionImplementation, actionName, paramNames, registerAction,
+                                                paramTypes, isDeprecated ).processTemplate();
         } catch( IOException ioe ) {
             throw new BuildException( ioe );
         }

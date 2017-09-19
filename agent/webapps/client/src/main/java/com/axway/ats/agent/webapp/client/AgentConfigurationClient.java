@@ -247,21 +247,6 @@ public final class AgentConfigurationClient extends ActionClient {
     }
 
     /**
-     * When set to 'false', the "Queue Execution Time" will be missing on the Test Explorer UI
-     * 
-     * @param enable
-     * @throws AgentException
-     */
-    @PublicAtsApi
-    public void setRegisterActionsInQueueExecutionTime( boolean enable ) throws AgentException {
-
-        GenericAgentConfigurator genericAgentConfigurator = new GenericAgentConfigurator();
-        genericAgentConfigurator.setRegisterActionsInQueueExecutionTime( enable );
-
-        applyConfiguration( genericAgentConfigurator );
-    }
-    
-    /**
      * The usage of this method concerns the very rare case when same user on same host is running 
      * simultaneous executions of more than one test runs and these tests are sending requests to one and same ATS Agent!
      * If this is not your case, you do not have to worry about the meaning of this method.

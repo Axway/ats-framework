@@ -29,19 +29,21 @@ class MethodTemplateProcessor extends TemplateProcessor {
     public MethodTemplateProcessor( Method actionImplementation,
                                     String actionName,
                                     String[] paramNames,
+                                    boolean registerAction,
                                     String[] paramTypes,
                                     boolean isDeprecated ) throws IOException {
 
         super( ClassTemplateProcessor.class.getResourceAsStream( DEFAULT_METHOD_TEMPLATE ),
                DEFAULT_METHOD_TEMPLATE );
 
-        configureTemplate( actionImplementation, actionName, paramNames, paramTypes, isDeprecated );
+        configureTemplate( actionImplementation, actionName, paramNames, registerAction, paramTypes, isDeprecated );
     }
     
     private void configureTemplate(
                                     Method actionImplementation,
                                     String actionName,
                                     String[] paramNames,
+                                    boolean registerAction,
                                     String[] paramTypes,
                                     boolean isDeprecated ) {
 
@@ -81,6 +83,11 @@ class MethodTemplateProcessor extends TemplateProcessor {
             }
             placeHolderValues.put( "$RETURN_TYPE$", returnTypeName );
             placeHolderValues.put( "$EXEC_RETURN_DEFINITION$", execDefinition.toString() );
+            if ( registerAction ) {
+                placeHolderValues.put( "$EXECUTE_ACTION$", "executeAction" );
+            } else {
+                placeHolderValues.put( "$EXECUTE_ACTION$", "executeActionWithoutRegister" );
+            }
 
             StringBuilder paramDefinition = new StringBuilder();
             StringBuilder argumentArray = new StringBuilder();

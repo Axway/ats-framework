@@ -130,7 +130,9 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
             }
             
             for(ActionRequest actionRequest : actionRequests) {
-                dbAccess.populateCheckpointSummary( loadQueueId, actionRequest.getActionName(), "", true );
+                if(actionRequest.getRegisterActionExecution()){
+                    dbAccess.populateCheckpointSummary( loadQueueId, actionRequest.getActionName(), "", true );
+                }
             }
             
             dbAccess.populateCheckpointSummary( loadQueueId, AbstractActionTask.ATS_ACTION__QUEUE_EXECUTION_TIME, "", true );

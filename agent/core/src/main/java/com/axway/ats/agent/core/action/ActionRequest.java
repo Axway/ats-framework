@@ -23,6 +23,7 @@ public class ActionRequest {
     private String   componentName;
     private String   actionName;
     private Object[] args;
+    private boolean registerAction;
 
     /**
      * @param componentName name of the component
@@ -64,5 +65,25 @@ public class ActionRequest {
     public Object[] getArguments() {
 
         return args;
+    }
+    
+    /**
+     * Set whether to register or not the actions
+     * 
+     * @param registerAction populate or not the action in the database
+     */
+    public void setRegisterActionExecution( boolean registerAction ) {
+
+        this.registerAction = registerAction;
+    }
+    
+    /**
+     * Get whether to register or not the actions
+     * 
+     * @return argument to populate or not the action
+     */
+    public boolean getRegisterActionExecution() {
+
+        return this.registerAction;
     }
 }

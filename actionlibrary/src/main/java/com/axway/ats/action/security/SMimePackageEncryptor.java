@@ -289,17 +289,22 @@ public class SMimePackageEncryptor implements PackageEncryptor {
         }
     }
 
-    private KeyStore getKeystore() throws Exception {
+    private KeyStore getKeystore() throws ActionException {
 
-        KeyStore ks = KeyStore.getInstance( PKCS12_KEYSTORE_TYPE, BouncyCastleProvider.PROVIDER_NAME );
-        ks.load( new FileInputStream( certLocation ), certPassword.toCharArray() );
+        KeyStore ks = null;
+        try (FileInputStream fis = new FileInputStream( certLocation )) {
+            ks = KeyStore.getInstance( PKCS12_KEYSTORE_TYPE, BouncyCastleProvider.PROVIDER_NAME );
+            ks.load( fis, certPassword.toCharArray() );
 
-        if( aliasOrCN == null ) {
-            Enumeration<String> aliases = ks.aliases();
-            String alias = aliases.nextElement();
-            aliasOrCN = alias;
+            if( aliasOrCN == null ) {
+                Enumeration<String> aliases = ks.aliases();
+                String alias = aliases.nextElement();
+                aliasOrCN = alias;
+            }
+
+        } catch( Exception e ) {
+            throw new ActionException( e );
         }
-
         return ks;
     }
     

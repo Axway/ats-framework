@@ -15,7 +15,6 @@
  */
 package com.axway.ats.agent.core.configuration;
 
-import com.axway.ats.agent.core.threading.AbstractActionTask;
 import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
@@ -26,8 +25,6 @@ import com.axway.ats.log.model.CheckpointLogLevel;
 public class GenericAgentConfigurator implements Configurator {
 
     private CheckpointLogLevel checkpointLogLevel;
-
-    private Boolean            registerActionsInQueueExecutionTime;
 
     public GenericAgentConfigurator() {
 
@@ -59,10 +56,6 @@ public class GenericAgentConfigurator implements Configurator {
         if( this.checkpointLogLevel != null ) {
             SQLServerDbWriteAccess.setCheckpointLogLevel( checkpointLogLevel );
         }
-
-        if( this.registerActionsInQueueExecutionTime != null ) {
-            AbstractActionTask.setRegisterActionsInQueueExecutionTime( registerActionsInQueueExecutionTime );
-        }
     }
 
     @Override
@@ -86,11 +79,6 @@ public class GenericAgentConfigurator implements Configurator {
     public void setCheckpointLogLevel( CheckpointLogLevel checkpointLogLevel ) {
 
         this.checkpointLogLevel = checkpointLogLevel;
-    }
-
-    public void setRegisterActionsInQueueExecutionTime( boolean registerActionsInQueueExecutionTime ) {
-
-        this.registerActionsInQueueExecutionTime = registerActionsInQueueExecutionTime;
     }
 
     @Override
