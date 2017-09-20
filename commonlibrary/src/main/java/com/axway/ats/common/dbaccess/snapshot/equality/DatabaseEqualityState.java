@@ -360,7 +360,7 @@ public class DatabaseEqualityState {
             tablesPerSnapshot.put( table, indexesPerTable );
         }
 
-        indexesPerTable.add( "name=" + indexName + ", " + index );
+        indexesPerTable.add( "name=" + indexName + index );
     }
 
     /**
