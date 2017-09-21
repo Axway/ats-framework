@@ -15,8 +15,10 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -51,7 +53,7 @@ public class MonitoringContext {
         return instance;
     }
 
-    public void init() {
+    public void init() throws IOException {
 
         if( !ReadingsRepository.getInstance().isConfigured() ) {
 
@@ -76,13 +78,15 @@ public class MonitoringContext {
             }
 
             // find the custom configuration searched in the classpath
-            URL customLinuxConfigurationURL = this.getClass()
-                                                  .getResource( "/" + CUSTOM_PERFORMANCE_CONFIGURATION );
-            if( customLinuxConfigurationURL != null ) {
-                configurationFiles.add( customLinuxConfigurationURL.getPath() );
-            } else {
+            Enumeration<URL> customLinuxConfigurationURLs = this.getClass().getClassLoader().getResources(CUSTOM_PERFORMANCE_CONFIGURATION );
+            int counter = 0;
+            while ( customLinuxConfigurationURLs.hasMoreElements() ) {
+                counter++;
+                configurationFiles.add( customLinuxConfigurationURLs.nextElement().getPath() );
+            }
+            if( counter == 0 ) {
                 log.debug( "No custom linux configuration detected. It is searched as a "
-                           + CUSTOM_PERFORMANCE_CONFIGURATION + " file in the classpath" );
+                        + CUSTOM_PERFORMANCE_CONFIGURATION + " file in the classpath" );
             }
 
             // 2. Parse the configuration files

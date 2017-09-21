@@ -15,6 +15,7 @@
  */
 package com.axway.ats.agent.core.monitoring;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +116,7 @@ public class AgentSystemMonitor {
         ReadingsRepository.getInstance().updateDatabaseRepository( monitoredHost, readings );
     }
 
-    public void initializeMonitoringContext() {
+    public void initializeMonitoringContext() throws IOException {
 
         MonitoringContext.getInstance().init();
     }

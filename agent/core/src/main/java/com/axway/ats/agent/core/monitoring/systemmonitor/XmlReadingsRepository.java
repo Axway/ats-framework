@@ -40,9 +40,12 @@ public class XmlReadingsRepository {
     void addReading(
                      String readingName,
                      ReadingBean reading ) {
-
         if( readings.containsKey( readingName ) ) {
-            log.warn( "The reading [" + reading + "[ will be now replaced with  reading [" + reading + "]" );
+            ReadingBean alreadyAddedReading = readings.get( readingName );
+            log.warn( "The reading [" + alreadyAddedReading + "], collected from monitor '" 
+                                      + alreadyAddedReading.getMonitorName() 
+                                      + "' will be replaced with [" + reading + "], collected from monitor '" 
+                                      + reading.getMonitorName() + "'" );
         }
         readings.put( readingName, reading );
     }

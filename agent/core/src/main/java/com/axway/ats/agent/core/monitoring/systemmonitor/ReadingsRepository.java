@@ -18,6 +18,7 @@ package com.axway.ats.agent.core.monitoring.systemmonitor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,9 @@ public class ReadingsRepository {
     private DatabaseReadingsRepository dbRepository;
 
     private ParseReadingState          readingParseState;
+
+    // keeps track of each already loaded monitor and its custom.performance.configuration.xml file
+    private Map<String, String>        alreadyLoadedMonitors = new HashMap<String, String>();
 
     static {
         instance = new ReadingsRepository();
@@ -147,6 +151,8 @@ public class ReadingsRepository {
         try {
             // empty the repository with readings definitions
             cleanRepository();
+            // clear previously loaded monitors
+            this.alreadyLoadedMonitors.clear();
 
             for( String configurationFile : configurationFiles ) {
                 InputStream configurationFileStream;
@@ -162,6 +168,8 @@ public class ReadingsRepository {
         } catch( MonitorConfigurationException e ) {
             // on error empty the repository with readings definitions, so we know it is all clean
             cleanRepository();
+            // on error clear previously loaded monitors
+            this.alreadyLoadedMonitors.clear();
             throw e;
         }
     }
@@ -238,6 +246,16 @@ public class ReadingsRepository {
         if( monitorClass == null ) {
             this.readingParseState.throwException( "No monitor class specified" );
         }
+        if( this.alreadyLoadedMonitors.containsKey( monitorClass ) ) {
+            // the jar, that had monitor with the same name as the current one
+            String alreadyProcessedJarFilename = extractJarFilepath( this.alreadyLoadedMonitors.get( monitorClass ) );
+            // the currently processed jar, which contains custom performance monitor
+            String currentJarFilename = extractJarFilepath( this.readingParseState.configurationFileName );
+            String errMsg = "Duplicated monitor class name. Monitor '" + monitorClass
+                            + "' is presented in both '" + alreadyProcessedJarFilename + "' and '"
+                            + currentJarFilename + "'";
+            throw new MonitorConfigurationException( errMsg );
+        }
         this.readingParseState.rememberMonitorClass( monitorClass );
 
         // iterate over all children, all of them being filters
@@ -250,7 +268,16 @@ public class ReadingsRepository {
             }
         }
 
+        // remember that this monitor's readings were already loaded 
+        this.alreadyLoadedMonitors.put( this.readingParseState.monitorClass,
+                                        this.readingParseState.configurationFileName );
         this.readingParseState.forgetMonitorClass();
+    }
+
+    private String extractJarFilepath( String configFilepath ) {
+
+        return configFilepath.substring( configFilepath.indexOf( ":" ) + 1,
+                                         configFilepath.indexOf( "!/" ) );
     }
 
     /**
