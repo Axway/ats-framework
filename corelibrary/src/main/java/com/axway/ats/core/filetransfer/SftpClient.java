@@ -75,11 +75,10 @@ public class SftpClient extends AbstractFileTransferClient {
     /**
      * Constructor
      *
-     * @param portNumber the port number to use when connecting
      */
-    public SftpClient( int portNumber ) {
+    public SftpClient() {
 
-        super( portNumber );
+        super();
 
         // Add BoncyCastle provider as the first one, before any default JRE providers.
         // We remove it first, because in case the provider is already present as not-the-first-one,

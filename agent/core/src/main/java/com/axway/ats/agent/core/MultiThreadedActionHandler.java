@@ -140,10 +140,14 @@ public class MultiThreadedActionHandler {
     }
 
     /**
+     * 
      * @param caller
      * @param queueName
+     * @param queueId
      * @param actionRequests
      * @param threadingPattern
+     * @param loaderDataConfig
+     * @param isUseSynchronizedIterations
      * @throws NoSuchComponentException
      * @throws NoSuchActionException
      * @throws NoCompatibleMethodFoundException

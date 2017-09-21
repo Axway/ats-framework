@@ -65,9 +65,13 @@ public class ClientFactory {
 
         switch( protocol ){
             case FTPS:
-                return new FtpsClient( protocol.getDefaultPort() );
+                FtpsClient ftps = new FtpsClient();
+                ftps.setCustomPort( protocol.getDefaultPort() );
+                return ftps;
             case HTTPS:
-                return new HttpsClient( protocol.getDefaultPort() );
+                HttpsClient https = new HttpsClient();
+                https.setCustomPort( protocol.getDefaultPort() );
+                return https;
             default:
                 throw new Exception( "No implementation for the " + protocol + " is currently available" );
         }
@@ -88,15 +92,25 @@ public class ClientFactory {
 
         switch( protocol ){
             case FTP:
-                return new FtpClient( port );
+                FtpClient ftp = new FtpClient();
+                ftp.setCustomPort( port );
+                return ftp;
             case FTPS:
-                return new FtpsClient( port );
+                FtpsClient ftps = new FtpsClient();
+                ftps.setCustomPort( port );
+                return ftps;
             case SFTP:
-                return new SftpClient( port );
+                SftpClient sftp = new SftpClient();
+                sftp.setCustomPort( port );
+                return sftp;
             case HTTP:
-                return new HttpClient( port );
+                HttpClient http = new HttpClient();
+                http.setCustomPort( port );
+                return http;
             case HTTPS:
-                return new HttpsClient( port );
+                HttpsClient https = new HttpsClient();
+                https.setCustomPort( port );
+                return https;
             default:
                 throw new FileTransferException( "No implementation for the " + protocol
                                                        + " protocol is currently available" );

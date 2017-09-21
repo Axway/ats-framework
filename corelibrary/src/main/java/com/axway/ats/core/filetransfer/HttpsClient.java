@@ -54,22 +54,14 @@ public class HttpsClient extends HttpClient {
     private String[]            cipherSuites;
 
     /**
-     * Constructor. By default each connection is closed so no pooling is used.<br/>
+     * Constructor. By default each connection is closed so no pooling is used.
      * The default port number 443 will be used
+     *
      */
     public HttpsClient() {
 
-        this( DEFAULT_HTTPS_PORT );
-    }
-
-    /**
-     * Constructor. By default each connection is closed so no pooling is used.
-     *
-     * @param portNumber the port number to use when connecting
-     */
-    public HttpsClient( int portNumber ) {
-
-        super( portNumber );
+        super();
+        setCustomPort( DEFAULT_HTTPS_PORT );
     }
 
     /**

@@ -80,15 +80,6 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
     }
 
     /**
-     * Constructor
-     * @param portNumber the port number to use when connecting
-     */
-    public AbstractFileTransferClient( int portNumber ) {
-
-        this.port = portNumber;
-    }
-
-    /**
      * Set the {@link TransferMode} that this protocol should use
      *
      * @param mode

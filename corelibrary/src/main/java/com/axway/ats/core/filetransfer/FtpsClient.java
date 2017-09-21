@@ -74,11 +74,10 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     /**
      * Constructor
      *
-     * @param portNumber the port number to use when connecting
      */
-    public FtpsClient( int portNumber ) {
+    public FtpsClient() {
 
-        super( portNumber );
+        super();
     }
 
     /**

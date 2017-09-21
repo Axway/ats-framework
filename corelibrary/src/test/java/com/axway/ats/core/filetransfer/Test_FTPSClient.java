@@ -88,7 +88,8 @@ public class Test_FTPSClient extends BaseTest {
     public void makeMeHappy() {
 
         mockFtp = createMock( org.apache.commons.net.ftp.FTPSClient.class );
-        testObject = new FtpsClient( PORT_NUMBER );
+        testObject = new FtpsClient();
+        testObject.setCustomPort( PORT_NUMBER );
     }
 
     @Test(expected = AssertionError.class)
@@ -202,7 +203,8 @@ public class Test_FTPSClient extends BaseTest {
     @Test(expected = FileTransferException.class)
     public void testConnectNegative() throws AssertionError {
 
-        FtpsClient client = new FtpsClient( PORT_NUMBER );
+        FtpsClient client = new FtpsClient();
+        client.setCustomPort( PORT_NUMBER );
         client.connect( HOSTNAME, USERNAME, PASSWORD );
     }
 

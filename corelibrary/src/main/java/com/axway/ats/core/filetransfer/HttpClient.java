@@ -132,11 +132,10 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
      * By default each connection is closed in disconnect() so no pooling is used.
      * Pooling between threads does not work when using different users.
      *
-     * @param portNumber the port number to use when connecting
      */
-    public HttpClient( int portNumber ) {
+    public HttpClient() {
 
-        super( portNumber );
+        super();
         log = Logger.getLogger( this.getClass() );
     }
 
