@@ -240,6 +240,7 @@ public class HttpClient {
     // For mutual SSL, the client-side SSL private key and certificate.
     private X509Certificate[]         clientSSLCertificateChain;
     private KeyStore                  clientSSLKeyStore;
+    private String                    clientSSLKeyStorePassword;
 
     private String[]                  supportedProtocols    = new String[]{ "TLSv1.2" };
     private String[]                  supportedCipherSuites;
@@ -708,10 +709,16 @@ public class HttpClient {
 
         FileInputStream fis = null;
         try {
+            clientSSLKeyStorePassword = password;
             clientSSLKeyStore = KeyStore.getInstance( "PKCS12" );
             fis = new FileInputStream( clientSSLCertificateP12File );
-            clientSSLKeyStore.load( fis, password.toCharArray() );
+            clientSSLKeyStore.load( fis, clientSSLKeyStorePassword.toCharArray() );
 
+            // The following code seems to not make any effect on the communication.
+            // It just reads the certificates in the keystore file 
+            // and remembers those in the last certificate chain only ;)
+            // Maybe the initial intention behind this code was to verify the keystore 
+            // content can be successfully loaded?
             Enumeration<String> e = clientSSLKeyStore.aliases();
             while( e.hasMoreElements() ) {
                 String alias = e.nextElement();
@@ -1369,7 +1376,8 @@ public class HttpClient {
                                                  } );
 
             if( clientSSLKeyStore != null ) {
-                sslContextBuilder.loadKeyMaterial( clientSSLKeyStore, "".toCharArray() );
+                sslContextBuilder.loadKeyMaterial( clientSSLKeyStore,
+                                                   clientSSLKeyStorePassword.toCharArray() );
             }
 
             SSLContext sslContext = sslContextBuilder.build();
