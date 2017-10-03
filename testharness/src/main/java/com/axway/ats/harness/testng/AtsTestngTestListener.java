@@ -104,8 +104,15 @@ public class AtsTestngTestListener extends TestListenerAdapter {
                 if( lastSuiteName != null ) {
                     logger.endSuite();
                 }
-
-                String packageName = testClass.getPackage().getName();
+                /* if the TestNG tests are presented in the default package
+                 * set the package name to 'default'
+                 */
+                String packageName = null;
+                if ( testClass.getPackage() != null ) {
+                    packageName = testClass.getPackage().getName();
+                } else {
+                    packageName = "default";
+                }
                 logger.startSuite( packageName, suiteSimpleName );
             }
         }
