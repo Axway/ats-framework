@@ -91,8 +91,8 @@
 
         <net.java.dev.jna.version>3.4.0</net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client dependency -->
         <commons-compress.version>1.10</commons-compress.version>
-        
-        <ats-expectj.version>2.0.8-SNAPSHOT</ats-expectj.version>
+
+        <ats-expectj.version>2.0.8</ats-expectj.version>
 
     </properties>
 
