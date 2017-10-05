@@ -225,8 +225,8 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
             // change to correct remote directory, but save the one that the
             // client was in before that
             String currentDir = this.ftpsConnection.printWorkingDirectory();
-            if( !StringUtils.isNullOrEmpty( currentDir ) ) {
-                log.warn( "Unable to get the name of the current working directory." );
+            if( !StringUtils.isNullOrEmpty( currentDir ) && log.isDebugEnabled() ) {
+                log.debug( "Unable to get the name of the current working directory." );
             }
 
             if( !this.ftpsConnection.changeWorkingDirectory( remoteDir ) ) {
@@ -274,8 +274,8 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
             // client was in before that
             String currentDir = this.ftpsConnection.printWorkingDirectory();
 
-            if( !StringUtils.isNullOrEmpty( currentDir ) ) {
-                log.warn( "Unable to get the name of the current working directory." );
+            if( !StringUtils.isNullOrEmpty( currentDir ) && log.isDebugEnabled() ) {
+                log.debug( "Unable to get the name of the current working directory." );
             }
 
             if( !this.ftpsConnection.changeWorkingDirectory( remoteDir ) ) {
