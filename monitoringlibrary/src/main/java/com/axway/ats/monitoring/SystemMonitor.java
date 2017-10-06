@@ -687,6 +687,8 @@ public class SystemMonitor {
          * create RestHelper instance, ready to connect with the specified
          * monitoredHost
          */
+        // appenderConfiguration.setLoggingThreshold( Logger.getRootLogger().getEffectiveLevel() );
+        
         RestHelper helper = new RestHelper();
         helper.post( monitoredHost,
                      RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
@@ -696,6 +698,9 @@ public class SystemMonitor {
                                    appenderConfiguration.getDatabase(),
                                    appenderConfiguration.getUser(),
                                    appenderConfiguration.getPassword(),
+                                   ( appenderConfiguration.isBatchMode() ) ? "batch" : "",
+                                   Logger.getRootLogger().getEffectiveLevel().toInt(),
+                                   appenderConfiguration.getMaxNumberLogEvents(),
                                    System.currentTimeMillis() } );
 
         this.restHelpers.put( monitoredHost, helper );

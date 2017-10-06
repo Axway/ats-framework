@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package com.axway.ats.monitoring;
-
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -55,7 +53,10 @@ public class JsonMonitoringUtils {
                                                                                          "dbName",
                                                                                          "dbUser",
                                                                                          "dbPass",
-                                                                                         "timestamp"};
+                                                                                         "mode",
+                                                                                         "loggingThreshold",
+                                                                                         "maxNumberLogEvents",
+                                                                                         "timestamp" };
 
     public static final String[] JOIN_TESTCASE_KEYS                      = new String[]{ "uid",
                                                                                          "runId",
@@ -217,6 +218,8 @@ public class JsonMonitoringUtils {
                     }
                     sb = new StringBuilder( sb.subSequence( 0, sb.length() - 1 ) );
                     sb.append( "]" );
+                } else if ( value instanceof Boolean ) {
+                    sb.append( ( Boolean ) value );
                 } else if( value instanceof Map ) {
                 	/* 
                 	 * In order to serialize java.util.Map object to JSON,
@@ -254,7 +257,7 @@ public class JsonMonitoringUtils {
                     throw new IllegalArgumentException( "Error running '" + action
                                                         + "'. Invallid value type '"
                                                         + value.getClass().getSimpleName()
-                                                        + "'. Only String, String[], Number and Object are supported." );
+                                                        + "'. String, String[], Number, Boolean and Object are supported." );
                 }
             }
 

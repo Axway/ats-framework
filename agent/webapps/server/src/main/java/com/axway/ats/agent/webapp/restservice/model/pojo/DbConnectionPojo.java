@@ -17,24 +17,28 @@ package com.axway.ats.agent.webapp.restservice.model.pojo;
 
 public class DbConnectionPojo extends BasePojo {
 
-    private long   timestamp;
-    private String dbHost;
-    private String dbName;
-    private String dbUser;
-    private String dbPass;
+    private long    timestamp;
+    private String  dbHost;
+    private String  dbName;
+    private String  dbUser;
+    private String  dbPass;
+    // As of writing this code, only batch and empty (non-batch) are available as modes
+    private String  mode;
+    private int     loggingThreshold;
+    private String  maxNumberLogEvents;
 
     public DbConnectionPojo() {}
 
-    public DbConnectionPojo( long timestamp,
-                             String dbHost,
-                             String dbName,
-                             String dbUser,
-                             String dbPass ) {
+    public DbConnectionPojo( long timestamp, String dbHost, String dbName, String dbUser, String dbPass,
+                             String mode, int loggingThreshold, String maxNumberLogEvents ) {
         this.timestamp = timestamp;
         this.dbHost = dbHost;
         this.dbName = dbName;
         this.dbUser = dbUser;
         this.dbPass = dbPass;
+        this.mode = mode;
+        this.loggingThreshold = loggingThreshold;
+        this.maxNumberLogEvents = maxNumberLogEvents;
     }
 
     public String getDbHost() {
@@ -42,8 +46,7 @@ public class DbConnectionPojo extends BasePojo {
         return dbHost;
     }
 
-    public void setDbHost(
-                           String dbHost ) {
+    public void setDbHost( String dbHost ) {
 
         this.dbHost = dbHost;
     }
@@ -53,8 +56,7 @@ public class DbConnectionPojo extends BasePojo {
         return dbName;
     }
 
-    public void setDbName(
-                           String dbName ) {
+    public void setDbName( String dbName ) {
 
         this.dbName = dbName;
     }
@@ -64,8 +66,7 @@ public class DbConnectionPojo extends BasePojo {
         return dbUser;
     }
 
-    public void setDbUser(
-                           String dbUser ) {
+    public void setDbUser( String dbUser ) {
 
         this.dbUser = dbUser;
     }
@@ -75,8 +76,7 @@ public class DbConnectionPojo extends BasePojo {
         return dbPass;
     }
 
-    public void setDbPass(
-                           String dbPass ) {
+    public void setDbPass( String dbPass ) {
 
         this.dbPass = dbPass;
     }
@@ -86,10 +86,39 @@ public class DbConnectionPojo extends BasePojo {
         return timestamp;
     }
 
-    public void setTimestamp(
-                              long timestamp ) {
+    public void setTimestamp( long timestamp ) {
 
         this.timestamp = timestamp;
+    }
+
+    public int getLoggingThreshold() {
+
+        return loggingThreshold;
+    }
+
+    public void setLoggingThreshold( int loggingThreshold ) {
+
+        this.loggingThreshold = loggingThreshold;
+    }
+
+    public String getMode() {
+    
+        return mode;
+    }
+
+    public void setMode( String mode ) {
+    
+        this.mode = mode;
+    }
+
+    public String getMaxNumberLogEvents() {
+    
+        return maxNumberLogEvents;
+    }
+
+    public void setMaxNumberLogEvents( String maxNumberLogEvents ) {
+    
+        this.maxNumberLogEvents = maxNumberLogEvents;
     }
 
 }

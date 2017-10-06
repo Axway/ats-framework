@@ -30,6 +30,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
 import com.axway.ats.agent.core.context.ApplicationContext;
@@ -89,10 +90,9 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             newAppenderConfiguration.setDatabase( dbConnectionPojo.getDbName() );
             newAppenderConfiguration.setUser( dbConnectionPojo.getDbUser() );
             newAppenderConfiguration.setPassword( dbConnectionPojo.getDbPass() );
-            /*
-             * all messages with level DEBUG or higher (e.g. INFO|WARN|ERROR|) will be logged
-             */
-            newAppenderConfiguration.setLoggingThreshold( Level.DEBUG );
+            newAppenderConfiguration.setMode( dbConnectionPojo.getMode() );
+            newAppenderConfiguration.setLoggingThreshold( Priority.toPriority( dbConnectionPojo.getLoggingThreshold() ) );
+            newAppenderConfiguration.setMaxNumberLogEvents( dbConnectionPojo.getMaxNumberLogEvents() );
 
             PassiveDbAppender alreadyExistingAppender = PassiveDbAppender.getCurrentInstance( caller );
             // check whether PassiveDbAppender for this caller is already registered

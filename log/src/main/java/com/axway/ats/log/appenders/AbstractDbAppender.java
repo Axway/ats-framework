@@ -73,6 +73,11 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     private boolean                               isMonitoringEventsQueue;
     private long                                  lastQueueCapacityTick;
+    
+    /**
+     * Keeps track what was the minimum value of the remaining queue capacity;
+     * */
+    private int                                   minRemainingQueueCapacity = -1;
 
     /**
     
@@ -153,7 +158,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         // Events on both Test Executor and Agent sides are processed here.
 
-        // Events on Agent get their timestamps alligned with Test Executor time.
+        // Events on Agent get their timestamps aligned with Test Executor time.
         if( timeOffset != 0 ) {
             packedEvent.applyTimeOffset( timeOffset );
         }
@@ -163,8 +168,15 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
             // Do this every second.
             long newTick = System.currentTimeMillis();
             if( newTick - lastQueueCapacityTick > 1000 ) {
+                if ( minRemainingQueueCapacity == -1) {
+                    minRemainingQueueCapacity = queue.remainingCapacity();
+                } else {
+                    minRemainingQueueCapacity = Math.min( minRemainingQueueCapacity, queue.remainingCapacity() );
+                }
                 System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                    + " Remaining queue capacity is " + queue.remainingCapacity() );
+                                    + " Remaining queue capacity is " + queue.remainingCapacity() 
+                                    + " out of " + ( queue.remainingCapacity() + queue.size() ) 
+                                    + ". Bottom remaining capacity is " + minRemainingQueueCapacity );
                 lastQueueCapacityTick = newTick;
             }
         }
