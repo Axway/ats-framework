@@ -130,11 +130,22 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
     @Override
     public void skipDirectory(
                                String rootDirectoryAlias,
-                               String relativeDirectoryPath,
-                               boolean lastTokenIsRegex ) {
+                               String relativeDirectoryPath ) {
 
         try {
-            remoteFSSnapshot.skipDirectory( internalId, rootDirectoryAlias, relativeDirectoryPath, lastTokenIsRegex );
+            remoteFSSnapshot.skipDirectory( internalId, rootDirectoryAlias, relativeDirectoryPath );
+        } catch( AgentException e ) {
+            throw new FileSystemSnapshotException( e );
+        }
+    }
+    
+    @Override
+    public void skipDirectoryByRegex(
+                               String rootDirectoryAlias,
+                               String relativeDirectoryPath ) {
+
+        try {
+            remoteFSSnapshot.skipDirectoryByRegex( internalId, rootDirectoryAlias, relativeDirectoryPath );
         } catch( AgentException e ) {
             throw new FileSystemSnapshotException( e );
         }

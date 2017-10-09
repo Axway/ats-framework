@@ -29,8 +29,11 @@ public interface IFileSystemSnapshot {
 
     public void skipDirectory(
                                String rootDirectoryAlias,
-                               String relativeDirectoryPath,
-                               boolean lastTokenIsRegex );
+                               String relativeDirectoryPath );
+    
+    public void skipDirectoryByRegex(
+                              String rootDirectoryAlias,
+                              String relativeDirectoryPath );
 
     public void skipFile(
                           String rootDirectoryAlias,

@@ -175,14 +175,25 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     }
 
     @Override
-    public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath, boolean lastTokenIsRegex ) {
+    public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath ) {
 
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
-        relativeDirectoryPath = makePathRelative( parseDirectoryPath( relativeDirectoryPath, lastTokenIsRegex ) );
+        relativeDirectoryPath = makePathRelative( parseDirectoryPath( relativeDirectoryPath, false ) );
 
         DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
 
-        dirSnapshot.skipSubDirectory( relativeDirectoryPath, lastTokenIsRegex );
+        dirSnapshot.skipSubDirectory( relativeDirectoryPath, false );
+    }
+    
+    @Override
+    public void skipDirectoryByRegex( String rootDirectoryAlias, String relativeDirectoryPath ) {
+
+        rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
+        relativeDirectoryPath = makePathRelative( parseDirectoryPath( relativeDirectoryPath, true ) );
+
+        DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
+
+        dirSnapshot.skipSubDirectory( relativeDirectoryPath, true );
     }
 
     @Override

@@ -248,7 +248,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
         
         FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
         snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.skipDirectory( "F1", FILES_ROOT + "dir1/[0-9]", true );
+        snapshot1.skipDirectoryByRegex( "F1", FILES_ROOT + "dir1/[0-9]" );
         snapshot1.takeSnapshot();
         
         FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );

@@ -219,20 +219,19 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath ) {
 
-        this.fsSnapshotImpl.skipDirectory( rootDirectoryAlias, relativeDirectoryPath, false );
+        this.fsSnapshotImpl.skipDirectory( rootDirectoryAlias, relativeDirectoryPath );
     }
     
     /**
-     * Point a sub directory which will not be processed
+     * Point a sub directory which will not be processed. The last token of the relative directory path is processed as a Regex
      *
      * @param rootDirectoryAlias the alias of the root directory
      * @param relativeDirectoryPath path to this directory relative to the path of the one with provided alias
-     * @param lastTokenIsRegex whether the last token of the relative directory path is a regex (example: dir1/subdir2/[a-z]._[a-z]._)
      */
     @PublicAtsApi
-    public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath, boolean lastTokenIsRegex) {
+    public void skipDirectoryByRegex( String rootDirectoryAlias, String relativeDirectoryPath) {
 
-        this.fsSnapshotImpl.skipDirectory( rootDirectoryAlias, relativeDirectoryPath, lastTokenIsRegex );
+        this.fsSnapshotImpl.skipDirectoryByRegex( rootDirectoryAlias, relativeDirectoryPath );
     }
 
     /**
