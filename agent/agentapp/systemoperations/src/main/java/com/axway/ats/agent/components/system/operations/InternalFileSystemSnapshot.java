@@ -114,10 +114,12 @@ public class InternalFileSystemSnapshot extends CallerRelatedAction {
     public void skipDirectory(
                                @Parameter(name = "internalProcessId") String internalProcessId,
                                @Parameter(name = "rootDirectoryAlias") String rootDirectoryAlias,
-                               @Parameter(name = "relativeDirectoryPath") String relativeDirectoryPath ) {
+                               @Parameter(name = "relativeDirectoryPath") String relativeDirectoryPath,
+                               @Parameter(name = "lastTokenIsRegex") boolean lastTokenIsRegex ) {
 
         ( ( LocalFileSystemSnapshot ) dataRepo.getObject( OBJECT_KEY_PREFIX + internalProcessId ) ).skipDirectory( rootDirectoryAlias,
-                                                                                                                   relativeDirectoryPath );
+                                                                                                                   relativeDirectoryPath,
+                                                                                                                   lastTokenIsRegex );
     }
 
     @Action

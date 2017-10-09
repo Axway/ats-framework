@@ -19,10 +19,13 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -63,7 +66,7 @@ public class DirectorySnapshot implements Serializable {
     private FileMatchersContainer          matchersContainer = new FileMatchersContainer();
 
     // sub-directories to skip
-    private Set<String>                    skippedSubDirs    = new HashSet<String>();
+    private Set<Map<String, Boolean>>                    skippedSubDirs    = new HashSet<Map<String, Boolean>>();
 
     // keeps info how equal both directories are 
     private FileSystemEqualityState                equality;
@@ -122,7 +125,10 @@ public class DirectorySnapshot implements Serializable {
                                                                                LocalFileSystemSnapshot.NODE_SKIPPED_DIRECTORY );
         for( Element skippedSubDirNode : skippedSubDirNodes ) {
 
-            dirSnapshot.skippedSubDirs.add( skippedSubDirNode.getAttribute( "name" ) );
+            Map<String, Boolean> mapEntry = new HashMap<>();
+            mapEntry.put( skippedSubDirNode.getAttribute( "name" ), 
+                          Boolean.parseBoolean( skippedSubDirNode.getAttribute( "lastTokenIsRegex" ) ) );
+            dirSnapshot.skippedSubDirs.add( mapEntry );
         }
 
         // its files
@@ -153,7 +159,8 @@ public class DirectorySnapshot implements Serializable {
     }
 
     void skipSubDirectory(
-                          String dirPath ) {
+                          String dirPath,
+                          boolean lastTokenIsRegex ) {
 
         /*
          * This method is called only for top level directories.
@@ -163,10 +170,12 @@ public class DirectorySnapshot implements Serializable {
          *
          * Currently the only rule for a directory is to SKIP it
          */
-        skippedSubDirs.add( dirPath );
+        Map<String, Boolean> entry = new HashMap<>();
+        entry.put( dirPath, lastTokenIsRegex );
+        skippedSubDirs.add( entry );
     }
 
-    Set<String> getSkippedSubDirectories() {
+    Set<Map<String, Boolean>> getSkippedSubDirectories() {
 
         return skippedSubDirs;
     }
@@ -304,14 +313,34 @@ public class DirectorySnapshot implements Serializable {
         for( File fsEntity : new File( this.path ).listFiles() ) {
             if( !fsEntity.isHidden() || configuration.isSupportHidden() ) {
                 if( fsEntity.isDirectory() ) {
+                    boolean skipSubDir = false;
                     // make a directory snapshot
                     String unixDirName = IoUtils.normalizeUnixDir( fsEntity.getName() ); // skipped dirs are also in UnixDir (ends with '/') format
-                    if( skippedSubDirs.contains( unixDirName ) ) {
-                        continue; // skip this sub directory
+                    Iterator<Map<String, Boolean>> it = skippedSubDirs.iterator();
+                    while ( it.hasNext() ) {
+                        // each set entry is a map, that contains exactly one key-value pair
+                        Map<String, Boolean> setEntry = it.next();
+                        String subDirName = setEntry.keySet().iterator().next();
+                        boolean lastTokenIsRegex = setEntry.get( subDirName );
+                        if ( lastTokenIsRegex ) {
+                            Pattern p = Pattern.compile( subDirName );
+                            Matcher m = p.matcher( unixDirName );
+                            if( m.find() ) {
+                                skipSubDir = true;// skip this sub directory
+                                break;
+                            }
+                        } else {
+                            if( subDirName.equals( unixDirName ) ) {
+                                skipSubDir = true;// skip this sub directory
+                                break;
+                            }       
+                        }
                     }
-                    DirectorySnapshot subdirSnapshot = generateSubDirectorySnapshot( unixDirName, fsEntity );
-                    subdirSnapshot.takeSnapshot( configuration );
-                    subdirSnapshots.put( fsEntity.getName(), subdirSnapshot );
+                    if ( !skipSubDir ) {
+                        DirectorySnapshot subdirSnapshot = generateSubDirectorySnapshot( unixDirName, fsEntity );
+                        subdirSnapshot.takeSnapshot( configuration );
+                        subdirSnapshots.put( fsEntity.getName(), subdirSnapshot );   
+                    }
                 } else {
                     // make a file snapshot
                     FileSnapshot fileSnapshot = generateFileSnapshot( configuration, fsEntity );
@@ -337,10 +366,13 @@ public class DirectorySnapshot implements Serializable {
                                                                   subDirMatchersContainer, equality );
 
         // pass sub-dir skipped directories
-        for( String skippedSubDir : skippedSubDirs ) {
-            if( skippedSubDir.startsWith( unixDirName ) ) { // dirName ends with '/', so skippedSubDir contains sub-dir of dirName
-                String subDirToSkip = skippedSubDir.substring( unixDirName.length() );
-                subDirSnapshot.skipSubDirectory( subDirToSkip );
+        for( Map<String, Boolean> skippedSubDir : skippedSubDirs ) {
+            String skippedSubDirPath = skippedSubDir.keySet().iterator().next();
+            boolean lastTokenIsRegex = skippedSubDir.get( skippedSubDirPath );
+            if( skippedSubDirPath.startsWith( unixDirName ) ) {
+                // dirName ends with '/', so skippedSubDirPath contains sub-dir of dirName
+                String subDirToSkip = skippedSubDirPath.substring( unixDirName.length() );
+                subDirSnapshot.skipSubDirectory( subDirToSkip, lastTokenIsRegex );
             }
         }
 
@@ -444,12 +476,14 @@ public class DirectorySnapshot implements Serializable {
         }
 
         // its skipped sub-directories
-        for( String skippedSubDir : this.skippedSubDirs ) {
-
+        for( Map<String, Boolean> mapEntry : this.skippedSubDirs ) {
+            String skippedSubDirPath = mapEntry.keySet().iterator().next();
+            Boolean lastTokenIsRegex = mapEntry.get( skippedSubDirPath );
             Element skippedSubDirNode = dom.createElement( LocalFileSystemSnapshot.NODE_SKIPPED_DIRECTORY );
             dirSnapshotNode.appendChild( skippedSubDirNode );
 
-            skippedSubDirNode.setAttribute( "name", skippedSubDir );
+            skippedSubDirNode.setAttribute( "name", skippedSubDirPath );
+            skippedSubDirNode.setAttribute( "lastTokenIsRegex", String.valueOf( lastTokenIsRegex ) );
         }
 
         // its files

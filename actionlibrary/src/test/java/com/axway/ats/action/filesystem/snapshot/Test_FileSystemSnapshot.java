@@ -242,6 +242,22 @@ public class Test_FileSystemSnapshot extends BaseTest {
 
         snapshot1.compare( snapshot2 );
     }
+    
+    @Test
+    public void skipDirectoryByRegex() {
+        
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
+        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        snapshot1.skipDirectory( "F1", FILES_ROOT + "dir1/[0-9]", true );
+        snapshot1.takeSnapshot();
+        
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
+        snapshot2.addDirectory( "F1", FILES_ROOT + "dir1" );
+        snapshot2.skipDirectory( "F1", FILES_ROOT + "dir1/sub-dir1" );
+        snapshot2.takeSnapshot();
+
+        snapshot1.compare( snapshot2 );
+    }
 
     @Test
     public void skipFileByRegex2() {

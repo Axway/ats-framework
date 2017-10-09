@@ -164,7 +164,7 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     public void addDirectory( String directoryAlias, String directoryPath ) {
 
         directoryAlias = parseDirectoryAlias( directoryAlias );
-        directoryPath = parseDirectoryPath( directoryPath );
+        directoryPath = parseDirectoryPath( directoryPath, false );
 
         if( dirSnapshots.keySet().contains( directoryAlias ) ) {
             throw new FileSystemSnapshotException( "There is already a directory with alias '"
@@ -175,14 +175,14 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     }
 
     @Override
-    public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath ) {
+    public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath, boolean lastTokenIsRegex ) {
 
         rootDirectoryAlias = parseDirectoryAlias( rootDirectoryAlias );
-        relativeDirectoryPath = makePathRelative( parseDirectoryPath( relativeDirectoryPath ) );
+        relativeDirectoryPath = makePathRelative( parseDirectoryPath( relativeDirectoryPath, lastTokenIsRegex ) );
 
         DirectorySnapshot dirSnapshot = getDirectorySnapshot( rootDirectoryAlias );
 
-        dirSnapshot.skipSubDirectory( relativeDirectoryPath );
+        dirSnapshot.skipSubDirectory( relativeDirectoryPath, lastTokenIsRegex );
     }
 
     @Override
@@ -424,12 +424,24 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
         return directoryAlias.trim();
     }
 
-    private String parseDirectoryPath( String directoryPath ) {
+    private String parseDirectoryPath( String directoryPath, boolean lastTokenIsRegex ) {
 
         if( StringUtils.isNullOrEmpty( directoryPath ) ) {
             throw new FileSystemSnapshotException( "Invalid directory path '" + directoryPath + "'" );
         }
-        return IoUtils.normalizeUnixDir( directoryPath.trim() );
+        if ( lastTokenIsRegex ) {
+            int lastFileSeparatorCharIdx = directoryPath.lastIndexOf( File.separator ) + 1;
+            // lastFileSeparatorCharIdx is -1 if File.separator is not found, but by adding 1, it will be 0
+            // That's why the next check is against 0 and not -1
+            if ( lastFileSeparatorCharIdx == 0 ) {
+                return directoryPath;
+            }
+            String lastToken = directoryPath.substring( lastFileSeparatorCharIdx );
+            directoryPath = IoUtils.normalizeUnixDir( directoryPath.substring( 0, directoryPath.lastIndexOf( lastToken ) ).trim() );
+            return directoryPath + lastToken;
+        } else {
+            return IoUtils.normalizeUnixDir( directoryPath.trim() );   
+        }
     }
 
     /**
@@ -618,8 +630,10 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
                                                                     .get( fileName )
                                                                     .getRules() );
                 }
-                for( String skippedSubDir : subDirSnapshot.getSkippedSubDirectories() ) {
-                    topLevelDirSnapshot.skipSubDirectory( skippedSubDir );
+                for( Map<String, Boolean> mapEntry : subDirSnapshot.getSkippedSubDirectories() ) {
+                    String skippedSubDirPath = mapEntry.keySet().iterator().next();
+                    boolean isLastTokenRegex = mapEntry.get( skippedSubDirPath );
+                    topLevelDirSnapshot.skipSubDirectory( skippedSubDirPath, isLastTokenRegex );
                 }
             }
         }
