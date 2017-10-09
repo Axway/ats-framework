@@ -107,7 +107,7 @@ public class AtsDbLoggerUtilities {
         final String database = dbAppender.getDatabase();
         final String host = dbAppender.getHost();
         final String URL = "http://" + host + ":" + testExplorerPort + "/" + testExplorerContextName
-                           + "/UploadServlet";
+                           + "/AttachmentsServlet";
 
         URL url = null;
         try {
