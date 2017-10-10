@@ -32,7 +32,6 @@ import com.axway.ats.core.filetransfer.model.TransferListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
 import com.axway.ats.core.filetransfer.model.ftp.SynchronizationFtpTransferListener;
-import com.axway.ats.core.utils.StringUtils;
 /**
  * The {@link FtpClient} uses the Apache Commons Net component suite for Java
  * ( https://commons.apache.org/proper/commons-net/ ) to initiate and execute FTP
@@ -183,33 +182,27 @@ public class FtpClient extends AbstractFileTransferClient implements IFileTransf
 
         FileOutputStream fos = null;
         try {
+            String remoteFileAbsPath = null;
+            remoteDir = remoteDir.replace( "\\", "/" );
+            remoteFile = remoteFile.replace( "\\", "/" );
 
-            // change to correct remote directory, but save the one that the
-            // client was in before that
-            String currentDir = this.ftpConnection.printWorkingDirectory();
-            if( !StringUtils.isNullOrEmpty( currentDir ) && log.isDebugEnabled() ) {
-                log.debug( "Unable to the get name of the current working directory." );
-            }
-
-            if( !this.ftpConnection.changeWorkingDirectory( remoteDir ) ) {
-                throw new FileTransferException( "Unable to change working directory to " + remoteDir );
+            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
+            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir + "/" + remoteFile;
+            } else {
+                remoteFileAbsPath = remoteDir + remoteFile;
             }
 
             // download the file
             fos = new FileOutputStream( new File( localFile ) );
-            if( !this.ftpConnection.retrieveFile( remoteFile, fos ) ) {
+            if( !this.ftpConnection.retrieveFile( remoteFileAbsPath, fos ) ) {
                 throw new FileTransferException( "Unable to retrieve "
                                                  + ( remoteDir.endsWith( "/" )
                                                                               ? remoteDir
                                                                               : remoteDir + "/" )
                                                  + remoteFile + " from "
                                                  + this.ftpConnection.getPassiveHost() + " as a " + localFile );
-            }
-
-            // go back to the location that the client was before the upload
-            // took place
-            if( !this.ftpConnection.changeWorkingDirectory( currentDir ) ) {
-                throw new FileTransferException( "Unable to change working directory to " + currentDir );
             }
         } catch( Exception e ) {
             log.error( "Unable to download file " + localFile, e );
@@ -241,33 +234,27 @@ public class FtpClient extends AbstractFileTransferClient implements IFileTransf
         FileInputStream fis = null;
 
         try {
-            // change to correct remote directory, but save the one that the
-            // client was in before that
-            String currentDir = this.ftpConnection.printWorkingDirectory();
+            String remoteFileAbsPath = null;
+            remoteDir = remoteDir.replace( "\\", "/" );
+            remoteFile = remoteFile.replace( "\\", "/" );
 
-            if( !StringUtils.isNullOrEmpty( currentDir ) && log.isDebugEnabled() ) {
-                log.debug( "Unable to get the name of the current working directory." );
-            }
-
-            if( !this.ftpConnection.changeWorkingDirectory( remoteDir ) ) {
-                throw new FileTransferException( "Unable to change working directory to " + remoteDir );
+            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
+            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir + "/" + remoteFile;
+            } else {
+                remoteFileAbsPath = remoteDir + remoteFile;
             }
 
             // upload the file
             fis = new FileInputStream( new File( localFile ) );
-            if( !this.ftpConnection.storeFile( remoteFile, fis ) ) {
+            if( !this.ftpConnection.storeFile( remoteFileAbsPath, fis ) ) {
                 throw new FileTransferException( "Unable to store " + localFile + " to "
                                                  + this.ftpConnection.getPassiveHost() + " as a "
                                                  + ( remoteDir.endsWith( "/" )
                                                                               ? remoteDir
                                                                               : remoteDir + "/" )
                                                  + remoteFile );
-            }
-
-            // go back to the location that the client was before the upload
-            // took place
-            if( !this.ftpConnection.changeWorkingDirectory( currentDir ) ) {
-                throw new FileTransferException( "Unable to change working directory to " + currentDir );
             }
         } catch( Exception e ) {
             log.error( "Unable to upload file!", e );

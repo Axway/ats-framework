@@ -250,26 +250,28 @@ public class SftpClient extends AbstractFileTransferClient {
         FileInputStream fis = null;
 
         try {
-            // change to correct remote directory, but save the one that the
-            // client was in before that
-            String currentDir = this.channel.pwd();
-            this.channel.cd( remoteDir );
+            String remoteFileAbsPath = null;
+            remoteDir = remoteDir.replace( "\\", "/" );
+            remoteFile = remoteFile.replace( "\\", "/" );
 
+            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
+            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir + "/" + remoteFile;
+            } else {
+                remoteFileAbsPath = remoteDir + remoteFile;
+            }
             // upload the file
             File file = new File( localFile );
             fis = new FileInputStream( file );
             if( synchronizationSftpTransferListener != null ) {
-                this.channel.put( fis, remoteFile, synchronizationSftpTransferListener );
+                this.channel.put( fis, remoteFileAbsPath, synchronizationSftpTransferListener );
             } else if( isDebugMode() && debugProgressMonitor != null ) {
-                debugProgressMonitor.setTransferMetadata( localFile, remoteFile, file.length() );
-                this.channel.put( fis, remoteFile, debugProgressMonitor );
+                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
+                this.channel.put( fis, remoteFileAbsPath, debugProgressMonitor );
             } else {
-                this.channel.put( fis, remoteFile );
+                this.channel.put( fis, remoteFileAbsPath );
             }
-
-            // go back to the location that the client was before the upload
-            // took place
-            this.channel.cd( currentDir );
         } catch( SftpException e ) {
             log.error( "Unable to upload file!", e );
             throw new FileTransferException( e );
@@ -295,25 +297,26 @@ public class SftpClient extends AbstractFileTransferClient {
 
         FileOutputStream fos = null;
         try {
+            String remoteFileAbsPath = null;
+            remoteDir = remoteDir.replace( "\\", "/" );
+            remoteFile = remoteFile.replace( "\\", "/" );
 
-            // change to correct remote directory, but save the one that the
-            // client was in before that
-            String currentDir = this.channel.pwd();
-            this.channel.cd( remoteDir );
-
+            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
+            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir + "/" + remoteFile;
+            } else {
+                remoteFileAbsPath = remoteDir + remoteFile;
+            }
             // download the file
             File file = new File( localFile );
             fos = new FileOutputStream( localFile );
             if( isDebugMode() && debugProgressMonitor != null ) {
-                debugProgressMonitor.setTransferMetadata( localFile, remoteFile, file.length() );
-                this.channel.get( remoteFile, fos, debugProgressMonitor );
+                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
+                this.channel.get( remoteFileAbsPath, fos, debugProgressMonitor );
             } else {
-                this.channel.get( remoteFile, fos );
+                this.channel.get( remoteFileAbsPath, fos );
             }
-
-            // go back to the location that the client was before the upload
-            // took place
-            this.channel.cd( currentDir );
         } catch( SftpException e ) {
             log.error( "Unable to download " + localFile, e );
             throw new FileTransferException( e );
