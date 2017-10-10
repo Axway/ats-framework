@@ -287,10 +287,7 @@ public class Test_FTPClient extends BaseTest {
         mockFtp.enterLocalPassiveMode();
         expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
 
-        expect( mockFtp.printWorkingDirectory() ).andReturn( CURRENT_REMOTE_DIR );
-        expect( mockFtp.changeWorkingDirectory( REMOTE_DIRECTORY_NAME ) ).andReturn( true );
-        expect( mockFtp.retrieveFile( eq( REMOTE_FILE_NAME ), isA( FileOutputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.changeWorkingDirectory( CURRENT_REMOTE_DIR ) ).andReturn( true );
+        expect( mockFtp.retrieveFile( eq( REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME ), isA( FileOutputStream.class ) ) ).andReturn( true );
 
         expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
 
@@ -302,7 +299,7 @@ public class Test_FTPClient extends BaseTest {
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test(expected = AssertionError.class)
     public void testDownloadException() throws Exception {
 
         expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
@@ -312,8 +309,6 @@ public class Test_FTPClient extends BaseTest {
         expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
         mockFtp.enterLocalPassiveMode();
         expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
-
-        expect( mockFtp.printWorkingDirectory() ).andThrow( new IOException( "" ) );
 
         replayAll();
 
@@ -334,10 +329,7 @@ public class Test_FTPClient extends BaseTest {
         mockFtp.enterLocalPassiveMode();
         expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
 
-        expect( mockFtp.printWorkingDirectory() ).andReturn( CURRENT_REMOTE_DIR );
-        expect( mockFtp.changeWorkingDirectory( REMOTE_DIRECTORY_NAME ) ).andReturn( true );
-        expect( mockFtp.storeFile( eq( REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.changeWorkingDirectory( CURRENT_REMOTE_DIR ) ).andReturn( true );
+        expect( mockFtp.storeFile( eq( REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
 
         expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
 
@@ -349,7 +341,7 @@ public class Test_FTPClient extends BaseTest {
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test(expected = AssertionError.class)
     public void testUploadException() throws Exception {
 
         expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
@@ -359,8 +351,6 @@ public class Test_FTPClient extends BaseTest {
         expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
         mockFtp.enterLocalPassiveMode();
         expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
-
-        expect( mockFtp.printWorkingDirectory() ).andThrow( new IOException( "" ) );
 
         replayAll();
 
@@ -385,10 +375,7 @@ public class Test_FTPClient extends BaseTest {
         mockFtp.addProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
 
         // upload
-        expect( mockFtp.printWorkingDirectory() ).andReturn( CURRENT_REMOTE_DIR );
-        expect( mockFtp.changeWorkingDirectory( REMOTE_DIRECTORY_NAME ) ).andReturn( true );
-        expect( mockFtp.storeFile( eq( REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.changeWorkingDirectory( CURRENT_REMOTE_DIR ) ).andReturn( true );
+        expect( mockFtp.storeFile( eq( REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
         expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
 
         mockFtp.removeProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
@@ -408,38 +395,6 @@ public class Test_FTPClient extends BaseTest {
 
         Assert.assertFalse( testObject.canResume );
         Assert.assertFalse( testObject.isTransferStartedAndPaused );
-
-        verifyAll();
-    }
-
-    @Test(expected = FileTransferException.class)
-    public void testStartUploadAndPauseException() throws Exception {
-
-        // connect
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
-
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
-        mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
-
-        mockFtp.addProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
-
-        expect( mockFtp.printWorkingDirectory() ).andThrow( new IOException( "" ) );
-
-        replayAll();
-
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
-        Assert.assertFalse( testObject.canResume );
-
-        testObject.startUploadAndPause( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
-
-        Assert.assertTrue( testObject.isTransferStartedAndPaused );
-
-        testObject.resumePausedTransfer();
 
         verifyAll();
     }
@@ -642,5 +597,4 @@ public class Test_FTPClient extends BaseTest {
 
         verifyAll();
     }
-
 }
