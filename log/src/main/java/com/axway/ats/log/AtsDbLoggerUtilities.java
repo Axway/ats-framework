@@ -79,6 +79,7 @@ public class AtsDbLoggerUtilities {
                                             String testExplorerContextName,
                                             int testExplorerPort ) {
 
+        fileLocation = fileLocation.replace( "\\", "/" );
         ERR_MSG_PREFIX = ERR_MSG_PREFIX.replace( "{FILE}", fileLocation );
 
         if( !checkFileExist( fileLocation ) ) {
