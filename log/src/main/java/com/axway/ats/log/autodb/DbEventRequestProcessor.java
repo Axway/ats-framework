@@ -64,6 +64,7 @@ import com.axway.ats.log.autodb.events.StartSuiteEvent;
 import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.events.UpdateRunEvent;
 import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
+import com.axway.ats.log.autodb.events.UpdateTestcaseEvent;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException;
 import com.axway.ats.log.autodb.exceptions.LoadQueueAlreadyStartedException;
@@ -150,6 +151,33 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * The actual UpdateRunEvent that will be processed and executed
      * */
     private UpdateRunEvent                actualUpdateRunEvent       = null;
+    
+    
+    /*
+     * While these flag is true, all messages are logged as run messages
+     * */
+    private boolean                       afterSuiteMode             = false;
+    
+    /*
+     * While these flag is true, all messages are logged as suite messages
+     * */
+    private boolean                       afterClassMode            = false;
+    
+    /*
+     * While these flag is true, all messages, statistics and checkpoints
+     * are logged as they have been logged from the testcase, that was ended most recently
+     * */
+    private boolean                       afterMethodMode            = false;
+    
+    /*
+     * Keeps the ID of the last ended testcase, regardless of the testcase result (e.g. PASSED,FAILED,SKIPPED) 
+     * */
+    private int                           lastEndedTestcaseId        = -1;
+    
+    /*
+     * Keeps the ID of the last ended suite
+     * */
+    private int                           lastEndedSuiteId        = -1;
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     boolean isBatchMode ) throws DatabaseAccessException {
@@ -317,6 +345,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     constructUpdateRunEvent();
                     updateRun( actualUpdateRunEvent );
                     break;
+                case START_AFTER_SUITE:
+                    afterSuiteMode = true;
+                    break;
+                case END_AFTER_SUITE:
+                    afterSuiteMode = false;
+                    break;
                 case ADD_RUN_METAINFO:
                     addRunMetainfo( ( AddRunMetainfoEvent ) event );
                     break;
@@ -333,23 +367,38 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 case UPDATE_SUITE:
                     updateSuite( ( UpdateSuiteEvent ) event );
                     break;
+                case START_AFTER_CLASS:
+                    afterClassMode = true;
+                    break;
+                case END_AFTER_CLASS:
+                    afterClassMode = false;
+                    break;
                 case CLEAR_SCENARIO_METAINFO:
                     clearScenarioMetainfo();
                     break;
                 case ADD_SCENARIO_METAINFO:
                     addScenarioMetainfo( ( AddScenarioMetainfoEvent ) event );
                     break;
-                case START_TEST_CASE:
-                    startTestCase( ( StartTestCaseEvent ) event, eventRequest.getTimestamp() );
+                case UPDATE_TEST_CASE:
+                    updateTestcase( ( UpdateTestcaseEvent ) event, eventRequest.getTimestamp() );
                     break;
                 case END_TEST_CASE:
                     endTestCase( ( EndTestCaseEvent ) event, eventRequest.getTimestamp() );
+                    break;
+                case START_TEST_CASE:
+                    startTestCase( ( StartTestCaseEvent ) event, eventRequest.getTimestamp() );
                     break;
                 case JOIN_TEST_CASE:
                     joinTestCase( ( JoinTestCaseEvent ) event );
                     break;
                 case LEAVE_TEST_CASE:
                     leaveTestCase();
+                    break;
+                case START_AFTER_METHOD:
+                    afterMethodMode = true;
+                    break;
+                case END_AFTER_METHOD:
+                    afterMethodMode = false;
                     break;
                 case REMEMBER_LOADQUEUE_STATE:
                     rememberLoadQueueState( ( RememberLoadQueueStateEvent ) event );
@@ -504,6 +553,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         try {
             dbAccess.endSuite( timeStamp, eventProcessorState.getSuiteId(), true );
+            
+            lastEndedSuiteId = eventProcessorState.getSuiteId();
         } finally {
             // even when this DB entity could not finish due to error,
             // we want to clear the internal state,
@@ -588,6 +639,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             if( !this.deletedTestcases.contains( eventProcessorState.getTestCaseId() ) ) {
                 dbAccess.endTestCase( endTestCaseEvent.getTestCaseResult().toInt(), timeStamp,
                                       eventProcessorState.getTestCaseId(), true );
+                lastEndedTestcaseId = eventProcessorState.getTestCaseId();
             }
         } finally {
             // even when this DB entity could not finish due to error,
@@ -598,6 +650,21 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             eventProcessorState.getTestCaseState().clearTestcaseId();
             eventProcessorState.getLoadQueuesState().clearAll();
         }
+    }
+    
+    private void updateTestcase( UpdateTestcaseEvent updateTestcaseEvent, long timestamp ) throws LoggingException {
+        
+        String suiteFullName = updateTestcaseEvent.getSuiteFullName();
+        String scenarioName = updateTestcaseEvent.getScenarioName();
+        String scenarioDescription = updateTestcaseEvent.getScenarioDescription();
+        String testcaseName = updateTestcaseEvent.getTestcaseName();
+        String userNote = updateTestcaseEvent.getUserNote();
+        int testcaseResult = updateTestcaseEvent.getTestcaseResult();
+        int testcaseId = ( getTestCaseId() == -1 ) ? lastEndedTestcaseId : getTestCaseId();
+        
+        dbAccess.updateTestcase( suiteFullName, scenarioName, scenarioDescription, 
+                                 testcaseName, userNote, testcaseResult, testcaseId, timestamp, true );
+        
     }
 
     /**
@@ -847,7 +914,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         // If test case is not open, just return - this is necessary because components which are not aware of this
         // appender may try to log before the client has a chance of opening a test case.
-        if( eventProcessorState.getLifeCycleState() == LifeCycleState.RUN_STARTED || isRunMessage ) {
+        if( ( eventProcessorState.getLifeCycleState() == LifeCycleState.RUN_STARTED && !afterClassMode ) || 
+                isRunMessage || afterSuiteMode ) {
             if( !ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported ) {
                 return;
             }
@@ -863,9 +931,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             } catch( LoggingException e ) {
                 handleDeletedRun( e, runId );
             }
-        } else if( eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED ) {
+        } else if( eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED || afterMethodMode ) {
 
-            final int testcaseId = eventProcessorState.getTestCaseId();
+            final int testcaseId = (afterMethodMode) ? lastEndedTestcaseId :eventProcessorState.getTestCaseId();
             if( !deletedTestcases.contains( testcaseId ) ) {
                 Level level = event.getLevel();
                 try {
@@ -876,11 +944,11 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     handleDeletedTestcase( e, testcaseId );
                 }
             }
-        } else if( eventProcessorState.getLifeCycleState() == LifeCycleState.SUITE_STARTED ) {
+        } else if( eventProcessorState.getLifeCycleState() == LifeCycleState.SUITE_STARTED || afterClassMode ) {
             if( !ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported ) {
                 return;
             }
-            final int suiteId = eventProcessorState.getSuiteId();
+            final int suiteId = (afterClassMode) ? lastEndedSuiteId : eventProcessorState.getSuiteId();
             Level level = event.getLevel();
             try {
                 dbAccess.insertSuiteMessage( getLoggingMesage( event ), convertMsgLevel( level ), escapeHtml,

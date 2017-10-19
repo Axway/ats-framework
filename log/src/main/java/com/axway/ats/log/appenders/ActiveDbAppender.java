@@ -43,7 +43,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
     private static long    EVENT_WAIT_TIMEOUT       = 60 * 1000;
     private static long    EVENT_WAIT_LONG_TIMEOUT  = 15 * 60 * 1000;
     private static boolean isActiveDbAppenderActive = false;
-    /** weather or not @beforeMethod, @afterMethod, @beforeClass, etc messages will be logged in DB **/
+    
+    /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
     public static boolean isBeforeAndAfterMessagesLoggingSupported = false;
 
     /**

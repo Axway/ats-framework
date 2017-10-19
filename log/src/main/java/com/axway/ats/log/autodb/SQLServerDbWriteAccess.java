@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -625,6 +624,54 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 DbUtils.closeStatement( callableStatement );
             }
         }
+    }
+    
+    public void updateTestcase(
+                                String suiteFullName,
+                                String scenarioName,
+                                String scenarioDescription,
+                                String testcaseName,
+                                String userNote,
+                                int testcaseResult,
+                                int testcaseId,
+                                long timestamp,
+                                boolean closeConnection ) throws DatabaseAccessException {
+        
+        final String errMsg = "Unable to update testcase with name '" + testcaseName + "' and id " + testcaseId;
+
+        timestamp = inUTC(timestamp);
+        
+        final int indexRowsUpdate = 9;
+
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
+
+            callableStatement = connection.prepareCall( "{ call sp_update_testcase(?, ?, ?, ?, ?, ?, ?, ?, ?) }" );
+            callableStatement.setInt( 1, testcaseId );
+            callableStatement.setString( 2, suiteFullName );
+            callableStatement.setString( 3, scenarioName );
+            callableStatement.setString( 4, scenarioDescription );
+            callableStatement.setString( 5, testcaseName );
+            callableStatement.setString( 6, userNote );
+            callableStatement.setInt( 7, testcaseResult );
+            callableStatement.setTimestamp( 8, new Timestamp( timestamp ) );
+            callableStatement.registerOutParameter( indexRowsUpdate, Types.INTEGER );
+
+            callableStatement.execute();
+            if( callableStatement.getInt( indexRowsUpdate ) != 1 ) {
+                throw new DatabaseAccessException( errMsg );
+            }
+        } catch( Exception e ) {
+            throw new DatabaseAccessException( errMsg, e );
+        } finally {
+            if( closeConnection ) {
+                DbUtils.close( connection, callableStatement );
+            } else {
+                DbUtils.closeStatement( callableStatement );
+            }
+        }
+        
     }
 
     public void deleteTestcase(

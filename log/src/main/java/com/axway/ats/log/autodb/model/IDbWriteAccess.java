@@ -106,6 +106,11 @@ public interface IDbWriteAccess {
 
     public void endTestCase( int testcaseResult, long timestamp, int testcaseId,
                              boolean closeConnection ) throws DatabaseAccessException;
+    
+    public void updateTestcase(
+                               String suiteFullName, String scenarioName, String scenarioDescription,
+                               String testcaseName, String userNote ,int testcaseResult,
+                               int testcaseId, long timestamp, boolean closeConnection ) throws DatabaseAccessException;
 
     public int startLoadQueue( String name, int sequence, String hostsList, String threadingPattern,
                                int numberThreads, String machine, long timestamp, int testcaseId,

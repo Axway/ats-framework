@@ -29,7 +29,7 @@ public class StartTestCaseEvent extends AbstractLoggingEvent {
     private String scenarioName;
     private String scenarioDescription;
 
-    private String testcaseName;
+    protected String testcaseName;
 
     public StartTestCaseEvent( String loggerFQCN,
                                Logger logger,
@@ -38,11 +38,32 @@ public class StartTestCaseEvent extends AbstractLoggingEvent {
                                String scenarioName,
                                String inputArguments,
                                String scenarioDescription ) {
+        
+        this(loggerFQCN,
+             logger,
+             "Start test case '" + scenarioName + inputArguments + "' for suite " + suiteSimpleName,
+             suiteFullName,
+             suiteSimpleName,
+             scenarioName,
+             inputArguments,
+             scenarioDescription,
+             LoggingEventType.START_TEST_CASE);
+    }
+    
+    public StartTestCaseEvent( String loggerFQCN,
+                               Logger logger,
+                               String message,
+                               String suiteFullName,
+                               String suiteSimpleName,
+                               String scenarioName,
+                               String inputArguments,
+                               String scenarioDescription,
+                               LoggingEventType loggingEventType) {
 
         super( loggerFQCN,
                logger,
-               "Start test case '" + scenarioName + inputArguments + "' for suite " + suiteSimpleName,
-               LoggingEventType.START_TEST_CASE );
+               message,
+               loggingEventType );
 
         this.suiteFullName = suiteFullName;
         this.suiteSimpleName = suiteSimpleName;

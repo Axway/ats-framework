@@ -55,11 +55,6 @@ public class AtsTestngSuiteListener implements ISuiteListener {
     private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
 
     public void onStart( ISuite suite ) {
-        /*
-         * Check whether we are using a patched TestNG distribution, 
-         * in such case ATS supports inserting messages before a testcase is started and after it is ended.
-        */
-        ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = Version.VERSION.contains("ATS");
         // get the run name specified by the user
         String runName = CommonConfigurator.getInstance().getRunName();
         if( runName.equals( CommonConfigurator.DEFAULT_RUN_NAME ) ) {

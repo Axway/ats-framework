@@ -31,6 +31,9 @@ import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
 import com.axway.ats.log.autodb.events.CleanupLoadQueueStateEvent;
 import com.axway.ats.log.autodb.events.ClearScenarioMetainfoEvent;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
+import com.axway.ats.log.autodb.events.EndAfterClassEvent;
+import com.axway.ats.log.autodb.events.EndAfterMethodEvent;
+import com.axway.ats.log.autodb.events.EndAfterSuiteEvent;
 import com.axway.ats.log.autodb.events.EndCheckpointEvent;
 import com.axway.ats.log.autodb.events.EndLoadQueueEvent;
 import com.axway.ats.log.autodb.events.EndRunEvent;
@@ -45,12 +48,16 @@ import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
 import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 import com.axway.ats.log.autodb.events.RegisterThreadWithLoadQueueEvent;
 import com.axway.ats.log.autodb.events.RememberLoadQueueStateEvent;
+import com.axway.ats.log.autodb.events.StartAfterClassEvent;
+import com.axway.ats.log.autodb.events.StartAfterMethodEvent;
+import com.axway.ats.log.autodb.events.StartAfterSuiteEvent;
 import com.axway.ats.log.autodb.events.StartCheckpointEvent;
 import com.axway.ats.log.autodb.events.StartRunEvent;
 import com.axway.ats.log.autodb.events.StartSuiteEvent;
 import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.events.UpdateRunEvent;
 import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
+import com.axway.ats.log.autodb.events.UpdateTestcaseEvent;
 import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
 import com.axway.ats.log.model.SystemLogLevel;
@@ -500,6 +507,40 @@ public class AtsDbLogger {
                                            inputArguments,
                                            testDescription ) );
     }
+    
+    /**
+     * Update a testcase. If value is null for any of the parameters, no update will be performed for that parameter.
+     * 
+     * @param suiteFullName full name ( package.java_class_name ) of the suite.
+     * <div> Note that the fullName must contains at least two tokens, divided by dot character ( e.g. com.foobar ) </div>
+     * @param testcaseId the testcase ID
+     * @param suiteSimpleName the name of the Java class, containing the tests
+     * @param scenarioName the scenario name
+     * @param inputArguments the test method parameters
+     * @param scenarioDescription the scenario description
+     * @param testcaseResult the result of the testcase (PASSED,FAILED,SKIPPED)
+     * 
+     * */
+    public void updateTestcase( int testcaseId,
+                                String suiteFullName,
+                                String suiteSimpleName,
+                                String scenarioName,
+                                String inputArguments,
+                                String scenarioDescription,
+                                int testcaseResult ) {
+        
+        sendEvent( new UpdateTestcaseEvent( ATS_DB_LOGGER_CLASS_NAME, 
+                                            logger,
+                                            testcaseId,
+                                            suiteFullName, 
+                                            suiteSimpleName, 
+                                            scenarioName, 
+                                            inputArguments, 
+                                            scenarioDescription,
+                                            testcaseResult,
+                                            System.currentTimeMillis() ) );
+        
+    }
 
     /**
      * End the current test case
@@ -779,6 +820,54 @@ public class AtsDbLogger {
     public void leaveTestCase() {
 
         sendEvent( new LeaveTestCaseEvent( ATS_DB_LOGGER_CLASS_NAME, logger ) );
+    }
+    
+    /**
+     * After this call, all messages are treated as TESTCASE messages
+     * */
+    public void startAfterMethod() {
+        
+        sendEvent(new StartAfterMethodEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+    }
+    
+    /**
+     * Clears effect of the StartAfterMethod invocation
+     * */
+    public void endAfterMethod() {
+        
+        sendEvent(new EndAfterMethodEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+    }
+    
+    /**
+     * After this call, all messages are treated as SUITE messages
+     * */
+    public void startAfterClass() {
+        
+        sendEvent(new StartAfterClassEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+    }
+    
+    /**
+     * Clears effect of the StartAfterClass invocation
+     * */
+    public void endAfterClass() {
+        
+        sendEvent(new EndAfterClassEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+    }
+    
+    /**
+     * After this call, all messages are treated as RUN messages
+     * */
+    public void startAfterSuite() {
+     
+        sendEvent(new StartAfterSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+    }
+    
+    /**
+     * Clears effect of the StartAfterSuite invocation
+     * */
+    public void endAfterSuite() {
+        
+        sendEvent(new EndAfterSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
     }
 
     /**
