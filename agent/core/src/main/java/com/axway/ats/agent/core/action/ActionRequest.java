@@ -23,7 +23,8 @@ public class ActionRequest {
     private String   componentName;
     private String   actionName;
     private Object[] args;
-    private boolean registerAction;
+    private boolean  registerAction;
+    private String   transferUnit;
 
     /**
      * @param componentName name of the component
@@ -85,5 +86,22 @@ public class ActionRequest {
     public boolean getRegisterActionExecution() {
 
         return this.registerAction;
+    }
+
+    /**
+     * @return transfer unit data transfer actions
+     */
+    public String getTransferUnit() {
+    
+        return transferUnit;
+    }
+
+    /**
+     * Set the transfer unit data transfer actions
+     * @param transferUnit
+     */
+    public void setTransferUnit( String transferUnit ) {
+    
+        this.transferUnit = transferUnit;
     }
 }

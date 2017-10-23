@@ -22,6 +22,8 @@ import java.lang.reflect.Type;
 
 import org.apache.tools.ant.BuildException;
 
+import com.axway.ats.core.utils.StringUtils;
+
 class MethodTemplateProcessor extends TemplateProcessor {
 
     private static final String DEFAULT_METHOD_TEMPLATE      = "templates/method.template";
@@ -31,12 +33,13 @@ class MethodTemplateProcessor extends TemplateProcessor {
                                     String[] paramNames,
                                     boolean registerAction,
                                     String[] paramTypes,
+                                    String transferUnit,
                                     boolean isDeprecated ) throws IOException {
 
         super( ClassTemplateProcessor.class.getResourceAsStream( DEFAULT_METHOD_TEMPLATE ),
                DEFAULT_METHOD_TEMPLATE );
 
-        configureTemplate( actionImplementation, actionName, paramNames, registerAction, paramTypes, isDeprecated );
+        configureTemplate( actionImplementation, actionName, paramNames, registerAction, paramTypes, transferUnit, isDeprecated );
     }
     
     private void configureTemplate(
@@ -45,6 +48,7 @@ class MethodTemplateProcessor extends TemplateProcessor {
                                     String[] paramNames,
                                     boolean registerAction,
                                     String[] paramTypes,
+                                    String transferUnit,
                                     boolean isDeprecated ) {
 
         try {
@@ -106,6 +110,14 @@ class MethodTemplateProcessor extends TemplateProcessor {
             placeHolderValues.put( "$PARAMETERS$", paramDefinitionStr );
             placeHolderValues.put( "$ARGUMENTS$", argumentArrayStr );
 
+            if( StringUtils.isNullOrEmpty( transferUnit ) ) {
+                placeHolderValues.put( "$META_KEYS$", "" );
+                placeHolderValues.put( "$META_VALUES$", "" );
+            }else{
+                placeHolderValues.put( "$META_KEYS$", ", " + arrayToString( new String[]{"transferUnit"} ) );
+                placeHolderValues.put( "$META_VALUES$", ", " + arrayToString( new String[]{transferUnit} ) );
+            }
+            
             if( isDeprecated ) {
                 placeHolderValues.put( "$DEPRECATED$", "    @Deprecated" );
             } else {
@@ -176,5 +188,20 @@ class MethodTemplateProcessor extends TemplateProcessor {
         }
 
         return actionCamel.toString();
+    }
+    
+    private String arrayToString( String[] tokens ) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( "new String[]{" );
+        for( String token : tokens ) {
+            sb.append( " \"" );
+            sb.append( token );
+            sb.append( "\"," );
+        }
+        sb.deleteCharAt( sb.length() - 1 );
+        sb.append( " }" );
+
+        return sb.toString();
     }
 }

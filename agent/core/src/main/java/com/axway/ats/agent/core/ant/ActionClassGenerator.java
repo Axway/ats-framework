@@ -251,7 +251,8 @@ class ActionClassGenerator {
                     }
 
                     // check if this is a transfer action and it has the necessary return type
-                    if( actionAnnotation != null && actionAnnotation.transferUnit().length() > 0
+                    String transferUnit = actionAnnotation.transferUnit();
+                    if( actionAnnotation != null && transferUnit.length() > 0
                         && actionClassMethod.getReturnType() != Long.class ) {
                         throw new BuildException( "Action '" + actionName
                                                   + "' has a declared transfer unit, but the return type is not Long" );
@@ -269,7 +270,7 @@ class ActionClassGenerator {
                     if( actionAnnotation != null ){
                         registerActionExecution = actionAnnotation.registerActionExecution(); 
                     }
-                    String actionDefinition = generateActionDefinition( actionName, actionClassMethod, registerActionExecution );
+                    String actionDefinition = generateActionDefinition( actionName, actionClassMethod, transferUnit, registerActionExecution );
                     methodsDefinition.append( actionDefinition );
 
                     //get any enum constants
@@ -462,6 +463,7 @@ class ActionClassGenerator {
 
     private String generateActionDefinition( String actionName, 
                                              Method actionImplementation,
+                                             String transferUnit,
                                              boolean registerAction ) {
 
         log.info( "Generating method implementation for action '" + actionName + "'" );
@@ -512,7 +514,7 @@ class ActionClassGenerator {
 
         try {
             return new MethodTemplateProcessor( actionImplementation, actionName, paramNames, registerAction,
-                                                paramTypes, isDeprecated ).processTemplate();
+                                                paramTypes, transferUnit, isDeprecated ).processTemplate();
         } catch( IOException ioe ) {
             throw new BuildException( ioe );
         }

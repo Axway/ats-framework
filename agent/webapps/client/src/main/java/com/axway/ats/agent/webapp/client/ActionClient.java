@@ -47,50 +47,84 @@ public abstract class ActionClient extends AbstractAgentClient {
     }
 
     /**
-     * Execute the given action. The action will not be populated in the database
+     * Execute the given action. The action will not be registered in the database
      *
-     * @param actionName
-     *            name of the action
-     * @param arguments
-     *            arguments for the action
+     * @param actionName name of the action
+     * @param arguments arguments for the action
      * @return result of the action execution
-     * @throws AgentException
-     *             if exception occurs during action execution
+     * @throws AgentException if exception occurs during action execution
      */
     protected Object executeActionWithoutRegister( String actionName,
                                                    Object[] arguments ) throws AgentException {
 
-        return getActionResult( actionName, arguments, false );
+        return getActionResult( actionName, arguments, new String[]{}, new String[]{}, false );
+    }
+    
+    /**
+     * Execute the given action. The action will not be registered in the database
+     *
+     * @param actionName name of the action
+     * @param arguments arguments for the action
+     * @param metaKeys some meta info key
+     * @param metaValues some meta info value
+     * @return result of the action execution
+     * @throws AgentException if exception occurs during action execution
+     */
+    protected Object executeActionWithoutRegister( String actionName,
+                                                   Object[] arguments,
+                                                   String[] metaKeys,
+                                                   String[] metaValues ) throws AgentException {
+
+        return getActionResult( actionName, arguments, metaKeys, metaValues, false );
     }
 
     /**
-     * Execute the given action. The action will be populated in the database
+     * Execute the given action. The action will be registered in the database
      *
-     * @param actionName
-     *            name of the action
-     * @param arguments
-     *            arguments for the action
-     * @param registerAction
-     *            register action in the database
+     * @param actionName name of the action
+     * @param arguments arguments for the action
      * @return result of the action execution
-     * @throws AgentException
-     *             if exception occurs during action execution
+     * @throws AgentException if exception occurs during action execution
      */
     protected Object executeAction(
                                     String actionName,
                                     Object[] arguments ) throws AgentException {
 
-        return getActionResult( actionName, arguments, true );
+        return getActionResult( actionName, arguments, new String[]{}, new String[]{}, true );
     }
+    
+    /**
+     * Execute the given action. The action will be registered in the database
+     *
+     * @param actionName name of the action
+     * @param arguments arguments for the action
+     * @param metaKeys some meta info key
+     * @param metaValues some meta info value
+     * @return result of the action execution
+     * @throws AgentException if exception occurs during action execution
+     */
+    protected Object executeAction(
+                                   String actionName,
+                                   Object[] arguments,
+                                   String[] metaKeys,
+                                   String[] metaValues ) throws AgentException {
+
+        return getActionResult( actionName, arguments, metaKeys, metaValues, true );
+   }
     
     private Object getActionResult( 
                                     String actionName, 
                                     Object[] arguments,
+                                    String[] metaKeys,
+                                    String[] metaValues,
                                     boolean registerAction ) throws AgentException {
 
         // construct an action request
         ActionRequest actionRequest = new ActionRequest( component, actionName, arguments );
         actionRequest.setRegisterActionExecution( registerAction );
+        if( metaKeys.length > 0 ) {
+            applyMetaData( actionRequest, metaKeys, metaValues );
+        }
 
         // the returned result
         Object result = null;
@@ -112,5 +146,29 @@ public abstract class ActionClient extends AbstractAgentClient {
         }
 
         return result;
+    }
+
+    /**
+     * Applies data which affects the way an action is executed.
+     * It is assumed that meta data arrays are never null and are always same size
+     * 
+     * @param actionRequest the action request to apply on
+     * @param metaKeys the meta key names
+     * @param metaValues the meta values
+     */
+    private void applyMetaData( ActionRequest actionRequest, String[] metaKeys, String[] metaValues ) {
+
+        for( int i = 0; i < metaKeys.length; i++ ) {
+            switch( metaKeys[i] ){
+                case "transferUnit":
+                    actionRequest.setTransferUnit( metaValues[i] + "/sec");
+                    break;
+                default:
+                    log.warn( "Action '" + actionRequest.getActionName() + "' from component '"
+                              + actionRequest.getComponentName() + "' is called with unknown meta key '"
+                              + metaKeys[i] + "' and value '" + metaValues[i]
+                              + "'. This meta key will not be applied on this action." );
+            }
+        }
     }
 }
