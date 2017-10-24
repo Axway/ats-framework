@@ -823,8 +823,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     }
 
     private void sendTestEndEventToAgents() {
-
-        if( ActiveDbAppender.isAppenderActive() ) {
+        
+        if( ActiveDbAppender.getCurrentInstance() != null ) {
             // send TestEnd event to all ATS agents
             TestcaseStateEventsDispacher.getInstance().onTestEnd();
         }

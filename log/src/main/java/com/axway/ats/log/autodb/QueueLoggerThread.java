@@ -70,7 +70,7 @@ public class QueueLoggerThread extends Thread {
     public void run() {
 
         System.out.println( TimeUtils.getFormattedDateTillMilliseconds() + " Started logger thread named '"
-                            + getName() + "' with queue of maximum " + queue.remainingCapacity()
+                            + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
                             + " events. Batch mode is " + ( isBatchMode
                                                                         ? "enabled"
                                                                         : "disabled" ) );

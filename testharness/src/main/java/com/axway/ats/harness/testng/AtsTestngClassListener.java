@@ -38,7 +38,7 @@ public class AtsTestngClassListener {
      */
     public void onStart( ITestClass testClass ) {
 
-        if( ActiveDbAppender.isAppenderActive() ) {
+        if( ActiveDbAppender.getCurrentInstance() != null ) {
 
             String suiteName = testClass.getName();
             String suiteSimpleName = suiteName.substring( suiteName.lastIndexOf( '.' ) + 1 );
@@ -54,7 +54,7 @@ public class AtsTestngClassListener {
      */
     public void onFinish() {
 
-        if( ActiveDbAppender.isAppenderActive() ) {
+        if( ActiveDbAppender.getCurrentInstance() != null ) {
             if( lastSuiteName != null ) {
                 logger.endSuite();
                 lastSuiteName = null;

@@ -33,6 +33,7 @@ import com.axway.ats.log.appenders.ReportAppender;
  * it creates an instance from this class and in the constructor we can add additional 
  * listeners if they are not already added.
  */
+@Deprecated
 public class InitTestHarness {
 
     private Logger logger = Logger.getLogger( InitTestHarness.class );
@@ -43,7 +44,7 @@ public class InitTestHarness {
         TestNG testNgInstance = TestNG.getDefault();
         if( testNgInstance != null ) {
             //Attaching our listeners only when our appenders are loaded
-            if( ActiveDbAppender.isAppenderActive() || ReportAppender.isAppenderActive() ) {
+            if( ActiveDbAppender.getCurrentInstance() != null || ReportAppender.isAppenderActive() ) {
 
                 addListener( testNgInstance,
                              testNgInstance.getTestListeners(),

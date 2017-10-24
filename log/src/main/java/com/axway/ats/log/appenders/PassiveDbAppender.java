@@ -68,6 +68,15 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
         return caller;
     }
+    
+
+    @Override
+    public void activateOptions() {
+        super.activateOptions();
+        
+        // create the queue logging thread and the DbEventRequestProcessor
+        initializeDbLogging();
+    }
 
     /* (non-Javadoc)
      * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)

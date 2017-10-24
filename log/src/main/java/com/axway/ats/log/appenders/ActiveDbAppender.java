@@ -42,7 +42,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
      */
     private static long    EVENT_WAIT_TIMEOUT       = 60 * 1000;
     private static long    EVENT_WAIT_LONG_TIMEOUT  = 15 * 60 * 1000;
-    private static boolean isActiveDbAppenderActive = false;
+    private static ActiveDbAppender instance        = null;
     
     /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
     public static boolean isBeforeAndAfterMessagesLoggingSupported = false;
@@ -53,8 +53,6 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public ActiveDbAppender() {
 
         super();
-
-        isActiveDbAppenderActive = true;
     }
 
     @Override
@@ -115,6 +113,10 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
                                         + "*** ATS *** Waiting for " + event.getClass().getSimpleName()
                                         + " event completion" );
+                    
+                    // create the queue logging thread and the DbEventRequestProcessor
+                    initializeDbLogging();
+                    
                     waitForEventToBeExecuted( packedEvent, dbLoggingEvent, false );
                     //this event has already been through the queue
                     return;
@@ -251,24 +253,18 @@ public class ActiveDbAppender extends AbstractDbAppender {
     @SuppressWarnings("unchecked")
     public static ActiveDbAppender getCurrentInstance() {
 
-        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        while( appenders.hasMoreElements() ) {
-            Appender appender = appenders.nextElement();
+        if (instance == null) {
+            Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+            while( appenders.hasMoreElements() ) {
+                Appender appender = appenders.nextElement();
 
-            if( appender instanceof ActiveDbAppender ) {
-                return ( ActiveDbAppender ) appender;
+                if( appender instanceof ActiveDbAppender ) {
+                    instance = ( ActiveDbAppender ) appender;
+                }
             }
         }
-
-        return null;
-    }
-
-    /**
-     * @return true if ActiveDb Appender is active, otherwise returns false
-     */
-    public static boolean isAppenderActive() {
-
-        return isActiveDbAppenderActive;
+        
+        return instance;
     }
 
     private synchronized void checkForExceptions() {

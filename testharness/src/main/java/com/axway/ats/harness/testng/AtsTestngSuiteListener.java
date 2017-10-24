@@ -24,7 +24,6 @@ import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestListener;
 import org.testng.TestNG;
-import org.testng.internal.Version;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -34,7 +33,6 @@ import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
-import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
  * Suite listener to capture test events from TestNG<br>

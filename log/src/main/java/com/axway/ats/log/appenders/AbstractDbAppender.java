@@ -130,6 +130,10 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // the logging queue
         queue = new ArrayBlockingQueue<LogEventRequest>( getMaxNumberLogEvents() );
 
+    }
+    
+    protected void initializeDbLogging() {
+
         // enable batch mode at ATS Agent side only
         boolean isWorkingAtAgentSide = this instanceof PassiveDbAppender;
         boolean isBatchMode = false;
