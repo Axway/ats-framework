@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -121,18 +121,23 @@ public class CassandraDbProvider implements DbProvider {
         }
     }
 
+    @Override
     public void disconnect() {
 
         try {
-            session.close();
-            session = null;
+            if (session != null ) {
+                session.close();
+                session = null;
+            }
         } catch( Exception e ) {
             log.warn( "Error shutting down Cassandra session", e );
         }
 
         try {
-            cluster.close();
-            cluster = null;
+            if (cluster != null ) {
+                cluster.close();
+                cluster = null;
+            }
         } catch( Exception e ) {
             log.warn( "Error shutting down Cassandra cluster", e );
         }
@@ -472,7 +477,7 @@ public class CassandraDbProvider implements DbProvider {
 
         throw new RuntimeException( "Method not implemented" );
     }
-    
+
     @Override
     public DatabaseMetaData getDatabaseMetaData() throws DbException {
 
