@@ -2,9 +2,9 @@
 [![GitHub version](https://badge.fury.io/gh/Axway%2Fats-framework.svg)](https://badge.fury.io/gh/Axway%2Fats-framework)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-The Axway Automated Testing System (ATS) is an internally developed testing framework widely used for the testing needs of most of the Axway products.
+**The Axway Automated Testing System** (ATS) is an internally developed testing framework widely used for the testing needs of most of the Axway products.
 
-ATS key features include:
+ATS **key features** include:
 <ul>
   <li>Easy to write and maintain automated tests. Understandable by both QA and developers</li>
   <li>Appropriate for variety types of functional and performance testing</li>
@@ -17,15 +17,15 @@ ATS key features include:
   <li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li>
 </ul>
 
-Documentation is available at https://axway.github.io/ats-framework/ATS-Documentation.html
+**Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
 
-ATS framework artifacts are available at https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/
+ATS framework **artifacts** are available at https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/
 
-Other related projects:
+Other **related projects**:
 <ul>
   <li>ATS Test Explorer at https://github.com/Axway/ats-testexplorer</li>
   <li>ATS HTTP DB Logger at https://github.com/Axway/ats-httpdblogger</li>
   <li>ATS Distribution at https://github.com/Axway/ats-distrib</li>
 </ul>
 
-Contact ATS team at group.ats.team@axway.com
+**Contact** ATS team at group.ats.team@axway.com
