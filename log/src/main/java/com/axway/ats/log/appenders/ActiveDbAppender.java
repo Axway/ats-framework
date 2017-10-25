@@ -53,6 +53,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public ActiveDbAppender() {
 
         super();
+        
     }
 
     @Override
@@ -115,7 +116,9 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                         + " event completion" );
                     
                     // create the queue logging thread and the DbEventRequestProcessor
-                    initializeDbLogging();
+                    if ( queueLogger == null ) {
+                        initializeDbLogging();
+                    }
                     
                     waitForEventToBeExecuted( packedEvent, dbLoggingEvent, false );
                     //this event has already been through the queue
