@@ -251,7 +251,10 @@ class ActionClassGenerator {
                     }
 
                     // check if this is a transfer action and it has the necessary return type
-                    String transferUnit = actionAnnotation.transferUnit();
+                    String transferUnit = "";
+                    if ( actionAnnotation != null ) {
+                        transferUnit = actionAnnotation.transferUnit();
+                    }
                     if( actionAnnotation != null && transferUnit.length() > 0
                         && actionClassMethod.getReturnType() != Long.class ) {
                         throw new BuildException( "Action '" + actionName
