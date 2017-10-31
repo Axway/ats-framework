@@ -37,6 +37,7 @@ import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
 
@@ -202,7 +203,13 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
 				if (this.browserPath != null) {
 					capabilities.setCapability(FirefoxDriver.BINARY, this.browserPath);
 				}
-
+				
+				FirefoxOptions options = UiEngineConfigurator.getInstance().getFirefoxDriverOptions();
+				if ( options == null ) {
+				    options = new FirefoxOptions();
+				}
+				capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
+				
 				if (this.remoteSeleniumURL != null) {
 					webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
 				} else {

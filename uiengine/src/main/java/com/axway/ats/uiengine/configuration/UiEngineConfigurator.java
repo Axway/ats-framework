@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -55,6 +56,12 @@ public class UiEngineConfigurator extends AbstractConfigurator {
      * These are not kept in the regular key-value map as it can be a complex object.
      */
     private static ChromeOptions        chromeOptions;
+    
+    /**
+     * Options for starting Firefox Selenium driver.
+     * These are not kept in the regular key-value map as it can be a complex object.
+     */
+    private static FirefoxOptions        firefoxOptions;
 
     /**
      * The singleton instance for this configurator
@@ -311,5 +318,24 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     public void setChromeDriverOptions( ChromeOptions options ) {
 
         chromeOptions = options;
+    }
+    
+    /**
+     * @return the Firefox options
+     */
+    @PublicAtsApi
+    public FirefoxOptions getFirefoxDriverOptions() {
+
+        return firefoxOptions;
+    }
+
+    /**
+     * Pass options which will be applied when starting a Firefox broswer through Selenium
+     * @param options Firefox options
+     */
+    @PublicAtsApi
+    public void setFirefoxDriverOptions( FirefoxOptions options ) {
+
+        firefoxOptions = options;
     }
 }
