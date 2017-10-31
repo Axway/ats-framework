@@ -81,10 +81,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private int                      lastTestcaseResult                    = -1;
 
     public AtsTestngListener() {
-        
+
         ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = true;
     }
-    
+
     @Override
     public void beforeInvocation( IInvokedMethod method, ITestResult testResult ) {}
 
@@ -103,6 +103,13 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                     // start suite
                     startSuite( testResult );
 
+                } else if( !currentSuiteName.equals( testResult.getTestClass()
+                                                               .getRealClass()
+                                                               .getSimpleName() ) ) {
+
+                    endSuite(); // end previously started suite
+                    startSuite( testResult ); // start new suite
+
                 }
 
             } else if( method.getTestMethod().isBeforeMethodConfiguration() ) { // check if method is @BeforeMethod
@@ -111,6 +118,14 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
                     // start suite
                     startSuite( testResult );
+
+                } else if( !currentSuiteName.equals( testResult.getTestClass()
+                                                               .getRealClass()
+                                                               .getSimpleName() ) ) {
+
+                    endSuite(); // end previously started suite
+                    startSuite( testResult ); // start new suite
+
                 }
 
                 if( currentTestcaseName == null ) {
@@ -150,6 +165,14 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
                     // start suite
                     startSuite( testResult );
+
+                } else if( !currentSuiteName.equals( testResult.getTestClass()
+                                                               .getRealClass()
+                                                               .getSimpleName() ) ) {
+
+                    endSuite(); // end previously started suite
+                    startSuite( testResult ); // start new suite
+
                 }
 
                 if( currentTestcaseName == null ) {
@@ -253,12 +276,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
                 if( currentSuiteName != null ) {
 
-                    // end the current suite
-                    currentSuiteName = null;
-                    logger.endSuite();
+                    endSuite();
 
                 } else {
-                    
+
                     // the event was received after a suite is already ended
                     // which means that we only have to clear the after class mode
                     logger.endAfterClass();
@@ -320,8 +341,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         if( currentSuiteName != null ) {
 
-            currentSuiteName = null;
-            logger.endSuite();
+            endSuite();
         }
 
         // end the run
@@ -823,11 +843,19 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     }
 
     private void sendTestEndEventToAgents() {
-        
+
         if( ActiveDbAppender.getCurrentInstance() != null ) {
             // send TestEnd event to all ATS agents
             TestcaseStateEventsDispacher.getInstance().onTestEnd();
         }
+    }
+
+    private void endSuite() {
+
+        // end the current suite
+        currentSuiteName = null;
+        logger.endSuite();
+
     }
 
 }
