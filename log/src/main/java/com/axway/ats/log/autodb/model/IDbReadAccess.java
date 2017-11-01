@@ -129,6 +129,9 @@ public interface IDbReadAccess {
                                                                           int utcTimeOffset,
                                                                           boolean dayLightSavingOn ) throws DatabaseAccessException;
 
+    public Map<String, Integer>
+            getNumberOfCheckpointsPerQueue( String testcaseIds ) throws DatabaseAccessException;
+
     public List<Statistic> getSystemStatistics(
                                                 float timeOffset,
                                                 String testcaseIds,

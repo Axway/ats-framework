@@ -869,7 +869,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
     }
 
     public List<StatisticDescription> getSystemStatisticDescriptions( 
-                                                                      float timeOffset, 
+                                                                     float timeOffset, 
                                                                       String whereClause,
                                                                       Map<String, String> testcaseAliases,
                                                                       int utcTimeOffset,
@@ -1015,7 +1015,41 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         return statisticDescriptions;
     }
+    
+    public Map<String, Integer>
+            getNumberOfCheckpointsPerQueue( String testcaseIds ) throws DatabaseAccessException {
 
+        Map<String, Integer> allStatistics = new HashMap<String, Integer>();
+
+        String sqlLog = new SqlRequestFormatter().add( "testcase ids", testcaseIds ).format();
+
+        Connection connection = getConnection();
+        CallableStatement callableStatement = null;
+        ResultSet rs = null;
+        try {
+
+            callableStatement = connection.prepareCall( "{ call sp_get_number_of_checkpoints_per_queue(?) }" );
+            callableStatement.setString( 1, testcaseIds );
+
+            rs = callableStatement.executeQuery();
+            int numberRecords = 0;
+            while( rs.next() ) {
+                String name = rs.getString( "name" );
+                int queueNumbers = rs.getInt( "queue_number" );
+                allStatistics.put( name, queueNumbers );
+            }
+
+            logQuerySuccess( sqlLog, "system statistics", numberRecords );
+        } catch( Exception e ) {
+            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } finally {
+            DbUtils.closeResultSet( rs );
+            DbUtils.close( connection, callableStatement );
+        }
+
+        return allStatistics;
+    }
+        
 	public List<Statistic> getSystemStatistics( float timeOffset, 
 												String testcaseIds,
 												String machineIds,
