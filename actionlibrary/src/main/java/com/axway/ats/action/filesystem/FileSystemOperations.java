@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,10 +41,10 @@ import com.axway.ats.core.validation.Validator;
  * If an ATS Agent is given (by the appropriate constructor), we are working remotely.
  *
  * <br/><br/>Note: On error all methods in this class are likely to throw FileSystemOperationException
- * 
+ *
  * <br/><br/>
- * <b>User guide</b>  
- * <a href="https://techweb.axway.com/confluence/display/ATS/File+System+Operations">page</a>
+ * <b>User guide</b>
+ * <a href="https://axway.github.io/ats-framework/File-System-Operations.html">page</a>
  * related to this class
  */
 @PublicAtsApi
@@ -167,7 +167,7 @@ public class FileSystemOperations {
      * Creates a file. The content is set by the user.
      *
      * @param filePath the file to work with
-     * @param fileContent the text that will be parsed in the file 
+     * @param fileContent the text that will be parsed in the file
      */
     @PublicAtsApi
     public void createFile( @Validate(name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath,
@@ -450,11 +450,11 @@ public class FileSystemOperations {
     }
 
     /**
-     * Define whether you want not to be thrown an exception, 
-     * if there is still a process writing in the file that 
+     * Define whether you want not to be thrown an exception,
+     * if there is still a process writing in the file that
      * is being copied. <br />
      * It could be useful for log files. By default exception is thrown.
-     * @param failOnError set to false in order not to have exception if file is still modified 
+     * @param failOnError set to false in order not to have exception if file is still modified
      */
     @PublicAtsApi
     public void failCopyFileIfSizeChanged( boolean failOnError ) {
@@ -503,7 +503,7 @@ public class FileSystemOperations {
 
         // validate input parameters
         new Validator().validateMethodParameters( new Object[]{ fromFile, toFile } );
-        
+
         try {
             checkIfFileExistsAndIsFile( fromFile );
         } catch( Exception e ) {
@@ -527,12 +527,12 @@ public class FileSystemOperations {
     /**
      * Copies the contents of a file from one remote host to another remote host
      *
-     * @param fromHost the address of the ATS agent on the source host.<br /> 
-     * If you provide null then local host will be used. In such case it is recommended to use 
-     * {@link #copyFileTo(String, String)} method after FileSytemOperations is constructed with target agent (toHost) 
+     * @param fromHost the address of the ATS agent on the source host.<br />
+     * If you provide null then local host will be used. In such case it is recommended to use
+     * {@link #copyFileTo(String, String)} method after FileSytemOperations is constructed with target agent (toHost)
      * @param fromFile the source file to copy
-     * @param toHost the address of the ATS agent on the destination host.<br /> 
-     * If you provide null then local host will be used. In such case it is recommended to use 
+     * @param toHost the address of the ATS agent on the destination host.<br />
+     * If you provide null then local host will be used. In such case it is recommended to use
      * {@link #copyFileFrom(String, String)} method after FileSytemOperations is constructed with target agent (fromHost)
      * @param toFile the destination file to copy to
      */
@@ -1324,7 +1324,7 @@ public class FileSystemOperations {
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         return operations.doesFileExist( filePath );
     }
-    
+
     /**
      * Check if a directory exists
      *
@@ -1428,11 +1428,13 @@ public class FileSystemOperations {
     }
 
     /**
-     * Unzip archive to local or remote machine.
-     * If the machine is UNIX-like it will preserve the permissions 
-     * 
+     * Unzip archive to local or remote machine. Use extract() method
+     * If the machine is UNIX-like it will preserve the permissions
+     *
      * @param zipFilePath the ZIP file path
-     * @param outputDirPath output directory which is used as base directory for extracted files 
+     * @param outputDirPath output directory which is used as base directory for extracted files
+     *
+     * @see #extract(String, String)
      */
     @Deprecated
     @PublicAtsApi
@@ -1446,13 +1448,13 @@ public class FileSystemOperations {
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         operations.unzip( zipFilePath, outputDirPath );
     }
-    
+
     /**
-     * Extract archive to local or remote machine. 
-     * If the machine is UNIX-like it will preserve the permissions 
-     * 
+     * Extract archive to local or remote machine.
+     * If the machine is UNIX-like it will preserve the permissions
+     *
      * @param archiveFilePath the archive file path
-     * @param outputDirPath output directory which is used as base directory for extracted files 
+     * @param outputDirPath output directory which is used as base directory for extracted files
      */
     @PublicAtsApi
     public void extract( @Validate(name = "archiveFilePath", type = ValidationType.STRING_NOT_EMPTY) String archiveFilePath,
@@ -1460,14 +1462,14 @@ public class FileSystemOperations {
 
         // validate input parameters
         new Validator().validateMethodParameters( new Object[]{ archiveFilePath, outputDirPath } );
-        
+
         checkIfArchiveFormatIsSupported(archiveFilePath);
 
         // execute action
         IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
         operations.extract( archiveFilePath, outputDirPath );
     }
-    
+
     private void checkIfArchiveFormatIsSupported( String archiveFilePath ) {
 
         if( archiveFilePath.endsWith( ".zip" ) ) {
@@ -1488,7 +1490,7 @@ public class FileSystemOperations {
                                                         + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' ." );
             }
         }
-        
+
     }
 
     // checks if file exists and is a file
