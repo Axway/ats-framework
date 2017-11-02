@@ -1430,6 +1430,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
     }
 
     public List<Checkpoint> getCheckpoints( String testcaseId,
+                                            int loadQueueId,
                                             String checkpointName,
                                             int utcTimeOffset,
                                             boolean dayLightSavingOn ) throws DatabaseAccessException {
@@ -1437,6 +1438,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         List<Checkpoint> checkpoints = new ArrayList<Checkpoint>();
 
         String sqlLog = new SqlRequestFormatter().add( "testcase id", testcaseId )
+                                                 .add( "loadQueue id", loadQueueId )
                                                  .add( "checkpoint name", checkpointName )
                                                  .format();
         Connection connection = getConnection();
@@ -1451,10 +1453,11 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                                                      + " INNER JOIN tCheckpointsSummary chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
                                                      + " INNER JOIN tLoadQueues c on (c.loadQueueId = chs.loadQueueId)"
                                                      + " INNER JOIN tTestcases tt on (tt.testcaseId = c.testcaseId) "
-                                                     + "WHERE tt.testcaseId = ? AND ch.name = ?" );
+                                                     + "WHERE tt.testcaseId = ? AND c.loadQueueId = ? AND ch.name = ?" );
 
             statement.setString( 1, testcaseId );
-            statement.setString( 2, checkpointName );
+            statement.setInt( 2, loadQueueId );
+            statement.setString( 3, checkpointName );
 
             rs = statement.executeQuery();
             while( rs.next() ) {

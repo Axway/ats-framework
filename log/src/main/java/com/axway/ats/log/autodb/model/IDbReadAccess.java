@@ -141,6 +141,7 @@ public interface IDbReadAccess {
                                                 boolean dayLightSavingOn ) throws DatabaseAccessException;
     
     public List<Checkpoint> getCheckpoints( String testcaseId,
+                                            int loadQueueId,
                                             String checkpointName,
                                             int utcTimeOffset,
                                             boolean dayLightSavingOn ) throws DatabaseAccessException;
