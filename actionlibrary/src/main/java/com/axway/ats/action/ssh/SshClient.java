@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,10 +22,10 @@ import com.axway.ats.core.ssh.JschSshClient;
 
 /**
  * An SSH client class
- * 
+ *
  * <br/><br/>
- * <b>User guide</b>  
- * <a href="https://techweb.axway.com/confluence/display/ATS/SSH+Operations">page</a>
+ * <b>User guide</b>
+ * <a href="https://axway.github.io/ats-framework/SSH-Operations.html">page</a>
  * related to this class
  */
 @PublicAtsApi
@@ -35,7 +35,7 @@ public class SshClient implements Closeable {
 
     /**
      * Construct SSH client. It will work on the default port 22
-     * 
+     *
      * @param host the target host
      * @param user the user name
      * @param password the user password
@@ -49,7 +49,7 @@ public class SshClient implements Closeable {
 
     /**
      * Construct SSH client and specify the port to use
-     * 
+     *
      * @param host the target host
      * @param user the user name
      * @param password the user password
@@ -77,7 +77,7 @@ public class SshClient implements Closeable {
 
     /**
      * Starts and a command and waits for its completion
-     * 
+     *
      * @param command SSH command to execute
      * @return the exit code
      */
@@ -120,7 +120,7 @@ public class SshClient implements Closeable {
     }
 
     /*
-     * If user fail to disconnect, we try when the GC collects this instance 
+     * If user fail to disconnect, we try when the GC collects this instance
      * (non-Javadoc)
      * @see java.lang.Object#finalize()
      */

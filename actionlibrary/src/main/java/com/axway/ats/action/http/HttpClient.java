@@ -577,7 +577,7 @@ public class HttpClient {
      * {@link #setAuthorization(String, String) setAuthorization} for SPNEGO
      * authentication if a keytab file holds the client's secret key.
      *
-     * @param username The username, e.g. 'User1@AXWAY.COM'
+     * @param username The username, e.g. 'User1@example.com'
      * @param keytab The file containing the client's keytab.
      */
     @PublicAtsApi

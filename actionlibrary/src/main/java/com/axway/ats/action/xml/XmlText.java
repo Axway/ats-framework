@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ import com.axway.ats.core.utils.StringUtils;
  *     .add("//person[@id=\"1.1\"]/age", "20")
  *     .add("//person[@id=\"1.1\"]/sex", "Male");
  * </pre>
- * More info: {@link https://techweb.axway.com/confluence/display/ATS/REST+Operations+-+Parsing+XML+text}
+ * More info: {@link https://axway.github.io/ats-framework/REST-Operations---Parsing-XML-body.html}
  */
 @PublicAtsApi
 public class XmlText {

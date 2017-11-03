@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,19 +40,19 @@ import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 
 /**
- * Operations on the OS level like getting OS type, get/set time, get classpath and 
- * perform keyboard/mouse operations. 
- * 
+ * Operations on the OS level like getting OS type, get/set time, get classpath and
+ * perform keyboard/mouse operations.
+ *
  * <br/>
  * <p>User guide page related to this class is
- * <a href="https://techweb.axway.com/confluence/display/ATS/Basic+System+Operations">here</a>
+ * <a href="https://axway.github.io/ats-framework/Basic-System-Operations.html">here</a>
  * </p>
  */
 @PublicAtsApi
 public class SystemOperations {
 
     private String  atsAgent;
-    
+
     private Logger log = Logger.getLogger( SystemOperations.class );
 
     @PublicAtsApi
@@ -166,9 +166,9 @@ public class SystemOperations {
     }
 
     /**
-    * Check if some process is listening on some port on some host. 
+    * Check if some process is listening on some port on some host.
     * Note that we cannot give the name of the listening process.
-    * 
+    *
     * @param host host address
     * @param port port number
     * @param timeout timeout value in milliseconds
@@ -249,7 +249,7 @@ public class SystemOperations {
     /**
      * @param host the address of the host machine
      * @param jmxPort the jmx port
-     * 
+     *
      * @return all MBeans with their attributes and type
      * @throws SystemOperationException
      */
@@ -312,7 +312,7 @@ public class SystemOperations {
                 }
         }
     }
-    
+
     /**
      * @return Machine hostname
      */
