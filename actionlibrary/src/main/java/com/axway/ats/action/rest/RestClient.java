@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +58,7 @@ import com.axway.ats.core.utils.StringUtils;
  *
  * <br/><br/>
  * <b>User guide</b> page related to this class is
- * <a href="https://techweb.axway.com/confluence/display/ATS/REST+Operations">here</a>
+ * <a href="https://axway.github.io/ats-framework/REST-Operations.html">here</a>
  *
  */
 @PublicAtsApi
@@ -199,8 +199,8 @@ public class RestClient {
          */
         if( this.client != null ) {
             this.client.close();
-            /* After invoking close() on the JerseyClient instance, 
-             * we must remove it from the map, 
+            /* After invoking close() on the JerseyClient instance,
+             * we must remove it from the map,
              * because all of its resources are deallocated and the client is not usable anymore
             */
             clients.remove( finalClientIdKey );
@@ -435,9 +435,9 @@ public class RestClient {
 
     /**
      * Remove a header from the request
-     * 
+     *
      * @param name the name of the request header
-     * 
+     *
      * @return this client's instance
      */
     @PublicAtsApi
@@ -465,9 +465,9 @@ public class RestClient {
 
     /**
      * Remove one or more headers from the request
-     * 
+     *
      * @param names the names of the request headers
-     * 
+     *
      * @return this client's instance
      */
     @PublicAtsApi

@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,7 +95,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
             }
         } while( ( root = new File( root ).getParent() ) != null );
 
-        throw new RuntimeException( "Uable to determine the project root path." );
+        throw new RuntimeException( "Unable to determine the project's root directory." );
     }
 
     private static void fixFileModificationTimes() {
@@ -1034,7 +1034,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
                 List<String> real = new LinkedList<String>( Arrays.asList( token )
                                                                   .subList( 1, token.length - 1 ) );
                 // we have 2 files with different properties, with different jdk versions we get the files
-                // in different order. So we will get the right file by checking its length 
+                // in different order. So we will get the right file by checking its length
                 if( token.length == 2 ) {
                     assertTrue( token[0].trim().endsWith( "file2.xml\":" ) );
                     expected.add( "Modification time:" );
@@ -1054,8 +1054,8 @@ public class Test_FileSystemSnapshot extends BaseTest {
      * @param expectedEntities a list with the expected entities
      * @param realEntities a list with the entities we will check
      * @param searchFromStart set to true if we will look for the expected entity from the beginning
-     *          of the real entity, otherwise we will look for in at real entity`s end 
-     * @return true if expected entities and real entities are equal 
+     *          of the real entity, otherwise we will look for in at real entity`s end
+     * @return true if expected entities and real entities are equal
      */
     private boolean compareEntities( List<String> expectedEntities, List<String> realEntities,
                                      boolean searchFromStart ) {

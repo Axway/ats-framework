@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,25 +46,10 @@ import com.axway.ats.core.utils.StringUtils;
 
 /**
  * A JMS client class
- * 
- * <br/><br/>
- * <b>User guide</b> 
- * <a href="https://techweb.axway.com/confluence/display/ATS/JMS+operations">page</a>
- * related to this class
+ *
  */
 @PublicAtsApi
 public class JmsClient {
-
-    /* TODO: 
-     * bytes messages
-     * getters & setters
-     * simple TopicConnection QueueConnection capabilities 
-     * simple transactional Session, TopicSession, QueueSession capabilities 
-     * simple session.create###Message() capabilities 
-     * simple session consumer, provider, subscriber, publisher capabilities ? 
-     * simple durable subscription capabilities (clientID, subscriberName, ...) capabilities 
-     * simple browse & selection message criteria capabilities 
-    */
 
     private static final Logger           log         = Logger.getLogger( JmsClient.class );
 
@@ -118,7 +103,7 @@ public class JmsClient {
 
     /**
      * Basic constructor
-     * 
+     *
      * @param context the initial context
      * @param defaultConnectionFactoryName default connection factory name
      * @throws NamingException
@@ -137,7 +122,7 @@ public class JmsClient {
 
     /**
      * Use basic authentication
-     * 
+     *
      * @param username the user name
      * @param password the user password
      */
@@ -149,11 +134,11 @@ public class JmsClient {
     }
 
     /**
-     * This option must be used in cases where we must not close the session after executing some of the 
+     * This option must be used in cases where we must not close the session after executing some of the
      * available public methods.
-     * 
+     *
      * For example, if you subscribe to listen for topic messages and then send a message, the last step will
-     * close the session which kills the listening process. In such case the session must not be closed. 
+     * close the session which kills the listening process. In such case the session must not be closed.
      * @param isKeepAlive
      */
     @PublicAtsApi
@@ -295,7 +280,7 @@ public class JmsClient {
 
     /**
      * Send a text message
-     * 
+     *
      * @param jndiName
      * @param textMessage message content
      * @param properties message properties or null if none
@@ -309,7 +294,7 @@ public class JmsClient {
 
     /**
      * Send a text message
-     * 
+     *
      * @param destination message destination
      * @param textMessage message content
      * @param properties message properties or null if none
@@ -323,7 +308,7 @@ public class JmsClient {
 
     /**
      * Send a text message to a queue
-     * 
+     *
      * @param queueName queue name
      * @param textMessage message content
      * @param properties message properties or null if none
@@ -342,7 +327,7 @@ public class JmsClient {
 
     /**
      * Send a text message to a topic
-     * 
+     *
      * @param topicName topic name
      * @param textMessage message content
      * @param properties message properties or null if none
@@ -396,7 +381,7 @@ public class JmsClient {
 
     /**
      * Send a binary message to a queue
-     * 
+     *
      * @param queueName queue name
      * @param bytes message content
      * @param properties message properties or null if none
@@ -438,7 +423,7 @@ public class JmsClient {
 
     /**
      * Receive a message
-     * 
+     *
      * @param jndiName
      * @return the received message
      */
@@ -450,7 +435,7 @@ public class JmsClient {
 
     /**
      * Receive a message
-     * 
+     *
      * @param jndiName
      * @param timeout timeout period in milliseconds
      * @return the received message
@@ -463,7 +448,7 @@ public class JmsClient {
 
     /**
      * Receive a message
-     * 
+     *
      * @param destination remote destination
      * @return the received message
      */
@@ -475,7 +460,7 @@ public class JmsClient {
 
     /**
      * Receive a message
-     * 
+     *
      * @param destination remote destination
      * @param timeout timeout period in milliseconds
      * @return the received message
@@ -493,7 +478,7 @@ public class JmsClient {
 
     /**
      * Receive a message from queue. Waits indefinitely.
-     * 
+     *
      * @param queueName queue name
      * @return the received message
      */
@@ -505,9 +490,9 @@ public class JmsClient {
 
     /**
      * Receive a message from queue for a period of time
-     * 
+     *
      * @param queueName queue name
-     * @param timeout timeout period in milliseconds 
+     * @param timeout timeout period in milliseconds
      * @return the received message
      */
     @PublicAtsApi
@@ -523,7 +508,7 @@ public class JmsClient {
 
     /**
      * Receive a message from a topic. Waits indefinitely.
-     * 
+     *
      * @param topicName topic name
      * @return the received message
      */
@@ -535,9 +520,9 @@ public class JmsClient {
 
     /**
      * Receive a message from topic for a period of time
-     * 
+     *
      * @param topicName topic name
-     * @param timeout timeout period in milliseconds 
+     * @param timeout timeout period in milliseconds
      * @return the received message
      */
     @PublicAtsApi
@@ -564,7 +549,7 @@ public class JmsClient {
 
     /**
      * Read all messages from a queue
-     * 
+     *
      * @param queueName queue name
      * @throws JMSException
      */
@@ -600,7 +585,7 @@ public class JmsClient {
 
     /**
      * Create a topic
-     * 
+     *
      * @param topicName the topic name
      */
     @PublicAtsApi
@@ -622,7 +607,7 @@ public class JmsClient {
 
     /**
      * Start listening for messages on topic
-     * 
+     *
      * @param topicName the topic name
      */
     @PublicAtsApi
@@ -655,7 +640,7 @@ public class JmsClient {
 
     /**
      * Stop listening for messages on topic
-     * 
+     *
      * @param topicName the topic name
      */
     @PublicAtsApi
@@ -677,7 +662,7 @@ public class JmsClient {
 
     /**
      * Get the current list of collected messages on this topic.
-     * 
+     *
      * @param topicName the topic name
      * @return the messages.
      */

@@ -48,7 +48,7 @@ import com.axway.ats.core.utils.StringUtils;
  *
  * <br/><br/>
  * <b>User guide</b>
- * <a href="https://techweb.axway.com/confluence/display/ATS/Mail+and+SMTP+operations">page</a>
+ * <a href="https://axway.github.io/ats-framework/Mail-and-SMTP-operations.html">page</a>
  * related to this class
  */
 @PublicAtsApi
@@ -67,7 +67,7 @@ public class MailSender extends PackageSender {
     private long                            mailPort;
 
     protected Properties                    mailProperties = new Properties();
-    
+
     private PackageEncryptor                encryptor;
 
     private PackageEncryptor                signer;
@@ -140,7 +140,7 @@ public class MailSender extends PackageSender {
 
         // tag the package
         mimePackage.tag();
-        
+
         // sign the package if needed
         mimePackage = sign( mimePackage );
 

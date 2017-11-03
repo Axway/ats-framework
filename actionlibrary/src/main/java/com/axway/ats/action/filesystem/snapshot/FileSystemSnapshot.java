@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,8 @@ import com.axway.ats.core.utils.StringUtils;
  * for changes like different attributes, some file/dir. missing or added, etc.
  *
  * <br/><br/>
- * <b>User guide</b>
- * <a href="https://techweb.axway.com/confluence/display/ATS/File+System+Snapshots">page</a>
- * related to this class
+ * <a href="https://axway.github.io/ats-framework/File-System-Snapshots.html">Here</a>
+ * is related <b>user guide</b> page related to this class
  */
 @PublicAtsApi
 public class FileSystemSnapshot {
@@ -48,7 +47,7 @@ public class FileSystemSnapshot {
     public XmlFile                xml;
     public IniFile                ini;
     public TextFile               text;
-    
+
     /**
      * Skip checking the size of a file
      */
@@ -146,21 +145,21 @@ public class FileSystemSnapshot {
         configuration.setCheckMD5( configurator.snapshots.getCheckFileMd5() );
         configuration.setCheckPermissions( configurator.snapshots.getCheckFilePermissions() );
         configuration.setSupportHidden( configurator.snapshots.getSupportHiddenFiles() );
-        
+
         // Properties files
         configuration.setCheckPropertiesFilesContent( configurator.snapshots.getCheckPropertiesFilesContent() );
         String propertiesExtensions = configurator.snapshots.getPropertiesFileExtensions();
         if( !StringUtils.isNullOrEmpty( propertiesExtensions ) ) {
             configuration.setPropertiesFileExtensions( propertiesExtensions.split( "," ) );
         }
-        
+
         // XML files
         configuration.setCheckXmlFilesContent( configurator.snapshots.getCheckXmlFilesContent() );
         String xmlExtensions = configurator.snapshots.getXmlFileExtensions();
         if( !StringUtils.isNullOrEmpty( xmlExtensions ) ) {
             configuration.setXmlFileExtensions( xmlExtensions.split( "," ) );
         }
-        
+
         // INI files
         configuration.setCheckIniFilesContent( configurator.snapshots.getCheckIniFilesContent() );
         configuration.setIniFileStartSectionCharacter( configurator.snapshots.getIniFilesStartSectionChar() );
@@ -170,7 +169,7 @@ public class FileSystemSnapshot {
         if( !StringUtils.isNullOrEmpty( iniExtensions ) ) {
             configuration.setIniFileExtensions( iniExtensions.split( "," ) );
         }
-        
+
         // TEXT files
         configuration.setCheckTextFilesContent( configurator.snapshots.getCheckTextFilesContent() );
         String textExtensions = configurator.snapshots.getTextFileExtensions();
@@ -221,7 +220,7 @@ public class FileSystemSnapshot {
 
         this.fsSnapshotImpl.skipDirectory( rootDirectoryAlias, relativeDirectoryPath );
     }
-    
+
     /**
      * Point a sub directory which will not be processed. The last token of the relative directory path is processed as a Regex
      *
@@ -429,7 +428,7 @@ public class FileSystemSnapshot {
     }
 
     /**
-     * A class used to compare properties files 
+     * A class used to compare properties files
      */
     public class PropertiesFile {
 
@@ -442,7 +441,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its key.
          * The key is matched if it is the same as the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param key a token used to match a key
@@ -458,7 +457,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its key.
          * The key is matched if it contains the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param key a token used to match a key
@@ -474,7 +473,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its key.
          * The key is matched if it matches the provided regular expression token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param key a token used to match a key
@@ -490,7 +489,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its value.
          * The value is matched if it the same as the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param value a token used to match a value
@@ -506,7 +505,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its value.
          * The value is matched if it contains the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param value a token used to match a value
@@ -522,7 +521,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its value.
          * The value is matched if it matches the provided regular expression token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param value a token used to match a value
@@ -550,7 +549,7 @@ public class FileSystemSnapshot {
 
         /**
          * Skip XML node if its attribute value is the same as the provided value.
-         * 
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param nodeXpath node XPATH
@@ -569,7 +568,7 @@ public class FileSystemSnapshot {
 
         /**
          * Skip XML node if its attribute value contains the provided value.
-         * 
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param nodeXpath node XPATH
@@ -588,7 +587,7 @@ public class FileSystemSnapshot {
 
         /**
          * Skip XML node if its attribute value matches the provided regular expression value.
-         * 
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param nodeXpath node XPATH
@@ -607,7 +606,7 @@ public class FileSystemSnapshot {
 
         /**
          * Skip XML node if its value is the same as the provided value.
-         * 
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param nodeXpath node XPATH
@@ -623,7 +622,7 @@ public class FileSystemSnapshot {
 
         /**
          * Skip XML node if its value contains the provided value.
-         * 
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param nodeXpath node XPATH
@@ -639,7 +638,7 @@ public class FileSystemSnapshot {
 
         /**
          * Skip XML node if its value matches the provided value.
-         * 
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param nodeXpath node XPATH
@@ -655,7 +654,7 @@ public class FileSystemSnapshot {
     }
 
     /**
-     * A class used to compare INI files 
+     * A class used to compare INI files
      */
     public class IniFile {
 
@@ -668,7 +667,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a whole INI section.
          * The section is matched if it is the same as the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this key belongs to
@@ -684,7 +683,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a whole INI section.
          * The section is matched if it contains the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this key belongs to
@@ -700,7 +699,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a whole INI section.
          * The section is matched if it matches the provided regular expression token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this key belongs to
@@ -716,7 +715,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its section and key.
          * The key is matched if it is the same as the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this key belongs to
@@ -733,7 +732,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its section and key.
          * The key is matched if it contains the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this key belongs to
@@ -750,7 +749,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its section and key.
          * The key is matched if it matches the provided regular expression token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this key belongs to
@@ -767,7 +766,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its section and value.
          * The value is matched if it the same as the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this value belongs to
@@ -784,7 +783,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its section and value.
          * The value is matched if it contains the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this value belongs to
@@ -801,7 +800,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a property by matching its section and value.
          * The value is matched if it matches the provided regular expression token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param section the section this value belongs to
@@ -817,7 +816,7 @@ public class FileSystemSnapshot {
     }
 
     /**
-     * A class used to compare plain TEXT files 
+     * A class used to compare plain TEXT files
      */
     public class TextFile {
 
@@ -830,7 +829,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a text line.
          * The line is matched if it is the same as the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param line the line
@@ -846,7 +845,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a text line.
          * The line is matched if it contains the provided token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param line the line
@@ -862,7 +861,7 @@ public class FileSystemSnapshot {
         /**
          * Skip a text line.
          * The line is matched if it matches the provided regular expression token
-         *  
+         *
          * @param rootDirectoryAlias the alias of the root directory
          * @param relativeFilePath path to this file relative to the directory with provided alias
          * @param line the line

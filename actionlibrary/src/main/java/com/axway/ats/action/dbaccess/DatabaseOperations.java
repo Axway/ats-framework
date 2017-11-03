@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,10 +44,9 @@ import com.axway.ats.harness.config.TestBox;
  * This class allows the user to execute general database operations.
  *
  * <br/><br/>
- * <b>User guide</b> page related to this class:
- * <a href="https://techweb.axway.com/confluence/display/ATS/Functional+tests#Functionaltests-DatabaseOperations">basic</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Database+Operations">detailed</a>
+ * <b>User guide</b>
+ * <a href="https://axway.github.io/ats-framework/Database-Operations.html">page</a>
+ * related to this class
  */
 @PublicAtsApi
 public class DatabaseOperations {
@@ -86,11 +85,11 @@ public class DatabaseOperations {
     public DatabaseOperations( TestBox testBox,
                                       Map<String, Object> customProperties ) {
 
-        
+
         String dbUser = testBox.getDbUser();
-    
+
         String dbPass = testBox.getDbPass();
-        
+
         if (customProperties != null && customProperties.containsKey(OracleKeys.USE_ADMIN_CREDENTIALS)
                 && "true".equals(customProperties.get(OracleKeys.USE_ADMIN_CREDENTIALS))) {
             dbUser = testBox.getAdminUser();
@@ -122,7 +121,7 @@ public class DatabaseOperations {
 
         createDbProvider(dbType, dbHost, dbName, dbUser, dbPass, dbPort, customProperties);
     }
-    
+
     private void createDbProvider( String dbType,
                                    String dbHost,
                                    String dbName,
@@ -138,7 +137,7 @@ public class DatabaseOperations {
                                                                   dbPass,
                                                                   dbPort,
                                                                   customProperties );
-        
+
     }
 
     /**
@@ -490,11 +489,11 @@ public class DatabaseOperations {
     }
 
     /**
-     * Returns the JDBC meta data about this database, 
-     * for example if want to get the list of tables into some database.</p> 
+     * Returns the JDBC meta data about this database,
+     * for example if want to get the list of tables into some database.</p>
      * <b>Note:</b> The connection is not closed internally as it must remain open while reading the metadata.
      * The user must call the {@link #disconnect() disconnect} method when done.
-     * 
+     *
      * @return the database meta data instance
      */
     @PublicAtsApi

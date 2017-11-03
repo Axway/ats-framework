@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,19 +36,19 @@ import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 
 /**
- * The {@link FileTransferClient} can be used to execute actions specific for
+ * The <code>FileTransferClient</code> can be used to execute actions specific for
  * the different file transfer protocols. The supported protocols are :
  * <ul>
  * <li>FTP, FTPS</li>
  * <li>HTTP, HTTPS</li>
  * <li>SFTP</li>
- * <li>AS2</li>
  * </ul>
  *
- * <b>User guide</b> page related to this class:
- * <a href="https://techweb.axway.com/confluence/display/ATS/Functional+tests#Functionaltests-FileTransfers">basic</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/File+transfers">detailed</a>
+ * <b>User guide</b> pages related to this class:
+ * <ul>
+ *   <li><a href="https://axway.github.io/ats-framework/Basic-functionalities.html#Basicfunctionalities-FileTransfers">basic</a></li>
+ *   <li><a href="https://axway.github.io/ats-framework/File-transfers.html">detailed</a></li>
+ * </ul>
  */
 @PublicAtsApi
 public class FileTransferClient {
@@ -173,12 +173,12 @@ public class FileTransferClient {
             throw new FileTransferException( e );
         }
     }
-    
+
     /**
      * Creates a new file transfer client, which would work with the specified custom protocol
      *
      * @param protocol the transfer protocol the client would work with
-     * or the ending token of the property 
+     * or the ending token of the property
      * <p>
      * e.g. 'my_protocol_name' from actionlibrary.filetransfer.client.my_protocol_name in ats-adapters.properties file
      * @param port     the port to use
@@ -205,7 +205,7 @@ public class FileTransferClient {
             throw new FileTransferException( e );
         }
     }
-    
+
     private TransferProtocol checkTransferProtocolType( String transferProtocol ) {
 
         switch( transferProtocol.toUpperCase() ){
@@ -545,10 +545,10 @@ public class FileTransferClient {
 
     /**
      * <b>Note:</b> This method is unofficial. It returns object from
-     * the core of ATS framework which is not supposed to be used directly 
-     * by customers. 
+     * the core of ATS framework which is not supposed to be used directly
+     * by customers.
      * It might be changed or removed at any moment without notice.
-     * 
+     *
      * @return the internal object handling the actual operations
      */
     public Object getInternalObject() {

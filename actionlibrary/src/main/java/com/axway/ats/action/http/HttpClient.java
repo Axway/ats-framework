@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -115,7 +115,8 @@ import com.axway.ats.core.utils.StringUtils;
  * The following is some sample code which shows how to use this class to send a SOAP request
  * over HTTP and receive the response:-
  * <pre>
- *    import org.apache.commons.io.IoUtils;
+ *    import java.nio.file.Files;
+ *    import java.nio.file.Paths;
  *    import org.w3c.dom.Document;
  *
  *    HTTPClient httpClient = new HTTPClient();
@@ -126,7 +127,7 @@ import com.axway.ats.core.utils.StringUtils;
  *    // Add credentials for HTTP Basic
  *    httpClient.setAuthorization("admin", "password");
  *    // Set the XML request body
- *    byte[] requestBody = IoUtils.readFileToByteArray(new File("c:/requests/SoapRequest.xml"));
+ *    byte[] requestBody = Files.readAllBytes(Paths.get("c:/requests/SoapRequest.xml"));
  *    httpClient.setRequestBody(requestBody, "text/xml");
  *    // Send request via HTTP POST
  *    HTTPResponse response = httpClient.post();
@@ -170,14 +171,17 @@ import com.axway.ats.core.utils.StringUtils;
  * <p>
  * The following code enables SPNEGO authentication:
  * <pre>
- * httpClient.setAuthorization("User1@AXWAY.COM", "password");
- * httpClient.setKerberosServicePrincipal("Service1@AXWAY.COM", "NT_USER_NAME");
+ * httpClient.setAuthorization("User1@example.com", "password");
+ * httpClient.setKerberosServicePrincipal("Service1@example.com", "NT_USER_NAME");
  * httpClient.setKrb5ConfFile(new File("c:/kerberos/krb5.conf"));
  * </pre>
  * Alternatively, the Kerberos client password may be loaded from a keytab file:-
  * <pre>
- * httpClient.setKerberosAuthorization("User1@AXWAY.COM", new File("c:/keytabs/user1.keytab"));
+ * httpClient.setKerberosAuthorization("User1@example.com", new File("c:/keytabs/user1.keytab"));
  * </pre>
+ * <p>
+ * More info could be found <a href="https://axway.github.io/ats-framework/HTTP-Operations.html">here</a>
+ * </p>
  */
 @PublicAtsApi
 public class HttpClient {
@@ -338,7 +342,7 @@ public class HttpClient {
             this.requestParameters.put( valueEntry.getKey(), valueEntry.getValue() );
         }
     }
-    
+
     /**
      * Remove a request(also called query) parameter<br/></br/>
      *
@@ -356,12 +360,12 @@ public class HttpClient {
                 return;
             }
         }
-        
+
         log.warn( "Parameter with name '" + name
                   + "' will not be removed since it was not found in request parameters." );
-        
+
     }
-    
+
     /**
      * Remove one or more request(also called query) parameters<br/></br/>
      *
@@ -369,7 +373,7 @@ public class HttpClient {
      */
     @PublicAtsApi
     public void removeRequestParameters(String... names){
-        
+
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
         while( keys.hasNext() ) {
@@ -380,7 +384,7 @@ public class HttpClient {
                 }
             }
         }
-        
+
     }
 
 
@@ -438,10 +442,10 @@ public class HttpClient {
 
         addHeaderToList( requestHeaders, name, value );
     }
-    
+
     /**
      * Remove a a user-specified HTTP header.
-     * 
+     *
      * @param name the header name
      */
     @PublicAtsApi
@@ -590,7 +594,7 @@ public class HttpClient {
      * for browser SPNEGO authentication.
      *
      * @param kerberosServicePrincipalName The service principal name,
-     *                                     e.g. 'Service1@AXWAY.COM', 'HTTP/server.axway.com@AXWAY.COM'
+     *                                     e.g. 'Service1@example.com', 'HTTP/server.example.com@example.com'
      * @param kerberosServicePrincipalType The service principal type. This must be set to one of the following
      *                                     values:-
      *            <ul>
@@ -617,12 +621,12 @@ public class HttpClient {
      * [libdefaults]
      * default_tkt_enctypes=rc4-hmac
      * default_tgs_enctypes= rc4-hmac
-     * default_realm = AXWAY.COM
+     * default_realm = example.com
      * forwardable = true
-    
+
      * [realms]
-     * AXWAY.COM = {
-     *     kdc = kerberos-dc.axway.com
+     * example.com = {
+     *     kdc = kerberos-dc.example.com
      * }
      * </pre>
      * @param krb5ConfFile The krb5.conf file
@@ -715,9 +719,9 @@ public class HttpClient {
             clientSSLKeyStore.load( fis, clientSSLKeyStorePassword.toCharArray() );
 
             // The following code seems to not make any effect on the communication.
-            // It just reads the certificates in the keystore file 
+            // It just reads the certificates in the keystore file
             // and remembers those in the last certificate chain only ;)
-            // Maybe the initial intention behind this code was to verify the keystore 
+            // Maybe the initial intention behind this code was to verify the keystore
             // content can be successfully loaded?
             Enumeration<String> e = clientSSLKeyStore.aliases();
             while( e.hasMoreElements() ) {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,14 +28,13 @@ import com.axway.ats.core.validation.Validator;
 
 /**
  * Used for running a system processes. <br/>
- * <b>Note</b> that this is not the same as simply running a shell command, as for example the executed process will
- * inherit the environment variables from the parent process.
- * 
- * <br/><br/>
- * <b>User guide</b> page related to this class: 
- * <a href="https://techweb.axway.com/confluence/display/ATS/Functional+tests#Functionaltests-Runningexternalprocess">basic</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Running+external+process">detailed</a>
+ * <b>Note</b> that this is not the same as simply running a shell command, as for example
+ * the executed process will inherit the environment variables from the parent process.
+ *
+ * <br/>
+ * <b>User guide</b>
+ * <a href="https://axway.github.io/ats-framework/Running-external-process.html">page</a>
+ * related to this class.
  */
 @PublicAtsApi
 public class ProcessExecutor {
