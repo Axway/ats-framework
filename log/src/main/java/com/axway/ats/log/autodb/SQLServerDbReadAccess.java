@@ -1035,7 +1035,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
             int numberRecords = 0;
             while( rs.next() ) {
                 String name = rs.getString( "name" );
-                int queueNumbers = rs.getInt( "queue_number" );
+                int queueNumbers = rs.getInt( "numberOfQueue" );
                 allStatistics.put( name, queueNumbers );
             }
 
