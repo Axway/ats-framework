@@ -64,7 +64,7 @@ public class Test_AbstractConfigurator extends BaseTest {
         testConfigurator.addConfigFile( configFile2.getAbsolutePath() );
         testConfigurator.addConfigFile( configFile1.getAbsolutePath() );
 
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       testConfigurator.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, testConfigurator.getProperties( "common.testboxes" ).keySet().size() );
     }
@@ -77,7 +77,7 @@ public class Test_AbstractConfigurator extends BaseTest {
         testConfigurator.addConfigFile( configFile1.getAbsolutePath() );
         testConfigurator.addConfigFile( configFile2.getAbsolutePath() );
 
-        assertEquals( "exch2003.perf.elab.axway.com",
+        assertEquals( "exch2003.perf.domain.com",
                       testConfigurator.getProperty( "common.mailservers.second-mail-server.host" ) );
         assertEquals( 2,
                       testConfigurator.getProperties( "common.mailservers.second-mail-server" )
@@ -94,7 +94,7 @@ public class Test_AbstractConfigurator extends BaseTest {
         testConfigurator.addConfigFile( configFile2.getAbsolutePath() );
 
         //the value should be taken from the second resource, as it is added to the top of the list
-        assertEquals( "perf-9.perf.elab.axway.com",
+        assertEquals( "perf-9.perf.domain.com",
                       testConfigurator.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, testConfigurator.getProperties( "common.testboxes" ).keySet().size() );
     }
@@ -125,7 +125,7 @@ public class Test_AbstractConfigurator extends BaseTest {
         assertEquals( 1, testConfigurator.getProperties( "common.testboxes" ).keySet().size() );
 
         testConfigurator.clearTempProperties();
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       testConfigurator.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, testConfigurator.getProperties( "common.testboxes" ).keySet().size() );
     }
@@ -152,7 +152,7 @@ public class Test_AbstractConfigurator extends BaseTest {
         testConfigurator.addConfigFile( configFile1.getAbsolutePath() );
 
         //the value should be taken from the first resource, as the second one is added to the bottom of the list
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       testConfigurator.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, testConfigurator.getProperties( "common.testboxes" ).keySet().size() );
 

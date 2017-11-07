@@ -60,7 +60,7 @@ public class Test_ConfigurationRepository extends BaseTest {
     public void registerUserConfigResourcePositive() throws ConfigurationException {
 
         configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       configRepository.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, configRepository.getProperties( "common.testboxes" ).keySet().size() );
     }
@@ -70,7 +70,7 @@ public class Test_ConfigurationRepository extends BaseTest {
 
         configRepository.registerConfigFile( configFile2.getAbsolutePath() );
         configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       configRepository.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, configRepository.getProperties( "common.testboxes" ).keySet().size() );
     }
@@ -80,7 +80,7 @@ public class Test_ConfigurationRepository extends BaseTest {
 
         configRepository.registerConfigFile( configFile1.getAbsolutePath() );
         configRepository.registerConfigFile( configFile2.getAbsolutePath() );
-        assertEquals( "exch2003.perf.elab.axway.com",
+        assertEquals( "exch2003.perf.domain.com",
                       configRepository.getProperty( "common.mailservers.second-mail-server.host" ) );
         assertEquals( 2,
                       configRepository.getProperties( "common.mailservers.second-mail-server" )
@@ -105,7 +105,7 @@ public class Test_ConfigurationRepository extends BaseTest {
         configRepository.registerConfigFile( configFile1.getAbsolutePath() );
 
         //the value should be taken from the first resource, as the second one is added to the bottom of the list
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       configRepository.getProperty( "common.testboxes.testbox1.host" ) );
         assertEquals( 12, configRepository.getProperties( "common.testboxes" ).keySet().size() );
 
@@ -145,18 +145,18 @@ public class Test_ConfigurationRepository extends BaseTest {
     public void checkPropertyIsCleared() throws ConfigurationException {
 
         configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        assertEquals( "perf-8.perf.elab.axway.com",
+        assertEquals( "perf-8.perf.domain.com",
                       configRepository.getProperty( "common.testboxes.testbox1.host" ) );
 
         configRepository.registerConfigFile( configFile2.getAbsolutePath() );
-        assertEquals( "perf-9.perf.elab.axway.com",
+        assertEquals( "perf-9.perf.domain.com",
                       configRepository.getProperty( "common.testboxes.testbox1.host" ) );
 
         configRepository.setTempProperty( "common.testboxes.testbox1.host", "host1" );
         assertEquals( "host1", configRepository.getProperty( "common.testboxes.testbox1.host" ) );
 
         configRepository.clearTempResources();
-        assertEquals( "perf-9.perf.elab.axway.com",
+        assertEquals( "perf-9.perf.domain.com",
                       configRepository.getProperty( "common.testboxes.testbox1.host" ) );
     }
 
@@ -165,11 +165,11 @@ public class Test_ConfigurationRepository extends BaseTest {
 
         configRepository.registerConfigFile( configFile1.getAbsolutePath() );
         Map<String, String> properties = configRepository.getProperties( "common.testboxes.testbox1" );
-        assertEquals( "perf-8.perf.elab.axway.com", properties.get( "common.testboxes.testbox1.host" ) );
+        assertEquals( "perf-8.perf.domain.com", properties.get( "common.testboxes.testbox1.host" ) );
 
         configRepository.registerConfigFile( configFile2.getAbsolutePath() );
         properties = configRepository.getProperties( "common.testboxes.testbox1" );
-        assertEquals( "perf-9.perf.elab.axway.com", properties.get( "common.testboxes.testbox1.host" ) );
+        assertEquals( "perf-9.perf.domain.com", properties.get( "common.testboxes.testbox1.host" ) );
 
         configRepository.setTempProperty( "common.testboxes.testbox1.host", "host1" );
         properties = configRepository.getProperties( "common.testboxes.testbox1" );
