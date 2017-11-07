@@ -1,5 +1,5 @@
-From: "test105" <test105@automator.sofia-qa2.axway.com>
-To: <test1000@automator.es.lab.sofi.axway.int>
+From: "test105" <test105@automator.domain>
+To: <test1000@automator.domain>
 Subject: 3 nested messages, 2 attachments
 Date: Mon, 20 Sep 2010 15:03:34 +0300
 MIME-Version: 1.0
@@ -60,18 +60,18 @@ Content-Disposition: attachment;
 	filename="With Message Tag .eml"
 
 Return-Path: <sender@sender.com>
-X-Original-To: test53@automator.es.lab.sofi.axway.int
-Delivered-To: test53@automator.es.lab.sofi.axway.int
-Received: from vmg-117.es.lab.sofi.axway.int (vmg-117.es.lab.sofi.axway.int [10.232.6.117])
-	by automator.auto-es.lab.sofi.axway.int (Postfix) with ESMTP id EBE5F2E1D7
-	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:46 +0300 (EEST)
+X-Original-To: test53@automator.domain
+Delivered-To: test53@automator.domain
+Received: from vmg-117.domain
+	by automator.domain (Postfix) with ESMTP id EBE5F2E1D7
+	for <test53@automator.domain>; Mon, 20 Sep 2010 14:29:46 +0300 (EEST)
 X-WSS-ID: 0L91ML2-ID-0HI-02
 X-TMWD-Spam-Summary: TS=20100920112928; ID=1; SEV=2.4.2; DFV=B2010092010; IFV=NA; AIF=B2010092010; RPD=6.02.0034; ENG=NA; RPDID=NA; CAT=NONE; CON=NONE; SIG=AAAAAAAAAAAAAAAACr8CIQAAfQ==
-Received: from mailer (mailer.corp.axway.com [10.191.2.33])
-	by vmg-117.es.lab.sofi.axway.int (Postfix) with ESMTP id 2F36B3CC176
-	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:24 +0300 (EEST)
+Received: from mailer (mailer.domain)
+	by vmg-117.domain (Postfix) with ESMTP id 2F36B3CC176
+	for <test53@automator.domain>; Mon, 20 Sep 2010 14:29:24 +0300 (EEST)
 From: sender@sender.com
-To: test53@automator.es.lab.sofi.axway.int
+To: test53@automator.domain
 Message-ID: <5760903.01284982177750.JavaMail.mailer@mailer>
 Subject: subject
 MIME-Version: 1.0
@@ -273,8 +273,8 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
 	filename="1 nested message, 1 txt attachment.eml"
 
-From: "test105" <test105@automator.sofia-qa2.axway.com>
-To: test101@automator.es.lab.sofi.axway.int
+From: "test105" <test105@automator.domain>
+To: test101@automator.domain
 Subject: 1 nested message, 1 txt attachment
 Date: Mon, 20 Sep 2010 14:53:28 +0300
 MIME-Version: 1.0
@@ -325,18 +325,18 @@ Content-Disposition: attachment;
 	filename="With Message Tag .eml"
 
 Return-Path: <sender@sender.com>
-X-Original-To: test53@automator.es.lab.sofi.axway.int
-Delivered-To: test53@automator.es.lab.sofi.axway.int
-Received: from vmg-117.es.lab.sofi.axway.int (vmg-117.es.lab.sofi.axway.int [10.232.6.117])
-	by automator.auto-es.lab.sofi.axway.int (Postfix) with ESMTP id EBE5F2E1D7
-	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:46 +0300 (EEST)
+X-Original-To: test53@automator.domain
+Delivered-To: test53@automator.domain
+Received: from vmg-117.domain
+	by automator.domain (Postfix) with ESMTP id EBE5F2E1D7
+	for <test53@automator.domain>; Mon, 20 Sep 2010 14:29:46 +0300 (EEST)
 X-WSS-ID: 0L91ML2-ID-0HI-02
 X-TMWD-Spam-Summary: TS=20100920112928; ID=1; SEV=2.4.2; DFV=B2010092010; IFV=NA; AIF=B2010092010; RPD=6.02.0034; ENG=NA; RPDID=NA; CAT=NONE; CON=NONE; SIG=AAAAAAAAAAAAAAAACr8CIQAAfQ==
-Received: from mailer (mailer.corp.axway.com [10.191.2.33])
-	by vmg-117.es.lab.sofi.axway.int (Postfix) with ESMTP id 2F36B3CC176
-	for <test53@automator.es.lab.sofi.axway.int>; Mon, 20 Sep 2010 14:29:24 +0300 (EEST)
+Received: from mailer (mailer.domain)
+	by vmg-117.domain (Postfix) with ESMTP id 2F36B3CC176
+	for <test53@automator.domain>; Mon, 20 Sep 2010 14:29:24 +0300 (EEST)
 From: sender@sender.com
-To: test553@automator.es.lab.sofi.axway.int
+To: test553@automator.domain
 Message-ID: <5760903.01284982177750.JavaMail.mailer@mailer>
 Subject: some subject
 MIME-Version: 1.0
@@ -372,8 +372,8 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
 	filename="2 attachments, 0 nested messages.eml"
 
-From: "test105" <test105@automator.sofia-qa2.axway.com>
-To: test102@automator.es.lab.sofi.axway.int
+From: "test105" <test105@automator.domain>
+To: test102@automator.domain
 Subject: 2 attachments, 0 nested messages
 Date: Mon, 20 Sep 2010 15:01:57 +0300
 MIME-Version: 1.0

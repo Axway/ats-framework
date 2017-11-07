@@ -46,12 +46,12 @@ import com.axway.ats.rbv.model.RbvException;
  * Class used for base DB verifications
  * <p>Note that <code>check</code> methods add rules for match whereas actual rules
  * evaluation is done in one of the methods with <code>verify</code> prefix.</p>
- *
+  *
  * <br/><br/>
  * <b>User guide</b> pages related to this class:<br/>
- * <a href="https://techweb.axway.com/confluence/display/ATS/Test+verifications">RBV basics</a>
+ * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
  * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Database+verifications">Database verification details</a>
+ * <a href="https://axway.github.io/ats-framework/Database-verifications.html">Database verification details</a>
  */
 @PublicAtsApi
 public class DbVerification extends VerificationSkeleton {

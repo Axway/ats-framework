@@ -1,23 +1,23 @@
 <config>
 	<common>
 		<testboxes>
-			<testbox1 host="perf-8.perf.elab.axway.com" db="mft"
+			<testbox1 host="perf-8.perf.domain.com" db="dbname"
 				dbuser="axway" dbpass="axway" adminUser="admin"
 				adminPassword="PASSWORD123" />
 
-			<testbox2 host="10.193.1.2" db="mft" dbuser="axway"
+			<testbox2 host="10.10.10.10" db="dbname" dbuser="axway"
 				dbpass="axway" adminUser="admin" adminPassword="PASSWORD123" />
 
 		</testboxes>
 		
 		<messageboxes>
 			<axway
-				host="perf.elab.axway.com" db="messages"
+				host="domain.com" db="messages"
 				table="messages_axway" dbuser="root" dbpass="axway" />
 		</messageboxes>
 		
 		<mailservers>
-			<exchange host="exch2003.perf.elab.axway.com"
+			<exchange host="exch2003.perf.domain.com"
 				deafultPass="PASSWORD123" />
 		</mailservers>
 	</common>

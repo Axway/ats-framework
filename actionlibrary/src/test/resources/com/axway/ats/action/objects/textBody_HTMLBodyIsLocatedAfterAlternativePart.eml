@@ -1,18 +1,17 @@
-Return-Path: test1@auto.lab.sofi.axway.int
-Received: from [127.0.0.1] ([10.134.9.189])
-	by auto.lab.sofi.axway.int
+Return-Path: test1@domain
+Received: from [127.0.0.1]
 	; Thu, 27 Aug 2015 14:54:54 +0300
-References: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
+References: <55DEF9DA.9030604@domain>
 Subject: test2
-To: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
-From: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
-X-Forwarded-Message-Id: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
-Message-ID: <55DEFAD7.2060507@auto.lab.sofi.axway.int>
+To: Radoslav Kostadinov <test1@domain>
+From: Radoslav Kostadinov <test1@domain>
+X-Forwarded-Message-Id: <55DEF9DA.9030604@domain>
+Message-ID: <55DEFAD7.2060507@domain>
 Date: Thu, 27 Aug 2015 14:56:07 +0300
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
  Thunderbird/38.1.0
 MIME-Version: 1.0
-In-Reply-To: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
+In-Reply-To: <55DEF9DA.9030604@domain>
 Content-Type: multipart/mixed;
  boundary="------------060100070504060404010709"
 
@@ -50,14 +49,13 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
  filename="test again.eml"
 
-Return-Path: test1@auto.lab.sofi.axway.int
-Received: from [127.0.0.1] ([10.134.9.189])
-	by auto.lab.sofi.axway.int
+Return-Path: test1@domain
+Received: from [127.0.0.1]
 	; Thu, 27 Aug 2015 14:50:40 +0300
-To: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
-From: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
+To: Radoslav Kostadinov <test1@domain>
+From: Radoslav Kostadinov <test1@domain>
 Subject: test again
-Message-ID: <55DEF9DA.9030604@auto.lab.sofi.axway.int>
+Message-ID: <55DEF9DA.9030604@domain>
 Date: Thu, 27 Aug 2015 14:51:54 +0300
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
  Thunderbird/38.1.0
@@ -102,17 +100,17 @@ Content-Disposition: attachment;
  filename*1=".eml"
 
 Return-Path: <>
-X-Original-To: test68@automator.es.lab.sofi.axway.int
-Delivered-To: test68@automator.es.lab.sofi.axway.int
-Received: from mailgate46.perf-es.lab.sofi.axway.int (mailgate46.perf-es.lab.sofi.axway.int [10.232.12.46])
-	by automator4.auto-es.lab.sofi.axway.int (Postfix) with ESMTP id B90602E244
-	for <test68@automator.es.lab.sofi.axway.int>; Mon,  2 May 2011 14:41:56 +0300 (EEST)
+X-Original-To: test68@automator.domain
+Delivered-To: test68@automator.domain
+Received: from mailgate46.domain
+	by automator4.domain (Postfix) with ESMTP id B90602E244
+	for <test68@automator.domain>; Mon,  2 May 2011 14:41:56 +0300 (EEST)
 Date: Mon, 02 May 2011 14:57:04 +0300
 Content-Type: multipart/mixed;
  boundary="_-==0R35QC70UTVNY9==-_"
-From: "MailGate Notifier" <admin@automator.es.lab.sofi.axway.int>
-To: test68@automator.es.lab.sofi.axway.int
-Message-ID: <0R35QCA0UTVNY8-01@mailgate46.perf-es.lab.sofi.axway.int>
+From: "MailGate Notifier" <admin@automator.domain>
+To: test68@automator.domain
+Message-ID: <0R35QCA0UTVNY8-01@mailgate46.domain>
 MIME-Version: 1.0
 Subject: The notification subject
 X-M-MSG: 

@@ -53,22 +53,22 @@ public class Test_CommonConfigurator extends BaseTest {
     private static File nullPropertyConfigFile;
     private static File unknownPropertyConfigFile;
 
-    private static final String TEXTBOX1_HOST      = "perf-8.perf.elab.axway.com";
-    private static final String TEXTBOX1_HOST2     = "perf-9.perf.elab.axway.com";
+    private static final String TEXTBOX1_HOST      = "perf-8.perf.domain.com";
+    private static final String TEXTBOX1_HOST2     = "perf-9.perf.domain.com";
     private static final int    TEXTBOX1_DBPORT    = 12345;
     private static final String TEXTBOX1_ADMINPASS = "PASSWORD123";
-    private static final String TEXTBOX1_DBNAME    = "mft";
+    private static final String TEXTBOX1_DBNAME    = "dbname";
     private static final String TEXTBOX1_DBUSER    = "axway_user";
     private static final String TEXTBOX1_DBPASS    = "axway";
     private static final String TEXTBOX1_DBTYPE    = "Oracle";
 
-    private static final String TEXTBOX2_HOST      = "10.193.1.2";
+    private static final String TEXTBOX2_HOST      = "10.11.12.13";
     private static final String TEXTBOX2_ADMINUSER = "admin";
 
-    private static final String MAILSERVER_HOST        = "exch2003.perf.elab.axway.com";
+    private static final String MAILSERVER_HOST        = "exch2003.perf.domain.com";
     private static final String MAILSERVER_DEFAULTPASS = "PASSWORD123";
 
-    private static final String MESSAGEBOX_HOST    = "perf.elab.axway.com";
+    private static final String MESSAGEBOX_HOST    = "domain.com";
     private static final String MESSAGEBOX_DBNAME  = "messages";
     private static final String MESSAGEBOX_DBUSER  = "root";
     private static final String MESSAGEBOX_DBPASS  = "axway";

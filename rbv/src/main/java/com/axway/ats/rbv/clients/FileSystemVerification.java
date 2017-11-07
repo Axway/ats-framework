@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.axway.ats.action.objects.FilePackage;
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
@@ -49,9 +48,9 @@ import com.axway.ats.rbv.model.RbvException;
  *
  * <br/>
  * <b>User guide</b> pages related to this class:<br/>
- * <a href="https://techweb.axway.com/confluence/display/ATS/Test+verifications">RBV basics</a>
+ * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
  * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/File+system+verifications">File system verification details</a>
+ * <a href="https://axway.github.io/ats-framework/File-system-verifications.html">File system verification details</a>
 */
 @PublicAtsApi
 public class FileSystemVerification extends VerificationSkeleton {

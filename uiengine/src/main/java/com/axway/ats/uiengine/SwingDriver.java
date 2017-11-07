@@ -38,13 +38,6 @@ import netx.jnlp.runtime.ApplicationInstance;
 
 /**
  * A driver used for working with a SWING application
- * 
- * 
- * <br/><br/>
- * <b>User guide</b> pages related to this class:<br/> 
- * <a href="https://techweb.axway.com/confluence/display/ATS/UI+Engine">UI Engine basics</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Automating+Swing+application">testing swing applications</a>
  */
 @PublicAtsApi
 public class SwingDriver extends UiDriver {

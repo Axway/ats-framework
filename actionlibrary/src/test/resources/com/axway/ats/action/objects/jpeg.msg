@@ -1,7 +1,7 @@
 Return-Path: <sender@sender.com>
 X-Original-To: test43@automator.sofia-qa2.axway.com
 Delivered-To: test43@automator.sofia-qa2.axway.com
-Received: from tm (tm.corp.axway.com [10.191.2.10])
+Received: from tm (tm.corp.axway.com)
 	by automator4.sofia-qa3.axway.com (Postfix) with ESMTP id 6B45912E82CB
 	for <test43@automator.sofia-qa2.axway.com>; Fri, 19 Oct 2007 14:45:39 +0300 (EEST)
 FROM: 1192794169660 <sender@sender.com>

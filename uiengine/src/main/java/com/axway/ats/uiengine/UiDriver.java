@@ -24,11 +24,6 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 
 /**
  * Abstraction of a UI driver
- *
- * <br/><br/>
- * <b>User guide</b>
- * <a href="https://techweb.axway.com/confluence/display/ATS/UI+Engine">page</a>
- * for the UI Engine
  */
 @PublicAtsApi
 public abstract class UiDriver {

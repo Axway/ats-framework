@@ -1,18 +1,18 @@
-Return-Path: test1@auto.lab.sofi.axway.int
-Received: from [127.0.0.1] ([10.134.9.189])
-	by auto.lab.sofi.axway.int
+Return-Path: test1@domain
+Received: from [127.0.0.1]
+	by domain
 	; Fri, 28 Aug 2015 16:05:29 +0300
-References: <55E05CA4.8040404@auto.lab.sofi.axway.int>
+References: <55E05CA4.8040404@domain>
 Subject: Fwd: test1Att
-To: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
-From: Radoslav Kostadinov <test1@auto.lab.sofi.axway.int>
-X-Forwarded-Message-Id: <55E05CA4.8040404@auto.lab.sofi.axway.int>
-Message-ID: <55E05CE5.5020209@auto.lab.sofi.axway.int>
+To: Radoslav Kostadinov <test1@domain>
+From: Radoslav Kostadinov <test1@domain>
+X-Forwarded-Message-Id: <55E05CA4.8040404@domain>
+Message-ID: <55E05CE5.5020209@domain>
 Date: Fri, 28 Aug 2015 16:06:45 +0300
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
  Thunderbird/38.1.0
 MIME-Version: 1.0
-In-Reply-To: <55E05CA4.8040404@auto.lab.sofi.axway.int>
+In-Reply-To: <55E05CA4.8040404@domain>
 Content-Type: multipart/mixed;
  boundary="------------020905070404080308000303"
 

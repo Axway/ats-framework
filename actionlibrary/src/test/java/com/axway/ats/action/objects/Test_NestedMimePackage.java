@@ -79,10 +79,10 @@ public class Test_NestedMimePackage extends BaseTest {
         String headerName = "To";
         int index = 0;
 
-        assertEquals( "test53@automator.es.lab.sofi.axway.int",
+        assertEquals( "test53@automator.domain",
                       getNestedMessage( NESTED_1 ).getHeader( headerName, index ) );
 
-        assertEquals( "test553@automator.es.lab.sofi.axway.int",
+        assertEquals( "test553@automator.domain",
                       getNestedMessage( NESTED_2_1 ).getHeader( headerName, index ) );
 
         assertEquals( "1284982177797",

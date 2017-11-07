@@ -51,9 +51,9 @@ import com.axway.ats.rbv.storage.Matchable;
  *
  * <br/><br/>
  * <b>User guide</b> pages related to this class:<br/>
- * <a href="https://techweb.axway.com/confluence/display/ATS/Test+verifications">RBV basics</a>
+ * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
  * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/IMAP+verifications">IMAP verification details</a>
+ * <a href="https://axway.github.io/ats-framework/IMAP-verifications.html">IMAP verification details</a>
  */
 @PublicAtsApi
 public class ImapVerification extends VerificationSkeleton {

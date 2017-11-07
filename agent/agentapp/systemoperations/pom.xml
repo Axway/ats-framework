@@ -13,8 +13,7 @@
     <description>Component for system operations. Contains ATS Agent actions deployed in ATS agents. Produces service (for agent side) and client JAR files</description>
 
     <properties>
-        <!-- skip Sonar because Findbugs plugin complains about missing source.
-          Done as per https://techweb.axway.com/jira/browse/ECDOP-2064 -->
+        <!-- skip Sonar because Findbugs plugin complains about missing source. -->
         <sonar.skip>true</sonar.skip>
     </properties>
     

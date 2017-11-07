@@ -46,12 +46,6 @@ import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
  *
  * <br/>
  * This is a headless(no UI) browser.
- *
- * <br/><br/>
- * <b>User guide</b> pages related to this class:<br/>
- * <a href="https://techweb.axway.com/confluence/display/ATS/UI+Engine">UI Engine basics</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Automating+HTML+and+Javascript+application">testing HTML applications</a>
  */
 @PublicAtsApi
 public class HiddenBrowserDriver extends AbstractHtmlDriver {

@@ -45,12 +45,6 @@ import io.appium.java_client.ios.IOSDriver;
 
 /**
  * A driver used for working with a mobile applications(Android or iOS)
- *
- * <br/><br/>
- * <b>User guide</b> pages related to this class:<br/>
- * <a href="https://techweb.axway.com/confluence/display/ATS/UI+Engine">UI Engine basics</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Automating+mobile+%28Android+or+iOS%29+application">testing mobile applications</a>
  */
 @PublicAtsApi
 public class MobileDriver extends UiDriver {

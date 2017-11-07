@@ -19,13 +19,6 @@ import com.axway.ats.common.PublicAtsApi;
 
 /**
  * A driver operating over Firefox browser
- *
- *
- * <br/><br/>
- * <b>User guide</b> pages related to this class:<br/>
- * <a href="https://techweb.axway.com/confluence/display/ATS/UI+Engine">UI Engine basics</a>
- * and
- * <a href="https://techweb.axway.com/confluence/display/ATS/Automating+HTML+and+Javascript+application">testing HTML applications</a>
  */
 @PublicAtsApi
 public class FirefoxDriver extends AbstractRealBrowserDriver {

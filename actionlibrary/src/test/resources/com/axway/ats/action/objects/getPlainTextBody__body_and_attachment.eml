@@ -1,11 +1,11 @@
 Return-Path: <test@test.com>
-X-Original-To: test86@automator.es.lab.sofi.axway.int
-Delivered-To: test86@automator.es.lab.sofi.axway.int
-Received: from ITEM-A11034.axway.int (item-a11034.wks.sofi.axway.int [10.134.14.21])
-	by automator2.auto-es.lab.sofi.axway.int (Postfix) with ESMTP id 5D60C2EA99
-	for <test86@automator.es.lab.sofi.axway.int>; Wed, 11 Jan 2012 15:18:35 +0200 (EET)
+X-Original-To: test86@automator.domain
+Delivered-To: test86@automator.domain
+Received: from ITEM-A11034.domain (item-a11034.domain)
+	by automator2.domain (Postfix) with ESMTP id 5D60C2EA99
+	for <test86@automator.domain>; Wed, 11 Jan 2012 15:18:35 +0200 (EET)
 From: test@test.com
-To: test86@automator.es.lab.sofi.axway.int
+To: test86@automator.domain
 Message-ID: <27403852.2.1326291875671.JavaMail.kanikolov@ITEM-A11034>
 Subject: TEST
 MIME-Version: 1.0
