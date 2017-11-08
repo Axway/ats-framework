@@ -75,7 +75,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public static final int       CHECK_FILE_SIZE              = LocalFileSystemSnapshot.CHECK_FILE_SIZE;
     /**
-     * Must check the silast modification timeze of a file. This value will override the global settings when used
+     * Must check the last modification time of a file. This value will override the global settings when used
      */
     @PublicAtsApi
     public static final int       CHECK_FILE_MODIFICATION_TIME = LocalFileSystemSnapshot.CHECK_FILE_MODIFICATION_TIME;

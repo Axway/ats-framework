@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ public abstract class ContentFileSnapshot extends FileSnapshot {
 
     /**
      * Load the file as a String
-     * 
+     *
      * @param agent agent file is located at
      * @param filePath full file path
      * @return the file content
@@ -59,7 +59,7 @@ public abstract class ContentFileSnapshot extends FileSnapshot {
             // As we need to use Action Library code in order to get the file content, here we use
             // java reflection, so do not need to introduce compile dependency
             try {
-                Class<?> fileSystemOperationsClass = Class.forName( "com.tumbleweed.automation.actions.filesystem.RemoteFileSystemOperations" );
+                Class<?> fileSystemOperationsClass = Class.forName( "com.axway.ats.action.filesystem.RemoteFileSystemOperations" );
                 Object fileSystemOperationsInstance = fileSystemOperationsClass.getConstructor( String.class )
                                                                                .newInstance( agent );
 
@@ -72,7 +72,7 @@ public abstract class ContentFileSnapshot extends FileSnapshot {
                 // this will cancel the comparison
                 // the other option is to add a difference to the FileTrace object, instead of throwing an exception here
                 throw new FileSystemOperationException( "Error loading '" + filePath + "' file from "
-                                                        + agent );
+                                                        + agent, e );
             }
         }
 
