@@ -42,9 +42,6 @@ public class SMimeSignatureRule extends AbstractImapRule {
         setNestedPackagePath( nestedPackagePath );
     }
 
-    /* (non-Javadoc)
-     * @see com.tumbleweed.automation.rbv.rules.AbstractRule#performMatch(com.tumbleweed.automation.rbv.MetaData)
-     */
     @Override
     protected boolean performMatch(
                                     MetaData metaData ) throws RbvException {
@@ -63,9 +60,6 @@ public class SMimeSignatureRule extends AbstractImapRule {
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.tumbleweed.automation.rbv.rules.AbstractRule#getRuleDescription()
-     */
     @Override
     protected String getRuleDescription() {
 
@@ -74,9 +68,6 @@ public class SMimeSignatureRule extends AbstractImapRule {
                                   : "which checks SMIME signature against the keystore";
     }
 
-    /* (non-Javadoc)
-     * @see com.tumbleweed.automation.rbv.rules.Rule#getMetaDataKeys()
-     */
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();

@@ -114,8 +114,7 @@
 			<groupId>com.oracle.jdbc</groupId>
 			<artifactId>ojdbc7</artifactId>
 			<version>${oracle.ojdbc.version}</version>
-			<optional>true</optional> <!-- only needed for connections to Oracle DB -->
-			<!-- <scope>system</scope> <systemPath>${HOME}/.m2/repository/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar</systemPath> -->
+			<optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com repo -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.oracle.jdbc</groupId>
@@ -127,8 +126,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.mysql-connector-java.version}</version>
-			<!-- TODO: make runtime after concrete DB driver classes are parameterized 
-				and loaded with reflection <scope>runtime</scope> -->
+			<!-- TODO: make optional or runtime -->
 		</dependency>
 		<!-- dependency for working with PostgreSQL databases -->
 		<dependency>

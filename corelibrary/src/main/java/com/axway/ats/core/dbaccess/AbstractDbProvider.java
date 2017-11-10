@@ -109,9 +109,6 @@ public abstract class AbstractDbProvider implements DbProvider {
         return dbConnection;
     }
 
-    /* (non-Javadoc)
-     * @see com.tumbleweed.automation.core.dbaccess.DbProvider#getDatabaseMetaData()
-     */
     @Override
     public DatabaseMetaData getDatabaseMetaData() {
 

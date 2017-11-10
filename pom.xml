@@ -7,7 +7,7 @@
     <version>4.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ATS-Framework</name>
-    <description>ATS Maven parent artifact. Internal ATS helper for sharing common settings and dependencies</description>
+    <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
     <url>https://github.com/Axway/ats-framework</url>
 
     <modules>
@@ -27,7 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java.version>1.8</java.version> <!-- min JDK to use. Currently forced to Java 8 because of Selenium -->
+        <java.version>1.8</java.version> <!-- min JDK to use. Currently forced to Java 8 because Selenium produces Java 8 class level artifacts-->
         <java.classlevel.version>1.7</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
         <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
@@ -444,7 +444,8 @@
         </profile>
         <profile>
             <id>fast</id>
-            <!-- Use this profile with "mvn goal -P fast" if you want quick build without running tests and generating JavaDoc -->
+            <!-- Use this profile with "mvn goal -P fast" if you want quick build 
+			     without running tests and generating JavaDoc -->
             <properties>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
                 <!-- Uncomment this if you want to compile tests but not to run them <skipTests>true</skipTests> -->

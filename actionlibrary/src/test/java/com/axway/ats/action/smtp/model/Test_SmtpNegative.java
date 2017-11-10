@@ -29,7 +29,7 @@ import com.axway.ats.action.smtp.SmtpManager;
 public class Test_SmtpNegative extends BaseTest {
 
     private SmtpManager smtp;
-    private String      host = "unit4.sofia-qa2.axway.com";
+    private String      host = "unit4.ne.localdomain";
     private int         port = 25;
 
     @Before
@@ -62,7 +62,7 @@ public class Test_SmtpNegative extends BaseTest {
     @Test(expected = RuntimeException.class)
     public void openConnection_wrongHost() {
 
-        smtp.openConnections( "unit.sofi.axway.co", port, 1 );
+        smtp.openConnections( "unit.ne.localdomain", port, 1 );
     }
 
     @Ignore

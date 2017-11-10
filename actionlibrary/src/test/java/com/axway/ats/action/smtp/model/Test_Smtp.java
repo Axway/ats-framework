@@ -35,7 +35,7 @@ import com.axway.ats.action.smtp.SmtpManager;
 public class Test_Smtp extends BaseTest {
 
     private SmtpManager smtpMgr;
-    private String      host = "unit4.sofia-qa2.axway.com";
+    private String      host = "unit4.da.localdomain";
     private int         port = 25;
 
     @Before
@@ -194,7 +194,7 @@ public class Test_Smtp extends BaseTest {
 
         smtpConnection.helo( "t.t.com" );
         smtpConnection.mailFrom( "t@t.com", null );
-        smtpConnection.rcptTo( "test197@automator.sofia-qa2.axway.com", null );
+        smtpConnection.rcptTo( "test197@automator.da.localdomain", null );
         smtpConnection.data( "Subject: Test 123\nTo:t@t.com" );
         smtpConnection.quit();
     }

@@ -52,7 +52,7 @@ public enum ValidationType {
     STRING_DATE,
 
     /** 
-     * {@link String} containing a valid email address, ex. "boiko.borisov@sofia.bg"<br>
+     * {@link String} containing a valid email address, ex. "someone@example.com"<br>
      * <br>
      * Note that the JavaMail's implementation of email address validation is<br>
      * somewhat limited. The Javadoc says "The current implementation checks many,<br>

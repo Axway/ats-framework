@@ -28,7 +28,7 @@ import com.axway.ats.action.smtp.SmtpManager;
 public class Test_SmtpCon extends BaseTest {
 
     //-------------------------------------------------------------------------
-    private static final String host = "unit4.sofia-qa2.axway.com";
+    private static final String host = "unit4.da.localdomain";
     private static final int    port = 25;
     private SmtpManager                smtp;
     private SmtpConnection             connection;
