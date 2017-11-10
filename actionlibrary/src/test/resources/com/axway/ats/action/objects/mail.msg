@@ -1,11 +1,11 @@
-x-sender: <pop270@perf.elab.axway.com>
-x-receiver: <pop408@perf.elab.axway.com>
-Message-ID: <17421200634262437793@perf.elab.axway.com>
+x-sender: <pop270@host.localdomain>
+x-receiver: <pop408@host.localdomain>
+Message-ID: <17421200634262437793@host.localdomain>
 X-EM-Version: 5, 0, 0, 14
 X-EM-Registration: #00D0540310E01400FE00
 X-Mailer: e-Message Builder 3.0 (SMTP Edition)
-From: "pop270" <pop270@perf.elab.axway.com>
-To: "pop408" <pop408@perf.elab.axway.com>
+From: "pop270" <pop270@host.localdomain>
+To: "pop408" <pop408@host.localdomain>
 Subject: RE: MUNCH
 Date: Wed, 1 Mar 2006 22:24:37 -0800
 MIME-Version: 1.0

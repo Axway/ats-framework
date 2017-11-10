@@ -12,7 +12,7 @@
 		
 		<messageboxes>
 			<axway
-				host="perf.elab.axway.com" db="messages"
+				host="host.localdomain" db="messages"
 				table="messages_axway" dbuser="root" dbpass="axway" />
 		</messageboxes>
 		

@@ -1,11 +1,11 @@
 Return-Path: <sender@sender.com>
-X-Original-To: test43@automator.sofia-qa2.axway.com
-Delivered-To: test43@automator.sofia-qa2.axway.com
-Received: from tm (tm.corp.axway.com)
-	by automator4.sofia-qa3.axway.com (Postfix) with ESMTP id 6B45912E82CB
-	for <test43@automator.sofia-qa2.axway.com>; Fri, 19 Oct 2007 14:45:39 +0300 (EEST)
+X-Original-To: test43@qa2-automator.host.localdomain
+Delivered-To: test43@qa2-automator.host.localdomain
+Received: from tm (host.localdomain.com)
+	by qa3-automator4.host.localdomain (Postfix) with ESMTP id 6B45912E82CB
+	for <test43@qa2-automator.host.localdomain>; Fri, 19 Oct 2007 14:45:39 +0300 (EEST)
 FROM: 1192794169660 <sender@sender.com>
-To: test43@automator.sofia-qa2.axway.com
+To: test43@qa2-automator.host.localdomain
 Message-ID: <28195661.3291192794340347.JavaMail.username@tm>
 Subject: All_Image_Files : JPEG : looney.jpeg
 MIME-Version: 1.0

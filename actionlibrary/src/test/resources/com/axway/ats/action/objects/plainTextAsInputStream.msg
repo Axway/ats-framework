@@ -1,5 +1,5 @@
-From: "test11" <test11@automator.sofia-qa2.axway.com>
-To: "test11@automator.sofia-qa2.axway.com"
+From: "test11" <test11@automator.host.localdomain>
+To: "test11@automator.host.localdomain"
 Subject: Multiple attachments
 Date: Fri, 8 Jul 2005 10:47:50 +0300
 MIME-Version: 1.0

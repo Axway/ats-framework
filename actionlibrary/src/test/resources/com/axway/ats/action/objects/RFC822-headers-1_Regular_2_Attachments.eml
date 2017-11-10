@@ -37,8 +37,8 @@ X-MS-TNEF-Correlator:
 Thread-Topic: Delivery Notification: Delivery has been successful
 Thread-Index: AcUEng8QUWj3Vh6hTNm1MbuKRdtZqw==
 Priority: Urgent
-From: a@sofia-qa2.axway.com
-To: test41@sofia-qa.axway.com
+From: a@qa2-host.localdomain
+To: test41@qa-host.localdomain
 Content-Type: multipart/mixed;
  boundary="----_=_NextPart_002_01C5049E.0ED34D80"
 Content-Transfer-Encoding: 7bit
@@ -56,7 +56,7 @@ fields:
   Message-id: =
 <A0FA42E4C805C8488802954DCB1D6D340305CBB2@edxmb1.jdnet.deere.com>
   Date: Thu, 27 Jan 2005 12:24:56 -0600
-From: a@sofia-qa2.axway.com
+From: a@qa2-host.localdomain
 your
    friends, made me cry, remembering all the fun times......
 

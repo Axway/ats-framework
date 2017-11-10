@@ -316,7 +316,7 @@ public class Test_MimePackage extends BaseTest {
         String headerName = "To";
         int index = 0;
 
-        assertEquals( "\"pop408\" <pop408@perf.elab.axway.com>",
+        assertEquals( "\"pop408\" <pop408@host.localdomain>",
                       eMailMessage.getHeader( headerName, index ) );
     }
 
@@ -324,7 +324,7 @@ public class Test_MimePackage extends BaseTest {
     public void getHeaderMainBodyPartShort() throws Exception {
 
         String headerName = "To";
-        assertEquals( "\"pop408\" <pop408@perf.elab.axway.com>", eMailMessage.getHeader( headerName ) );
+        assertEquals( "\"pop408\" <pop408@host.localdomain>", eMailMessage.getHeader( headerName ) );
     }
 
     @Test
