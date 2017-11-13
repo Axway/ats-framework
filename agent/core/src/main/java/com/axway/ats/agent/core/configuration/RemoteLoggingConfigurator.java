@@ -309,6 +309,12 @@ public class RemoteLoggingConfigurator implements Configurator {
 
         atsDbLoggerLevelsFromTests.put( atsAgent, logLevel );
     }
+    
+    public static LogLevel getAtsLogLevelForAgent( String atsAgent ) {
+        
+        return atsDbLoggerLevelsFromTests.get( atsAgent );
+        
+    }
 
     @Override
     public String getDescription() {

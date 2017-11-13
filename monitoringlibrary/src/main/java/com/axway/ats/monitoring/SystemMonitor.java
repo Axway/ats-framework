@@ -23,15 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
+import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.monitoring.MonitoringException;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.TestCaseState;
@@ -683,12 +686,14 @@ public class SystemMonitor {
         monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
         this.monitoredHosts.add( monitoredHost );
 
+        /* see if log level was already set for this monitored host */
+        LogLevel lvlFromRlc = RemoteLoggingConfigurator.getAtsLogLevelForAgent( monitoredHost );
+        int logLevel = ( lvlFromRlc == null ) ? Logger.getRootLogger().getEffectiveLevel().toInt() : lvlFromRlc.toInt();
+
         /*
          * create RestHelper instance, ready to connect with the specified
          * monitoredHost
          */
-        // appenderConfiguration.setLoggingThreshold( Logger.getRootLogger().getEffectiveLevel() );
-        
         RestHelper helper = new RestHelper();
         helper.post( monitoredHost,
                      RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
@@ -699,7 +704,7 @@ public class SystemMonitor {
                                    appenderConfiguration.getUser(),
                                    appenderConfiguration.getPassword(),
                                    ( appenderConfiguration.isBatchMode() ) ? "batch" : "",
-                                   Logger.getRootLogger().getEffectiveLevel().toInt(),
+                                   logLevel,
                                    appenderConfiguration.getMaxNumberLogEvents(),
                                    System.currentTimeMillis() } );
 

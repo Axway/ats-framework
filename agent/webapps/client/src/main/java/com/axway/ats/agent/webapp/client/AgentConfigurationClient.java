@@ -144,6 +144,10 @@ public final class AgentConfigurationClient extends ActionClient {
     public void setLogLevel( LogLevel logLevel ) throws AgentException {
 
         RemoteLoggingConfigurator.setAtsDbLogLevelPerAgent( atsAgent, logLevel );
+        
+        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator( atsAgent );
+        
+        applyConfiguration( rlc );
     }
     
     /**
