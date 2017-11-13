@@ -22,7 +22,9 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.function.Consumer;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -133,7 +135,7 @@ public class AtsDbLoggerUtilities {
 
             HttpEntity entity = builder.build();
             post.setEntity( entity );
-            checkPostExecutedSuccessfully( client.execute( post ), fileLocation );
+            return checkPostExecutedSuccessfully( client.execute( post ), fileLocation );
         } catch( FileNotFoundException fnfe ) {
             logger.warn( ERR_MSG_PREFIX + "it does not exist on the local file system", fnfe );
             return false;
@@ -147,9 +149,6 @@ public class AtsDbLoggerUtilities {
             logger.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ioe );
             return false;
         }
-
-        logger.info( "Successfully attached \"" + fileLocation + "\" to the current Test Explorer testcase" );
-        return true;
     }
 
     private boolean checkFileExist(
@@ -177,14 +176,29 @@ public class AtsDbLoggerUtilities {
         return goodSize;
     }
 
-    private void checkPostExecutedSuccessfully(
+    private boolean checkPostExecutedSuccessfully(
                                                 HttpResponse response,
                                                 String fileLocation ) {
 
         if( response.getStatusLine().getStatusCode() != 200 ) {
+            try {
+                IOUtils.readLines( response.getEntity().getContent() ).forEach( new Consumer<String>() {
+                    @Override
+                    public void accept( String t ) {
+                       logger.info( t );
+                    }
+                } );
+            } catch( Exception e ) {
+                logger.error( "unable to read response entity", e );
+            }
             logger.warn( "File \"" + fileLocation
                          + "\" will not be attached to the current test, due to error in saving the file. " );
+            return false;
+        } else {
+            logger.info( "Successfully attached \"" + fileLocation + "\" to the current Test Explorer testcase" );
+            return true;
         }
+        
     }
 
     private boolean isURLConnetionAvailable(
