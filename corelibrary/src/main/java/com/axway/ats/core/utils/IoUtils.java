@@ -293,6 +293,7 @@ public class IoUtils {
     * @param output {@link OutputStream}. The output stream is closed after copying.
     * @param closeInputStream. Whether to close the input stream after copying is complete.
     * @param closeOutputStream. Whether to close the output stream after copying is complete.
+    * @param maxSize. The maximum number of bytes that will be copied ( -1 for unlimited ) 
     * @return the number of bytes copied
     * @throws IOException
     */
@@ -300,7 +301,8 @@ public class IoUtils {
                                    InputStream input,
                                    OutputStream output,
                                    boolean closeInputStream,
-                                   boolean closeOutputStream ) throws IOException {
+                                   boolean closeOutputStream,
+                                   long maxSize ) throws IOException {
 
         byte[] buffer = new byte[INTERNAL_BUFFER_SIZE];
         long count = 0;
@@ -309,6 +311,9 @@ public class IoUtils {
             while( ( n = input.read( buffer ) ) != -1 ) {
                 output.write( buffer, 0, n );
                 count += n;
+                if (count > maxSize) {
+                    throw new IOException( "Unable to copy input stream. Max size of " + maxSize + " bytes reached." );
+                }
             }
         } finally {
             if( closeInputStream ) {
@@ -320,12 +325,20 @@ public class IoUtils {
         }
         return count;
     }
+    
+    public static long copyStream( InputStream input,
+                                   OutputStream output,
+                                   boolean closeInputStream,
+                                   boolean closeOutputStream ) throws IOException {
+        
+        return copyStream( input, output, closeInputStream, closeOutputStream, -1 );
+    }
 
     public static long copyStream(
                                    InputStream input,
                                    OutputStream output ) throws IOException {
 
-        return copyStream( input, output, true, true );
+        return copyStream( input, output, true, true, -1 );
     }
 
     /**
