@@ -1,57 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : ATS Documentation</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : ATS Documentation
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 12, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="ATSDocumentation-WhatisATS?">What is ATS?</h1><p>The Axway Automated Testing System (ATS) is an internally developed testing framework widely used for the testing needs of most of the Axway products.</p><p> </p><hr/><h1 id="ATSDocumentation-WhatarethekeyfeaturesofATS?">What are the key features of ATS?</h1><ul><li>Easy to write and maintain automated tests. Understandable by both QA and developers</li><li>Appropriate for variety types of functional and performance testing</li><li>Separate components, or complete products, or products grouped as a bigger product can be tested</li><li>Tests work on all platforms with (virtually) no change</li><li>Support of distributed environments – it all works locally and remotely</li><li>Comprehensive statistics about the system resource usage of the tested applications</li><li>Consolidated reporting allowing easy test result analyzes</li><li>Ability to freely mix ATS code with your own code</li><li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li></ul><p> </p><hr/><h1 id="ATSDocumentation-Whatkindoftestingitisgoodat?">What kind of testing it is good at?</h1><p>If we follow the naming conventions at <a class="external-link" href="https://en.wikipedia.org/wiki/Software_testing" rel="nofollow">https://en.wikipedia.org/wiki/Software_testing</a> we can say that ATS falls in the following categories:</p><h3 id="ATSDocumentation-Testinglevels">Testing levels</h3><ul><li>Integration testing</li><li>Component interface testing</li><li>System testing<br/> Obviously Unit testing is not a strong point and it should never be</li></ul><h3 id="ATSDocumentation-Testingtypes">Testing types</h3><ul><li>Installation testing</li><li>Smoke and sanity testing</li><li>Regression testing</li><li>Functional testing</li><li>Performance testing(Load and Endurance)</li></ul><h3 id="ATSDocumentation-Testingprocesses">Testing processes</h3><ul><li>Agile or Extreme development model</li><li>Waterfall development model</li><li>Top-down and bottom-up</li></ul><p> </p><hr/><h1 id="ATSDocumentation-WhatcanyoudowithATS?">What can you do with ATS?</h1><p>Unfortunately we cannot give both a short and detailed enough answer to this question, but still :</p><ul><li>Testing a software application involves interacting with that application and the environment it is living in. Some examples of such interactions are the following:</li><li>File transfer over most popular protocols. You can also plug in support for your own protocol</li><li>All kinds of actions on a file system</li><li>Interactions with databases</li><li>HTTP and REST operations. Good support for JSON and XML data</li><li>Running external processes and analyzing the produced result</li><li>Manipulating and sending complex mails</li><li>Interacting with application through a standard UI(HTML, Mobile, Swing)</li><li>Run your own test steps on a remote host as part of the whole test scenario</li><li>Run your own test steps according to some load pattern to achieve the wanted load on the tested application. Monitor its performance meanwhile</li></ul><p> </p><hr/><h1 id="ATSDocumentation-ATSrunsonJava">ATS runs on Java</h1><h3 id="ATSDocumentation-Javaisgoodbecause:">Java is good because:</h3><ul><li>Java is very powerful. We can satisfy almost all ATS requirements using Java</li><li>Java is cross-platform. That is why our test code almost always runs on any supported OS without changes</li><li>There is plenty of third party free/open source products available which can be used to fight some though tasks. By reusing all this, ATS power can be used for fighting other tough tasks <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" data-emoticon-name="smile" alt="(smile)"/></li></ul><h3 id="ATSDocumentation-ButJavaisbadbecause:">But Java is bad because:</h3><ul><li>The QA people are usually concerned about Java because &quot;Writing java code can be difficult&quot;. <br/>Well, we can show you difficult to understand and maintain code no matter the programming language.<br/> <br/>We answer to this concern by being very careful when it comes to defining the public API of the framework. We always negotiate this process with our customers (the QA people) in order to give them the most user friendly API possible. <br/>The result is test code which is usually very linear and it looks more like script rather than java developers code.<br/> <br/>Our goal is each test line to represents a single user step of the same test if it was performed manually.</li></ul><p> </p><hr/><h1 id="ATSDocumentation-Aquickexample">A quick example</h1><p>Please have a look at this <a href="Quick-test-example.html">test example</a> using ATS code</p><p> </p><hr/><h1 id="ATSDocumentation-More(alotmore)aboutATS">More (a lot more) about ATS</h1><p>Now as you strive to know more about ATS, you can dive into <a href="ATS-Guide.html">ATS examples and useful information</a></p><p> </p><hr/><h1 id="ATSDocumentation-RetrievingATSartifactsforyourtests">Retrieving ATS artifacts for your tests</h1><p><a href="Retrieving-ATS-artifacts.html">Here</a> you can see the options</p><p> </p><hr/><h1 id="ATSDocumentation-BuildingtheATSframeworkyourself">Building the ATS framework yourself</h1><p><a href="Building-the-ATS-framework.html">Here</a> you can see the few short steps</p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+ <head> 
+  <title>ATS : ATS Documentation</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : ATS Documentation </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="ATSDocumentation-WhatisATS?">What is ATS?</h1>
+      <p>The Axway Automated Testing System (ATS) is an internally developed testing framework widely used for the testing needs of most of the Axway products.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-Keyfeatures">Key features</h1>
+      <ul>
+       <li>Easy to write and maintain automated tests. Understandable by both QA and developers</li>
+       <li>Appropriate for variety types of functional and performance testing</li>
+       <li>Separate components, or complete products, or products grouped as a bigger product can be tested</li>
+       <li>Tests work on all platforms with (virtually) no change</li>
+       <li>Support of distributed environments – it all works locally and remotely</li>
+       <li>Comprehensive statistics about the system resource usage of the tested applications</li>
+       <li>Consolidated reporting allowing easy test result analyzes</li>
+       <li>Ability to freely mix ATS code with your own code</li>
+       <li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-Whatkindoftestingitisgoodat?">What kind of testing it is good at?</h1>
+      <p>If we follow the naming conventions at <a class="external-link" href="https://en.wikipedia.org/wiki/Software_testing" rel="nofollow">https://en.wikipedia.org/wiki/Software_testing</a> we can say that ATS falls in the following categories:</p>
+      <h3 id="ATSDocumentation-Testinglevels">Testing levels</h3>
+      <ul>
+       <li>Integration testing</li>
+       <li>Component interface testing</li>
+       <li>System testing<br> Obviously Unit testing is not a strong point and it should never be</li>
+      </ul>
+      <h3 id="ATSDocumentation-Testingtypes">Testing types</h3>
+      <ul>
+       <li>Installation testing</li>
+       <li>Smoke and sanity testing</li>
+       <li>Regression testing</li>
+       <li>Functional testing</li>
+       <li>Performance testing(Load and Endurance)</li>
+      </ul>
+      <h3 id="ATSDocumentation-Testingprocesses">Testing processes</h3>
+      <ul>
+       <li>Agile or Extreme development model</li>
+       <li>Waterfall development model</li>
+       <li>Top-down and bottom-up</li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-WhatcanyoudowithATS?">What can you do with ATS?</h1>
+      <p>Unfortunately we cannot give both a short and detailed enough answer to this question, but still :</p>
+      <ul>
+       <li>Testing a software application involves interacting with that application and the environment it is living in. Some examples of such interactions are the following:</li>
+       <li>File transfer over most popular protocols. You can also plug in support for your own protocol</li>
+       <li>All kinds of actions on a file system</li>
+       <li>Interactions with databases</li>
+       <li>HTTP and REST operations. Good support for JSON and XML data</li>
+       <li>Running external processes and analyzing the produced result</li>
+       <li>Manipulating and sending complex mails</li>
+       <li>Interacting with application through a standard UI(HTML, Mobile, Swing)</li>
+       <li>Run your own test steps on a remote host as part of the whole test scenario</li>
+       <li>Run your own test steps according to some load pattern to achieve the wanted load on the tested application. Monitor its performance meanwhile</li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-ATSrunsonJava">ATS runs on Java</h1>
+      <h3 id="ATSDocumentation-Javaisgoodbecause:">Java is good because:</h3>
+      <ul>
+       <li>Java is very powerful. We can satisfy almost all ATS requirements using Java</li>
+       <li>Java is cross-platform. That is why our test code almost always runs on any supported OS without changes</li>
+       <li>There is plenty of third party free/open source products available which can be used to&nbsp;fight some though tasks. By reusing all this, ATS power can be used for fighting other tough tasks&nbsp;<img class="emoticon emoticon-smile" title="(smile)" alt="(smile)" src="images/icons/emoticons/smile.png" border="0"></li>
+      </ul>
+      <h3 id="ATSDocumentation-ButJavaisbadbecause:">But Java is bad because:</h3>
+      <ul>
+       <li>The QA people are usually concerned about Java because "Writing java code can be difficult". <br>Well, we can show you difficult to understand and maintain code no matter the programming language.<br> <br>We answer to this concern by being very careful when it comes to defining the public API of the framework. We always negotiate this process with our customers (the QA people) in order to give them the most user friendly API possible. <br>The result is test code which is usually very linear and it looks more like script rather than java developers code.<br> <br>Our goal is each test line to represents a single user step of the same test if it was performed manually.</li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-Aquickexample">A quick example</h1>
+      <p>You can have a look at this <a class="external-link" href="https://www.youtube.com/watch?v=-4ZlEzU4ucM" rel="nofollow">short ATS video presentation</a></p>
+      <p>The test code itself is available <a href="Quick-test-example.html">here</a></p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-UserGuide">User Guide</h1>
+      <p>Now as you strive to know more about ATS, you can dive into <a href="ATS-Guide.html">ATS examples and useful information</a></p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-RetrievingtheATSartifacts">Retrieving the ATS artifacts</h1>
+      <p><a href="Retrieving-ATS-artifacts.html">Here</a> you can see the options</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSDocumentation-BuildingtheATSframeworkyourself">Building the ATS framework yourself</h1>
+      <p><a href="Building-the-ATS-framework.html">Here</a> you can see the few short steps</p>
+      <hr>
+      <h1 id="ATSDocumentation-Releasenotes">Release notes</h1>
+      <p><a href="Release-Notes.html">Here</a> they are</p>
+      <hr>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+  <hr>
+  <p>Go to <a href="./index.html">parent page</a></p>
+  <p>Go to <a href="./toc.html">Table of Contents</a></p>
+  <hr>
+ </body>
 </html>
-
-

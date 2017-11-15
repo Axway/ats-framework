@@ -1,77 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Synchronized iterations</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Performance-testing.html">Performance testing</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Synchronized iterations
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 10, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Synchronizediterations-Introduction">Introduction</h1><p>When you run your action queue for a long period of time, it happens that some threads are quicker than others and over period of time you see that the number of running threads is going down. Here is an example graph:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496551.png" data-image-src="attachments/119496546/119496551.png" data-unresolved-comment-count="0" data-linked-resource-id="119496551" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119496546" data-linked-resource-container-version="4"></span></p><p>In order to avoid this, you can specify that you want to have each iteration of all threads to start at the same moment.<br/> This means that the quicker threads will wait for slower ones to finish the current iteration and then, they will together start the next iteration.</p><p> </p><hr/><h1 id="Synchronizediterations-Synchronizingtheiterations">Synchronizing the iterations</h1><p>You need to use the <strong> <em>setUseSynchronizedIterations</em> </strong> method:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">AllAtOncePattern threadingPattern = new AllAtOncePattern( 2, true, 10, 2000 );
+ <head> 
+  <title>ATS : Synchronized iterations</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Performance-testing.html">Performance testing</a></span> </li> 
+       <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Synchronized iterations </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Synchronizediterations-Introduction">Introduction</h1>
+      <p>When you run your action queue for a long period of time, it happens that some threads are quicker than others and over period of time you see that the number of running threads is going down. Here is an example graph:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496551.png" data-image-src="attachments/119496546/119496551.png" data-unresolved-comment-count="0" data-linked-resource-id="119496551" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119496546" data-linked-resource-container-version="4"></span></p>
+      <p>In order to avoid this, you can specify that you want to have each iteration of all threads to start at the same moment.<br> This means that the quicker threads will wait for slower ones to finish the current iteration and then, they will together start the next iteration.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Synchronizediterations-Synchronizingtheiterations">Synchronizing the iterations</h1>
+      <p>You need to use the <strong> <em>setUseSynchronizedIterations</em> </strong> method:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">AllAtOncePattern threadingPattern = new AllAtOncePattern( 2, true, 10, 2000 );
 
 // synchronize the iterations
 threadingPattern.setUseSynchronizedIterations( true );
 
 loader.setThreadingPattern( threadingPattern );
-</pre>
-</div></div><p> </p><hr/><h1 id="Synchronizediterations-Theresult">The result</h1><p>As you can see the user activity has changed significantly:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496552.png" data-image-src="attachments/119496546/119496552.png" data-unresolved-comment-count="0" data-linked-resource-id="119496552" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic2.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119496546" data-linked-resource-container-version="4"></span></p><p>No matter how many iterations will be completed and how many threads will run, they will always start together on each iteration.</p><div class="confluence-information-macro confluence-information-macro-note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Only <em>AllAtOncePattern</em> and <em>FixedDurationAllAtOncePattern</em> support this feature</p></div></div><p> </p><hr/><p>Back to <a href="Running-performance-tests.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Synchronizediterations-Theresult">The result</h1>
+      <p>As you can see the user activity has changed significantly:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496552.png" data-image-src="attachments/119496546/119496552.png" data-unresolved-comment-count="0" data-linked-resource-id="119496552" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic2.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119496546" data-linked-resource-container-version="4"></span></p>
+      <p>No matter how many iterations will be completed and how many threads will run, they will always start together on each iteration.</p>
+      <div class="confluence-information-macro confluence-information-macro-note">
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
+       <div class="confluence-information-macro-body">
+        <p>Only <em>AllAtOncePattern</em> and <em>FixedDurationAllAtOncePattern</em> support this feature</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

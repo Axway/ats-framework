@@ -1,65 +1,107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Test logging</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Test logging
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Jun 12, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Testlogging-Introduction">Introduction</h1><hr/><p>Good test reporting is crucial for serious automation testing. You need an easy way to:</p><ul><li>Check which tests passed, which failed and why</li><li>Analyze the performance of the tested application</li><li>Compare the results of running same of different tests</li></ul><p>Here we discuss different features of the ATS logging system</p><hr/><h1 id="Testlogging-Flexibleoutput">Flexible output</h1><p>Here is where all logs can go</p><ul><li>Test Explorer database<br/>this is a persisted database storage, the results are reviewed by Test Explorer web application. The project is located <a class="external-link" href="https://github.com/Axway/ats-testexplorer" rel="nofollow">here</a></li><li>Console<br/>good when reviewing the results of one or few tests</li><li>Mail report</li><li><p>custom</p></li></ul><p>All log outputs are optional. You can use just one of them or some of them as you wish.</p><h1 id="Testlogging-Basedonlog4j">Based on log4j</h1><p>The ATS logging system is configured through <a class="external-link" href="https://logging.apache.org/log4j/2.0/" rel="nofollow">log4j</a></p><p>Log4j is very flexible in terms of defining how much logging you need by specifying its log level. It is also possible to have more logs from some classes or some packages and less from others.</p><h1 class="with-breadcrumbs" id="Testlogging-ConfigureATSDatabaseLogging">Configure ATS Database Logging</h1><p><a href="Configure-ATS-Database-Logging.html">Here</a> are the steps to make it working for you.</p><h1 id="Testlogging-Realtime,butnonblockingthetestexecution">Real time, but non blocking the test execution</h1><p>The logging is performed in real time. This means while your tests are running, you can look up the results in Test Explorer.</p><p>The test execution itself is not blocked waiting for the log event to be persisted in the database. The reason is that each log event is placed into a queue so the test execution can go on. While the test is running an additional dedicated thread moves these cached events to the database.</p><p>If you have very heavy logging, it may turn out it will take some time (some number of seconds) until the log event makes it to the database. So we have to say that <em>real time</em> does not mean exactly <em>immediately</em></p><h1 id="Testlogging-Everyparticipatingpartycanlogintosametestcase">Every participating party can log into same testcase</h1><p>Each java application located anywhere on the test environment can be configured to send its log4j events into the same test case. This means for example that while doing some work with your Application Under Test(AUT), you can have log event from the java API of the AUT into the same testcase.</p><p>Here is who can log:</p><ul><li>The QA from the test</li><li>ATS libraries used in your tests</li><li>Actions running on some ATS agent</li><li>The Application Under Test</li><li>Third party libraries</li></ul><h1 id="Testlogging-TestExploreruserguide">Test Explorer user guide</h1><hr/><p>Test Explorer is a web application used to review the test results. It is a separated project from the ATS framework.</p><p><a href="http://www.github.com/Axway/ats-testexplorer">Here</a> it is.</p><h1 id="Testlogging-Reporttestexecutionresultbymail">Report test execution result by mail</h1><hr/><p class="confluence-link"><a href="Report-test-execution-result-by-mail.html">Here</a> we show how to get mail report about the test execution result.</p><p>Note that this is not a real time feature as the mail is send after the accomplishment of the last test.</p><h1 id="Testlogging-SetRUNinformation">Set RUN information</h1><hr/><p class="confluence-link"><a href="Set-RUN-information.html">Here</a> we show how to set the information about the RUN of your tests in the Test Explorer UI</p><h1 id="Testlogging-Loggingthejavadoc">Logging the javadoc</h1><hr/><p class="confluence-link"><a href="Logging-test-method-javadoc.html">Here</a> we show how the javadoc of the test methods can become a description of your tests in Test Explorer</p><h1 id="Testlogging-SpecifycustomloglevelonATSagents">Specify custom log level on ATS agents</h1><hr/><p class="confluence-link"><a href="Custom-log-level-on-ATS-agents.html">Here</a> are the details how to have Agent log level different than the Test Executor log level</p><h1 id="Testlogging-IncreasingthespeedwesendsomeeventstothelogDB">Increasing the speed we send some events to the log DB</h1><hr/><p class="confluence-link"><a href="Increasing-the-speed-we-send-some-events-to-the-log-DB.html">Here</a> we show how to tune the performance of the logging system in case you really need it.</p><h1 id="Testlogging-Attachafiletothecurrenttestcase">Attach a file to the current testcase</h1><hr/><p><a href="Attach-a-file-to-the-current-testcase.html">Here</a> we show how to place an important file next to your testcase data in Test Explorer</p><hr/><h1 id="Testlogging-UsingTestExplorerdatabaseloggingwhenrunningtestsfromnon-javaapplications">Using Test Explorer database logging when running tests from non-java applications</h1><hr/><p>Imagine you have your own tests written in a language different than java, but you would like to use Test Explorer for your needs.</p><p class="confluence-link">Here we show how to achieve it</p><h1 class="confluence-link" id="Testlogging-Whatisnotsupported">What is not supported</h1><p>Currently we do not support simultaneous execution of more than one test case.</p><p>This is not affecting the performance testing as in that case a single test case causes the need load.</p><p class="confluence-link"><br/></p><p><br/></p><hr/><p>Back to <a href="ATS-Guide.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+ <head> 
+  <title>ATS : Test logging</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Test logging </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Testlogging-Introduction">Introduction</h1>
+      <hr>
+      <p>Good test reporting is crucial for serious automation testing. You need an easy way to:</p>
+      <ul>
+       <li>Check which tests passed, which failed and why</li>
+       <li>Analyze the performance of the tested application</li>
+       <li>Compare the results of running same of different tests</li>
+      </ul>
+      <p>Here we discuss different features of the ATS logging system</p>
+      <hr>
+      <h1 id="Testlogging-Flexibleoutput">Flexible output</h1>
+      <p>Here is where all logs can go</p>
+      <ul>
+       <li>Test Explorer database<br>this is a persisted database storage, the results are reviewed by Test Explorer web application. The project is located <a class="external-link" href="https://github.com/Axway/ats-testexplorer" rel="nofollow">here</a></li>
+       <li>Console<br>good when reviewing the results of one or few tests</li>
+       <li>Mail report</li>
+       <li><p>custom</p></li>
+      </ul>
+      <p>All log outputs are optional. You can use just one of them or some of them as you wish.</p>
+      <h1 id="Testlogging-Basedonlog4j">Based on log4j</h1>
+      <p>The ATS logging system is configured through <a class="external-link" href="https://logging.apache.org/log4j/2.0/" rel="nofollow">log4j</a></p>
+      <p>Log4j is very flexible in terms of defining how much logging you need by specifying its log level. It is also possible to have more logs from some classes or some packages and less from others.</p>
+      <h1 class="with-breadcrumbs" id="Testlogging-ConfigureATSDatabaseLogging">Configure ATS Database Logging</h1>
+      <p><a href="Configure-ATS-Database-Logging.html">Here</a> are the steps to make it working for you.</p>
+      <h1 id="Testlogging-Realtime,butnonblockingthetestexecution">Real time, but non blocking the test execution</h1>
+      <p>The logging is performed in real time. This means while your tests are running, you can look up the results in Test Explorer.</p>
+      <p>The test execution itself is not blocked waiting for the log event to be persisted in the database. The reason is that each log event is placed into a queue so the test execution can go on. While the test is running an additional dedicated thread moves these cached events to the database.</p>
+      <p>If you have very heavy logging, it may turn out it will take some time (some number of seconds) until the log event makes it to the database. So we have to say that <em>real time</em> does not mean exactly <em>immediately</em></p>
+      <h1 id="Testlogging-Everyparticipatingpartycanlogintosametestcase">Every participating party can log into same testcase</h1>
+      <p>Each java application located anywhere on the test environment can be configured to send its log4j events into the same test case. This means for example that while doing some work with your Application Under Test(AUT), you can have log event from the java API of the AUT into the same testcase.</p>
+      <p>Here is who can log:</p>
+      <ul>
+       <li>The QA from the test</li>
+       <li>ATS libraries used in your tests</li>
+       <li>Actions running on some ATS agent</li>
+       <li>The Application Under Test</li>
+       <li>Third party libraries</li>
+      </ul>
+      <h1 id="Testlogging-TestExploreruserguide">Test Explorer user guide</h1>
+      <hr>
+      <p>Test Explorer is a web application used to review the test results. It is a separated project from the ATS framework.</p>
+      <p><a class="external-link" href="https://github.com/Axway/ats-testexplorer" rel="nofollow">Here</a> it is.</p>
+      <h1 id="Testlogging-Reporttestexecutionresultbymail">Report test execution result by mail</h1>
+      <hr>
+      <p class="confluence-link"><a href="Report-test-execution-result-by-mail.html">Here</a> we show how to get mail report about the test execution result.</p>
+      <p>Note that this is not a real time feature as the mail is send after the accomplishment of the last test.</p>
+      <h1 id="Testlogging-SetRUNinformation">Set RUN information</h1>
+      <hr>
+      <p class="confluence-link"><a href="Set-RUN-information.html">Here</a> we show how to set the information about the RUN of your tests in the Test Explorer UI</p>
+      <h1 id="Testlogging-Loggingthejavadoc">Logging the javadoc</h1>
+      <hr>
+      <p class="confluence-link"><a href="Logging-test-method-javadoc.html">Here</a> we show how the javadoc of the test methods can become a description of your tests in Test Explorer</p>
+      <h1 id="Testlogging-SpecifycustomloglevelonATSagents">Specify custom log level on ATS agents</h1>
+      <hr>
+      <p class="confluence-link"><a href="Custom-log-level-on-ATS-agents.html">Here</a> are the details how to have Agent log level different than the Test Executor log level</p>
+      <h1 id="Testlogging-IncreasingthespeedwesendsomeeventstothelogDB">Increasing the speed we send some events to the log DB</h1>
+      <hr>
+      <p class="confluence-link"><a href="Increasing-the-speed-we-send-some-events-to-the-log-DB.html">Here</a> we show how to tune the performance of the logging system in case you really need it.</p>
+      <h1 id="Testlogging-Attachafiletothecurrenttestcase">Attach a file to the current testcase</h1>
+      <hr>
+      <p><a href="Attach-a-file-to-the-current-testcase.html">Here</a> we show how to place an important file next to your testcase data in Test Explorer</p>
+      <h1 id="Testlogging-PrintingTestExecutorclasspathonstart">Printing Test Executor classpath on start</h1>
+      <hr>
+      <p>If you want to see(just once) in your console all the jars that are present in the Test Executor classpath, you have to set a system environment variable with name "ats.log.classpath.on.start" and value "true".</p>
+      <p>For variable name you can use the AtsSystemProperties.LOG__CLASSPATH_ON_START constant.</p>
+      <h1 id="Testlogging-UsingTestExplorerdatabaseloggingwhenrunningtestsfromnon-javaapplications">Using Test Explorer database logging when running tests from non-java applications</h1>
+      <hr>
+      <p>Imagine you have your own tests written in a language different than java, but you would like to use Test Explorer for your needs.</p>
+      <p class="confluence-link"><a class="external-link" href="https://axway.github.io/ats-httpdblogger/ATS-HTTP-DB-Logger-Guide.html" rel="nofollow">Here</a> we show how to achieve it</p>
+      <h1 class="confluence-link" id="Testlogging-Whatisnotsupported">What is not supported</h1>
+      <hr>
+      <p>Currently we do not support simultaneous execution of more than one test case.</p>
+      <p>This is not affecting the performance testing as in that case a single test case causes the need load.</p>
+      <p class="confluence-link"><br></p>
+      <p><br></p>
+      <hr>
+      <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

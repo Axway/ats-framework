@@ -1,78 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Running simultaneous action queues</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
+ <head> 
+  <title>ATS : Running simultaneous action queues</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Performance-testing.html">Performance testing</a></span> </li> 
+       <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Running simultaneous action queues </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Runningsimultaneousactionqueues-Introduction">Introduction</h1>
+      <p>In real life your users are doing different things at same moment, but our examples so far were doing the same thing - FTP upload.</p>
+      <p>This page shows how you can run many simultaneous action queues and each queue can run its own actions.</p>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>The action queues do not know about the existence of each other</p>
+       </div>
+      </div>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>It is not important what our example actions do. Yours will do whatever you need</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningsimultaneousactionqueues-Extendourexampleperformanceaction">Extend our example performance action</h1>
+      <hr>
+      <p>So far the <em>FileTransferActions</em> is able to do one thing - upload FTP files as you can see it <a href="Creating-an-Agent-Component.html">here</a></p>
+      <p>Now we will extend it a little, so it can handle HTTP transfers as well. We will change only the <em>connect</em> method:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    @Action
+    public void connect( @Parameter(name = "hostname") String hostname,
+                         @Parameter(name = "protocol") String protocol,
+                         @Parameter(name = "port") int port,
+                         @Parameter(name = "username") String username,
+                         @Parameter(name = "password") String password ) {
 
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Performance-testing.html">Performance testing</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Running simultaneous action queues
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 10, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Runningsimultaneousactionqueues-Introduction">Introduction</h1><p>In real life your users are doing different things at same moment, but our examples so far were doing the same thing - FTP upload.</p><p>This page shows how you can run many simultaneous action queues and each queue can run its own actions.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The action queues do not know about the existence of each other</p></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>It is not important what our example actions do. Yours will do whatever you need</p></div></div><p> </p><hr/><h1 id="Runningsimultaneousactionqueues-Extendourexampleperformanceaction">Extend our example performance action</h1><hr/><p>So far the <em>FileTransferActions</em> is able to do one thing - upload FTP files as you can see it <a href="Creating-an-Agent-Component.html">here</a></p><p>Now we will extend it a little, so it can handle HTTP transfers as well. We will change only the <em>connect</em> method:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    @Action
-    public void connect( @Parameter(name = &quot;hostname&quot;) String hostname,
-                         @Parameter(name = &quot;protocol&quot;) String protocol,
-                         @Parameter(name = &quot;port&quot;) int port,
-                         @Parameter(name = &quot;username&quot;) String username,
-                         @Parameter(name = &quot;password&quot;) String password ) {
-
-        if( protocol.equalsIgnoreCase( &quot;FTP&quot; ) ) {
+        if( protocol.equalsIgnoreCase( "FTP" ) ) {
             transferClient = new FileTransferClient( TransferProtocol.FTP );
-        } else {
+       &nbsp;} else {
             transferClient = new FileTransferClient( TransferProtocol.HTTP );
-        }
+       &nbsp;}
         transferClient.setPort( port );
 
         transferClient.connect( hostname, username, password );
     }
-</pre>
-</div></div><p>The difference is that we have introduced one more input argument called <strong> <em>protocol</em> </strong> and in the method body we are asking the <strong> <em>FileTransferClient</em> </strong> class (part of ATS) to establish connection over FTP or HTTP.</p><p> </p><hr/><h1 id="Runningsimultaneousactionqueues-Deploythenewneedcode">Deploy the new need code</h1><p><a href="Building-and-deploying-an-Agent-Component.html">Here</a> are the steps in details</p><p> </p><hr/><h1 id="Runningsimultaneousactionqueues-Runatestwithsimultaneousactionqueues">Run a test with simultaneous action queues</h1><p>Lets have a look at this test code:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    import com.axway.ats.agent.webapp.client.ActionQueue;
+</pre> 
+       </div>
+      </div>
+      <p>The difference is that we have introduced one more input argument called <strong> <em>protocol</em> </strong> and in the method body we are asking the <strong> <em>FileTransferClient</em> </strong> class (part of ATS) to establish connection over FTP or HTTP.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningsimultaneousactionqueues-Deploythenewneedcode">Deploy the new need code</h1>
+      <p><a href="Building-and-deploying-an-Agent-Component.html">Here</a> are the steps in details</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningsimultaneousactionqueues-Runatestwithsimultaneousactionqueues">Run a test with simultaneous action queues</h1>
+      <p>Lets have a look at this test code:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    import com.axway.ats.agent.webapp.client.ActionQueue;
 
     public void simultanousFileTransfers() throws Exception {
 
@@ -81,39 +83,55 @@
         ftpLoader.setThreadingPattern( new AllAtOncePattern( 2, false, 100, 0 ) );
 
         // do FTP transfers
-        ftpLoader.startQueueing( &quot;FTP transfer&quot; );
+        ftpLoader.startQueueing( "FTP transfer" );
         FileTransferActions ftpTransferActions = new FileTransferActions();
-        ftpTransferActions.connect( SERVER_IP, &quot;FTP&quot;, SERVER_FTP_PORT, USER_NAME, USER_PASSWORD );
-        ftpTransferActions.upload( &quot;C:/some_file.txt&quot; );
+        ftpTransferActions.connect( SERVER_IP, "FTP", SERVER_FTP_PORT, USER_NAME, USER_PASSWORD );
+        ftpTransferActions.upload( "C:/some_file.txt" );
         ftpTransferActions.disconnect();
-        ftpLoader.executeQueuedActions();
+       &nbsp;ftpLoader.executeQueuedActions();
 
         // create the HTTP load client
         LoadClient htpLoader = new LoadClient( LOADER_ADDRESS );
         htpLoader.setThreadingPattern( new AllAtOncePattern( 2, false, 100, 0 ) );
 
         // do HTTP transfers
-        htpLoader.startQueueing( &quot;HTTP transfer&quot; );
+        htpLoader.startQueueing( "HTTP transfer" );
         FileTransferActions htpTransferActions = new FileTransferActions();
-        htpTransferActions.connect( SERVER_IP, &quot;HTTP&quot;, SERVER_HTTP_PORT, USER_NAME, USER_PASSWORD );
-        htpTransferActions.upload( &quot;C:/some_other_file.txt&quot; );
+        htpTransferActions.connect( SERVER_IP, "HTTP", SERVER_HTTP_PORT, USER_NAME, USER_PASSWORD );
+        htpTransferActions.upload( "C:/some_other_file.txt" );
         htpTransferActions.disconnect();
         htpLoader.executeQueuedActions();
 
         ActionQueue.waitUntilAllQueuesFinish();
     }
-</pre>
-</div></div><p>Please spend some time to look through this code. Here is what we do:</p><ul><li>We use different names for both queues, so they can be distinguished</li><li>The <strong><em>connect</em></strong> action is called with the appropriate arguments for each <em>protocol</em></li><li>We are creating one Loader for each queue. Both queues have different actions. Note that you can freely use same or different actions from same or different action classes.</li></ul><p>The 2nd argument in the threading pattern constructor is <strong> <em>false</em></strong>, while by default it is set to <strong> <em>true</em> </strong>. This argument specifies if we must wait when calling the <strong> <em>executeQueuedActions</em> </strong> method. <br/>If we use <strong> <em>true</em> </strong> here, the first queue will get started and we will wait here until it is over. Then we will start the next queue.<br/>But in our case we need simultaneous executions, that is why we use <em>false</em>. This way the test code will go on and start the second queue as soon as have started the first one.</p><ul><li>The last test line causes waiting until all(in our case both) action queues are completed</li></ul><h1 id="Runningsimultaneousactionqueues-Theresult">The result</h1><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496598/119496712.png" data-image-src="attachments/119496598/119496712.png" data-unresolved-comment-count="0" data-linked-resource-id="119496712" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119496598" data-linked-resource-container-version="4"></span></p><p>Both queues have started at the same time, but their duration is significantly different</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>You can have as many action queues as needed</p></div></div><p> </p><hr/><p>Back to <a href="Running-performance-tests.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+</pre> 
+       </div>
+      </div>
+      <p>Please spend some time to look through this code. Here is what we do:</p>
+      <ul>
+       <li>We use different names for both queues, so they can be distinguished</li>
+       <li>The <strong><em>connect</em></strong> action is called with the appropriate arguments for each <em>protocol</em></li>
+       <li>We are creating one Loader for each queue. Both queues have different actions. Note that you can freely use same or different actions from same or different action classes.</li>
+      </ul>
+      <p>The 2nd argument in the threading pattern constructor is <strong> <em>false</em></strong>, while by default it is set to <strong> <em>true</em> </strong>. This argument specifies if we must wait when calling the <strong> <em>executeQueuedActions</em> </strong> method. <br>If we use <strong> <em>true</em> </strong> here, the first queue will get started and we will wait here until it is over. Then we will start the next queue.<br>But in our case we need simultaneous executions, that is why we use <em>false</em>. This way the test code will go on and start the second queue as soon as have started the first one.</p>
+      <ul>
+       <li>The last test line causes waiting until all(in our case both) action queues are completed</li>
+      </ul>
+      <h1 id="Runningsimultaneousactionqueues-Theresult">The result</h1>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496598/119496712.png" data-image-src="attachments/119496598/119496712.png" data-unresolved-comment-count="0" data-linked-resource-id="119496712" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119496598" data-linked-resource-container-version="4"></span></p>
+      <p>Both queues have started at the same time, but their duration is significantly different</p>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>You can have as many action queues as needed</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

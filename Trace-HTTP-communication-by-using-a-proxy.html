@@ -1,71 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Trace HTTP communication by using a proxy</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="HTTP-Operations.html">HTTP Operations</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Trace HTTP communication by using a proxy
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 05, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="TraceHTTPcommunicationbyusingaproxy-Introduction">Introduction</h1><p>Here we describe how to inspect your HTTP(S) requests and responses independently of your test code.</p><p>This is useful when you don't want to change your code in order to set verbose mode of ATS HTTP/REST clients.</p><p> </p><hr/><h1 id="TraceHTTPcommunicationbyusingaproxy-SettingproxyonJVM">Setting proxy on JVM</h1><p>Test execution is done in some JVM so you may use these generic properties from command line to turn proxy usage.</p><p>These are the related Java system properties which should be used in order to turn on proxy usage:</p><ul><li><code>http.proxyHost</code>: the host name (name or IP) of the proxy server</li><li><code>http.proxyPort</code>: the port number, the default value being 80.</li><li><code>http.nonProxyHosts</code>: a list of hosts that should be reached directly, bypassing the proxy. This is a list of patterns separated by '|'. The patterns may start or end with a '*' for wildcards. Any host matching one of these patterns will be reached through a direct connection instead of through a proxy.</li></ul><ul><li><code>htttps.proxyHost</code>: HTTPS proxy host name to use</li><li><code>https.proxyPort</code>: HTTPS port</li></ul><p>Details: <a class="external-link" href="http://docs.oracle.com/javase/7/docs/technotes/guides/net/proxies.html" rel="nofollow">http://docs.oracle.com/javase/7/docs/technotes/guides/net/proxies.html</a></p><p> </p><hr/><h1 id="TraceHTTPcommunicationbyusingaproxy-UseFiddlerasaproxy">Use Fiddler as a proxy</h1><p>You can also use Fiddler (<a class="external-link" href="http://www.telerik.com/fiddler" rel="nofollow">http://www.telerik.com/fiddler</a>). It is a free Windows proxy to set and inspect HTTP(S) traffic for debugging purposes.<br/> <img class="emoticon emoticon-warning" src="images/icons/emoticons/warning.png" data-emoticon-name="warning" alt="(warning)"/> Note that 2.x versions do not support TLS v1.1 and v1.2 protocols because .NET 2 do not support them. Details are <a class="external-link" href="http://www.telerik.com/blogs/fiddler-and-modern-tls-versions" rel="nofollow">here</a></p><p>You have to set:</p><ul><li><em>Fiddler Options -&gt; Connections -&gt; Fiddler listens on port</em> . Default port used is 8888. You may change it on this tab.</li><li><em>Fiddler Options -&gt; HTTPS -&gt; Decrypt HTTPS traffic</em>. This involves using Fiddler own certificate, that's why you may see errors and your client temporarily should not reject such certificates. Details are <a class="external-link" href="http://docs.telerik.com/fiddler/configure-fiddler/tasks/decrypthttps" rel="nofollow">here</a></li></ul><p> </p>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+ <head> 
+  <title>ATS : Trace HTTP communication by using a proxy</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+       <li> <span><a href="HTTP-Operations.html">HTTP Operations</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Trace HTTP communication by using a proxy </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="TraceHTTPcommunicationbyusingaproxy-Introduction">Introduction</h1>
+      <p>Here we describe how to inspect your HTTP(S) requests and responses independently of your test code.</p>
+      <p>This is useful when you don't want to change your code in order to set verbose mode of ATS HTTP/REST clients.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="TraceHTTPcommunicationbyusingaproxy-SettingproxyonJVM">Setting proxy on JVM</h1>
+      <p>Test execution is done in some JVM so you may use these generic properties from command line to turn proxy usage.</p>
+      <p>These are the related Java system properties which should be used in order to turn on proxy usage:</p>
+      <ul>
+       <li><code>http.proxyHost</code>: the host name (name or IP) of the proxy server</li>
+       <li><code>http.proxyPort</code>: the port number, the default value being 80.</li>
+       <li><code>http.nonProxyHosts</code>: a list of hosts that should be reached directly, bypassing the proxy. This is a list of patterns separated by '|'. The patterns may start or end with a '*' for wildcards. Any host matching one of these patterns will be reached through a direct connection instead of through a proxy.</li>
+      </ul>
+      <ul>
+       <li><code>htttps.proxyHost</code>: HTTPS proxy host name to use</li>
+       <li><code>https.proxyPort</code>: HTTPS port</li>
+      </ul>
+      <p>Details: <a class="external-link" href="http://docs.oracle.com/javase/7/docs/technotes/guides/net/proxies.html" rel="nofollow">http://docs.oracle.com/javase/7/docs/technotes/guides/net/proxies.html</a></p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="TraceHTTPcommunicationbyusingaproxy-UseFiddlerasaproxy">Use Fiddler as a proxy</h1>
+      <p>You can also use Fiddler (<a class="external-link" href="http://www.telerik.com/fiddler" rel="nofollow">http://www.telerik.com/fiddler</a>). It is a free Windows proxy to set and inspect HTTP(S) traffic for debugging purposes.<br> <img class="emoticon emoticon-warning" src="images/icons/emoticons/warning.png" data-emoticon-name="warning" alt="(warning)"> Note that 2.x versions do not support TLS v1.1 and v1.2 protocols because .NET 2 do not support them. Details are <a class="external-link" href="http://www.telerik.com/blogs/fiddler-and-modern-tls-versions" rel="nofollow">here</a></p>
+      <p>You have to set:</p>
+      <ul>
+       <li><em>Fiddler Options -&gt; Connections -&gt; Fiddler listens on port</em> . Default port used is 8888. You may change it on this tab.</li>
+       <li><em>Fiddler Options -&gt; HTTPS -&gt; Decrypt HTTPS traffic</em>. This involves using Fiddler own certificate, that's why you may see errors and your client temporarily should not reject such certificates. Details are <a class="external-link" href="http://docs.telerik.com/fiddler/configure-fiddler/tasks/decrypthttps" rel="nofollow">here</a></li>
+      </ul>
+      <p>&nbsp;</p> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+  <hr>
+  <p>Go to <a href="./HTTP-Operations.html">parent page</a></p>
+  <p>Go to <a href="./toc.html">Table of Contents</a></p>
+  <hr>
+ </body>
 </html>
-
-

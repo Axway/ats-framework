@@ -1,82 +1,106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Running UI tests from CI</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="UI-Testing.html">UI Testing</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Running UI tests from CI
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Stanimir Komitov</span>, last modified by <span class='editor'> Svilen Dikov</span> on Jun 02, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="RunningUItestsfromCI-Introduction">Introduction</h1><p>This page describes how to run UI tests from Jenkins on Windows VM using Jenkins Slave.<br/> There are two options, depending on the Windows version.</p><p><br/></p><hr/><h1 id="RunningUItestsfromCI-OnolderWindowssystemslikeXP">On older Windows systems like XP</h1><ol><li>Run Jenkins Slave as a service</li><li>Go to &quot;Computer Management&quot; -&gt; &quot;Services&quot; -&gt; &quot;Jenkins Slave&quot;, select &quot;Log On&quot; tab and select &quot;Allow service to interact with the desktop&quot;</li></ol><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/107040326/107044380.png" data-image-src="attachments/107040326/107044380.png" data-unresolved-comment-count="0" data-linked-resource-id="107044380" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="JenkinsWindowsService.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040326" data-linked-resource-container-version="11"></span></p><p><br/></p><hr/><h1 id="RunningUItestsfromCI-OnnewersystemslikeWindows7andWindows8">On newer systems like Windows 7 and Windows 8</h1><p>There is an additional service for &quot;Interactive Services Detection&quot; which requires manual user interaction ...<br/> As a workaround we have to start the Jenkins Slave in a user session (not as a service) and then if we have to disconnect from the target VM machine we have to keep the current session opened, using a simple command &quot;%windir%\System32\tscon.exe &quot;RDP-Tcp#0&quot; /dest:console&quot; that will log you off and return the system to it's console.</p><ol><li><p><strong>Run Jenkins Slave</strong> command line (headless):</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">java -jar slave.jar -jnlpUrl http://&lt;JENKINS_SERVER&gt;/computer/&lt;SLAVE_NAME&gt;/slave-agent.jnlp
-</pre>
-</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><p class="title">Determine SLAVE_NAME</p><div class="confluence-information-macro-body"><p>You can see all Jenkins Slave machines, their names, status and possible connection options on http://&lt;JENKINS_SERVER&gt;/computer</p></div></div><p>If you want to start it automatically, you can create a .bat file and link it in the &quot;Startup&quot; folder or create a Windows Scheduled Task but set its startup when a user is logged on only.</p></li><li><p><strong>Disconnect from the VM</strong> using &quot;tscon&quot; command:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  tscon RDP-Tcp#0 /dest:console
- </pre>
-</div></div><p>The name of the session depends on the current name in Task Manager. Instead of name you may also use the ID (plain number).<br/><br/></p></li><li>the <strong>screen resolution</strong> would be the system default one (usually 640x480 or 800x600), so if you want to use another resolution, you should use some utility for screen resize.</li></ol><ul class="alternate"><li><p>For <strong>32-bit</strong> Windows you can use <a class="external-link" href="http://qres.sourceforge.net/" rel="nofollow">QRes.exe</a> - a small (open source) freeware application.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"><b>disconnect.bat</b></div><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  tscon RDP-Tcp#0 /dest:console
+ <head> 
+  <title>ATS : Running UI tests from CI</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="UI-Testing.html">UI Testing</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Running UI tests from CI </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="RunningUItestsfromCI-Introduction">Introduction</h1>
+      <p>This page describes how to run UI tests from Jenkins on Windows VM using Jenkins Slave.<br> There are two options, depending on the Windows version.</p>
+      <p><br></p>
+      <hr>
+      <h1 id="RunningUItestsfromCI-OnolderWindowssystemslikeXP">On older Windows systems like XP</h1>
+      <ol>
+       <li>Run Jenkins Slave as a service</li>
+       <li>Go to "Computer Management" -&gt; "Services" -&gt; "Jenkins Slave", select "Log On" tab and select "Allow service to interact with the desktop"</li>
+      </ol>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/107040326/107044380.png" data-image-src="attachments/107040326/107044380.png" data-unresolved-comment-count="0" data-linked-resource-id="107044380" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="JenkinsWindowsService.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040326" data-linked-resource-container-version="11"></span></p>
+      <p><br></p>
+      <hr>
+      <h1 id="RunningUItestsfromCI-OnnewersystemslikeWindows7andWindows8">On newer systems like Windows 7 and Windows 8</h1>
+      <p>There is an additional service for "Interactive Services Detection" which requires manual user interaction ...<br> As a workaround we have to start the Jenkins Slave in a user session (not as a service) and then if we have to disconnect from the target VM machine we have to keep the current session opened, using a simple command "%windir%\System32\tscon.exe "RDP-Tcp#0" /dest:console" that will log you off and return the system to it's console.</p>
+      <ol>
+       <li><p><strong>Run Jenkins Slave</strong> command line (headless):</p>
+        <div class="code panel pdl" style="border-width: 1px;">
+         <div class="codeContent panelContent pdl"> 
+          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">java -jar slave.jar -jnlpUrl http://&lt;JENKINS_SERVER&gt;/computer/&lt;SLAVE_NAME&gt;/slave-agent.jnlp
+</pre> 
+         </div>
+        </div>
+        <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+         <p class="title">Determine SLAVE_NAME</p>
+         <div class="confluence-information-macro-body">
+          <p>You can see all Jenkins Slave machines, their names, status and possible connection options on http://&lt;JENKINS_SERVER&gt;/computer</p>
+         </div>
+        </div><p>If you want to start it automatically, you can create a .bat file and link it in the "Startup" folder or create a Windows Scheduled Task but set its startup when a user is logged on only.</p></li>
+       <li><p><strong>Disconnect from the VM</strong> using "tscon" command:</p>
+        <div class="code panel pdl" style="border-width: 1px;">
+         <div class="codeContent panelContent pdl"> 
+          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  tscon RDP-Tcp#0 /dest:console
+ </pre> 
+         </div>
+        </div><p>The name of the session depends on the current name in Task Manager. Instead of name you may also use the ID (plain number).<br><br></p></li>
+       <li>the <strong>screen resolution</strong> would be the system default one (usually 640x480 or 800x600), so if you want to use another resolution, you should use some utility for screen resize.</li>
+      </ol>
+      <ul class="alternate">
+       <li><p>For <strong>32-bit</strong> Windows you can use <a class="external-link" href="http://qres.sourceforge.net/" rel="nofollow">QRes.exe</a> - a small (open source) freeware application.</p>
+        <div class="code panel pdl" style="border-width: 1px;">
+         <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;">
+          <b>disconnect.bat</b>
+         </div>
+         <div class="codeContent panelContent pdl"> 
+          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  tscon RDP-Tcp#0 /dest:console
   timeout 5
   C:\QRes.exe /x:1920 /y:1080
- </pre>
-</div></div></li><li><p>For <strong>64-bit systems</strong> you may use <strong>nircmd</strong> utility from NirSoft<br/>Its parameters are width, height and bits-per-pixel (color depth)</p><p>Example:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"><b>disconnect.bat</b></div><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  tscon 2 /dest:console
+ </pre> 
+         </div>
+        </div></li>
+       <li><p>For <strong>64-bit systems</strong> you may use <strong>nircmd</strong> utility from NirSoft<br>Its parameters are width, height and bits-per-pixel (color depth)</p><p>Example:</p>
+        <div class="code panel pdl" style="border-width: 1px;">
+         <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;">
+          <b>disconnect.bat</b>
+         </div>
+         <div class="codeContent panelContent pdl"> 
+          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  tscon 2 /dest:console
   timeout 5
   C:\bin\nircmd.exe 1650 1080 24
-</pre>
-</div></div><ul class="alternate"><li><p>Main page. <a class="external-link" href="http://www.nirsoft.net/utils/nircmd.html" rel="nofollow">Download</a></p></li><li><p>Description is <a class="external-link" href="http://nircmd.nirsoft.net/setdisplay.html" rel="nofollow">here</a></p></li></ul><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>You have to run it as an administrator (Right Click -&gt; Run as Administrator).</p></div></div><p>If you find it not working, check the user session that you are using on the RDP. Open Task Manager and then the Users tab. Then check the Session column. The session number corresponds to the number in the command - RDP-Tcp#0. Instead of session name you may use the number from the ID column.</p></li></ul><p><br/></p><hr/><p>Back to <a href="UI-Testing.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+</pre> 
+         </div>
+        </div>
+        <ul class="alternate">
+         <li><p>Main page. <a class="external-link" href="http://www.nirsoft.net/utils/nircmd.html" rel="nofollow">Download</a></p></li>
+         <li><p>Description is <a class="external-link" href="http://nircmd.nirsoft.net/setdisplay.html" rel="nofollow">here</a></p></li>
+        </ul>
+        <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+         <div class="confluence-information-macro-body">
+          <p>You have to run it as an administrator (Right Click -&gt; Run as Administrator).</p>
+         </div>
+        </div><p>If you find it not working, check the user session that you are using on the RDP. Open Task Manager and then the Users tab. Then check the Session column. The session number corresponds to the number in the command - RDP-Tcp#0. Instead of session name you may use the number from the ID column.</p></li>
+      </ul>
+      <p><br></p>
+      <hr>
+      <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

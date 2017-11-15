@@ -1,92 +1,126 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Threading patterns</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Performance-testing.html">Performance testing</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Threading patterns
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 11, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Threadingpatterns-Introduction">Introduction</h1><hr/><p>The threading pattern defines the most important parameters of the performance test scenario. For example these are the number of threads(users), do they start together or with some delay, how long time they run, is there some delay after each run etc</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p><a href="Performance-testing.html">Here</a> we presented some basic performance test example.</p><p>Please have it in mind as on this page we will be adding just the extra code you will need to have.</p></div></div><p> </p><p>Currently ATS supports four types of threading patterns. They are following:</p><hr/><h1 id="Threadingpatterns-Allatoncepattern">All at once pattern</h1><p>With this pattern you can start a number of users <strong>all at the same time</strong>. The moment actions start executing is synchronized for all users. This means that practically there will be no delay between the start of the first and the last threads.</p><p>Here is a testcase running file transfer using the all-at-once pattern:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.AllAtOncePattern;
+ <head> 
+  <title>ATS : Threading patterns</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Performance-testing.html">Performance testing</a></span> </li> 
+       <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Threading patterns </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Threadingpatterns-Introduction">Introduction</h1>
+      <hr>
+      <p>The threading pattern defines the most important parameters of the performance test scenario. For example these are the number of threads(users), do they start together or with some delay, how long time they run, is there some delay after each run etc</p>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p><a href="Performance-testing.html">Here</a> we presented some basic performance test example.</p>
+        <p>Please have it in mind as on this page we will be adding just the extra code you will need to have.</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <p>Currently ATS supports four types of threading patterns. They are following:</p>
+      <hr>
+      <h1 id="Threadingpatterns-Allatoncepattern">All at once pattern</h1>
+      <p>With this pattern you can start a number of users <strong>all at the same time</strong>. The moment actions start executing is synchronized for all users. This means that practically there will be no delay between the start of the first and the last threads.</p>
+      <p>Here is a testcase running file transfer using the all-at-once pattern:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.AllAtOncePattern;
 
 loader.setThreadingPattern( new AllAtOncePattern( 5, true ) );
-</pre>
-</div></div><p>This example runs 5 users, it starts them at the same time and each of them connects, uploads a file and disconnects.</p><p>The <em>Performance actions</em> tab at the Test Explorer shows:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489838.png" data-image-src="attachments/119489758/119489838.png" data-unresolved-comment-count="0" data-linked-resource-id="119489838" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p><p>It should be easy to understand the info at this page and how it relates to your test code.</p><p>The <em>Total execution time</em> entry shows the time it took to execute once the whole iteration(which are all queued actions)</p><h3 id="Threadingpatterns-Manyexecutions(iterations)ofthesameactionqueue">Many executions(iterations) of the same action queue</h3><p>This example runs only iteration. If you need to do it for a number of times you have to change one line in the test example:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">loader.setThreadingPattern( new AllAtOncePattern( 5, true, 10, 1000 ) );
-</pre>
-</div></div><p>Now we have requested that each thread will execute its action queue 10 times and there will be 1000 ms sleep after each iteration.</p><p>We run it again and here is the result:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489839.png" data-image-src="attachments/119489758/119489839.png" data-unresolved-comment-count="0" data-linked-resource-id="119489839" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic2.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p><p> </p><hr/><h1 id="Threadingpatterns-Fixeddurationallatoncepattern">Fixed duration all at once pattern</h1><p>This pattern is almost the same as the all-at-once pattern. The difference is that instead of specifying number of action queue iterations, we specify duration for the action queue execution.</p><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.FixedDurationAllAtOncePattern;
+</pre> 
+       </div>
+      </div>
+      <p>This example runs 5 users, it starts them at the same time and each of them connects, uploads a file and disconnects.</p>
+      <p>The <em>Performance actions</em> tab at the Test Explorer shows:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489838.png" data-image-src="attachments/119489758/119489838.png" data-unresolved-comment-count="0" data-linked-resource-id="119489838" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p>
+      <p>It should be easy to understand the info at this page and how it relates to your test code.</p>
+      <p>The <em>Total execution time</em> entry shows the time it took to execute once the whole iteration(which are all queued actions)</p>
+      <h3 id="Threadingpatterns-Manyexecutions(iterations)ofthesameactionqueue">Many executions(iterations) of the same action queue</h3>
+      <p>This example runs only iteration. If you need to do it for a number of times you have to change one line in the test example:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">loader.setThreadingPattern( new AllAtOncePattern( 5, true, 10, 1000 ) );
+</pre> 
+       </div>
+      </div>
+      <p>Now we have requested that each thread will execute its action queue 10 times and there will be 1000 ms sleep after each iteration.</p>
+      <p>We run it again and here is the result:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489839.png" data-image-src="attachments/119489758/119489839.png" data-unresolved-comment-count="0" data-linked-resource-id="119489839" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic2.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Threadingpatterns-Fixeddurationallatoncepattern">Fixed duration all at once pattern</h1>
+      <p>This pattern is almost the same as the all-at-once pattern. The difference is that instead of specifying number of action queue iterations, we specify duration for the action queue execution.</p>
+      <p>&nbsp;</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.FixedDurationAllAtOncePattern;
 
 loader.setThreadingPattern( new FixedDurationAllAtOncePattern( 5, true, 20, 1000 ) );
-</pre>
-</div></div><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489841.png" data-image-src="attachments/119489758/119489841.png" data-unresolved-comment-count="0" data-linked-resource-id="119489841" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic4.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p><p>Five threads are started. Each thread ran for 20 seconds and then exited. There was 1000 ms delay between the iterations.</p><p>As you can see we have a total number of 28 executions which means some threads ran 6 times, while some slower threads managed to execute only 5 times before the deadline.</p><p> </p><hr/><h1 id="Threadingpatterns-Rampuppattern">Ramp up pattern</h1><p>Sometimes you do not want to start all your users at the same time, but you prefer to load the server slowly. In such case you can use the ramp-up-pattern.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.RampUpPattern;
+</pre> 
+       </div>
+      </div>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489841.png" data-image-src="attachments/119489758/119489841.png" data-unresolved-comment-count="0" data-linked-resource-id="119489841" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic4.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p>
+      <p>Five threads are started. Each thread ran for 20 seconds and then exited. There was 1000 ms delay between the iterations.</p>
+      <p>As you can see we have a total number of 28 executions which means some threads ran 6 times, while some slower threads managed to execute only 5 times before the deadline.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Threadingpatterns-Rampuppattern">Ramp up pattern</h1>
+      <p>Sometimes you do not want to start all your users at the same time, but you prefer to load the server slowly. In such case you can use the ramp-up-pattern.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.RampUpPattern;
 
 loader.setThreadingPattern( new RampUpPattern( 10, true, 5, 0, 2000, 2 ) );
-</pre>
-</div></div><p>We have changed only one line in our test and now we will start a total number of 10 threads(first parameter), but every 2000 ms(fifth parameter) it will start 2 new threads(sixth parameter). Each thread will execute its action queue 5 times(third parameter) and there will be no delay between each queue execution(fourth parameter).</p><p>The result regarding response times and transfer rates are not shown here as they are easy to understand, but have a look at this pic:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489842.png" data-image-src="attachments/119489758/119489842.png" data-unresolved-comment-count="0" data-linked-resource-id="119489842" data-linked-resource-version="3" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic5.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p><p>Here you can see how the number of running threads was changing according to the used pattern. Every 2 seconds another 2 threads get started until reach the total number of 10.<br/> The thread that started first will eventually end first(all run for same number of 5 iterations), so at the end you see the number of threads is slowly going down.<br/> Of course the end of the graphic is not so well shaped as the beginning, the reason is that all threads do not do the transfer with same exact speed.</p><div class="confluence-information-macro confluence-information-macro-note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>This graphic with the number of running threads is made by using ATS Monitoring which is explained in details <a href="User-activity-monitoring-details.html">here</a></p></div></div><p> </p><hr/><h1 id="Threadingpatterns-Fixeddurationrampuppattern">Fixed duration ramp up pattern</h1><p>This pattern is almost the same as the ramp-up-pattern pattern. The difference is that instead of specifying number of queue iterations, we specify duration for the queue execution.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.FixedDurationRampUpPattern;
+</pre> 
+       </div>
+      </div>
+      <p>We have changed only one line in our test and now we will start a total number of 10 threads(first parameter), but every 2000 ms(fifth parameter) it will start 2 new threads(sixth parameter). Each thread will execute its action queue 5 times(third parameter) and there will be no delay between each queue execution(fourth parameter).</p>
+      <p>The result regarding response times and transfer rates are not shown here as they are easy to understand, but have a look at this pic:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489842.png" data-image-src="attachments/119489758/119489842.png" data-unresolved-comment-count="0" data-linked-resource-id="119489842" data-linked-resource-version="3" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic5.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p>
+      <p>Here you can see how the number of running threads was changing according to the used pattern. Every 2 seconds another 2 threads get started until reach the total number of 10.<br> The thread that started first will eventually end first(all run for same number of 5 iterations), so at the end you see the number of threads is slowly going down.<br> Of course the end of the graphic is not so well shaped as the beginning, the reason is that all threads do not do the transfer with same exact speed.</p>
+      <div class="confluence-information-macro confluence-information-macro-note">
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
+       <div class="confluence-information-macro-body">
+        <p>This graphic with the number of running threads is made by using ATS Monitoring which is explained in details <a href="User-activity-monitoring-details.html">here</a></p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Threadingpatterns-Fixeddurationrampuppattern">Fixed duration ramp up pattern</h1>
+      <p>This pattern is almost the same as the ramp-up-pattern pattern. The difference is that instead of specifying number of queue iterations, we specify duration for the queue execution.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.core.threading.patterns.FixedDurationRampUpPattern;
 
 loader.setThreadingPattern( new FixedDurationRampUpPattern( 10, true, 60, 0, 2000, 2 ) );
-</pre>
-</div></div><p>Compared to the previous example, now the third parameter shows the threads will run for 60 seconds, while before they would run 5 iterations exactly.<br/> Here is the user activity:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489843.png" data-image-src="attachments/119489758/119489843.png" data-unresolved-comment-count="0" data-linked-resource-id="119489843" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic6.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p><p> </p><hr/><p>Back to <a href="Running-performance-tests.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+</pre> 
+       </div>
+      </div>
+      <p>Compared to the previous example, now the third parameter shows the threads will run for 60 seconds, while before they would run 5 iterations exactly.<br> Here is the user activity:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119489758/119489843.png" data-image-src="attachments/119489758/119489843.png" data-unresolved-comment-count="0" data-linked-resource-id="119489843" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic6.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119489758" data-linked-resource-container-version="5"></span></p>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

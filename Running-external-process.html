@@ -1,57 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Running external process</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Running external process
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 17, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <p>The ATS <strong> <em>ProcessExecutor</em> </strong> class allows you to run a local or remote external process(for example some shell command) and analyze the output</p><p> </p><hr/><h1 id="Runningexternalprocess-Havesomeexternalprocesstorun"><strong>Have some external process to run</strong></h1><p>You should try with your own external process, but for the examples on this page we will use the following simple bat file.</p><p>The content of the bat file is:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">@ECHO OFF
+ <head> 
+  <title>ATS : Running external process</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Running external process </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p>The ATS <strong> <em>ProcessExecutor</em> </strong> class allows you to run a local or remote external process(for example some shell command) and analyze the output</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningexternalprocess-Havesomeexternalprocesstorun"><strong>Have some external process to run</strong></h1>
+      <p>You should try with your own external process, but for the examples on this page we will use the following simple bat file.</p>
+      <p>The content of the bat file is:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">@ECHO OFF
 
 ECHO info line one
 ECHO error line one 1&gt;&amp;2
@@ -60,46 +39,84 @@ ECHO info line two
 ECHO error line two 1&gt;&amp;2
 
 ECHO info line three
-</pre>
-</div></div><p>The file path is &quot;C:/Temp/test.bat&quot;. It basically sends few lines of code to the <em>standard output</em> and the <em>error output</em></p><p><em> <br/> </em></p><hr/><h1 id="Runningexternalprocess-Examplerun"><strong>Example run</strong></h1><p>Here is our test code:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">@Test
+</pre> 
+       </div>
+      </div>
+      <p>The file path is "C:/Temp/test.bat". It basically sends few lines of code to the <em>standard output</em> and the <em>error output</em></p>
+      <p><em> <br> </em></p>
+      <hr>
+      <h1 id="Runningexternalprocess-Examplerun"><strong>Example run</strong></h1>
+      <p>Here is our test code:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">@Test
 public void runExternalProcess() throws Exception {
 
     // in the constructor, provide the external process that will be run and optionally some arguments
-    ProcessExecutor processExecutor = new ProcessExecutor( &quot;test.bat&quot; );
+    ProcessExecutor processExecutor = new ProcessExecutor( "test.bat" );
 
     // execute the external process and wait for its completion
     processExecutor.execute();
  }
-</pre>
-</div></div><p>If the commands has arguments, there are two ways to achieve it.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// with auto parsing of the command line arguments
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;ls -la /tmp&quot; );
+</pre> 
+       </div>
+      </div>
+      <p>If the commands has arguments, there are two ways to achieve it.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// with auto parsing of the command line arguments
+ProcessExecutor processExecutor = new ProcessExecutor( "ls -la /tmp" );
 
 // OR command arguments specified in a String array
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;ls&quot;, new String[]{ &quot;-la&quot;, &quot;/tmp&quot; } );
-</pre>
-</div></div><p>Now unfortunately we get some unpleasant surprise. The external process is not started and an error is logged which says:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Cannot run program &quot;test.bat&quot;: CreateProcess error=2, The system cannot find the file specified
-</pre>
-</div></div><p>The problem comes from the fact that running an external process using the Process Executor is not the same as running a shell command.<br/> When a shell console is started, it has some options set. For example it may have some options which tell the operating system where to search for the targeted applications, thus from the console window you may not need to specify the full path to the executed application.</p><p>In order to fix the current problem, you have to simply specify the full path to the application to start:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ProcessExecutor processExecutor = new ProcessExecutor( &quot;C:\\Temp\\test.bat&quot; );
-</pre>
-</div></div><p>or you can run the command in <strong>cmd</strong> or <strong>bash</strong>:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// you need to wrap the command in &#39; or &quot; (only when you use the constructors without separated arguments array)
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;cmd /C &#39;dir C:/Temp/&#39;&quot; );
-// but if you need quotes for some internal argument, you can use &#39; for command wrapping and &quot; for its arguments
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;cmd /C &#39;dir \&quot;C:/Program Files/\&quot;&#39;&quot; );
+ProcessExecutor processExecutor = new ProcessExecutor( "ls", new String[]{ "-la", "/tmp" } );
+</pre> 
+       </div>
+      </div>
+      <p>Now unfortunately we get some unpleasant surprise. The external process is not started and an error is logged which says:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Cannot run program "test.bat": CreateProcess error=2, The system cannot find the file specified
+</pre> 
+       </div>
+      </div>
+      <p>The problem comes from the fact that running an external process using the Process Executor is not the same as running a shell command.<br> When a shell console is started, it has some options set. For example it may have some options which tell the operating system where to search for the targeted applications, thus from the console window you may not need to specify the full path to the executed application.</p>
+      <p>In order to fix the current problem, you have to simply specify the full path to the application to start:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ProcessExecutor processExecutor = new ProcessExecutor( "C:\\Temp\\test.bat" );
+</pre> 
+       </div>
+      </div>
+      <p>or you can run the command in <strong>cmd</strong> or <strong>bash</strong>:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// you need to wrap the command in ' or " (only when you use the constructors without separated arguments array)
+ProcessExecutor processExecutor = new ProcessExecutor( "cmd /C 'dir C:/Temp/'" );
+// but if you need quotes for some internal argument, you can use ' for command wrapping and " for its arguments
+ProcessExecutor processExecutor = new ProcessExecutor( "cmd /C 'dir \"C:/Program Files/\"'" );
 
 // in bash
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;/bin/bash -c &#39;ls -la /tmp | grep .log&#39;&quot; );
+ProcessExecutor processExecutor = new ProcessExecutor( "/bin/bash -c 'ls -la /tmp | grep .log'" );
 
 // or using the other constructors
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;/bin/bash&quot;, new String[]{ &quot;-c&quot;, &quot;ls -la /tmp | grep .log&quot; } );
-ProcessExecutor processExecutor = new ProcessExecutor( &quot;cmd&quot;, new String[]{ &quot;/C&quot;, &quot;dir \&quot;C:/Program Files/\&quot;&quot; } );
-</pre>
-</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>In some cases you should strictly separate each parameter into separate String element of the array with command parameters</p></div></div><p> </p><hr/><h1 id="Runningexternalprocess-Evaluatingtheprocessexecution"><strong>Evaluating the process execution</strong></h1><p>Almost always you will need to examine the process execution output in order to verify if it was all successful.<br/> Or sometimes you may want to extract some data from the output and use this data in the next test steps.</p><p>For such cases you need to get the execution output:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// after the completion of the process you can call some of the following methods:
+ProcessExecutor processExecutor = new ProcessExecutor( "/bin/bash", new String[]{ "-c", "ls -la /tmp | grep .log" } );
+ProcessExecutor processExecutor = new ProcessExecutor( "cmd", new String[]{ "/C", "dir \"C:/Program Files/\"" } );
+</pre> 
+       </div>
+      </div>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>In some cases you should strictly separate each parameter into separate String element of the array with command parameters</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningexternalprocess-Evaluatingtheprocessexecution"><strong>Evaluating the process execution</strong></h1>
+      <p>Almost always you will need to examine the process execution output in order to verify if it was all successful.<br> Or sometimes you may want to extract some data from the output and use this data in the next test steps.</p>
+      <p>For such cases you need to get the execution output:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// after the completion of the process you can call some of the following methods:
 
 // get the process outputs(Standard and Error)
 String standardOutputText = processExecutor.getStandardOutput( );
@@ -113,35 +130,55 @@ processExecutor.getCurrentErrorOutput( );
 // and to check for stream read finished with:
 processExecutor.isStandardOutputFullyRead()
 processExecutor.isErrorOutputFullyRead()
-</pre>
-</div></div><p> </p><hr/><h1 id="Runningexternalprocess-Monitoringtheprocessexecution"><strong>Monitoring the process execution</strong></h1><p>Some processes take significant amount of time to execute. In such cases you want to have an idea how it is going. Here are your options:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// prior to running the process you can call some of the following methods:
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningexternalprocess-Monitoringtheprocessexecution"><strong>Monitoring the process execution</strong></h1>
+      <p>Some processes take significant amount of time to execute. In such cases you want to have an idea how it is going. Here are your options:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// prior to running the process you can call some of the following methods:
 
 // route the process outputs(Standard and Error) to some local files
-processExecutor.setStandardOutputFile( &quot;C:/Temp/standard.log&quot; );
-processExecutor.setErrorOutputFile( &quot;C:/Temp/error.log&quot; );
+processExecutor.setStandardOutputFile( "C:/Temp/standard.log" );
+processExecutor.setErrorOutputFile( "C:/Temp/error.log" );
 
 // route the process outputs(Standard and Error) to the logging database
 processExecutor.setLogErrorOutput( true );
 processExecutor.setLogStandardOutput( true );
-</pre>
-</div></div><p>Each of these lines can be used separately and it gives a real time view on the process output.</p><p> </p><hr/><h1 id="Runningexternalprocess-Dosomethingelsewhiletheexternalprocessisrunning"><strong>Do something else while the external process is running</strong></h1><p>There are cases where while the process is running in background, you want to continue with some other test steps. Here is how to do it:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// start the external process, but do not wait for its completion
+</pre> 
+       </div>
+      </div>
+      <p>Each of these lines can be used separately and it gives a real time view on the process output.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningexternalprocess-Dosomethingelsewhiletheexternalprocessisrunning"><strong>Do something else while the external process is running</strong></h1>
+      <p>There are cases where while the process is running in background, you want to continue with some other test steps. Here is how to do it:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// start the external process, but do not wait for its completion
 processExecutor.execute( false );
-</pre>
-</div></div><p> </p><hr/><h1 id="Runningexternalprocess-Otherusefulmethods"><strong>Other useful methods</strong></h1><p>You can check the other easy to use methods of this class like:</p><ul><li>get exit code</li><li>get/set environment variables</li><li>kill the started process with/without its children</li></ul><p> </p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Runningexternalprocess-Otherusefulmethods"><strong>Other useful methods</strong></h1>
+      <p>You can check the other easy to use methods of this class like:</p>
+      <ul>
+       <li>get exit code</li>
+       <li>get/set environment variables</li>
+       <li>kill the started process with/without its children</li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

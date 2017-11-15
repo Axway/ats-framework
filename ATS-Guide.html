@@ -1,62 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : ATS Guide</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : ATS Guide
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 20, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="ATSGuide-Purposeofthisdocument">Purpose of this document</h1><p>This document is the official user guide on ATS</p><p> </p><hr/><h1 id="ATSGuide-Aquickexample">A quick example</h1><p>You can have a look at this <a href="Quick-test-example.html">test example</a> using ATS code</p><p> </p><hr/><h1 id="ATSGuide-ATSTerminology">ATS Terminology</h1><p><a href="ATS-Terminology.html">Here</a> we list some special words and names you will read many teams all over this user guide.</p><p> </p><hr/><h1 id="ATSGuide-Basicfunctionalities">Basic functionalities</h1><p><a href="Basic-functionalities.html">Here</a> are many examples which can help you to understand a large part of what and how is possible to do with ATS.</p><p>Other areas like performance testing, monitoring of system resources and others are presented in sections bellow.</p><p> </p><hr/><h1 id="ATSGuide-Testlogging">Test logging</h1><p>No testing framework is useful without appropriate logging.</p><p><a href="Test-logging.html">Here</a> are the important features.</p><p> </p><hr/><h1 id="ATSGuide-Systemmonitoring">System monitoring</h1><p><a href="System-monitoring.html">Here</a> you can see how to monitor the system state of one or many hosts, one or many system processes and more ...</p><p> </p><hr/><h1 id="ATSGuide-Performancetesting">Performance testing</h1><p>ATS has proven to be steady, flexible and powerful when comes to check the behavior of the Tested Application under load.</p><p><a href="Performance-testing.html">Here</a> are the details.</p><p> </p><hr/><h1 id="ATSGuide-UItesting">UI testing</h1><p>ATS comes with a component we call UI Engine which is targeted for testing various UI applications.</p><p>Currently it can be used to interact with the following UI types:</p><ul><li>HTML and JavaScript</li><li>Mobile (Native and hybrid ones)</li><li>Swing</li></ul><p><a href="UI-Testing.html">Here</a> is the page dedicated to these features.</p><p> </p><hr/><h1 id="ATSGuide-TheATSAgent">The ATS Agent</h1><p>When working with the ATS Framework, you often use the ATS Agent for variety of tasks.</p><p><a href="The-ATS-Agent.html">Here</a> it is presented.</p><p> </p><hr/><h1 id="ATSGuide-Executeanycustomcodeonanyhost">Execute any custom code on any host</h1><p>There is a way to execute any code(in the form of a java method) on any host where the ATS Agent is running</p><p><a href="Execute-any-custom-code-on-any-host.html">Here</a> are the details</p><p> </p><hr/><h1 id="ATSGuide-YoulikeATS,butyoudonotwantorcannotusejava">You like ATS, but you do not want or cannot use java</h1><p>You are in a poor situation. But here ( TODO ) we list some ATS features you can use without java</p><p> </p><hr/><p>Back to <a href="ATS-Documentation.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+ <head> 
+  <title>ATS : ATS Guide</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : ATS Guide </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="ATSGuide-Purposeofthisdocument">Purpose of this document</h1>
+      <p>This document is the official user guide on ATS</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-Aquickexample">A quick example</h1>
+      <p>You can have a look at this <a href="Quick-test-example.html">test example</a> using ATS code</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-ATSTerminology">ATS Terminology</h1>
+      <p><a href="ATS-Terminology.html">Here</a> we list some special words and names you will read many teams all over this user guide.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-Basicfunctionalities">Basic functionalities</h1>
+      <p><a href="Basic-functionalities.html">Here</a> are many examples which can help you to understand a large part of what and how is possible to do with ATS.</p>
+      <p>Other areas like performance testing, monitoring of system resources and others are presented in sections bellow.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-Testlogging">Test logging</h1>
+      <p>No testing framework is useful without appropriate logging.</p>
+      <p><a href="Test-logging.html">Here</a> are the important features.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-Systemmonitoring">System monitoring</h1>
+      <p><a href="System-monitoring.html">Here</a> you can see how to monitor the system state of one or many hosts, one or many system processes and more ...</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-Performancetesting">Performance testing</h1>
+      <p>ATS has proven to be steady, flexible and powerful when comes to check the behavior of the Tested Application under load.</p>
+      <p><a href="Performance-testing.html">Here</a> are the details.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-UItesting">UI testing</h1>
+      <p>ATS comes with a component we call UI Engine which is targeted for testing various UI applications.</p>
+      <p>Currently it can be used to interact with the following UI types:</p>
+      <ul>
+       <li>HTML and JavaScript</li>
+       <li>Mobile (Native and hybrid ones)</li>
+       <li>Swing</li>
+      </ul>
+      <p><a href="UI-Testing.html">Here</a> is the page dedicated to these features.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-ATSAgent">ATS Agent</h1>
+      <p>When working with the ATS Framework, you often use the ATS Agent for variety of tasks.</p>
+      <p><a href="The-ATS-Agent.html">Here</a> it is presented.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-Executeanycustomcodeonanyhost">Execute any custom code on any host</h1>
+      <p>There is a way to execute any code(in the form of a java method) on any host where the ATS Agent is running</p>
+      <p><a href="Execute-any-custom-code-on-any-host.html">Here</a> are the details</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSGuide-YoulikeATS,butyoudonotwantorcannotusejava">You like ATS, but you do not want or cannot use java</h1>
+      <p>You are in a poor situation. But here ( TODO ) we list some ATS features you can use without java</p>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="ATS-Documentation.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

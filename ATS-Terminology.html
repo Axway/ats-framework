@@ -1,65 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : ATS Terminology</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : ATS Terminology
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 04, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <p>In our days there are a lot of testing frameworks which leads to obvious confusion when everybody calls the same thing with a different name.</p><p>Here we explain the terminology used in ATS. We do not say it is the best one, it is just a working one.</p><p> </p><hr/><h1 id="ATSTerminology-Testhierarchy">Test hierarchy</h1><ul><li><em> <strong>Scenario </strong> </em>or <strong> <em>Test scenario</em> </strong> <br/> Represents a java method annotated with the <em>@Test</em> annotation. The name of the scenario is the name of the java method indeed</li><li><em> <strong>Testcase<br/> </strong> </em>This is a<em> </em>single execution of a <em>Scenario</em>. Since in most cases we executed a <em>Scenario</em> just once, we can use either one of these terms.<br/> <br/>There is a difference in the meaning of <em>Scenario</em> and <em>Testcase</em> when we run <em>data driven tests</em>. In such case the java method has some input arguments and the same <em>scenario</em> is executed many times with different input arguments. Then each <em>scenario</em> execution is called a <em>testcase</em> <br/>TODO provide link to data driven test</li><li><em> <strong>Suite</strong> </em> <br/>This is the java class containing all test methods. In other words a <em>Suite</em> contains all <em>Scenarios</em> defined in its java class</li></ul><ul><li><em> <strong>Run</strong> <br/> </em>One execution of one or more <em>Suites</em> containing one or more <em>Scenarios</em></li></ul><p> </p><hr/><h1 id="ATSTerminology-Testenvironmentparticipants">Test environment participants</h1><ul><li><em> <strong>Test Executor (TE)</strong> </em> - the host which manages and runs the tests.<br/>ATS tests can run from Eclipse, Ant, Maven, Shell command etc.</li><li><em> <strong>Application</strong> <strong>Under Test (AUT)</strong> </em> or <em> <strong>Tested Application (TA)</strong> </em> - the application which functionality we are testing.<br/>It could be a single standalone application or a number of applications working as one.<br/>Usually the <em>Tested Application</em> is located on a different host than the <em>Test Executor</em></li><li><em> <strong>External Servers</strong> </em> - any external application the <em>AUT</em> works with.<br/>For example this could be some file or mail storage application</li><li><em> <strong>ATS Agent</strong> </em> - a standalone application used for different tasks on a usually remote host.<br/>Its name does not reveal its purpose and this is because it is used for variety of tasks. For example:<ul><li>Execute some action (code lines) on a remote host. The ATS frameworks does it internally, but the QA can do it as well</li><li>Collect statistical information about some system resources like CPU, Memory etc.</li><li>Run actions in multiple threads, so the test can achieve good load on the <em>AUT<br/> <br/> </em></li></ul></li><li><em> <strong>Test Explorer</strong> </em> - a dedicated host which is used to keep, review and analyze the test results<br/>It is consisted of:<ul><li>Database storage where all test data is persisted</li><li>Web application used to review and analyze the test results</li></ul></li></ul><p> </p><hr/><p>Back to <a href="ATS-Guide.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+ <head> 
+  <title>ATS : ATS Terminology</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : ATS Terminology </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p>In our days there are a lot of testing frameworks which leads to obvious confusion when everybody calls the same thing with a different name.</p>
+      <p>Here we explain the terminology used in ATS. We do not say it is the best one, it is just a working one.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSTerminology-Testhierarchy">Test hierarchy</h1>
+      <ul>
+       <li><em> <strong>Scenario </strong> </em>or <strong> <em>Test scenario</em> </strong> <br> Represents a java method annotated with the <em>@Test</em> annotation. The name of the scenario is the name of the java method indeed</li>
+       <li><em> <strong>Testcase<br> </strong> </em>This is a<em> </em>single execution of a <em>Scenario</em>. Since in most cases we executed a <em>Scenario</em> just once, we can use either one of these terms.<br> <br>There is a difference in the meaning of <em>Scenario</em> and <em>Testcase</em> when we run <em>data driven tests</em>. In such case the java method has some input arguments and the same <em>scenario</em> is executed many times with different input arguments. Then each <em>scenario</em> execution is called a <em>testcase</em> <br>TODO provide link to data driven test</li>
+       <li><em> <strong>Suite</strong> </em> <br>This is the java class containing all test methods. In other words a <em>Suite</em> contains all <em>Scenarios</em> defined in its java class</li>
+      </ul>
+      <ul>
+       <li><em> <strong>Run</strong> <br> </em>One execution of one or more <em>Suites</em> containing one or more <em>Scenarios</em></li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="ATSTerminology-Testenvironmentparticipants">Test environment participants</h1>
+      <ul>
+       <li><em> <strong>Test Executor (TE)</strong> </em> - the host which manages and runs the tests.<br>ATS tests can run from Eclipse, Ant, Maven, Shell command etc.</li>
+       <li><em> <strong>Application</strong> <strong>Under Test (AUT)</strong> </em> or <em> <strong>Tested Application (TA)</strong> </em> - the application which functionality we are testing.<br>It could be a single standalone application or a number of applications working as one.<br>Usually the <em>Tested Application</em> is located on a different host than the <em>Test Executor</em></li>
+       <li><em> <strong>External Servers</strong> </em> - any external application the <em>AUT</em> works with.<br>For example this could be some file or mail storage application</li>
+       <li><em> <strong>ATS Agent</strong> </em> - a standalone application used for different tasks on a usually remote host.<br>Its name does not reveal its purpose and this is because it is used for variety of tasks. For example:
+        <ul>
+         <li>Execute some action (code lines) on a remote host. The ATS frameworks does it internally, but the QA can do it as well</li>
+         <li>Collect statistical information about some system resources like CPU, Memory etc.</li>
+         <li>Run actions in multiple threads, so the test can achieve good load on the <em>AUT<br> <br> </em></li>
+        </ul></li>
+       <li><em> <strong>Test Explorer</strong> </em> - a dedicated host which is used to keep, review and analyze the test results<br>It is consisted of:
+        <ul>
+         <li>Database storage where all test data is persisted</li>
+         <li>Web application used to review and analyze the test results</li>
+        </ul></li>
+      </ul>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

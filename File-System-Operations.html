@@ -1,57 +1,78 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : File System Operations</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : File System Operations
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified by <span class='editor'> Svilen Dikov</span> on Jul 13, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <p>Introduction</p><p>Using the <strong> <em>FileSystemOperations</em> </strong>class you can do lots of different tasks on any type of file system on any host. Some of these tasks are:</p><ul style="list-style-type: square;"><li><span>create file in variety of ways</span></li><li><span>append or replace text in file</span></li><li><span>manipulate file attributes like modification time, UID, GIU</span></li><li><span>rename and delete files and directories</span></li><li><span>read the whole file content</span></li><li><span> <span>extract content from a file in a way similar to the Linux grep command</span> </span></li><li><span>read the new file content - useful for watching log files</span></li><li><span>copy files/directories</span></li></ul><p><span><br/></span></p><hr/><h1 id="FileSystemOperations-FirstmakeaninstanceoftheFileSystemOperationsclass:">First make an instance of the <em>FileSystemOperations</em> class:</h1><div><div class="syntaxhighlighter sh-confluence nogutter java"><p><br/></p><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup> <col/> </colgroup><tbody><tr><td class="confluenceTd"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2"><code class="java plain">FileSystemOperations fileOperations = </code> <code class="java keyword">new</code> <code class="java plain">FileSystemOperations( SERVER_IP );</code></div></div></td></tr></tbody></table></div></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note conf-macro output-block"><div class="confluence-information-macro-body"><p>If you want to work locally, use the constructor without any input arguments</p></div></div><p><br/></p><hr/><h1 id="FileSystemOperations-Examples">Examples</h1><p>Following are some example of what you can do with this class. For the full list please check the code or javadoc.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Make an instance of this class
+ <head> 
+  <title>ATS : File System Operations</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : File System Operations </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p>Introduction</p>
+      <p>Using the <strong> <em>FileSystemOperations</em> </strong>class you can do lots of different tasks on any type of file system on any host. Some of these tasks are:</p>
+      <ul style="list-style-type: square;">
+       <li><span>create file in variety of ways</span></li>
+       <li><span>append or replace text in file</span></li>
+       <li><span>manipulate file attributes like modification time, UID, GIU</span></li>
+       <li><span>rename and delete files and directories</span></li>
+       <li><span>read the whole file content</span></li>
+       <li><span> <span>extract content from a file in a way similar to the Linux grep command</span> </span></li>
+       <li><span>read the new file content - useful for watching log files</span></li>
+       <li><span>copy files/directories</span></li>
+      </ul>
+      <p><span><br></span></p>
+      <hr>
+      <h1 id="FileSystemOperations-FirstmakeaninstanceoftheFileSystemOperationsclass:">First make an instance of the <em>FileSystemOperations</em> class:</h1>
+      <div>
+       <div class="syntaxhighlighter sh-confluence nogutter java">
+        <p><br></p>
+        <div class="table-wrap">
+         <table class="wrapped confluenceTable">
+          <colgroup> 
+           <col> 
+          </colgroup>
+          <tbody>
+           <tr>
+            <td class="confluenceTd">
+             <div class="container" title="Hint: double-click to select code">
+              <div class="line number1 index0 alt2">
+               <code class="java plain">FileSystemOperations&nbsp;fileOperations = </code> 
+               <code class="java keyword">new</code> 
+               <code class="java plain">FileSystemOperations( SERVER_IP );</code>
+              </div>
+             </div></td>
+           </tr>
+          </tbody>
+         </table>
+        </div>
+       </div>
+      </div>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note conf-macro output-block">
+       <div class="confluence-information-macro-body">
+        <p>If you want to work locally, use the constructor without any input arguments</p>
+       </div>
+      </div>
+      <p><br></p>
+      <hr>
+      <h1 id="FileSystemOperations-Examples">Examples</h1>
+      <p>Following are some example of what you can do with this class. For the full list please check the code or javadoc.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Make an instance of this class
 FileSystemOperations fileOperations = new FileSystemOperations( SERVER_IP );
 
 // create a remote folder
@@ -72,36 +93,36 @@ fileOperations.doesFileExist( SOME_FILE );
 // delete the remote file
 fileOperations.deleteFile( SOME_FILE );
 
-// get all lines from the file which contain &quot;first name = &quot;
-String[] matchedLines = fileOperations.fileGrep( SOME_FILE, &quot;.*first name = .*&quot;, false); 
+// get all lines from the file which contain "first name = "
+String[] matchedLines = fileOperations.fileGrep( SOME_FILE, ".*first name = .*", false); 
 
 // get a list of all XML files from the specified folder and its subfolders
-String[] foundFiles = fileOperations.findFiles( SOME_FOLDER, &quot;.*.XML&quot;, true, false, true );
+String[] foundFiles = fileOperations.findFiles( SOME_FOLDER, ".*.XML", true, false, true );
 
 // Get info about all matches (in this case it will return all instances of the specified String)
 // This method remembers the last processed line, so the next call will continue from after that line,
 // which makes it good for extracting info from growing(log like) files when you need to check only the new content
-FileMatchInfo matchInfo = fileOperations.findNewTextInFile( SOME_FILE, &quot;Our server started successfully&quot;, true );
+FileMatchInfo matchInfo = fileOperations.findNewTextInFile( SOME_FILE, "Our server started successfully", true );
 // the list of matched lines can be taken from the returned matchInfo structure
 
 // copy a file from a remote host to another remote host - of course the ATS Agent must be running on both remote hosts
 fileOperations.copyRemoteFile( FROM_HOST, SOME_FILE, TO_HOST, SOME_FILE );
 
 // copy recursively a folder from a remote host to another remote host - of course the ATS Agent must be running on both remote hosts
-fileOperations.copyRemoteDirectory( FROM_HOST, SOME_FOLDER, TO_HOST, SOME_FOLDER, true );</pre>
-</div></div><p><br/></p><hr/><h1 id="FileSystemOperations-Specialconsiderationswhencopyingfilesanddirectories">Special considerations when copying files and directories</h1><p>For details when copying files to Docker containers you may refer to <a href="Special-considerations-for-file-copy-in-Docker-environment.html">this page</a></p><p><br/></p><hr/><p>Back to <a href="Basic-functionalities.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+fileOperations.copyRemoteDirectory( FROM_HOST, SOME_FOLDER, TO_HOST, SOME_FOLDER, true );</pre> 
+       </div>
+      </div>
+      <p><br></p>
+      <hr>
+      <h1 id="FileSystemOperations-Specialconsiderationswhencopyingfilesanddirectories">Special considerations when copying files and directories</h1>
+      <p>For details when copying files to Docker containers you may refer to <a href="Special-considerations-for-file-copy-in-Docker-environment.html">this page</a></p>
+      <p><br></p>
+      <hr>
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

@@ -1,67 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : REST Operations - Configuring the client</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Basic-functionalities.html">Basic functionalities</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="REST-Operations.html">REST Operations</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : REST Operations - Configuring the client
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Mar 17, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <hr/><h1 id="RESTOperations-Configuringtheclient-SettingdefaultvaluesforanyRESTclient">Setting default values for any REST client</h1><p>The <em>ActionLibraryConfigurator</em> can be used(as the REST client API is part of the ATS Action Library) to get and set some default values for the rest client:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ActionLibraryConfigurator.getInstance().setRestDefaultResponseMediaType( RESTMediaType.APPLICATION_XML );
-</pre>
-</div></div><p>Using this example we set the default response media type to &quot;application/xml&quot; and this will be the type of content we expect unless we explicitly specify another type using the setResponseMediaType method of the RESTClient class</p><div class="confluence-information-macro confluence-information-macro-tip"><span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Use the different methods of the ActionLibraryConfigurator which start with <strong> <em>getRest...</em> </strong> or <strong> <em>setRest...</em> </strong> to see all the supported configuration values.</p></div></div><p> </p><hr/><h1 id="RESTOperations-Configuringtheclient-Loggingbysettingverbosemode">Logging by setting verbose mode</h1><p><span style="color: rgb(61,61,61);">In verbose mode you can trace all HTTP requests and responses.You can select what to log - just headers, bodies or both.</span></p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClient client = new RestClient( &lt;target URI&gt; );
+ <head> 
+  <title>ATS : REST Operations - Configuring the client</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+       <li> <span><a href="REST-Operations.html">REST Operations</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : REST Operations - Configuring the client </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <hr>
+      <h1 id="RESTOperations-Configuringtheclient-SettingdefaultvaluesforanyRESTclient">Setting default values for any REST client</h1>
+      <p>The <em>ActionLibraryConfigurator</em> can be used(as the REST client API is part of the ATS Action Library) to get and set some default values for the rest client:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ActionLibraryConfigurator.getInstance().setRestDefaultResponseMediaType( RESTMediaType.APPLICATION_XML );
+</pre> 
+       </div>
+      </div>
+      <p>Using this example we set the default response media type to "application/xml" and this will be the type of content we expect unless we explicitly specify another type using the setResponseMediaType method of the RESTClient class</p>
+      <div class="confluence-information-macro confluence-information-macro-tip">
+       <span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span>
+       <div class="confluence-information-macro-body">
+        <p>Use the different methods of the ActionLibraryConfigurator which start with <strong> <em>getRest...</em> </strong> or <strong> <em>setRest...</em> </strong> to see all the supported configuration values.</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="RESTOperations-Configuringtheclient-Loggingbysettingverbosemode">Logging by setting verbose mode</h1>
+      <p><span style="color: rgb(61,61,61);">In verbose mode you can trace all HTTP requests and responses.You can select what to log - just headers, bodies or both.</span></p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClient client = new RestClient( &lt;target URI&gt; );
 client.setVerboseMode( RestClient.RestDebugLevel.HEADERS );
-</pre>
-</div></div><p>This way you will see a similar logging:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">INFO  17:52:35 rest.RestClient: Sending the following requests:
+</pre> 
+       </div>
+      </div>
+      <p>This way you will see a similar logging:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">INFO  17:52:35 rest.RestClient: Sending the following requests:
            http://10.10.10.10:8080/TestRestServer/services/peoplepage/post
            Accept: application/xml; charset=UTF-8
            Content-Type: text/plain; charset=UTF-8
@@ -70,51 +62,94 @@ INFO  17:52:36 rest.RestClient: Receiving the following responses:
            Transfer-Encoding: chunked
            Content-Type: application/xml;charset=UTF-8
            Server: Apache-Coyote/1.1
-</pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-Configuringtheclient-Loggingbyusingaproxy">Logging by using a proxy</h1><p><a href="Trace-HTTP-communication-by-using-a-proxy.html">Here</a> are the details. Same for both HttpClient and RestClient.</p><p> </p><hr/><h1 id="RESTOperations-Configuringtheclient-Setcertificatefile">Set certificate file</h1><p>This is how you can set some SSL certificate</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="RESTOperations-Configuringtheclient-Loggingbyusingaproxy">Logging by using a proxy</h1>
+      <p><a href="Trace-HTTP-communication-by-using-a-proxy.html">Here</a> are the details. Same for both HttpClient and RestClient.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="RESTOperations-Configuringtheclient-Setcertificatefile">Set certificate file</h1>
+      <p>This is how you can set some SSL certificate</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
 configurator.setSSLCertificate( pemCertificate, pemPassword );
 client.setClientConfigurator( configurator );
-</pre>
-</div></div><p> </p><hr/><h1 id="RESTOperations-Configuringtheclient-Settransportencryptionprotocol">Set transport encryption protocol</h1><p>Here is example how to set encryption protocol (TLS) to use for HTTPS connections.</p><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClient client = new RestClient( &lt;target URI&gt; );
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="RESTOperations-Configuringtheclient-Settransportencryptionprotocol">Set transport encryption protocol</h1>
+      <p>Here is example how to set encryption protocol (TLS) to use for HTTPS connections.</p>
+      <p>&nbsp;</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClient client = new RestClient( &lt;target URI&gt; );
 
 // set TLS protocol to use like TLSv1, TLSv1.1, TLSv1.2
-client.setSupportedProtocols(new String[]{&quot;TLSv1.2&quot;});
+client.setSupportedProtocols(new String[]{"TLSv1.2"});
 
 // execute a REST method
 RestResponse response = client.get();
-</pre>
-</div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The default TLS version is 1.2</p></div></div><p> </p><hr/><h1 id="RESTOperations-Configuringtheclient-RegistersomeJerseyprovider">Register some Jersey provider</h1><p>Currently ATS REST client is using <a class="external-link" href="https://jersey.java.net/" rel="nofollow">Jersey</a> as underlying third party library. Jersey is giving you an option to register different <em>providers</em> which will affect its behavior.</p><h3 id="RESTOperations-Configuringtheclient-JacksonJSONprocessingprovider">Jackson JSON processing provider</h3><div class="confluence-information-macro confluence-information-macro-note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>By default Jersey is using <a class="external-link" href="https://jersey.java.net/documentation/latest/user-guide.html#json.moxy" rel="nofollow">Moxy</a> as its entity processing provider. This is the default provider and it is distributed with ATS, so you do not need to do anything to enable it.</p><p>But if you want to use another provider, you must explicitly state it. The Jersey guide info is <a class="external-link" href="https://jersey.java.net/documentation/latest/user-guide.html#json.jackson" rel="nofollow">here</a></p></div></div><p>Following are the steps to enable the <strong> <em>jersey-media-json-jackson</em> </strong> module. You will need to add to the classpath the needed dependencies as they are not distributed by ATS. The list with all dependencies is <a class="external-link" href="https://jersey.java.net/project-info/2.22.2/jersey/project/jersey-media-json-jackson/dependencies.html" rel="nofollow">here</a></p><p>Then you can use code like the following to instruct Jersey to use Jackson provider for processing JSON objects:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
+</pre> 
+       </div>
+      </div>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>The default TLS version is 1.2</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="RESTOperations-Configuringtheclient-RegistersomeJerseyprovider">Register some Jersey provider</h1>
+      <p>Currently ATS REST client is using <a class="external-link" href="https://jersey.java.net/" rel="nofollow">Jersey</a> as underlying third party library. Jersey is giving you an option to register different <em>providers</em> which will affect its behavior.</p>
+      <h3 id="RESTOperations-Configuringtheclient-JacksonJSONprocessingprovider">Jackson JSON processing provider</h3>
+      <div class="confluence-information-macro confluence-information-macro-note">
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
+       <div class="confluence-information-macro-body">
+        <p>By default Jersey is using <a class="external-link" href="https://jersey.java.net/documentation/latest/user-guide.html#json.moxy" rel="nofollow">Moxy</a> as its entity processing provider. This is the default provider and it is distributed with ATS, so you do not need to do anything to enable it.</p>
+        <p>But if you want to use another provider, you must explicitly state it. The Jersey guide info is <a class="external-link" href="https://jersey.java.net/documentation/latest/user-guide.html#json.jackson" rel="nofollow">here</a></p>
+       </div>
+      </div>
+      <p>Following are the steps to enable the <strong> <em>jersey-media-json-jackson</em> </strong> module. You will need to add to the classpath the needed dependencies as they are not distributed by ATS. The list with all dependencies is <a class="external-link" href="https://jersey.java.net/project-info/2.22.2/jersey/project/jersey-media-json-jackson/dependencies.html" rel="nofollow">here</a></p>
+      <p>Then you can use code like the following to instruct Jersey to use Jackson provider for processing JSON objects:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
 
 configurator.registerProvider( new JacksonFeature() );
 configurator.registerProviderClass( JacksonJsonProvider.class );
 configurator.registerProviderClass( JacksonJaxbJsonProvider.class );
 
 client.setClientConfigurator( configurator );
-</pre>
-</div></div><h3 id="RESTOperations-Configuringtheclient-SettingMultipartentityprocessingprovider">Setting Multipart entity processing provider</h3><p>Following are the steps to enable the <strong> <em>jersey-media-multipart</em> </strong> module. You will need to add to the classpath the needed dependencies as they are not distributed by ATS. The list with all dependencies is <a class="external-link" href="https://jersey.java.net/project-info/2.22.2/jersey/project/jersey-media-multipart/dependencies.html" rel="nofollow">here</a></p><p>Then you can use code like the following to make Jersey capable of processing multi-part entities:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
+</pre> 
+       </div>
+      </div>
+      <h3 id="RESTOperations-Configuringtheclient-SettingMultipartentityprocessingprovider">Setting Multipart entity processing provider</h3>
+      <p>Following are the steps to enable the&nbsp;<strong> <em>jersey-media-multipart</em> </strong> module. You will need to add to the classpath the needed dependencies as they are not distributed by ATS. The list with all dependencies is <a class="external-link" href="https://jersey.java.net/project-info/2.22.2/jersey/project/jersey-media-multipart/dependencies.html" rel="nofollow">here</a></p>
+      <p>Then you can use code like the following to make Jersey capable of processing multi-part entities:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
 
 configurator.registerProvider( new MultiPartFeature() );
 configurator.registerProvider( MultiPartWriter.class );
 configurator.registerProvider( MultiPartReaderClientSide.class );
 
-client.setClientConfigurator( configurator );</pre>
-</div></div><p> </p><hr/><p>Back to <a href="REST-Operations.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+client.setClientConfigurator( configurator );</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

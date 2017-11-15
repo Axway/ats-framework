@@ -1,65 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Parametrized input data with multiple calls to same input arguments</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Performance-testing.html">Performance testing</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Running-performance-tests.html">Running performance tests</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Parametrization.html">Parametrization</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Parametrized input data with multiple calls to same input arguments
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 07, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Introduction">Introduction</h1><p>As you already saw on the <a href="Parametrization.html">parametrization page</a>, we find the action input argument to parametrize by its name.</p><p>Sometimes it turns out in same queue of actions there is more than one parameter with same name. This is the case when you want to upload a file twice in a row.</p><p> </p><hr/><h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Example">Example</h1><p> </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    private static final String   PARAMETRIZED_USER       = &quot;username&quot;;
-    private static final String   PARAMETRIZED_SMALL_FILE = &quot;localFilePath&quot;;
-    private static final String   PARAMETRIZED_LARGE_FILE = &quot;localFilePath&quot;;
+ <head> 
+  <title>ATS : Parametrized input data with multiple calls to same input arguments</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Performance-testing.html">Performance testing</a></span> </li> 
+       <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
+       <li> <span><a href="Parametrization.html">Parametrization</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Parametrized input data with multiple calls to same input arguments </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Introduction">Introduction</h1>
+      <p>As you already saw on the <a href="Parametrization.html">parametrization page</a>, we find the action input argument to parametrize by its name.</p>
+      <p>Sometimes it turns out in same queue of actions there is more than one parameter with same name. This is the case when you want to upload a file twice in a row.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Example">Example</h1>
+      <p>&nbsp;</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    private static final String   PARAMETRIZED_USER       = "username";
+    private static final String   PARAMETRIZED_SMALL_FILE = "localFilePath";
+    private static final String   PARAMETRIZED_LARGE_FILE = "localFilePath";
 
     public void paremetrizedFileTransfers() throws Exception {
 
@@ -70,14 +46,14 @@
         loader.setThreadingPattern( new AllAtOncePattern( 5, true ) );
 
         // set as many as needed data configurators
-        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_USER, &quot;vuser{0}&quot;, 10, 100 ) );
+        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_USER, "vuser{0}", 10, 100 ) );
 
         // we now add 2 File Name patterns
-        loader.addParameterDataConfigurator( new FileNamesDataConfig( PARAMETRIZED_SMALL_FILE, &quot;C:/temp/small_files/&quot;, ParameterProviderLevel.PER_INVOCATION ) );
-        loader.addParameterDataConfigurator( new FileNamesDataConfig( PARAMETRIZED_LARGE_FILE, &quot;C:/temp/large_files/&quot;, ParameterProviderLevel.PER_INVOCATION ) );
+        loader.addParameterDataConfigurator( new FileNamesDataConfig( PARAMETRIZED_SMALL_FILE, "C:/temp/small_files/", ParameterProviderLevel.PER_INVOCATION ) );
+        loader.addParameterDataConfigurator( new FileNamesDataConfig( PARAMETRIZED_LARGE_FILE, "C:/temp/large_files/", ParameterProviderLevel.PER_INVOCATION ) );
 
         // give a name to your action queue
-        loader.startQueueing( &quot;FTP transfer&quot; );
+        loader.startQueueing( "FTP transfer" );
 
         // list all the actions you want to run
         FileTransferAction ftAction = new FileTransferAction();
@@ -89,20 +65,23 @@
         // now execute the requested action queue according to the threading pattern
         loader.executeQueuedActions();
     }
-</pre>
-</div></div><p>As you can we call the <strong> <em>upload</em> </strong> action twice and we have provided two <em> <strong>File Name generation patterns</strong> </em> - each of them specifies a different folder to pull the files from and each of them attached to one call of the <em> <strong>upload</strong> </em> action.</p><p>One iteration of this queue will result in:</p><ol><li>connect</li><li>upload a file from the folder with small files</li><li>upload a file from the folder with large files</li><li>disconnect</li></ol><hr/><p>Back to <a href="Parametrization.html">parent page</a></p><hr/>
-                    </div>
-
-                    
-                                                      
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+</pre> 
+       </div>
+      </div>
+      <p>As you can we call the <strong> <em>upload</em> </strong> action twice and we have provided two <em> <strong>File Name generation patterns</strong> </em> - each of them specifies a different folder to pull the files from and each of them attached to one call of the <em> <strong>upload</strong> </em> action.</p>
+      <p>One iteration of this queue will result in:</p>
+      <ol>
+       <li>connect</li>
+       <li>upload a file from the folder with small files</li>
+       <li>upload a file from the folder with large files</li>
+       <li>disconnect</li>
+      </ol>
+      <hr>
+      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

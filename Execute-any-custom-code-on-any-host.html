@@ -1,54 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : Execute any custom code on any host</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : Execute any custom code on any host
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 11, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Executeanycustomcodeonanyhost-Introduction">Introduction</h1><p>One of the obvious problems when testing some product is to be able to do something on some remote host.</p><p>You run your test from your Test Executor host, but you need to do something on another host.</p><p>The ATS Agent can be used to achieve this.</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>There is some initial effort before it get very easy, but in most cases it is worthy it.</p><p>This page uses an action class called <em>SimpleAction</em>. The class itself is presented <a href="Creating-an-Agent-Component.html">here</a> where you can also see what it takes to create an Agent component containing such actions. These actions you can run on any host where the Agent is running</p></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>ATS does not have any idea what your action will do. It will just execute it</p></div></div><p> </p><hr/><h1 id="Executeanycustomcodeonanyhost-Testcodeexample">Test code example</h1><p>Lets first look at the following test code:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import org.apache.log4j.Logger;
+ <head> 
+  <title>ATS : Execute any custom code on any host</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Execute any custom code on any host </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Executeanycustomcodeonanyhost-Introduction">Introduction</h1>
+      <p>One of the obvious problems when testing some product is to be able to do something on some remote host.</p>
+      <p>You run your test from your Test Executor host, but you need to do something on another host.</p>
+      <p>The ATS Agent can be used to achieve this.</p>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>There is some initial effort before it get very easy, but in most cases it is worthy it.</p>
+        <p>This page uses an action class called <em>SimpleAction</em>. The class itself is presented <a href="Creating-an-Agent-Component.html">here</a> where you can also see what it takes to create an Agent component containing such actions. These actions you can run on any host where the Agent is running</p>
+       </div>
+      </div>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>ATS does not have any idea what your action will do. It will just execute it</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Executeanycustomcodeonanyhost-Testcodeexample">Test code example</h1>
+      <p>Lets first look at the following test code:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
  
 import com.axway.myproduct.actions.clients.SimpleAction;
@@ -64,22 +58,33 @@ public class SimpleRemoteTests {
         SimpleAction simpleAction = new SimpleAction( AGENT_ADDRESS );
  
         // run your action on the remote host, this one returns some result
-        String result = simpleAction.sayHi( &quot;Professional Tester&quot;, 20 );
+        String result = simpleAction.sayHi( "Professional Tester", 20 );
  
-        log.info( &quot;The remote ATS agent answered with: &quot; + result );
+        log.info( "The remote ATS agent answered with: " + result );
     }
-}</pre>
-</div></div><p>This is a regular test which runs some action(called <em> <strong>sayHi</strong> </em>) on a remote ATS Agent(located at <em> <strong>AGENT_ADDRESS</strong> </em>).</p><p>The action can accept input data and return result - just as every regular java method. The big deal is that you can run it remotely.</p><hr/><h1 id="Executeanycustomcodeonanyhost-Testexplorerresult">Test explorer result</h1><p>Here are some logs seen on Test Explorer:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119497760/119498091.png" data-image-src="attachments/119497760/119498091.png" data-unresolved-comment-count="0" data-linked-resource-id="119498091" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119497760" data-linked-resource-container-version="4"></span></p><p>You can see there are messages logged on Test Executor side as well as on Agent side.</p><p> </p><hr/><h1 id="Executeanycustomcodeonanyhost-Sessiondata">Session data</h1><p>ATS Agent actions are simple java classes. The Agent will maintain same instance for you all the time. This means if you have some private data members, you can use them as in regular java classes.</p><p>This way you can call many times one or more actions from same class and they can save/use those private data members.</p><p><strong> <em>Example:</em> </strong>In order to make some configuration on the remote host you need to pass many parameters. Instead of using just one huge action with many parameters, you can create a few, each one of them will make some changes to the private data members, and finally you will call the last action(maybe called <em>finish</em> or <em>commit</em>) which will benefit from the ready to use data and complete the work.</p><p> </p><hr/><p>Back to <a href="ATS-Guide.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+}</pre> 
+       </div>
+      </div>
+      <p>This is a regular test which runs some action(called <em> <strong>sayHi</strong> </em>) on a remote ATS Agent(located at <em> <strong>AGENT_ADDRESS</strong> </em>).</p>
+      <p>The action can accept input data and return result - just as every regular java method. The big deal is that you can run it remotely.</p>
+      <hr>
+      <h1 id="Executeanycustomcodeonanyhost-Testexplorerresult">Test explorer result</h1>
+      <p>Here are some logs seen on Test Explorer:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119497760/119498091.png" data-image-src="attachments/119497760/119498091.png" data-unresolved-comment-count="0" data-linked-resource-id="119498091" data-linked-resource-version="2" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119497760" data-linked-resource-container-version="4"></span></p>
+      <p>You can see there are messages logged on Test Executor side as well as on Agent side.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Executeanycustomcodeonanyhost-Sessiondata">Session data</h1>
+      <p>ATS Agent actions are simple java classes. The Agent will maintain same instance for you all the time. This means if you have some private data members, you can use them as in regular java classes.</p>
+      <p>This way you can call many times one or more actions from same class and they can save/use those private data members.</p>
+      <p><strong> <em>Example:</em> </strong>In order to make some configuration on the remote host you need to pass many parameters. Instead of using just one huge action with many parameters, you can create a few, each one of them will make some changes to the private data members, and finally you will call the last action(maybe called <em>finish</em> or <em>commit</em>) which will benefit from the ready to use data and complete the work.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

@@ -1,65 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : System monitoring details</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="System-monitoring.html">System monitoring</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : System monitoring details
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified on Apr 05, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Systemmonitoringdetails-Introduction">Introduction</h1><p>Here is the list of supported statistics you can collect on a host:</p><ul><li>System - load average for the last 1min, 5min and 15 min. This applies for Linux only</li><li>CPU - percentage running <em>kernel,</em> <em>user</em> and <em>total</em> code. As well as <em>waiting for IO</em></li><li>Network traffic - number of received and transmitted bytes for each network interface</li><li>Memory - <em>used</em>, <em>free</em>, <em>actual used</em> and <em>actual free</em>. The <em>actual used</em> and <em>actual free</em> apply on UNIX based systems only and take into consideration the Unix buffered and cached memory</li><li>Virtual memory - <em>total</em>, <em>used</em>, <em>free</em>, <em>pages in</em> and <em>pages out</em></li><li>Input/Output - <em>read</em> and <em>write</em> bytes on the file system</li><li>Netstat command statistics</li><li>TCP statistics</li><li>Any application statistics<br/><ul><li>CPU - time spent running <em>kernel</em>, <em>user</em> and <em>total</em> code</li><li>Memory - <em>used</em> memory and memory <em>page faults</em></li></ul></li><li>Java application statistics<br/><ul><li>CPU</li><li>Memory - detailed heap and others</li><li>Number of threads</li><li>Number of loaded classes</li></ul></li><li>Custom statistics</li></ul><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>You must be running the ATS Agent on the host where all data will be collected from</p></div></div><p> </p><hr/><h1 id="Systemmonitoringdetails-Usage">Usage</h1><p>Once you have made an instance of the <strong> <em>SystemMonitor</em> </strong> class, all you need to do is to use the right methods starting with <em> <strong>schedule...</strong> </em></p><h3 id="Systemmonitoringdetails-Systemmonitoring">System monitoring</h3><p>The <strong> <em>scheduleSystemMonitoring()</em> </strong> method allows monitoring the state of a physical host.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleSystemMonitoring( &lt;AGENT ADDRESS&gt;,
+ <head> 
+  <title>ATS : System monitoring details</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="System-monitoring.html">System monitoring</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : System monitoring details </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Systemmonitoringdetails-Introduction">Introduction</h1>
+      <p>Here is the list of supported statistics you can collect on a host:</p>
+      <ul>
+       <li>System - load average for the last 1min, 5min and 15 min. This applies for Linux only</li>
+       <li>CPU - percentage running <em>kernel,</em> <em>user</em> and <em>total</em> code. As well as <em>waiting for IO</em></li>
+       <li>Network traffic - number of received and transmitted bytes for each network interface</li>
+       <li>Memory - <em>used</em>, <em>free</em>, <em>actual used</em> and <em>actual free</em>. The <em>actual used</em> and <em>actual free</em> apply on UNIX based systems only and take into consideration the Unix buffered and cached memory</li>
+       <li>Virtual memory - <em>total</em>, <em>used</em>, <em>free</em>, <em>pages in</em> and <em>pages out</em></li>
+       <li>Input/Output - <em>read</em> and <em>write</em> bytes on the file system</li>
+       <li>Netstat command statistics</li>
+       <li>TCP statistics</li>
+       <li>Any application statistics<br>
+        <ul>
+         <li>CPU - time spent running <em>kernel</em>, <em>user</em> and <em>total</em> code</li>
+         <li>Memory - <em>used</em> memory and memory <em>page faults</em></li>
+        </ul></li>
+       <li>Java application statistics<br>
+        <ul>
+         <li>CPU</li>
+         <li>Memory - detailed heap and others</li>
+         <li>Number of threads</li>
+         <li>Number of loaded classes</li>
+        </ul></li>
+       <li>Custom statistics</li>
+      </ul>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>You must be running the ATS Agent on the host where all data will be collected from</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoringdetails-Usage">Usage</h1>
+      <p>Once you have made an instance of the <strong> <em>SystemMonitor</em> </strong> class, all you need to do is to use the right methods starting with <em> <strong>schedule...</strong> </em></p>
+      <h3 id="Systemmonitoringdetails-Systemmonitoring">System monitoring</h3>
+      <p>The <strong> <em>scheduleSystemMonitoring()</em> </strong> method allows monitoring the state of a physical host.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleSystemMonitoring( &lt;AGENT ADDRESS&gt;,
       new String[]{     SystemMonitor.MONITOR_CPU.ALL,
                         SystemMonitor.MONITOR_IO.ALL,
                         SystemMonitor.MONITOR_MEMORY.ALL,
                         SystemMonitor.MONITOR_VIRTUAL_MEMORY.ALL,
                         SystemMonitor.MONITOR_NETWORK_INTERFACES.ALL } );
-</pre>
-</div></div><p>It accepts the following parameters:</p><ul><li><em>AGENT ADDRESS</em> - the Agent address running on the monitored host</li><li>Array with monitor types - this defines what kind of statistics to collect. Use the various <strong> <em>SystemMonitor.MONITOR</em> </strong> <strong>_</strong> <strong>*</strong> constants</li></ul><p><em>Note</em> that currently Netstat and TCP connection state statistics are not supported on AIX.</p><h3 id="Systemmonitoringdetails-JVMmonitoring">JVM monitoring</h3><p>The <strong> <em>scheduleJvmMonitoring()</em> </strong> method allows monitoring a Java Virtual Machine(JVM) process.</p><p>This gives a much deeper look compared to the regular <em>process monitoring</em>. For example the regular process monitoring will give you info about the total used memory, but the JVM monitoring will break this further into different areas of Heap memory, Permanent generation and Code cache. You can also see how many regular and daemon threads are running.</p><p>The list of supported JVM statistics is likely to grow in future per customer requests.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleJvmMonitoring(
+</pre> 
+       </div>
+      </div>
+      <p>It accepts the following parameters:</p>
+      <ul>
+       <li><em>AGENT ADDRESS</em> - the Agent address running on the monitored host</li>
+       <li>Array with monitor types - this defines what kind of statistics to collect. Use the various <strong> <em>SystemMonitor.MONITOR</em> </strong> <strong>_</strong> <strong>*</strong> constants</li>
+      </ul>
+      <p><em>Note</em> that currently Netstat and TCP connection state statistics are not supported on AIX.</p>
+      <h3 id="Systemmonitoringdetails-JVMmonitoring">JVM monitoring</h3>
+      <p>The <strong> <em>scheduleJvmMonitoring()</em> </strong> method allows monitoring a Java Virtual Machine(JVM) process.</p>
+      <p>This gives a much deeper look compared to the regular <em>process monitoring</em>. For example the regular process monitoring will give you info about the total used memory, but the JVM monitoring will break this further into different areas of Heap memory, Permanent generation and Code cache. You can also see how many regular and daemon threads are running.</p>
+      <p>The list of supported JVM statistics is likely to grow in future per customer requests.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleJvmMonitoring(
       &lt;AGENT ADDRESS&gt;,
       &lt;JMX/JVM MONITORING PORT&gt;,
       new String[]{     SystemMonitor.MONITOR_JVM.MEMORY_HEAP,
@@ -75,16 +97,39 @@
                         SystemMonitor.MONITOR_JVM.THREADS_DAEMON_COUNT,
 
                         SystemMonitor.MONITOR_JVM.CLASSES_COUNT } );
-</pre>
-</div></div><p>It accepts the following parameters:</p><ul><li><em>AGENT ADDRESS</em> - the Agent address running on the monitored host</li><li><p><em>JVM MONITORING PORT</em> - We must be able to connect to your JVM, so can capture the needed info. Here you specify the port for this (JMX) internal connection.</p><div class="confluence-information-macro confluence-information-macro-note"><p class="title">JVM monitoring port</p><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Use the the following environment parameters in order to open your JVM application for remote connections: <br class="atl-forced-newline"/> -Dcom.sun.management.jmxremote.port=1234<br/> -Dcom.sun.management.jmxremote.authenticate=false<br/> -Dcom.sun.management.jmxremote.ssl=false</p></div></div><p>In this example the important part is the port, you can specify any available port number</p></li><li>Array with monitor types - this defines what kind of statistics to collect. Use the various <strong> <em>SystemMonitor.MONITOR_JVM</em> </strong> <strong>_</strong> <strong>*</strong> constants</li></ul><h3 id="Systemmonitoringdetails-CustomJVMmonitoring">Custom JVM monitoring</h3><p>The <strong>scheduleCustomJvmMonitoring() </strong>method allows monitoring a custom Java Virtual Machine(JVM) process.</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleCustomJvmMonitoring( &lt;AGENT ADDRESS&gt;,
+</pre> 
+       </div>
+      </div>
+      <p>It accepts the following parameters:</p>
+      <ul>
+       <li><em>AGENT ADDRESS</em> - the Agent address running on the monitored host</li>
+       <li><p><em>JVM MONITORING PORT</em> - We must be able to connect to your JVM, so can capture the needed info. Here you specify the port for this (JMX) internal connection.</p>
+        <div class="confluence-information-macro confluence-information-macro-note">
+         <p class="title">JVM monitoring port</p>
+         <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
+         <div class="confluence-information-macro-body">
+          <p>Use the the following environment parameters in order to open your JVM application for remote connections: <br class="atl-forced-newline"> -Dcom.sun.management.jmxremote.port=1234<br> -Dcom.sun.management.jmxremote.authenticate=false<br> -Dcom.sun.management.jmxremote.ssl=false</p>
+         </div>
+        </div><p>In this example the important part is the port, you can specify any available port number</p></li>
+       <li>Array with monitor types - this defines what kind of statistics to collect. Use the various <strong> <em>SystemMonitor.MONITOR_JVM</em> </strong> <strong>_</strong> <strong>*</strong> constants</li>
+      </ul>
+      <h3 id="Systemmonitoringdetails-CustomJVMmonitoring">Custom JVM monitoring</h3>
+      <p>The <strong>scheduleCustomJvmMonitoring() </strong>method allows monitoring a custom Java Virtual Machine(JVM) process.</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleCustomJvmMonitoring( &lt;AGENT ADDRESS&gt;,
                                            &lt;JMX_PORT&gt;,
                                            &lt;ALIAS&gt;,
                                            &lt;MBEAN_NAME&gt;,
                                            &lt;MBEAN_METRIC&gt;,
-                                           &quot;ATTRIBUTE&quot; ); </pre>
-</div></div><p>To have a custom monitoring data about some JVM process you need to know the MBean name and its attribute. If you do not know them you can use <strong> <em>getJvmMbeans()</em> </strong> method in SystemOperations class. The other option is by using the JConsole application.</p><p>This is simple a example from the getJvmMbeans() method output:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">MBean name: org.apache.camel:context=Advanced Routing Camel Context,name=DefaultExecutorServiceManager,type=services
+                                           "ATTRIBUTE" ); </pre> 
+       </div>
+      </div>
+      <p>To have a custom monitoring data about some JVM process you need to know the MBean name and its attribute. If you do not know them you can use <strong> <em>getJvmMbeans()</em> </strong> method in SystemOperations class. The other option is by using the JConsole application.</p>
+      <p>This is simple a example from the getJvmMbeans() method output:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">MBean name: org.apache.camel:context=Advanced Routing Camel Context,name=DefaultExecutorServiceManager,type=services
 
 
 MBean name: java.lang:type=Threading
@@ -98,38 +143,93 @@ MBean name: java.lang:type=Threading
 
 MBean name: org.apache.camel:context=Advanced Routing Camel Context-1,name=EndpointRegistry,type=services
    Size | java.lang.Integer
-   MaximumCacheSize | java.lang.Integer</pre>
-</div></div><h3 id="Systemmonitoringdetails-Processmonitoring">Process monitoring</h3><p>The <strong> <em>scheduleProcessMonitoring()</em> </strong> method allows monitoring the state of a system process, commonly this the process that is running the Application Under Test.</p><p>Here is an example usage:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleProcessMonitoring( &lt;AGENT ADDRESS&gt;,
-                                         &quot;.*chrome.*&quot;,
-                                         &quot;BROWSER&quot;,
+   MaximumCacheSize | java.lang.Integer</pre> 
+       </div>
+      </div>
+      <h3 id="Systemmonitoringdetails-Processmonitoring">Process monitoring</h3>
+      <p>The <strong> <em>scheduleProcessMonitoring()</em> </strong> method allows monitoring the state of a system process, commonly this the process that is running the Application Under Test.</p>
+      <p>Here is an example usage:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemMonitor.scheduleProcessMonitoring( &lt;AGENT ADDRESS&gt;,
+                                         ".*chrome.*",
+                                         "BROWSER",
                                          new String[]{ 
                                               SystemMonitor.MONITOR_PROCESS_CPU.ALL, 
                                               SystemMonitor.MONITOR_PROCESS_MEMORY.ALL 
                                          } );
-</pre>
-</div></div><p>It accepts the following parameters:</p><ul><li><em>AGENT ADDRESS</em> - the Agent address running on the monitored host</li><li>Process pattern - some string which identifies the system process. We try to match this string against the start command of the system process<br/> If no process is matched - a warning is registered in the log file<br/> If more than one processes are matched - we append indexes at the end of the process alias<br/> In this example we are looking for system processes which have in their start command the token &quot;<em>chrome&quot;</em></li><li>Process alias - a user friendly name to display when show the statistic on the Test Explorer<br/> In this example the statistic will be presented as <em>BROWSER</em></li><li>Process username - use this parameter to specify that the monitored process must be started by a particular user. This is an optional parameter. By default we search for processes from all users</li><li>Array with monitor types - defines what kind of statistics to collect. Use the various <strong> <em>SystemMonitor.</em> </strong> <strong> <em>MONITOR_PROCESS</em> </strong> <strong>_</strong> <strong>*</strong> constants</li></ul><h5 id="Systemmonitoringdetails-Combiningprocessesasonevirtualprocess">Combining processes as one virtual process</h5><p>Imagine you want to get picture of the performance of Application Under Test which runs as more than one actual processes</p><p>The <strong> <em>scheduleChildProcessMonitoring()</em> </strong> method has same input argument as the <strong> <em>scheduleProcessMonitoring()</em> </strong> plus one more argument. This argument specifies a name of some virtual parent process.</p><p>Using this method you can specify that some monitored process belongs to a parent process and you will see how much resources(for example CPU) are used by all of the separate processes as well as by the virtual parent process</p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The list of matching system processes is constantly maintained, which means we will we able to properly catch processes that sometimes stop and start back.</p><p>This is particularly useful in cases when your Application Under Test stats more processes to handle more customer requests and kills them when the load goes down.</p></div></div><p> </p><hr/><h1 id="Systemmonitoringdetails-Providingparameterstoamonitor">Providing parameters to a monitor</h1><p>Sometimes a monitor may need to get some input arguments so it can work properly. Imagine you have your own custom monitor and it collects data from a database, but you need to somehow pass the database connection parameters. Here is some example for such case:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create a map with all needed parameters
+</pre> 
+       </div>
+      </div>
+      <p>It accepts the following parameters:</p>
+      <ul>
+       <li><em>AGENT ADDRESS</em> - the Agent address running on the monitored host</li>
+       <li>Process pattern - some string which identifies the system process. We try to match this string against the start command of the system process<br> If no process is matched - a warning is registered in the log file<br> If more than one processes are matched - we append indexes at the end of the process alias<br> In this example we are looking for system processes which have in their start command the token "<em>chrome"</em></li>
+       <li>Process alias - a user friendly name to display when show the statistic on the Test Explorer<br> In this example the statistic will be presented as <em>BROWSER</em></li>
+       <li>Process username - use this parameter to specify that the monitored process must be started by a particular user. This is an optional parameter. By default we search for processes from all users</li>
+       <li>Array with monitor types - defines what kind of statistics to collect. Use the various <strong> <em>SystemMonitor.</em> </strong> <strong> <em>MONITOR_PROCESS</em> </strong> <strong>_</strong> <strong>*</strong> constants</li>
+      </ul>
+      <h5 id="Systemmonitoringdetails-Combiningprocessesasonevirtualprocess">Combining processes as one virtual process</h5>
+      <p>Imagine you want to get picture of the performance of Application Under Test which runs as more than one actual processes</p>
+      <p>The <strong> <em>scheduleChildProcessMonitoring()</em> </strong> method has same input argument as the <strong> <em>scheduleProcessMonitoring()</em> </strong> plus one more argument. This argument specifies a name of some virtual parent process.</p>
+      <p>Using this method you can specify that some monitored process belongs to a parent process and you will see how much resources(for example CPU) are used by all of the separate processes as well as by the virtual parent process</p>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>The list of matching system processes is constantly maintained, which means we will we able to properly catch processes that sometimes stop and start back.</p>
+        <p>This is particularly useful in cases when your Application Under Test stats more processes to handle more customer requests and kills them when the load goes down.</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoringdetails-Providingparameterstoamonitor">Providing parameters to a monitor</h1>
+      <p>Sometimes a monitor may need to get some input arguments so it can work properly. Imagine you have your own custom monitor and it collects data from a database, but you need to somehow pass the database connection parameters. Here is some example for such case:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create a map with all needed parameters
 Map&lt;String, String&gt; statisticParameters = new HashMap&lt;String, String&gt;();
-statisticParameters.put( &quot;dbHost&quot;, &quot;127.0.0.1&quot; );
-statisticParameters.put( &quot;dbPort&quot;, &quot;5555&quot; );
-statisticParameters.put( &quot;dbUser&quot;, &quot;MyUser&quot; );
-statisticParameters.put( &quot;dbPassword&quot;, &quot;MyPassword&quot; );
+statisticParameters.put( "dbHost", "127.0.0.1" );
+statisticParameters.put( "dbPort", "5555" );
+statisticParameters.put( "dbUser", "MyUser" );
+statisticParameters.put( "dbPassword", "MyPassword" );
 
 // call your own monitor and provide the needed parameters
-systemMonitor.scheduleMonitoring( &lt;MONITORING SERVICE IP AND PORT&gt;, &quot;My Custom DB Statistic&quot;, statisticParameters );
-</pre>
-</div></div><p> </p><hr/><h1 id="Systemmonitoringdetails-Monitoringmorethanonehost">Monitoring more than one host</h1><p>You can freely monitor as many hosts as needed. You can also monitor as many processes on each host as needed.</p><p> </p><hr/><h1 id="Systemmonitoringdetails-Reviewingthecollecteddata">Reviewing the collected data</h1><p>The collected data is available at Test Explorer UI. Here is an example:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485571/119485581.png" data-image-src="attachments/119485571/119485581.png" data-unresolved-comment-count="0" data-linked-resource-id="119485581" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119485571" data-linked-resource-container-version="4"></span></p><p>This example shows:</p><ul><li>Memory used by the whole system <em>green line</em></li><li>Memory used by the Application Under Test <em>red line</em></li><li>CPU usage by all chrome instances. We see them here as one single application <em>blue line</em></li></ul><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>This example shows on same graph statistics measured in different unit types.</p><p>Memory is measured in MBs, CPU is measured in %</p></div></div><p> </p><hr/><h1 id="Systemmonitoringdetails-Customizingthedatacollection">Customizing the data collection</h1><p>Imagine you need to monitor something which is specific to your testing environment. ATS does not provide you with the needed option, but you can attach your own code to the Monitoring Service and collect your own statistics and display them in the regular way.</p><p class="confluence-link"><a href="Custom-monitoring.html">Here</a> are the details</p><p> </p><hr/><p>Back to <a href="System-monitoring.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+systemMonitor.scheduleMonitoring( &lt;MONITORING SERVICE IP AND PORT&gt;, "My Custom DB Statistic", statisticParameters );
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoringdetails-Monitoringmorethanonehost">Monitoring more than one host</h1>
+      <p>You can freely monitor as many hosts as needed. You can also monitor as many processes on each host as needed.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoringdetails-Reviewingthecollecteddata">Reviewing the collected data</h1>
+      <p>The collected data is available at Test Explorer UI. Here is an example:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485571/119485581.png" data-image-src="attachments/119485571/119485581.png" data-unresolved-comment-count="0" data-linked-resource-id="119485581" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119485571" data-linked-resource-container-version="4"></span></p>
+      <p>This example shows:</p>
+      <ul>
+       <li>Memory used by the whole system <em>green line</em></li>
+       <li>Memory used by the Application Under Test <em>red line</em></li>
+       <li>CPU usage by all chrome instances. We see them here as one single application <em>blue line</em></li>
+      </ul>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>This example shows on same graph statistics measured in different unit types.</p>
+        <p>Memory is measured in MBs, CPU is measured in %</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoringdetails-Customizingthedatacollection">Customizing the data collection</h1>
+      <p>Imagine you need to monitor something which is specific to your testing environment. ATS does not provide you with the needed option, but you can attach your own code to the Monitoring Service and collect your own statistics and display them in the regular way.</p>
+      <p class="confluence-link"><a href="Custom-monitoring.html">Here</a> are the details</p>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="System-monitoring.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-

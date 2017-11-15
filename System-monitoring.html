@@ -1,54 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>ATS : System monitoring</title>
-        <link rel="stylesheet" href="styles/site.css" type="text/css" />
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-
-    <body class="theme-default aui-theme-default">
-        <div id="page">
-            <div id="main" class="aui-page-panel">
-                <div id="main-header">
-<a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a>
-
-                    <div id="breadcrumb-section">
-                        <ol id="breadcrumbs">
-                            <li class="first">
-                                <span><a href="index.html">ATS</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="Axway-Automation-Framework-Home-Page.html">Axway Automation Framework Home Page</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Documentation.html">ATS Documentation</a></span>
-                            </li>
-                                                    <li>
-                                <span><a href="ATS-Guide.html">ATS Guide</a></span>
-                            </li>
-                                                </ol>
-                    </div>
-                    <h1 id="title-heading" class="pagetitle">
-                                                <span id="title-text">
-                            ATS : System monitoring
-                        </span>
-                    </h1>
-                </div>
-
-                <div id="content" class="view">
-                    <div class="page-metadata">
-                        
-        
-    
-        
-    
-        
-        
-            Created by <span class='author'> Nikolay Gogovski</span>, last modified by <span class='editor'> Dragoslav Slaveykov</span> on Jul 19, 2017
-                        </div>
-                    <div id="main-content" class="wiki-content group">
-                    <h1 id="Systemmonitoring-Introduction">Introduction</h1><p>During a test execution, the ATS <em>Monitoring service</em> allows you to collect various statistical information about:</p><ul><li>State of one or more physical hosts. This includes the usage of CPU, memory, virtual memory, network activity etc</li><li>State of one or more system process. Currently this means the CPU and memory usage</li><li>Users activity. When running some kind of performance test, we usually simulate the activity of many simultaneous users. We are able to show how many users are running one or another action(step) at any given moment</li><li>It is possible to write your own monitor which can be easily plugged into the current monitoring system. This way you can see some custom information, for example this could be the number of &quot;<em>running jobs</em>&quot; or the &quot;<em>number of file transfers</em>&quot; on the tested server</li></ul><p> </p><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The monitoring process is done through the ATS Agent, so you need the Agent running on the host you will run monitoring at.</p><p>In the context of this page ATS Agent and ATS Monitoring mean the same thing.</p></div></div><div class="confluence-information-macro has-no-icon confluence-information-macro-note"><div class="confluence-information-macro-body"><p>The monitoring process is not tied to performance tests only.</p><p>It is indeed just one of the optional ATS components to use. You can start it prior to any kind of test and end it after the end of any type of test.</p></div></div><p> </p><hr/><h1 id="Systemmonitoring-UsingtheMonitoringservice">Using the Monitoring service</h1><p>Here is a quick example for using the monitoring service in a test:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.monitoring.SystemMonitor;
+ <head> 
+  <title>ATS : System monitoring</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : System monitoring </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Systemmonitoring-Introduction">Introduction</h1>
+      <p>During a test execution, the ATS <em>Monitoring service</em> allows you to collect various statistical information about:</p>
+      <ul>
+       <li>State of one or more physical hosts. This includes the usage of CPU, memory, virtual memory, network activity etc</li>
+       <li>State of one or more system process. Currently this means the CPU and memory usage</li>
+       <li>Users activity. When running some kind of performance test, we usually simulate the activity of many simultaneous users. We are able to show how many users are running one or another action(step) at any given moment</li>
+       <li>It is possible to write your own monitor which can be easily plugged into the current monitoring system. This way you can see some custom information, for example this could be the number of "<em>running jobs</em>" or the "<em>number of file transfers</em>" on the tested server</li>
+      </ul>
+      <p>&nbsp;</p>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>The monitoring process is done through the ATS Agent, so you need the Agent running on the host you will run monitoring at.</p>
+        <p>In the context of this page ATS Agent and ATS Monitoring mean the same thing.</p>
+       </div>
+      </div>
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
+       <div class="confluence-information-macro-body">
+        <p>The monitoring process is not tied to performance tests only.</p>
+        <p>It is indeed just one of the optional ATS components to use. You can start it prior to any kind of test and end it after the end of any type of test.</p>
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-UsingtheMonitoringservice">Using the Monitoring service</h1>
+      <p>Here is a quick example for using the monitoring service in a test:</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.monitoring.SystemMonitor;
 
 // make an instance of the system monitoring class
 SystemMonitor systemMonitor = new SystemMonitor();
@@ -72,9 +72,45 @@ Thread.sleep( 5 * 60 * 1000 );
 
 // test is over, so stop the monitoring process
 systemMonitor.stopMonitoring();
-</pre>
-</div></div><p> </p><hr/><h1 id="Systemmonitoring-TheresultasseeninTestExplorer">The result as seen in Test Explorer</h1><p>And here is some example of what you might get:</p><p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485353/119485568.png" data-image-src="attachments/119485353/119485568.png" data-unresolved-comment-count="0" data-linked-resource-id="119485568" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119485353" data-linked-resource-container-version="7"></span></p><p>Here you can see the change in the amount of free and used memory as well as the CPU usage percentage</p><p> </p><hr/><h1 id="Systemmonitoring-Startingthemonitoringprocess">Starting the monitoring process</h1><p>As you can see in the example code above, all you need to do is to call the <strong> <em>startMonitoring</em> </strong> method.</p><p>This method accepts as a first argument the <strong> <em>collectInterval</em> </strong> or <strong> <em>pollInterval</em> </strong> which is the number of seconds between polling for new data.</p><p> </p><hr/><h1 id="Systemmonitoring-Stoppingthemonitoringprocess">Stopping the monitoring process</h1><p>All you need to do is to call the <strong> <em>stopMonitoring</em> </strong> method.</p><p> </p><hr/><h1 id="Systemmonitoring-UsingtheSystemmonitoringagent">Using the System monitoring agent</h1><p class="confluence-link"><a href="System-monitoring-details.html">Here</a> you can find the details</p><p> </p><hr/><h1 id="Systemmonitoring-UsingtheUseractivitymonitoringagent">Using the User activity monitoring agent</h1><p class="confluence-link"><a href="User-activity-monitoring-details.html">Here</a> you can find the details</p><p> </p><hr/><h1 id="Systemmonitoring-Howtocallstartandstop">How to call start and stop</h1><h3 id="Systemmonitoring-Idletimebeforeandafterthetestexecution">Idle time before and after the test execution</h3><p>It is usually wise to see what the system state is before the test is started and after the test is over.</p><p>That is why recommend to put some idle time just after calling the <em> <strong>startMonitoring</strong> </em> method and again just before calling the <em> <strong>stopMonitoring</strong> </em> method. This can be easily done using the <em> <strong>Thread.sleep()</strong> </em> method</p><h3 id="Systemmonitoring-Therightplacetocallstartandstop">The right place to call start and stop</h3><p>It does not make sense to call the SystemMonitor methods in each scenario - there will be not needed code duplication. If using TestNG, the right place should be methods annotated with @BeforeMethod and @AfterMethod annotations</p><h3 id="Systemmonitoring-Example">Example</h3><p>Having in mind both notes above, here is how the start and stop code should look like</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import org.testng.annotations.AfterMethod;
+</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-TheresultasseeninTestExplorer">The result as seen in Test Explorer</h1>
+      <p>And here is some example of what you might get:</p>
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485353/119485568.png" data-image-src="attachments/119485353/119485568.png" data-unresolved-comment-count="0" data-linked-resource-id="119485568" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="pic1.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="119485353" data-linked-resource-container-version="7"></span></p>
+      <p>Here you can see the change in the amount of free and used memory as well as the CPU usage percentage</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-Startingthemonitoringprocess">Starting the monitoring process</h1>
+      <p>As you can see in the example code above, all you need to do is to call the <strong> <em>startMonitoring</em> </strong> method.</p>
+      <p>This method accepts as a first argument the <strong> <em>collectInterval</em> </strong> or <strong> <em>pollInterval</em> </strong> which is the number of seconds between polling for new data.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-Stoppingthemonitoringprocess">Stopping the monitoring process</h1>
+      <p>All you need to do is to call the <strong> <em>stopMonitoring</em> </strong> method.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-UsingtheSystemmonitoringagent">Using the System monitoring agent</h1>
+      <p class="confluence-link"><a href="System-monitoring-details.html">Here</a> you can find the details</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-UsingtheUseractivitymonitoringagent">Using the User activity monitoring agent</h1>
+      <p class="confluence-link"><a href="User-activity-monitoring-details.html">Here</a> you can find the details</p>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-Howtocallstartandstop">How to call start and stop</h1>
+      <h3 id="Systemmonitoring-Idletimebeforeandafterthetestexecution">Idle time before and after the test execution</h3>
+      <p>It is usually wise to see what the system state is before the test is started and after the test is over.</p>
+      <p>That is why recommend to put some idle time just after calling the <em> <strong>startMonitoring</strong> </em> method and again just before calling the <em> <strong>stopMonitoring</strong> </em> method. This can be easily done using the <em> <strong>Thread.sleep()</strong> </em> method</p>
+      <h3 id="Systemmonitoring-Therightplacetocallstartandstop">The right place to call start and stop</h3>
+      <p>It does not make sense to call the SystemMonitor methods in each scenario - there will be not needed code duplication. If using TestNG, the right place should be methods annotated with @BeforeMethod and @AfterMethod annotations</p>
+      <h3 id="Systemmonitoring-Example">Example</h3>
+      <p>Having in mind both notes above, here is how the start and stop code should look like</p>
+      <div class="code panel pdl" style="border-width: 1px;">
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import com.axway.ats.monitoring.SystemMonitor;
 
@@ -111,18 +147,21 @@ public void afterTest() throws Exception {
 
     // test is over, so stop the monitoring process
     systemMonitor.stopMonitoring();
-}</pre>
-</div></div><p> </p><hr/><h1 id="Systemmonitoring-Performanceconsiderations">Performance considerations</h1><p>Currently no performance issues are known when using the ATS monitoring service even with the most intensive polling interval.</p><p>However we recommend that you wisely choose the polling interval according to the test duration. For example if a test takes 5 days to complete, polling on each second will produce 432 000 values for each statistic and if you specify 20 or 30 different types of statistics you will get a very large amount of data going to the logging database.</p><p> </p><hr/><p>Back to <a href="ATS-Guide.html">parent page</a></p><hr/>
-                    </div>
-
-                </div>             </div> 
-            <div id="footer" role="contentinfo">
-                <section class="footer-body">
-                    <p>Document generated by Confluence on Aug 21, 2017 08:51</p>
-                    <div id="footer-logo"></div>
-                </section>
-            </div>
-        </div>     </body>
+}</pre> 
+       </div>
+      </div>
+      <p>&nbsp;</p>
+      <hr>
+      <h1 id="Systemmonitoring-Performanceconsiderations">Performance considerations</h1>
+      <p>Currently no performance issues are known when using the ATS monitoring service even with the most intensive polling interval.</p>
+      <p>However we recommend that you wisely choose the polling interval according to the test duration. For example if a test takes 5 days to complete, polling on each second will produce 432 000 values for each statistic and if you specify 20 or 30 different types of statistics you will get a very large amount of data going to the logging database.</p>
+      <p>&nbsp;</p>
+      <hr>
+      <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+ </body>
 </html>
-
-
