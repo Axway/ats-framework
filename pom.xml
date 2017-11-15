@@ -4,7 +4,7 @@
 
     <groupId>com.axway.ats.framework</groupId>
     <artifactId>ats-framework</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.2</version>
     <packaging>pom</packaging>
     <name>ATS-Framework</name>
     <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
@@ -399,7 +399,7 @@
         <connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
         <developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
         <url>https://github.com/Axway/ats-framework</url>
-      <tag>HEAD</tag>
+      <tag>v4.0.2</tag>
   </scm>
 
     <developers>
