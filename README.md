@@ -20,7 +20,11 @@ ATS **key features** include:
 
 **Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
 
+**Video tutorials** are published on YouTube [here](https://www.youtube.com/watch?v=-4ZlEzU4ucM&list=PLBEEcZZeAijMOHzPVvrPKqeg4O079W33I)
+
 ATS framework **artifacts** are available at https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/
+**Release notes** are published here https://axway.github.io/ats-framework/Release-Notes.html
+
 
 Other **related projects**:
 <ul>
