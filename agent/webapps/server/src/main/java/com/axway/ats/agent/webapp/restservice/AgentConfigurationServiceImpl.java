@@ -16,6 +16,8 @@
 package com.axway.ats.agent.webapp.restservice;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -252,7 +254,8 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
     private void cleanupExpiredSessions(
                                          DbConnectionPojo dbConnectionPojo ) {
 
-        for( String uid : sessions.keySet() ) {
+        Set<String> keySet = new HashSet<>( sessions.keySet() );
+        for( String uid : keySet ) {
             long lastTimeUsed = sessions.get( uid ).getLastUsedFlag();
             if( new Date().getTime() - lastTimeUsed > SESSION_MAX_IDLE_TIME ) {
 
