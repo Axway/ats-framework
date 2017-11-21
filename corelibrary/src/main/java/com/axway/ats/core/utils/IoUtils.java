@@ -311,7 +311,7 @@ public class IoUtils {
             while( ( n = input.read( buffer ) ) != -1 ) {
                 output.write( buffer, 0, n );
                 count += n;
-                if (count > maxSize) {
+                if ( maxSize > 0 && count > maxSize ) {
                     throw new IOException( "Unable to copy input stream. Max size of " + maxSize + " bytes reached." );
                 }
             }
