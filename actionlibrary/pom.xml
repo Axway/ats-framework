@@ -226,9 +226,8 @@
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>ojdbc7</artifactId>
-            <version>12.1.0.1</version>
             <optional>true</optional>
-            <scope>test</scope> <!-- Indirectly refered. Declare here since it is also optional in Core library -->
+            <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core library -->
             <exclusions>
                 <exclusion>
                     <groupId>com.oracle.jdbc</groupId>
