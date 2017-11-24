@@ -177,16 +177,22 @@ public class Test_FileEnvironmentUnit extends BaseTest {
     }
 
     @Test(expected = EnvironmentCleanupException.class)
-    public void restoreNegativeOriginalFileIsDirectory() throws EnvironmentCleanupException {
+    public void restoreNegativeTargetFileIsDirectory() throws EnvironmentCleanupException {
 
-        //this test requires original file directory modification date to be different from the original file date
-        //therefore we will change the directory modification date with 1sec
-        new File( IoUtils.getFilePath( originalFileName ) ).setLastModified( new File( originalFileName ).lastModified() - 1000 );
-
-        FileEnvironmentUnit fileEnvUnitBackup = new FileEnvironmentUnit( originalFileName,
-                                                                         backupFolder,
+        // Create the backup file
+        FileEnvironmentUnit fileEnvUnitBackup = new FileEnvironmentUnit( originalFileName, backupFolder,
                                                                          backupFileName );
         fileEnvUnitBackup.backup();
+
+        // Try to restore.
+        // The restore fails because we provide a folder for restore target, we should have provided some file instead.
+        // An error is thrown saying "File ... is actually a directory and can not be restored."
+
+        // Sometimes it turns out that both backup file and restore target have same modification times.
+        // In such case we skip the restore, the restore method returns false and the assert at the end of the test fails.
+        // That is why we make sure both modification times are different prior to doing restore.
+        new File( backupFolder + backupFileName ).setLastModified( new File( backupFolder ).lastModified()
+                                                                   - 1000 );
 
         FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( IoUtils.getFilePath( originalFileName ),
                                                                    backupFolder,
