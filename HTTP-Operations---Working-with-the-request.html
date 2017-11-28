@@ -23,14 +23,14 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>Usually prior to executing an HTTP method, you will need to provide some more data besides the URL.</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththerequest-Setbodyoftherequest">Set body of the request</h1>
-      <p>Use one of the <em>setRequestBody</em> methods which allow you to specify the body content, content type and charset</p>
-      <pre>&nbsp;</pre>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>Usually prior to executing an HTTP method, you will need to provide some more data besides the URL.</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththerequest-Setbodyoftherequest">Set body of the request</h1> 
+      <p>Use one of the <em>setRequestBody</em> methods which allow you to specify the body content, content type and charset</p> 
+      <pre>&nbsp;</pre> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// provide a file as body content
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// provide a file as body content
 client.setRequestBody( new File( "&lt;path to a local file&gt;" ), "text/xml" );
 
 // provide some JSON text
@@ -38,61 +38,61 @@ client.setRequestBody( "{ \"key\":\"value\"}", "application/json" );
 
 // provide some byte array
 client.setRequestBody( new byte[]{1,2,3}, "application/octet-stream" );</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththerequest-Addheaderstotherequest">Add headers to the request</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththerequest-Addheaderstotherequest">Add headers to the request</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// the type of content we are sending
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// the type of content we are sending
 client.addRequestHeader( "Content-Type", "application/x-www-form-urlencoded" );
 
 // the type of content we will accept back
 client.addRequestHeader( "Accept", "application/json" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththerequest-Addqueryparameterstotherequest">Add query parameters to the request</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththerequest-Addqueryparameterstotherequest">Add query parameters to the request</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">client.addRequestParameter( "lang", "English" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">client.addRequestParameter( "lang", "English" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththerequest-Basicauthorization">Basic authorization</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththerequest-Basicauthorization">Basic authorization</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">client.setAuthorization( USER_NAME, USER_PASSWORD );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">client.setAuthorization( USER_NAME, USER_PASSWORD );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththerequest-Multipartrequestbody">Multipart request body</h1>
-      <p>If want to send a multipart message, do not use a<em> setRequestBody</em> methods. <br>Instead, use the <em>addRequestBodyPart</em> method as many times as needed:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththerequest-Multipartrequestbody">Multipart request body</h1> 
+      <p>If want to send a multipart message, do not use a<em> setRequestBody</em> methods. <br>Instead, use the <em>addRequestBodyPart</em> method as many times as needed:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// add attachment file
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// add attachment file
 client.addRequestBodyPart( HttpBodyPart.createFilePart( "file", &lt;PATH TO A FILE TO SEND&gt; ) );
 
 // add a text part
 client.addRequestBodyPart( HttpBodyPart.createTextPart( "BodyString", "Put here some text content" ) );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="HTTP-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
-      <hr>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="HTTP-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

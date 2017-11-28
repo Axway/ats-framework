@@ -23,38 +23,38 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>Following is a list with currently supported HTTP methods</p>
-      <hr>
-      <h1 id="RESTOperations-SupportedHTTPmethods-GETmethod">GET method</h1>
-      <p>GET is used to retrieve an already existing resource on the server without modifying it</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>Following is a list with currently supported HTTP methods</p> 
+      <hr> 
+      <h1 id="RESTOperations-SupportedHTTPmethods-GETmethod">GET method</h1> 
+      <p>GET is used to retrieve an already existing resource on the server without modifying it</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// execute a GET method
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// execute a GET method
 RestResponse response = client.get();
  
 // now examine the response</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-SupportedHTTPmethods-POSTmethod">POST method</h1>
-      <p>POST is used to create a new resource on the server</p>
-      <h3 id="RESTOperations-SupportedHTTPmethods-POSTaform">POST a form</h3>
-      <p>Post a form containing some information about some person:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-SupportedHTTPmethods-POSTmethod">POST method</h1> 
+      <p>POST is used to create a new resource on the server</p> 
+      <h3 id="RESTOperations-SupportedHTTPmethods-POSTaform">POST a form</h3> 
+      <p>Post a form containing some information about some person:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// POST a form
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// POST a form
 client.postForm( new RestForm().addParameter( "firstName", USER_FIRST_NAME )
                                .addParameter( "lastName", USER_LAST_NAME )
                                .addParameter( "age", "40" ) );
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-SupportedHTTPmethods-POSTajavaobject">POST a java object</h3>
-      <p>Post some java object:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-SupportedHTTPmethods-POSTajavaobject">POST a java object</h3> 
+      <p>Post some java object:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// prepare the object to POST
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// prepare the object to POST
 Person person = new Person();
 person.setFirstName( "Indiana" );
 person.setLastName( "Johnes" );
@@ -67,24 +67,24 @@ client.setResponseMediaType( RestMediaType.APPLICATION_XML );
 // POST the object
 RestResponse response = client.postObject( person );
 </pre> 
-       </div>
-      </div>
-      <p>In the example above, Person is some particular class provided by you, not the ATS framework.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-SupportedHTTPmethods-PUTmethod">PUT method</h1>
-      <p>PUT is used to update an already existing resource on the server</p>
-      <h3 id="RESTOperations-SupportedHTTPmethods-PUTaform">PUT a form</h3>
-      <p>Equivalent to the POST form example, but use the <strong> <em>putForm</em> </strong> method instead</p>
-      <h3 id="RESTOperations-SupportedHTTPmethods-PUTajavaobject">PUT a java object</h3>
-      <p>Equivalent to the POST object example, but use the <strong> <em>putObject</em> </strong> method instead</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-SupportedHTTPmethods-DELETEmethod">DELETE method</h1>
-      <p>DELETE is used to delete an already existing resource on the server.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>In the example above, Person is some particular class provided by you, not the ATS framework.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-SupportedHTTPmethods-PUTmethod">PUT method</h1> 
+      <p>PUT is used to update an already existing resource on the server</p> 
+      <h3 id="RESTOperations-SupportedHTTPmethods-PUTaform">PUT a form</h3> 
+      <p>Equivalent to the POST form example, but use the <strong> <em>putForm</em> </strong> method instead</p> 
+      <h3 id="RESTOperations-SupportedHTTPmethods-PUTajavaobject">PUT a java object</h3> 
+      <p>Equivalent to the POST object example, but use the <strong> <em>putObject</em> </strong> method instead</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-SupportedHTTPmethods-DELETEmethod">DELETE method</h1> 
+      <p>DELETE is used to delete an already existing resource on the server.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
 RestClient client = new RestClient( &lt;target URI&gt;/people/delete/123 );
 
 // execute the delete method
@@ -93,17 +93,17 @@ RestResponse response = client.delete();
 // read the body of the response
 String responseBody = response.getBodyAsString();
 </pre> 
-       </div>
-      </div>
-      <p>In this example we delete a person with id 123 which is specified as part of the URI.</p>
-      <p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-SupportedHTTPmethods-Anymethod">Any method</h1>
-      <p>There are other HTTP methods not supported by our REST client, there could be also some methods specific only to your server. Here is how you can proceed in such case:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>In this example we delete a person with id 123 which is specified as part of the URI.</p> 
+      <p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-SupportedHTTPmethods-Anymethod">Any method</h1> 
+      <p>There are other HTTP methods not supported by our REST client, there could be also some methods specific only to your server. Here is how you can proceed in such case:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
 RestClient client = new RestClient( &lt;target URI&gt; );
 
 // execute some HTTP method
@@ -112,16 +112,16 @@ RestResponse response = client.execute( "KICK" );
 // read the body of the response
 String responseBody = response.getBodyAsString();
 </pre> 
-       </div>
-      </div>
-      <p>In this case our server knows how to handle a method called KICK <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" data-emoticon-name="smile" alt="(smile)"></p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>In this case our server knows how to handle a method called KICK <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" alt="(smile)"></p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

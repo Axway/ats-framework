@@ -23,99 +23,99 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="RESTOperations-ParsingXMLbody-Introduction">Introduction</h1>
-      <p><a class="external-link" href="http://en.wikipedia.org/wiki/XML" rel="nofollow">XML</a> (Extensible Markup Language) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable similar to JSON and YAML.</p>
-      <p>In this page we will use mostly the following example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="RESTOperations-ParsingXMLbody-Introduction">Introduction</h1> 
+      <p><a class="external-link" href="http://en.wikipedia.org/wiki/XML" rel="nofollow">XML</a> (Extensible Markup Language) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable similar to JSON and YAML.</p> 
+      <p>In this page we will use mostly the following example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: xml; gutter: false; theme: Confluence" data-theme="Confluence">&lt;person id="121213266"&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;person id="121213266"&gt;
 	&lt;firstname&gt;Indianna&lt;/firstname&gt;
 	&lt;lastname&gt;Jones&lt;/lastname&gt;
 	&lt;age&gt;10&lt;/age&gt;
 &lt;/person&gt;
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-DifferentwaystospecifytheXMLbody">Different ways to specify the XML body</h1>
-      <h3 id="RESTOperations-ParsingXMLbody-Javaobject:">Java object:</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-DifferentwaystospecifytheXMLbody">Different ways to specify the XML body</h1> 
+      <h3 id="RESTOperations-ParsingXMLbody-Javaobject:">Java object:</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Person xmlBody = new Person();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">Person xmlBody = new Person();
 xmlBody.setFirstName( "Indiana" );
 xmlBody.setLastName( "Johnes" );
 xmlBody.setAge( 40 );
 </pre> 
-       </div>
-      </div>
-      <p>This is the easiest to use way, but sometimes the problem is that you do not have the jar with the needed class(in this example this is the Person class).</p>
-      <h3 id="RESTOperations-ParsingXMLbody-Simpletext:">Simple text:</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>This is the easiest to use way, but sometimes the problem is that you do not have the jar with the needed class(in this example this is the Person class).</p> 
+      <h3 id="RESTOperations-ParsingXMLbody-Simpletext:">Simple text:</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String xmlBody = "&lt;person id=\"121213266\"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;";
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">String xmlBody = "&lt;person id=\"121213266\"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;";
 </pre> 
-       </div>
-      </div>
-      <p>The formatting here is not always understandable. Additionally it will be very difficult to extract a value from such (String) response.</p>
-      <h3 id="RESTOperations-ParsingXMLbody-XMLtext:">XML text:</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The formatting here is not always understandable. Additionally it will be very difficult to extract a value from such (String) response.</p> 
+      <h3 id="RESTOperations-ParsingXMLbody-XMLtext:">XML text:</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.xml.XmlText;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.xml.XmlText;
 
 XmlText xmlBody = new XmlText("&lt;person/&gt;");
 xmlBody.setAttribute("//person","id","121213266");
 xmlBody.add("//person","&lt;firstname&gt;Indiana&lt;/firstname&gt;");
 xmlBody.add("//person","&lt;lastname&gt;Jones&lt;/lastname&gt;");
 xmlBody.add("//person","&lt;age&gt;10&lt;/age&gt;"); </pre> 
-       </div>
-      </div>
-      <p>In this example we are using our <em>XmlText</em> class provided by ATS. You still do not need the corresponding java class, but the working with this class is much easier compared to regular String.</p>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>All presented 3 examples above send the request in the same way:</p>
-        <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>In this example we are using our <em>XmlText</em> class provided by ATS. You still do not need the corresponding java class, but the working with this class is much easier compared to regular String.</p> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>All presented 3 examples above send the request in the same way:</p> 
+        <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
-          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RESTResponse response = client.postObject( xmlBody );
+          <pre class="syntaxhighlighter-pre" data-theme="Confluence">RESTResponse response = client.postObject( xmlBody );
 </pre> 
-         </div>
-        </div>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-ConstructingXMLText">Constructing XMLText</h1>
-      <h3 id="RESTOperations-ParsingXMLbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-ConstructingXMLText">Constructing XMLText</h1> 
+      <h3 id="RESTOperations-ParsingXMLbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">XmlText xmlBody = client.get().getBodyAsXml();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = client.get().getBodyAsXml();
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-ParsingXMLbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-ParsingXMLbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person id=\"121213266\"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;"; );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person id=\"121213266\"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;"; );
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-ParsingXMLbody-Additemsonebyone">Add items one by one</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-ParsingXMLbody-Additemsonebyone">Add items one by one</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person/&gt;");
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person/&gt;");
 xmlBody.setAttribute("//person","id","121213266");
 xmlBody.add("//person","&lt;firstname&gt;Indiana&lt;/firstname&gt;");
 xmlBody.add("//person","&lt;lastname&gt;Jones&lt;/lastname&gt;");
 xmlBody.add("//person","&lt;age&gt;10&lt;/age&gt;"); 
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-ParsingXMLbody-Constructingcomplexcontent">Constructing complex content</h3>
-      <p>Imagine you need to construct a more complex example like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-ParsingXMLbody-Constructingcomplexcontent">Constructing complex content</h3> 
+      <p>Imagine you need to construct a more complex example like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;department total-people="10"&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;department total-people="10"&gt;
 	&lt;person id="121213266"&gt;
 		&lt;firstname&gt;Indianna&lt;/firstname&gt;
 		&lt;lastname&gt;Jones&lt;/lastname&gt;
@@ -127,12 +127,12 @@ xmlBody.add("//person","&lt;age&gt;10&lt;/age&gt;");
 		&lt;age&gt;20&lt;/age&gt;
 	&lt;/person&gt;
 &lt;/department&gt; </pre> 
-       </div>
-      </div>
-      <p>Here is how you can do it:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>Here is how you can do it:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">new XmlText("&lt;department/&gt;")
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">new XmlText("&lt;department/&gt;")
 	.setAttribute("/","total-people","10")
 	.add("/", new XmlText("&lt;person/&gt;")
 			          .setAttribute("/","id","121213266")
@@ -146,57 +146,57 @@ xmlBody.add("//person","&lt;age&gt;10&lt;/age&gt;");
             		  .add("/", new XmlText("&lt;lastname/&gt;").setText("/","Smith") )
 			          .add("/", new XmlText("&lt;age/&gt;") .setText("/","20") 	)
 	);</pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>Many <em>XmlText </em>methods return the result instance, so if you want, you can chain as in the example:</p>
-        <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Many <em>XmlText </em>methods return the result instance, so if you want, you can chain as in the example:</p> 
+        <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
-          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person id='121213266'/&gt;").add("/","&lt;firstname&gt;Indiana&lt;/firstname&gt;").add("/","&lt;lastname&gt;Jones&lt;/lastname&gt;").add("/","&lt;age&gt;10&lt;/age&gt;");</pre> 
-         </div>
-        </div>
-        <p>of course you can always use the other option:</p>
-        <div class="code panel pdl" style="border-width: 1px;">
+          <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person id='121213266'/&gt;").add("/","&lt;firstname&gt;Indiana&lt;/firstname&gt;").add("/","&lt;lastname&gt;Jones&lt;/lastname&gt;").add("/","&lt;age&gt;10&lt;/age&gt;");</pre> 
+         </div> 
+        </div> 
+        <p>of course you can always use the other option:</p> 
+        <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
-          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person/&gt;");
+          <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person/&gt;");
 xmlBody.setAttribute("/","id","121213266");
 xmlBody.add("/","&lt;firstname&gt;Indiana&lt;/firstname&gt;");
 xmlBody.add("/","&lt;lastname&gt;Jones&lt;/lastname&gt;");
 xmlBody.add("/","&lt;age&gt;10&lt;/age&gt;");
 </pre> 
-         </div>
-        </div>
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>In some examples , we are using <strong>" /" </strong>for XPath , which points to the root element of the XML document.</p>
-        <p>There are <strong>two</strong> ways to point to an XML element via XPath - <strong>absolute</strong> and <strong>relative</strong>.</p>
-        <p>The <strong>absolute</strong> XPath is constructed from the <strong>root</strong> element of the XML document , down to the element , you are looking for.</p>
-        <p>Example : <strong>"/department/person[2]/age"</strong> or <strong>"/department/person[@id='101015033']/age"</strong></p>
-        <p>The <strong>relative</strong> XPath is constructed from any XML element , which XPath is unique for the XML document , instead of from the<strong> root</strong> element of the document.</p>
-        <p>Example : <strong>"//person[2]/age"</strong> or <strong>"//person[@id='101015033']/age"</strong></p>
-        <p><strong> <br> </strong></p>
-        <p><strong>Note that absolute XPath , starts with single slash while relative XPath starts with double slash.</strong></p>
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>The above java code may look complex, but the actual output is complex too.</p>
-        <p>Using this approach is good when you are taking some programmatic approach in constructing your XML body. For example if the input comes from some template file or some user interaction - then you can use this approach to add the needed content.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-RetrievingcontentfromXmlText">Retrieving content from XmlText<strong><br> </strong></h1>
-      <p>Here is how you can get some XML value:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>In some examples , we are using <strong>" /" </strong>for XPath , which points to the root element of the XML document.</p> 
+        <p>There are <strong>two</strong> ways to point to an XML element via XPath - <strong>absolute</strong> and <strong>relative</strong>.</p> 
+        <p>The <strong>absolute</strong> XPath is constructed from the <strong>root</strong> element of the XML document , down to the element , you are looking for.</p> 
+        <p>Example : <strong>"/department/person[2]/age"</strong> or <strong>"/department/person[@id='101015033']/age"</strong></p> 
+        <p>The <strong>relative</strong> XPath is constructed from any XML element , which XPath is unique for the XML document , instead of from the<strong> root</strong> element of the document.</p> 
+        <p>Example : <strong>"//person[2]/age"</strong> or <strong>"//person[@id='101015033']/age"</strong></p> 
+        <p><strong> <br> </strong></p> 
+        <p><strong>Note that absolute XPath , starts with single slash while relative XPath starts with double slash.</strong></p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>The above java code may look complex, but the actual output is complex too.</p> 
+        <p>Using this approach is good when you are taking some programmatic approach in constructing your XML body. For example if the input comes from some template file or some user interaction - then you can use this approach to add the needed content.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-RetrievingcontentfromXmlText">Retrieving content from XmlText<strong><br> </strong></h1> 
+      <p>Here is how you can get some XML value:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">XMLText xmlBody = client.get().getBodyAsXml();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">XMLText xmlBody = client.get().getBodyAsXml();
 
 // get a String value
 String firstName = xmlBody.getString( "//person[@id='121213266']/firstname");
@@ -204,66 +204,66 @@ String firstName = xmlBody.getString( "//person[@id='121213266']/firstname");
 // get an int value
 int age = xmlBody.getInt( "/department/person[1]/age");
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-Modifyingcontent">Modifying content</h1>
-      <p>You can replace some values in the XML text:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-Modifyingcontent">Modifying content</h1> 
+      <p>You can replace some values in the XML text:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// by replacing XML element
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// by replacing XML element
 xmlBody.replace( "/department/person[1]/firstname", "&lt;firstname&gt;Will&lt;/firstname&gt;" );
 
 // by changing the text of XML element
 xmlBody.setText( "/department/person[1]/age", "35" );
 </pre> 
-       </div>
-      </div>
-      <p>Or you can delete some of the content:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>Or you can delete some of the content:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// here we are using the absolute XPath , pointing to XML element &lt;firstname/&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// here we are using the absolute XPath , pointing to XML element &lt;firstname/&gt;
 xmlBody.remove( "/department/person[1]/firstname" );
 
 // here we are using the relative XPath , pointing to XML element &lt;age/&gt;
 xmlBody.remove( "//person[@id='121213266']/firstname/age" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1>
-      <p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1> 
+      <p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// this will return 10
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// this will return 10
 xmlBody.getAttribute("/department","total-people")
 
 // this will return "Indiana"
 xmlBody.getString( "/department/people[1]/firstname" );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>All methods use same approach to point to a key of interest - <em>getString</em>, <em>replace</em> or <em>remove</em></p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-ModifyingXMLattributes">Modifying XML attributes</h1>
-      <p>You can see all attributes for a certain XML element:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>All methods use same approach to point to a key of interest - <em>getString</em>, <em>replace</em> or <em>remove</em></p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-ModifyingXMLattributes">Modifying XML attributes</h1> 
+      <p>You can see all attributes for a certain XML element:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Map&lt;String, String&gt; attributes = xmlBody.getAttributes("/department/person[1]");</pre> 
-       </div>
-      </div>
-      <p>Or you can see certain attribute value, change attribute's value , or remove the attribute:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">Map&lt;String, String&gt; attributes = xmlBody.getAttributes("/department/person[1]");</pre> 
+       </div> 
+      </div> 
+      <p>Or you can see certain attribute value, change attribute's value , or remove the attribute:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get an attribute , this will return 101015033
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get an attribute , this will return 101015033
 String id = xmlBody.getAttribute("/department/person[2]","id");
 
 // set new attribute
@@ -274,22 +274,22 @@ xmlBody.setAttribute("//department","total-people","30");
 
 // remove an attribute
 xmlBody.removeAttribute("//department","country");</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-NicelyformattingtheXMLtext">Nicely formatting the XML text</h1>
-      <p>You have the option to print the XML text as regular or as a well formatted text.</p>
-      <p>For example using the <em>toString()</em> method may give you output like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-NicelyformattingtheXMLtext">Nicely formatting the XML text</h1> 
+      <p>You have the option to print the XML text as regular or as a well formatted text.</p> 
+      <p>For example using the <em>toString()</em> method may give you output like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;department total-people="10"&gt;&lt;person id="121213266"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;&lt;person id="101015033"&gt;&lt;firstname&gt;Will&lt;/firstname&gt;&lt;lastname&gt;Smith&lt;/lastname&gt;&lt;age&gt;20&lt;/age&gt;&lt;/person&gt;&lt;/department&gt;</pre> 
-       </div>
-      </div>
-      <p>while using the <em>toFormattedString()</em> method for the same XML text will give you output like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;department total-people="10"&gt;&lt;person id="121213266"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;&lt;person id="101015033"&gt;&lt;firstname&gt;Will&lt;/firstname&gt;&lt;lastname&gt;Smith&lt;/lastname&gt;&lt;age&gt;20&lt;/age&gt;&lt;/person&gt;&lt;/department&gt;</pre> 
+       </div> 
+      </div> 
+      <p>while using the <em>toFormattedString()</em> method for the same XML text will give you output like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;department total-people="10"&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;department total-people="10"&gt;
 	&lt;person id="121213266"&gt;
 		&lt;firstname&gt;Indiana&lt;/firstname&gt;
 		&lt;lastname&gt;Jones&lt;/lastname&gt;
@@ -302,15 +302,15 @@ xmlBody.removeAttribute("//department","country");</pre>
   	&lt;/person&gt;
 &lt;/department&gt;
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-ParsingXMLbody-IteratingovertheXMLtextcontent">Iterating over the XML text content</h1>
-      <p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingXMLbody-IteratingovertheXMLtextcontent">Iterating over the XML text content</h1> 
+      <p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">for( String xpath : xmlBody.getElementXPaths() ) {
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">for( String xpath : xmlBody.getElementXPaths() ) {
      // here we get the XPath of the next element
 
      // do something with the found element, in this case we just print it out
@@ -319,15 +319,15 @@ xmlBody.removeAttribute("//department","country");</pre>
      // or we can navigate to it
      XMLText xmlText = xmlBody.get( xpath );
 }			 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

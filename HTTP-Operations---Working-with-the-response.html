@@ -23,15 +23,15 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>You should always carefully examine the response otherwise you will not be confident in the success of your HTTP call.</p>
-      <p>Additionally, often you will need to get data from the response in order to decide how to continue your test execution.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththeresponse-Exploretheresponse">Explore the response</h1>
-      <p>Every HTTP method returns a HttpResponse and here are some useful methods it has:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>You should always carefully examine the response otherwise you will not be confident in the success of your HTTP call.</p> 
+      <p>Additionally, often you will need to get data from the response in order to decide how to continue your test execution.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththeresponse-Exploretheresponse">Explore the response</h1> 
+      <p>Every HTTP method returns a HttpResponse and here are some useful methods it has:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get status code, for example "200"
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get status code, for example "200"
 int statusCode = response.getStatusCode();
 
 // get status message, for example "SUCCESS"
@@ -43,20 +43,20 @@ HttpHeader[] headers = response.getHeaders();
 // get received body as a String
 String body = response.getBodyAsString();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-Workingwiththeresponse-Verifytheresponse">Verify the response</h1>
-      <p>Every HTTP response can be verified by header, body, status code, status message.</p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>ATS <strong> <em>verify methods</em> </strong> check if the condition is met, if not an exception is thrown and this fails the test with an appropriate error message.</p>
-       </div>
-      </div>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-Workingwiththeresponse-Verifytheresponse">Verify the response</h1> 
+      <p>Every HTTP response can be verified by header, body, status code, status message.</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>ATS <strong> <em>verify methods</em> </strong> check if the condition is met, if not an exception is thrown and this fails the test with an appropriate error message.</p> 
+       </div> 
+      </div> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// verify status code, for example "200"
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// verify status code, for example "200"
 response.verifyStatusCode(200);
 
 // verify status message, for example "SUCCESS"
@@ -74,15 +74,15 @@ response.verifyBodyMatch("Some simple page response");
 // verify response body by REGEX, e.g. response body "Some simple page response"
 response.verifyBodyRegex(".*page\\D");
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="HTTP-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="HTTP-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

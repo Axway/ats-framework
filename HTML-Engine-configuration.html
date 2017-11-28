@@ -23,17 +23,17 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="HTMLEngineconfiguration-Introduction">Introduction</h1>
-      <p>This page shows some useful configuration options when the UI Engine is used for testing HTML/Javascript applications</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTMLEngineconfiguration-Basicconfiguration">Basic configuration</h1>
-      <p>Using the <em> <strong>UiEngineConfigurator</strong> </em> class you can do some changes to the UI Engine behavior.</p>
-      <p>Following are some examples, look at the available setter methods for all options.</p>
-      <p>&nbsp;</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="HTMLEngineconfiguration-Introduction">Introduction</h1> 
+      <p>This page shows some useful configuration options when the UI Engine is used for testing HTML/Javascript applications</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTMLEngineconfiguration-Basicconfiguration">Basic configuration</h1> 
+      <p>Using the <em> <strong>UiEngineConfigurator</strong> </em> class you can do some changes to the UI Engine behavior.</p> 
+      <p>Following are some examples, look at the available setter methods for all options.</p> 
+      <p>&nbsp;</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.uiengine.configuration.UiEngineConfigurator;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.uiengine.configuration.UiEngineConfigurator;
 
 UiEngineConfigurator configurator = UiEngineConfigurator.getInstance();
 
@@ -48,17 +48,17 @@ configurator.setCommandDelay( 2000 );
 
 // path to a folder where the browser will save downloaded files
 configurator.setBrowserDownloadDir( DIR_PATH );</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTMLEngineconfiguration-PhantomJSconfiguration">PhantomJS configuration</h1>
-      <p>Following are options applicable PhantomJS driver only</p>
-      <h3 id="HTMLEngineconfiguration-Pagesettings">Page settings</h3>
-      <p>You can modify any of the supported by PhantomJS page settings, which are described <a class="external-link" href="http://phantomjs.org/api/webpage/property/settings.html" rel="nofollow">here</a>.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTMLEngineconfiguration-PhantomJSconfiguration">PhantomJS configuration</h1> 
+      <p>Following are options applicable PhantomJS driver only</p> 
+      <h3 id="HTMLEngineconfiguration-Pagesettings">Page settings</h3> 
+      <p>You can modify any of the supported by PhantomJS page settings, which are described <a class="external-link" href="http://phantomjs.org/api/webpage/property/settings.html" rel="nofollow">here</a>.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Single settings format:
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Single settings format:
 // System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, "settingName: value" );
 // Multiple settings format:
 // System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, "{settingName: value}, {other setting: value 2}" );
@@ -66,12 +66,12 @@ configurator.setBrowserDownloadDir( DIR_PATH );</pre>
 // Example
 System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, "userAgent: Mozilla/5.0 (Windows NT 5.1; rv:24.0) Gecko/20100101 Firefox/24.0" );
 </pre> 
-       </div>
-      </div>
-      <h3 id="HTMLEngineconfiguration-Customheaders">Custom headers</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="HTMLEngineconfiguration-Customheaders">Custom headers</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Single settings format:
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Single settings format:
 // System.setProperty( PhantomJSDriver.CUSTOM_HEADERS_PROPERTY, "header name: value" );&lt;/b&gt;
 // Multiple headers format:
 // System.setProperty( PhantomJSDriver.CUSTOM_HEADERS_PROPERTY, "{header X: value X}, {header Y: value Y}" );
@@ -79,23 +79,23 @@ System.setProperty( PhantomJSDriver.SETTINGS_PROPERTY, "userAgent: Mozilla/5.0 (
 // Example
 System.setProperty( PhantomJSDriver.CUSTOM_HEADERS_PROPERTY, "Accept-Language: en-US,en;q=0.5" );
 </pre> 
-       </div>
-      </div>
-      <h3 id="HTMLEngineconfiguration-SpecificSSLProtocolfortheconnectionhandshake">Specific SSL Protocol for the connection handshake</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="HTMLEngineconfiguration-SpecificSSLProtocolfortheconnectionhandshake">Specific SSL Protocol for the connection handshake</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// possible options are SSLv3, SSLv2, TLSv1, any (default)
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// possible options are SSLv3, SSLv2, TLSv1, any (default)
 System.setProperty( PhantomJSDriver.SSL_PROTOCOL_PROPERTY, "TLSv1" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Automated-testing-of-HTML-and-Javascript-application.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Automated-testing-of-HTML-and-Javascript-application.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

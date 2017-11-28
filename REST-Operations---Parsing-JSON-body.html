@@ -23,98 +23,98 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="RESTOperations-ParsingJSONbody-Introduction">Introduction</h1>
-      <p><a class="external-link" href="http://en.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a> (JavaScript Object Notation) is a text-based open standard designed for human-readable data interchange similar to XML and YAML.</p>
-      <p>In this page we will use mostly the following example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="RESTOperations-ParsingJSONbody-Introduction">Introduction</h1> 
+      <p><a class="external-link" href="http://en.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a> (JavaScript Object Notation) is a text-based open standard designed for human-readable data interchange similar to XML and YAML.</p> 
+      <p>In this page we will use mostly the following example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">{
 	"firstName":"Indiana",
 	"lastName":"Johnes",
 	"age":10
 }
 </pre> 
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-DifferentwaystospecifytheJSONbody">Different ways to specify the JSON body</h1>
-      <h3 id="RESTOperations-ParsingJSONbody-Javaobject:">Java object:</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-DifferentwaystospecifytheJSONbody">Different ways to specify the JSON body</h1> 
+      <h3 id="RESTOperations-ParsingJSONbody-Javaobject:">Java object:</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Person jsonBody = new Person();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">Person jsonBody = new Person();
 jsonBody.setFirstName( "Indiana" );
 jsonBody.setLastName( "Johnes" );
 jsonBody.setAge( 40 );
 </pre> 
-       </div>
-      </div>
-      <p>This is the easiest to use way, but sometimes the problem is that you do not have the jar with the needed class(in this example this is the Person class).</p>
-      <h3 id="RESTOperations-ParsingJSONbody-Simpletext:">Simple text:</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>This is the easiest to use way, but sometimes the problem is that you do not have the jar with the needed class(in this example this is the Person class).</p> 
+      <h3 id="RESTOperations-ParsingJSONbody-Simpletext:">Simple text:</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String jsonBody = "{\"firstName\":\"Indiana\",\"lastName\":\"Johnes\",\"age\":10}";
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">String jsonBody = "{\"firstName\":\"Indiana\",\"lastName\":\"Johnes\",\"age\":10}";
 </pre> 
-       </div>
-      </div>
-      <p>The formatting here is not always understandable. Additionally it will be very difficult to extract a value from such (String) response.</p>
-      <h3 id="RESTOperations-ParsingJSONbody-JSONtext:">JSON text:</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The formatting here is not always understandable. Additionally it will be very difficult to extract a value from such (String) response.</p> 
+      <h3 id="RESTOperations-ParsingJSONbody-JSONtext:">JSON text:</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.json.JsonText;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.json.JsonText;
 
 JsonText jsonBody = new JsonText();
 jsonBody.add( "firstName", "Indiana" );
 jsonBody.add( "lastName", "Johnes" );
 jsonBody.add( "age", 10 );
 </pre> 
-       </div>
-      </div>
-      <p>In this example we are using our <em>JsonText</em> class provided by ATS. You still do not need the corresponding java class, but the working with this class is much easier compared to regular String.</p>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>All presented 3 examples above send the request in the same way:</p>
-        <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>In this example we are using our <em>JsonText</em> class provided by ATS. You still do not need the corresponding java class, but the working with this class is much easier compared to regular String.</p> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>All presented 3 examples above send the request in the same way:</p> 
+        <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
-          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RestResponse response = client.postObject( jsonBody );
+          <pre class="syntaxhighlighter-pre" data-theme="Confluence">RestResponse response = client.postObject( jsonBody );
 </pre> 
-         </div>
-        </div>
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-ConstructingJsonText">Constructing JsonText</h1>
-      <h3 id="RESTOperations-ParsingJSONbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-ConstructingJsonText">Constructing JsonText</h1> 
+      <h3 id="RESTOperations-ParsingJSONbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-ParsingJSONbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-ParsingJSONbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = new JsonText( "{\"firstName\":\"Indiana\",\"lastName\":\"Johnes\",\"age\":10}" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = new JsonText( "{\"firstName\":\"Indiana\",\"lastName\":\"Johnes\",\"age\":10}" );
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-ParsingJSONbody-Additemsonebyone">Add items one by one</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-ParsingJSONbody-Additemsonebyone">Add items one by one</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = new JsonText();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = new JsonText();
 jsonBody.add( "firstName", "Indiana" );
 jsonBody.add( "lastName", "Johnes" );
 jsonBody.add( "age", 10 );
 </pre> 
-       </div>
-      </div>
-      <h3 id="RESTOperations-ParsingJSONbody-Constructingcomplexcontent">Constructing complex content</h3>
-      <p>Imagine you need to construct a more complex example like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="RESTOperations-ParsingJSONbody-Constructingcomplexcontent">Constructing complex content</h3> 
+      <p>Imagine you need to construct a more complex example like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">{
 	"department" : {
 		"totalPeople": 10,
 		"people" : [
@@ -132,12 +132,12 @@ jsonBody.add( "age", 10 );
 		"temperature-this-week" : [20,23,12,11,36]
 }
 </pre> 
-       </div>
-      </div>
-      <p>Here is how you can do it:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>Here is how you can do it:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">new JsonText()
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">new JsonText()
 	.add( "department",
 		new JsonText()
 			.add( "totalPeople", 10 )
@@ -156,49 +156,49 @@ jsonBody.add( "age", 10 );
 			.addArray( "temperature-this-week", new int[]{ 20, 23, 12, 11, 36 } )
 	);
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-note">
-       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>Note that beside the already presented <strong> <em>add</em> </strong> method, here we also used the <strong> <em>addArray</em> </strong> method.</p>
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>Many JsonText methods return the result instance, so if you want, you can chain as in the example:</p>
-        <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Note that beside the already presented <strong> <em>add</em> </strong> method, here we also used the <strong> <em>addArray</em> </strong> method.</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Many JsonText methods return the result instance, so if you want, you can chain as in the example:</p> 
+        <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
-          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = new JsonText().add( "firstName", "Indiana" ).add( "lastName", "Johnes" ).add( "age", 10 );</pre> 
-         </div>
-        </div>
-        <p>of course you can always use the other option:</p>
-        <div class="code panel pdl" style="border-width: 1px;">
+          <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = new JsonText().add( "firstName", "Indiana" ).add( "lastName", "Johnes" ).add( "age", 10 );</pre> 
+         </div> 
+        </div> 
+        <p>of course you can always use the other option:</p> 
+        <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
-          <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = new JsonText();
+          <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = new JsonText();
 jsonBody.add( "firstName", "Indiana" );
 jsonBody.add( "lastName", "Johnes" );
 jsonBody.add( "age", 10 );
 </pre> 
-         </div>
-        </div>
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>The above java code may look complex, but the actual output is complex too.</p>
-        <p>Using this approach is good when you are taking some programmatic approach in constructing your JSON body. For example if the input comes from some template file or some user interaction - then you can use this approach to add the needed content.</p>
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-RetrievingcontentfromJsonText">Retrieving content from JsonText</h1>
-      <p>Here is how you can get some JSON value:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>The above java code may look complex, but the actual output is complex too.</p> 
+        <p>Using this approach is good when you are taking some programmatic approach in constructing your JSON body. For example if the input comes from some template file or some user interaction - then you can use this approach to add the needed content.</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-RetrievingcontentfromJsonText">Retrieving content from JsonText</h1> 
+      <p>Here is how you can get some JSON value:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
 
 // get a String value
 String firstName = jsonBody.getString( "firstName" );
@@ -206,35 +206,35 @@ String firstName = jsonBody.getString( "firstName" );
 // get an int value
 int age = jsonBody.getInt( "age" );
 </pre> 
-       </div>
-      </div>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-Modifyingcontent">Modifying content</h1>
-      <p>You can replace some values in the JSON text:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-Modifyingcontent">Modifying content</h1> 
+      <p>You can replace some values in the JSON text:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">jsonBody.replace( "firstName", "Will" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">jsonBody.replace( "firstName", "Will" );
 
 jsonBody.replace( "age", 35 );
 </pre> 
-       </div>
-      </div>
-      <p>Or you can delete some of the content:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>Or you can delete some of the content:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">jsonBody.remove( "firstName" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">jsonBody.remove( "firstName" );
 
 jsonBody.remove( "age" );
 </pre> 
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1>
-      <p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1> 
+      <p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// this will return 10
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// this will return 10
 jsonBody.getString( "department/totalPeople" );
 
 // this will return "Indiana"
@@ -243,21 +243,21 @@ jsonBody.getString( "department/people[0]/firstName" );
 // this will return 11
 jsonBody.getInt( "department/temperature-this-week[3]" );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-information">
-       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>All methods use same approach to point to a key of interest - <em>getValue()</em>, <em>replace()</em> or <em>remove()</em></p>
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-JSONtoplevelarrays">JSON top level arrays</h1>
-      <p>In some cases you may need to work with JSON content which top level is an array of JSON objects like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>All methods use same approach to point to a key of interest - <em>getValue()</em>, <em>replace()</em> or <em>remove()</em></p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-JSONtoplevelarrays">JSON top level arrays</h1> 
+      <p>In some cases you may need to work with JSON content which top level is an array of JSON objects like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">[
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">[
 	{
 		"firstName" : "Indiana",
 		"lastName" : "Johnes",
@@ -270,34 +270,34 @@ jsonBody.getInt( "department/temperature-this-week[3]" );
 	}
 ]
 </pre> 
-       </div>
-      </div>
-      <p>in this case the first token in the path will be the index of the JSON object:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>in this case the first token in the path will be the index of the JSON object:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// this will return Johnes
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// this will return Johnes
 jsonBody.getString( "[0]/lastName" );
 
 // this will return Smith
 jsonBody.getString( "[1]/lastName" );
 </pre> 
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-NicelyformattingtheJSONtext">Nicely formatting the JSON text</h1>
-      <p>You have the option to print the JSON text as regular or as a well formatted text.</p>
-      <p>For example using the <em>toString()</em> method may give you output like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-NicelyformattingtheJSONtext">Nicely formatting the JSON text</h1> 
+      <p>You have the option to print the JSON text as regular or as a well formatted text.</p> 
+      <p>For example using the <em>toString()</em> method may give you output like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{"department":{"totalPeople":10,"temperature-this-week":[20,23,12,11,36],"people":[{"lastName":"Johnes","age":10,"firstName":"Indiana"},{"lastName":"Smith","age":20,"firstName":"Will"}]}}
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">{"department":{"totalPeople":10,"temperature-this-week":[20,23,12,11,36],"people":[{"lastName":"Johnes","age":10,"firstName":"Indiana"},{"lastName":"Smith","age":20,"firstName":"Will"}]}}
 </pre> 
-       </div>
-      </div>
-      <p>while using the <em>toFormattedString()</em> method for the same JSON text will give you output like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>while using the <em>toFormattedString()</em> method for the same JSON text will give you output like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">{
 	"department":{
 		"totalPeople":10,
 		"temperature-this-week":[
@@ -318,15 +318,15 @@ jsonBody.getString( "[1]/lastName" );
 	}
 }
 </pre> 
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="RESTOperations-ParsingJSONbody-IteratingovertheJSONtextcontent">Iterating over the JSON text content</h1>
-      <p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-ParsingJSONbody-IteratingovertheJSONtextcontent">Iterating over the JSON text content</h1> 
+      <p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">if( jsonBody.isTopLevelObject() ) {
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">if( jsonBody.isTopLevelObject() ) {
 	// we are dealing with a JSON object
 
 	for( String name : jsonBody.getElementNames() ) {
@@ -359,15 +359,15 @@ jsonBody.getString( "[1]/lastName" );
 	}
 }
 </pre> 
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

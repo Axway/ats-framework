@@ -24,32 +24,32 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Parameterproviderlevel-Introduction">Introduction</h1>
-      <p>This page shows how to change what values you are getting for each action execution</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Parameterproviderlevel-Defaultbehavior">Default behavior</h1>
-      <p>Each of the supported patterns comes with a several different constructors and some of them allow you to set the parameter provider level, while others do not.</p>
-      <p>The following example will maintain a single user to each thread</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="Parameterproviderlevel-Introduction">Introduction</h1> 
+      <p>This page shows how to change what values you are getting for each action execution</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Parameterproviderlevel-Defaultbehavior">Default behavior</h1> 
+      <p>Each of the supported patterns comes with a several different constructors and some of them allow you to set the parameter provider level, while others do not.</p> 
+      <p>The following example will maintain a single user to each thread</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ "vuser10", "vuser11", "vuser12" } );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ "vuser10", "vuser11", "vuser12" } );
 </pre> 
-       </div>
-      </div>
-      <p>while the next example does not care about threads, but just gives the next available <em>username</em>.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>while the next example does not care about threads, but just gives the next available <em>username</em>.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ "vuser10", "vuser11", "vuser12" }, ParameterProviderLevel.PER_INVOCATION );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ "vuser10", "vuser11", "vuser12" }, ParameterProviderLevel.PER_INVOCATION );
 </pre> 
-       </div>
-      </div>
-      <h3 id="Parameterproviderlevel-Settheproviderlevelafterconstructingtheparameterpattern">Set the provider level after constructing the parameter pattern</h3>
-      <p>You can always explicitly set the level using the <strong> <em>setParameterProviderLevel</em> </strong>method.</p>
-      <p>Here is how:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="Parameterproviderlevel-Settheproviderlevelafterconstructingtheparameterpattern">Set the provider level after constructing the parameter pattern</h3> 
+      <p>You can always explicitly set the level using the <strong> <em>setParameterProviderLevel</em> </strong>method.</p> 
+      <p>Here is how:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// create the configurator using any available constructor
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// create the configurator using any available constructor
 ListDataConfig usersConfigurator = new ListDataConfig( PARAMETRIZED_USER, new String[]{ "user1", "user2", "user3" } );
 
 // set the needed provider level
@@ -58,140 +58,140 @@ usersConfigurator.setParameterProviderLevel( ParameterProviderLevel.PER_INVOCATI
 // pass this configurator to the load client
 loader.addParameterDataConfigurator( usersConfigurator );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Parameterproviderlevel-Possibleoptions">Possible options</h1>
-      <p>We will show these options using an example.</p>
-      <p>Lets say we are running 2 threads with 3 possible values for username. The possible usernames are "<em>user1</em>", "<em>user2</em>" and "<em>user3</em>"</p>
-      <h3 id="Parameterproviderlevel-Parametersperthread">Parameters per thread</h3>
-      <p>Here is the result when using <strong> <em>ParameterProviderLevel.PER_THREAD</em> </strong></p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Parameterproviderlevel-Possibleoptions">Possible options</h1> 
+      <p>We will show these options using an example.</p> 
+      <p>Lets say we are running 2 threads with 3 possible values for username. The possible usernames are "<em>user1</em>", "<em>user2</em>" and "<em>user3</em>"</p> 
+      <h3 id="Parameterproviderlevel-Parametersperthread">Parameters per thread</h3> 
+      <p>Here is the result when using <strong> <em>ParameterProviderLevel.PER_THREAD</em> </strong></p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <td class="confluenceTd"><p>iteration</p></td>
-          <td class="confluenceTd"><p>thread 1</p></td>
-          <td class="confluenceTd"><p>thread 2</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>1</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>2</p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>3</p></td>
-          <td class="confluenceTd"><p><em>user3</em></p></td>
-          <td class="confluenceTd"><p><em>user3</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>4</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>As you can see each thread will cycle through the available values without messing with the other threads.</p>
-      <p>When all the values are over, the thread will start pulling them from the beginning.</p>
-      <h3 id="Parameterproviderlevel-Staticparametersperthread">Static parameters per thread</h3>
-      <p>Here is the result when&nbsp;using <strong> <em>ParameterProviderLevel.PER_THREAD_STATIC</em> </strong></p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <td class="confluenceTd"><p>iteration</p></td> 
+          <td class="confluenceTd"><p>thread 1</p></td> 
+          <td class="confluenceTd"><p>thread 2</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>1</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>2</p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>3</p></td> 
+          <td class="confluenceTd"><p><em>user3</em></p></td> 
+          <td class="confluenceTd"><p><em>user3</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>4</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>As you can see each thread will cycle through the available values without messing with the other threads.</p> 
+      <p>When all the values are over, the thread will start pulling them from the beginning.</p> 
+      <h3 id="Parameterproviderlevel-Staticparametersperthread">Static parameters per thread</h3> 
+      <p>Here is the result when&nbsp;using <strong> <em>ParameterProviderLevel.PER_THREAD_STATIC</em> </strong></p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <td class="confluenceTd"><p>iteration</p></td>
-          <td class="confluenceTd"><p>thread 1</p></td>
-          <td class="confluenceTd"><p>thread 2</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>1</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>2</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>3</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>4</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>As you can see each thread gets assigned some value and keeps using only this value, no matter how many iterations are executed.</p>
-      <p>This is the expected way when parametrizing the username, as usually each thread represents one user during all iterations.</p>
-      <p>If we had a third thread, it would get assigned the "<em>user3</em>". If we we had a fourth thread, it would get assigned the "<em>user1</em>" and so forth.</p>
-      <h3 id="Parameterproviderlevel-Parametersperinvocation">Parameters per invocation</h3>
-      <p>Here is the result when&nbsp;using <strong> <em>ParameterProviderLevel.PER_INVOCATION</em> </strong></p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <td class="confluenceTd"><p>iteration</p></td> 
+          <td class="confluenceTd"><p>thread 1</p></td> 
+          <td class="confluenceTd"><p>thread 2</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>1</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>2</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>3</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>4</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>As you can see each thread gets assigned some value and keeps using only this value, no matter how many iterations are executed.</p> 
+      <p>This is the expected way when parametrizing the username, as usually each thread represents one user during all iterations.</p> 
+      <p>If we had a third thread, it would get assigned the "<em>user3</em>". If we we had a fourth thread, it would get assigned the "<em>user1</em>" and so forth.</p> 
+      <h3 id="Parameterproviderlevel-Parametersperinvocation">Parameters per invocation</h3> 
+      <p>Here is the result when&nbsp;using <strong> <em>ParameterProviderLevel.PER_INVOCATION</em> </strong></p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <td class="confluenceTd"><p>iteration</p></td>
-          <td class="confluenceTd"><p>thread 1</p></td>
-          <td class="confluenceTd"><p>thread 2</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>1</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>2</p></td>
-          <td class="confluenceTd"><p><em>user3</em></p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>3</p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-          <td class="confluenceTd"><p><em>user3</em></p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>4</p></td>
-          <td class="confluenceTd"><p><em>user1</em></p></td>
-          <td class="confluenceTd"><p><em>user2</em></p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>As you can see here, there is no any respect to threads. Each new value is passed to whoever requested it.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <td class="confluenceTd"><p>iteration</p></td> 
+          <td class="confluenceTd"><p>thread 1</p></td> 
+          <td class="confluenceTd"><p>thread 2</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>1</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>2</p></td> 
+          <td class="confluenceTd"><p><em>user3</em></p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>3</p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+          <td class="confluenceTd"><p><em>user3</em></p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>4</p></td> 
+          <td class="confluenceTd"><p><em>user1</em></p></td> 
+          <td class="confluenceTd"><p><em>user2</em></p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>As you can see here, there is no any respect to threads. Each new value is passed to whoever requested it.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

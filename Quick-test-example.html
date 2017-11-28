@@ -20,11 +20,11 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>Please read this example carefully. There are a lot of comments which will help you get a good idea on what it is doing.</p>
-      <p>Note that some important topics are following this test code.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>Please read this example carefully. There are a lot of comments which will help you get a good idea on what it is doing.</p> 
+      <p>Note that some important topics are following this test code.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    import com.axway.ats.action.filesystem.FileSystemOperations;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">    import com.axway.ats.action.filesystem.FileSystemOperations;
     import com.axway.ats.action.filetransfer.FileTransferClient;
     import com.axway.ats.action.rest.RestClient;
     import com.axway.ats.action.rest.RestMediaType;
@@ -77,51 +77,51 @@
         boolean fileExists = fileSystemClient.doesFileExist( userHome + FILE_NAME );
         assertTrue( fileExists, "File " + FILE_NAME + " was not found in the user's home folder" );
     }</pre> 
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="Quicktestexample-Whatisthistestdoing?">What is this test doing?</h1>
-      <p>As you can see this test contains three parts:</p>
-      <ol>
-       <li>Issue a REST GET call to our server(also called Tested Application). <br>For the provided first and last user names, the server responds back with some JSON body which contains the home of the user.</li>
-       <li>We establish a FTP connection to our server and upload a local file to it.</li>
-       <li>We do not believe our server(otherwise we wouldn't test it), so we want to verify it has saved the uploaded file into the user's home folder.</li>
-      </ol>
-      <p><br></p>
-      <hr>
-      <h1 id="Quicktestexample-WhataretheusedATSclasses?">What are the used ATS classes?</h1>
-      <p><strong> <em>RestClient</em> </strong>is the class capable of running REST calls. Beside the mandatory URL, you can specify headers, query parameters, content type etc.</p>
-      <p>After running the HTTP method(in our example we do a GET) you always get a <strong> <em>RestResponse</em> </strong>which allows you to inspect the response. You can check the status code or response headers. In our case we also need to extract data from the response body and since this is a JSON body, we specify the path (the <em>"home"</em> key) to the needed data. This data is used at the end of the scenario.</p>
-      <p>The <strong> <em>FileTransferClient</em> </strong>is a simple client which supports uploads and downloads over variety of transfer protocols.</p>
-      <p><strong> <em>FileSystemOperations</em> </strong>allows doing different tasks on the file system. In our case we simply check whether some file(the uploaded one) is present in some folder on the server side. Since the server side is a remote host, we need to provide in the constructor the address of the remote ATS agent(TODO: make it a link). The ATS agent is a stand alone ATS application which allows our test example to do file operations on a remote host.</p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <p class="title">Test constants</p>
-       <div class="confluence-information-macro-body">
-        <p>To make the test running, you will need to assign valid values to all used constants</p>
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="Quicktestexample-Whyistheexamplebrokenintothreeparts?">Why is the example broken into three parts?</h1>
-      <p>We think that most test scenarios can be broken into three significant parts or <em>phases</em>:</p>
-      <ol>
-       <li><strong> <em>Configuration</em> </strong>. <br>These are the preparation steps to make the environment appropriate for having the test run as expected.</li>
-       <li><strong> <em>Action</em> </strong>. <br>These are the actual test steps, they materialize the meaning of the test. This is the core of the test code.</li>
-       <li><strong> <em>Verification</em> </strong>. <br>This is a very important part which is often underestimated. It is used to assure the action phase passed as expected or not. Here you will define whether we got a success or failure.<br>Imagine in our example we are able to send the file over FTP without errors and then we conclude the upload was successful, so the test pass. What if the server consumed the file and did not save it in the user's home folder?<br>For such cases we can make a separate check without relying on the server opinion. We do it in the verification phase.</li>
-      </ol>
-      <p><br></p>
-      <hr>
-      <h1 id="Quicktestexample-Whatifsomethinggowrong?">What if something go wrong?</h1>
-      <p>This test will fail if some error happen during the step executions. For example if provide wrong username, the file transfer step will throw a java exception containing the failure reason.</p>
-      <p>Another failure option is if some of the <em>asserts</em> in the code are not satisfied, in such case again a java exception will be thrown explaining difference between the expected and actually received values.</p>
-      <p><br></p>
-      <hr>
-      <p>Back to <a href="ATS-Documentation.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Quicktestexample-Whatisthistestdoing?">What is this test doing?</h1> 
+      <p>As you can see this test contains three parts:</p> 
+      <ol> 
+       <li>Issue a REST GET call to our server(also called Tested Application). <br>For the provided first and last user names, the server responds back with some JSON body which contains the home of the user.</li> 
+       <li>We establish a FTP connection to our server and upload a local file to it.</li> 
+       <li>We do not believe our server(otherwise we wouldn't test it), so we want to verify it has saved the uploaded file into the user's home folder.</li> 
+      </ol> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Quicktestexample-WhataretheusedATSclasses?">What are the used ATS classes?</h1> 
+      <p><strong> <em>RestClient</em> </strong>is the class capable of running REST calls. Beside the mandatory URL, you can specify headers, query parameters, content type etc.</p> 
+      <p>After running the HTTP method(in our example we do a GET) you always get a <strong> <em>RestResponse</em> </strong>which allows you to inspect the response. You can check the status code or response headers. In our case we also need to extract data from the response body and since this is a JSON body, we specify the path (the <em>"home"</em> key) to the needed data. This data is used at the end of the scenario.</p> 
+      <p>The <strong> <em>FileTransferClient</em> </strong>is a simple client which supports uploads and downloads over variety of transfer protocols.</p> 
+      <p><strong> <em>FileSystemOperations</em> </strong>allows doing different tasks on the file system. In our case we simply check whether some file(the uploaded one) is present in some folder on the server side. Since the server side is a remote host, we need to provide in the constructor the address of the remote ATS agent(TODO: make it a link). The ATS agent is a stand alone ATS application which allows our test example to do file operations on a remote host.</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <p class="title">Test constants</p> 
+       <div class="confluence-information-macro-body"> 
+        <p>To make the test running, you will need to assign valid values to all used constants</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Quicktestexample-Whyistheexamplebrokenintothreeparts?">Why is the example broken into three parts?</h1> 
+      <p>We think that most test scenarios can be broken into three significant parts or <em>phases</em>:</p> 
+      <ol> 
+       <li><strong> <em>Configuration</em> </strong>. <br>These are the preparation steps to make the environment appropriate for having the test run as expected.</li> 
+       <li><strong> <em>Action</em> </strong>. <br>These are the actual test steps, they materialize the meaning of the test. This is the core of the test code.</li> 
+       <li><strong> <em>Verification</em> </strong>. <br>This is a very important part which is often underestimated. It is used to assure the action phase passed as expected or not. Here you will define whether we got a success or failure.<br>Imagine in our example we are able to send the file over FTP without errors and then we conclude the upload was successful, so the test pass. What if the server consumed the file and did not save it in the user's home folder?<br>For such cases we can make a separate check without relying on the server opinion. We do it in the verification phase.</li> 
+      </ol> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Quicktestexample-Whatifsomethinggowrong?">What if something go wrong?</h1> 
+      <p>This test will fail if some error happen during the step executions. For example if provide wrong username, the file transfer step will throw a java exception containing the failure reason.</p> 
+      <p>Another failure option is if some of the <em>asserts</em> in the code are not satisfied, in such case again a java exception will be thrown explaining difference between the expected and actually received values.</p> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="ATS-Documentation.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

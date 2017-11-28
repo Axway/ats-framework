@@ -24,16 +24,16 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Introduction">Introduction</h1>
-      <p>As you already saw on the <a href="Parametrization.html">parametrization page</a>, we find the action input argument to parametrize by its name.</p>
-      <p>Sometimes it turns out in same queue of actions there is more than one parameter with same name. This is the case when you want to upload a file twice in a row.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Example">Example</h1>
-      <p>&nbsp;</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Introduction">Introduction</h1> 
+      <p>As you already saw on the <a href="Parametrization.html">parametrization page</a>, we find the action input argument to parametrize by its name.</p> 
+      <p>Sometimes it turns out in same queue of actions there is more than one parameter with same name. This is the case when you want to upload a file twice in a row.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Parametrizedinputdatawithmultiplecallstosameinputarguments-Example">Example</h1> 
+      <p>&nbsp;</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    private static final String   PARAMETRIZED_USER       = "username";
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">    private static final String   PARAMETRIZED_USER       = "username";
     private static final String   PARAMETRIZED_SMALL_FILE = "localFilePath";
     private static final String   PARAMETRIZED_LARGE_FILE = "localFilePath";
 
@@ -66,22 +66,22 @@
         loader.executeQueuedActions();
     }
 </pre> 
-       </div>
-      </div>
-      <p>As you can we call the <strong> <em>upload</em> </strong> action twice and we have provided two <em> <strong>File Name generation patterns</strong> </em> - each of them specifies a different folder to pull the files from and each of them attached to one call of the <em> <strong>upload</strong> </em> action.</p>
-      <p>One iteration of this queue will result in:</p>
-      <ol>
-       <li>connect</li>
-       <li>upload a file from the folder with small files</li>
-       <li>upload a file from the folder with large files</li>
-       <li>disconnect</li>
-      </ol>
-      <hr>
-      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>As you can we call the <strong> <em>upload</em> </strong> action twice and we have provided two <em> <strong>File Name generation patterns</strong> </em> - each of them specifies a different folder to pull the files from and each of them attached to one call of the <em> <strong>upload</strong> </em> action.</p> 
+      <p>One iteration of this queue will result in:</p> 
+      <ol> 
+       <li>connect</li> 
+       <li>upload a file from the folder with small files</li> 
+       <li>upload a file from the folder with large files</li> 
+       <li>disconnect</li> 
+      </ol> 
+      <hr> 
+      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

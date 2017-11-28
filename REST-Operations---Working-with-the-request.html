@@ -23,34 +23,34 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>Usually prior to executing a REST method, you will need to set some special data to the request besides the URI.</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththerequest-Addheaderstotherequest">Add headers to the request</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>Usually prior to executing a REST method, you will need to set some special data to the request besides the URI.</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththerequest-Addheaderstotherequest">Add headers to the request</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// the type of content we are sending
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// the type of content we are sending
 client.addRequestHeader( "Content-Type", "application/x-www-form-urlencoded" );
  
 // the type of content we will accept back
 client.addRequestHeader( "Accept", "application/json" );		
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththerequest-Addqueryparameterstotherequest">Add query parameters to the request</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththerequest-Addqueryparameterstotherequest">Add query parameters to the request</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">client.addRequestParameter( "lang", "English" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">client.addRequestParameter( "lang", "English" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththerequest-Specifyrequestmediatype">Specify request media type</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththerequest-Specifyrequestmediatype">Specify request media type</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// send as text/xml
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// send as text/xml
 client.setRequestMediaType( RestMediaType.TEXT_XML );
 
 // send as application/xml
@@ -59,23 +59,23 @@ client.setRequestMediaType( RestMediaType.APPLICATION_XML );
 // send as application/json
 client.setRequestMediaType( RestMediaType.APPLICATION_JSON );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththerequest-Basicauthorization">Basic authorization</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththerequest-Basicauthorization">Basic authorization</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">client.setBasicAuthorization( USER_NAME, USER_PASSWORD );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">client.setBasicAuthorization( USER_NAME, USER_PASSWORD );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththerequest-Navigatetointernalresource">Navigate to internal resource</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththerequest-Navigatetointernalresource">Navigate to internal resource</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
 RestClient client = new RestClient( &lt;target URI&gt;/people );
 
 // add one or more resource path tokens
@@ -85,26 +85,26 @@ client.addResourcePath( "123" );
 // execute a REST method
 RestResponse response = client.delete();
 </pre> 
-       </div>
-      </div>
-      <p>This example is equivalent to:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>This example is equivalent to:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
 RestClient client = new RestClient( &lt;target URI&gt;/people/delete/123 );
 
 // execute a REST method
 RestResponse response = client.delete();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

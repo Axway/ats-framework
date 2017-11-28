@@ -1,0 +1,5 @@
+ul { list-style: none; }
+
+p { display: inline-block; }
+
+p.expand_sign { cursor: pointer; }

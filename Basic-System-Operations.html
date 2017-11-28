@@ -22,39 +22,39 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="BasicSystemOperations-Introduction">Introduction</h1>
-      <p>This page shows some very basic but sometimes useful operations you can run on any system.</p>
-      <p>The list of all supported operations is wider than the provided here, use the class java doc to see all possible options.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-FirstmakeaninstanceoftheSystemOperationsclass:">First make an instance of the&nbsp;<em>SystemOperations</em> class:</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="BasicSystemOperations-Introduction">Introduction</h1> 
+      <p>This page shows some very basic but sometimes useful operations you can run on any system.</p> 
+      <p>The list of all supported operations is wider than the provided here, use the class java doc to see all possible options.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-FirstmakeaninstanceoftheSystemOperationsclass:">First make an instance of the&nbsp;<em>SystemOperations</em> class:</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">SystemOperations systemOps = new SystemOperations( SERVER_IP );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">SystemOperations systemOps = new SystemOperations( SERVER_IP );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>If you want to work locally, use the constructor without any input arguments</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Checkthetypeoftheoperatingsystem">Check the type of the operating system</h1>
-      <p>&nbsp;</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you want to work locally, use the constructor without any input arguments</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Checkthetypeoftheoperatingsystem">Check the type of the operating system</h1> 
+      <p>&nbsp;</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.getOperatingSystemType();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">systemOps.getOperatingSystemType();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Workingwiththesystemtime">Working with the system time</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Workingwiththesystemtime">Working with the system time</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get system time in milliseconds
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get system time in milliseconds
 systemOps.getTime( true );
 
 // get system time as string
@@ -66,55 +66,55 @@ systemOps.setTime( "1365753359278", true );
 // set system time providing it as string
 systemOps.setTime( "03/30/13 10:00:00", false );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-tip">
-       <span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>When get/set time using a formatted string, we expect some particular format. For example "03/30/13 10:00:00" means 10 o'clock on 30th of March 2013</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Getasystemproperty">Get a system property</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-tip"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>When get/set time using a formatted string, we expect some particular format. For example "03/30/13 10:00:00" means 10 o'clock on 30th of March 2013</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Getasystemproperty">Get a system property</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">String userHome = systemOps.getSystemProperty("user.home");
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">String userHome = systemOps.getSystemProperty("user.home");
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Checkifsomeprocessislisteningonsomeportonsomehost">Check if some process is listening on some port on some host</h1>
-      <p>The next code tells if there is a process attached at the given port on the given host.</p>
-      <p>Internally we will try to make a connection to that host and port and we will keep trying for up to the 10 seconds timeout.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Checkifsomeprocessislisteningonsomeportonsomehost">Check if some process is listening on some port on some host</h1> 
+      <p>The next code tells if there is a process attached at the given port on the given host.</p> 
+      <p>Internally we will try to make a connection to that host and port and we will keep trying for up to the 10 seconds timeout.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.isListening( SERVER_IP, 8080, 10 );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">systemOps.isListening( SERVER_IP, 8080, 10 );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>We can only tell if some process is attached to that port, but we do not know what kind of process it is</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Makeascreenshotofthedisplayandsaveitintoalocalfile">Make a screenshot of the display and save it into a local file</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>We can only tell if some process is attached to that port, but we do not know what kind of process it is</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Makeascreenshotofthedisplayandsaveitintoalocalfile">Make a screenshot of the display and save it into a local file</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.createScreenshot( "C:\\snapshot.png" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">systemOps.createScreenshot( "C:\\snapshot.png" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Checktheclasspath">Check the classpath</h1>
-      <p>Java applications often suffer classpath issues. You may wonder what is in your classpath or whether some jar is present more than once.<br>The following example might be a good option for fighting classpath issues in your Test Executor or ATS Agents:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Checktheclasspath">Check the classpath</h1> 
+      <p>Java applications often suffer classpath issues. You may wonder what is in your classpath or whether some jar is present more than once.<br>The following example might be a good option for fighting classpath issues in your Test Executor or ATS Agents:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get a list of entries in the classpath
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get a list of entries in the classpath
 String[] classpathEntries = systemOps.getClassPath();
 
 // just log the classpath entries
@@ -125,33 +125,33 @@ String[] duplicatedJars = systemOps.getDuplicatedJars();
 
 // just log the jars present more than once in the classpath
 systemOps.logDuplicatedJars();</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Mouseworks">Mouse works</h1>
-      <p>Perform a left click at a given position</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Mouseworks">Mouse works</h1> 
+      <p>Perform a left click at a given position</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// having the top left display corner as starting point,
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// having the top left display corner as starting point,
 // click 1000 pixels to the right and 200 pixels down
 systemOps.mouse.clickAt( 1000, 200 );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-warning">
-       <div class="confluence-information-macro-body">
-        <p>You should use this only in cases when you do not have an alternative.</p>
-        <p>This kind of operations are easy to break. For example when the display is resized, the right coordinates will surely become wrong</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="BasicSystemOperations-Keyboardworks">Keyboard works</h1>
-      <p>Bellow are given some of the currently provided operations.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-warning"> 
+       <div class="confluence-information-macro-body"> 
+        <p>You should use this only in cases when you do not have an alternative.</p> 
+        <p>This kind of operations are easy to break. For example when the display is resized, the right coordinates will surely become wrong</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="BasicSystemOperations-Keyboardworks">Keyboard works</h1> 
+      <p>Bellow are given some of the currently provided operations.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">systemOps.keyboard.pressEnter();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">systemOps.keyboard.pressEnter();
 
 systemOps.keyboard.pressEsc();
 
@@ -161,21 +161,21 @@ systemOps.keyboard.pressAltF4();
 
 systemOps.keyboard.type( "it is typing" );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-warning">
-       <div class="confluence-information-macro-body">
-        <p>You should use this only in cases when you do not have an alternative.</p>
-        <p>This kind of operations are easy to break. For example when a not expected system popup comes(the anti-virus program prompts you to update) then you will be sending your keyboard events to a wrong application.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-warning"> 
+       <div class="confluence-information-macro-body"> 
+        <p>You should use this only in cases when you do not have an alternative.</p> 
+        <p>This kind of operations are easy to break. For example when a not expected system popup comes(the anti-virus program prompts you to update) then you will be sending your keyboard events to a wrong application.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

@@ -22,16 +22,16 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="UIelementsdefinition-Introduction">Introduction</h1>
-      <p>In order to find a UI element, we need to know some identification properties like <em>ID</em>, <em>name</em>, <em>value</em> etc.</p>
-      <p>The UI Engine supports two ways of providing these properties - using a map file or directly specifying the list of properties in the test code.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="UIelementsdefinition-Usingamapfile">Using a map file</h1>
-      <p>Here is an example of a so called map file:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="UIelementsdefinition-Introduction">Introduction</h1> 
+      <p>In order to find a UI element, we need to know some identification properties like <em>ID</em>, <em>name</em>, <em>value</em> etc.</p> 
+      <p>The UI Engine supports two ways of providing these properties - using a map file or directly specifying the list of properties in the test code.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="UIelementsdefinition-Usingamapfile">Using a map file</h1> 
+      <p>Here is an example of a so called map file:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;Map&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;Map&gt;
      &lt;Section name="login"&gt;
           &lt;Element mapID="userNameTB" type="Textbox" id="_a_user_name_"/&gt;
           &lt;Element mapID="userPasswordTB" type="Textbox" name="password"/&gt;
@@ -39,42 +39,42 @@
      &lt;/Section&gt;
 &lt;/Map&gt;
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>We recommend to use some common naming convention for your <em><strong>map IDs</strong></em>.</p>
-        <p>For example <strong><em>userPasswordTB</em></strong> is a <strong><em>Text Box</em></strong>, while <em><strong>loginB</strong></em> is a <em><strong>Button</strong></em> etc.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <p>And here is how you can use it in your tests:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>We recommend to use some common naming convention for your <em><strong>map IDs</strong></em>.</p> 
+        <p>For example <strong><em>userPasswordTB</em></strong> is a <strong><em>Text Box</em></strong>, while <em><strong>loginB</strong></em> is a <em><strong>Button</strong></em> etc.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <p>And here is how you can use it in your tests:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">engine.loadMapFile( "MyUiComponents.map", "login" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">engine.loadMapFile( "MyUiComponents.map", "login" );
 
 engine.getTextBox( "userNameTB" ).setValue( "admin" );
 engine.getTextBox( "userPasswordTB" ).setValue( "admin" );
 engine.getButton( "loginB" ).click();
 </pre> 
-       </div>
-      </div>
-      <p>So basically you use a map file to describe the elements you will use in your tests. You put all the needed attributes and then refer to your elements in the test by its mapId only.</p>
-      <p>The benefits of using a map file are:</p>
-      <ul>
-       <li>cleaner tests as each element is identified by its mapId only</li>
-       <li>central storage for all UI elements involved in the tests</li>
-       <li>more intuitive names are used for identifying an element. For example the developer may specify an id for a login button called "_this_is_some_gadget_doing_something", but you can still use "loginB" as identifier in your tests</li>
-       <li>changes in the application affect only the map file, once it is fixed the tests works again</li>
-       <li>multiple map files and multiple map sections are supported. Imagine you have 10 menus on your web application and you can have 10 map sections for each menu, thus you can use same mapIds for elements from different web pages</li>
-      </ul>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="UIelementsdefinition-Usingalistofpropertiesinthejavacode">Using a list of properties in the java code</h1>
-      <p>If you insist to not use a map file for some reason, you can directly provide the UI element properties using Java only:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>So basically you use a map file to describe the elements you will use in your tests. You put all the needed attributes and then refer to your elements in the test by its mapId only.</p> 
+      <p>The benefits of using a map file are:</p> 
+      <ul> 
+       <li>cleaner tests as each element is identified by its mapId only</li> 
+       <li>central storage for all UI elements involved in the tests</li> 
+       <li>more intuitive names are used for identifying an element. For example the developer may specify an id for a login button called "_this_is_some_gadget_doing_something", but you can still use "loginB" as identifier in your tests</li> 
+       <li>changes in the application affect only the map file, once it is fixed the tests works again</li> 
+       <li>multiple map files and multiple map sections are supported. Imagine you have 10 menus on your web application and you can have 10 map sections for each menu, thus you can use same mapIds for elements from different web pages</li> 
+      </ul> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="UIelementsdefinition-Usingalistofpropertiesinthejavacode">Using a list of properties in the java code</h1> 
+      <p>If you insist to not use a map file for some reason, you can directly provide the UI element properties using Java only:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// provide "id" of a button
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// provide "id" of a button
 UiElementProperties loginButtonProperties = new UiElementProperties().addProperty( "id", "a_login_btn_id" );
 // or provide "name" and "value" of a button
 UiElementProperties loginButtonProperties = new UiElementProperties().addProperty( "name", "a_login_btn_name" ).addProperty( "value", "Log in" );
@@ -82,17 +82,17 @@ UiElementProperties loginButtonProperties = new UiElementProperties().addPropert
 // now construct the button and click it
 engine.getButton( loginButtonProperties ).click();
 </pre> 
-       </div>
-      </div>
-      <p>Of course you can mix the usage of map files and java properties.</p>
-      <p>Maybe most of your UI elements will be defined in a map file and will be used multiple times in your test code. But few of UI elements will be defined in the java only because you use them just once.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>Of course you can mix the usage of map files and java properties.</p> 
+      <p>Maybe most of your UI elements will be defined in a map file and will be used multiple times in your test code. But few of UI elements will be defined in the java only because you use them just once.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

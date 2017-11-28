@@ -22,15 +22,15 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="DatabaseOperations-Introduction">Introduction</h1>
-      <p>Currently ATS supports <em>Oracle</em>, <em>MySQL</em>, <em>MSSQL</em> and <em>Cassandra</em>. With some effort, It is also possible to plug-in support for your own database type.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-Basicexample">Basic example</h1>
-      <p>Here is some example code:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="DatabaseOperations-Introduction">Introduction</h1> 
+      <p>Currently ATS supports <em>Oracle</em>, <em>MySQL</em>, <em>MSSQL</em> and <em>Cassandra</em>. With some effort, It is also possible to plug-in support for your own database type.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-Basicexample">Basic example</h1> 
+      <p>Here is some example code:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    import com.axway.ats.action.dbaccess.DatabaseOperations;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">    import com.axway.ats.action.dbaccess.DatabaseOperations;
     import com.axway.ats.action.dbaccess.model.DatabaseCell;
     import com.axway.ats.action.dbaccess.model.DatabaseRow;
     import com.axway.ats.harness.config.TestBox;
@@ -76,16 +76,16 @@
             log.info( "column1 is " + column1Cell.getValue() + " while column2 is " + column2Cell.getValue() );
         }
     }</pre> 
-       </div>
-      </div>
-      <p>Following are some specifics which are important when working with a particular database provider.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-ProvidingDBconnectionparameters">Providing DB connection parameters</h1>
-      <p>Describing the database to work with needs a lot of parameters:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>Following are some specifics which are important when working with a particular database provider.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-ProvidingDBconnectionparameters">Providing DB connection parameters</h1> 
+      <p>Describing the database to work with needs a lot of parameters:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Create a TestBox object describing your DB connection parameters
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Create a TestBox object describing your DB connection parameters
 TestBox dbBox = new TestBox();
 dbBox.setDbType( "MYSQL" );
 dbBox.setHost( SERVER_IP );
@@ -98,25 +98,25 @@ DatabaseOperations dbOperations = new DatabaseOperations( dbBox );
 
 // Now you can use its methods
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-Setacustomportforanydatabasetype">Set a custom port for any database type</h1>
-      <p>If you do not specify a DB port, we will use the default one. Otherwise, here is how you can specify the right port number:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-Setacustomportforanydatabasetype">Set a custom port for any database type</h1> 
+      <p>If you do not specify a DB port, we will use the default one. Otherwise, here is how you can specify the right port number:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">dbBox.setDbPort( "3310" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">dbBox.setDbPort( "3310" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-Addadditionalconnectionparameters">Add additional connection parameters</h1>
-      <p>You will see examples bellow with some more special configurations needed to work properly with a database. For such cases you can create a map which will contain data that will change the behavior of DatabaseOperations class.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-Addadditionalconnectionparameters">Add additional connection parameters</h1> 
+      <p>You will see examples bellow with some more special configurations needed to work properly with a database. For such cases you can create a map which will contain data that will change the behavior of DatabaseOperations class.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import java.util.Map;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import java.util.Map;
 import java.util.HashMap;
 
 // create a map for custom properties
@@ -124,31 +124,31 @@ Map&lt;String, Object&gt; customProperties = new HashMap&lt;&gt;();
 
 // Make an instance of this class by providing the connection parameters and custom properties as well
 DatabaseOperations dbOperations = new DatabaseOperations( dbBox, customProperties );</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-Useadmincredentials">Use admin credentials</h1>
-      <p>The TestBox class supports a DB user and password as well as Admin user and password. You set them by calling setDbUser, setDbPass,&nbsp;setAdminUser and setAdminPass.</p>
-      <p>By default when establishing connection the DatabaseOperations class will use the DB user and password. If you want to use the Admin user and password instead, then you need to add this custom property <em>DbKeys.USE_ADMIN_CREDENTIALS</em> with value "true"</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-Useadmincredentials">Use admin credentials</h1> 
+      <p>The TestBox class supports a DB user and password as well as Admin user and password. You set them by calling setDbUser, setDbPass,&nbsp;setAdminUser and setAdminPass.</p> 
+      <p>By default when establishing connection the DatabaseOperations class will use the DB user and password. If you want to use the Admin user and password instead, then you need to add this custom property <em>DbKeys.USE_ADMIN_CREDENTIALS</em> with value "true"</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.common.dbaccess.DbKeys;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.common.dbaccess.DbKeys;
 
 customProperties.put( DbKeys.USE_ADMIN_CREDENTIALS, "true" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-Oracle">Oracle</h1>
-      <p>This section deals with some Oracle specifics</p>
-      <h3 id="DatabaseOperations-Connectionspecifics">Connection specifics</h3>
-      <p>When working with an Oracle DB, you often need to provide some extra parameters in order to connect successfully. These are the <em>SID</em> and <em>SERVICE NAME</em>.</p>
-      <p>You can do it by providing some custom values:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-Oracle">Oracle</h1> 
+      <p>This section deals with some Oracle specifics</p> 
+      <h3 id="DatabaseOperations-Connectionspecifics">Connection specifics</h3> 
+      <p>When working with an Oracle DB, you often need to provide some extra parameters in order to connect successfully. These are the <em>SID</em> and <em>SERVICE NAME</em>.</p> 
+      <p>You can do it by providing some custom values:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.common.dbaccess.OracleKeys;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.common.dbaccess.OracleKeys;
 
 // Specify a SID
 customProperties.put( OracleKeys.SID_KEY, "MySid" );
@@ -156,17 +156,17 @@ customProperties.put( OracleKeys.SID_KEY, "MySid" );
 // Specify a Service name
 customProperties.put( OracleKeys.SERVICE_NAME_KEY, "MyServiceName" );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>If you do not specify a <em> <strong>SID</strong> </em> value, we will use <strong> <em>ORCL</em> </strong></p>
-       </div>
-      </div>
-      <h3 id="DatabaseOperations-UsesecureconnectiontoOracle">Use secure connection to Oracle</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you do not specify a <em> <strong>SID</strong> </em> value, we will use <strong> <em>ORCL</em> </strong></p> 
+       </div> 
+      </div> 
+      <h3 id="DatabaseOperations-UsesecureconnectiontoOracle">Use secure connection to Oracle</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Specify the following property with value "true" to use secure connection
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Specify the following property with value "true" to use secure connection
 customProperties.put(OracleKeys.USE_SECURE_SOCKET, "true");
  
 // Specify keystore file full path, type and password
@@ -174,18 +174,18 @@ customProperties.put(OracleKeys.KEY_STORE_FULL_PATH, &lt;Keystore Full Path&gt; 
 customProperties.put(OracleKeys.KEY_STORE_TYPE, &lt;Keystore Type&gt; );
 customProperties.put(OracleKeys.KEY_STORE_PASSWORD, &lt;Keystore Password&gt; );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>If you do not specify all keystore properties, we will create default ones</p>
-       </div>
-      </div>
-      <h3 id="DatabaseOperations-Obtainingcertificatesdirectlyfromthedatabaseconnection">Obtaining certificates directly from the database connection</h3>
-      <p>If needed, you can use the following to obtain the appropriate certificate from your Oracle database server, then save it into a file and use for achieving secure connectivity</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you do not specify all keystore properties, we will create default ones</p> 
+       </div> 
+      </div> 
+      <h3 id="DatabaseOperations-Obtainingcertificatesdirectlyfromthedatabaseconnection">Obtaining certificates directly from the database connection</h3> 
+      <p>If needed, you can use the following to obtain the appropriate certificate from your Oracle database server, then save it into a file and use for achieving secure connectivity</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.security.CertificateUtilities;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.security.CertificateUtilities;
 
 // next line will cause establishing TLS connection and returning the needed certificates
 Certificate[] cerrificates = CertificateUtilities.getSecurityCertificates( DB_HOST, DB_PORT );
@@ -194,88 +194,88 @@ Certificate[] cerrificates = CertificateUtilities.getSecurityCertificates( DB_HO
 CertificateUtilities.createKeyStoreFile( cerrificates[0], &lt;Keystore Full Path&gt;, &lt;Keystore Password&gt;, &lt;Keystore Type&gt; );
 
 // and now you can establish secure connection using DatabaseOperations as shown in an upper section</pre> 
-       </div>
-      </div>
-      <h3 id="DatabaseOperations-ProblemwithINSERTandUPDATEoflongbinarydata">Problem with INSERT and UPDATE of long binary data</h3>
-      <p>There is a common problem when trying to INSERT/UPDATE a long value in a binary column (BLOB,CLOB,...) and the statement execution fails with an error like:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="DatabaseOperations-ProblemwithINSERTandUPDATEoflongbinarydata">Problem with INSERT and UPDATE of long binary data</h3> 
+      <p>There is a common problem when trying to INSERT/UPDATE a long value in a binary column (BLOB,CLOB,...) and the statement execution fails with an error like:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">ORA-01704: string literal too long
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">ORA-01704: string literal too long
 Cause: The string literal is longer than 4000 characters.
 Action: Use a string literal of at most 4000 characters. 
 Longer values may only be entered using bind variables.
 </pre> 
-       </div>
-      </div>
-      <p>The workaround here is a block statement, where you have to assign the long value to a variable, defined with the same type as the column, and then use this variable in the INSERT/UPDATE statement:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
-       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;">
-        <b>Example with updating long value in a BLOB column</b>
-       </div>
+       </div> 
+      </div> 
+      <p>The workaround here is a block statement, where you have to assign the long value to a variable, defined with the same type as the column, and then use this variable in the INSERT/UPDATE statement:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Example with updating long value in a BLOB column</b> 
+       </div> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">DECLARE
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">DECLARE
   binValue myTable.blobColumn%type;
 BEGIN
   binValue := to_blob('Some very long string value');
   UPDATE myTable SET blobColumn = binValue WHERE someKey = someCriteria;
 END;
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-MSSQL">MSSQL</h1>
-      <p>This section deals with some MS SQL database specifics</p>
-      <h3 id="DatabaseOperations-SecureconnectionwithMSSQLdatabase">Secure connection with MSSQL database</h3>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-MSSQL">MSSQL</h1> 
+      <p>This section deals with some MS SQL database specifics</p> 
+      <h3 id="DatabaseOperations-SecureconnectionwithMSSQLdatabase">Secure connection with MSSQL database</h3> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// add this property to enable security connection 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// add this property to enable security connection 
 customProperties.put( DbKeys.USE_SECURE_SOCKET, "true" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseOperations-Cassandra">Cassandra</h1>
-      <p>Apache's <a class="external-link" href="http://cassandra.apache.org/" rel="nofollow">Cassandra</a> can give you different kind of errors you are not used with.</p>
-      <h3 id="DatabaseOperations-Dependencies">Dependencies</h3>
-      <p>Currently ATS is using the following <a class="external-link" href="http://www.datastax.com/" rel="nofollow">Datastax</a> driver version to work with Cassandra DB:</p>
-      <p>But the ATS is not directly depending on the Datastax driver dependencies. So you have to add them to your classpath.</p>
-      <p>Here is how to do it with Maven</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseOperations-Cassandra">Cassandra</h1> 
+      <p>Apache's <a class="external-link" href="http://cassandra.apache.org/" rel="nofollow">Cassandra</a> can give you different kind of errors you are not used with.</p> 
+      <h3 id="DatabaseOperations-Dependencies">Dependencies</h3> 
+      <p>Currently ATS is using the following <a class="external-link" href="https://www.datastax.com/" rel="nofollow">Datastax</a> driver version to work with Cassandra DB:</p> 
+      <p>But the ATS is not directly depending on the Datastax driver dependencies. So you have to add them to your classpath.</p> 
+      <p>Here is how to do it with Maven</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">  &lt;dependency&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">  &lt;dependency&gt;
     &lt;groupId&gt;com.datastax.cassandra&lt;/groupId&gt;
     &lt;artifactId&gt;cassandra-driver-core&lt;/artifactId&gt;
-    &lt;version&gt;2.0.0-beta2&lt;/version&gt;
+    &lt;version&gt;3.2.0&lt;/version&gt;
   &lt;/dependency&gt;
 </pre> 
-       </div>
-      </div>
-      <h3 id="DatabaseOperations-Cassandraspecificerrormessages">Cassandra specific error messages</h3>
-      <ul>
-       <li>"Cannot execute this query as it might involve data filtering and thus may have unpredictable performance. If you want to execute this query despite the performance unpredictability, use ALLOW FILTERING"<br> The solution is the add ALLOW FILTERING token at the end of the SQL query. The options are:
-        <ul>
-         <li><p>Add the following custom property and we will append the token after each SELECT query</p>
-          <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="DatabaseOperations-Cassandraspecificerrormessages">Cassandra specific error messages</h3> 
+      <ul> 
+       <li>"Cannot execute this query as it might involve data filtering and thus may have unpredictable performance. If you want to execute this query despite the performance unpredictability, use ALLOW FILTERING"<br> The solution is the add ALLOW FILTERING token at the end of the SQL query. The options are: 
+        <ul> 
+         <li><p>Add the following custom property and we will append the token after each SELECT query</p> 
+          <div class="code panel pdl" style="border-width: 1px;"> 
            <div class="codeContent panelContent pdl"> 
-            <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">customProperties.put( "ALLOW FILTERING", true );
+            <pre class="syntaxhighlighter-pre" data-theme="Confluence">customProperties.put( "ALLOW FILTERING", true );
 </pre> 
-           </div>
-          </div></li>
-         <li>Add yourself the needed token</li>
-        </ul></li>
-       <li>"No indexed columns present in by-columns clause with Equal operator" - Change your <em>where</em> clause.</li>
-       <li>"Non PRIMARY KEY type found in where clause" - Change your <em>where</em> clause.</li>
-       <li>"Invalid STRING constant (a14f0f51-7ff2-43fe-b922-8c36ddbbd91f) for id of type uuid" - In the <em>where</em> clauses, some data types (like UUID) must not be quoted while others (like TEXT) must be quoted.</li>
-      </ul>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+           </div> 
+          </div></li> 
+         <li>Add yourself the needed token</li> 
+        </ul></li> 
+       <li>"No indexed columns present in by-columns clause with Equal operator" - Change your <em>where</em> clause.</li> 
+       <li>"Non PRIMARY KEY type found in where clause" - Change your <em>where</em> clause.</li> 
+       <li>"Invalid STRING constant (a14f0f51-7ff2-43fe-b922-8c36ddbbd91f) for id of type uuid" - In the <em>where</em> clauses, some data types (like UUID) must not be quoted while others (like TEXT) must be quoted.</li> 
+      </ul> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

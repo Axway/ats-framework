@@ -22,16 +22,16 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="DatabaseSnapshots-Introduction">Introduction</h1>
-      <p>In some cases you might be interested to know what changes were made on some database.</p>
-      <p>The regular example is when you want to test whether an upgrade of your Application Under Test did not cause any unwanted changes on the database.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Makesurethereisnochangeonthedatabase">Make sure there is no change on the database</h1>
-      <p>The following example makes a snapshot of two databases. An instance of TestBox is used to provide connection parameters to the databases.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="DatabaseSnapshots-Introduction">Introduction</h1> 
+      <p>In some cases you might be interested to know what changes were made on some database.</p> 
+      <p>The regular example is when you want to test whether an upgrade of your Application Under Test did not cause any unwanted changes on the database.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Makesurethereisnochangeonthedatabase">Make sure there is no change on the database</h1> 
+      <p>The following example makes a snapshot of two databases. An instance of TestBox is used to provide connection parameters to the databases.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.harness.config.TestBox;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.harness.config.TestBox;
 import com.axway.ats.action.dbaccess.snapshot.DatabaseSnapshot;
 
 // create a test box instance
@@ -57,12 +57,12 @@ snapshot2.takeSnapshot();
 // compare both snapshots
 snapshot2.compare( snapshot1 );
 </pre> 
-       </div>
-      </div>
-      <p>If the databases are identical a message will be logged. Otherwise the <em>compare</em> method will throw an error describing the found differences. For example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>If the databases are identical a message will be logged. Otherwise the <em>compare</em> method will throw an error describing the found differences. For example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Comparing [snap2] and [snap1] produced the following unexpected differences:
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">Comparing [snap2] and [snap1] produced the following unexpected differences:
 Tables present in [snap2] only:
 	Accounts
 	Users
@@ -74,31 +74,31 @@ Table indexes for 'Operations' table:
 	[snap1]:
 		name=PRIMARY, column=id, index catalog=, type=BINARY, asc/desc=A, non-unique=false, filter condition=null, sequence number=1
 </pre> 
-       </div>
-      </div>
-      <p>In the above description we see that:</p>
-      <ul>
-       <li>there are table that are present in just one of the snapshots</li>
-       <li>there is table with a different primary key column</li>
-       <li>there is a table which index has a different type</li>
-      </ul>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Whenisthedataloaded?">When is the data loaded?</h1>
-      <p>It is not clever to load all database data in the java memory as this might cause memory issues.</p>
-      <p>So when you call <em>takeSnapshot</em> method, we load only the list of tables and different meta information about each table like primary key, columns, indexes.</p>
-      <p>The real loading of the tables content is done when needed and this is:</p>
-      <ul>
-       <li>when called <em>compare</em> method, we load the content of one table at a time for both databases. After comparing a pair of tables, we load data about the next pair and so on.</li>
-       <li>when called <em>saveToFile</em> method. We load one table at a time, save it into a file and then proceed to the next table</li>
-      </ul>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Donotchecksometable">Do not check some table</h1>
-      <p>By default all found tables in the pointed databases are checked. If you want to exclude a table from the check, you can do:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>In the above description we see that:</p> 
+      <ul> 
+       <li>there are table that are present in just one of the snapshots</li> 
+       <li>there is table with a different primary key column</li> 
+       <li>there is a table which index has a different type</li> 
+      </ul> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Whenisthedataloaded?">When is the data loaded?</h1> 
+      <p>It is not clever to load all database data in the java memory as this might cause memory issues.</p> 
+      <p>So when you call <em>takeSnapshot</em> method, we load only the list of tables and different meta information about each table like primary key, columns, indexes.</p> 
+      <p>The real loading of the tables content is done when needed and this is:</p> 
+      <ul> 
+       <li>when called <em>compare</em> method, we load the content of one table at a time for both databases. After comparing a pair of tables, we load data about the next pair and so on.</li> 
+       <li>when called <em>saveToFile</em> method. We load one table at a time, save it into a file and then proceed to the next table</li> 
+      </ul> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Donotchecksometable">Do not check some table</h1> 
+      <p>By default all found tables in the pointed databases are checked. If you want to exclude a table from the check, you can do:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// skip one table
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// skip one table
 snapshot1.skipTables( "SomeTable" );
 
 // skip some tables
@@ -106,60 +106,60 @@ snapshot1.skipTables( "SomeTable1", "SomeTable2", "SomeTable3" );
 // or
 snapshot1.skipTables( new String[]{ "SomeTable1", "SomeTable2", "SomeTable3"} );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Donotchecksomecolumn(s)fromsometable">Do not check some column(s) from some table</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Donotchecksomecolumn(s)fromsometable">Do not check some column(s) from some table</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// skip one column
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// skip one column
 snapshot1.skipTableColumn( "SomeTable1", "column1" );
 
 // skip a list of column
 snapshot1.skipTableColumns( "SomeTable1", "column1", "column2", "column3" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Savethesnapshotintoafile">Save the snapshot into a file</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Savethesnapshotintoafile">Save the snapshot into a file</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// after snapshot is taken, you can call:
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// after snapshot is taken, you can call:
 snapshot1.saveToFile( "C:\\db_snapshot_backup.xml" );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-tip">
-       <span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>Database backup files are in XML format, so are human readable.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Loadsnapshotfromfile">Load snapshot from file</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-tip"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Database backup files are in XML format, so are human readable.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Loadsnapshotfromfile">Load snapshot from file</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// load snapshot info from a backup file
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// load snapshot info from a backup file
 snapshot1.loadFromFile( "snapshot_from_backup_file", "C:\\db_snapshot_backup.xml" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Checksamedatabaseattwodifferentmoments">Check same database at two different moments</h1>
-      <p>Sometimes you do not want to compare two databases, but one and same database at different moments.</p>
-      <p>If you just go ahead, make one snapshot, then take the another snapshot in some time, you will be unpleasantly surprised both snapshots are reported identical even if there is changed content. The reason is, as we described above, in the fact we do not load the table contents prior to calling the <em>compare</em> method. So in this case when we compare each table pairs, we will actually load the tables data at same moment for both snapshots from the same database and everything will be the same.</p>
-      <p>The way to go here is to make one snapshot and save it into a file, this guarantees you get the current tables content. When the seconds snapshot is made and <em>compare</em> is called, we will compare the second snapshot tables from the database versus the first snapshot tables from the backup file.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="DatabaseSnapshots-Makeyourownreportaboutthefounddifferences">Make your own report about the found differences</h1>
-      <p>If you do not like the way we present the found differences, you can make your own:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Checksamedatabaseattwodifferentmoments">Check same database at two different moments</h1> 
+      <p>Sometimes you do not want to compare two databases, but one and same database at different moments.</p> 
+      <p>If you just go ahead, make one snapshot, then take the another snapshot in some time, you will be unpleasantly surprised both snapshots are reported identical even if there is changed content. The reason is, as we described above, in the fact we do not load the table contents prior to calling the <em>compare</em> method. So in this case when we compare each table pairs, we will actually load the tables data at same moment for both snapshots from the same database and everything will be the same.</p> 
+      <p>The way to go here is to make one snapshot and save it into a file, this guarantees you get the current tables content. When the seconds snapshot is made and <em>compare</em> is called, we will compare the second snapshot tables from the database versus the first snapshot tables from the backup file.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Makeyourownreportaboutthefounddifferences">Make your own report about the found differences</h1> 
+      <p>If you do not like the way we present the found differences, you can make your own:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
 import com.axway.ats.common.dbaccess.snapshot.equality.EqualityState;
 
 // make both snapshots as described in the previous sections of this page
@@ -178,15 +178,15 @@ try {
     equalityState.getDifferentPrimaryKeys();
     equalityState.getIndexesPresentInOneSnapshotOnly( "snap1" );
 }</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

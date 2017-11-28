@@ -23,45 +23,45 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Knownissues-Introduction">Introduction</h1>
-      <p>This page shows some problems we have hit with some browsers</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Knownissues-InternetExplorer">Internet Explorer</h1>
-      <h3 id="Knownissues-IE11exceptionswithIEDriverServer:Unabletogetbrowser">IE11 exceptions with IEDriverServer: Unable to get browser</h3>
-      <p>There is registry workaround for this error message: <a class="external-link" href="https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/6511" rel="nofollow">https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/6511</a></p>
-      <h3 id="Knownissues-ErrorlaunchingIE:ProtectedModesettingsarenotthesameforallzones...">Error launching IE: Protected Mode settings are not the same for all zones...</h3>
-      <p>The full error message is:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="Knownissues-Introduction">Introduction</h1> 
+      <p>This page shows some problems we have hit with some browsers</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Knownissues-InternetExplorer">Internet Explorer</h1> 
+      <h3 id="Knownissues-IE11exceptionswithIEDriverServer:Unabletogetbrowser">IE11 exceptions with IEDriverServer: Unable to get browser</h3> 
+      <p>There is registry workaround for this error message: <a class="external-link" href="https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/6511" rel="nofollow">https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/6511</a></p> 
+      <h3 id="Knownissues-ErrorlaunchingIE:ProtectedModesettingsarenotthesameforallzones...">Error launching IE: Protected Mode settings are not the same for all zones...</h3> 
+      <p>The full error message is:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">WebDriverException: Error launching IE: Protected Mode settings are not the same for all zones. Please follow these steps: http://heliumhq.com/docs/internet_explorer#protected_mode
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">WebDriverException: Error launching IE: Protected Mode settings are not the same for all zones. Please follow these steps: http://heliumhq.com/docs/internet_explorer#protected_mode
 </pre> 
-       </div>
-      </div>
-      <p>You need to update IE's security settings. To do this, select "Internet options" from the Tools menu (or the gear icon in the toolbar in later versions). Open the Security tab. At the bottom of the dialog for each of the zones ("Internet", "Local intranet", "Trusted sites" and "Restricted sites"), you should see a check box labeled "Enable Protected Mode". Set the value of the check box to the same value, either checked or unchecked, for each zone. <br>In the following screenshots, the check box has been unchecked for all zones:</p>
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044043.png" data-image-src="attachments/107040548/107044043.png" data-unresolved-comment-count="0" data-linked-resource-id="107044043" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="protected-mode-internet.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040548" data-linked-resource-container-version="12"></span> &nbsp; <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044041.png" data-image-src="attachments/107040548/107044041.png" data-unresolved-comment-count="0" data-linked-resource-id="107044041" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="protected-mode-local-intranet.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040548" data-linked-resource-container-version="12"></span> &nbsp; <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044042.png" data-image-src="attachments/107040548/107044042.png" data-unresolved-comment-count="0" data-linked-resource-id="107044042" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="protected-mode-trusted-sites.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040548" data-linked-resource-container-version="12"></span> &nbsp; <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044039.png" data-image-src="attachments/107040548/107044039.png" data-unresolved-comment-count="0" data-linked-resource-id="107044039" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="protected-mode-restricted-sites.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040548" data-linked-resource-container-version="12"></span></p>
-      <h3 id="Knownissues-Thexpathexpression'[]'cannotbeevaluatedordoesnotresultinaWebElement&quot;">The xpath expression '[]' cannot be evaluated or does not result in a WebElement"</h3>
-      <p>The full error message is:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>You need to update IE's security settings. To do this, select "Internet options" from the Tools menu (or the gear icon in the toolbar in later versions). Open the Security tab. At the bottom of the dialog for each of the zones ("Internet", "Local intranet", "Trusted sites" and "Restricted sites"), you should see a check box labeled "Enable Protected Mode". Set the value of the check box to the same value, either checked or unchecked, for each zone. <br>In the following screenshots, the check box has been unchecked for all zones:</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044043.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="protected-mode-internet.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span> &nbsp; <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044041.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="protected-mode-local-intranet.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span> &nbsp; <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044042.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="protected-mode-trusted-sites.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span> &nbsp; <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-thumbnail" src="attachments/107040548/107044039.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="protected-mode-restricted-sites.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span></p> 
+      <h3 id="Knownissues-Thexpathexpression'[]'cannotbeevaluatedordoesnotresultinaWebElement&quot;">The xpath expression '[]' cannot be evaluated or does not result in a WebElement"</h3> 
+      <p>The full error message is:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">selenium.common.exceptions.InvalidSelectorException: Message: u"The xpath expression '[...]' cannot be evaluated or does not result in a WebElement"
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">selenium.common.exceptions.InvalidSelectorException: Message: u"The xpath expression '[...]' cannot be evaluated or does not result in a WebElement"
 </pre> 
-       </div>
-      </div>
-      <p>If you run local HTML pages (i.e. HTML files residing on your hard disk) in IE, you may see a popup saying "Internet Explorer restricted this webpage from running scripts or ActiveX controls":</p>
-      <p><span class="confluence-embedded-file-wrapper image-center-wrapper"><img class="confluence-embedded-image image-center" src="attachments/107040548/107044040.png" data-image-src="attachments/107040548/107044040.png" data-unresolved-comment-count="0" data-linked-resource-id="107044040" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="ie-restricted-activex-small.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040548" data-linked-resource-container-version="12"></span></p>
-      <p>To fix this, go to "Internet options" in the Tools menu (or the gear icon in newer versions). Open the Advanced tab. Scroll down to "Security" and select "Allow active content to run in files on My Computer":</p>
-      <p><span class="confluence-embedded-file-wrapper image-center-wrapper"><img class="confluence-embedded-image confluence-thumbnail image-center" src="attachments/107040548/107044038.png" data-image-src="attachments/107040548/107044038.png" data-unresolved-comment-count="0" data-linked-resource-id="107044038" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="allow-active-content.png" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040548" data-linked-resource-container-version="12"></span></p>
-      <h3 id="Knownissues-UnabletosetvalueforTextBoxandTextAreawhenthevalueisinlowercase">Unable to set value for TextBox and TextArea when the value is in lower case</h3>
-      <p>The workaround is to send values in upper case <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" data-emoticon-name="smile" alt="(smile)"></p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Knownissues-Firefox">Firefox</h1>
-      <p>FF 50+ throws&nbsp;org.openqa.selenium.TimeoutException, when <em> <strong>AbstractHtmlEngine.goToPage()</strong> </em> method is invoked.</p>
-      <p>The workaround is to call this method in <strong>try-catch</strong> block:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>If you run local HTML pages (i.e. HTML files residing on your hard disk) in IE, you may see a popup saying "Internet Explorer restricted this webpage from running scripts or ActiveX controls":</p> 
+      <p><span class="confluence-embedded-file-wrapper image-center-wrapper"><img class="confluence-embedded-image image-center" src="attachments/107040548/107044040.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="ie-restricted-activex-small.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span></p> 
+      <p>To fix this, go to "Internet options" in the Tools menu (or the gear icon in newer versions). Open the Advanced tab. Scroll down to "Security" and select "Allow active content to run in files on My Computer":</p> 
+      <p><span class="confluence-embedded-file-wrapper image-center-wrapper"><img class="confluence-embedded-image confluence-thumbnail image-center" src="attachments/107040548/107044038.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="allow-active-content.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span></p> 
+      <h3 id="Knownissues-UnabletosetvalueforTextBoxandTextAreawhenthevalueisinlowercase">Unable to set value for TextBox and TextArea when the value is in lower case</h3> 
+      <p>The workaround is to send values in upper case <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" alt="(smile)"></p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Knownissues-Firefox">Firefox</h1> 
+      <p>FF 50+ throws&nbsp;org.openqa.selenium.TimeoutException, when <em> <strong>AbstractHtmlEngine.goToPage()</strong> </em> method is invoked.</p> 
+      <p>The workaround is to call this method in <strong>try-catch</strong> block:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">...
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">...
 try{
 	engine.goToPage(url);
 catch(org.openqa.selenium.TimeoutException){
@@ -69,25 +69,25 @@ catch(org.openqa.selenium.TimeoutException){
 	// do nothing , or log some appropriate message
 }
 ...</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Knownissues-MicrosoftEdge">Microsoft Edge</h1>
-      <h3 id="Knownissues-OlderversionsofthebrowserdonotsupportsearchbyXPath.">Older versions of the browser do not support search by XPath.</h3>
-      <p>You can either use CSS Selectors for searching of HTML elements or install the latest version of the driver.</p>
-      <h3 id="Knownissues-CannotselectmorethanonevalueinMultiSelectListelement">Cannot select more than one value in MultiSelectList element</h3>
-      <p>No workaround for now <img class="emoticon emoticon-sad" src="images/icons/emoticons/sad.png" data-emoticon-name="sad" alt="(sad)"></p>
-      <h3 id="Knownissues-CannotsetvaluetoFileBrowseelement">Cannot set value to FileBrowse element</h3>
-      <p>No workaround for now <img class="emoticon emoticon-sad" src="images/icons/emoticons/sad.png" data-emoticon-name="sad" alt="(sad)"></p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Automated-testing-of-HTML-and-Javascript-application.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Knownissues-MicrosoftEdge">Microsoft Edge</h1> 
+      <h3 id="Knownissues-OlderversionsofthebrowserdonotsupportsearchbyXPath.">Older versions of the browser do not support search by XPath.</h3> 
+      <p>You can either use CSS Selectors for searching of HTML elements or install the latest version of the driver.</p> 
+      <h3 id="Knownissues-CannotselectmorethanonevalueinMultiSelectListelement">Cannot select more than one value in MultiSelectList element</h3> 
+      <p>No workaround for now <img class="emoticon emoticon-sad" src="images/icons/emoticons/sad.png" alt="(sad)"></p> 
+      <h3 id="Knownissues-CannotsetvaluetoFileBrowseelement">Cannot set value to FileBrowse element</h3> 
+      <p>No workaround for now <img class="emoticon emoticon-sad" src="images/icons/emoticons/sad.png" alt="(sad)"></p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Automated-testing-of-HTML-and-Javascript-application.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

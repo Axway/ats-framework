@@ -22,39 +22,39 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Introduction">Introduction</h1>
-      <p>This page shows how to use the ATS <em>UI Engine</em> in order to automate the functional testing of web application working on top of HTML and javascript</p>
-      <div class="confluence-information-macro confluence-information-macro-note">
-       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>The current implementation uses internally <a class="external-link" href="http://seleniumhq.org/" rel="nofollow">Selenium</a>.</p>
-        <p>If this get changed in the future, the <em>UI Engine</em> needs to make the change as transparent as possible.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Quickexample">Quick example</h1>
-      <p>Please have a look at the <em> <strong>Quick example</strong> </em> provided in the beginning of this <a href="UI-Testing.html">page</a></p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Supportedbrowsersandsettings">Supported browsers and settings</h1>
-      <p><a href="Supported-browsers-and-settings.html">Here</a> you can see the list of supported browser. In order to use some of them you need to take some preparation steps</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Usingdifferentbrowsers">Using different browsers</h1>
-      <p>Let's say we want to change the used browser in the <strong> <em>quick example</em> </strong>. In order to achieve that, we have to change only the first code line, e.g.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Introduction">Introduction</h1> 
+      <p>This page shows how to use the ATS <em>UI Engine</em> in order to automate the functional testing of web application working on top of HTML and javascript</p> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>The current implementation uses internally <a class="external-link" href="http://seleniumhq.org/" rel="nofollow">Selenium</a>.</p> 
+        <p>If this get changed in the future, the <em>UI Engine</em> needs to make the change as transparent as possible.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Quickexample">Quick example</h1> 
+      <p>Please have a look at the <em> <strong>Quick example</strong> </em> provided in the beginning of this <a href="UI-Testing.html">page</a></p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Supportedbrowsersandsettings">Supported browsers and settings</h1> 
+      <p><a href="Supported-browsers-and-settings.html">Here</a> you can see the list of supported browser. In order to use some of them you need to take some preparation steps</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Usingdifferentbrowsers">Using different browsers</h1> 
+      <p>Let's say we want to change the used browser in the <strong> <em>quick example</em> </strong>. In order to achieve that, we have to change only the first code line, e.g.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// 1. initialize the browser
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// 1. initialize the browser
 InternetExplorerDriver driver = UiDriver.getInternetExplorerDriver( "SOME URL" );
 ...
 </pre> 
-       </div>
-      </div>
-      <p>But if want to run same tests with different browsers, you can use code like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>But if want to run same tests with different browsers, you can use code like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.uiengine.AbstractHtmlDriver;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.uiengine.AbstractHtmlDriver;
 
 AbstractHtmlDriver driver;
 
@@ -76,1045 +76,1045 @@ if( browserType.equals( "FF" ) ) {
 }
 ...
 </pre> 
-       </div>
-      </div>
-      <p><strong> <br> </strong></p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>We are using here the common for all browsers <em> <strong>AbstractHtmlDriver</strong> </em> class</p>
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>PhantomJS driver operates over the headless <a class="external-link" href="http://phantomjs.org/" rel="nofollow">PhantomJS</a></p>
-        <p>Hidden driver operates over the headless <a class="external-link" href="http://htmlunit.sourceforge.net/" rel="nofollow">HtmlUnit</a></p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Configuration">Configuration</h1>
-      <p><a href="HTML-Engine-configuration.html">Here</a> you can see some useful configuration options when the UI Engine is used for testing HTML/Javascript applications</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-FindingUIelements">Finding UI elements</h1>
-      <p>There are many ways finding a UI element. This is the order we use to find the UI element.</p>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-_css"><em> <strong>_css</strong> </em></h3>
-      <p>we will search by CSS<em> <strong> <br> </strong> </em></p>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-xpath"><em> <strong>xpath</strong> </em></h3>
-      <p>we will search by XPATH</p>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-otherattributes">other attributes</h3>
-      <p>We will search for UI element matching all provided attributes. For example, if provided <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em>, we will search for element having these <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em></p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>You can search for a UI element by its HTML element in the HTML page. For example, some elements are &lt;input&gt; or &lt;a&gt; or &lt;div&gt; or &lt;span&gt; etc.</p>
-        <p>For such cases, you can specify a <em> <strong>_inputType</strong> </em>. For example, if we have:<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;Element mapID="usernameTB" <em> <strong>_inputType</strong> </em>="input" name="betterUser" /&gt;<br>we will search for <em> <strong>&lt;input&gt;</strong> </em> HTML element with <em> <strong>name</strong> </em> "betterUser"</p>
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>You can search for a UI element by its <em> <strong>text</strong> </em> as returned by javascript as each UI element supports the text javascript attribute.<br>In order to do that you need to specify a <em> <strong>_text</strong> </em> or <em> <strong>_partText</strong> </em>. The latter one matches a part of the text.</p>
-        <p>For example, if we have:<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;Element mapID="usernameTB" <em> <strong>_inputType</strong> </em>="input" <em> <strong>_partText</strong> </em>="User" /&gt;<br>we will search for <em> <strong>&lt;input&gt;</strong> </em> HTML element with <em> <strong>text</strong> </em> containing "User"</p>
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>In case you want to exclude some attributes in the map file from being used in the search, you can do that by using double underscore ( <strong>__</strong> ) in front of the attribute name.</p>
-        <p>For example, you can have a <em> <strong>__description</strong> </em> attribute in the map file which you can use as some important hint, but this must not be used when searching that element.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-SupportedUIelements">Supported UI elements</h1>
-      <p>Following is the current list with all supported UI elements.<br>You can see the java classes per UI element, the list of actions you can run on each UI element and the list of attributes the needed to find the UI element.</p>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Button">Button</h3>
-      <p>A button</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+       </div> 
+      </div> 
+      <p><strong> <br> </strong></p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>We are using here the common for all browsers <em> <strong>AbstractHtmlDriver</strong> </em> class</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>PhantomJS driver operates over the headless <a class="external-link" href="http://phantomjs.org/" rel="nofollow">PhantomJS</a></p> 
+        <p>Hidden driver operates over the headless <a class="external-link" href="http://htmlunit.sourceforge.net/" rel="nofollow">HtmlUnit</a></p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Configuration">Configuration</h1> 
+      <p><a href="HTML-Engine-configuration.html">Here</a> you can see some useful configuration options when the UI Engine is used for testing HTML/Javascript applications</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-FindingUIelements">Finding UI elements</h1> 
+      <p>There are many ways finding a UI element. This is the order we use to find the UI element.</p> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-_css"><em> <strong>_css</strong> </em></h3> 
+      <p>we will search by CSS<em> <strong> <br> </strong> </em></p> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-xpath"><em> <strong>xpath</strong> </em></h3> 
+      <p>we will search by XPATH</p> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-otherattributes">other attributes</h3> 
+      <p>We will search for UI element matching all provided attributes. For example, if provided <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em>, we will search for element having these <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em></p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>You can search for a UI element by its HTML element in the HTML page. For example, some elements are &lt;input&gt; or &lt;a&gt; or &lt;div&gt; or &lt;span&gt; etc.</p> 
+        <p>For such cases, you can specify a <em> <strong>_inputType</strong> </em>. For example, if we have:<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;Element mapID="usernameTB" <em> <strong>_inputType</strong> </em>="input" name="betterUser" /&gt;<br>we will search for <em> <strong>&lt;input&gt;</strong> </em> HTML element with <em> <strong>name</strong> </em> "betterUser"</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>You can search for a UI element by its <em> <strong>text</strong> </em> as returned by javascript as each UI element supports the text javascript attribute.<br>In order to do that you need to specify a <em> <strong>_text</strong> </em> or <em> <strong>_partText</strong> </em>. The latter one matches a part of the text.</p> 
+        <p>For example, if we have:<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;Element mapID="usernameTB" <em> <strong>_inputType</strong> </em>="input" <em> <strong>_partText</strong> </em>="User" /&gt;<br>we will search for <em> <strong>&lt;input&gt;</strong> </em> HTML element with <em> <strong>text</strong> </em> containing "User"</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>In case you want to exclude some attributes in the map file from being used in the search, you can do that by using double underscore ( <strong>__</strong> ) in front of the attribute name.</p> 
+        <p>For example, you can have a <em> <strong>__description</strong> </em> attribute in the map file which you can use as some important hint, but this must not be used when searching that element.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-SupportedUIelements">Supported UI elements</h1> 
+      <p>Following is the current list with all supported UI elements.<br>You can see the java classes per UI element, the list of actions you can run on each UI element and the list of attributes the needed to find the UI element.</p> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Button">Button</h3> 
+      <p>A button</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlButton<br>HiddenHtmlButton</p></td>
-          <td class="confluenceTd"><p>engine.getButton()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name + value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>5. name</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>6. value</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlButton<br>HiddenHtmlButton</p></td> 
+          <td class="confluenceTd"><p>engine.getButton()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name + value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>5. name</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>6. value</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>click</p></td>
-          <td class="confluenceTd"><p>click it (if the element is invisible, check the <em>Configuration</em> section how to allow such action)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>clickAndDownloadFile</p></td>
-          <td class="confluenceTd"><p>click and download file (check the <em>Configuration</em> section)</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-TextBox">Text Box</h3>
-      <p>A box which value can be changed</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlTextBox<br>HiddenHtmlTextBox</p></td>
-          <td class="confluenceTd"><p>engine.getTextBox()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getValue</p></td>
-          <td class="confluenceTd"><p>get its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValue</p></td>
-          <td class="confluenceTd"><p>set its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyValue</p></td>
-          <td class="confluenceTd"><p>verify its value is as specified</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotValue</p></td>
-          <td class="confluenceTd"><p>verify its value is not as specified</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-TextArea">Text Area</h3>
-      <p>A multi-line box which value can be changed.</p>
-      <p><strong>Note:</strong> All values provided by user or coming from the browser are normalized by replacing all "\r\n" with "\n" and trimming leading and trailing white spaces.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>click</p></td> 
+          <td class="confluenceTd"><p>click it (if the element is invisible, check the <em>Configuration</em> section how to allow such action)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>clickAndDownloadFile</p></td> 
+          <td class="confluenceTd"><p>click and download file (check the <em>Configuration</em> section)</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-TextBox">Text Box</h3> 
+      <p>A box which value can be changed</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlTextArea<br>HiddenHtmlTextArea</p></td>
-          <td class="confluenceTd"><p>engine.getTextArea()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlTextBox<br>HiddenHtmlTextBox</p></td> 
+          <td class="confluenceTd"><p>engine.getTextBox()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getValue</p></td>
-          <td class="confluenceTd"><p>get its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValue</p></td>
-          <td class="confluenceTd"><p>set its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyValue</p></td>
-          <td class="confluenceTd"><p>verify its value is as specified</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotValue</p></td>
-          <td class="confluenceTd"><p>verify its value is not as specified</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-CheckBox">Check Box</h3>
-      <p>A check box</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlCheckBox<br>HiddenHtmlCheckBox</p></td>
-          <td class="confluenceTd"><p>engine.getCheckBox()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name + value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>5. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>check</p></td>
-          <td class="confluenceTd"><p>check it</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>unCheck</p></td>
-          <td class="confluenceTd"><p>un-check it</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>isChecked</p></td>
-          <td class="confluenceTd"><p>tell if it is checked</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyChecked</p></td>
-          <td class="confluenceTd"><p>verify it is checked</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotChecked</p></td>
-          <td class="confluenceTd"><p>verify it is not checked</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Link">Link</h3>
-      <p>A link</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getValue</p></td> 
+          <td class="confluenceTd"><p>get its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValue</p></td> 
+          <td class="confluenceTd"><p>set its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is as specified</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is not as specified</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-TextArea">Text Area</h3> 
+      <p>A multi-line box which value can be changed.</p> 
+      <p><strong>Note:</strong> All values provided by user or coming from the browser are normalized by replacing all "\r\n" with "\n" and trimming leading and trailing white spaces.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlLink<br>HiddenHtmlLink</p></td>
-          <td class="confluenceTd"><p>engine.getLink()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>5. href</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>6. title (the text of the "a" node)</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlTextArea<br>HiddenHtmlTextArea</p></td> 
+          <td class="confluenceTd"><p>engine.getTextArea()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>click</p></td>
-          <td class="confluenceTd"><p>click it</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>clickAndDownloadFile</p></td>
-          <td class="confluenceTd"><p>click and download file (check uiengine.properties file)</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Table">Table</h3>
-      <p>A table</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlTable<br>HiddenHtmlTable</p></td>
-          <td class="confluenceTd"><p>engine.getTable()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. title</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>5. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getFieldValue</p></td>
-          <td class="confluenceTd"><p>get its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyFieldValue</p></td>
-          <td class="confluenceTd"><p>verify its value is as specified</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyFieldValueRegex</p></td>
-          <td class="confluenceTd"><p>verify its value matches the specified regular expression</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotFieldValue</p></td>
-          <td class="confluenceTd"><p>verify its value is as specified</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getRowCount</p></td>
-          <td class="confluenceTd"><p>get the number of rows in a table</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getColumnCount</p></td>
-          <td class="confluenceTd"><p>get the number of columns in a table</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Singleselectionlist">Single selection list</h3>
-      <p>A select element that can have only one selected item</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getValue</p></td> 
+          <td class="confluenceTd"><p>get its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValue</p></td> 
+          <td class="confluenceTd"><p>set its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is as specified</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is not as specified</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-CheckBox">Check Box</h3> 
+      <p>A check box</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlSingleSelectList<br>HiddenHtmlSingleSelectList</p></td>
-          <td class="confluenceTd"><p>engine.getSingleSelectList()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlCheckBox<br>HiddenHtmlCheckBox</p></td> 
+          <td class="confluenceTd"><p>engine.getCheckBox()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name + value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>5. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getValue</p></td>
-          <td class="confluenceTd"><p>get its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValue</p></td>
-          <td class="confluenceTd"><p>set its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyValue</p></td>
-          <td class="confluenceTd"><p>verify its value is as specified</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotValue</p></td>
-          <td class="confluenceTd"><p>verify its value is not as specified</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Multipleselectionlist">Multiple selection list</h3>
-      <p>A select element that can have one or more selected items</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlMultiSelectList<br>HiddenHtmlMultiSelectList</p></td>
-          <td class="confluenceTd"><p>engine.getMultiSelectList()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getValues</p></td>
-          <td class="confluenceTd"><p>get its selected values</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValue</p></td>
-          <td class="confluenceTd"><p>select a value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>unsetValue</p></td>
-          <td class="confluenceTd"><p>unselect a value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyValue</p></td>
-          <td class="confluenceTd"><p>verify the specified value is selected</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotValue</p></td>
-          <td class="confluenceTd"><p>verify the specified value is not selected</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Radiolist">Radio list</h3>
-      <p>A group of radio buttons with same name. Only one can be selected at a time</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>check</p></td> 
+          <td class="confluenceTd"><p>check it</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>unCheck</p></td> 
+          <td class="confluenceTd"><p>un-check it</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>isChecked</p></td> 
+          <td class="confluenceTd"><p>tell if it is checked</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyChecked</p></td> 
+          <td class="confluenceTd"><p>verify it is checked</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotChecked</p></td> 
+          <td class="confluenceTd"><p>verify it is not checked</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Link">Link</h3> 
+      <p>A link</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;RealHtmlRadioList<br>HiddenHtmlRadioList</p></td>
-          <td class="confluenceTd"><p>engine.getRadioList()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlLink<br>HiddenHtmlLink</p></td> 
+          <td class="confluenceTd"><p>engine.getLink()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>5. href</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>6. title (the text of the "a" node)</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>isValue</p></td>
-          <td class="confluenceTd"><p>tells if this is the selected radio button</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValue</p></td>
-          <td class="confluenceTd"><p>select a radio button</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyValue</p></td>
-          <td class="confluenceTd"><p>verify the specified radio button is selected</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotValue</p></td>
-          <td class="confluenceTd"><p>verify the specified radio button is not selected</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Filebrowse">File browse</h3>
-      <p>An element used to select a file from the local file system</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlFileBrowse<br>HiddenHtmlFileBrowse</p></td>
-          <td class="confluenceTd"><p>engine.getFileBrowse()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h5 id="AutomatedtestingofHTMLandJavascriptapplication-Directlysettingthefilepathvalue">Directly setting the file path value</h5>
-      <p>Using the following methods, we directly work with the text value without opening the native OS file browse window. This is the preferred way of choosing a file.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getValue</p></td>
-          <td class="confluenceTd"><p>get its value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValue</p></td>
-          <td class="confluenceTd"><p>set its value, when you set file path use '\' for Windows</p><p>and '/' for UNIX OSes</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyValue</p></td>
-          <td class="confluenceTd"><p>verify its value is as specified</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotValue</p></td>
-          <td class="confluenceTd"><p>verify its value is not as specified</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h5 id="AutomatedtestingofHTMLandJavascriptapplication-SettingthefilepathvaluebymanipulatingthenativeOSfilebrowsewindow">Setting the file path value by manipulating the native OS file browse window</h5>
-      <p>A real user opens a native dialog used to browse the file system and choose the file of interest. You can do the same by using the following method:</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
-        <colgroup> 
-         <col> 
-         <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>setValueUsingNativeDialog</p></td>
-          <td class="confluenceTd"><p>full path to the file of interest</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="confluence-information-macro confluence-information-macro-note">
-       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>Currently this method works on only through Filrefox and Chrome browsers on Windows OS</p>
-       </div>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Genericelement">Generic element</h3>
-      <p>Any HTML element</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>click</p></td> 
+          <td class="confluenceTd"><p>click it</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>clickAndDownloadFile</p></td> 
+          <td class="confluenceTd"><p>click and download file (check uiengine.properties file)</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Table">Table</h3> 
+      <p>A table</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>searched by</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlElement<br>HiddenHtmlElement</p></td>
-          <td class="confluenceTd"><p>engine.getElement()</p></td>
-          <td class="confluenceTd"><p>1. _css</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd">&nbsp;</td>
-          <td class="confluenceTd"><p>2. xpath</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>3. id</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>4. name</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlTable<br>HiddenHtmlTable</p></td> 
+          <td class="confluenceTd"><p>engine.getTable()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. title</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>5. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>click</p></td>
-          <td class="confluenceTd"><p>click the element (if the element is invisible, check the <em>Configuration</em> section how to allow such action)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>doubleClick</p></td>
-          <td class="confluenceTd"><p>double click mouse action on the element</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>rightClick</p></td>
-          <td class="confluenceTd"><p>right click mouse action on the element</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>mouseOver</p></td>
-          <td class="confluenceTd"><p>mouse over the element</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getTextContent</p></td>
-          <td class="confluenceTd"><p>get element text content (the innerText of the element)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getAttributeValue</p></td>
-          <td class="confluenceTd"><p>get element attribute value (style,class,...)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>getCssPropertyValue</p></td>
-          <td class="confluenceTd"><p>get element CSS property value</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>pressEnterKey</p></td>
-          <td class="confluenceTd"><p>simulate Enter key</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>pressTabKey</p></td>
-          <td class="confluenceTd"><p>simulate Tab key</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>pressEscapeKey</p></td>
-          <td class="confluenceTd"><p>simulate Escape key</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>dragAndDropTo</p></td>
-          <td class="confluenceTd"><p>drag and drop an element on top of other element</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>scrollTo</p></td>
-          <td class="confluenceTd"><p>scroll to element so it is viewable</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Popups-Alerts,PromptsandConfirms">Popups - Alerts, Prompts and Confirms</h3>
-      <p>Elements like <em>Alert</em>,<em>Prompt</em> and <em>Confirm</em> are handled differently than the other UI elements.</p>
-      <p>First you can have only one of them at a time, which means you do not need to provide attributes for finding them.</p>
-      <p>Second these elements must be expected <strong>before</strong> they are triggered. For example if we know that clicking some button will generate an <em>Alert</em> popup, we have to expect this Alert before clicking it in the following way:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getFieldValue</p></td> 
+          <td class="confluenceTd"><p>get its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyFieldValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is as specified</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyFieldValueRegex</p></td> 
+          <td class="confluenceTd"><p>verify its value matches the specified regular expression</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotFieldValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is as specified</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getRowCount</p></td> 
+          <td class="confluenceTd"><p>get the number of rows in a table</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getColumnCount</p></td> 
+          <td class="confluenceTd"><p>get the number of columns in a table</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Singleselectionlist">Single selection list</h3> 
+      <p>A select element that can have only one selected item</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlSingleSelectList<br>HiddenHtmlSingleSelectList</p></td> 
+          <td class="confluenceTd"><p>engine.getSingleSelectList()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getValue</p></td> 
+          <td class="confluenceTd"><p>get its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValue</p></td> 
+          <td class="confluenceTd"><p>set its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is as specified</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is not as specified</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Multipleselectionlist">Multiple selection list</h3> 
+      <p>A select element that can have one or more selected items</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlMultiSelectList<br>HiddenHtmlMultiSelectList</p></td> 
+          <td class="confluenceTd"><p>engine.getMultiSelectList()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getValues</p></td> 
+          <td class="confluenceTd"><p>get its selected values</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValue</p></td> 
+          <td class="confluenceTd"><p>select a value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>unsetValue</p></td> 
+          <td class="confluenceTd"><p>unselect a value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyValue</p></td> 
+          <td class="confluenceTd"><p>verify the specified value is selected</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotValue</p></td> 
+          <td class="confluenceTd"><p>verify the specified value is not selected</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Radiolist">Radio list</h3> 
+      <p>A group of radio buttons with same name. Only one can be selected at a time</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;RealHtmlRadioList<br>HiddenHtmlRadioList</p></td> 
+          <td class="confluenceTd"><p>engine.getRadioList()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>isValue</p></td> 
+          <td class="confluenceTd"><p>tells if this is the selected radio button</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValue</p></td> 
+          <td class="confluenceTd"><p>select a radio button</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyValue</p></td> 
+          <td class="confluenceTd"><p>verify the specified radio button is selected</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotValue</p></td> 
+          <td class="confluenceTd"><p>verify the specified radio button is not selected</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Filebrowse">File browse</h3> 
+      <p>An element used to select a file from the local file system</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlFileBrowse<br>HiddenHtmlFileBrowse</p></td> 
+          <td class="confluenceTd"><p>engine.getFileBrowse()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h5 id="AutomatedtestingofHTMLandJavascriptapplication-Directlysettingthefilepathvalue">Directly setting the file path value</h5> 
+      <p>Using the following methods, we directly work with the text value without opening the native OS file browse window. This is the preferred way of choosing a file.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getValue</p></td> 
+          <td class="confluenceTd"><p>get its value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValue</p></td> 
+          <td class="confluenceTd"><p>set its value, when you set file path use '\' for Windows</p><p>and '/' for UNIX OSes</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is as specified</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotValue</p></td> 
+          <td class="confluenceTd"><p>verify its value is not as specified</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h5 id="AutomatedtestingofHTMLandJavascriptapplication-SettingthefilepathvaluebymanipulatingthenativeOSfilebrowsewindow">Setting the file path value by manipulating the native OS file browse window</h5> 
+      <p>A real user opens a native dialog used to browse the file system and choose the file of interest. You can do the same by using the following method:</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>setValueUsingNativeDialog</p></td> 
+          <td class="confluenceTd"><p>full path to the file of interest</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Currently this method works on only through Filrefox and Chrome browsers on Windows OS</p> 
+       </div> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Genericelement">Generic element</h3> 
+      <p>Any HTML element</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>searched by</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlElement<br>HiddenHtmlElement</p></td> 
+          <td class="confluenceTd"><p>engine.getElement()</p></td> 
+          <td class="confluenceTd"><p>1. _css</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><p>2. xpath</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>3. id</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>4. name</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>click</p></td> 
+          <td class="confluenceTd"><p>click the element (if the element is invisible, check the <em>Configuration</em> section how to allow such action)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>doubleClick</p></td> 
+          <td class="confluenceTd"><p>double click mouse action on the element</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>rightClick</p></td> 
+          <td class="confluenceTd"><p>right click mouse action on the element</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>mouseOver</p></td> 
+          <td class="confluenceTd"><p>mouse over the element</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getTextContent</p></td> 
+          <td class="confluenceTd"><p>get element text content (the innerText of the element)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getAttributeValue</p></td> 
+          <td class="confluenceTd"><p>get element attribute value (style,class,...)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>getCssPropertyValue</p></td> 
+          <td class="confluenceTd"><p>get element CSS property value</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>pressEnterKey</p></td> 
+          <td class="confluenceTd"><p>simulate Enter key</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>pressTabKey</p></td> 
+          <td class="confluenceTd"><p>simulate Tab key</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>pressEscapeKey</p></td> 
+          <td class="confluenceTd"><p>simulate Escape key</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>dragAndDropTo</p></td> 
+          <td class="confluenceTd"><p>drag and drop an element on top of other element</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>scrollTo</p></td> 
+          <td class="confluenceTd"><p>scroll to element so it is viewable</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Popups-Alerts,PromptsandConfirms">Popups - Alerts, Prompts and Confirms</h3> 
+      <p>Elements like <em>Alert</em>,<em>Prompt</em> and <em>Confirm</em> are handled differently than the other UI elements.</p> 
+      <p>First you can have only one of them at a time, which means you do not need to provide attributes for finding them.</p> 
+      <p>Second these elements must be expected <strong>before</strong> they are triggered. For example if we know that clicking some button will generate an <em>Alert</em> popup, we have to expect this Alert before clicking it in the following way:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">engine.expectAlert().clickOk();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">engine.expectAlert().clickOk();
 engine.getButton( "openAlertButton" ).click();
 </pre> 
-       </div>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+       </div> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>Here is how these elements look like</p></th>
-          <th class="confluenceTh"><p>&nbsp;</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd">
-           <div class="content-wrapper">
-            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044145.png" data-image-src="attachments/107040534/107044145.png" data-unresolved-comment-count="0" data-linked-resource-id="107044145" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="alert.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040534" data-linked-resource-container-version="80"></span></p>
-           </div></td>
-          <td class="confluenceTd"><p>The <em>Alert</em> popup is just letting you know about some event</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">
-           <div class="content-wrapper">
-            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044146.png" data-image-src="attachments/107040534/107044146.png" data-unresolved-comment-count="0" data-linked-resource-id="107044146" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="confirm.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040534" data-linked-resource-container-version="80"></span></p>
-           </div></td>
-          <td class="confluenceTd"><p>The <em>Confirm</em> dialog is asking you a questions with predefined answers</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">
-           <div class="content-wrapper">
-            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044147.png" data-image-src="attachments/107040534/107044147.png" data-unresolved-comment-count="0" data-linked-resource-id="107044147" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="prompt.PNG" data-base-url="https://techweb.axway.com/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="107040534" data-linked-resource-container-version="80"></span></p>
-           </div></td>
-          <td class="confluenceTd"><p>The <em>Prompt</em> dialog requests you to provide some info</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>Here is the list of supported actions on these elements:</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>Here is how these elements look like</p></th> 
+          <th class="confluenceTh"><p>&nbsp;</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"> 
+           <div class="content-wrapper"> 
+            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044145.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="alert.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="80"></span></p> 
+           </div></td> 
+          <td class="confluenceTd"><p>The <em>Alert</em> popup is just letting you know about some event</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"> 
+           <div class="content-wrapper"> 
+            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044146.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="confirm.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="80"></span></p> 
+           </div></td> 
+          <td class="confluenceTd"><p>The <em>Confirm</em> dialog is asking you a questions with predefined answers</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"> 
+           <div class="content-wrapper"> 
+            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044147.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="prompt.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="80"></span></p> 
+           </div></td> 
+          <td class="confluenceTd"><p>The <em>Prompt</em> dialog requests you to provide some info</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>Here is the list of supported actions on these elements:</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-          <th class="confluenceTh"><p>methods</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlAlert<br>HiddenHtmlAlert</p></td>
-          <td class="confluenceTd"><p>engine.expectAlert()</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickOk</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickOk( expectedAlertText )</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>verifyProcessed</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlPrompt<br>HiddenHtmlPrompt</p></td>
-          <td class="confluenceTd"><p>engine.expectPrompt()</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickOk( promptValue )</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickOk( expectedPromptText, promptValue )</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickCancel</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickCancel( expectedPromptText )</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>verifyProcessed</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlConfirm<br>HiddenHtmlConfirm</p></td>
-          <td class="confluenceTd"><p>engine.expectConfirm()</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickOk</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickOk( expectedConfirmText )</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickCancel</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>clickCancel( expectedConfirmText )</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>&nbsp;</p></td>
-          <td class="confluenceTd"><p>verifyProcessed</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Framesandforms">Frames and forms</h1>
-      <p>In order to find an element in a frame or from or both, all you need to do is to specify the respective attribute. Here are some complex examples:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+          <th class="confluenceTh"><p>methods</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlAlert<br>HiddenHtmlAlert</p></td> 
+          <td class="confluenceTd"><p>engine.expectAlert()</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickOk</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickOk( expectedAlertText )</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>verifyProcessed</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlPrompt<br>HiddenHtmlPrompt</p></td> 
+          <td class="confluenceTd"><p>engine.expectPrompt()</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickOk( promptValue )</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickOk( expectedPromptText, promptValue )</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickCancel</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickCancel( expectedPromptText )</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>verifyProcessed</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlConfirm<br>HiddenHtmlConfirm</p></td> 
+          <td class="confluenceTd"><p>engine.expectConfirm()</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickOk</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickOk( expectedConfirmText )</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickCancel</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>clickCancel( expectedConfirmText )</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p>verifyProcessed</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Framesandforms">Frames and forms</h1> 
+      <p>In order to find an element in a frame or from or both, all you need to do is to specify the respective attribute. Here are some complex examples:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">&lt;Map&gt;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;Map&gt;
      &lt;Section name="login"&gt;
           &lt;Element mapID="usernameTB" type="TextBox" id="_a_user_name_" frame="MyBottomFrame -&gt; MyBottomLeftFrame" formid="theLoginFormId"/&gt;
           &lt;Element mapID="userpasswordTB" type="TextBox" name="password"  formname="theLoginFormName"/&gt;
@@ -1122,307 +1122,307 @@ engine.getButton( "openAlertButton" ).click();
      &lt;/Section&gt;
 &lt;/Map&gt;
 </pre> 
-       </div>
-      </div>
-      <p>In this case when need to work with the "usernameTB" element, the <em>UI Engine</em> will navigate to a frame called "MyBottomLeftFrame" which is nested into the "MyBottomFrame" top frame and additionally the element will be searched into a form with id "theLoginFormId".<br> The "userpasswordTB" element will be searched into a form with name "theLoginFormName".</p>
-      <p>If an element belongs to a form and this is not specified, it will be searched across all present forms and the first matching one will be chosen.</p>
-      <p>It is also possible to use XPATH locators for frames/iframes. For example: frame="//frame[contains(@name, '_test_frame')]"</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Windows">Windows</h1>
-      <p>There are some methods to work with browser windows (no matter if the window is new or it's a new browser tab).</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+       </div> 
+      </div> 
+      <p>In this case when need to work with the "usernameTB" element, the <em>UI Engine</em> will navigate to a frame called "MyBottomLeftFrame" which is nested into the "MyBottomFrame" top frame and additionally the element will be searched into a form with id "theLoginFormId".<br> The "userpasswordTB" element will be searched into a form with name "theLoginFormName".</p> 
+      <p>If an element belongs to a form and this is not specified, it will be searched across all present forms and the first matching one will be chosen.</p> 
+      <p>It is also possible to use XPATH locators for frames/iframes. For example: frame="//frame[contains(@name, '_test_frame')]"</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Windows">Windows</h1> 
+      <p>There are some methods to work with browser windows (no matter if the window is new or it's a new browser tab).</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.goToWindow( windowTitle )</p></td>
-          <td class="confluenceTd"><p>Switch to window by its Title</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.goToWindow( windowJavascriptPropertyKey, windowJavascriptPropertyValue )</p></td>
-          <td class="confluenceTd"><p>Switch to window which has a javascript property set. <br class="atl-forced-newline"> Usually this is the "name" variable</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.goToMainWindow( )</p></td>
-          <td class="confluenceTd"><p>Switch to the main window</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.goToFirstWindowWithoutTitle( )</p></td>
-          <td class="confluenceTd"><p>Go to first window/tab without title, skipping the main window</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.getWindowTitles( )</p></td>
-          <td class="confluenceTd"><p>Returns the titles of all windows that the browser knows about</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.closeActiveWindow()</p></td>
-          <td class="confluenceTd"><p>Close the active window/tab</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Utilities">Utilities</h1>
-      <p>Some utility classes and methods for the <em>Html Engine</em></p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Elementstate">Element state</h1>
-      <p>This can be used to check the state of an HTML element.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.goToWindow( windowTitle )</p></td> 
+          <td class="confluenceTd"><p>Switch to window by its Title</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.goToWindow( windowJavascriptPropertyKey, windowJavascriptPropertyValue )</p></td> 
+          <td class="confluenceTd"><p>Switch to window which has a javascript property set. <br class="atl-forced-newline"> Usually this is the "name" variable</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.goToMainWindow( )</p></td> 
+          <td class="confluenceTd"><p>Switch to the main window</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.goToFirstWindowWithoutTitle( )</p></td> 
+          <td class="confluenceTd"><p>Go to first window/tab without title, skipping the main window</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.getWindowTitles( )</p></td> 
+          <td class="confluenceTd"><p>Returns the titles of all windows that the browser knows about</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.closeActiveWindow()</p></td> 
+          <td class="confluenceTd"><p>Close the active window/tab</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Utilities">Utilities</h1> 
+      <p>Some utility classes and methods for the <em>Html Engine</em></p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Elementstate">Element state</h1> 
+      <p>This can be used to check the state of an HTML element.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>class</p></th>
-          <th class="confluenceTh"><p>instantiation</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>RealHtmlElementState<br>HiddenHtmlElementState</p></td>
-          <td class="confluenceTd"><p>engine.getUtilsElementState()</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>class</p></th> 
+          <th class="confluenceTh"><p>instantiation</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>RealHtmlElementState<br>HiddenHtmlElementState</p></td> 
+          <td class="confluenceTd"><p>engine.getUtilsElementState()</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyExist</p></td>
-          <td class="confluenceTd"><p>verify an element exists on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyNotExist</p></td>
-          <td class="confluenceTd"><p>verify an element does not exist on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>waitToBecomeExisting</p></td>
-          <td class="confluenceTd"><p>wait for an element to appear on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>waitToBecomeNotExisting</p></td>
-          <td class="confluenceTd"><p>wait for an element to disappear from the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>waitToBecomeDisplayed</p></td>
-          <td class="confluenceTd"><p>wait for an element to become displayed on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>waitToBecomeHidden</p></td>
-          <td class="confluenceTd"><p>wait for an element to become hidden on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>waitToBecomeEnabled</p></td>
-          <td class="confluenceTd"><p>wait for an element to become enabled on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>waitToBecomeDisabled</p></td>
-          <td class="confluenceTd"><p>wait for an element to become disabled on the current page</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>highlightElement</p></td>
-          <td class="confluenceTd"><p>tries to highlight an element</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>focus</p></td>
-          <td class="confluenceTd"><p>moves the focus to the specified element</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>isElementPresent</p></td>
-          <td class="confluenceTd"><p>if an element presents</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>isElementEnabled</p></td>
-          <td class="confluenceTd"><p>if an element is enabled</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>isElementDisplayed</p></td>
-          <td class="confluenceTd"><p>if an element is displayed</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-FireJavaScriptevent">Fire JavaScript event</h1>
-      <p>Explicitly simulate an event, to trigger the corresponding "onevent" handler of some HTML element.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyExist</p></td> 
+          <td class="confluenceTd"><p>verify an element exists on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyNotExist</p></td> 
+          <td class="confluenceTd"><p>verify an element does not exist on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>waitToBecomeExisting</p></td> 
+          <td class="confluenceTd"><p>wait for an element to appear on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>waitToBecomeNotExisting</p></td> 
+          <td class="confluenceTd"><p>wait for an element to disappear from the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>waitToBecomeDisplayed</p></td> 
+          <td class="confluenceTd"><p>wait for an element to become displayed on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>waitToBecomeHidden</p></td> 
+          <td class="confluenceTd"><p>wait for an element to become hidden on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>waitToBecomeEnabled</p></td> 
+          <td class="confluenceTd"><p>wait for an element to become enabled on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>waitToBecomeDisabled</p></td> 
+          <td class="confluenceTd"><p>wait for an element to become disabled on the current page</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>highlightElement</p></td> 
+          <td class="confluenceTd"><p>tries to highlight an element</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>focus</p></td> 
+          <td class="confluenceTd"><p>moves the focus to the specified element</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>isElementPresent</p></td> 
+          <td class="confluenceTd"><p>if an element presents</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>isElementEnabled</p></td> 
+          <td class="confluenceTd"><p>if an element is enabled</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>isElementDisplayed</p></td> 
+          <td class="confluenceTd"><p>if an element is displayed</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-FireJavaScriptevent">Fire JavaScript event</h1> 
+      <p>Explicitly simulate an event, to trigger the corresponding "onevent" handler of some HTML element.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.fireEvent()</p></td>
-          <td class="confluenceTd"><p>Fires event like click, blur, focus, change, submit, keydown, keyup, keypress etc.</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-ExecuteJavaScriptcommand">Execute JavaScript command</h1>
-      <p>Gets the result of evaluating the specified JavaScript command. The command/snippet may have multiple lines, but only the result of the last line will be returned.</p>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.fireEvent()</p></td> 
+          <td class="confluenceTd"><p>Fires event like click, blur, focus, change, submit, keydown, keyup, keypress etc.</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-ExecuteJavaScriptcommand">Execute JavaScript command</h1> 
+      <p>Gets the result of evaluating the specified JavaScript command. The command/snippet may have multiple lines, but only the result of the last line will be returned.</p> 
+      <p>&nbsp;</p> 
+      <p>&nbsp;</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.executeJavaScript()</p></td>
-          <td class="confluenceTd"><p>execute JavaScript command</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Countelements">Count elements</h1>
-      <p>Returns the number of HTML elements that match the specified xpath eg. "//table" would give the number of tables</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.executeJavaScript()</p></td> 
+          <td class="confluenceTd"><p>execute JavaScript command</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Countelements">Count elements</h1> 
+      <p>Returns the number of HTML elements that match the specified xpath eg. "//table" would give the number of tables</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.countElements()</p></td>
-          <td class="confluenceTd"><p>count elements located by xpath</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Getpagesource">Get page source</h1>
-      <p>This method is helpful when using hidden browser driver and we doesn't see the loaded page or the changes on it.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.countElements()</p></td> 
+          <td class="confluenceTd"><p>count elements located by xpath</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Getpagesource">Get page source</h1> 
+      <p>This method is helpful when using hidden browser driver and we doesn't see the loaded page or the changes on it.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.getPageSource()</p></td>
-          <td class="confluenceTd"><p>Returns the current page source as a String</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-GetcurrentpageURL">Get current page URL</h1>
-      <p>Get the URL of the page currently loaded in the browser.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.getPageSource()</p></td> 
+          <td class="confluenceTd"><p>Returns the current page source as a String</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-GetcurrentpageURL">Get current page URL</h1> 
+      <p>Get the URL of the page currently loaded in the browser.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.getCurrentUrl()</p></td>
-          <td class="confluenceTd"><p>The URL of the page currently loaded in the browser</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-CreatepageScreenshot">Create page Screenshot</h1>
-      <p>You can save a screenshot into a PNG file:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.getCurrentUrl()</p></td> 
+          <td class="confluenceTd"><p>The URL of the page currently loaded in the browser</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-CreatepageScreenshot">Create page Screenshot</h1> 
+      <p>You can save a screenshot into a PNG file:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">UiEngineUtilities.createScreenshot( filePath, browserDriver );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">UiEngineUtilities.createScreenshot( filePath, browserDriver );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Browsercontrol">Browser control</h1>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Browsercontrol">Browser control</h1> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p>methods</p></th>
-          <th class="confluenceTh"><p>description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.clickBrowserBackButton()</p></td>
-          <td class="confluenceTd"><p>simulate click on a browser Back button (move back a single "item" in the browser's history)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.clickBrowserForwardButton()</p></td>
-          <td class="confluenceTd"><p>simulate click on a browser Forward button (move forward a single "item" in the browser's history)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.clickBrowserRefreshButton()</p></td>
-          <td class="confluenceTd"><p>simulate click on a browser Refresh button</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>engine.retrieveBrowserFocus()</p></td>
-          <td class="confluenceTd"><p>retrieve the browser's focus</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Configureaproxy">Configure a proxy</h1>
-      <p>If you want to use proxy (e.g. <a class="external-link" href="http://fiddler2.com/fiddler2/" rel="nofollow">Fiddler</a>), you can use java system properties to set the proxy host and port. Here is how:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p>methods</p></th> 
+          <th class="confluenceTh"><p>description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.clickBrowserBackButton()</p></td> 
+          <td class="confluenceTd"><p>simulate click on a browser Back button (move back a single "item" in the browser's history)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.clickBrowserForwardButton()</p></td> 
+          <td class="confluenceTd"><p>simulate click on a browser Forward button (move forward a single "item" in the browser's history)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.clickBrowserRefreshButton()</p></td> 
+          <td class="confluenceTd"><p>simulate click on a browser Refresh button</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>engine.retrieveBrowserFocus()</p></td> 
+          <td class="confluenceTd"><p>retrieve the browser's focus</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Configureaproxy">Configure a proxy</h1> 
+      <p>If you want to use proxy (e.g. <a class="external-link" href="http://fiddler2.com/fiddler2/" rel="nofollow">Fiddler</a>), you can use java system properties to set the proxy host and port. Here is how:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// 1. configure proxy host and port
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// 1. configure proxy host and port
 System.setProperty( "http.proxyHost", "127.0.0.1" );
 System.setProperty( "http.proxyPort", "8200" );
 
@@ -1432,24 +1432,24 @@ AbstractHtmlDriver driver = UiDriver.getFirefoxDriver( "SOME URL" );
 // 3. start the browser
 driver.start();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Hints">Hints</h1>
-      <p>For easy getting and testing XPaths on the html page, you can use some Firefox addons like <a class="external-link" href="http://xpath.alephzarro.com/" rel="nofollow">XPather</a> or a Firebug extension - <a class="external-link" href="https://addons.mozilla.org/en-US/firefox/addon/11900/" rel="nofollow">FirePath</a></p>
-      <p>If there is a problem with finding elements by XPath (using 'xpath' property) make sure you are using two slashes // in the beginning of the xpath, not just one /</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Troubleshooting">Troubleshooting</h1>
-      <p>Here you can see some problems we have hit with some browsers</p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Hints">Hints</h1> 
+      <p>For easy getting and testing XPaths on the html page, you can use some Firefox addons like <a class="external-link" href="http://xpath.alephzarro.com/" rel="nofollow">XPather</a> or a Firebug extension - <a class="external-link" href="https://addons.mozilla.org/en-US/firefox/addon/11900/" rel="nofollow">FirePath</a></p> 
+      <p>If there is a problem with finding elements by XPath (using 'xpath' property) make sure you are using two slashes // in the beginning of the xpath, not just one /</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Troubleshooting">Troubleshooting</h1> 
+      <p>Here you can see some problems we have hit with some browsers</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

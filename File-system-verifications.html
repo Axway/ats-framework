@@ -23,38 +23,38 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Filesystemverifications-Introduction">Introduction</h1>
-      <p>This page shows how you can verify whether some <em>File</em> or <em>Folder</em> is present or not&nbsp; at some local or remote <em>host</em></p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Constructingtheverificationobject">Constructing the verification object</h1>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="Filesystemverifications-Introduction">Introduction</h1> 
+      <p>This page shows how you can verify whether some <em>File</em> or <em>Folder</em> is present or not&nbsp; at some local or remote <em>host</em></p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Constructingtheverificationobject">Constructing the verification object</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.rbv.clients.FileSystemVerification;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.FileSystemVerification;
 
 // Make an instance of the verification object.
 // The first input argument points to the remote ATS Agent, skip this argument if working on the local host
 FileSystemVerification fsVerification = new FileSystemVerification( SERVER_IP, FILE_LOCATION );</pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>If you want to work locally, use the constructor which does not specify a remote host ip</p>
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>When working remotely, the ATS Agent must be running on the remote host</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Addverificationrules">Add verification rules</h1>
-      <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need</p>
-      <p>Following is an example as complex as you will never need in practice <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" data-emoticon-name="smile" alt="(smile)"></p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you want to work locally, use the constructor which does not specify a remote host ip</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>When working remotely, the ATS Agent must be running on the remote host</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Addverificationrules">Add verification rules</h1> 
+      <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need</p> 
+      <p>Following is an example as complex as you will never need in practice <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" alt="(smile)"></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// check the size of the files
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// check the size of the files
 fsVerification.checkSize( 62 );
 
 // the file must contain some static text
@@ -78,91 +78,91 @@ fsVerification.checkUID( 1001 );
 
 // verify the file permission attributes
 fsVerification.checkPermissions( 644 );</pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>So far we have just specified what kind of file we are interested in.</p>
-        <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafileexists">Verify a file exists</h1>
-      <p>Keep polling until verify the searched file <strong>is present</strong>.</p>
-      <p>Fail if the searched file is not found for all polling attempts.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>So far we have just specified what kind of file we are interested in.</p> 
+        <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafileexists">Verify a file exists</h1> 
+      <p>Keep polling until verify the searched file <strong>is present</strong>.</p> 
+      <p>Fail if the searched file is not found for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFileExists();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFileExists();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Successfulverificationoutput">Successful verification output</h1>
-      <p><em>RBV</em> is verbose enough so from the logs you can understand if each of these checks was successful. It takes a little time until get used with these log messages, but they look the same for all kind of checks.</p>
-      <p>For example a part of the output in this example would be:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Successfulverificationoutput">Successful verification output</h1> 
+      <p><em>RBV</em> is verbose enough so from the logs you can understand if each of these checks was successful. It takes a little time until get used with these log messages, but they look the same for all kind of checks.</p> 
+      <p>For example a part of the output in this example would be:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">INFO  17:29:13 rules.FileSizeRule: Starting evaluation of rule 'checkSize' which expects file with size '62'
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">INFO  17:29:13 rules.FileSizeRule: Starting evaluation of rule 'checkSize' which expects file with size '62'
 INFO  17:29:13 rules.FileSizeRule: Processing meta data { FILE_PACKAGE : /tmp/file.txt }
 INFO  17:29:13 rules.FileSizeRule: Found a match!
 INFO  17:29:13 rules.FileSizeRule: Finished evaluation of rule 'checkSize' which expects file with size '62'
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Unsuccessfulverificationoutput">Unsuccessful verification output</h1>
-      <p>Upon a failure, you will get output like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Unsuccessfulverificationoutput">Unsuccessful verification output</h1> 
+      <p>Upon a failure, you will get output like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">INFO  17:39:49 rules.FileSizeRule: Starting evaluation of rule 'checkSize' which expects file with size '602'
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">INFO  17:39:49 rules.FileSizeRule: Starting evaluation of rule 'checkSize' which expects file with size '602'
 INFO  17:39:49 rules.FileSizeRule: Processing meta data { FILE_PACKAGE : /tmp/file.txt }
 INFO  17:39:49 rules.FileSizeRule: Did not find a match!
 INFO  17:39:49 rules.FileSizeRule: Finished evaluation of rule 'checkSize' which expects file with size '602'
 </pre> 
-       </div>
-      </div>
-      <p>Upon failure, a new try is made until all the allowed tries are exhausted and a final failure results in throwing an exception which fails the test case.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafiledoesnotexist">Verify a file does not exist</h1>
-      <p>Keep polling until verify the searched file<strong> is NOT present</strong>.</p>
-      <p>Fail if the searched file is present for all polling attempts.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>Upon failure, a new try is made until all the allowed tries are exhausted and a final failure results in throwing an exception which fails the test case.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafiledoesnotexist">Verify a file does not exist</h1> 
+      <p>Keep polling until verify the searched file<strong> is NOT present</strong>.</p> 
+      <p>Fail if the searched file is present for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFileDoesNotExist();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFileDoesNotExist();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafilealwaysexists">Verify a file always exists</h1>
-      <p>The next code will succeed if the searched file<strong> is present for all polling attempts</strong>, otherwise it will fail.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafilealwaysexists">Verify a file always exists</h1> 
+      <p>The next code will succeed if the searched file<strong> is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFileAlwaysExists();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFileAlwaysExists();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafileneverexists">Verify a file never exists</h1>
-      <p>The next code will succeed if the searched file <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafileneverexists">Verify a file never exists</h1> 
+      <p>The next code will succeed if the searched file <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFileNeverExist();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFileNeverExist();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafolderexists">Verify a folder exists</h1>
-      <p>Here is how you can verify the existence of a folder</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafolderexists">Verify a folder exists</h1> 
+      <p>Here is how you can verify the existence of a folder</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">FileSystemVerification fsVerification = new FileSystemVerification( SERVER_IP, "/tmp" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">FileSystemVerification fsVerification = new FileSystemVerification( SERVER_IP, "/tmp" );
 
 // verify the GID and UID
 fsVerification.checkGID( 1001 );
@@ -173,47 +173,47 @@ fsVerification.checkPermissions( 1777 );
 
 fsVerification.verifyFolderExists();
 </pre> 
-       </div>
-      </div>
-      <p>The logic is basically the same as with the files. But of course all those <strong> <em>check...</em> </strong> methods are not applicable to folders.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafolderdoesnotexist">Verify a folder does not exist</h1>
-      <p>Keep polling until verify the searched folder<strong> is NOT present</strong>.</p>
-      <p>Fail if the searched folder is present for all polling attempts.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The logic is basically the same as with the files. But of course all those <strong> <em>check...</em> </strong> methods are not applicable to folders.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafolderdoesnotexist">Verify a folder does not exist</h1> 
+      <p>Keep polling until verify the searched folder<strong> is NOT present</strong>.</p> 
+      <p>Fail if the searched folder is present for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFolderDoesNotExist();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFolderDoesNotExist();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafolderalwaysexists">Verify a folder always exists</h1>
-      <p>The next code will succeed if the searched folder<strong> is present for all polling attempts</strong>, otherwise it will fail.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafolderalwaysexists">Verify a folder always exists</h1> 
+      <p>The next code will succeed if the searched folder<strong> is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFolderAlwaysExists();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFolderAlwaysExists();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Filesystemverifications-Verifyafolderneverexists">Verify a folder never exists</h1>
-      <p>The next code will succeed if the searched folder <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Filesystemverifications-Verifyafolderneverexists">Verify a folder never exists</h1> 
+      <p>The next code will succeed if the searched folder <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">fsVerification.verifyFolderNeverExist();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFolderNeverExist();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

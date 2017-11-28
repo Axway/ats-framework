@@ -23,26 +23,26 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>Following is a list with currently supported HTTP methods</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-GETmethod">GET method</h1>
-      <p>GET is used to retrieve an already existing resource on the server without modifying it</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>Following is a list with currently supported HTTP methods</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-GETmethod">GET method</h1> 
+      <p>GET is used to retrieve an already existing resource on the server without modifying it</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// execute a GET method
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// execute a GET method
 HttpResponse response = client.get();
 
 // now examine the response </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-POSTmethod">POST method</h1>
-      <p>POST is used to create a new resource on the server</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-POSTmethod">POST method</h1> 
+      <p>POST is used to create a new resource on the server</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// set the body to post by using one of the supported methods
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// set the body to post by using one of the supported methods
 // set the request content type as well
 client.setRequestBody( new File( &lt;path to a local file&gt; ), "text/xml" );
 
@@ -51,20 +51,20 @@ HttpResponse response = client.post();
 
 // now examine the response
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-PUTmethod">PUT method</h1>
-      <p>PUT is used to update an already existing resource on the server.</p>
-      <p>You can use the POST method as example, but call the <em>put</em> method instead.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-DELETEmethod">DELETE method</h1>
-      <p>DELETE is used to delete an already existing resource on the server</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-PUTmethod">PUT method</h1> 
+      <p>PUT is used to update an already existing resource on the server.</p> 
+      <p>You can use the POST method as example, but call the <em>put</em> method instead.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="HTTPOperations-ListofsupportedHTTPmethods-DELETEmethod">DELETE method</h1> 
+      <p>DELETE is used to delete an already existing resource on the server</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// make an instance of the HTTP client by specifying the target URI
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the HTTP client by specifying the target URI
 HttpClient client = new HttpClient( &lt;target URI&gt;/people/delete/123 );
 
 // execute a DELETE method
@@ -72,17 +72,17 @@ HttpResponse response = client.delete();
 
 // now examine the response
 </pre> 
-       </div>
-      </div>
-      <p>In this example we delete a person with id 123 which is specified as part of the URI.</p>
-      <p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="HTTP-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>In this example we delete a person with id 123 which is specified as part of the URI.</p> 
+      <p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="HTTP-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

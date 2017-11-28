@@ -22,43 +22,43 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="CustomloglevelonATSagents-Introduction">Introduction</h1>
-      <p>By default the log level on the agents is the same as the Test Executor's log level</p>
-      <p>This page describes how to change that level on the agent side. This makes sense for example when running performance tests and you want a verbose log level(like INFO) on the Test Executor and not so verbose log level(like ERROR) on the agent side.</p>
-      <div class="confluence-information-macro confluence-information-macro-note">
-       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>The presented info concerns only logging which goes to Test Executor DB.</p>
-        <p>It does not change the Agent log which goes to its log file.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="CustomloglevelonATSagents-Howtodoit">How to do it</h1>
-      <p>Somewhere in your test code you run code like the following:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="CustomloglevelonATSagents-Introduction">Introduction</h1> 
+      <p>By default the log level on the agents is the same as the Test Executor's log level</p> 
+      <p>This page describes how to change that level on the agent side. This makes sense for example when running performance tests and you want a verbose log level(like INFO) on the Test Executor and not so verbose log level(like ERROR) on the agent side.</p> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>The presented info concerns only logging which goes to Test Executor DB.</p> 
+        <p>It does not change the Agent log which goes to its log file.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="CustomloglevelonATSagents-Howtodoit">How to do it</h1> 
+      <p>Somewhere in your test code you run code like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// list with needed imports
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// list with needed imports
 import com.axway.ats.agent.webapp.client.AgentConfigurationClient;
 import com.axway.ats.log.LogLevel;
 
 // set the Agent log level to WARN
 new AgentConfigurationClient( &lt;agent address&gt; ).setLogLevel( LogLevel.WARN );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>The right place to put such code is some method annotated with <em>@BeforeClass</em> or <em>@BeforeSuite</em> TestNG annotation.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Test-logging.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>The right place to put such code is some method annotated with <em>@BeforeClass</em> or <em>@BeforeSuite</em> TestNG annotation.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Test-logging.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

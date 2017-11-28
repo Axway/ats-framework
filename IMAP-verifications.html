@@ -23,27 +23,27 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="IMAPverifications-Introduction">Introduction</h1>
-      <p>This page shows how you can verify whether some <em>Mime Message</em> is present or not in some <em>IMAP folder</em></p>
-      <p><em><br></em></p>
-      <hr>
-      <h1 id="IMAPverifications-Constructingtheverificationobject">Constructing the verification object</h1>
-      <p>&nbsp;</p>
-      <p>Define the connection and credential parameters for the IMAP folder of a particular user</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="IMAPverifications-Introduction">Introduction</h1> 
+      <p>This page shows how you can verify whether some <em>Mime Message</em> is present or not in some <em>IMAP folder</em></p> 
+      <p><em><br></em></p> 
+      <hr> 
+      <h1 id="IMAPverifications-Constructingtheverificationobject">Constructing the verification object</h1> 
+      <p>&nbsp;</p> 
+      <p>Define the connection and credential parameters for the IMAP folder of a particular user</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.rbv.clients.ImapVerification;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.ImapVerification;
 
 ImapVerification imapVerification = new ImapVerification( SERVER_IP, "test1", "password" );</pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Addverificationrules">Add verification rules</h1>
-      <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Addverificationrules">Add verification rules</h1> 
+      <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// check the subject
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// check the subject
 imapVerification.checkSubject( "RE: Hi" );
 
 // check some custom header
@@ -60,65 +60,65 @@ imapVerification.checkStringInAttachment( "Instructions for Mobile phone install
 
 // check the name of the only attachment using regular expression
 imapVerification.checkRegexInAttachmentName( ".*nokia3310.*", 0 );</pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note conf-macro output-block">
-       <div class="confluence-information-macro-body">
-        <p>&nbsp;</p>
-        <p>So far we have just specified what kind of message we are interested in.</p>
-        <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Verifyamessageexists">Verify a message exists</h1>
-      <p>Keep polling until verify the searched mail <strong>is present</strong>.</p>
-      <p>Fail if the searched mail is not found for all polling attempts.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note conf-macro output-block"> 
+       <div class="confluence-information-macro-body"> 
+        <p>&nbsp;</p> 
+        <p>So far we have just specified what kind of message we are interested in.</p> 
+        <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Verifyamessageexists">Verify a message exists</h1> 
+      <p>Keep polling until verify the searched mail <strong>is present</strong>.</p> 
+      <p>Fail if the searched mail is not found for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">imapVerification.verifyMessageExists();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">imapVerification.verifyMessageExists();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Verifyamessagedoesnotexist">Verify a message does not exist</h1>
-      <p>Keep polling until verify the searched mail <strong>is NOT present</strong>.</p>
-      <p>Fail if the searched mail is present for all polling attempts.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Verifyamessagedoesnotexist">Verify a message does not exist</h1> 
+      <p>Keep polling until verify the searched mail <strong>is NOT present</strong>.</p> 
+      <p>Fail if the searched mail is present for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">imapVerification.verifyMessageDoesNotExist();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">imapVerification.verifyMessageDoesNotExist();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Verifyamessagealwaysexists">Verify a message always exists</h1>
-      <p>The next code will succeed if the searched mail <strong>is present for all polling attempts</strong>, otherwise it will fail.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Verifyamessagealwaysexists">Verify a message always exists</h1> 
+      <p>The next code will succeed if the searched mail <strong>is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">imapVerification.verifyMessageAlwaysExists();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">imapVerification.verifyMessageAlwaysExists();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Verifyamessageneverexists">Verify a message never exists</h1>
-      <p>The next code will succeed if the searched mail <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Verifyamessageneverexists">Verify a message never exists</h1> 
+      <p>The next code will succeed if the searched mail <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">imapVerification.verifyMessageNeverExists();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">imapVerification.verifyMessageNeverExists();
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Workingwithanestedmessage">Working with a nested message</h1>
-      <p>All message checks are also available on nested messages.<br> You just have to use a method with the same name, but with an additional argument(s) used to identify the nested message to work with.</p>
-      <p>Have a look at the following example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Workingwithanestedmessage">Working with a nested message</h1> 
+      <p>All message checks are also available on nested messages.<br> You just have to use a method with the same name, but with an additional argument(s) used to identify the nested message to work with.</p> 
+      <p>Have a look at the following example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// check the subject of the main(top level) message
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// check the subject of the main(top level) message
 imapVerification.checkSubject( "RE: Hi" );
 
 // check the subject of the first nested message
@@ -130,23 +130,23 @@ imapVerification.checkSubject( "This is the second nested message", 1 );
 // check the subject of the second nested message of the first nested message
 imapVerification.checkSubject( "This is the second nested message of the first nested message", 0, 1 );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>Note that nested message indexes start from 0.</p>
-        <p>So 0 points to the first nested message, 1 points to the first nested message etc.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Extractthecontentofamessage">Extract the content of a message</h1>
-      <p>Sometimes upon verifying the message existence, you may need to extract some data from the message itself.</p>
-      <p>For example in the message body there might be some URL which you need in order to download some file. If we imagine this URL is generated on the fly by the message server, you need a way to extract it in order to do the next test step.</p>
-      <p>For this purpose two of the <em>ImapVerification</em> methods return the matched message. These are the <em>verifyMessageExists</em> and <em>verifyMessageAlwaysExists</em>. Have a look at the next example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>Note that nested message indexes start from 0.</p> 
+        <p>So 0 points to the first nested message, 1 points to the first nested message etc.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Extractthecontentofamessage">Extract the content of a message</h1> 
+      <p>Sometimes upon verifying the message existence, you may need to extract some data from the message itself.</p> 
+      <p>For example in the message body there might be some URL which you need in order to download some file. If we imagine this URL is generated on the fly by the message server, you need a way to extract it in order to do the next test step.</p> 
+      <p>For this purpose two of the <em>ImapVerification</em> methods return the matched message. These are the <em>verifyMessageExists</em> and <em>verifyMessageAlwaysExists</em>. Have a look at the next example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.objects.MimePackage;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.objects.MimePackage;
 import com.axway.ats.rbv.clients.ImapVerification;
 
 // get the message(represented as a MIME package) upon successful verification
@@ -167,36 +167,36 @@ String sender = mimePackage.getSender();
 // get the file name of the first attachment
 String firstAttachmentFileName = mimePackage.getAttachmentFileName( 0 );
 </pre> 
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>The number of&nbsp; get&nbsp; methods is very long. Lookup the code or java doc for the whole list.</p>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="IMAPverifications-Customizethejavamailsession">Customize the java mail session</h1>
-      <p>Following are examples showing how to configure the way java mail works.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>The number of&nbsp; get&nbsp; methods is very long. Lookup the code or java doc for the whole list.</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="IMAPverifications-Customizethejavamailsession">Customize the java mail session</h1> 
+      <p>Following are examples showing how to configure the way java mail works.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">    // Disable NTLM authentication. By default java mail tries NTLM authentication
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">    // Disable NTLM authentication. By default java mail tries NTLM authentication
     RbvConfigurator.getInstance().setCustomProperty( "mail.imap.auth.ntlm.disable", "true" );
 
     // set connection timeout period in milliseconds
     RbvConfigurator.getInstance().setCustomProperty( "mail.smtp.connectiontimeout", "10000" );
 
 </pre> 
-       </div>
-      </div>
-      <p>Note that we will apply any property starting with "mail" prefix.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>Note that we will apply any property starting with "mail" prefix.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

@@ -23,35 +23,35 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Iterationtimeout-Introduction">Introduction</h1>
-      <p>In some cases some of your action(s) may hang for a long period of time or for ever.</p>
-      <p>If it hangs for a long period of time, the result will be that your test will wait for this queue completion way too long than expected. <br>Imagine you are running 100 threads for 1 hour, but one of them complete in 4 hours. This means you will load your Application under test for 1 hour and then will wait 3 more hours until the last thread is done.</p>
-      <p>If you get an action hanging for ever then your test will never finish.</p>
-      <p><br></p>
-      <hr>
-      <h1 id="Iterationtimeout-Setmaxiterationtimeoutperiod">Set max iteration timeout period</h1>
-      <p>All <a href="Threading-patterns.html">threading patterns</a> support setting max time (in seconds) for iteration execution:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="Iterationtimeout-Introduction">Introduction</h1> 
+      <p>In some cases some of your action(s) may hang for a long period of time or for ever.</p> 
+      <p>If it hangs for a long period of time, the result will be that your test will wait for this queue completion way too long than expected. <br>Imagine you are running 100 threads for 1 hour, but one of them complete in 4 hours. This means you will load your Application under test for 1 hour and then will wait 3 more hours until the last thread is done.</p> 
+      <p>If you get an action hanging for ever then your test will never finish.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Iterationtimeout-Setmaxiterationtimeoutperiod">Set max iteration timeout period</h1> 
+      <p>All <a href="Threading-patterns.html">threading patterns</a> support setting max time (in seconds) for iteration execution:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// set max iteration timeout period to 5 minutes
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// set max iteration timeout period to 5 minutes
 pattern.setIterationTimeout( 5 * 60 );</pre> 
-       </div>
-      </div>
-      <p>In our example we will not allow an iteration to last longer than 5 minutes.</p>
-      <p>If timeout is reached the currently running action is canceled and marked as failed in Test Explorer UI. An error is logged about the iteration timeout and the thread goes to the next iteration(if there is such left).</p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>In order to stop the too long running iteration we actually interrupt its thread.</p>
-        <p>Thread interruption is an expensive operation, so if it happens very often you may experience significant CPU usage.</p>
-       </div>
-      </div>
-      <p><br></p>
-      <hr>
-      <h1 id="Iterationtimeout-Maxqueuetimeout">Max queue timeout</h1>
-      <p>There is one more way to achieve something similar. Please see the next code and read carefully its comments:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>In our example we will not allow an iteration to last longer than 5 minutes.</p> 
+      <p>If timeout is reached the currently running action is canceled and marked as failed in Test Explorer UI. An error is logged about the iteration timeout and the thread goes to the next iteration(if there is such left).</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>In order to stop the too long running iteration we actually interrupt its thread.</p> 
+        <p>Thread interruption is an expensive operation, so if it happens very often you may experience significant CPU usage.</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Iterationtimeout-Maxqueuetimeout">Max queue timeout</h1> 
+      <p>There is one more way to achieve something similar. Please see the next code and read carefully its comments:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.agent.webapp.client.ActionQueue;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.agent.webapp.client.ActionQueue;
 import com.axway.ats.agent.core.threading.patterns.FixedDurationAllAtOncePattern;
 
 // start a queue, but in a non-blocking manner
@@ -68,16 +68,16 @@ Thread.sleep( 62*60*1000 );
 
 // cancel this queue if still running
 ActionQueue.cancelQueue( "My running queue" );</pre> 
-       </div>
-      </div>
-      <p>As you can see we start a queue which is expected to run for 1 hour. If not done in 1 hour and 2 minutes we simple shut it down.</p>
-      <h3 id="Iterationtimeout-Drawback">Drawback</h3>
-      <p>Compared to using iteration timeout, canceling a queue has a major disadvantage: If one thread hangs for ever, it will stay like this until you cancel the queue at the end. This means this thread will be blocked all the time, while when using iteration timeout the thread will make new attempts after each iteration timeout.</p>
-      <hr>
+       </div> 
+      </div> 
+      <p>As you can see we start a queue which is expected to run for 1 hour. If not done in 1 hour and 2 minutes we simple shut it down.</p> 
+      <h3 id="Iterationtimeout-Drawback">Drawback</h3> 
+      <p>Compared to using iteration timeout, canceling a queue has a major disadvantage: If one thread hangs for ever, it will stay like this until you cancel the queue at the end. This means this thread will be blocked all the time, while when using iteration timeout the thread will make new attempts after each iteration timeout.</p> 
+      <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

@@ -22,61 +22,61 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="MailandSMTPoperations-Introduction">Introduction</h1>
-      <hr>
-      <p>This page shows how to manipulate and send Mime messages through SMTP.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="MailandSMTPoperations-CreatingandeditingaMIMEpackage">Creating and editing a MIME package</h1>
-      <h3 id="MailandSMTPoperations-CreatinganemptyMIMEpackage">Creating an empty MIME package</h3>
-      <p>You can create a Mime package from scratch.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="MailandSMTPoperations-Introduction">Introduction</h1> 
+      <hr> 
+      <p>This page shows how to manipulate and send Mime messages through SMTP.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="MailandSMTPoperations-CreatingandeditingaMIMEpackage">Creating and editing a MIME package</h1> 
+      <h3 id="MailandSMTPoperations-CreatinganemptyMIMEpackage">Creating an empty MIME package</h3> 
+      <p>You can create a Mime package from scratch.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.objects.MimePackage;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.objects.MimePackage;
 
 MimePackage mail = new MimePackage();
 </pre> 
-       </div>
-      </div>
-      <h3 id="MailandSMTPoperations-LoadingaMIMEpackagefromdatabase">Loading a MIME package from database</h3>
-      <p>You can load Mime package from a database.</p>
-      <div class="confluence-information-macro confluence-information-macro-note">
-       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span>
-       <div class="confluence-information-macro-body">
-        <p>When loading a message from a database, ATS expects specific format of the table with the messages.</p>
-        <p>Please contact our team if you intend to use this feature.</p>
-       </div>
-      </div>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="MailandSMTPoperations-LoadingaMIMEpackagefromdatabase">Loading a MIME package from database</h3> 
+      <p>You can load Mime package from a database.</p> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>When loading a message from a database, ATS expects specific format of the table with the messages.</p> 
+        <p>Please contact our team if you intend to use this feature.</p> 
+       </div> 
+      </div> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// The host from which the packages are loaded is read from a message box instance
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// The host from which the packages are loaded is read from a message box instance
 MimePackage mail = PackageLoader.loadMimePackageFromDb( 123456 );
 
 // or you can specify the Message Box to use
 MimePackage mail = PackageLoader.loadMimePackageFromDb( 123456, "some Message Box name" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="MailandSMTPoperations-EditingaMIMEpackage.Useoneofthemany&quot;setter&quot;methods">Editing a MIME package. Use one of the many "setter" methods</h1>
-      <p>Once you have the Mime package object, you can use the variety of methods which modify its content.<br> The list of methods is very large, so please use the auto-complete feature of Eclipse to see the current options.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="MailandSMTPoperations-EditingaMIMEpackage.Useoneofthemany&quot;setter&quot;methods">Editing a MIME package. Use one of the many "setter" methods</h1> 
+      <p>Once you have the Mime package object, you can use the variety of methods which modify its content.<br> The list of methods is very large, so please use the auto-complete feature of Eclipse to see the current options.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">mail.setSubject( "A test message" );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">mail.setSubject( "A test message" );
 mail.setRecipient( "recipient@test.com" );
 mail.setHeader( "MY-CUSTOM-HEADER-NAME", "MY-CUSTOM-HEADER-VALUE" );
 mail.addAttachment( "C:/attachment.txt" );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="MailandSMTPoperations-SendingaMIMEpackage">Sending a MIME package</h1>
-      <p>When the mail is ready, you can send it over one of the supported mail senders</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="MailandSMTPoperations-SendingaMIMEpackage">Sending a MIME package</h1> 
+      <p>When the mail is ready, you can send it over one of the supported mail senders</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.mail.MailSender;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.mail.MailSender;
 
 // Create the mail sender object
 MailSender mailSender = new MailSender();
@@ -84,13 +84,13 @@ MailSender mailSender = new MailSender();
 // Send the message
 mailSender.send( mail );
 </pre> 
-       </div>
-      </div>
-      <h3 id="MailandSMTPoperations-SendingaMIMEpackageoverTLS">Sending a MIME package over TLS</h3>
-      <p>If you want to send the mail securely(over TLS) you need to use the TLS mail sender.</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <h3 id="MailandSMTPoperations-SendingaMIMEpackageoverTLS">Sending a MIME package over TLS</h3> 
+      <p>If you want to send the mail securely(over TLS) you need to use the TLS mail sender.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.action.mail.MailTlsSender
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.mail.MailTlsSender
 
 // Create the mail TLS sender object
 MailSender mailSender = new MailTlsSender();
@@ -98,16 +98,16 @@ MailSender mailSender = new MailTlsSender();
 // Send the message
 mailSender.send( mail );
 </pre> 
-       </div>
-      </div>
-      <p>The MailTlsSender comes with a built-in JavaMail trust manager which does not perform validation of the server's certificate i.e. it trusts everybody.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="MailandSMTPoperations-SigningaMIMEpackage">Signing a MIME package</h1>
-      <p>If you want to sign the mail prior to sending, here is example code:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The MailTlsSender comes with a built-in JavaMail trust manager which does not perform validation of the server's certificate i.e. it trusts everybody.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="MailandSMTPoperations-SigningaMIMEpackage">Signing a MIME package</h1> 
+      <p>If you want to sign the mail prior to sending, here is example code:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Create the signer
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Create the signer
 PackageEncryptor signer = new SMimePackageEncryptor( "&lt;keystore/certificate (chain) file&gt;", "&lt;keystore file password&gt;", "&lt;key pair alias or CN (Common Name) if there is no private key&gt;");
 
 // Set a specific signature algorithm
@@ -120,16 +120,16 @@ mailSender.setSigner( signer );
 // Now the message will be signed prior to sending
 mailSender.send( mail );
 </pre> 
-       </div>
-      </div>
-      <p>The message is signed prior to sending. It the message will be encrypted as well, it is first signed.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="MailandSMTPoperations-EncryptingaMIMEpackage">Encrypting a MIME package</h1>
-      <p>If you want to encrypt the mail prior to sending, here is example code:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The message is signed prior to sending. It the message will be encrypted as well, it is first signed.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="MailandSMTPoperations-EncryptingaMIMEpackage">Encrypting a MIME package</h1> 
+      <p>If you want to encrypt the mail prior to sending, here is example code:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// Create the encriptor
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Create the encriptor
 PackageEncryptor encryptor =  new SMimePackageEncryptor( "&lt;keystore file/certificate (chain)&gt;", "&lt;keystore file password&gt;", "&lt;key pair alias(es) or CNs (Common Name) if there is no private key&gt;");
 
 // Set a specific encryption cipher
@@ -142,18 +142,18 @@ mailSender.setEncryptor( encryptor );
 // Now the message will be encrypted prior to sending
 mailSender.send( mail );
 </pre> 
-       </div>
-      </div>
-      <p>The message is encrypted prior to sending.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="MailandSMTPoperations-SMTPOperations">SMTP Operations</h1>
-      <hr>
-      <p>&nbsp;</p>
-      <p>If you want you can open SMTP connections and send direct SMTP commands. Here is a simple example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The message is encrypted prior to sending.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="MailandSMTPoperations-SMTPOperations">SMTP Operations</h1> 
+      <hr> 
+      <p>&nbsp;</p> 
+      <p>If you want you can open SMTP connections and send direct SMTP commands. Here is a simple example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get connected to a SMTP host
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get connected to a SMTP host
 SmtpManager smtpMgr = new SmtpManager();
 int connectionId = smtpMgr.openConnection( &lt;SMTP host&gt;, &lt;SMTP port&gt; );
 SmtpConnection smtpConnection = smtpObject.getConnection( connectionId );
@@ -168,16 +168,16 @@ smtpConnection.finishData();
 // release the allocated resources
 smtpMgr.closeConnection( connectionId  );
 </pre> 
-       </div>
-      </div>
-      <p>You can also open and close more than one connection at once. For the full list of supported operations please refer to the java documentation.</p>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>You can also open and close more than one connection at once. For the full list of supported operations please refer to the java documentation.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

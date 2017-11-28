@@ -23,14 +23,14 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>You should always carefully examine the response otherwise you will not be confident in the success of your REST call.</p>
-      <p>Additionally, often you will need to get data from the response in order to decide how to continue your test execution.</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththeresponse-Specifyresponsemediatype">Specify response media type</h1>
-      <p>You can specify the response media type in the same ways as you do with the request media type:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <p>You should always carefully examine the response otherwise you will not be confident in the success of your REST call.</p> 
+      <p>Additionally, often you will need to get data from the response in order to decide how to continue your test execution.</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththeresponse-Specifyresponsemediatype">Specify response media type</h1> 
+      <p>You can specify the response media type in the same ways as you do with the request media type:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// receive as text/plain
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// receive as text/plain
 client.setResponseMediaType( RestMediaType.TEXT_PLAIN );
 
 // receive as text/html
@@ -39,15 +39,15 @@ client.setResponseMediaType( RestMediaType.TEXT_HTML );
 // receive as application/xml
 client.setResponseMediaType( RestMediaType.APPLICATION_XML );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththeresponse-Exploretheresponse">Explore the response</h1>
-      <p>Every REST method returns a RestResponse and here are some useful methods it has:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththeresponse-Exploretheresponse">Explore the response</h1> 
+      <p>Every REST method returns a RestResponse and here are some useful methods it has:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">// get status code, for example "200"
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get status code, for example "200"
 int statusCode = response.getStatusCode();
 
 // get status message, for example "SUCCESS"
@@ -62,20 +62,20 @@ String body = response.getBodyAsString();
 // get received body as java Object
 Person person = response.getBodyAsObject( Person.class );
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="RESTOperations-Workingwiththeresponse-Verifytheresponse">Verify the response</h1>
-      <p>Every HTTP method could be verified by header, body, status code, status message</p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>ATS <strong> <em>verify methods</em> </strong> check if the condition is met, if not an exception is thrown and this fails the test with an appropriate error message.</p>
-       </div>
-      </div>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RESTOperations-Workingwiththeresponse-Verifytheresponse">Verify the response</h1> 
+      <p>Every HTTP method could be verified by header, body, status code, status message</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>ATS <strong> <em>verify methods</em> </strong> check if the condition is met, if not an exception is thrown and this fails the test with an appropriate error message.</p> 
+       </div> 
+      </div> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">	// verify status code, for example "200"
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">	// verify status code, for example "200"
 response.verifyStatusCode(200);
 
 // verify status message, for example "SUCCESS"
@@ -96,15 +96,15 @@ response.verifyBodyMatch("Some simple page response");
 // verify response body by REGEX, e.g. response body "Some simple page response"
 response.verifyBodyRegex(".*page\\D");
 </pre> 
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>

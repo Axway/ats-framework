@@ -22,59 +22,59 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Commontestverifications-Introduction">Introduction</h1>
-      <p>A regular test scenario can be broken in three important parts or phases:</p>
-      <ol>
-       <li><strong> <em>Configuration</em> </strong> - prepares the environment for the test execution</li>
-       <li><em> <strong>Action</strong> </em> - the actual execution of the test steps</li>
-       <li><strong> <em>Verification</em> </strong> - tells whether the product behaved as expected or not</li>
-      </ol>
-      <p>We consider all three parts as very important. This page talks about the third one - the <em>Verification</em></p>
-      <p><em> <br> </em></p>
-      <hr>
-      <h1 id="Commontestverifications-RBVintroduction">RBV introduction</h1>
-      <p>We have noticed that some types of verification are needed for many of the test scenarios. In order to make these checks easier, we have come up with our <strong> <em>Rule Based Verification</em> </strong> (or simply called <strong> <em>RBV</em> </strong>) library</p>
-      <p>It allows you to easily do verifications on the following objects:</p>
-      <ul>
-       <li>File and folders - using the <strong> <em>FileSystemVerification</em> </strong> class</li>
-       <li>Databases - using the <strong> <em>DbVerification</em> </strong> class</li>
-       <li>Mail in IMAP folders - using the <strong> <em>ImapVerification</em> </strong> class</li>
-       <li>Your own custom objects</li>
-      </ul>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Commontestverifications-Filesystemverifications">File system verifications</h1>
-      <p><span class="confluence-anchor-link" id="Commontestverifications-Filesystemverifications"></span></p>
-      <p>Here is some very basic check on the file system</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+      <h1 id="Commontestverifications-Introduction">Introduction</h1> 
+      <p>A regular test scenario can be broken in three important parts or phases:</p> 
+      <ol> 
+       <li><strong> <em>Configuration</em> </strong> - prepares the environment for the test execution</li> 
+       <li><em> <strong>Action</strong> </em> - the actual execution of the test steps</li> 
+       <li><strong> <em>Verification</em> </strong> - tells whether the product behaved as expected or not</li> 
+      </ol> 
+      <p>We consider all three parts as very important. This page talks about the third one - the <em>Verification</em></p> 
+      <p><em> <br> </em></p> 
+      <hr> 
+      <h1 id="Commontestverifications-RBVintroduction">RBV introduction</h1> 
+      <p>We have noticed that some types of verification are needed for many of the test scenarios. In order to make these checks easier, we have come up with our <strong> <em>Rule Based Verification</em> </strong> (or simply called <strong> <em>RBV</em> </strong>) library</p> 
+      <p>It allows you to easily do verifications on the following objects:</p> 
+      <ul> 
+       <li>File and folders - using the <strong> <em>FileSystemVerification</em> </strong> class</li> 
+       <li>Databases - using the <strong> <em>DbVerification</em> </strong> class</li> 
+       <li>Mail in IMAP folders - using the <strong> <em>ImapVerification</em> </strong> class</li> 
+       <li>Your own custom objects</li> 
+      </ul> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-Filesystemverifications">File system verifications</h1> 
+      <p><span class="confluence-anchor-link" id="Commontestverifications-Filesystemverifications"></span></p> 
+      <p>Here is some very basic check on the file system</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.rbv.clients.FileSystemVerification;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.FileSystemVerification;
 
 FileSystemVerification fsVerification = new FileSystemVerification( SERVER_IP, FILE_LOCATION );
 fsVerification.verifyFileExists();
 </pre> 
-       </div>
-      </div>
-      <p>The above code will check whether some file exists on some remote host. If does not exists on the first poll, RBV will try over and over until the file is found or until all attempts are exhausted.</p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>If you want to work locally, use the constructor which does not specify a remote host ip</p>
-       </div>
-      </div>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <p>When working remotely, the ATS Agent must be running on the remote host</p>
-       </div>
-      </div>
-      <p class="confluence-link"><a href="File-system-verifications.html">Here</a> you can see more complex examples</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Commontestverifications-Databaseverifications">Database verifications</h1>
-      <p><span class="confluence-anchor-link" id="Commontestverifications-Databaseverifications"></span></p>
-      <p>Here is some very basic check in a database</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The above code will check whether some file exists on some remote host. If does not exists on the first poll, RBV will try over and over until the file is found or until all attempts are exhausted.</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you want to work locally, use the constructor which does not specify a remote host ip</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>When working remotely, the ATS Agent must be running on the remote host</p> 
+       </div> 
+      </div> 
+      <p class="confluence-link"><a href="File-system-verifications.html">Here</a> you can see more complex examples</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-Databaseverifications">Database verifications</h1> 
+      <p><span class="confluence-anchor-link" id="Commontestverifications-Databaseverifications"></span></p> 
+      <p>Here is some very basic check in a database</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.rbv.clients.DbVerification;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.DbVerification;
 
 TestBox serverBox = new TestBox();
 serverBox.setHost( SERVER_IP );
@@ -92,18 +92,18 @@ dbVerification.checkFieldValueContains( "", "column1", "How old" );
 // trigger the verification process
 dbVerification.verifyDbDataExists();
 </pre> 
-       </div>
-      </div>
-      <p>This example shows how we can check whether some cell value exists in the specified table. If does not exists on the first poll, RBV will try over and over until the value is found or until all attempts are exhausted.</p>
-      <p class="confluence-link"><a href="Database-verifications.html">Here</a> you can see more complex examples</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Commontestverifications-IMAPverifications">IMAP verifications</h1>
-      <p><span class="confluence-anchor-link" id="Commontestverifications-IMAPverifications"></span></p>
-      <p>Here is some very basic check of a mail in some <em>IMAP folder</em></p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>This example shows how we can check whether some cell value exists in the specified table. If does not exists on the first poll, RBV will try over and over until the value is found or until all attempts are exhausted.</p> 
+      <p class="confluence-link"><a href="Database-verifications.html">Here</a> you can see more complex examples</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-IMAPverifications">IMAP verifications</h1> 
+      <p><span class="confluence-anchor-link" id="Commontestverifications-IMAPverifications"></span></p> 
+      <p>Here is some very basic check of a mail in some <em>IMAP folder</em></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">import com.axway.ats.rbv.clients.ImapVerification;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.ImapVerification;
 
 // define the connection and credential parameters for the IMAP folder of a particular user
 ImapVerification imapVerification = new ImapVerification( SERVER_IP, "test1", "password" );
@@ -117,19 +117,19 @@ imapVerification.checkBody( "Financing of the transaction" );
 // now trigger the process for finding the expected message
 imapVerification.verifyMessageExists();
 </pre> 
-       </div>
-      </div>
-      <p>The above code will check whether the INBOX folder of some IMAP user contains a message with specific subject and it contains some specific text in its body.</p>
-      <p class="confluence-link"><a href="IMAP-verifications.html">Here</a> you can see more complex examples</p>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Commontestverifications-TheRBVEngine">The RBV Engine</h1>
-      <p>One of the main <em>RBV</em> features is that it has an internal engine which not only checks if the requested conditions are met, but it also re-tries as many times as needed.</p>
-      <p>Imagine your are expecting some file to appear at some remote server, but the file will probably not appear at the very first time you check. In such case you need to check a few times before giving up.</p>
-      <p><em>RBV</em> does all checks several times with a specific interval between the checks. You can change the polling configuration at run-time using the <em>RbvConfigurator</em> class. For example:</p>
-      <div class="code panel pdl" style="border-width: 1px;">
+       </div> 
+      </div> 
+      <p>The above code will check whether the INBOX folder of some IMAP user contains a message with specific subject and it contains some specific text in its body.</p> 
+      <p class="confluence-link"><a href="IMAP-verifications.html">Here</a> you can see more complex examples</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-TheRBVEngine">The RBV Engine</h1> 
+      <p>One of the main <em>RBV</em> features is that it has an internal engine which not only checks if the requested conditions are met, but it also re-tries as many times as needed.</p> 
+      <p>Imagine your are expecting some file to appear at some remote server, but the file will probably not appear at the very first time you check. In such case you need to check a few times before giving up.</p> 
+      <p><em>RBV</em> does all checks several times with a specific interval between the checks. You can change the polling configuration at run-time using the <em>RbvConfigurator</em> class. For example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">RbvConfigurator rbvConfigurator = RbvConfigurator.getInstance();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RbvConfigurator rbvConfigurator = RbvConfigurator.getInstance();
 
 // number of maximum polls
 rbvConfigurator.setPollingAttempts( 10 );
@@ -142,100 +142,100 @@ rbvConfigurator.setPollingInitialDelay( 60 * 1000 );
 // the interval(in ms) between each poll
 rbvConfigurator.setPollingInterval( 500 );
 </pre> 
-       </div>
-      </div>
-      <p>The above code will cause maximum 10 polling attempts with 0.5 seconds interval between each two attempts and the first poll will be happen after 1 minute</p>
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note">
-       <div class="confluence-information-macro-body">
-        <pre>RbvConfigurator keeps the default settings. But if needed, you can them overwrite for some particular instances.</pre>
-       </div>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Commontestverifications-Setconfigurationsettingsforthecurrentverificationinstance">Set configuration settings for the current verification instance</h1>
-      <p>Using the following methods you can change configuration settings, just for the current verification instance. <br>These methods are accessible for File system, IMAP and Database verification instances.</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+       </div> 
+      </div> 
+      <p>The above code will cause maximum 10 polling attempts with 0.5 seconds interval between each two attempts and the first poll will be happen after 1 minute</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <pre>RbvConfigurator keeps the default settings. But if needed, you can them overwrite for some particular instances.</pre> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-Setconfigurationsettingsforthecurrentverificationinstance">Set configuration settings for the current verification instance</h1> 
+      <p>Using the following methods you can change configuration settings, just for the current verification instance. <br>These methods are accessible for File system, IMAP and Database verification instances.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh">method</th>
-          <th class="confluenceTh">description</th>
-         </tr>
-         <tr>
-          <td class="confluenceTd">setPollingInitialDelay</td>
-          <td class="confluenceTd">Set polling initial delay for the current instance only</td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">setPollingAttempts</td>
-          <td class="confluenceTd">Set polling attempts for the current instance only</td>
-         </tr>
-         <tr>
-          <td class="confluenceTd">setPollingInterval</td>
-          <td class="confluenceTd">Set polling interval for the current instance only</td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <h1 id="Commontestverifications-Verificationtypes">Verification types</h1>
-      <p>The following table looks somewhat complex, but it gives a very good picture on the behavior of <em>RBV</em> when using the different <em>verify</em> methods:</p>
-      <p>&nbsp;</p>
-      <div class="table-wrap">
-       <table class="wrapped confluenceTable">
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh">method</th> 
+          <th class="confluenceTh">description</th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">setPollingInitialDelay</td> 
+          <td class="confluenceTd">Set polling initial delay for the current instance only</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">setPollingAttempts</td> 
+          <td class="confluenceTd">Set polling attempts for the current instance only</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">setPollingInterval</td> 
+          <td class="confluenceTd">Set polling interval for the current instance only</td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-Verificationtypes">Verification types</h1> 
+      <p>The following table looks somewhat complex, but it gives a very good picture on the behavior of <em>RBV</em> when using the different <em>verify</em> methods:</p> 
+      <p>&nbsp;</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
         <colgroup> 
          <col> 
          <col> 
          <col> 
          <col> 
-        </colgroup>
-        <tbody>
-         <tr>
-          <th class="confluenceTh"><p><em>FileSystemVerification</em></p></th>
-          <th class="confluenceTh"><p><em>DbVerification</em></p></th>
-          <th class="confluenceTh"><p><em>ImapVerification</em></p></th>
-          <th class="confluenceTh"><p>Description</p></th>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyFileExists <br class="atl-forced-newline"> verifyFolderExists</p></td>
-          <td class="confluenceTd"><p>verifyDbDataExists</p></td>
-          <td class="confluenceTd"><p>verifyMessageExists</p></td>
-          <td class="confluenceTd"><p><strong>Verify the searched object exists</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> It will keep polling until verify the searched object is present and matches all the check rules. <br class="atl-forced-newline"> So if for example the object is present from the very beginning, the verification will succeed at the first poll, otherwise it will keep polling until the search object appear(ending with success) or the polling attempts are exhausted(ending with failure).</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyFileDoesNotExist <br class="atl-forced-newline"> verifyFolderDoesNotExist</p></td>
-          <td class="confluenceTd"><p>verifyDbDataDoesNotExist</p></td>
-          <td class="confluenceTd"><p>verifyMessageDoesNotExist</p></td>
-          <td class="confluenceTd"><p><strong>Verify the searched object does not exist</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> It will keep polling until verify the searched object is not present. <br class="atl-forced-newline"> So if for example the object is not present from the very beginning, the verification will succeed at the first poll, otherwise it will keep polling until the search object disappear(ending with success) or the polling attempts are exhausted(ending with failure)</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyFileAlwaysExists <br class="atl-forced-newline"> verifyFolderAlwaysExists</p></td>
-          <td class="confluenceTd"><p>verifyDbDataAlwaysExists</p></td>
-          <td class="confluenceTd"><p>verifyMessageAlwaysExists</p></td>
-          <td class="confluenceTd"><p><strong>Verify</strong> <strong>the searched object</strong> <strong>exists all the time</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> The searched object along with all rules for checking must be present for the whole polling period, this will result in success. If the searched object is not present even once, the verification fails right away.</p></td>
-         </tr>
-         <tr>
-          <td class="confluenceTd"><p>verifyFileNeverExist <br class="atl-forced-newline"> verifyFolderNeverExist</p></td>
-          <td class="confluenceTd"><p>verifyDbDataNeverExists</p></td>
-          <td class="confluenceTd"><p>verifyMessageNeverExists</p></td>
-          <td class="confluenceTd"><p><strong>Verify</strong> <strong>the searched object</strong> <strong>does not exist all the time</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> The searched object must not be present for the whole polling period, this will result in success. If the searched object is present even once, the verification fails right away.</p></td>
-         </tr>
-        </tbody>
-       </table>
-      </div>
-      <p>&nbsp;</p>
-      <hr>
-      <p>&nbsp;</p>
-      <hr>
-      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p>
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh"><p><em>FileSystemVerification</em></p></th> 
+          <th class="confluenceTh"><p><em>DbVerification</em></p></th> 
+          <th class="confluenceTh"><p><em>ImapVerification</em></p></th> 
+          <th class="confluenceTh"><p>Description</p></th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyFileExists <br class="atl-forced-newline"> verifyFolderExists</p></td> 
+          <td class="confluenceTd"><p>verifyDbDataExists</p></td> 
+          <td class="confluenceTd"><p>verifyMessageExists</p></td> 
+          <td class="confluenceTd"><p><strong>Verify the searched object exists</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> It will keep polling until verify the searched object is present and matches all the check rules. <br class="atl-forced-newline"> So if for example the object is present from the very beginning, the verification will succeed at the first poll, otherwise it will keep polling until the search object appear(ending with success) or the polling attempts are exhausted(ending with failure).</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyFileDoesNotExist <br class="atl-forced-newline"> verifyFolderDoesNotExist</p></td> 
+          <td class="confluenceTd"><p>verifyDbDataDoesNotExist</p></td> 
+          <td class="confluenceTd"><p>verifyMessageDoesNotExist</p></td> 
+          <td class="confluenceTd"><p><strong>Verify the searched object does not exist</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> It will keep polling until verify the searched object is not present. <br class="atl-forced-newline"> So if for example the object is not present from the very beginning, the verification will succeed at the first poll, otherwise it will keep polling until the search object disappear(ending with success) or the polling attempts are exhausted(ending with failure)</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyFileAlwaysExists <br class="atl-forced-newline"> verifyFolderAlwaysExists</p></td> 
+          <td class="confluenceTd"><p>verifyDbDataAlwaysExists</p></td> 
+          <td class="confluenceTd"><p>verifyMessageAlwaysExists</p></td> 
+          <td class="confluenceTd"><p><strong>Verify</strong> <strong>the searched object</strong> <strong>exists all the time</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> The searched object along with all rules for checking must be present for the whole polling period, this will result in success. If the searched object is not present even once, the verification fails right away.</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><p>verifyFileNeverExist <br class="atl-forced-newline"> verifyFolderNeverExist</p></td> 
+          <td class="confluenceTd"><p>verifyDbDataNeverExists</p></td> 
+          <td class="confluenceTd"><p>verifyMessageNeverExists</p></td> 
+          <td class="confluenceTd"><p><strong>Verify</strong> <strong>the searched object</strong> <strong>does not exist all the time</strong> <br class="atl-forced-newline"> <strong> <em>Behavior:</em> </strong> The searched object must not be present for the whole polling period, this will result in success. If the searched object is present even once, the verification fails right away.</p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>
+  </div>   
  </body>
 </html>
