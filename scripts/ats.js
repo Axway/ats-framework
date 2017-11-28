@@ -4,7 +4,7 @@ function toggle_ul_elements() {
 	
 	// expand up until element with text equal to the document.referer is found
 	$('#content').find('a').each(function(idx, itm){
-		if ( $(itm).text() == document.referer ) {
+		if ( document.referer.includes( $(itm).text() ) ) {
 			$(itm).siblings('p.expand_sign').click();
 			var ul_parent =  $(itm).parent().parent();
 			$(ul_parent).parents('ul > li').children('p.expand_sign').click();
