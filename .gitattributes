@@ -1,13 +1,11 @@
-* -text !eol
-*.java eol=crlf
-*.java -text
-*.properties -text
-*.xml -text
+*.java text diff=java eol=crlf
+*.properties text eol=crlf
+*.xml text eol=crlf
 *.xsd -text
-*.bat -text
-*.sh -text
-*.txt -text
+*.bat text eol=crlf
+*.sh text eol=crlf
+*.txt text eol=crlf
 .template -text
-*.version -text
+*.version text eol=crlf
 .classpath -text
 .project -text
