@@ -77,6 +77,7 @@ import com.axway.ats.action.objects.MimePackage;
 import com.axway.ats.action.objects.model.Package;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.SslUtils;
 import com.sun.mail.util.BASE64DecoderStream;
 
 public class SMimePackageEncryptor implements PackageEncryptor {
@@ -167,6 +168,10 @@ public class SMimePackageEncryptor implements PackageEncryptor {
         @PublicAtsApi
         public static final String SHA512_with_RSA = PKCSObjectIdentifiers.sha512WithRSAEncryption.getId();
 
+    }
+    
+    static {
+        SslUtils.registerBCProvider();
     }
 
     /**

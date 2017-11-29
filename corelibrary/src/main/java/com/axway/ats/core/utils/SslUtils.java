@@ -24,7 +24,9 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.axway.ats.common.dbaccess.OracleKeys;
 
@@ -508,6 +511,62 @@ public class SslUtils {
         public X509Certificate[] getAcceptedIssuers() {
 
             return acceptedIssuers;
+        }
+    }
+
+    /**
+     * Registers Bouncy Castle as first security provider before any other providers 
+     * coming with the java runtime.
+     * </br>ATS calls this method internally when it is supposed to be needed.
+     * 
+     * </br></br><b>Note:</b> This is a static operation. All working threads will be affected. 
+     * The method itself is not thread-safe.
+     * 
+     * </br></br><b>Note:</b> It does not duplicate if already available.
+     */
+    public static void registerBCProvider() {
+
+        boolean needToInsert = true;
+        boolean needToRemove = false;
+
+        Provider bcProvider = new BouncyCastleProvider();
+        Provider[] providers = Security.getProviders();
+
+        for( int i = 0; i < providers.length; i++ ) {
+            if( providers[i].getName().equalsIgnoreCase( bcProvider.getName() ) ) {
+                if( i == 0 ) {
+                    needToInsert = false;
+                } else {
+                    needToRemove = true;
+                }
+                break;
+            }
+        }
+
+        if( needToInsert ) {
+            if( needToRemove ) {
+                Security.removeProvider( bcProvider.getName() );
+            }
+            Security.insertProviderAt( bcProvider, 1 );
+
+            log.info( "Bouncy Castle security provider is registered as first in the list of available providers" );
+        }
+    }
+
+    /**
+     * Unregisters Bouncy Castle security provider
+     */
+    public static void unregisterBCProvider() {
+
+        final String bcProviderName = new BouncyCastleProvider().getName();
+        Provider[] providers = Security.getProviders();
+
+        for( int i = 0; i < providers.length; i++ ) {
+            if( providers[i].getName().equalsIgnoreCase( bcProviderName ) ) {
+                Security.removeProvider( bcProviderName );
+                log.info( "Bouncy Castle security provider is unregistered from the list of available providers" );
+                return;
+            }
         }
     }
 }
