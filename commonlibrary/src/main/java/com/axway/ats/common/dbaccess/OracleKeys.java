@@ -22,8 +22,8 @@ import com.axway.ats.common.PublicAtsApi;
 public class OracleKeys extends DbKeys {
 
     @PublicAtsApi
-    public static final String SID_KEY           = "SID";
+    public static final String SID_KEY          = "SID";
 
     @PublicAtsApi
-    public static final String SERVICE_NAME_KEY  = "SERVICE NAME";
+    public static final String SERVICE_NAME_KEY = "SERVICE NAME";
 }

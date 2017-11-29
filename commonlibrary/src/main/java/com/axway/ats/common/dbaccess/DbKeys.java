@@ -24,26 +24,26 @@ public class DbKeys {
      * The key for the port custom property
      */
     @PublicAtsApi
-    public static final String    PORT_KEY = "PORT";
-    
+    public static final String PORT_KEY              = "PORT";
+
     /**
      * Use this property with value 'true' to use the admin credentials
      */
     @PublicAtsApi
     public static final String USE_ADMIN_CREDENTIALS = "USE_ADMIN_CREDENTIALS";
-    
+
     /**
      * Use this property with value 'true' to use SSL connection
      */
-    public static final String USE_SECURE_SOCKET = "USE_SECURE_SOCKET";
+    public static final String USE_SECURE_SOCKET     = "USE_SECURE_SOCKET";
 
     @PublicAtsApi
-    public static final String KEY_STORE_FULL_PATH = "javax.net.ssl.trustStore";
+    public static final String KEY_STORE_FULL_PATH   = "javax.net.ssl.trustStore";
 
     @PublicAtsApi
-    public static final String KEY_STORE_TYPE = "javax.net.ssl.trustStoreType";
+    public static final String KEY_STORE_TYPE        = "javax.net.ssl.trustStoreType";
 
     @PublicAtsApi
-    public static final String KEY_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+    public static final String KEY_STORE_PASSWORD    = "javax.net.ssl.trustStorePassword";
 
 }

@@ -92,9 +92,9 @@ public class NetworkingStopWatch {
      * @param actionNameStepWithNumber
      */
     public void step0_SetNewContext(
-                                     String actionNameStepWithNumber ) {
+                                     String actionNameStepWithNumber) {
 
-        if( logTimer.isTraceEnabled() ) {
+        if (logTimer.isTraceEnabled()) {
             logTimer.trace( "Starting new step " + actionNameStepWithNumber + " and reset timers" );
         }
         currentActionName = actionNameStepWithNumber;
@@ -131,7 +131,7 @@ public class NetworkingStopWatch {
 
         timerNetAndServerProcessingTime.start();
         timerNetAndServerProcessingTime.suspend();
-        if( timerNetAndServerProcessingTime.getTime() > 20 ) { // if start/suspend delay is relatively big
+        if (timerNetAndServerProcessingTime.getTime() > 20) { // if start/suspend delay is relatively big
             logTimer.warn( "Due to thread delay network timer intially starts with "
                            + timerNetAndServerProcessingTime.getTime()
                            + "ms more. Probably the system is too much loaded." );
@@ -143,7 +143,7 @@ public class NetworkingStopWatch {
      */
     public void step5_StartInterimTimer() {
 
-        if( logTimer.isTraceEnabled() ) {
+        if (logTimer.isTraceEnabled()) {
             logTimer.trace( "This action step " + currentActionName + " request network time took "
                             + timerNetAndServerProcessingTime.getTime() + " ms" );
         }

@@ -40,12 +40,12 @@ public class TemplateActionsXmlDefinitions {
     public static final String   TOKEN_HEADER_VALUE_ATTRIBUTE      = "value";
 
     public static final String[] NON_SIGNIFICANT_HEADERS           = new String[]{ "Date",
-            "Expires",
-            "Keep-Alive",
-            "Cache-Control",
-            "Last-Modified",
-            "Connection",
-            "Accept-Ranges",
-            "Pragma",
-            "ETag" /* Used for detecting modified resources */    };
+                                                                                   "Expires",
+                                                                                   "Keep-Alive",
+                                                                                   "Cache-Control",
+                                                                                   "Last-Modified",
+                                                                                   "Connection",
+                                                                                   "Accept-Ranges",
+                                                                                   "Pragma",
+                                                                                   "ETag" /* Used for detecting modified resources */ };
 }

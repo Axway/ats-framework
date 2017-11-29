@@ -23,7 +23,6 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class FileTransferException extends RuntimeException {
 
-
     /**
      * 
      */
@@ -36,7 +35,7 @@ public class FileTransferException extends RuntimeException {
      * @param e
      */
     public FileTransferException( String message,
-                                               Exception e ) {
+                                  Exception e ) {
 
         super( message, e );
     }

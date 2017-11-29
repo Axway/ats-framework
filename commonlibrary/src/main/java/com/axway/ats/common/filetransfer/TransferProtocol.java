@@ -24,24 +24,29 @@ import com.axway.ats.common.PublicAtsApi;
 public enum TransferProtocol {
 
     /** File Transfer Protocol type*/
-    @PublicAtsApi FTP,
+    @PublicAtsApi
+    FTP,
     /** File Transfer Protocol over SSL type*/
-    @PublicAtsApi FTPS,
+    @PublicAtsApi
+    FTPS,
 
     /** Hypertext Transfer Protocol type*/
-    @PublicAtsApi HTTP,
+    @PublicAtsApi
+    HTTP,
     /** Hypertext Transfer Protocol over SSL type*/
-    @PublicAtsApi HTTPS,
+    @PublicAtsApi
+    HTTPS,
 
     /** SSH File Transfer Protocol type*/
-    @PublicAtsApi SFTP;
+    @PublicAtsApi
+    SFTP;
 
     /**
      * @return the default port for the current protocol
      */
     public final int getDefaultPort() {
 
-        switch( this ){
+        switch (this) {
             case FTP:
                 return 21;
             case HTTP:

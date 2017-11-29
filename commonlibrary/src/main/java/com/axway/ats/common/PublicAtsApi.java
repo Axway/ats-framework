@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
  * This annotation marks the ATS API which is intended to be 
  * called by the QA in their automated tests
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD })
+@Retention( RetentionPolicy.RUNTIME)
+@Target( { ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD })
 public @interface PublicAtsApi {
 
 }

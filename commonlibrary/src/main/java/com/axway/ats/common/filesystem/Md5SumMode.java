@@ -42,7 +42,7 @@ public enum Md5SumMode {
      */
     public boolean isBinary() {
 
-        if( this == BINARY ) {
+        if (this == BINARY) {
             return true;
         }
 

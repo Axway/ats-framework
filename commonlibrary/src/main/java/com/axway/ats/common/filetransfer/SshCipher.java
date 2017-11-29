@@ -219,7 +219,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setSshAlgorithmName(
-                                     String sshAlgorithmName ) {
+                                     String sshAlgorithmName) {
 
         this.sshAlgorithmName = sshAlgorithmName;
     }
@@ -229,7 +229,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setJceAlgorithmName(
-                                     String jceAlgorithmName ) {
+                                     String jceAlgorithmName) {
 
         this.jceAlgorithmName = jceAlgorithmName;
     }
@@ -240,7 +240,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setProvider(
-                             String provider ) {
+                             String provider) {
 
         this.provider = provider;
     }
@@ -251,7 +251,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setBlockLength(
-                                int blockLength ) {
+                                int blockLength) {
 
         this.blockLength = blockLength;
     }
@@ -261,7 +261,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setKeyLength(
-                              int keyLength ) {
+                              int keyLength) {
 
         this.keyLength = keyLength;
     }

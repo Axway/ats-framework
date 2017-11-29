@@ -48,7 +48,7 @@ public abstract class PerformanceMonitor {
      */
     @PublicAtsApi
     public abstract void init(
-                               ReadingBean[] readings ) throws Exception;
+                               ReadingBean[] readings) throws Exception;
 
     /**
      * Set polling interval in seconds
@@ -56,7 +56,7 @@ public abstract class PerformanceMonitor {
      * @param pollInterval the polling interval in seconds
      */
     public void setPollInterval(
-                                 int pollInterval ) {
+                                 int pollInterval) {
 
         this.pollInterval = pollInterval;
     }

@@ -30,14 +30,14 @@ public class AtsSystemProperties {
     @PublicAtsApi
     public static final int     DEFAULT_AGENT_PORT_VALUE                                          = 8089;
     @PublicAtsApi
-    public static final String  AGENT_HOME_FOLDER                                                = "ats.agent.home";
-    
+    public static final String  AGENT_HOME_FOLDER                                                 = "ats.agent.home";
+
     public static final String  AGENT__MONITOR_POLL_INTERVAL                                      = "ats.agent.monitor.poll.interval";
     @PublicAtsApi
     public static final String  AGENT__MONITOR_INITIAL_POLL_DELAY                                 = "ats.agent.monitor.initial.poll.delay";
     @PublicAtsApi
     public static final String  AGENT__COMPONENTS_FOLDER                                          = "ats.agent.components.folder";
-    
+
     @PublicAtsApi
     public static final String  AGENT__TEMPLATE_ACTIONS_PROXY_PROPERTY                            = "ats.agent.template.actions.proxy";                             // Key to specify proxy for template action requests
     public static final String  AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY = "ats.agent.template.actions.register_full_and_net_action_time"; // Property to enable full action time logging in addition to net+server think time
@@ -91,11 +91,11 @@ public class AtsSystemProperties {
         Integer defaultPort = null;
         try {
             defaultPort = getPropertyAsNumber( DEFAULT_AGENT_PORT_KEY );
-        } catch( IllegalArgumentException iae ) {
+        } catch (IllegalArgumentException iae) {
             System.err.println( iae.getMessage() );
         }
 
-        if( defaultPort == null ) {
+        if (defaultPort == null) {
             defaultPort = DEFAULT_AGENT_PORT_VALUE;
         }
         return defaultPort;
@@ -105,7 +105,7 @@ public class AtsSystemProperties {
      * @param defaultAgentPort the new default ATS agent port number
      */
     @PublicAtsApi
-    public static void setAgentDefaultPort( int defaultAgentPort ) {
+    public static void setAgentDefaultPort( int defaultAgentPort) {
 
         System.setProperty( DEFAULT_AGENT_PORT_KEY, String.valueOf( defaultAgentPort ) );
     }
@@ -119,16 +119,16 @@ public class AtsSystemProperties {
      * @return a number
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNumber( String key ) {
+    public static Integer getPropertyAsNumber( String key) {
 
         String strValue = getPropertyAsString( key );
 
-        if( strValue == null ) {
+        if (strValue == null) {
             return null;
         } else {
             try {
                 return Integer.parseInt( strValue );
-            } catch( NumberFormatException nfe ) {
+            } catch (NumberFormatException nfe) {
                 throw new IllegalArgumentException( "System property with name '" + key
                                                     + "' has a non integer value '" + strValue + "'" );
             }
@@ -143,15 +143,15 @@ public class AtsSystemProperties {
      * @return a number
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNumber( String key, Integer defaultValue ) {
+    public static Integer getPropertyAsNumber( String key, Integer defaultValue) {
 
         String strValue = getPropertyAsString( key );
 
-        if( strValue != null ) {
+        if (strValue != null) {
             try {
                 return Integer.parseInt( strValue );
-            } catch( NumberFormatException nfe ) {
-                if( defaultValue == null ) {
+            } catch (NumberFormatException nfe) {
+                if (defaultValue == null) {
                     throw new IllegalArgumentException( "System property with name '" + key
                                                         + "' has a non integer value '" + strValue + "'" );
                 }
@@ -170,7 +170,7 @@ public class AtsSystemProperties {
      * @return a boolean value
      */
     @PublicAtsApi
-    public static Boolean getPropertyAsBoolean( String key ) {
+    public static Boolean getPropertyAsBoolean( String key) {
 
         return getPropertyAsBoolean( key, null );
     }
@@ -186,20 +186,20 @@ public class AtsSystemProperties {
      * @return a boolean value
      */
     @PublicAtsApi
-    public static Boolean getPropertyAsBoolean( String key, Boolean defaultValue ) {
+    public static Boolean getPropertyAsBoolean( String key, Boolean defaultValue) {
 
         String strValue = getPropertyAsString( key );
 
-        if( strValue != null ) {
-            if( strValue.equalsIgnoreCase( "true" ) || strValue.equals( "1" ) ) {
+        if (strValue != null) {
+            if (strValue.equalsIgnoreCase( "true" ) || strValue.equals( "1" )) {
                 return Boolean.TRUE;
             }
 
-            if( strValue.equalsIgnoreCase( "false" ) || strValue.equals( "0" ) ) {
+            if (strValue.equalsIgnoreCase( "false" ) || strValue.equals( "0" )) {
                 return Boolean.FALSE;
             }
 
-            if( defaultValue == null ) {
+            if (defaultValue == null) {
                 throw new IllegalArgumentException( "System property with name '" + key
                                                     + "' has a non boolean value '" + strValue
                                                     + "'. Expected values are 'true' or '1' for TRUE and 'false' or '0' for FALSE." );
@@ -218,7 +218,7 @@ public class AtsSystemProperties {
      * @return a number that is 0 or above
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNonNegativeNumber( String key ) {
+    public static Integer getPropertyAsNonNegativeNumber( String key) {
 
         return getPropertyAsNonNegativeNumber( key, null );
     }
@@ -234,20 +234,20 @@ public class AtsSystemProperties {
      * @return a number that is 0 or above
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNonNegativeNumber( String key, Integer defaultValue ) {
+    public static Integer getPropertyAsNonNegativeNumber( String key, Integer defaultValue) {
 
         String strValue = getPropertyAsString( key );
 
-        if( strValue != null ) {
+        if (strValue != null) {
             try {
                 int intValue = Integer.parseInt( strValue );
-                if( intValue < 0 && defaultValue == null ) {
+                if (intValue < 0 && defaultValue == null) {
                     throw new IllegalArgumentException( "System property with name '" + key
                                                         + "' has a non positive number '" + strValue + "'" );
                 }
                 return intValue;
-            } catch( NumberFormatException nfe ) {
-                if( defaultValue == null ) {
+            } catch (NumberFormatException nfe) {
+                if (defaultValue == null) {
                     throw new IllegalArgumentException( "System property with name '" + key
                                                         + "' has a non number value '" + strValue + "'" );
                 }
@@ -263,11 +263,11 @@ public class AtsSystemProperties {
      * @return
      */
     @PublicAtsApi
-    public static String getPropertyAsString( String key ) {
+    public static String getPropertyAsString( String key) {
 
         String value = System.getProperty( key );
 
-        if( value == null ) {
+        if (value == null) {
             return value;
         } else {
             return value.trim();
@@ -282,11 +282,11 @@ public class AtsSystemProperties {
      * @return
      */
     @PublicAtsApi
-    public static String getPropertyAsString( String key, String defaultValue ) {
+    public static String getPropertyAsString( String key, String defaultValue) {
 
         String value = System.getProperty( key );
 
-        if( value == null ) {
+        if (value == null) {
             return defaultValue;
         } else {
             return value.trim();

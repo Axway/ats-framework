@@ -31,7 +31,7 @@ public class MimeTypeFileExtensionMapper {
                                                                 {
                                                                     try {
                                                                         loadFromXML( MimeTypeFileExtensionMapper.class.getResourceAsStream( "MimeTypeFileExtensionMapper.xml" ) );
-                                                                    } catch( Exception e ) {
+                                                                    } catch (Exception e) {
                                                                         log.error( "Could not load file with mime types to files extension mappings",
                                                                                    e );
                                                                     }
@@ -39,20 +39,20 @@ public class MimeTypeFileExtensionMapper {
                                                             };
 
     public static String getFileExtension(
-                                           String contentType ) {
+                                           String contentType) {
 
         return getFileExtension( contentType, null );
     }
 
     public static String getFileExtension(
                                            String contentType,
-                                           String contentEncoding ) {
+                                           String contentEncoding) {
 
-        if( contentType == null ) {
+        if (contentType == null) {
             return null;
         }
         int columnIdx = contentType.indexOf( ';' );
-        if( columnIdx > 0 ) {
+        if (columnIdx > 0) {
             contentType = contentType.substring( 0, columnIdx ).trim().toLowerCase();
         } else {
             contentType = contentType.toLowerCase();
@@ -61,11 +61,11 @@ public class MimeTypeFileExtensionMapper {
                                                       ? contentEncoding.toLowerCase()
                                                       : null;
         String fileExt = contentTypeFileExtProps.getProperty( contentType );
-        if( fileExt == null ) {
+        if (fileExt == null) {
             return null;
         }
         StringBuilder resultStr = new StringBuilder( fileExt );
-        if( GZIP_CONTENT_ENCODING.equals( contentEncoding ) ) {
+        if (GZIP_CONTENT_ENCODING.equals( contentEncoding )) {
             resultStr.append( "." );
             resultStr.append( GZIP_FILE_EXTENSION );
         }

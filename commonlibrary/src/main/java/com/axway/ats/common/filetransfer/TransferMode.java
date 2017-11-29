@@ -24,8 +24,10 @@ import com.axway.ats.common.PublicAtsApi;
 public enum TransferMode {
 
     /** ASCII mode */
-    @PublicAtsApi ASCII,
+    @PublicAtsApi
+    ASCII,
 
     /** Binary (image) mode*/
-    @PublicAtsApi BINARY
+    @PublicAtsApi
+    BINARY
 }
