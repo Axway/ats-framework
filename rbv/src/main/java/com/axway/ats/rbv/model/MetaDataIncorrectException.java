@@ -15,23 +15,23 @@
  */
 package com.axway.ats.rbv.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MetaDataIncorrectException extends RuntimeException {
 
     public MetaDataIncorrectException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public MetaDataIncorrectException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public MetaDataIncorrectException( String message,
                                        Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

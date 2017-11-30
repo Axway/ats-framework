@@ -36,16 +36,16 @@ public class MetaData {
                              String name,
                              Object value ) throws RbvException {
 
-        properties.put( name, value );
+        properties.put(name, value);
     }
 
     public Object getProperty(
                                String name ) throws RbvException {
 
-        if( !properties.containsKey( name ) ) {
-            throw new NoSuchMetaDataKeyException( name );
+        if (!properties.containsKey(name)) {
+            throw new NoSuchMetaDataKeyException(name);
         }
-        return properties.get( name );
+        return properties.get(name);
     }
 
     /**
@@ -62,26 +62,26 @@ public class MetaData {
         StringBuffer outputBuffer = new StringBuffer();
         Iterator<Entry<String, Object>> entryIterator = properties.entrySet().iterator();
 
-        outputBuffer.append( "{ " );
+        outputBuffer.append("{ ");
 
-        while( entryIterator.hasNext() ) {
+        while (entryIterator.hasNext()) {
             Entry<String, Object> entry = entryIterator.next();
 
-            outputBuffer.append( entry.getKey() + " : " );
+            outputBuffer.append(entry.getKey() + " : ");
 
             Object value = entry.getValue();
-            if( value != null ) {
-                outputBuffer.append( entry.getValue().toString() );
+            if (value != null) {
+                outputBuffer.append(entry.getValue().toString());
             } else {
-                outputBuffer.append( "null" );
+                outputBuffer.append("null");
             }
 
-            if( entryIterator.hasNext() ) {
-                outputBuffer.append( " , " );
+            if (entryIterator.hasNext()) {
+                outputBuffer.append(" , ");
             }
         }
 
-        outputBuffer.append( " }" );
+        outputBuffer.append(" }");
 
         return outputBuffer.toString();
     }
@@ -92,9 +92,9 @@ public class MetaData {
 
         //it is ok to use instanceof here, as all subclasses of
         //MetaData should be based on the properties map
-        if( object instanceof MetaData ) {
-            MetaData metaData = ( MetaData ) object;
-            return this.properties.equals( metaData.properties );
+        if (object instanceof MetaData) {
+            MetaData metaData = (MetaData) object;
+            return this.properties.equals(metaData.properties);
         }
 
         return false;

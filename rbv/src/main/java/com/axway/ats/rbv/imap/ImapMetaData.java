@@ -29,20 +29,20 @@ public class ImapMetaData extends MetaData {
 
         super();
 
-        putProperty( MIME_PACKAGE, mimePackage );
+        putProperty(MIME_PACKAGE, mimePackage);
     }
 
     public MimePackage getMimePackage() throws RbvException {
 
         MimePackage mimePackage = null;
         try {
-            mimePackage = ( MimePackage ) getProperty( MIME_PACKAGE );
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Mime message is not of correct type" );
+            mimePackage = (MimePackage) getProperty(MIME_PACKAGE);
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Mime message is not of correct type");
         }
 
-        if( mimePackage == null ) {
-            throw new MetaDataIncorrectException( "Meta data does not include mime message" );
+        if (mimePackage == null) {
+            throw new MetaDataIncorrectException("Meta data does not include mime message");
         }
 
         return mimePackage;

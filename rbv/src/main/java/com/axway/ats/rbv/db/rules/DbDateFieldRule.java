@@ -65,7 +65,7 @@ public class DbDateFieldRule extends DbFieldsRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( tableName, fieldName, expectedValue, ruleName, expectedResult );
+        super(tableName, fieldName, expectedValue, ruleName, expectedResult);
 
         this.actualValuePattern = actualValuePattern;
         this.relation = relation;
@@ -88,7 +88,7 @@ public class DbDateFieldRule extends DbFieldsRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( fieldName, expectedValue, ruleName, expectedResult );
+        super(fieldName, expectedValue, ruleName, expectedResult);
 
         this.actualValuePattern = actualValuePattern;
         this.relation = relation;
@@ -111,7 +111,7 @@ public class DbDateFieldRule extends DbFieldsRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( tableName, fieldName, expectedValue, ruleName, expectedResult );
+        super(tableName, fieldName, expectedValue, ruleName, expectedResult);
 
         this.relation = relation;
     }
@@ -131,7 +131,7 @@ public class DbDateFieldRule extends DbFieldsRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( fieldName, expectedValue, ruleName, expectedResult );
+        super(fieldName, expectedValue, ruleName, expectedResult);
 
         this.relation = relation;
     }
@@ -141,26 +141,26 @@ public class DbDateFieldRule extends DbFieldsRule {
                                     MetaData metaData ) throws RbvException {
 
         //this cast is safe, as isMatch has already checked the type of meta data            
-        DbMetaData dbMetaData = ( DbMetaData ) metaData;
+        DbMetaData dbMetaData = (DbMetaData) metaData;
 
-        Object actualValue = dbMetaData.getProperty( this.expectedMetaDataKey.toString() );
+        Object actualValue = dbMetaData.getProperty(this.expectedMetaDataKey.toString());
 
         // check for null
-        if( this.expectedValue == null ) {
-            if( actualValue == null ) {
+        if (this.expectedValue == null) {
+            if (actualValue == null) {
                 return true;
             }
             return false;
         }
         // expected value is not null, but if actual is null then we have a negative match
-        if( actualValue == null ) {
+        if (actualValue == null) {
             return false;
         }
 
-        if( expectedValue instanceof String ) {
-            return checkString( dbMetaData );
-        }  
-        return checkDate( dbMetaData );
+        if (expectedValue instanceof String) {
+            return checkString(dbMetaData);
+        }
+        return checkDate(dbMetaData);
 
     }
 
@@ -169,34 +169,37 @@ public class DbDateFieldRule extends DbFieldsRule {
 
         String actualValue;
         try {
-            actualValue = ( String ) dbMetaData.getProperty( this.expectedMetaDataKey.toString() );
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Meta data is incorrect - expected String" );
+            actualValue = (String) dbMetaData.getProperty(this.expectedMetaDataKey.toString());
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Meta data is incorrect - expected String");
         }
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat( this.actualValuePattern );
-            sdf.setTimeZone( new SimpleTimeZone( 0, "GMT" ) );
+            SimpleDateFormat sdf = new SimpleDateFormat(this.actualValuePattern);
+            sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
 
-            Date expectedDate = new Date( Long.parseLong( ( String ) this.expectedValue ) * 1000 );
-            Date actualDate = sdf.parse( actualValue );
+            Date expectedDate = new Date(Long.parseLong((String) this.expectedValue) * 1000);
+            Date actualDate = sdf.parse(actualValue);
 
-            switch( this.relation ){
-                case BEFORE_DATE: return expectedDate.before( actualDate );
-                case AFTER_DATE: return expectedDate.after( actualDate );
-                case EXACT: return expectedDate.compareTo( actualDate ) == 0;
+            switch (this.relation) {
+                case BEFORE_DATE:
+                    return expectedDate.before(actualDate);
+                case AFTER_DATE:
+                    return expectedDate.after(actualDate);
+                case EXACT:
+                    return expectedDate.compareTo(actualDate) == 0;
                 default:
-                    throw new RbvException( "No implementation for MatchRelation '" + this.relation.toString()
-                                            + "' in DbDateFieldMatchingTerm" );
+                    throw new RbvException("No implementation for MatchRelation '" + this.relation.toString()
+                                           + "' in DbDateFieldMatchingTerm");
             }
 
-        } catch( NumberFormatException nfe ) {
-            throw new RbvException( "Expected value '" + this.expectedValue
-                                    + "' cannot be converted to UNIX timestamp" );
-        } catch( ParseException pe ) {
+        } catch (NumberFormatException nfe) {
+            throw new RbvException("Expected value '" + this.expectedValue
+                                   + "' cannot be converted to UNIX timestamp");
+        } catch (ParseException pe) {
             //we've already checked the expected value in isValid(), so this exception can be thrown
             //only if the actual value is incorrect
-            throw new RbvException( "Actual value '" + actualValue + "' cannot be converted to Date" );
+            throw new RbvException("Actual value '" + actualValue + "' cannot be converted to Date");
         }
     }
 
@@ -205,20 +208,23 @@ public class DbDateFieldRule extends DbFieldsRule {
 
         Timestamp actual;
         try {
-            actual = ( Timestamp ) dbMetaData.getProperty( this.expectedMetaDataKey );
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Meta data is incorrect - expected Timestamp" );
+            actual = (Timestamp) dbMetaData.getProperty(this.expectedMetaDataKey);
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Meta data is incorrect - expected Timestamp");
         }
-        long timestamp = ( ( Date ) this.expectedValue ).getTime();
-        Timestamp expected = new Timestamp( timestamp );
+        long timestamp = ((Date) this.expectedValue).getTime();
+        Timestamp expected = new Timestamp(timestamp);
 
-        switch( this.relation ){
-            case BEFORE_DATE: return actual.compareTo( expected ) <= 0;
-            case AFTER_DATE: return actual.compareTo( expected ) >= 0;
-            case EXACT: return actual.compareTo( expected ) == 0;
+        switch (this.relation) {
+            case BEFORE_DATE:
+                return actual.compareTo(expected) <= 0;
+            case AFTER_DATE:
+                return actual.compareTo(expected) >= 0;
+            case EXACT:
+                return actual.compareTo(expected) == 0;
             default:
-                throw new RbvException( "No implementation for MatchRelation '" + this.relation.toString()
-                                        + "' in DbDateFieldMatchingTerm" );
+                throw new RbvException("No implementation for MatchRelation '" + this.relation.toString()
+                                       + "' in DbDateFieldMatchingTerm");
         }
     }
 
@@ -227,13 +233,13 @@ public class DbDateFieldRule extends DbFieldsRule {
 
         StringBuilder ruleDescription = new StringBuilder();
 
-        ruleDescription.append( "on table '" + this.expectedMetaDataKey.getTableName() + "'," );
-        ruleDescription.append( " column '" + this.expectedMetaDataKey.getColumnName() + "'," );
-        if( !getExpectedResult() ) {
-            ruleDescription.append( " not" );
+        ruleDescription.append("on table '" + this.expectedMetaDataKey.getTableName() + "',");
+        ruleDescription.append(" column '" + this.expectedMetaDataKey.getColumnName() + "',");
+        if (!getExpectedResult()) {
+            ruleDescription.append(" not");
         }
-        ruleDescription.append( " expected value '" + this.expectedValue + "'," );
-        ruleDescription.append( " with match relation '" + this.relation.toString() + "'" );
+        ruleDescription.append(" expected value '" + this.expectedValue + "',");
+        ruleDescription.append(" with match relation '" + this.relation.toString() + "'");
 
         return ruleDescription.toString();
     }

@@ -37,82 +37,82 @@ public class Test_AttachmentNameRule extends BaseTest {
     @Before
     public void setUp() throws PackageException, RbvException {
 
-        mailMessage = new MimePackage( Test_AttachmentNameRule.class.getResourceAsStream( "mail_with_two_attachments.msg" ) );
+        mailMessage = new MimePackage(Test_AttachmentNameRule.class.getResourceAsStream("mail_with_two_attachments.msg"));
 
-        metaData = new ImapMetaData( mailMessage );
+        metaData = new ImapMetaData(mailMessage);
     }
 
     @Test
     public void testAttachmentNameRulePositive() throws RbvException {
 
         //expected true
-        AttachmentNameRule rule = new AttachmentNameRule( "24thekilt.jpg",
-                                                          0,
-                                                          "checkAttachmentNameRuleExpectingTrue_Positive",
-                                                          true );
+        AttachmentNameRule rule = new AttachmentNameRule("24thekilt.jpg",
+                                                         0,
+                                                         "checkAttachmentNameRuleExpectingTrue_Positive",
+                                                         true);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
 
         //expected false  
-        rule = new AttachmentNameRule( "24thekilt.jpg",
-                                       1,
-                                       "checkAttachmentNameRuleExpectingFalse_Positive",
-                                       false );
+        rule = new AttachmentNameRule("24thekilt.jpg",
+                                      1,
+                                      "checkAttachmentNameRuleExpectingFalse_Positive",
+                                      false);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
     }
 
     @Test
     public void testAttachmentNameRuleNegative() throws RbvException {
 
         //expected true
-        AttachmentNameRule rule = new AttachmentNameRule( "24thekilt_WRONG.jpg",
-                                                          0,
-                                                          "checkAttachmentNameRuleExpectingTrue_Negative",
-                                                          true );
+        AttachmentNameRule rule = new AttachmentNameRule("24thekilt_WRONG.jpg",
+                                                         0,
+                                                         "checkAttachmentNameRuleExpectingTrue_Negative",
+                                                         true);
 
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
         //expected false  
-        rule = new AttachmentNameRule( "24thekilt.jpg",
-                                       0,
-                                       "checkAttachmentNameRuleExpectingFalse_Negative",
-                                       false );
+        rule = new AttachmentNameRule("24thekilt.jpg",
+                                      0,
+                                      "checkAttachmentNameRuleExpectingFalse_Negative",
+                                      false);
 
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
     }
 
     @Test
     public void testAttachmentNameRuleUsingRegex() throws RbvException {
 
-        AttachmentNameRule rule = new AttachmentNameRule( "24thekilt.*",
-                                                          0,
-                                                          "checkAttachmentNameRuleUsingRegex",
-                                                          true );
+        AttachmentNameRule rule = new AttachmentNameRule("24thekilt.*",
+                                                         0,
+                                                         "checkAttachmentNameRuleUsingRegex",
+                                                         true);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
     }
 
     @Test
     public void testAttachmentNameRuleUsingRegexNegative() throws RbvException {
 
-        AttachmentNameRule rule = new AttachmentNameRule( "24thekilt",
-                                                          0,
-                                                          "testAttachmentNameRuleUsingRegexNegative",
-                                                          true );
+        AttachmentNameRule rule = new AttachmentNameRule("24thekilt",
+                                                         0,
+                                                         "testAttachmentNameRuleUsingRegexNegative",
+                                                         true);
 
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void testAttachmentNameRule_WrongAttachmentIndex() throws RbvException {
 
-        AttachmentNameRule rule = new AttachmentNameRule( "24thekilt.jpg",
-                                                          5,
-                                                          "testAttachmentNameRule_WrongAttachmentIndex",
-                                                          true );
+        AttachmentNameRule rule = new AttachmentNameRule("24thekilt.jpg",
+                                                         5,
+                                                         "testAttachmentNameRule_WrongAttachmentIndex",
+                                                         true);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
     }
 
 }

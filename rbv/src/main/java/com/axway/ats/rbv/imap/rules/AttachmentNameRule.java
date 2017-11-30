@@ -36,7 +36,7 @@ public class AttachmentNameRule extends AbstractImapRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        this( new int[0], expectedValue, attachmentIndex, ruleName, expectedResult );
+        this(new int[0], expectedValue, attachmentIndex, ruleName, expectedResult);
     }
 
     public AttachmentNameRule( int[] nestedPackagePath,
@@ -45,12 +45,12 @@ public class AttachmentNameRule extends AbstractImapRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        super( ruleName, expectedResult, ImapMetaData.class );
+        super(ruleName, expectedResult, ImapMetaData.class);
 
         this.expectedValue = expectedValue;
         this.attachmentIndex = attachmentIndex;
 
-        setNestedPackagePath( nestedPackagePath );
+        setNestedPackagePath(nestedPackagePath);
     }
 
     @Override
@@ -59,23 +59,23 @@ public class AttachmentNameRule extends AbstractImapRule {
 
         //get the emailMessage
         //the meta data type check already passed, so it is safe to cast
-        MimePackage emailMessage = getNeededMimePackage( metaData );
+        MimePackage emailMessage = getNeededMimePackage(metaData);
 
         String attachmentFileName;
         try {
-            attachmentFileName = emailMessage.getAttachmentFileName( attachmentIndex );
-        } catch( PackageException pe ) {
-            throw new RbvException( pe );
+            attachmentFileName = emailMessage.getAttachmentFileName(attachmentIndex);
+        } catch (PackageException pe) {
+            throw new RbvException(pe);
         }
 
         //if there is no such file name return false 
         boolean actualResult = false;
 
-        if( attachmentFileName != null ) {
-            actualResult = Pattern.compile( expectedValue ).matcher( attachmentFileName ).matches();
-            log.info( "Actual attachment file name is '" + attachmentFileName + "'" );
+        if (attachmentFileName != null) {
+            actualResult = Pattern.compile(expectedValue).matcher(attachmentFileName).matches();
+            log.info("Actual attachment file name is '" + attachmentFileName + "'");
         } else {
-            log.info( "No attachment with name that matches '" + expectedValue + "' was found" );
+            log.info("No attachment with name that matches '" + expectedValue + "' was found");
         }
 
         return actualResult;
@@ -91,7 +91,7 @@ public class AttachmentNameRule extends AbstractImapRule {
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( ImapMetaData.MIME_PACKAGE );
+        metaKeys.add(ImapMetaData.MIME_PACKAGE);
         return metaKeys;
     }
 }

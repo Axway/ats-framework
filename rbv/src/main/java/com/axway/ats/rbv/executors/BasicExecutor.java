@@ -38,10 +38,10 @@ public abstract class BasicExecutor implements Executor {
 
     public String getLastRuleName() {
 
-        if( rootRule instanceof RuleOperation ) {
-            return ( ( RuleOperation ) rootRule ).getLastRuleName();
+        if (rootRule instanceof RuleOperation) {
+            return ((RuleOperation) rootRule).getLastRuleName();
         } else {
-            return ( ( AbstractRule ) rootRule ).getRuleName();
+            return ((AbstractRule) rootRule).getRuleName();
         }
     }
 }

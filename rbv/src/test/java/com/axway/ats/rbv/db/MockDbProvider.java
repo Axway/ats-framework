@@ -55,13 +55,13 @@ public class MockDbProvider implements DbProvider {
 
     public DbConnection getDbConnection() {
 
-        return new DbConnMySQL( "localhost", "db", "user", "pass" );
+        return new DbConnMySQL("localhost", "db", "user", "pass");
     }
 
     public DbRecordValuesList[] select(
                                         String query ) {
 
-        return this.select( new DbQuery( query, new ArrayList<Object>() ) );
+        return this.select(new DbQuery(query, new ArrayList<Object>()));
     }
 
     public DbRecordValuesList[] select(
@@ -71,33 +71,33 @@ public class MockDbProvider implements DbProvider {
 
         DbRecordValuesList[] resultSet = new DbRecordValuesList[resultCount];
 
-        for( int i = 0; i < resultCount; i++ ) {
+        for (int i = 0; i < resultCount; i++) {
 
             DbRecordValuesList result = new DbRecordValuesList();
 
             Calendar calendar = Calendar.getInstance();
-            calendar.set( Calendar.MINUTE, 0 );
-            calendar.set( Calendar.SECOND, 0 );
-            calendar.set( Calendar.MILLISECOND, 0 );
-            Timestamp stamp = new Timestamp( calendar.getTime().getTime() );
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            Timestamp stamp = new Timestamp(calendar.getTime().getTime());
 
-            result.add( new DbRecordValue( "asd", "key0", "value" + i + seed ) );
-            result.add( new DbRecordValue( "", "key1", "value" + i + seed ) );
-            result.add( new DbRecordValue( "", "key2", "value" + i + seed ) );
-            result.add( new DbRecordValue( "numeric", "key", i ) );
-            result.add( new DbRecordValue( "binary", "key", new byte[]{ 1, 2, ( byte ) i } ) );
-            result.add( new DbRecordValue( "boolean", "keyString", "0" ) );
-            result.add( new DbRecordValue( "boolean", "keyNumber", 1L ) );
-            result.add( new DbRecordValue( "Date", "today", stamp ) );
-            if( !useChangedValues ) {
-                result.add( new DbRecordValue( "", "test_key", "test_value" ) );
+            result.add(new DbRecordValue("asd", "key0", "value" + i + seed));
+            result.add(new DbRecordValue("", "key1", "value" + i + seed));
+            result.add(new DbRecordValue("", "key2", "value" + i + seed));
+            result.add(new DbRecordValue("numeric", "key", i));
+            result.add(new DbRecordValue("binary", "key", new byte[]{ 1, 2, (byte) i }));
+            result.add(new DbRecordValue("boolean", "keyString", "0"));
+            result.add(new DbRecordValue("boolean", "keyNumber", 1L));
+            result.add(new DbRecordValue("Date", "today", stamp));
+            if (!useChangedValues) {
+                result.add(new DbRecordValue("", "test_key", "test_value"));
             } else {
-                result.add( new DbRecordValue( "", "test_key", "test_value_changed" ) );
+                result.add(new DbRecordValue("", "test_key", "test_value_changed"));
             }
 
             resultSet[i] = result;
         }
-        if( useChangedValues ) {
+        if (useChangedValues) {
             useChangedValues = false;
         }
         return resultSet;

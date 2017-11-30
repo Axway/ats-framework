@@ -39,9 +39,9 @@ import com.axway.ats.rbv.filesystem.FileSystemMetaData;
 import com.axway.ats.rbv.filesystem.rules.FileUidRule;
 import com.axway.ats.rbv.model.RbvException;
 
-@SuppressWarnings("boxing")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FileUidRule.class, FilePackage.class })
+@SuppressWarnings( "boxing")
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FileUidRule.class, FilePackage.class })
 public class Test_FileUIDRule extends BaseTest {
 
     public static FileUidRule        rule;
@@ -51,39 +51,39 @@ public class Test_FileUIDRule extends BaseTest {
     @Before
     public void setUpTest_FilePathRule() {
 
-        meta = createMock( FileSystemMetaData.class );
-        pack = createMock( FilePackage.class );
+        meta = createMock(FileSystemMetaData.class);
+        pack = createMock(FilePackage.class);
     }
 
     @Test
     public void getRuleDescFile() {
 
-        rule = new FileUidRule( 1, "ruleName", true );
+        rule = new FileUidRule(1, "ruleName", true);
 
-        assertEquals( rule.getRuleDescription(), "which expects file with UID '1'" );
+        assertEquals(rule.getRuleDescription(), "which expects file with UID '1'");
     }
 
     @Test
     public void getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
 
-        rule = new FileUidRule( 1, "ruleName", true );
+        rule = new FileUidRule(1, "ruleName", true);
 
-        assertEquals( rule.getMetaDataKeys(), metaKeys );
+        assertEquals(rule.getMetaDataKeys(), metaKeys);
     }
 
     @Test
     public void performMatch() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getUid() ).andReturn( 1L );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getUid()).andReturn(1L);
 
         replayAll();
 
-        rule = new FileUidRule( 1, "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileUidRule(1, "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
@@ -91,27 +91,27 @@ public class Test_FileUIDRule extends BaseTest {
     @Test
     public void performMatchNotSupported() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getUid() ).andReturn( FilePackage.ATTRIBUTE_NOT_SUPPORTED );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getUid()).andReturn(FilePackage.ATTRIBUTE_NOT_SUPPORTED);
 
         replayAll();
 
-        rule = new FileUidRule( 1, "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileUidRule(1, "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void performMatchNegativeWxception() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getUid() ).andThrow( new PackageException( "" ) );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getUid()).andThrow(new PackageException(""));
 
         replayAll();
 
-        rule = new FileUidRule( 1, "ruleName", true );
-        rule.performMatch( meta );
+        rule = new FileUidRule(1, "ruleName", true);
+        rule.performMatch(meta);
 
         verifyAll();
     }
@@ -119,33 +119,33 @@ public class Test_FileUIDRule extends BaseTest {
     @Test
     public void performMatchOtherFile() throws Exception {
 
-        FilePackage remotePack = createMock( FilePackage.class, null, "/root/file.name" );
+        FilePackage remotePack = createMock(FilePackage.class, null, "/root/file.name");
 
-        expectNew( FilePackage.class, null, null, "/root/file.name" ).andReturn( remotePack );
-        expect( remotePack.getUid() ).andReturn( 1L );
+        expectNew(FilePackage.class, null, null, "/root/file.name").andReturn(remotePack);
+        expect(remotePack.getUid()).andReturn(1L);
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getUid() ).andReturn( 1L );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getUid()).andReturn(1L);
 
         replayAll();
 
-        rule = new FileUidRule( null, "/root/file.name", "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileUidRule(null, "/root/file.name", "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void performMatchOtherFileException() throws Exception {
 
-        FilePackage remotePack = createMock( FilePackage.class, null, "/root/file.name" );
+        FilePackage remotePack = createMock(FilePackage.class, null, "/root/file.name");
 
-        expectNew( FilePackage.class, null, null, "/root/file.name" ).andReturn( remotePack );
-        expect( remotePack.getUid() ).andThrow( new PackageException( "Test" ) );
+        expectNew(FilePackage.class, null, null, "/root/file.name").andReturn(remotePack);
+        expect(remotePack.getUid()).andThrow(new PackageException("Test"));
 
         replayAll();
 
-        rule = new FileUidRule( null, "/root/file.name", "ruleName", true );
+        rule = new FileUidRule(null, "/root/file.name", "ruleName", true);
 
         verifyAll();
     }

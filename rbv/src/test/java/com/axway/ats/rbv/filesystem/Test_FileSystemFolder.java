@@ -48,11 +48,11 @@ import com.axway.ats.rbv.model.MatchableNotOpenException;
 import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.model.RbvStorageException;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FilePackage.class,
-                 FileSystemFolder.class,
-                 FileSystemOperations.class,
-                 SystemOperations.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FilePackage.class,
+                   FileSystemFolder.class,
+                   FileSystemOperations.class,
+                   SystemOperations.class })
 public class Test_FileSystemFolder extends BaseTest {
 
     private static String               path               = "/tmp/test/";
@@ -72,23 +72,23 @@ public class Test_FileSystemFolder extends BaseTest {
     @Before
     public void setUpTest_FileSystemFolder() throws Exception {
 
-        fileSystemOperations = createMock( FileSystemOperations.class );
-        systemOperations = createMock( SystemOperations.class );
+        fileSystemOperations = createMock(FileSystemOperations.class);
+        systemOperations = createMock(SystemOperations.class);
         storage = new FileSystemStorage();
     }
 
     @Test
     public void open() throws Exception {
 
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations );
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.LINUX );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations);
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.LINUX);
 
         replayAll();
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.open();
 
         verifyAll();
@@ -97,31 +97,32 @@ public class Test_FileSystemFolder extends BaseTest {
     @Test
     public void openNegativeInvalidPath() throws Exception {
 
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations );
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.LINUX );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations);
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.LINUX);
 
         replayAll();
 
         //should pass - only warning should be logged
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( ";;;",
-                                                                                                          null,
-                                                                                                          true ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(";;;",
+                                                                                                      null,
+                                                                                                      true));
         folder.open();
 
         verifyAll();
     }
 
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void openNegativeInvalidHost() throws Exception {
 
-        expectNew( SystemOperations.class, "invalid hosttt" ).andThrow( new RbvStorageException( "Could not open File system folder '/tmp/test/' on server 'invalid hosttt'" ) );
+        expectNew(SystemOperations.class,
+                  "invalid hosttt").andThrow(new RbvStorageException("Could not open File system folder '/tmp/test/' on server 'invalid hosttt'"));
 
         replayAll();
 
-        FileSystemStorage invalidStorage = new FileSystemStorage( "invalid hosttt" );
-        FileSystemFolder folder = ( FileSystemFolder ) invalidStorage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                                 null,
-                                                                                                                 true ) );
+        FileSystemStorage invalidStorage = new FileSystemStorage("invalid hosttt");
+        FileSystemFolder folder = (FileSystemFolder) invalidStorage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                             null,
+                                                                                                             true));
         folder.open();
 
         verifyAll();
@@ -130,15 +131,15 @@ public class Test_FileSystemFolder extends BaseTest {
     @Test
     public void close() throws Exception {
 
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations );
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.LINUX );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations);
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.LINUX);
 
         replayAll();
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.open();
         folder.close();
 
@@ -148,27 +149,27 @@ public class Test_FileSystemFolder extends BaseTest {
     @Test
     public void getMetadataCountsWithoutSubdirs() throws Exception {
 
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations ).times( 5 );
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.LINUX );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations).times(5);
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.LINUX);
 
         // now we call getAllMetaData() 2 times
-        expectNew( FileSystemOperations.class, "localhost:0000" ).andReturn( fileSystemOperations ).times( 5 );
-        expect( fileSystemOperations.findFiles( path, ".*", true, true, false ) ).andReturn( fileList )
-                                                                                 .times( 2 );
-        expect( fileSystemOperations.getFileUniqueId( file1 ) ).andReturn( file1_hash ).times( 2 );
-        expect( fileSystemOperations.getFileUniqueId( file2 ) ).andReturn( file2_hash ).times( 2 );
+        expectNew(FileSystemOperations.class, "localhost:0000").andReturn(fileSystemOperations).times(5);
+        expect(fileSystemOperations.findFiles(path, ".*", true, true, false)).andReturn(fileList)
+                                                                             .times(2);
+        expect(fileSystemOperations.getFileUniqueId(file1)).andReturn(file1_hash).times(2);
+        expect(fileSystemOperations.getFileUniqueId(file2)).andReturn(file2_hash).times(2);
 
         replayAll();
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.open();
         folder.getAllMetaData();
-        assertEquals( "Total files: " + 2 + ", new files: " + 2, folder.getMetaDataCounts() );
+        assertEquals("Total files: " + 2 + ", new files: " + 2, folder.getMetaDataCounts());
         folder.getAllMetaData();
-        assertEquals( "Total files: " + 2 + ", new files: " + 0, folder.getMetaDataCounts() );
+        assertEquals("Total files: " + 2 + ", new files: " + 0, folder.getMetaDataCounts());
 
         verifyAll();
     }
@@ -176,35 +177,35 @@ public class Test_FileSystemFolder extends BaseTest {
     @Test
     public void getNewMetadataChangeLastModified() throws Exception {
 
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations ).times( 7 );
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.LINUX );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations).times(7);
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.LINUX);
 
         // now we call getNewMetaData() 3 times
-        expect( fileSystemOperations.findFiles( path, ".*", true, true, false ) ).andReturn( fileList )
-                                                                                 .times( 3 );
-        expectNew( FileSystemOperations.class, "localhost:0000" ).andReturn( fileSystemOperations ).times( 7 ); // 3 times x 2 files
-        expect( fileSystemOperations.getFileUniqueId( file1 ) ).andReturn( file1_hash ).times( 2 );
-        expect( fileSystemOperations.getFileUniqueId( file2 ) ).andReturn( file2_hash ).times( 3 );
+        expect(fileSystemOperations.findFiles(path, ".*", true, true, false)).andReturn(fileList)
+                                                                             .times(3);
+        expectNew(FileSystemOperations.class, "localhost:0000").andReturn(fileSystemOperations).times(7); // 3 times x 2 files
+        expect(fileSystemOperations.getFileUniqueId(file1)).andReturn(file1_hash).times(2);
+        expect(fileSystemOperations.getFileUniqueId(file2)).andReturn(file2_hash).times(3);
         // modify the modification timestamp of file1 for the last getNewMetaData() call
-        expect( fileSystemOperations.getFileUniqueId( file1 ) ).andReturn( file1_hash_changed );
+        expect(fileSystemOperations.getFileUniqueId(file1)).andReturn(file1_hash_changed);
 
         replayAll();
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.open();
         List<MetaData> list = folder.getNewMetaData();
-        assertEquals( 2, list.size() );
+        assertEquals(2, list.size());
 
-        for( MetaData metaData : list ) {
-            ( ( FileSystemMetaData ) metaData ).getFilePackage();
+        for (MetaData metaData : list) {
+            ((FileSystemMetaData) metaData).getFilePackage();
         }
 
-        assertEquals( 0, folder.getNewMetaData().size() );
+        assertEquals(0, folder.getNewMetaData().size());
 
-        assertEquals( 1, folder.getNewMetaData().size() );
+        assertEquals(1, folder.getNewMetaData().size());
 
         verifyAll();
     }
@@ -213,32 +214,32 @@ public class Test_FileSystemFolder extends BaseTest {
     public void getAllMetadataNoSuchEntity() throws Exception {
 
         // constructors
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations );
-        expectNew( FileSystemOperations.class, "localhost:0000" ).andReturn( fileSystemOperations );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations);
+        expectNew(FileSystemOperations.class, "localhost:0000").andReturn(fileSystemOperations);
 
         // open()
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.SOLARIS );
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.SOLARIS);
         // getAllMetaData()
-        expect( fileSystemOperations.findFiles( "some.path/", ".*", true, true, false ) ).andReturn( new String[0] );
+        expect(fileSystemOperations.findFiles("some.path/", ".*", true, true, false)).andReturn(new String[0]);
         replayAll();
 
-        FileSystemFolder folder = new FileSystemFolder( "localhost:0000", "some.path", null, true, false );
+        FileSystemFolder folder = new FileSystemFolder("localhost:0000", "some.path", null, true, false);
         folder.open();
-        assertEquals( folder.getAllMetaData(), new ArrayList<MetaData>() );
+        assertEquals(folder.getAllMetaData(), new ArrayList<MetaData>());
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void getAllMetadataExceptionExists() throws Exception {
 
         // constructor
-        expectNew( FileSystemOperations.class, "localhost:0000" ).andThrow( new RbvException( "Test" ) );
+        expectNew(FileSystemOperations.class, "localhost:0000").andThrow(new RbvException("Test"));
         replayAll();
 
-        FileSystemFolder folder = new FileSystemFolder( "localhost:0000", "some.path", null, true, false );
+        FileSystemFolder folder = new FileSystemFolder("localhost:0000", "some.path", null, true, false);
         folder.open();
-        assertEquals( folder.getAllMetaData(), new ArrayList<MetaData>() );
+        assertEquals(folder.getAllMetaData(), new ArrayList<MetaData>());
 
         verifyAll();
     }
@@ -247,28 +248,31 @@ public class Test_FileSystemFolder extends BaseTest {
     public void getAllMetadataExceptionFetchingModTimePositive() throws Exception {
 
         // constructors
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations );
-        expectNew( FileSystemOperations.class, "localhost:0000" ).andReturn( fileSystemOperations );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations);
+        expectNew(FileSystemOperations.class, "localhost:0000").andReturn(fileSystemOperations);
 
         // open()
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.SOLARIS );
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.SOLARIS);
         // getAllMetaData()
-        expect( fileSystemOperations.findFiles( "some.path/", ".*", true, true, false ) ).andReturn( new String[]{ "some.path/some.file1",
-                "some.path/some.file2" } );
+        expect(fileSystemOperations.findFiles("some.path/", ".*", true, true,
+                                              false)).andReturn(new String[]{ "some.path/some.file1",
+                                                                              "some.path/some.file2" });
 
-        FilePackage pack1 = createMock( FilePackage.class );
-        expectNew( FilePackage.class, "localhost:0000", "some.path/some.file1", OperatingSystemType.SOLARIS ).andReturn( pack1 );
-        expect( pack1.getUniqueIdentifier() ).andThrow( new PackageException( "" ) );
+        FilePackage pack1 = createMock(FilePackage.class);
+        expectNew(FilePackage.class, "localhost:0000", "some.path/some.file1",
+                  OperatingSystemType.SOLARIS).andReturn(pack1);
+        expect(pack1.getUniqueIdentifier()).andThrow(new PackageException(""));
 
-        FilePackage pack2 = createMock( FilePackage.class );
-        expectNew( FilePackage.class, "localhost:0000", "some.path/some.file2", OperatingSystemType.SOLARIS ).andReturn( pack2 );
-        expect( pack2.getUniqueIdentifier() ).andReturn( "some.path/some.file1.1.1.1" );
+        FilePackage pack2 = createMock(FilePackage.class);
+        expectNew(FilePackage.class, "localhost:0000", "some.path/some.file2",
+                  OperatingSystemType.SOLARIS).andReturn(pack2);
+        expect(pack2.getUniqueIdentifier()).andReturn("some.path/some.file1.1.1.1");
 
         replayAll();
 
-        FileSystemFolder folder = new FileSystemFolder( "localhost:0000", "some.path", null, true, false );
+        FileSystemFolder folder = new FileSystemFolder("localhost:0000", "some.path", null, true, false);
         folder.open();
-        assertEquals( folder.getAllMetaData().size(), 1 );
+        assertEquals(folder.getAllMetaData().size(), 1);
 
         verifyAll();
     }
@@ -276,65 +280,65 @@ public class Test_FileSystemFolder extends BaseTest {
     @Test
     public void getDescription() {
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
-        assertEquals( "File system folder '" + path + "' on the local machine", folder.getDescription() );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
+        assertEquals("File system folder '" + path + "' on the local machine", folder.getDescription());
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void getAllMetaDataNegativeFolderNotOpen() throws Exception {
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.getAllMetaData();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void getNewMetaDataNegativeFolderNotOpen() throws Exception {
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.getNewMetaData();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void closeNegativeFolderNotOpen() throws Exception {
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.close();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void getMetaDataCountsNegativeFolderNotOpen() throws Exception {
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.getMetaDataCounts();
     }
 
-    @Test(expected = MatchableAlreadyOpenException.class)
+    @Test( expected = MatchableAlreadyOpenException.class)
     public void openNegativeFolderAlreadyOpen() throws Exception {
 
-        expectNew( SystemOperations.class, "localhost:0000" ).andReturn( systemOperations );
-        expect( systemOperations.getOperatingSystemType() ).andReturn( OperatingSystemType.LINUX );
+        expectNew(SystemOperations.class, "localhost:0000").andReturn(systemOperations);
+        expect(systemOperations.getOperatingSystemType()).andReturn(OperatingSystemType.LINUX);
 
         replayAll();
 
-        FileSystemFolder folder = ( FileSystemFolder ) storage.getFolder( new FileSystemFolderSearchTerm( path,
-                                                                                                          null,
-                                                                                                          true,
-                                                                                                          false ) );
+        FileSystemFolder folder = (FileSystemFolder) storage.getFolder(new FileSystemFolderSearchTerm(path,
+                                                                                                      null,
+                                                                                                      true,
+                                                                                                      false));
         folder.open();
         folder.open();
 

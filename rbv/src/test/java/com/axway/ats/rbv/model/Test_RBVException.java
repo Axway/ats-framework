@@ -30,17 +30,17 @@ public class Test_RBVException extends BaseTest {
 
         RbvException exception;
 
-        exception = new RbvException( "test" );
-        assertEquals( "test", exception.getMessage() );
-        assertNull( exception.getCause() );
+        exception = new RbvException("test");
+        assertEquals("test", exception.getMessage());
+        assertNull(exception.getCause());
 
         Exception helperException = new Exception();
-        exception = new RbvException( "test", helperException );
-        assertEquals( "test", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new RbvException("test", helperException);
+        assertEquals("test", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
 
-        exception = new RbvException( helperException );
-        assertEquals( "java.lang.Exception", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new RbvException(helperException);
+        assertEquals("java.lang.Exception", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
     }
 }

@@ -55,7 +55,7 @@ public class SnapshotExecutor extends BasicExecutor {
     // excluded keys that are specified by the user and should not be considered during the matching process
     private List<String>                 explicitlyExcluded;
 
-    private static final Logger          log                         = Logger.getLogger( SnapshotExecutor.class );
+    private static final Logger          log                         = Logger.getLogger(SnapshotExecutor.class);
 
     // log messages
     private static final String          SNAPSHOT_EVALUATION_START   = "Starting metadata snapshot evaluation ...";
@@ -85,20 +85,20 @@ public class SnapshotExecutor extends BasicExecutor {
     public List<MetaData> evaluate(
                                     List<MetaData> metaData ) throws RbvException {
 
-        log.debug( SNAPSHOT_EVALUATION_START );
+        log.debug(SNAPSHOT_EVALUATION_START);
 
         // try to match each piece of MetaData to the snapshot
-        for( MetaData currentMeta : metaData ) {
-            if( !this.match( currentMeta ) ) {
+        for (MetaData currentMeta : metaData) {
+            if (!this.match(currentMeta)) {
                 // if any of the pieces does not match - return no matched data
                 return null;
             }
         }
 
-        if( !this.snapshot.isEmpty() ) {
+        if (!this.snapshot.isEmpty()) {
             // if some pieces of MetaData from the snapshot weren't found in the
             // new MetaData then the result would still be negative
-            log.debug( SNAPSHOT_NOT_FULLY_MATCHED );
+            log.debug(SNAPSHOT_NOT_FULLY_MATCHED);
             return null;
         }
 
@@ -116,12 +116,12 @@ public class SnapshotExecutor extends BasicExecutor {
                          Rule keyRule,
                          Rule matchingRule ) throws RbvException {
 
-        if( keyRule == null || matchingRule == null ) {
-            throw new RbvException( "Neither the key, nor the matching rule can be null" );
+        if (keyRule == null || matchingRule == null) {
+            throw new RbvException("Neither the key, nor the matching rule can be null");
         }
 
         //add a snapshot rule
-        rules.add( new SnapshotMatchingRule( keyRule, matchingRule, "snapshot_rule" + rules.size(), true ) );
+        rules.add(new SnapshotMatchingRule(keyRule, matchingRule, "snapshot_rule" + rules.size(), true));
     }
 
     /**
@@ -136,7 +136,7 @@ public class SnapshotExecutor extends BasicExecutor {
                              List<String> metaDataKeys ) {
 
         // add to list of excluded keys
-        this.explicitlyExcluded.addAll( metaDataKeys );
+        this.explicitlyExcluded.addAll(metaDataKeys);
     }
 
     // matches the current piece of MetaData to the predefined set of rules
@@ -145,12 +145,12 @@ public class SnapshotExecutor extends BasicExecutor {
                            MetaData metaData ) throws RbvException {
 
         //iterate through all matching rules from the hashmap
-        for( SnapshotMatchingRule snapShotRule : rules ) {
+        for (SnapshotMatchingRule snapShotRule : rules) {
 
-            if( snapShotRule.getKeyRule().isMatch( metaData ) ) {
+            if (snapShotRule.getKeyRule().isMatch(metaData)) {
 
                 //if the key rule and the snapshot rule match the meta data, we don't need more checks
-                if( snapShotRule.isMatch( metaData ) ) {
+                if (snapShotRule.isMatch(metaData)) {
                     return true;
                 } else {
                     //if the key rule matched, but the matching rule did not match,
@@ -161,12 +161,12 @@ public class SnapshotExecutor extends BasicExecutor {
         }
 
         //this means that we should be matched by the global rule (if we have it)
-        if( globalRule != null ) {
-            if( globalRule.isMatch( metaData ) && snapshotMatch( metaData, globalRule.getMetaDataKeys() ) ) {
+        if (globalRule != null) {
+            if (globalRule.isMatch(metaData) && snapshotMatch(metaData, globalRule.getMetaDataKeys())) {
                 return true;
             }
         } else {
-            if( snapshotMatch( metaData, new ArrayList<String>() ) ) {
+            if (snapshotMatch(metaData, new ArrayList<String>())) {
                 return true;
             }
         }
@@ -181,11 +181,11 @@ public class SnapshotExecutor extends BasicExecutor {
                                    List<String> excludedKeys ) throws RbvException {
 
         // iterate over all of the entries of the snapshot
-        for( Iterator<MetaData> iterator = this.snapshot.iterator(); iterator.hasNext(); ) {
+        for (Iterator<MetaData> iterator = this.snapshot.iterator(); iterator.hasNext();) {
             MetaData metaData = iterator.next();
             boolean isMatch = true;
 
-            if( !checkPropertiesMapping( metaData, newMeta ) ) {
+            if (!checkPropertiesMapping(metaData, newMeta)) {
                 // if both pieces of MetaData DO NOT have the same set of
                 // properties then they should not be matched
                 continue;
@@ -193,26 +193,26 @@ public class SnapshotExecutor extends BasicExecutor {
 
             // iterate over all the properties of this MetaData entry and
             // compare their values to the ones supplied by the new MetaData
-            for( String value : metaData.getKeys() ) {
+            for (String value : metaData.getKeys()) {
                 // check if this key should be evaluated at all
-                if( shouldEvaluateKey( value, excludedKeys ) ) {
-                    if( !compare( metaData.getProperty( value ), newMeta.getProperty( value ) ) ) {
+                if (shouldEvaluateKey(value, excludedKeys)) {
+                    if (!compare(metaData.getProperty(value), newMeta.getProperty(value))) {
                         isMatch = false;
                     }
                 }
             }
 
             // if the current snapshot entry matches the new MetaData
-            if( isMatch ) {
+            if (isMatch) {
                 iterator.remove();
-                log.debug( "Matched meta data: " + metaData );
+                log.debug("Matched meta data: " + metaData);
                 return true;
             }
         }
 
-        log.debug( UNSUCCESSFUL_SNAPSHOT_MATCH );
-        log.debug( "--- Debug dump --- " );
-        log.debug( "Metadata contents : " + newMeta );
+        log.debug(UNSUCCESSFUL_SNAPSHOT_MATCH);
+        log.debug("--- Debug dump --- ");
+        log.debug("Metadata contents : " + newMeta);
 
         return false;
     }
@@ -223,13 +223,13 @@ public class SnapshotExecutor extends BasicExecutor {
                                             MetaData newMeta ) {
 
         // check if the properties count is the same
-        if( metaData.getKeys().size() != newMeta.getKeys().size() ) {
+        if (metaData.getKeys().size() != newMeta.getKeys().size()) {
             return false;
         }
 
         // check if each of the properties has the same name
-        for( String value : metaData.getKeys() ) {
-            if( !newMeta.getKeys().contains( value ) ) {
+        for (String value : metaData.getKeys()) {
+            if (!newMeta.getKeys().contains(value)) {
                 return false;
             }
         }
@@ -243,12 +243,12 @@ public class SnapshotExecutor extends BasicExecutor {
 
         // if this key is excluded explicitly then it should not be
         // evaluated at all
-        if( this.explicitlyExcluded.contains( value ) ) {
+        if (this.explicitlyExcluded.contains(value)) {
             return false;
         }
 
         // otherwise see if the key is not excluded by any of the nested rules
-        if( excludedKeys.contains( value ) ) {
+        if (excludedKeys.contains(value)) {
             return false;
         }
 
@@ -261,18 +261,18 @@ public class SnapshotExecutor extends BasicExecutor {
                              Object data1,
                              Object data2 ) {
 
-        if( data1 == null ) {
-            if( data2 == null ) {
+        if (data1 == null) {
+            if (data2 == null) {
                 return true;
             }
             return false;
         }
 
-        if( data2 == null ) {
+        if (data2 == null) {
             return false;
         }
 
-        return data1.equals( data2 );
+        return data1.equals(data2);
     }
 
     /**
@@ -298,7 +298,7 @@ public class SnapshotExecutor extends BasicExecutor {
                                      String ruleName,
                                      boolean expectedResult ) {
 
-            super( ruleName, expectedResult );
+            super(ruleName, expectedResult);
 
             this.keyRule = keyRule;
             this.matchingRule = matchingRule;
@@ -316,12 +316,12 @@ public class SnapshotExecutor extends BasicExecutor {
                                         MetaData metaData ) throws RbvException {
 
             //check if the matchingRule will match
-            if( !matchingRule.isMatch( metaData ) ) {
+            if (!matchingRule.isMatch(metaData)) {
                 return false;
             }
 
             //now compare with the snapshot
-            if( !snapshotMatch( metaData, excludedKeys ) ) {
+            if (!snapshotMatch(metaData, excludedKeys)) {
                 return false;
             }
 

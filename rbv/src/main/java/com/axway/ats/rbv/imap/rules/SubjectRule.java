@@ -58,7 +58,7 @@ public class SubjectRule extends AbstractImapRule {
                         String ruleName,
                         boolean expectedResult ) {
 
-        this( new int[0], expectedValue, matchMode, ruleName, expectedResult );
+        this(new int[0], expectedValue, matchMode, ruleName, expectedResult);
     }
 
     public SubjectRule( int[] nestedPackagePath,
@@ -67,12 +67,12 @@ public class SubjectRule extends AbstractImapRule {
                         String ruleName,
                         boolean expectedResult ) {
 
-        super( ruleName, expectedResult, ImapMetaData.class );
+        super(ruleName, expectedResult, ImapMetaData.class);
 
         this.expectedValue = expectedValue;
         this.matchMode = matchMode;
 
-        setNestedPackagePath( nestedPackagePath );
+        setNestedPackagePath(nestedPackagePath);
     }
 
     @Override
@@ -81,40 +81,40 @@ public class SubjectRule extends AbstractImapRule {
 
         //get the emailMessage
         //the meta data type check already passed, so it is safe to cast
-        MimePackage emailMessage = getNeededMimePackage( metaData );
+        MimePackage emailMessage = getNeededMimePackage(metaData);
 
         //get the actual subject value
         String subjectValue;
         try {
             subjectValue = emailMessage.getSubject();
-        } catch( PackageException pe ) {
-            throw new RbvException( pe );
+        } catch (PackageException pe) {
+            throw new RbvException(pe);
         }
 
         //if there is no such header return false 
         boolean actualResult = false;
 
-        if( subjectValue != null ) {
-            switch( matchMode ){
+        if (subjectValue != null) {
+            switch (matchMode) {
                 case LEFT:
-                    actualResult = subjectValue.startsWith( expectedValue );
+                    actualResult = subjectValue.startsWith(expectedValue);
                     break;
                 case RIGHT:
-                    actualResult = subjectValue.endsWith( expectedValue );
+                    actualResult = subjectValue.endsWith(expectedValue);
                     break;
                 case EQUALS:
-                    actualResult = subjectValue.equals( expectedValue );
+                    actualResult = subjectValue.equals(expectedValue);
                     break;
                 case FIND:
-                    actualResult = subjectValue.indexOf( expectedValue ) >= 0;
+                    actualResult = subjectValue.indexOf(expectedValue) >= 0;
                     break;
                 case REGEX:
-                    actualResult = Pattern.compile( expectedValue ).matcher( subjectValue ).find();
+                    actualResult = Pattern.compile(expectedValue).matcher(subjectValue).find();
                     break;
             }
-            log.info( "Actual subject is '" + subjectValue + "'" );
+            log.info("Actual subject is '" + subjectValue + "'");
         } else {
-            log.info( "No subject was found" );
+            log.info("No subject was found");
         }
 
         return actualResult;
@@ -129,7 +129,7 @@ public class SubjectRule extends AbstractImapRule {
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( ImapMetaData.MIME_PACKAGE );
+        metaKeys.add(ImapMetaData.MIME_PACKAGE);
         return metaKeys;
     }
 }

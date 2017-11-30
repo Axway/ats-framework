@@ -73,14 +73,14 @@ public class DbVerification extends VerificationSkeleton {
     public DbVerification( TestBox testBox,
                            String table ) throws RbvException {
 
-        this( testBox.getHost(),
-              testBox.getDbPort(),
-              testBox.getDbName(),
-              testBox.getDbUser(),
-              testBox.getDbPass(),
-              new DbSearchTerm( "SELECT * FROM " + table ),
-              testBox.getDbType(),
-              testBox.getProperties() );
+        this(testBox.getHost(),
+             testBox.getDbPort(),
+             testBox.getDbName(),
+             testBox.getDbUser(),
+             testBox.getDbPass(),
+             new DbSearchTerm("SELECT * FROM " + table),
+             testBox.getDbType(),
+             testBox.getProperties());
     }
 
     /**
@@ -95,14 +95,14 @@ public class DbVerification extends VerificationSkeleton {
     public DbVerification( TestBox testBox,
                            DbSearchTerm searchTerm ) throws RbvException {
 
-        this( testBox.getHost(),
-              testBox.getDbPort(),
-              testBox.getDbName(),
-              testBox.getDbUser(),
-              testBox.getDbPass(),
-              searchTerm,
-              testBox.getDbType(),
-              testBox.getProperties() );
+        this(testBox.getHost(),
+             testBox.getDbPort(),
+             testBox.getDbName(),
+             testBox.getDbUser(),
+             testBox.getDbPass(),
+             searchTerm,
+             testBox.getDbType(),
+             testBox.getProperties());
     }
 
     protected DbVerification( String host,
@@ -119,49 +119,49 @@ public class DbVerification extends VerificationSkeleton {
         this.host = host;
 
         // avoid the possible NullPointerException
-        if( dbType == null ) {
-            throw new RbvException( "Database type not specified for host " + host );
+        if (dbType == null) {
+            throw new RbvException("Database type not specified for host " + host);
         }
         DbProvider dbProvider;
-        if( port != TestBox.DB_PORT_NOT_SPECIFIED ) { // add custom port
-            customProperties.put( DbKeys.PORT_KEY, new Integer( port ) );
+        if (port != TestBox.DB_PORT_NOT_SPECIFIED) { // add custom port
+            customProperties.put(DbKeys.PORT_KEY, new Integer(port));
         }
-        switch( dbType ){
+        switch (dbType) {
             case DbConnMySQL.DATABASE_TYPE:
-                dbProvider = new MysqlDbProvider( new DbConnMySQL( host,
-                                                                   database,
-                                                                   user,
-                                                                   password,
-                                                                   customProperties ) );
+                dbProvider = new MysqlDbProvider(new DbConnMySQL(host,
+                                                                 database,
+                                                                 user,
+                                                                 password,
+                                                                 customProperties));
                 break;
             case DbConnSQLServer.DATABASE_TYPE:
-                dbProvider = new MssqlDbProvider( new DbConnSQLServer( host,
-                                                                       database,
-                                                                       user,
-                                                                       password,
-                                                                       customProperties ) );
-                break;
-            case DbConnOracle.DATABASE_TYPE:
-                Object dbSid = customProperties.get( "dbsid" );
-                if( dbSid != null ) {
-                    customProperties.put( OracleKeys.SID_KEY, dbSid );
-                }
-                Object dbServiceName = customProperties.get( "dbserviceName" );
-                if( dbServiceName != null ) {
-                    customProperties.put( OracleKeys.SERVICE_NAME_KEY, dbServiceName );
-                }
-                dbProvider = new OracleDbProvider( new DbConnOracle( host,
+                dbProvider = new MssqlDbProvider(new DbConnSQLServer(host,
                                                                      database,
                                                                      user,
                                                                      password,
-                                                                     customProperties ) );
+                                                                     customProperties));
+                break;
+            case DbConnOracle.DATABASE_TYPE:
+                Object dbSid = customProperties.get("dbsid");
+                if (dbSid != null) {
+                    customProperties.put(OracleKeys.SID_KEY, dbSid);
+                }
+                Object dbServiceName = customProperties.get("dbserviceName");
+                if (dbServiceName != null) {
+                    customProperties.put(OracleKeys.SERVICE_NAME_KEY, dbServiceName);
+                }
+                dbProvider = new OracleDbProvider(new DbConnOracle(host,
+                                                                   database,
+                                                                   user,
+                                                                   password,
+                                                                   customProperties));
                 break;
             default:
-                throw new RbvException( "DB Provider '" + dbType + "' not supported!" );
+                throw new RbvException("DB Provider '" + dbType + "' not supported!");
         }
 
-        DbStorage storage = new DbStorage( dbProvider );
-        folder = storage.getFolder( searchTerm );
+        DbStorage storage = new DbStorage(dbProvider);
+        folder = storage.getFolder(searchTerm);
         this.executor = new MetaExecutor();
     }
 
@@ -170,8 +170,8 @@ public class DbVerification extends VerificationSkeleton {
 
         super();
 
-        DbStorage storage = new DbStorage( dbProvider );
-        folder = storage.getFolder( searchTerm );
+        DbStorage storage = new DbStorage(dbProvider);
+        folder = storage.getFolder(searchTerm);
         this.executor = new MetaExecutor();
     }
 
@@ -199,14 +199,14 @@ public class DbVerification extends VerificationSkeleton {
                                        String fieldName,
                                        String value ) {
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                DbStringFieldRule.MatchRelation.EQUALS,
-                                                                "checkFieldValueEquals",
-                                                                true );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValue( matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               DbStringFieldRule.MatchRelation.EQUALS,
+                                                               "checkFieldValueEquals",
+                                                               true);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -222,12 +222,12 @@ public class DbVerification extends VerificationSkeleton {
                                        String fieldName,
                                        boolean value ) {
 
-        DbBooleanFieldRule matchingRule = new DbBooleanFieldRule( tableName,
-                                                                  fieldName,
-                                                                  value,
-                                                                  "checkFieldValueEquals",
-                                                                  true );
-        checkFieldValue( matchingRule );
+        DbBooleanFieldRule matchingRule = new DbBooleanFieldRule(tableName,
+                                                                 fieldName,
+                                                                 value,
+                                                                 "checkFieldValueEquals",
+                                                                 true);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -243,13 +243,13 @@ public class DbVerification extends VerificationSkeleton {
                                        String fieldName,
                                        Date value ) {
 
-        DbDateFieldRule matchingRule = new DbDateFieldRule( tableName,
-                                                            fieldName,
-                                                            value,
-                                                            MatchRelation.EXACT,
-                                                            "checkFieldValueEquals",
-                                                            true );
-        checkFieldValue( matchingRule );
+        DbDateFieldRule matchingRule = new DbDateFieldRule(tableName,
+                                                           fieldName,
+                                                           value,
+                                                           MatchRelation.EXACT,
+                                                           "checkFieldValueEquals",
+                                                           true);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -265,12 +265,12 @@ public class DbVerification extends VerificationSkeleton {
                                        String fieldName,
                                        Number value ) {
 
-        DbNumericFieldRule matchingRule = new DbNumericFieldRule( tableName,
-                                                                  fieldName,
-                                                                  value,
-                                                                  "checkFieldValueEquals",
-                                                                  true );
-        checkFieldValue( matchingRule );
+        DbNumericFieldRule matchingRule = new DbNumericFieldRule(tableName,
+                                                                 fieldName,
+                                                                 value,
+                                                                 "checkFieldValueEquals",
+                                                                 true);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -286,12 +286,12 @@ public class DbVerification extends VerificationSkeleton {
                                        String fieldName,
                                        byte[] value ) {
 
-        DbBinaryFieldRule matchingRule = new DbBinaryFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                "checkFieldValueEquals",
-                                                                true );
-        checkFieldValue( matchingRule );
+        DbBinaryFieldRule matchingRule = new DbBinaryFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               "checkFieldValueEquals",
+                                                               true);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -307,14 +307,14 @@ public class DbVerification extends VerificationSkeleton {
                                              String fieldName,
                                              String value ) {
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                DbStringFieldRule.MatchRelation.EQUALS,
-                                                                "checkFieldValueDoesNotEqual",
-                                                                false );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValue( matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               DbStringFieldRule.MatchRelation.EQUALS,
+                                                               "checkFieldValueDoesNotEqual",
+                                                               false);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -330,12 +330,12 @@ public class DbVerification extends VerificationSkeleton {
                                              String fieldName,
                                              Number value ) {
 
-        DbNumericFieldRule matchingRule = new DbNumericFieldRule( tableName,
-                                                                  fieldName,
-                                                                  value,
-                                                                  "checkFieldValueDoesNotEqual",
-                                                                  false );
-        checkFieldValue( matchingRule );
+        DbNumericFieldRule matchingRule = new DbNumericFieldRule(tableName,
+                                                                 fieldName,
+                                                                 value,
+                                                                 "checkFieldValueDoesNotEqual",
+                                                                 false);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -351,12 +351,12 @@ public class DbVerification extends VerificationSkeleton {
                                              String fieldName,
                                              byte[] value ) {
 
-        DbBinaryFieldRule matchingRule = new DbBinaryFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                "checkFieldValueDoesNotEqual",
-                                                                false );
-        checkFieldValue( matchingRule );
+        DbBinaryFieldRule matchingRule = new DbBinaryFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               "checkFieldValueDoesNotEqual",
+                                                               false);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -372,14 +372,14 @@ public class DbVerification extends VerificationSkeleton {
                                       String fieldName,
                                       String regex ) {
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                regex,
-                                                                DbStringFieldRule.MatchRelation.REGEX_MATCH,
-                                                                "checkFieldValueRegex",
-                                                                true );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValue( matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               regex,
+                                                               DbStringFieldRule.MatchRelation.REGEX_MATCH,
+                                                               "checkFieldValueRegex",
+                                                               true);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -395,14 +395,14 @@ public class DbVerification extends VerificationSkeleton {
                                                   String fieldName,
                                                   String regex ) {
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                regex,
-                                                                DbStringFieldRule.MatchRelation.REGEX_MATCH,
-                                                                "checkFieldValueRegexDoesNotMatch",
-                                                                false );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValue( matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               regex,
+                                                               DbStringFieldRule.MatchRelation.REGEX_MATCH,
+                                                               "checkFieldValueRegexDoesNotMatch",
+                                                               false);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -418,14 +418,14 @@ public class DbVerification extends VerificationSkeleton {
                                          String fieldName,
                                          String value ) {
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                DbStringFieldRule.MatchRelation.CONTAINS,
-                                                                "checkFieldValueContains",
-                                                                true );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValue( matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               DbStringFieldRule.MatchRelation.CONTAINS,
+                                                               "checkFieldValueContains",
+                                                               true);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -441,14 +441,14 @@ public class DbVerification extends VerificationSkeleton {
                                                String fieldName,
                                                String value ) {
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                DbStringFieldRule.MatchRelation.CONTAINS,
-                                                                "checkFieldValueDoesNotContain",
-                                                                false );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValue( matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               DbStringFieldRule.MatchRelation.CONTAINS,
+                                                               "checkFieldValueDoesNotContain",
+                                                               false);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -466,15 +466,15 @@ public class DbVerification extends VerificationSkeleton {
                                            long timestamp,
                                            String datePattern ) {
 
-        DbDateFieldRule matchingRule = new DbDateFieldRule( tableName,
-                                                            fieldName,
-                                                            Long.toString( timestamp ),
-                                                            DbDateFieldRule.MatchRelation.BEFORE_DATE,
-                                                            datePattern,
-                                                            "checkFieldValueDateBefore",
-                                                            true );
+        DbDateFieldRule matchingRule = new DbDateFieldRule(tableName,
+                                                           fieldName,
+                                                           Long.toString(timestamp),
+                                                           DbDateFieldRule.MatchRelation.BEFORE_DATE,
+                                                           datePattern,
+                                                           "checkFieldValueDateBefore",
+                                                           true);
 
-        checkFieldValue( matchingRule );
+        checkFieldValue(matchingRule);
     }
 
     /**
@@ -492,20 +492,20 @@ public class DbVerification extends VerificationSkeleton {
                                           long timestamp,
                                           String datePattern ) {
 
-        DbDateFieldRule matchingRule = new DbDateFieldRule( tableName,
-                                                            fieldName,
-                                                            Long.toString( timestamp ),
-                                                            DbDateFieldRule.MatchRelation.AFTER_DATE,
-                                                            datePattern,
-                                                            "checkFieldValueDateAfter",
-                                                            true );
-        checkFieldValue( matchingRule );
+        DbDateFieldRule matchingRule = new DbDateFieldRule(tableName,
+                                                           fieldName,
+                                                           Long.toString(timestamp),
+                                                           DbDateFieldRule.MatchRelation.AFTER_DATE,
+                                                           datePattern,
+                                                           "checkFieldValueDateAfter",
+                                                           true);
+        checkFieldValue(matchingRule);
     }
 
     private void checkFieldValue(
                                   DbFieldsRule matchingRule ) {
 
-        rootRule.addRule( matchingRule );
+        rootRule.addRule(matchingRule);
     }
 
     /**

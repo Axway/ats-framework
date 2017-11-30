@@ -29,13 +29,13 @@ import com.axway.ats.config.AbstractConfigurator;
 @PublicAtsApi
 public class RbvConfigurator extends AbstractConfigurator {
 
-    private static final String RBV_CONFIG_FILE = "/ats.rbv.properties";
+    private static final String    RBV_CONFIG_FILE           = "/ats.rbv.properties";
 
     //the keys of the configuration values in the file
-    private static final String POLLING_INITIAL_DELAY_KEY = "rbv.polling.initialdelay";
-    private static final String POLLING_ATTEMPTS_KEY      = "rbv.polling.attempts";
-    private static final String POLLING_INTERVAL_KEY      = "rbv.polling.interval";
-    private static final String POLLING_TIMEOUT_KEY       = "rbv.polling.timeout";
+    private static final String    POLLING_INITIAL_DELAY_KEY = "rbv.polling.initialdelay";
+    private static final String    POLLING_ATTEMPTS_KEY      = "rbv.polling.attempts";
+    private static final String    POLLING_INTERVAL_KEY      = "rbv.polling.interval";
+    private static final String    POLLING_TIMEOUT_KEY       = "rbv.polling.timeout";
 
     /**
      * The singleton instance for this configurator
@@ -47,15 +47,15 @@ public class RbvConfigurator extends AbstractConfigurator {
         super();
 
         //add the resource to the repository
-        addConfigFileFromClassPath( configurationSource, true , false);
+        addConfigFileFromClassPath(configurationSource, true, false);
 
     }
 
     @PublicAtsApi
     public static synchronized RbvConfigurator getInstance() {
 
-        if( instance == null ) {
-            instance = new RbvConfigurator( RBV_CONFIG_FILE );
+        if (instance == null) {
+            instance = new RbvConfigurator(RBV_CONFIG_FILE);
         }
         return instance;
     }
@@ -68,7 +68,7 @@ public class RbvConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getPollingInitialDelay() {
 
-        return getLongProperty( POLLING_INITIAL_DELAY_KEY );
+        return getLongProperty(POLLING_INITIAL_DELAY_KEY);
     }
 
     /**
@@ -83,7 +83,7 @@ public class RbvConfigurator extends AbstractConfigurator {
 
         long currentPollingInitialDelay = getPollingInitialDelay();
 
-        setTempProperty( POLLING_INITIAL_DELAY_KEY, Long.toString( pollingInitialDelay ) );
+        setTempProperty(POLLING_INITIAL_DELAY_KEY, Long.toString(pollingInitialDelay));
         return currentPollingInitialDelay;
     }
 
@@ -95,7 +95,7 @@ public class RbvConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public int getPollingAttempts() {
 
-        return getIntegerProperty( POLLING_ATTEMPTS_KEY );
+        return getIntegerProperty(POLLING_ATTEMPTS_KEY);
     }
 
     /**
@@ -110,7 +110,7 @@ public class RbvConfigurator extends AbstractConfigurator {
 
         int currentPollingAttempts = getPollingAttempts();
 
-        setTempProperty( POLLING_ATTEMPTS_KEY, Integer.toString( pollingAttempts ) );
+        setTempProperty(POLLING_ATTEMPTS_KEY, Integer.toString(pollingAttempts));
         return currentPollingAttempts;
     }
 
@@ -122,7 +122,7 @@ public class RbvConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getPollingInterval() {
 
-        return getLongProperty( POLLING_INTERVAL_KEY );
+        return getLongProperty(POLLING_INTERVAL_KEY);
     }
 
     /**
@@ -137,7 +137,7 @@ public class RbvConfigurator extends AbstractConfigurator {
 
         long currentPollingInterval = getPollingInterval();
 
-        setTempProperty( POLLING_INTERVAL_KEY, Long.toString( pollingInterval ) );
+        setTempProperty(POLLING_INTERVAL_KEY, Long.toString(pollingInterval));
         return currentPollingInterval;
     }
 
@@ -151,7 +151,7 @@ public class RbvConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getPollingTimeout() {
 
-        return getLongProperty( POLLING_TIMEOUT_KEY );
+        return getLongProperty(POLLING_TIMEOUT_KEY);
     }
 
     /**
@@ -166,7 +166,7 @@ public class RbvConfigurator extends AbstractConfigurator {
 
         long currentPollingTimeout = getPollingTimeout();
 
-        setTempProperty( POLLING_TIMEOUT_KEY, Long.toString( pollingTimeout ) );
+        setTempProperty(POLLING_TIMEOUT_KEY, Long.toString(pollingTimeout));
         return currentPollingTimeout;
     }
 

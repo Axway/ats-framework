@@ -42,7 +42,7 @@ public class DbStringFieldRule extends DbFieldsRule {
                               String ruleName,
                               boolean expectedResult ) {
 
-        super( tableName, fieldName, expectedValue, ruleName, expectedResult );
+        super(tableName, fieldName, expectedValue, ruleName, expectedResult);
         this.relation = relation;
     }
 
@@ -52,7 +52,7 @@ public class DbStringFieldRule extends DbFieldsRule {
                               String ruleName,
                               boolean expectedResult ) {
 
-        super( fieldName, expectedValue, ruleName, expectedResult );
+        super(fieldName, expectedValue, ruleName, expectedResult);
         this.relation = relation;
     }
 
@@ -69,40 +69,40 @@ public class DbStringFieldRule extends DbFieldsRule {
         boolean actualResult = false;
 
         //this cast is safe, as isMatch has already checked the type of meta data
-        DbMetaData dbMetaData = ( DbMetaData ) metaData;
+        DbMetaData dbMetaData = (DbMetaData) metaData;
 
         String actualValue;
         try {
-            actualValue = ( String ) dbMetaData.getProperty( expectedMetaDataKey.toString() );
-            if( dbEncryptor != null ) {
-                actualValue = dbEncryptor.decrypt( actualValue );
+            actualValue = (String) dbMetaData.getProperty(expectedMetaDataKey.toString());
+            if (dbEncryptor != null) {
+                actualValue = dbEncryptor.decrypt(actualValue);
             }
-            log.info( "Actual value is '" + actualValue + "'" );
-        } catch( NoSuchMetaDataKeyException nsmdke ) {
-            log.warn( nsmdke.getMessage() );
+            log.info("Actual value is '" + actualValue + "'");
+        } catch (NoSuchMetaDataKeyException nsmdke) {
+            log.warn(nsmdke.getMessage());
             return false;
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Meta data is incorrect - expected String" );
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Meta data is incorrect - expected String");
         }
 
-        if( expectedValue == null ) {
+        if (expectedValue == null) {
             return actualValue == null;
         } else {
-            if( actualValue == null ) {
+            if (actualValue == null) {
                 return false;
             }
         }
 
-        if( relation == MatchRelation.EQUALS ) {
-            actualResult = expectedValue.equals( actualValue );
-        } else if( relation == MatchRelation.CONTAINS ) {
-            actualResult = actualValue.contains( ( String ) expectedValue );
-        } else if( relation == MatchRelation.REGEX_MATCH ) {
-            Pattern regexPattern = Pattern.compile( ( String ) expectedValue );
-            actualResult = regexPattern.matcher( actualValue ).matches();
+        if (relation == MatchRelation.EQUALS) {
+            actualResult = expectedValue.equals(actualValue);
+        } else if (relation == MatchRelation.CONTAINS) {
+            actualResult = actualValue.contains((String) expectedValue);
+        } else if (relation == MatchRelation.REGEX_MATCH) {
+            Pattern regexPattern = Pattern.compile((String) expectedValue);
+            actualResult = regexPattern.matcher(actualValue).matches();
         } else {
-            throw new RbvException( "No implementation for MatchRelation '" + relation.toString()
-                                    + "' in DbStringFieldMatchingTerm" );
+            throw new RbvException("No implementation for MatchRelation '" + relation.toString()
+                                   + "' in DbStringFieldMatchingTerm");
         }
 
         return actualResult;
@@ -113,13 +113,13 @@ public class DbStringFieldRule extends DbFieldsRule {
 
         StringBuilder ruleDescription = new StringBuilder();
 
-        ruleDescription.append( "on table '" + expectedMetaDataKey.getTableName() + "'," );
-        ruleDescription.append( " column '" + expectedMetaDataKey.getColumnName() + "'," );
-        if( !getExpectedResult() ) {
-            ruleDescription.append( " not" );
+        ruleDescription.append("on table '" + expectedMetaDataKey.getTableName() + "',");
+        ruleDescription.append(" column '" + expectedMetaDataKey.getColumnName() + "',");
+        if (!getExpectedResult()) {
+            ruleDescription.append(" not");
         }
-        ruleDescription.append( " expected value '" + expectedValue + "'," );
-        ruleDescription.append( " with match relation '" + relation.toString() + "'" );
+        ruleDescription.append(" expected value '" + expectedValue + "',");
+        ruleDescription.append(" with match relation '" + relation.toString() + "'");
 
         return ruleDescription.toString();
     }

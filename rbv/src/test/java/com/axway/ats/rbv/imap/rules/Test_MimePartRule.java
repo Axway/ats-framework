@@ -39,147 +39,147 @@ public class Test_MimePartRule extends BaseTest {
     @Before
     public void setUp() throws PackageException, RbvException {
 
-        mailMessage = new MimePackage( Test_MimePartRule.class.getResourceAsStream( "mail_with_two_attachments.msg" ) );
+        mailMessage = new MimePackage(Test_MimePartRule.class.getResourceAsStream("mail_with_two_attachments.msg"));
 
-        metaData = new ImapMetaData( mailMessage );
+        metaData = new ImapMetaData(mailMessage);
 
-        expectedMailMessage = new MimePackage( Test_MimePartRule.class.getResourceAsStream( "mail_with_two_attachments_modified.msg" ) );
+        expectedMailMessage = new MimePackage(Test_MimePartRule.class.getResourceAsStream("mail_with_two_attachments_modified.msg"));
     }
 
     @Test
     public void isMatchRegularPartPositive() throws RbvException {
 
         //expected true
-        MimePartRule rule = new MimePartRule( expectedMailMessage,
-                                              0,
-                                              false,
-                                              "isMatchRegularPartPositive1",
-                                              true );
-        assertTrue( rule.isMatch( metaData ) );
+        MimePartRule rule = new MimePartRule(expectedMailMessage,
+                                             0,
+                                             false,
+                                             "isMatchRegularPartPositive1",
+                                             true);
+        assertTrue(rule.isMatch(metaData));
 
         //expected false
-        rule = new MimePartRule( expectedMailMessage, 2, false, "isMatchRegularPartPositive2", false );
-        assertTrue( rule.isMatch( metaData ) );
+        rule = new MimePartRule(expectedMailMessage, 2, false, "isMatchRegularPartPositive2", false);
+        assertTrue(rule.isMatch(metaData));
     }
 
     @Test
     public void isMatchRegularPartNegative() throws RbvException {
 
         //expected true
-        MimePartRule rule = new MimePartRule( expectedMailMessage,
-                                              2,
-                                              false,
-                                              "isMatchRegularPartNegative1",
-                                              true );
-        assertFalse( rule.isMatch( metaData ) );
+        MimePartRule rule = new MimePartRule(expectedMailMessage,
+                                             2,
+                                             false,
+                                             "isMatchRegularPartNegative1",
+                                             true);
+        assertFalse(rule.isMatch(metaData));
 
         //expected false
-        rule = new MimePartRule( expectedMailMessage, 0, false, "isMatchRegularPartNegative2", false );
-        assertFalse( rule.isMatch( metaData ) );
+        rule = new MimePartRule(expectedMailMessage, 0, false, "isMatchRegularPartNegative2", false);
+        assertFalse(rule.isMatch(metaData));
     }
 
     @Test
     public void isMatchAttachmentPositive() throws RbvException {
 
         //expected true
-        MimePartRule rule = new MimePartRule( expectedMailMessage,
-                                              0,
-                                              true,
-                                              "isMatchAttachmentPositive1",
-                                              true );
-        assertTrue( rule.isMatch( metaData ) );
+        MimePartRule rule = new MimePartRule(expectedMailMessage,
+                                             0,
+                                             true,
+                                             "isMatchAttachmentPositive1",
+                                             true);
+        assertTrue(rule.isMatch(metaData));
 
         //expected false
-        rule = new MimePartRule( expectedMailMessage, 1, true, "isMatchAttachmentPositive2", false );
-        assertTrue( rule.isMatch( metaData ) );
+        rule = new MimePartRule(expectedMailMessage, 1, true, "isMatchAttachmentPositive2", false);
+        assertTrue(rule.isMatch(metaData));
     }
 
     @Test
     public void isMatchAttachmentNegative() throws RbvException {
 
         //expected true
-        MimePartRule rule = new MimePartRule( expectedMailMessage,
-                                              1,
-                                              true,
-                                              "isMatchAttachmentNegative1",
-                                              true );
-        assertFalse( rule.isMatch( metaData ) );
+        MimePartRule rule = new MimePartRule(expectedMailMessage,
+                                             1,
+                                             true,
+                                             "isMatchAttachmentNegative1",
+                                             true);
+        assertFalse(rule.isMatch(metaData));
 
         //expected false
-        rule = new MimePartRule( expectedMailMessage, 0, true, "isMatchAttachmentNegative2", false );
-        assertFalse( rule.isMatch( metaData ) );
+        rule = new MimePartRule(expectedMailMessage, 0, true, "isMatchAttachmentNegative2", false);
+        assertFalse(rule.isMatch(metaData));
     }
 
     @Test
     public void isMatchRegularPartNoSuchPart() throws PackageException, RbvException {
 
-        mailMessage = new MimePackage( Test_MimePartRule.class.getResourceAsStream( "mail_with_one_attachment.msg" ) );
-        metaData = new ImapMetaData( mailMessage );
+        mailMessage = new MimePackage(Test_MimePartRule.class.getResourceAsStream("mail_with_one_attachment.msg"));
+        metaData = new ImapMetaData(mailMessage);
 
         //expected true
-        MimePartRule rule = new MimePartRule( expectedMailMessage,
-                                              2,
-                                              false,
-                                              "isMatchRegularPartNoSuchPart1",
-                                              true );
-        assertFalse( rule.isMatch( metaData ) );
+        MimePartRule rule = new MimePartRule(expectedMailMessage,
+                                             2,
+                                             false,
+                                             "isMatchRegularPartNoSuchPart1",
+                                             true);
+        assertFalse(rule.isMatch(metaData));
 
         //expected false
-        rule = new MimePartRule( expectedMailMessage, 2, false, "isMatchRegularPartNoSuchPart2", false );
-        assertTrue( rule.isMatch( metaData ) );
+        rule = new MimePartRule(expectedMailMessage, 2, false, "isMatchRegularPartNoSuchPart2", false);
+        assertTrue(rule.isMatch(metaData));
     }
 
     @Test
     public void isMatchAttachmentNoSuchPart() throws PackageException, RbvException {
 
-        mailMessage = new MimePackage( Test_MimePartRule.class.getResourceAsStream( "mail_with_one_attachment.msg" ) );
-        metaData = new ImapMetaData( mailMessage );
+        mailMessage = new MimePackage(Test_MimePartRule.class.getResourceAsStream("mail_with_one_attachment.msg"));
+        metaData = new ImapMetaData(mailMessage);
 
         //expected true
-        MimePartRule rule = new MimePartRule( expectedMailMessage,
-                                              1,
-                                              true,
-                                              "isMatchAttachmentNoSuchPart1",
-                                              true );
-        assertFalse( rule.isMatch( metaData ) );
+        MimePartRule rule = new MimePartRule(expectedMailMessage,
+                                             1,
+                                             true,
+                                             "isMatchAttachmentNoSuchPart1",
+                                             true);
+        assertFalse(rule.isMatch(metaData));
 
         //expected false
-        rule = new MimePartRule( expectedMailMessage, 1, true, "isMatchAttachmentNoSuchPart2", false );
-        assertTrue( rule.isMatch( metaData ) );
+        rule = new MimePartRule(expectedMailMessage, 1, true, "isMatchAttachmentNoSuchPart2", false);
+        assertTrue(rule.isMatch(metaData));
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullExpectedMessage() throws RbvException {
 
-        new MimePartRule( null, 0, false, "isMatchNullExpectedMessage", true );
+        new MimePartRule(null, 0, false, "isMatchNullExpectedMessage", true);
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullMetaData() throws RbvException {
 
-        MimePartRule rule = new MimePartRule( expectedMailMessage, 0, false, "isMatchNullMetaData", true );
+        MimePartRule rule = new MimePartRule(expectedMailMessage, 0, false, "isMatchNullMetaData", true);
 
-        assertFalse( rule.isMatch( null ) );
+        assertFalse(rule.isMatch(null));
 
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchWrongMetaData() throws RbvException {
 
-        MimePartRule rule = new MimePartRule( expectedMailMessage, 0, false, "isMatchEmptyMetaData", true );
+        MimePartRule rule = new MimePartRule(expectedMailMessage, 0, false, "isMatchEmptyMetaData", true);
 
         metaData = new MetaData();
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchEmptyMetaData() throws RbvException {
 
-        MimePartRule rule = new MimePartRule( expectedMailMessage, 0, false, "isMatchEmptyMetaData", true );
+        MimePartRule rule = new MimePartRule(expectedMailMessage, 0, false, "isMatchEmptyMetaData", true);
 
-        metaData = new ImapMetaData( null );
-        assertFalse( rule.isMatch( metaData ) );
+        metaData = new ImapMetaData(null);
+        assertFalse(rule.isMatch(metaData));
 
     }
 }

@@ -42,8 +42,8 @@ import com.axway.ats.rbv.imap.rules.HeaderRule.HeaderMatchMode;
 import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.rules.AndRuleOperation;
 
-@SuppressWarnings("boxing")
-@RunWith(PowerMockRunner.class)
+@SuppressWarnings( "boxing")
+@RunWith( PowerMockRunner.class)
 public class Test_AndRuleOperation extends BaseTest {
 
     private static MetaData metaData;
@@ -51,103 +51,103 @@ public class Test_AndRuleOperation extends BaseTest {
     @BeforeClass
     public static void setUpTest_AndRuleOperation() throws PackageException, RbvException {
 
-        MimePackage testMessage = new MimePackage( Test_ImapStorage.class.getResourceAsStream( "mail.msg" ) );
+        MimePackage testMessage = new MimePackage(Test_ImapStorage.class.getResourceAsStream("mail.msg"));
 
         //init the meta data with the test message
-        metaData = new ImapMetaData( testMessage );
+        metaData = new ImapMetaData(testMessage);
     }
 
     @Test
     public void isMatchBothRulesExpectedTruePositive() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchBothRulesExpectedTruePositive",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
                                                "gmail.com",
                                                HeaderMatchMode.FIND,
                                                "isMatchBothRulesExpectedTruePositive",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchBothRulesExpectedTruePositive",
-                                                true );
+                                               true);
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchOneOfThRulesExpectedFalsePositive() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
-                                               "gmail.com",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchOneOfThRulesExpectedFalsePositive",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
+                                               "gmail123.com",
                                                HeaderMatchMode.FIND,
                                                "isMatchOneOfThRulesExpectedFalsePositive",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail123.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchOneOfThRulesExpectedFalsePositive",
-                                                false );
+                                               false);
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchBothRulesExpectedTrueNegative() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
-                                               "gmail.com",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchBothRulesExpectedTrueNegative",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
+                                               "gmail123.com",
                                                HeaderMatchMode.FIND,
                                                "isMatchBothRulesExpectedTrueNegative",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail123.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchBothRulesExpectedTrueNegative",
-                                                true );
-        firstRule.equals( secondRule );
+                                               true);
+        firstRule.equals(secondRule);
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchOneOfThRulesExpectedFalseNegative() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchOneOfThRulesExpectedFalseNegative",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
                                                "gmail.com",
                                                HeaderMatchMode.FIND,
                                                "isMatchOneOfThRulesExpectedFalseNegative",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchOneOfThRulesExpectedFalseNegative",
-                                                false );
+                                               false);
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchPriority() throws RbvException, PackageException {
 
-        FileSystemMetaData meta = createMock( FileSystemMetaData.class );
-        FilePackage pack = createMock( FilePackage.class );
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.isFile() ).andReturn( true );
+        FileSystemMetaData meta = createMock(FileSystemMetaData.class);
+        FilePackage pack = createMock(FilePackage.class);
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.isFile()).andReturn(true);
         // at this point the evaluation should stop since this is the first rule to
         // evaluate and it fails thus the second should not be evaluated at all
 
@@ -155,14 +155,14 @@ public class Test_AndRuleOperation extends BaseTest {
         // because we are not expecting any calls it would do to the mock objects
         replayAll();
 
-        FilePathRule rule = new FilePathRule( "some/path/some.file", "pathRule1", true, 2 );
-        FileFolderRule anotherRule = new FileFolderRule( false, "folderRule", true, 1 );
+        FilePathRule rule = new FilePathRule("some/path/some.file", "pathRule1", true, 2);
+        FileFolderRule anotherRule = new FileFolderRule(false, "folderRule", true, 1);
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( rule );
-        andRule.addRule( anotherRule );
+        andRule.addRule(rule);
+        andRule.addRule(anotherRule);
 
-        assertFalse( andRule.isMatch( meta ) );
+        assertFalse(andRule.isMatch(meta));
         verifyAll();
     }
 }

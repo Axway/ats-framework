@@ -30,17 +30,17 @@ public class Test_NoSuchMimePartException extends BaseTest {
 
         NoSuchMimePartException exception;
 
-        exception = new NoSuchMimePartException( "test" );
-        assertEquals( "test", exception.getMessage() );
-        assertNull( exception.getCause() );
+        exception = new NoSuchMimePartException("test");
+        assertEquals("test", exception.getMessage());
+        assertNull(exception.getCause());
 
         Exception helperException = new Exception();
-        exception = new NoSuchMimePartException( "test", helperException );
-        assertEquals( "test", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new NoSuchMimePartException("test", helperException);
+        assertEquals("test", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
 
-        exception = new NoSuchMimePartException( helperException );
-        assertEquals( "java.lang.Exception", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new NoSuchMimePartException(helperException);
+        assertEquals("java.lang.Exception", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
     }
 }

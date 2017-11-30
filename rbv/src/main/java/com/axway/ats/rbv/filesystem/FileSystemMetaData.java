@@ -29,20 +29,20 @@ public class FileSystemMetaData extends MetaData {
 
         super();
 
-        putProperty( FILE_PACKAGE, filePackage );
+        putProperty(FILE_PACKAGE, filePackage);
     }
 
     public FilePackage getFilePackage() throws RbvException {
 
         FilePackage filePackage = null;
         try {
-            filePackage = ( FilePackage ) getProperty( FILE_PACKAGE );
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Mime message is not of correct type" );
+            filePackage = (FilePackage) getProperty(FILE_PACKAGE);
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Mime message is not of correct type");
         }
 
-        if( filePackage == null ) {
-            throw new MetaDataIncorrectException( "Meta data does not include mime message" );
+        if (filePackage == null) {
+            throw new MetaDataIncorrectException("Meta data does not include mime message");
         }
 
         return filePackage;

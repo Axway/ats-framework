@@ -27,18 +27,18 @@ public class Test_ImapFolderSearchTerm extends BaseTest {
     @Test
     public void constructorWithoutIncludeSubDirsOption() {
 
-        ImapFolderSearchTerm searchTerm = new ImapFolderSearchTerm( "user", "password" );
-        assertEquals( "user", searchTerm.getUserName() );
-        assertEquals( "password", searchTerm.getPassword() );
-        assertEquals( "INBOX", searchTerm.getFolderName() );
+        ImapFolderSearchTerm searchTerm = new ImapFolderSearchTerm("user", "password");
+        assertEquals("user", searchTerm.getUserName());
+        assertEquals("password", searchTerm.getPassword());
+        assertEquals("INBOX", searchTerm.getFolderName());
     }
 
     @Test
     public void constructorWithIncludeSubDirsOption() {
 
-        ImapFolderSearchTerm searchTerm = new ImapFolderSearchTerm( "user", "password", "folder" );
-        assertEquals( "user", searchTerm.getUserName() );
-        assertEquals( "password", searchTerm.getPassword() );
-        assertEquals( "folder", searchTerm.getFolderName() );
+        ImapFolderSearchTerm searchTerm = new ImapFolderSearchTerm("user", "password", "folder");
+        assertEquals("user", searchTerm.getUserName());
+        assertEquals("password", searchTerm.getPassword());
+        assertEquals("folder", searchTerm.getFolderName());
     }
 }

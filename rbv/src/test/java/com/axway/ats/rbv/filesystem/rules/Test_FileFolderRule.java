@@ -37,8 +37,8 @@ import com.axway.ats.rbv.BaseTest;
 import com.axway.ats.rbv.filesystem.FileSystemMetaData;
 import com.axway.ats.rbv.filesystem.rules.FileFolderRule;
 import com.axway.ats.rbv.model.RbvException;
-@SuppressWarnings("boxing")
-@RunWith(PowerMockRunner.class)
+@SuppressWarnings( "boxing")
+@RunWith( PowerMockRunner.class)
 public class Test_FileFolderRule extends BaseTest {
 
     public static FileFolderRule     rule;
@@ -48,47 +48,47 @@ public class Test_FileFolderRule extends BaseTest {
     @Before
     public void setUpTest_FilePathRule() {
 
-        meta = createMock( FileSystemMetaData.class );
-        pack = createMock( FilePackage.class );
+        meta = createMock(FileSystemMetaData.class);
+        pack = createMock(FilePackage.class);
     }
 
     @Test
     public void getRuleDescFile() {
 
-        rule = new FileFolderRule( true, "ruleName", true );
+        rule = new FileFolderRule(true, "ruleName", true);
 
-        assertEquals( rule.getRuleDescription(), "which expects a 'file'" );
+        assertEquals(rule.getRuleDescription(), "which expects a 'file'");
     }
 
     @Test
     public void getRuleDescFolder() {
 
-        rule = new FileFolderRule( false, "ruleName", true );
+        rule = new FileFolderRule(false, "ruleName", true);
 
-        assertEquals( rule.getRuleDescription(), "which expects a 'folder'" );
+        assertEquals(rule.getRuleDescription(), "which expects a 'folder'");
     }
 
     @Test
     public void getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
 
-        rule = new FileFolderRule( false, "ruleName", true );
+        rule = new FileFolderRule(false, "ruleName", true);
 
-        assertEquals( rule.getMetaDataKeys(), metaKeys );
+        assertEquals(rule.getMetaDataKeys(), metaKeys);
     }
 
     @Test
     public void performMatch() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.isFile() ).andReturn( true );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.isFile()).andReturn(true);
 
         replayAll();
 
-        rule = new FileFolderRule( true, "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileFolderRule(true, "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
@@ -96,27 +96,27 @@ public class Test_FileFolderRule extends BaseTest {
     @Test
     public void performMatchNegative() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.isFile() ).andReturn( false );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.isFile()).andReturn(false);
 
         replayAll();
 
-        rule = new FileFolderRule( true, "ruleName", true );
-        assertFalse( rule.performMatch( meta ) );
+        rule = new FileFolderRule(true, "ruleName", true);
+        assertFalse(rule.performMatch(meta));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void performMatchException() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.isFile() ).andThrow( new PackageException( "" ) );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.isFile()).andThrow(new PackageException(""));
 
         replayAll();
 
-        rule = new FileFolderRule( true, "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileFolderRule(true, "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }

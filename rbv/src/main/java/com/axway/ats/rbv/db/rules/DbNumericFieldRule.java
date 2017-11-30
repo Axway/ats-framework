@@ -24,7 +24,7 @@ import com.axway.ats.rbv.model.RbvException;
 
 public class DbNumericFieldRule extends DbFieldsRule {
 
-    private static final Logger log = Logger.getLogger( DbNumericFieldRule.class );
+    private static final Logger log = Logger.getLogger(DbNumericFieldRule.class);
 
     public DbNumericFieldRule( String tableName,
                                String fieldName,
@@ -32,7 +32,7 @@ public class DbNumericFieldRule extends DbFieldsRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        super( tableName, fieldName, expectedValue, ruleName, expectedResult );
+        super(tableName, fieldName, expectedValue, ruleName, expectedResult);
     }
 
     public DbNumericFieldRule( String fieldName,
@@ -40,7 +40,7 @@ public class DbNumericFieldRule extends DbFieldsRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        super( fieldName, expectedValue, ruleName, expectedResult );
+        super(fieldName, expectedValue, ruleName, expectedResult);
     }
 
     @Override
@@ -50,32 +50,32 @@ public class DbNumericFieldRule extends DbFieldsRule {
         boolean actualResult = false;
 
         //this cast is safe, as isMatch has already checked the type of meta data            
-        DbMetaData dbMetaData = ( DbMetaData ) metaData;
+        DbMetaData dbMetaData = (DbMetaData) metaData;
 
         Number actualValue;
         try {
-            actualValue = ( Number ) dbMetaData.getProperty( expectedMetaDataKey.toString() );
-            log.info( "Actual value is '" + actualValue + "'" );
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Meta data is incorrect - expected Number" );
+            actualValue = (Number) dbMetaData.getProperty(expectedMetaDataKey.toString());
+            log.info("Actual value is '" + actualValue + "'");
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Meta data is incorrect - expected Number");
         }
 
-        if( expectedValue == null ) {
+        if (expectedValue == null) {
             return actualValue == null;
         } else {
-            if( actualValue == null ) {
+            if (actualValue == null) {
                 return false;
             }
         }
 
-        if( !expectedValue.getClass().getName().equals( actualValue.getClass().getName() ) ) {
-            log.info( "Type of expected value '" + expectedValue.getClass().getSimpleName()
-                      + "' is different than type of actual value '" + actualValue.getClass().getSimpleName()
-                      + "'" );
+        if (!expectedValue.getClass().getName().equals(actualValue.getClass().getName())) {
+            log.info("Type of expected value '" + expectedValue.getClass().getSimpleName()
+                     + "' is different than type of actual value '" + actualValue.getClass().getSimpleName()
+                     + "'");
             return false;
         }
 
-        if( expectedValue.equals( actualValue ) ) {
+        if (expectedValue.equals(actualValue)) {
             actualResult = true;
         }
 

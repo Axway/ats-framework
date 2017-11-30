@@ -15,23 +15,23 @@
  */
 package com.axway.ats.rbv.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MatchableNotOpenException extends RbvStorageException {
 
     public MatchableNotOpenException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public MatchableNotOpenException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public MatchableNotOpenException( String message,
                                       Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

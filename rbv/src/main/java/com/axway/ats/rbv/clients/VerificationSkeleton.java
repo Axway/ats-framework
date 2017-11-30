@@ -37,11 +37,11 @@ public abstract class VerificationSkeleton {
     protected AndRuleOperation rootRule;
     protected Executor         executor;
     protected Matchable        folder;
-    
-    protected long pollingInitialDelay = -1;
-    protected long  pollingInterval = -1;
-    protected int pollingAttempts = -1;
-    protected long pollingTimeout = -1;
+
+    protected long             pollingInitialDelay = -1;
+    protected long             pollingInterval     = -1;
+    protected int              pollingAttempts     = -1;
+    protected long             pollingTimeout      = -1;
 
     protected VerificationSkeleton() {
 
@@ -61,7 +61,7 @@ public abstract class VerificationSkeleton {
      */
     protected List<MetaData> verifyObjectExists() throws RbvException {
 
-        return verify( true, true, false );
+        return verify(true, true, false);
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class VerificationSkeleton {
      */
     protected void verifyObjectDoesNotExist() throws RbvException {
 
-        verify( false, true, false );
+        verify(false, true, false);
     }
 
     /**
@@ -87,7 +87,7 @@ public abstract class VerificationSkeleton {
      */
     protected List<MetaData> verifyObjectAlwaysExists() throws RbvException {
 
-        return verify( true, false, true );
+        return verify(true, false, true);
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class VerificationSkeleton {
      */
     protected void verifyObjectNeverExists() throws RbvException {
 
-        verify( false, false, true );
+        verify(false, false, true);
     }
 
     /**
@@ -116,54 +116,54 @@ public abstract class VerificationSkeleton {
     protected List<MetaData> verify(
                                      boolean expectedResult,
                                      boolean endOnFirstMatch,
-            boolean endOnFirstFailure ) throws RbvException {
+                                     boolean endOnFirstFailure ) throws RbvException {
 
         try {
-            
-            this.executor.setRootRule( this.rootRule );
+
+            this.executor.setRootRule(this.rootRule);
 
             applyConfigurationSettings();
 
-            Monitor monitor = new Monitor( getMonitorName(), this.folder, this.executor,
-                                           new PollingParameters( pollingInitialDelay, pollingInterval,
-                                                                  pollingAttempts ),
-                                           expectedResult, endOnFirstMatch, endOnFirstFailure );
+            Monitor monitor = new Monitor(getMonitorName(), this.folder, this.executor,
+                                          new PollingParameters(pollingInitialDelay, pollingInterval,
+                                                                pollingAttempts),
+                                          expectedResult, endOnFirstMatch, endOnFirstFailure);
 
             ArrayList<Monitor> monitors = new ArrayList<Monitor>();
-            monitors.add( monitor );
+            monitors.add(monitor);
 
             // run the actual evaluation
-            String evaluationProblem = new SimpleMonitorListener( monitors ).evaluateMonitors( pollingTimeout );
+            String evaluationProblem = new SimpleMonitorListener(monitors).evaluateMonitors(pollingTimeout);
 
-            if( !StringUtils.isNullOrEmpty( evaluationProblem ) ) {
-                throw new RbvVerificationException( "Verification failed - " + monitor.getLastError() );
+            if (!StringUtils.isNullOrEmpty(evaluationProblem)) {
+                throw new RbvVerificationException("Verification failed - " + monitor.getLastError());
             }
 
             return monitor.getAllMatchedMetaData();
-        } catch( ConfigurationException ce ) {
-            throw new RbvException( "RBV configuration error", ce );
+        } catch (ConfigurationException ce) {
+            throw new RbvException("RBV configuration error", ce);
         }
     }
-    
-    private void applyConfigurationSettings(){
-        
+
+    private void applyConfigurationSettings() {
+
         RbvConfigurator rbvConfigurator = RbvConfigurator.getInstance();
-        
-        if( pollingInitialDelay < 0 ) {
+
+        if (pollingInitialDelay < 0) {
             pollingInitialDelay = rbvConfigurator.getPollingInitialDelay();
         }
-        if( pollingInterval < 0 ) {
+        if (pollingInterval < 0) {
             pollingInterval = rbvConfigurator.getPollingInterval();
         }
-        if( pollingAttempts < 0 ) {
+        if (pollingAttempts < 0) {
             pollingAttempts = rbvConfigurator.getPollingAttempts();
         }
-        if( pollingTimeout < 0 ) {
+        if (pollingTimeout < 0) {
             pollingTimeout = rbvConfigurator.getPollingTimeout();
         }
-        
+
     }
-    
+
     /**
      * Set polling initial delay for the current instance only, 
      * set negative value to use the default value as defined in the RBV Configuration
@@ -175,7 +175,7 @@ public abstract class VerificationSkeleton {
 
         this.pollingInitialDelay = pollingInitialDelay;
     }
-    
+
     /**
      * Set polling attempts for the current instance only, 
      * set negative value to use the default value as defined in the RBV Configuration
@@ -199,7 +199,7 @@ public abstract class VerificationSkeleton {
 
         this.pollingInterval = pollingInterval;
     }
-    
+
     /**
      * Set polling timeout for the current instance only, 
      * set negative value to use the default value as defined in the RBV Configuration
@@ -211,7 +211,7 @@ public abstract class VerificationSkeleton {
 
         this.pollingTimeout = pollingTimeout;
     }
-    
+
     /**
      * Get the name of the monitor
      * 

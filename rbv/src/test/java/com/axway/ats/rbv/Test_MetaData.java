@@ -34,30 +34,30 @@ public class Test_MetaData extends BaseTest {
     public void toStringRegularValue() throws RbvException {
 
         MetaData metaData = new MetaData();
-        assertEquals( "{  }", metaData.toString() );
+        assertEquals("{  }", metaData.toString());
 
-        metaData.putProperty( "test", "test_value" );
-        metaData.putProperty( "test1", "test_value1" );
+        metaData.putProperty("test", "test_value");
+        metaData.putProperty("test1", "test_value1");
 
         String str = metaData.toString();
-        str = str.substring( 1, str.length() - 1 );
+        str = str.substring(1, str.length() - 1);
 
         List<String> expected = new ArrayList<String>();
-        expected.add( "test1 : test_value1" );
-        expected.add( "test : test_value" );
+        expected.add("test1 : test_value1");
+        expected.add("test : test_value");
 
-        assertTrue( compareMixedLists( expected,
-                                       new LinkedList<String>( Arrays.asList( str.split( "," ) ) ) ) );
+        assertTrue(compareMixedLists(expected,
+                                     new LinkedList<String>(Arrays.asList(str.split(",")))));
     }
 
     private boolean compareMixedLists( List<String> expected, List<String> actual ) {
 
-        for( String name : expected ) {
-            for( int i = 0; i < actual.size(); i++ ) {
-                if( actual.get( i ).trim().equals( name.trim() ) ) {
-                    actual.remove( i );
+        for (String name : expected) {
+            for (int i = 0; i < actual.size(); i++) {
+                if (actual.get(i).trim().equals(name.trim())) {
+                    actual.remove(i);
                     break;
-                } else if( i == actual.size() - 1 ) {
+                } else if (i == actual.size() - 1) {
                     return false;
                 }
             }
@@ -70,15 +70,15 @@ public class Test_MetaData extends BaseTest {
 
         MetaData metaData = new MetaData();
 
-        metaData.putProperty( "test", null );
-        assertEquals( "{ test : null }", metaData.toString() );
+        metaData.putProperty("test", null);
+        assertEquals("{ test : null }", metaData.toString());
     }
 
     @Test
     public void putGetProperty() throws RbvException {
 
         MetaData metaData = new MetaData();
-        metaData.putProperty( "test", "test_value" );
-        assertEquals( "test_value", metaData.getProperty( "test" ) );
+        metaData.putProperty("test", "test_value");
+        assertEquals("test_value", metaData.getProperty("test"));
     }
 }

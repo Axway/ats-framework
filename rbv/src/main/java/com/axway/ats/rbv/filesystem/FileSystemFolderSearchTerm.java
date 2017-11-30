@@ -28,7 +28,7 @@ public class FileSystemFolderSearchTerm implements SearchTerm {
                                        String fileName,
                                        boolean isRegExp ) {
 
-        this( path, fileName, isRegExp, true );
+        this(path, fileName, isRegExp, true);
     }
 
     public FileSystemFolderSearchTerm( String path,

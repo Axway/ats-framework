@@ -43,7 +43,7 @@ import com.axway.ats.rbv.storage.Storage;
  */
 public class ImapStorage implements Storage {
 
-    static Logger            log                = Logger.getLogger( ImapStorage.class );
+    static Logger            log                = Logger.getLogger(ImapStorage.class);
 
     public final static long CONNECTION_TIMEOUT = 10000;
     public final static long TIMEOUT            = 60000;
@@ -62,57 +62,57 @@ public class ImapStorage implements Storage {
 
         // set the session
         Properties props = new Properties();
-        props.setProperty( "mail.smtp.host", this.imapServerHost );
-        props.setProperty( "mail.imap.partialfetch", "false" );
-        props.setProperty( "mail.smtp.connectiontimeout", String.valueOf( CONNECTION_TIMEOUT ) );
-        props.setProperty( "mail.smtp.timeout", String.valueOf( TIMEOUT ) );
+        props.setProperty("mail.smtp.host", this.imapServerHost);
+        props.setProperty("mail.imap.partialfetch", "false");
+        props.setProperty("mail.smtp.connectiontimeout", String.valueOf(CONNECTION_TIMEOUT));
+        props.setProperty("mail.smtp.timeout", String.valueOf(TIMEOUT));
 
         // add custom mail properties from RBVConfigurator
-        Map<String, String> customMailProperties = RbvConfigurator.getInstance().getProperties( "mail." );
-        for( Entry<String, String> mailProperty : customMailProperties.entrySet() ) {
-            props.setProperty( mailProperty.getKey(), mailProperty.getValue() );
+        Map<String, String> customMailProperties = RbvConfigurator.getInstance().getProperties("mail.");
+        for (Entry<String, String> mailProperty : customMailProperties.entrySet()) {
+            props.setProperty(mailProperty.getKey(), mailProperty.getValue());
         }
 
-        this.session = Session.getInstance( props );
-        if( log.isTraceEnabled() ) {
-            session.setDebug( true );
+        this.session = Session.getInstance(props);
+        if (log.isTraceEnabled()) {
+            session.setDebug(true);
         }
 
-        log.debug( "IMAP session to host '" + imapServerHost + "' initialized" );
+        log.debug("IMAP session to host '" + imapServerHost + "' initialized");
     }
 
     public ImapFolder getFolder(
                                  SearchTerm searchTerm ) throws RbvStorageException {
 
         try {
-            if( searchTerm.getClass().getName().equals( ImapFolderSearchTerm.class.getName() ) ) {
+            if (searchTerm.getClass().getName().equals(ImapFolderSearchTerm.class.getName())) {
 
-                ImapFolderSearchTerm imapSearchTerm = ( ImapFolderSearchTerm ) searchTerm;
-                Store store = session.getStore( "imap" );
+                ImapFolderSearchTerm imapSearchTerm = (ImapFolderSearchTerm) searchTerm;
+                Store store = session.getStore("imap");
 
-                return new ImapFolder( store,
-                                       imapServerHost,
-                                       imapSearchTerm.getFolderName(),
-                                       imapSearchTerm.getUserName(),
-                                       imapSearchTerm.getPassword() );
-            } else if( searchTerm.getClass().getName().equals( ImapEncryptedFolderSearchTerm.class.getName() ) ) {
+                return new ImapFolder(store,
+                                      imapServerHost,
+                                      imapSearchTerm.getFolderName(),
+                                      imapSearchTerm.getUserName(),
+                                      imapSearchTerm.getPassword());
+            } else if (searchTerm.getClass().getName().equals(ImapEncryptedFolderSearchTerm.class.getName())) {
 
-                ImapEncryptedFolderSearchTerm imapSearchTerm = ( ImapEncryptedFolderSearchTerm ) searchTerm;
-                Store store = session.getStore( "imap" );
+                ImapEncryptedFolderSearchTerm imapSearchTerm = (ImapEncryptedFolderSearchTerm) searchTerm;
+                Store store = session.getStore("imap");
 
-                return new ImapEncryptedFolder( store,
-                                                imapServerHost,
-                                                imapSearchTerm.getFolderName(),
-                                                imapSearchTerm.getUserName(),
-                                                imapSearchTerm.getPassword(),
-                                                imapSearchTerm.getEncryptor() );
+                return new ImapEncryptedFolder(store,
+                                               imapServerHost,
+                                               imapSearchTerm.getFolderName(),
+                                               imapSearchTerm.getUserName(),
+                                               imapSearchTerm.getPassword(),
+                                               imapSearchTerm.getEncryptor());
             } else {
-                throw new RbvStorageException( "Search term " + searchTerm.getClass().getSimpleName()
-                                               + " is not supported" );
+                throw new RbvStorageException("Search term " + searchTerm.getClass().getSimpleName()
+                                              + " is not supported");
             }
 
-        } catch( NoSuchProviderException e ) {
-            throw new RuntimeException( "Unable to get IMAP store for host " + imapServerHost, e );
+        } catch (NoSuchProviderException e) {
+            throw new RuntimeException("Unable to get IMAP store for host " + imapServerHost, e);
         }
     }
 }

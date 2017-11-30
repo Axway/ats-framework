@@ -88,14 +88,14 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( new int[0],
-              headerName,
-              expectedValue,
-              PART_MAIN_MESSAGE,
-              -1,
-              matchMode,
-              ruleName,
-              expectedResult );
+        this(new int[0],
+             headerName,
+             expectedValue,
+             PART_MAIN_MESSAGE,
+             -1,
+             matchMode,
+             ruleName,
+             expectedResult);
     }
 
     public HeaderRule( int[] nestedPackagePath,
@@ -105,14 +105,14 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( nestedPackagePath,
-              headerName,
-              expectedValue,
-              PART_MAIN_MESSAGE,
-              -1,
-              matchMode,
-              ruleName,
-              expectedResult );
+        this(nestedPackagePath,
+             headerName,
+             expectedValue,
+             PART_MAIN_MESSAGE,
+             -1,
+             matchMode,
+             ruleName,
+             expectedResult);
     }
 
     public HeaderRule( String headerName,
@@ -122,14 +122,14 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( new int[0],
-              headerName,
-              expectedValue,
-              PART_MAIN_MESSAGE,
-              headerIndex,
-              matchMode,
-              ruleName,
-              expectedResult );
+        this(new int[0],
+             headerName,
+             expectedValue,
+             PART_MAIN_MESSAGE,
+             headerIndex,
+             matchMode,
+             ruleName,
+             expectedResult);
     }
 
     public HeaderRule( String headerName,
@@ -140,14 +140,14 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        this( new int[0],
-              headerName,
-              expectedValue,
-              partIndex,
-              headerIndex,
-              matchMode,
-              ruleName,
-              expectedResult );
+        this(new int[0],
+             headerName,
+             expectedValue,
+             partIndex,
+             headerIndex,
+             matchMode,
+             ruleName,
+             expectedResult);
     }
 
     public HeaderRule( int[] nestedPackagePath,
@@ -159,7 +159,7 @@ public class HeaderRule extends AbstractImapRule {
                        String ruleName,
                        boolean expectedResult ) {
 
-        super( ruleName, expectedResult, ImapMetaData.class );
+        super(ruleName, expectedResult, ImapMetaData.class);
 
         this.headerName = headerName;
         this.expectedValue = expectedValue;
@@ -167,7 +167,7 @@ public class HeaderRule extends AbstractImapRule {
         this.headerIndex = headerIndex;
         this.matchMode = matchMode;
 
-        setNestedPackagePath( nestedPackagePath );
+        setNestedPackagePath(nestedPackagePath);
     }
 
     public HeaderRule( String headerName,
@@ -177,7 +177,7 @@ public class HeaderRule extends AbstractImapRule {
                        boolean expectedResult,
                        int priority ) {
 
-        this( new int[0], headerName, expectedValue, matchMode, ruleName, expectedResult, priority );
+        this(new int[0], headerName, expectedValue, matchMode, ruleName, expectedResult, priority);
     }
 
     public HeaderRule( int[] nestedPackagePath,
@@ -188,7 +188,7 @@ public class HeaderRule extends AbstractImapRule {
                        boolean expectedResult,
                        int priority ) {
 
-        super( ruleName, expectedResult, ImapMetaData.class, priority );
+        super(ruleName, expectedResult, ImapMetaData.class, priority);
 
         this.headerName = headerName;
         this.expectedValue = expectedValue;
@@ -196,7 +196,7 @@ public class HeaderRule extends AbstractImapRule {
         this.headerIndex = -1;
         this.matchMode = matchMode;
 
-        setNestedPackagePath( nestedPackagePath );
+        setNestedPackagePath(nestedPackagePath);
     }
 
     public void setExpectedValue(
@@ -211,62 +211,62 @@ public class HeaderRule extends AbstractImapRule {
 
         //get the emailMessage
         //the meta data type check already passed, so it is safe to cast
-        MimePackage emailMessage = getNeededMimePackage( metaData );
+        MimePackage emailMessage = getNeededMimePackage(metaData);
 
         String[] headerValues;
         try {
-            if( headerIndex == -1 ) {
+            if (headerIndex == -1) {
                 // we are going to check all header values
-                if( partIndex == PART_MAIN_MESSAGE ) {
-                    headerValues = emailMessage.getHeaderValues( headerName );
+                if (partIndex == PART_MAIN_MESSAGE) {
+                    headerValues = emailMessage.getHeaderValues(headerName);
                 } else {
-                    headerValues = emailMessage.getPartHeaderValues( headerName, partIndex );
+                    headerValues = emailMessage.getPartHeaderValues(headerName, partIndex);
                 }
             } else {
                 // we are going to check a particular header value
                 String headerValue;
-                if( partIndex == PART_MAIN_MESSAGE ) {
-                    headerValue = emailMessage.getHeader( headerName, headerIndex );
+                if (partIndex == PART_MAIN_MESSAGE) {
+                    headerValue = emailMessage.getHeader(headerName, headerIndex);
                 } else {
-                    headerValue = emailMessage.getPartHeader( headerName, partIndex, headerIndex );
+                    headerValue = emailMessage.getPartHeader(headerName, partIndex, headerIndex);
                 }
                 headerValues = new String[]{ headerValue };
             }
-        } catch( NoSuchHeaderException nshe ) {
-            log.debug( "Meta data has no header '" + headerName + "'" );
+        } catch (NoSuchHeaderException nshe) {
+            log.debug("Meta data has no header '" + headerName + "'");
 
             //no such header, so return false
             return false;
-        } catch( PackageException pe ) {
-            throw new RbvException( pe );
+        } catch (PackageException pe) {
+            throw new RbvException(pe);
         }
 
         //if there is no such header return false
         boolean actualResult = false;
-        if( headerValues == null || headerValues.length == 0 ) {
-            log.info( "No header '" + headerName + "' was found" );
+        if (headerValues == null || headerValues.length == 0) {
+            log.info("No header '" + headerName + "' was found");
         } else {
-            for( String headerValue : headerValues ) {
-                switch( matchMode ){
+            for (String headerValue : headerValues) {
+                switch (matchMode) {
                     case LEFT:
-                        actualResult = headerValue.startsWith( expectedValue );
+                        actualResult = headerValue.startsWith(expectedValue);
                         break;
                     case RIGHT:
-                        actualResult = headerValue.endsWith( expectedValue );
+                        actualResult = headerValue.endsWith(expectedValue);
                         break;
                     case EQUALS:
-                        actualResult = headerValue.equals( expectedValue );
+                        actualResult = headerValue.equals(expectedValue);
                         break;
                     case FIND:
-                        actualResult = headerValue.indexOf( expectedValue ) >= 0;
+                        actualResult = headerValue.indexOf(expectedValue) >= 0;
                         break;
                     case REGEX:
-                        actualResult = Pattern.compile( expectedValue ).matcher( headerValue ).find();
+                        actualResult = Pattern.compile(expectedValue).matcher(headerValue).find();
                         break;
                 }
-                log.info( "Actual value for header '" + headerName + "' is '" + headerValue + "'" );
+                log.info("Actual value for header '" + headerName + "' is '" + headerValue + "'");
 
-                if( actualResult ) {
+                if (actualResult) {
                     // we matched a header value, stop iterating the rest of the values
                     break;
                 }
@@ -285,7 +285,7 @@ public class HeaderRule extends AbstractImapRule {
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( ImapMetaData.MIME_PACKAGE );
+        metaKeys.add(ImapMetaData.MIME_PACKAGE);
         return metaKeys;
     }
 }

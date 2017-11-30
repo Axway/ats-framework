@@ -50,7 +50,7 @@ public class FileContentRule extends AbstractRule {
                             boolean isRegularExpression,
                             boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         //initialize members
         this.expression = expression;
@@ -62,18 +62,18 @@ public class FileContentRule extends AbstractRule {
                                  MetaData metaData ) throws RbvException {
 
         // get the file from the meta data
-        if( metaData instanceof FileSystemMetaData ) {
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+        if (metaData instanceof FileSystemMetaData) {
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 // grep the contents of the file for the expression           
-                String[] actualContent = file.grep( expression, isRegularExpression );
+                String[] actualContent = file.grep(expression, isRegularExpression);
 
-                if( actualContent != null && actualContent.length > 0 ) {
+                if (actualContent != null && actualContent.length > 0) {
                     return true;
                 }
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
 
@@ -83,25 +83,25 @@ public class FileContentRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        StringBuilder description = new StringBuilder( "which expects the file to " );
-        if( !getExpectedResult() ) {
-            description.append( "not " );
+        StringBuilder description = new StringBuilder("which expects the file to ");
+        if (!getExpectedResult()) {
+            description.append("not ");
         }
-        description.append( "contain the following " );
+        description.append("contain the following ");
 
-        if( isRegularExpression ) {
-            description.append( "regular expression '" );
+        if (isRegularExpression) {
+            description.append("regular expression '");
         } else {
-            description.append( "line of text '" );
+            description.append("line of text '");
         }
 
-        return description.append( this.expression ).append( "'" ).toString();
+        return description.append(this.expression).append("'").toString();
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

@@ -35,11 +35,11 @@ public class SMimeSignatureRule extends AbstractImapRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        super( ruleName, expectedResult, ImapMetaData.class );
+        super(ruleName, expectedResult, ImapMetaData.class);
 
         this.signer = signer;
 
-        setNestedPackagePath( nestedPackagePath );
+        setNestedPackagePath(nestedPackagePath);
     }
 
     @Override
@@ -48,15 +48,15 @@ public class SMimeSignatureRule extends AbstractImapRule {
 
         //get the emailMessage
         //the meta data type check already passed, so it is safe to cast
-        MimePackage emailMessage = getNeededMimePackage( metaData );
+        MimePackage emailMessage = getNeededMimePackage(metaData);
 
         try {
-            if( this.signer == null ) {
-                return SMimePackageEncryptor.checkSignatureWithEmbeddedPublicKey( emailMessage );
+            if (this.signer == null) {
+                return SMimePackageEncryptor.checkSignatureWithEmbeddedPublicKey(emailMessage);
             }
-            return this.signer.checkSignature( emailMessage );
-        } catch( ActionException ae ) {
-            throw new RbvException( ae );
+            return this.signer.checkSignature(emailMessage);
+        } catch (ActionException ae) {
+            throw new RbvException(ae);
         }
     }
 
@@ -64,14 +64,14 @@ public class SMimeSignatureRule extends AbstractImapRule {
     protected String getRuleDescription() {
 
         return this.signer == null
-                                  ? "which checks SMIME signature against the embedded public keys"
-                                  : "which checks SMIME signature against the keystore";
+                                   ? "which checks SMIME signature against the embedded public keys"
+                                   : "which checks SMIME signature against the keystore";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( ImapMetaData.MIME_PACKAGE );
+        metaKeys.add(ImapMetaData.MIME_PACKAGE);
         return metaKeys;
     }
 }

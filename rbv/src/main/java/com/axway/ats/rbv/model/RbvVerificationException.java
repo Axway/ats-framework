@@ -18,7 +18,7 @@ package com.axway.ats.rbv.model;
 /**
  * Verification exception which is thrown if a verification fails
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class RbvVerificationException extends RbvException {
 
     /**
@@ -28,6 +28,6 @@ public class RbvVerificationException extends RbvException {
      */
     public RbvVerificationException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

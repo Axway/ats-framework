@@ -30,17 +30,17 @@ public class Test_MimePartWithoutContentException extends BaseTest {
 
         MimePartWithoutContentException exception;
 
-        exception = new MimePartWithoutContentException( "test" );
-        assertEquals( "test", exception.getMessage() );
-        assertNull( exception.getCause() );
+        exception = new MimePartWithoutContentException("test");
+        assertEquals("test", exception.getMessage());
+        assertNull(exception.getCause());
 
         Exception helperException = new Exception();
-        exception = new MimePartWithoutContentException( "test", helperException );
-        assertEquals( "test", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new MimePartWithoutContentException("test", helperException);
+        assertEquals("test", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
 
-        exception = new MimePartWithoutContentException( helperException );
-        assertEquals( "java.lang.Exception", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new MimePartWithoutContentException(helperException);
+        assertEquals("java.lang.Exception", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
     }
 }

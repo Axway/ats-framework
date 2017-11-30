@@ -17,26 +17,26 @@ package com.axway.ats.rbv.model;
 
 import com.axway.ats.common.PublicAtsApi;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 @PublicAtsApi
 public class RbvException extends RuntimeException {
 
     @PublicAtsApi
     public RbvException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     @PublicAtsApi
     public RbvException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     @PublicAtsApi
     public RbvException( String message,
                          Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

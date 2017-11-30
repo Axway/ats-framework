@@ -31,27 +31,27 @@ import com.axway.ats.rbv.rules.AndRuleOperation;
 
 public class Test_DbBinaryFieldRule extends BaseTest {
 
-    private static DbBinaryFieldRule ruleTest1ExpectTrue  = new DbBinaryFieldRule( "table",
-                                                                                   "column",
-                                                                                   new byte[]{ 0, 2 },
-                                                                                   "ruleTest1ExpectTrue",
-                                                                                   true );
-    private static DbBinaryFieldRule ruleTest2ExpectTrue  = new DbBinaryFieldRule( "table",
-                                                                                   "column2",
-                                                                                   new byte[]{ 0, 5 },
-                                                                                   "ruleTest2ExpectTrue",
-                                                                                   true );
+    private static DbBinaryFieldRule ruleTest1ExpectTrue  = new DbBinaryFieldRule("table",
+                                                                                  "column",
+                                                                                  new byte[]{ 0, 2 },
+                                                                                  "ruleTest1ExpectTrue",
+                                                                                  true);
+    private static DbBinaryFieldRule ruleTest2ExpectTrue  = new DbBinaryFieldRule("table",
+                                                                                  "column2",
+                                                                                  new byte[]{ 0, 5 },
+                                                                                  "ruleTest2ExpectTrue",
+                                                                                  true);
 
-    private static DbBinaryFieldRule ruleTest1ExpectFalse = new DbBinaryFieldRule( "table",
-                                                                                   "column",
-                                                                                   new byte[]{ 0, 2 },
-                                                                                   "ruleTest1ExpectFalse",
-                                                                                   false );
-    private static DbBinaryFieldRule ruleTest2ExpectFalse = new DbBinaryFieldRule( "table",
-                                                                                   "column2",
-                                                                                   new byte[]{ 0, 5 },
-                                                                                   "ruleTest2ExpectFalse",
-                                                                                   false );
+    private static DbBinaryFieldRule ruleTest1ExpectFalse = new DbBinaryFieldRule("table",
+                                                                                  "column",
+                                                                                  new byte[]{ 0, 2 },
+                                                                                  "ruleTest1ExpectFalse",
+                                                                                  false);
+    private static DbBinaryFieldRule ruleTest2ExpectFalse = new DbBinaryFieldRule("table",
+                                                                                  "column2",
+                                                                                  new byte[]{ 0, 5 },
+                                                                                  "ruleTest2ExpectFalse",
+                                                                                  false);
 
     private static DbMetaData        testMetaData;
 
@@ -64,184 +64,184 @@ public class Test_DbBinaryFieldRule extends BaseTest {
     @Test
     public void isMatchPositive() throws RbvException {
 
-        testMetaData.putProperty( "test.col", new byte[]{ 0, 3 } );
+        testMetaData.putProperty("test.col", new byte[]{ 0, 3 });
 
-        DbBinaryFieldRule rule = new DbBinaryFieldRule( "test",
-                                                        "col",
-                                                        new byte[]{ 0, 3 },
-                                                        "isMatchPositive",
-                                                        true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbBinaryFieldRule rule = new DbBinaryFieldRule("test",
+                                                       "col",
+                                                       new byte[]{ 0, 3 },
+                                                       "isMatchPositive",
+                                                       true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNegative() throws RbvException {
 
-        testMetaData.putProperty( "test.col", new byte[]{ 0, 3 } );
+        testMetaData.putProperty("test.col", new byte[]{ 0, 3 });
 
-        DbBinaryFieldRule rule = new DbBinaryFieldRule( "test",
-                                                        "col",
-                                                        new byte[]{ 0, 2 },
-                                                        "isMatchPositive",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbBinaryFieldRule rule = new DbBinaryFieldRule("test",
+                                                       "col",
+                                                       new byte[]{ 0, 2 },
+                                                       "isMatchPositive",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullActualValuePositive() throws RbvException {
 
-        testMetaData.putProperty( "test.col", null );
+        testMetaData.putProperty("test.col", null);
 
-        DbBinaryFieldRule rule = new DbBinaryFieldRule( "test", "col", null, "isMatchPositive", true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbBinaryFieldRule rule = new DbBinaryFieldRule("test", "col", null, "isMatchPositive", true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullActualValueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test.col", null );
+        testMetaData.putProperty("test.col", null);
 
-        DbBinaryFieldRule rule = new DbBinaryFieldRule( "test",
-                                                        "col",
-                                                        new byte[]{ 0, 2 },
-                                                        "isMatchPositive",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbBinaryFieldRule rule = new DbBinaryFieldRule("test",
+                                                       "col",
+                                                       new byte[]{ 0, 2 },
+                                                       "isMatchPositive",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullExpectedValueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test.col", new byte[]{ 0, 2 } );
+        testMetaData.putProperty("test.col", new byte[]{ 0, 2 });
 
-        DbBinaryFieldRule rule = new DbBinaryFieldRule( "test", "col", null, "isMatchPositive", true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbBinaryFieldRule rule = new DbBinaryFieldRule("test", "col", null, "isMatchPositive", true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchExpectedTruePositive() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 2 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 2 });
 
-        assertTrue( ruleTest1ExpectTrue.isMatch( metaData ) );
+        assertTrue(ruleTest1ExpectTrue.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueNegative() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 22 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 22 });
 
-        assertFalse( ruleTest1ExpectTrue.isMatch( metaData ) );
+        assertFalse(ruleTest1ExpectTrue.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalsePositive() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 22 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 22 });
 
-        assertTrue( ruleTest1ExpectFalse.isMatch( metaData ) );
+        assertTrue(ruleTest1ExpectFalse.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseNegative() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 2 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 2 });
 
-        assertFalse( ruleTest1ExpectFalse.isMatch( metaData ) );
+        assertFalse(ruleTest1ExpectFalse.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueMultipleRulesPositive() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 2 } );
-        metaData.putProperty( "table.column2", new byte[]{ 0, 5 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 2 });
+        metaData.putProperty("table.column2", new byte[]{ 0, 5 });
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectTrue );
-        andRule.addRule( ruleTest2ExpectTrue );
+        andRule.addRule(ruleTest1ExpectTrue);
+        andRule.addRule(ruleTest2ExpectTrue);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
-    @Test(expected = NoSuchMetaDataKeyException.class)
+    @Test( expected = NoSuchMetaDataKeyException.class)
     public void isMatchExpectedTrueMultipleRulesNegativeNoMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", new byte[]{ 0, 3 } );
+        metaData.putProperty("test1", new byte[]{ 0, 3 });
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectTrue );
-        andRule.addRule( ruleTest2ExpectTrue );
+        andRule.addRule(ruleTest1ExpectTrue);
+        andRule.addRule(ruleTest2ExpectTrue);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueMultipleRulesNegativeDontMatch() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 2 } );
-        metaData.putProperty( "table.column2", new byte[]{ 0, 6 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 2 });
+        metaData.putProperty("table.column2", new byte[]{ 0, 6 });
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectTrue );
-        andRule.addRule( ruleTest2ExpectTrue );
+        andRule.addRule(ruleTest1ExpectTrue);
+        andRule.addRule(ruleTest2ExpectTrue);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
-    @Test(expected = NoSuchMetaDataKeyException.class)
+    @Test( expected = NoSuchMetaDataKeyException.class)
     public void isMatchExpectedFalseMultipleRulesPositiveNoMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 3 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 3 });
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectFalse );
-        andRule.addRule( ruleTest2ExpectFalse );
+        andRule.addRule(ruleTest1ExpectFalse);
+        andRule.addRule(ruleTest2ExpectFalse);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseMultipleRulesPositiveDontMatch() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 2 } );
-        metaData.putProperty( "table.column2", new byte[]{ 0, 18 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 2 });
+        metaData.putProperty("table.column2", new byte[]{ 0, 18 });
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectFalse );
-        andRule.addRule( ruleTest2ExpectFalse );
+        andRule.addRule(ruleTest1ExpectFalse);
+        andRule.addRule(ruleTest2ExpectFalse);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseMultipleRulesNegative() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", new byte[]{ 0, 2 } );
-        metaData.putProperty( "table.column2", new byte[]{ 0, 5 } );
+        metaData.putProperty("table.column", new byte[]{ 0, 2 });
+        metaData.putProperty("table.column2", new byte[]{ 0, 5 });
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectFalse );
-        andRule.addRule( ruleTest2ExpectFalse );
+        andRule.addRule(ruleTest1ExpectFalse);
+        andRule.addRule(ruleTest2ExpectFalse);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchIncorrectMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "table.column", "asdasd" );
+        metaData.putProperty("table.column", "asdasd");
 
-        ruleTest1ExpectFalse.isMatch( metaData );
+        ruleTest1ExpectFalse.isMatch(metaData);
     }
 }

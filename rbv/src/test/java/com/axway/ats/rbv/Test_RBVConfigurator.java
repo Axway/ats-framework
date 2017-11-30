@@ -43,31 +43,31 @@ public class Test_RBVConfigurator extends BaseTest {
     @Test
     public void verifyInitialValues() throws ConfigurationException {
 
-        assertEquals( 0L, rbvConfigurator.getPollingInitialDelay() );
-        assertEquals( 10, rbvConfigurator.getPollingAttempts() );
-        assertEquals( 1000L, rbvConfigurator.getPollingInterval() );
-        assertEquals( 30000L, rbvConfigurator.getPollingTimeout() );
+        assertEquals(0L, rbvConfigurator.getPollingInitialDelay());
+        assertEquals(10, rbvConfigurator.getPollingAttempts());
+        assertEquals(1000L, rbvConfigurator.getPollingInterval());
+        assertEquals(30000L, rbvConfigurator.getPollingTimeout());
     }
 
     @Test
     public void verifyValuesCanBeSetAtRuntimeAndThenCleared() throws ConfigurationException {
 
-        rbvConfigurator.setPollingInitialDelay( 350 );
-        rbvConfigurator.setPollingAttempts( 15 );
-        rbvConfigurator.setPollingInterval( 35600 );
-        rbvConfigurator.setPollingTimeout( 555000 );
+        rbvConfigurator.setPollingInitialDelay(350);
+        rbvConfigurator.setPollingAttempts(15);
+        rbvConfigurator.setPollingInterval(35600);
+        rbvConfigurator.setPollingTimeout(555000);
 
-        assertEquals( 350L, rbvConfigurator.getPollingInitialDelay() );
-        assertEquals( 15, rbvConfigurator.getPollingAttempts() );
-        assertEquals( 35600L, rbvConfigurator.getPollingInterval() );
-        assertEquals( 555000L, rbvConfigurator.getPollingTimeout() );
+        assertEquals(350L, rbvConfigurator.getPollingInitialDelay());
+        assertEquals(15, rbvConfigurator.getPollingAttempts());
+        assertEquals(35600L, rbvConfigurator.getPollingInterval());
+        assertEquals(555000L, rbvConfigurator.getPollingTimeout());
 
         //now revert back to initial values
         rbvConfigurator.clearTempProperties();
 
-        assertEquals( 0L, rbvConfigurator.getPollingInitialDelay() );
-        assertEquals( 10, rbvConfigurator.getPollingAttempts() );
-        assertEquals( 1000L, rbvConfigurator.getPollingInterval() );
-        assertEquals( 30000L, rbvConfigurator.getPollingTimeout() );
+        assertEquals(0L, rbvConfigurator.getPollingInitialDelay());
+        assertEquals(10, rbvConfigurator.getPollingAttempts());
+        assertEquals(1000L, rbvConfigurator.getPollingInterval());
+        assertEquals(30000L, rbvConfigurator.getPollingTimeout());
     }
 }

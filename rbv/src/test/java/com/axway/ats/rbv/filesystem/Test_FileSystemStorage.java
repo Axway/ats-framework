@@ -28,15 +28,15 @@ public class Test_FileSystemStorage extends BaseTest {
     @Test
     public void getFolder() {
 
-        FileSystemStorage storage = new FileSystemStorage( "localhost:0000" );
-        assertNotNull( storage.getFolder( new FileSystemFolderSearchTerm( "/", null, true ) ) );
+        FileSystemStorage storage = new FileSystemStorage("localhost:0000");
+        assertNotNull(storage.getFolder(new FileSystemFolderSearchTerm("/", null, true)));
     }
 
     @Test
     public void getFolderDoNotIncludeSubdirs() {
 
         FileSystemStorage storage = new FileSystemStorage();
-        assertNotNull( storage.getFolder( new FileSystemFolderSearchTerm( "/", null, true, false ) ) );
+        assertNotNull(storage.getFolder(new FileSystemFolderSearchTerm("/", null, true, false)));
     }
 
 }

@@ -33,22 +33,22 @@ import com.axway.ats.rbv.model.RbvException;
  */
 public class Test_DbBooleanFieldRule extends BaseTest {
 
-    private static DbBooleanFieldRule ruleTestTrueExpectTrue   = new DbBooleanFieldRule( "test",
-                                                                                         true,
-                                                                                         "ruleTestTrueExpectTrue",
-                                                                                         true );
-    private static DbBooleanFieldRule ruleTestFalseExpectTrue  = new DbBooleanFieldRule( "test",
-                                                                                         false,
-                                                                                         "ruleTestFalseExpectTrue",
-                                                                                         true );
-    private static DbBooleanFieldRule ruleTestTrueExpectFalse  = new DbBooleanFieldRule( "test",
-                                                                                         true,
-                                                                                         "ruleTestTrueExpectFalse",
-                                                                                         false );
-    private static DbBooleanFieldRule ruleTestFalseExpectFalse = new DbBooleanFieldRule( "test",
-                                                                                         false,
-                                                                                         "ruleTestFalseExpectFalse",
-                                                                                         false );
+    private static DbBooleanFieldRule ruleTestTrueExpectTrue   = new DbBooleanFieldRule("test",
+                                                                                        true,
+                                                                                        "ruleTestTrueExpectTrue",
+                                                                                        true);
+    private static DbBooleanFieldRule ruleTestFalseExpectTrue  = new DbBooleanFieldRule("test",
+                                                                                        false,
+                                                                                        "ruleTestFalseExpectTrue",
+                                                                                        true);
+    private static DbBooleanFieldRule ruleTestTrueExpectFalse  = new DbBooleanFieldRule("test",
+                                                                                        true,
+                                                                                        "ruleTestTrueExpectFalse",
+                                                                                        false);
+    private static DbBooleanFieldRule ruleTestFalseExpectFalse = new DbBooleanFieldRule("test",
+                                                                                        false,
+                                                                                        "ruleTestFalseExpectFalse",
+                                                                                        false);
 
     private static DbMetaData         testMetaData;
 
@@ -67,8 +67,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchBooleanPositive() throws RbvException {
 
-        testMetaData.putProperty( "test", true );
-        Assert.assertTrue( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", true);
+        Assert.assertTrue(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -78,8 +78,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchNumberPositive() throws RbvException {
 
-        testMetaData.putProperty( "test", ( Number ) 1 );
-        Assert.assertTrue( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", (Number) 1);
+        Assert.assertTrue(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -89,8 +89,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchDoublePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", ( Double ) 1.0 );
-        Assert.assertTrue( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", (Double) 1.0);
+        Assert.assertTrue(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -100,8 +100,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchLongPositive() throws RbvException {
 
-        testMetaData.putProperty( "test", ( Long ) 1L );
-        Assert.assertTrue( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", (Long) 1L);
+        Assert.assertTrue(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -111,8 +111,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchStringPositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "1" );
-        Assert.assertTrue( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "1");
+        Assert.assertTrue(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -122,8 +122,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchTrueExpectFalsePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "0" );
-        Assert.assertTrue( ruleTestTrueExpectFalse.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "0");
+        Assert.assertTrue(ruleTestTrueExpectFalse.isMatch(testMetaData));
     }
 
     /**
@@ -133,8 +133,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchFalseExpectFalsePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "1" );
-        Assert.assertTrue( ruleTestFalseExpectFalse.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "1");
+        Assert.assertTrue(ruleTestFalseExpectFalse.isMatch(testMetaData));
     }
 
     /**
@@ -144,8 +144,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchFalseExpectTruePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "0" );
-        Assert.assertTrue( ruleTestFalseExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "0");
+        Assert.assertTrue(ruleTestFalseExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -155,9 +155,9 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchPositiveNull() throws RbvException {
 
-        DbBooleanFieldRule rule = new DbBooleanFieldRule( "test", null, "ruleTestTrueExpectTrue", true );
-        testMetaData.putProperty( "test", null );
-        Assert.assertTrue( rule.isMatch( testMetaData ) );
+        DbBooleanFieldRule rule = new DbBooleanFieldRule("test", null, "ruleTestTrueExpectTrue", true);
+        testMetaData.putProperty("test", null);
+        Assert.assertTrue(rule.isMatch(testMetaData));
     }
 
     // --- NEGATIVE ---
@@ -169,8 +169,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchTrueExpectTrueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "0" );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "0");
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -180,8 +180,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchFalseExpectTrueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "1" );
-        Assert.assertFalse( ruleTestFalseExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "1");
+        Assert.assertFalse(ruleTestFalseExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -191,8 +191,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchTrueExpectFalseNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "1" );
-        Assert.assertFalse( ruleTestTrueExpectFalse.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "1");
+        Assert.assertFalse(ruleTestTrueExpectFalse.isMatch(testMetaData));
     }
 
     /**
@@ -202,8 +202,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchFalseExpectFalseNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "0" );
-        Assert.assertFalse( ruleTestFalseExpectFalse.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "0");
+        Assert.assertFalse(ruleTestFalseExpectFalse.isMatch(testMetaData));
     }
 
     /**
@@ -213,8 +213,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchNumberNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", ( Number ) 0 );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", (Number) 0);
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -224,8 +224,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchDoubleNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", ( Double ) 0.0 );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", (Double) 0.0);
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -235,8 +235,8 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchLongNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", ( Long ) 0L );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", (Long) 0L);
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -246,30 +246,30 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchStringNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "0" );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "0");
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
      * Positive test case
      * @throws RbvException
      */
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void testMatchStringNegativeWrongValue() throws RbvException {
 
-        testMetaData.putProperty( "test", "#" );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "#");
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
      * Positive test case
      * @throws RbvException
      */
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void testMatchIntegerNegativeWrongValue() throws RbvException {
 
-        testMetaData.putProperty( "test", -3 );
-        Assert.assertFalse( ruleTestTrueExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", -3);
+        Assert.assertFalse(ruleTestTrueExpectTrue.isMatch(testMetaData));
     }
 
     /**
@@ -279,9 +279,9 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchNegativeNotNull() throws RbvException {
 
-        DbBooleanFieldRule rule = new DbBooleanFieldRule( "test", null, "ruleTestTrueExpectTrue", true );
-        testMetaData.putProperty( "test", "0" );
-        Assert.assertFalse( rule.isMatch( testMetaData ) );
+        DbBooleanFieldRule rule = new DbBooleanFieldRule("test", null, "ruleTestTrueExpectTrue", true);
+        testMetaData.putProperty("test", "0");
+        Assert.assertFalse(rule.isMatch(testMetaData));
     }
 
     /**
@@ -291,31 +291,30 @@ public class Test_DbBooleanFieldRule extends BaseTest {
     @Test
     public void testMatchNegativeNull() throws RbvException {
 
-        DbBooleanFieldRule rule = new DbBooleanFieldRule( "test", false, "ruleTestTrueExpectTrue", true );
-        testMetaData.putProperty( "test", null );
-        Assert.assertFalse( rule.isMatch( testMetaData ) );
+        DbBooleanFieldRule rule = new DbBooleanFieldRule("test", false, "ruleTestTrueExpectTrue", true);
+        testMetaData.putProperty("test", null);
+        Assert.assertFalse(rule.isMatch(testMetaData));
     }
-
 
     /**
      * Positive test case
      * @throws RbvException
      */
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void testMatchNegativeFloatingPoint() throws RbvException {
 
-        testMetaData.putProperty( "test", 0.1F );
-        Assert.assertFalse( ruleTestFalseExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", 0.1F);
+        Assert.assertFalse(ruleTestFalseExpectTrue.isMatch(testMetaData));
     }
 
     /**
      * Positive test case
      * @throws RbvException
      */
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void testMatchNegativeWrongType() throws RbvException {
 
-        testMetaData.putProperty( "test", new ArrayList() );
-        Assert.assertFalse( ruleTestFalseExpectTrue.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", new ArrayList());
+        Assert.assertFalse(ruleTestFalseExpectTrue.isMatch(testMetaData));
     }
 }

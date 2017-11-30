@@ -30,7 +30,7 @@ public class DbBinaryFieldRule extends DbFieldsRule {
                               String ruleName,
                               boolean expectedResult ) {
 
-        super( tableName, fieldName, expectedValue, ruleName, expectedResult );
+        super(tableName, fieldName, expectedValue, ruleName, expectedResult);
     }
 
     public DbBinaryFieldRule( String fieldName,
@@ -38,7 +38,7 @@ public class DbBinaryFieldRule extends DbFieldsRule {
                               String ruleName,
                               boolean expectedResult ) {
 
-        super( fieldName, expectedValue, ruleName, expectedResult );
+        super(fieldName, expectedValue, ruleName, expectedResult);
     }
 
     @Override
@@ -48,16 +48,16 @@ public class DbBinaryFieldRule extends DbFieldsRule {
         boolean actualResult = false;
 
         //this cast is safe, as isMatch has already checked the type of meta data            
-        DbMetaData dbMetaData = ( DbMetaData ) metaData;
+        DbMetaData dbMetaData = (DbMetaData) metaData;
 
         byte[] actualValue;
         try {
-            actualValue = ( byte[] ) dbMetaData.getProperty( expectedMetaDataKey.toString() );
-        } catch( ClassCastException cce ) {
-            throw new MetaDataIncorrectException( "Meta data is incorrect - expected byte[]" );
+            actualValue = (byte[]) dbMetaData.getProperty(expectedMetaDataKey.toString());
+        } catch (ClassCastException cce) {
+            throw new MetaDataIncorrectException("Meta data is incorrect - expected byte[]");
         }
 
-        if( Arrays.equals( ( byte[] ) expectedValue, actualValue ) ) {
+        if (Arrays.equals((byte[]) expectedValue, actualValue)) {
             actualResult = true;
         }
 

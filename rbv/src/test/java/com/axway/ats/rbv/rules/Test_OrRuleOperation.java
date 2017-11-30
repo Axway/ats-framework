@@ -39,94 +39,94 @@ public class Test_OrRuleOperation extends BaseTest {
     @BeforeClass
     public static void setUpTest_AndRuleOperation() throws PackageException, RbvException {
 
-        MimePackage testMessage = new MimePackage( Test_ImapStorage.class.getResourceAsStream( "mail.msg" ) );
+        MimePackage testMessage = new MimePackage(Test_ImapStorage.class.getResourceAsStream("mail.msg"));
 
         //init the meta data with the test message
-        metaData = new ImapMetaData( testMessage );
+        metaData = new ImapMetaData(testMessage);
     }
 
     @Test
     public void isMatchBothRulesExpectedTrue() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchBothRulesExpectedTrue1",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
                                                "gmail.com",
                                                HeaderMatchMode.FIND,
-                                               "isMatchBothRulesExpectedTrue1",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchBothRulesExpectedTrue2",
-                                                true );
+                                               "isMatchBothRulesExpectedTrue2",
+                                               true);
 
         OrRuleOperation andRule = new OrRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchOneOfThRulesExpectedFalse() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
-                                               "gmail.com",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchOneOfThRulesExpectedFalse1",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
+                                               "gmail123.com",
                                                HeaderMatchMode.FIND,
-                                               "isMatchOneOfThRulesExpectedFalse1",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail123.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchOneOfThRulesExpectedFalse2",
-                                                false );
+                                               "isMatchOneOfThRulesExpectedFalse2",
+                                               false);
 
         OrRuleOperation andRule = new OrRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchOnlyOneRulePasses() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
-                                               "gmail.com",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchOnlyOneRulePasses1",
+                                              true);
+        HeaderRule secondRule = new HeaderRule("Sender",
+                                               "gmail123.com",
                                                HeaderMatchMode.FIND,
-                                               "isMatchOnlyOneRulePasses1",
-                                               true );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail123.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchOnlyOneRulePasses2",
-                                                true );
+                                               "isMatchOnlyOneRulePasses2",
+                                               true);
 
         OrRuleOperation andRule = new OrRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchNoneOfTheRulesPasses() throws RbvException {
 
-        HeaderRule firstRule = new HeaderRule( "Sender",
-                                               "gmail.com",
+        HeaderRule firstRule = new HeaderRule("Sender",
+                                              "gmail.com",
+                                              HeaderMatchMode.FIND,
+                                              "isMatchNoneOfTheRulesPasses1",
+                                              false);
+        HeaderRule secondRule = new HeaderRule("Sender",
+                                               "gmail123.com",
                                                HeaderMatchMode.FIND,
-                                               "isMatchNoneOfTheRulesPasses1",
-                                               false );
-        HeaderRule secondRule = new HeaderRule( "Sender",
-                                                "gmail123.com",
-                                                HeaderMatchMode.FIND,
-                                                "isMatchNoneOfTheRulesPasses2",
-                                                true );
+                                               "isMatchNoneOfTheRulesPasses2",
+                                               true);
 
         OrRuleOperation andRule = new OrRuleOperation();
-        andRule.addRule( firstRule );
-        andRule.addRule( secondRule );
+        andRule.addRule(firstRule);
+        andRule.addRule(secondRule);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
 }

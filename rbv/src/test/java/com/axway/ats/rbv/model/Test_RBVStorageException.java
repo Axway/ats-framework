@@ -30,17 +30,17 @@ public class Test_RBVStorageException extends BaseTest {
 
         RbvStorageException exception;
 
-        exception = new RbvStorageException( "test" );
-        assertEquals( "test", exception.getMessage() );
-        assertNull( exception.getCause() );
+        exception = new RbvStorageException("test");
+        assertEquals("test", exception.getMessage());
+        assertNull(exception.getCause());
 
         Exception helperException = new Exception();
-        exception = new RbvStorageException( "test", helperException );
-        assertEquals( "test", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new RbvStorageException("test", helperException);
+        assertEquals("test", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
 
-        exception = new RbvStorageException( helperException );
-        assertEquals( "java.lang.Exception", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new RbvStorageException(helperException);
+        assertEquals("java.lang.Exception", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
     }
 }

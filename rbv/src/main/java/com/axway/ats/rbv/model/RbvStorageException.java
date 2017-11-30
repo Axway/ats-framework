@@ -15,22 +15,22 @@
  */
 package com.axway.ats.rbv.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class RbvStorageException extends RbvException {
 
     public RbvStorageException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public RbvStorageException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public RbvStorageException( String message,
                                 Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

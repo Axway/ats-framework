@@ -34,7 +34,7 @@ import com.axway.ats.rbv.rules.Rule;
 public class MetaExecutor extends BasicExecutor {
 
     private boolean             endOnFirstMatch = true;
-    private static final Logger log             = Logger.getLogger( MetaExecutor.class );
+    private static final Logger log             = Logger.getLogger(MetaExecutor.class);
 
     /**
      * Evaluates the {@link MetaData} received as a parameter against the rules
@@ -48,16 +48,16 @@ public class MetaExecutor extends BasicExecutor {
 
         List<MetaData> matched = new ArrayList<MetaData>();
 
-        for( MetaData currentMeta : metaData ) {
-            if( this.rootRule.isMatch( currentMeta ) ) {
+        for (MetaData currentMeta : metaData) {
+            if (this.rootRule.isMatch(currentMeta)) {
 
-                log.info( "Matched a meta data!" );
+                log.info("Matched a meta data!");
 
                 // we matched a piece of MetaData - add it to the
                 // collection that would be returned as a result
-                matched.add( currentMeta );
+                matched.add(currentMeta);
 
-                if( this.endOnFirstMatch ) {
+                if (this.endOnFirstMatch) {
                     return matched;
                 }
             }

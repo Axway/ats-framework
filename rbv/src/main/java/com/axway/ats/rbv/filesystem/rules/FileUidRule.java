@@ -26,7 +26,7 @@ import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.model.RbvStorageException;
 import com.axway.ats.rbv.rules.AbstractRule;
 
-@SuppressWarnings("boxing")
+@SuppressWarnings( "boxing")
 public class FileUidRule extends AbstractRule {
 
     protected long srcUid;
@@ -43,7 +43,7 @@ public class FileUidRule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
         this.srcUid = uid;
     }
 
@@ -61,15 +61,15 @@ public class FileUidRule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         try {
             //get source file's uid
-            FilePackage file = new FilePackage( atsAgent, filePath );
+            FilePackage file = new FilePackage(atsAgent, filePath);
             this.srcUid = file.getUid();
 
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -80,23 +80,23 @@ public class FileUidRule extends AbstractRule {
         boolean actualResult = false;
         //see if current message matches all the specified criteria
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 //get destination file's UID
                 long destUid = file.getUid();
 
-                if( this.srcUid == FilePackage.ATTRIBUTE_NOT_SUPPORTED
-                    || destUid == FilePackage.ATTRIBUTE_NOT_SUPPORTED ) {
+                if (this.srcUid == FilePackage.ATTRIBUTE_NOT_SUPPORTED
+                    || destUid == FilePackage.ATTRIBUTE_NOT_SUPPORTED) {
                     actualResult = true;
                 } else {
                     actualResult = destUid == this.srcUid;
                 }
 
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
         return actualResult;
@@ -105,16 +105,17 @@ public class FileUidRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with UID " + ( getExpectedResult()
+        return "which expects file with UID " + (getExpectedResult()
                                                                      ? ""
-                                                                     : "different than " ) + "'"
+                                                                     : "different than ")
+               + "'"
                + this.srcUid + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

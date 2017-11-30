@@ -27,14 +27,14 @@ import com.axway.ats.rbv.model.RbvStorageException;
 
 public class ImapEncryptedFolder extends ImapFolder {
 
-    private static Logger    log = Logger.getLogger( ImapEncryptedFolder.class );
+    private static Logger    log = Logger.getLogger(ImapEncryptedFolder.class);
 
     private PackageEncryptor packageEncryptor;
 
     ImapEncryptedFolder( Store store, String serverHost, String folderName, String userName, String password,
                          PackageEncryptor packageEncryptor ) throws RbvStorageException {
 
-        super( store, serverHost, folderName, userName, password );
+        super(store, serverHost, folderName, userName, password);
 
         this.packageEncryptor = packageEncryptor;
     }
@@ -43,23 +43,23 @@ public class ImapEncryptedFolder extends ImapFolder {
     protected ImapMetaData createImapMetaData( MimeMessage mimeMessage ) throws RbvStorageException {
 
         try {
-            MimePackage encrypterPackage = new MimePackage( mimeMessage );
-            log.info( encrypterPackage.getDescription() + " should be encrypted, trying to decrypt ..." );
-            Package decryptedPackage = packageEncryptor.decrypt( encrypterPackage );
-            if( decryptedPackage == null ) {
+            MimePackage encrypterPackage = new MimePackage(mimeMessage);
+            log.info(encrypterPackage.getDescription() + " should be encrypted, trying to decrypt ...");
+            Package decryptedPackage = packageEncryptor.decrypt(encrypterPackage);
+            if (decryptedPackage == null) {
                 // unable to understand encryption type
                 // message is probably not encrypted at all
                 // we will skip it
-                log.warn( "... skiped " + encrypterPackage.getDescription()
-                          + " . Message is probably not encrypted at all" );
+                log.warn("... skiped " + encrypterPackage.getDescription()
+                         + " . Message is probably not encrypted at all");
                 return null;
             }
 
-            log.info( "... decrytpion successful!" );
-            ImapMetaData metaData = new ImapMetaData( ( MimePackage ) decryptedPackage );
+            log.info("... decrytpion successful!");
+            ImapMetaData metaData = new ImapMetaData((MimePackage) decryptedPackage);
             return metaData;
-        } catch( Exception e ) {
-            throw new RbvStorageException( "Error while decrypting message : ", e );
+        } catch (Exception e) {
+            throw new RbvStorageException("Error while decrypting message : ", e);
         }
     }
 }

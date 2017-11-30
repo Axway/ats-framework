@@ -32,27 +32,27 @@ import com.axway.ats.rbv.rules.AndRuleOperation;
 
 public class Test_DbStringFieldRule extends BaseTest {
 
-    private static DbStringFieldRule ruleTest1ExpectTrue  = new DbStringFieldRule( "test1",
-                                                                                   "test",
-                                                                                   MatchRelation.EQUALS,
-                                                                                   "ruleTest1ExpectTrue",
-                                                                                   true );
-    private static DbStringFieldRule ruleTest2ExpectTrue  = new DbStringFieldRule( "test2",
-                                                                                   "test",
-                                                                                   MatchRelation.EQUALS,
-                                                                                   "ruleTest2ExpectTrue",
-                                                                                   true );
+    private static DbStringFieldRule ruleTest1ExpectTrue  = new DbStringFieldRule("test1",
+                                                                                  "test",
+                                                                                  MatchRelation.EQUALS,
+                                                                                  "ruleTest1ExpectTrue",
+                                                                                  true);
+    private static DbStringFieldRule ruleTest2ExpectTrue  = new DbStringFieldRule("test2",
+                                                                                  "test",
+                                                                                  MatchRelation.EQUALS,
+                                                                                  "ruleTest2ExpectTrue",
+                                                                                  true);
 
-    private static DbStringFieldRule ruleTest1ExpectFalse = new DbStringFieldRule( "test1",
-                                                                                   "test",
-                                                                                   MatchRelation.EQUALS,
-                                                                                   "ruleTest1ExpectFalse",
-                                                                                   false );
-    private static DbStringFieldRule ruleTest2ExpectFalse = new DbStringFieldRule( "test2",
-                                                                                   "test",
-                                                                                   MatchRelation.EQUALS,
-                                                                                   "ruleTest2ExpectFalse",
-                                                                                   false );
+    private static DbStringFieldRule ruleTest1ExpectFalse = new DbStringFieldRule("test1",
+                                                                                  "test",
+                                                                                  MatchRelation.EQUALS,
+                                                                                  "ruleTest1ExpectFalse",
+                                                                                  false);
+    private static DbStringFieldRule ruleTest2ExpectFalse = new DbStringFieldRule("test2",
+                                                                                  "test",
+                                                                                  MatchRelation.EQUALS,
+                                                                                  "ruleTest2ExpectFalse",
+                                                                                  false);
 
     private static DbMetaData        testMetaData;
 
@@ -65,250 +65,250 @@ public class Test_DbStringFieldRule extends BaseTest {
     @Test
     public void isMatchRelationEqualsPositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "test*(&%^$A&^%$" );
+        testMetaData.putProperty("test", "test*(&%^$A&^%$");
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test*(&%^$A&^%$",
-                                                        MatchRelation.EQUALS,
-                                                        "isMatchRelationEqualsPositive",
-                                                        true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test*(&%^$A&^%$",
+                                                       MatchRelation.EQUALS,
+                                                       "isMatchRelationEqualsPositive",
+                                                       true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationEqualsNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "test*(&%^$A&^%$12" );
+        testMetaData.putProperty("test", "test*(&%^$A&^%$12");
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test*(&%^$A&^%$",
-                                                        MatchRelation.EQUALS,
-                                                        "isMatchRelationEqualsNegative",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test*(&%^$A&^%$",
+                                                       MatchRelation.EQUALS,
+                                                       "isMatchRelationEqualsNegative",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationContainsPositive() throws RbvException {
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test*(&%^$A&^%$",
-                                                        MatchRelation.CONTAINS,
-                                                        "isMatchRelationContainsPositive",
-                                                        true );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test*(&%^$A&^%$",
+                                                       MatchRelation.CONTAINS,
+                                                       "isMatchRelationContainsPositive",
+                                                       true);
 
-        testMetaData.putProperty( "test", "test*(&%^$A&^%$123" );
-        assertTrue( rule.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "test*(&%^$A&^%$123");
+        assertTrue(rule.isMatch(testMetaData));
 
-        testMetaData.putProperty( "test", "123test*(&%^$A&^%$" );
-        assertTrue( rule.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "123test*(&%^$A&^%$");
+        assertTrue(rule.isMatch(testMetaData));
 
-        testMetaData.putProperty( "test", "test*(&%^$A&^%$" );
-        assertTrue( rule.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", "test*(&%^$A&^%$");
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationContainsNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "test*(&%^$A&^" );
+        testMetaData.putProperty("test", "test*(&%^$A&^");
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test*(&%^$A&^%$",
-                                                        MatchRelation.CONTAINS,
-                                                        "isMatchRelationContainsNegative",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test*(&%^$A&^%$",
+                                                       MatchRelation.CONTAINS,
+                                                       "isMatchRelationContainsNegative",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationRegexPositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "test123" );
+        testMetaData.putProperty("test", "test123");
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test[1-3]+",
-                                                        MatchRelation.REGEX_MATCH,
-                                                        "isMatchRelationRegexPositive",
-                                                        true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test[1-3]+",
+                                                       MatchRelation.REGEX_MATCH,
+                                                       "isMatchRelationRegexPositive",
+                                                       true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationRegexNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "test123" );
+        testMetaData.putProperty("test", "test123");
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test[1-3]2",
-                                                        MatchRelation.REGEX_MATCH,
-                                                        "isMatchRelationRegexNegative",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test[1-3]2",
+                                                       MatchRelation.REGEX_MATCH,
+                                                       "isMatchRelationRegexNegative",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullActualValuePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", null );
+        testMetaData.putProperty("test", null);
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        null,
-                                                        MatchRelation.CONTAINS,
-                                                        "isMatchNullActualValue",
-                                                        true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       null,
+                                                       MatchRelation.CONTAINS,
+                                                       "isMatchNullActualValue",
+                                                       true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullActualValueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", null );
+        testMetaData.putProperty("test", null);
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        "test[1-3]2",
-                                                        MatchRelation.CONTAINS,
-                                                        "isMatchNullActualValue",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       "test[1-3]2",
+                                                       MatchRelation.CONTAINS,
+                                                       "isMatchNullActualValue",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullExpectedValueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "asdfas" );
+        testMetaData.putProperty("test", "asdfas");
 
-        DbStringFieldRule rule = new DbStringFieldRule( "test",
-                                                        null,
-                                                        MatchRelation.CONTAINS,
-                                                        "isMatchNullActualValue",
-                                                        true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbStringFieldRule rule = new DbStringFieldRule("test",
+                                                       null,
+                                                       MatchRelation.CONTAINS,
+                                                       "isMatchNullActualValue",
+                                                       true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchExpectedTruePositive() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test" );
+        metaData.putProperty("test1", "test");
 
-        assertTrue( ruleTest1ExpectTrue.isMatch( metaData ) );
+        assertTrue(ruleTest1ExpectTrue.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueNegative() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test123" );
+        metaData.putProperty("test1", "test123");
 
-        assertFalse( ruleTest1ExpectTrue.isMatch( metaData ) );
+        assertFalse(ruleTest1ExpectTrue.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalsePositive() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test123" );
+        metaData.putProperty("test1", "test123");
 
-        assertTrue( ruleTest1ExpectFalse.isMatch( metaData ) );
+        assertTrue(ruleTest1ExpectFalse.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseNegative() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test" );
+        metaData.putProperty("test1", "test");
 
-        assertFalse( ruleTest1ExpectFalse.isMatch( metaData ) );
+        assertFalse(ruleTest1ExpectFalse.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueMultipleRulesPositive() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test" );
-        metaData.putProperty( "test2", "test" );
+        metaData.putProperty("test1", "test");
+        metaData.putProperty("test2", "test");
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectTrue );
-        andRule.addRule( ruleTest2ExpectTrue );
+        andRule.addRule(ruleTest1ExpectTrue);
+        andRule.addRule(ruleTest2ExpectTrue);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueMultipleRulesNegativeNoMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test123" );
+        metaData.putProperty("test1", "test123");
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectTrue );
-        andRule.addRule( ruleTest2ExpectTrue );
+        andRule.addRule(ruleTest1ExpectTrue);
+        andRule.addRule(ruleTest2ExpectTrue);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedTrueMultipleRulesNegativeDontMatch() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test" );
-        metaData.putProperty( "test2", "test123" );
+        metaData.putProperty("test1", "test");
+        metaData.putProperty("test2", "test123");
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectTrue );
-        andRule.addRule( ruleTest2ExpectTrue );
+        andRule.addRule(ruleTest1ExpectTrue);
+        andRule.addRule(ruleTest2ExpectTrue);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseMultipleRulesPositiveNoMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test123" );
+        metaData.putProperty("test1", "test123");
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectFalse );
-        andRule.addRule( ruleTest2ExpectFalse );
+        andRule.addRule(ruleTest1ExpectFalse);
+        andRule.addRule(ruleTest2ExpectFalse);
 
-        assertTrue( andRule.isMatch( metaData ) );
+        assertTrue(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseMultipleRulesPositiveDontMatch() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test" );
-        metaData.putProperty( "test2", "test123" );
+        metaData.putProperty("test1", "test");
+        metaData.putProperty("test2", "test123");
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectFalse );
-        andRule.addRule( ruleTest2ExpectFalse );
+        andRule.addRule(ruleTest1ExpectFalse);
+        andRule.addRule(ruleTest2ExpectFalse);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
     @Test
     public void isMatchExpectedFalseMultipleRulesNegative() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", "test" );
-        metaData.putProperty( "test2", "test" );
+        metaData.putProperty("test1", "test");
+        metaData.putProperty("test2", "test");
 
         AndRuleOperation andRule = new AndRuleOperation();
-        andRule.addRule( ruleTest1ExpectFalse );
-        andRule.addRule( ruleTest2ExpectFalse );
+        andRule.addRule(ruleTest1ExpectFalse);
+        andRule.addRule(ruleTest2ExpectFalse);
 
-        assertFalse( andRule.isMatch( metaData ) );
+        assertFalse(andRule.isMatch(metaData));
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchIncorrectMetaData() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( "test1", new Object() );
+        metaData.putProperty("test1", new Object());
 
-        ruleTest1ExpectFalse.isMatch( metaData );
+        ruleTest1ExpectFalse.isMatch(metaData);
     }
 }

@@ -42,13 +42,13 @@ import com.axway.ats.rbv.filesystem.rules.FilePathRule;
 import com.axway.ats.rbv.model.MetaDataIncorrectException;
 import com.axway.ats.rbv.model.RbvException;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FilePathRule.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FilePathRule.class })
 public class Test_FilePathRule extends BaseTest {
 
-    public static String             testFileAbsPath     = "/tmp/test/path1.txt";
-    public static String             testFileDir  = "/tmp/test/";
-    public static String             wrongFilePath = "/tmp/notexistingfile1234TESTTESTETSTEST.txt";
+    public static String             testFileAbsPath = "/tmp/test/path1.txt";
+    public static String             testFileDir     = "/tmp/test/";
+    public static String             wrongFilePath   = "/tmp/notexistingfile1234TESTTESTETSTEST.txt";
 
     public static FilePackage        pack;
     public static FileSystemMetaData meta;
@@ -56,20 +56,20 @@ public class Test_FilePathRule extends BaseTest {
     @Before
     public void setUpTest_FilePathRule() throws PackageException, RbvException {
 
-        pack = createMock( FilePackage.class );
-        meta = createMock( FileSystemMetaData.class );
+        pack = createMock(FilePackage.class);
+        meta = createMock(FileSystemMetaData.class);
     }
 
     @Test
     public void isMatchExpectedTruePositive() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchExpectedTruePositive", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchExpectedTruePositive", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -77,19 +77,19 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedTruePositiveRegex() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
-        expect( pack.getName() ).andReturn( testFileAbsPath.substring( testFileAbsPath.lastIndexOf( '/' ) + 1 ) );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
+        expect(pack.getName()).andReturn(testFileAbsPath.substring(testFileAbsPath.lastIndexOf('/') + 1));
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( testFileDir,
-                                              "p.*1.+xt",
-                                              "isMatchExpectedTruePositive",
-                                              true,
-                                              1 );
+        FilePathRule rule = new FilePathRule(testFileDir,
+                                             "p.*1.+xt",
+                                             "isMatchExpectedTruePositive",
+                                             true,
+                                             1);
 
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -97,13 +97,13 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedTrueNegative() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( wrongFilePath, "isMatchExpectedTrueNegative", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(wrongFilePath, "isMatchExpectedTrueNegative", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -111,18 +111,18 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedTrueNegativeRegex() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
-        expect( pack.getName() ).andReturn( testFileAbsPath.substring( testFileAbsPath.lastIndexOf( '/' ) + 1 ) );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
+        expect(pack.getName()).andReturn(testFileAbsPath.substring(testFileAbsPath.lastIndexOf('/') + 1));
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( wrongFilePath,
-                                              "p.*1.+xt",
-                                              "isMatchExpectedTrueNegative",
-                                              true,
-                                              1 );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(wrongFilePath,
+                                             "p.*1.+xt",
+                                             "isMatchExpectedTrueNegative",
+                                             true,
+                                             1);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -130,13 +130,13 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedTrueNegativeNullPath() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( null, "isMatchExpectedTrueNegativeNullPath", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(null, "isMatchExpectedTrueNegativeNullPath", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -144,18 +144,18 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedTrueNegativeNullPathregex() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( null );
-        expect( pack.getName() ).andReturn( testFileAbsPath.substring( testFileAbsPath.lastIndexOf( '/' ) + 1 ) );
+        expect(pack.getAbsolutePath()).andReturn(null);
+        expect(pack.getName()).andReturn(testFileAbsPath.substring(testFileAbsPath.lastIndexOf('/') + 1));
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( null,
-                                              "p.*1.+xt",
-                                              "isMatchExpectedTrueNegativeNullPath",
-                                              true,
-                                              1 );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(null,
+                                             "p.*1.+xt",
+                                             "isMatchExpectedTrueNegativeNullPath",
+                                             true,
+                                             1);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -163,13 +163,13 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedFalsePositive() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( wrongFilePath, "isMatchExpectedFalsePositive", false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(wrongFilePath, "isMatchExpectedFalsePositive", false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -177,13 +177,13 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void isMatchExpectedFalseNegative() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchExpectedFalseNegative", false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchExpectedFalseNegative", false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -191,56 +191,56 @@ public class Test_FilePathRule extends BaseTest {
     @Test
     public void getMetaKeys() {
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchExpectedFalseNegative", false );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchExpectedFalseNegative", false);
         List<String> list = new ArrayList<String>();
-        list.add( FileSystemMetaData.FILE_PACKAGE );
-        assertTrue( Arrays.equals( rule.getMetaDataKeys().toArray(), list.toArray() ) );
+        list.add(FileSystemMetaData.FILE_PACKAGE);
+        assertTrue(Arrays.equals(rule.getMetaDataKeys().toArray(), list.toArray()));
     }
 
     @Test
     public void priority() {
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchExpectedFalseNegative", false, 1 );
-        assertEquals( rule.getPriority(), 1 );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchExpectedFalseNegative", false, 1);
+        assertEquals(rule.getPriority(), 1);
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchNullMetaDataContent() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchNullMetaDataContent", true );
-        MetaData metaData = new FileSystemMetaData( null );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchNullMetaDataContent", true);
+        MetaData metaData = new FileSystemMetaData(null);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchInvalidMetaDataContent() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchInvalidMetaDataContent", true );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchInvalidMetaDataContent", true);
         MetaData metaData = new MetaData();
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullMetaData() throws Exception {
 
-        expect( pack.getAbsolutePath() ).andReturn( testFileAbsPath );
+        expect(pack.getAbsolutePath()).andReturn(testFileAbsPath);
 
         replayAll();
 
-        FilePathRule rule = new FilePathRule( testFileAbsPath, "isMatchNullMetaData", true );
-        assertFalse( rule.isMatch( null ) );
+        FilePathRule rule = new FilePathRule(testFileAbsPath, "isMatchNullMetaData", true);
+        assertFalse(rule.isMatch(null));
 
         verifyAll();
     }

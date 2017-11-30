@@ -38,8 +38,8 @@ import com.axway.ats.rbv.filesystem.rules.FileMd5Rule;
 import com.axway.ats.rbv.model.MetaDataIncorrectException;
 import com.axway.ats.rbv.model.RbvException;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FileMd5Rule.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FileMd5Rule.class })
 public class Test_FileMD5Rule extends BaseTest {
 
     public static String             md5sum       = "766d7f6cd12708346544e90a9d69221e";
@@ -51,20 +51,20 @@ public class Test_FileMD5Rule extends BaseTest {
     @Before
     public void setUpTest_FileMD5Rule() throws PackageException, RbvException {
 
-        meta = createMock( FileSystemMetaData.class );
-        pack = createMock( FilePackage.class );
+        meta = createMock(FileSystemMetaData.class);
+        pack = createMock(FilePackage.class);
     }
 
     @Test
     public void isMatchConstructWithMd5ExpectTruePositive() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( md5sum, "isMatchConstructWithMd5ExpectTruePositive", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule(md5sum, "isMatchConstructWithMd5ExpectTruePositive", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -72,13 +72,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithMd5ExpectTrueNegative() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( "23234234", "isMatchConstructWithMd5ExpectTrueNegative", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule("23234234", "isMatchConstructWithMd5ExpectTrueNegative", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -86,13 +86,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithMd5ExpectTrueNegativeEmptyMd5() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( "", "isMatchConstructWithMd5ExpectTrueNegativeEmptyMd5", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule("", "isMatchConstructWithMd5ExpectTrueNegativeEmptyMd5", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -100,13 +100,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithMd5ExpectTrueNegativeNullMd5() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null, "isMatchConstructWithMd5ExpectTrueNegativeNullMd5", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule(null, "isMatchConstructWithMd5ExpectTrueNegativeNullMd5", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -114,18 +114,18 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithFileExpectTruePositive() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getMd5sum() ).andReturn( md5sum );
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getMd5sum()).andReturn(md5sum);
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null,
-                                            testFilePath,
-                                            "isMatchConstructWithFileExpectTruePositive",
-                                            true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule(null,
+                                           testFilePath,
+                                           "isMatchConstructWithFileExpectTruePositive",
+                                           true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -133,13 +133,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithMd5ExpectFalsePositive() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( "23234234", "isMatchConstructWithMd5ExpectFalsePositive", false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule("23234234", "isMatchConstructWithMd5ExpectFalsePositive", false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -147,13 +147,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithMd5ExpectFalseNegative() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( md5sum, "isMatchConstructWithMd5ExpectFalseNegative", false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule(md5sum, "isMatchConstructWithMd5ExpectFalseNegative", false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -161,59 +161,59 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void isMatchConstructWithFileExpectFalseNegative() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getMd5sum() ).andReturn( md5sum );
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getMd5sum()).andReturn(md5sum);
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null,
-                                            testFilePath,
-                                            "isMatchConstructWithFileExpectFalseNegative",
-                                            false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule(null,
+                                           testFilePath,
+                                           "isMatchConstructWithFileExpectFalseNegative",
+                                           false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchNullMetaDataContent() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( "", "isMatchNullMetaDataContent", true );
-        MetaData metaData = new FileSystemMetaData( null );
-        assertFalse( rule.isMatch( metaData ) );
+        FileMd5Rule rule = new FileMd5Rule("", "isMatchNullMetaDataContent", true);
+        MetaData metaData = new FileSystemMetaData(null);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchInvalidMetaDataContent() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( "", "isMatchInvalidMetaDataContent", true );
+        FileMd5Rule rule = new FileMd5Rule("", "isMatchInvalidMetaDataContent", true);
         MetaData metaData = new MetaData();
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullMetaData() throws PackageException, RbvException {
 
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( md5sum, "isMatchNullMetaData", true );
-        assertFalse( rule.isMatch( null ) );
+        FileMd5Rule rule = new FileMd5Rule(md5sum, "isMatchNullMetaData", true);
+        assertFalse(rule.isMatch(null));
 
         verifyAll();
     }
@@ -221,13 +221,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void constructorWithMachine() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getMd5sum() ).andReturn( md5sum );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getMd5sum()).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null, testFilePath, "constructorWithMachine", true );
-        assertTrue( rule != null );
+        FileMd5Rule rule = new FileMd5Rule(null, testFilePath, "constructorWithMachine", true);
+        assertTrue(rule != null);
 
         verifyAll();
     }
@@ -235,13 +235,13 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void constructorWithNullMachine() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getMd5sum() ).andReturn( md5sum );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getMd5sum()).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null, testFilePath, "constructorWithNullMachine", true );
-        assertTrue( rule != null );
+        FileMd5Rule rule = new FileMd5Rule(null, testFilePath, "constructorWithNullMachine", true);
+        assertTrue(rule != null);
 
         verifyAll();
     }
@@ -249,17 +249,17 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void constructorWithMachineBinaryRepencrypt() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null,
-                                            testFilePath,
-                                            true,
-                                            "constructorWithMachineBinaryRepencrypt",
-                                            true );
-        assertTrue( rule != null );
+        FileMd5Rule rule = new FileMd5Rule(null,
+                                           testFilePath,
+                                           true,
+                                           "constructorWithMachineBinaryRepencrypt",
+                                           true);
+        assertTrue(rule != null);
 
         verifyAll();
     }
@@ -267,17 +267,17 @@ public class Test_FileMD5Rule extends BaseTest {
     @Test
     public void constructorWithNullMachineBinaryRepencrypt() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getMd5sum( true ) ).andReturn( md5sum );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getMd5sum(true)).andReturn(md5sum);
 
         replayAll();
 
-        FileMd5Rule rule = new FileMd5Rule( null,
-                                            testFilePath,
-                                            true,
-                                            "constructorWithNullMachineBinaryRepencrypt",
-                                            true );
-        assertTrue( rule != null );
+        FileMd5Rule rule = new FileMd5Rule(null,
+                                           testFilePath,
+                                           true,
+                                           "constructorWithNullMachineBinaryRepencrypt",
+                                           true);
+        assertTrue(rule != null);
 
         verifyAll();
     }

@@ -30,7 +30,7 @@ public class Test_DbMetaData extends BaseTest {
     public void putGetProperty() throws RbvException {
 
         DbMetaData metaData = new DbMetaData();
-        metaData.putProperty( new DbMetaDataKey( "", "column" ), "test_value" );
-        assertEquals( "test_value", metaData.getProperty( new DbMetaDataKey( "column" ) ) );
+        metaData.putProperty(new DbMetaDataKey("", "column"), "test_value");
+        assertEquals("test_value", metaData.getProperty(new DbMetaDataKey("column")));
     }
 }

@@ -30,17 +30,17 @@ public class Test_MatchableAlreadyOpenException extends BaseTest {
 
         MatchableAlreadyOpenException exception;
 
-        exception = new MatchableAlreadyOpenException( "test" );
-        assertEquals( "test", exception.getMessage() );
-        assertNull( exception.getCause() );
+        exception = new MatchableAlreadyOpenException("test");
+        assertEquals("test", exception.getMessage());
+        assertNull(exception.getCause());
 
         Exception helperException = new Exception();
-        exception = new MatchableAlreadyOpenException( "test", helperException );
-        assertEquals( "test", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new MatchableAlreadyOpenException("test", helperException);
+        assertEquals("test", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
 
-        exception = new MatchableAlreadyOpenException( helperException );
-        assertEquals( "java.lang.Exception", exception.getMessage() );
-        assertEquals( helperException, exception.getCause() );
+        exception = new MatchableAlreadyOpenException(helperException);
+        assertEquals("java.lang.Exception", exception.getMessage());
+        assertEquals(helperException, exception.getCause());
     }
 }

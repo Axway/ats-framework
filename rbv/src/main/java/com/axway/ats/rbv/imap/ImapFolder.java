@@ -40,7 +40,7 @@ import com.axway.ats.rbv.storage.Matchable;
 @PublicAtsApi
 public class ImapFolder implements Matchable {
 
-    private static Logger  log = Logger.getLogger( ImapFolder.class );
+    private static Logger  log = Logger.getLogger(ImapFolder.class);
 
     private boolean        isOpen;
     private Store          store;
@@ -79,24 +79,24 @@ public class ImapFolder implements Matchable {
     public void open() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( isOpen ) {
-            throw new MatchableAlreadyOpenException( getDescription() + " is already open" );
+        if (isOpen) {
+            throw new MatchableAlreadyOpenException(getDescription() + " is already open");
         }
 
         try {
             isInitialPass = true;
 
             // create and connect to the user's imap folder
-            if( !store.isConnected() ) {
-                store.connect( serverHost, userName, password );
+            if (!store.isConnected()) {
+                store.connect(serverHost, userName, password);
 
-                log.debug( "Connected to store '" + serverHost + "' with user '" + userName
-                           + "' and password '" + password + "'" );
+                log.debug("Connected to store '" + serverHost + "' with user '" + userName
+                          + "' and password '" + password + "'");
             }
 
-            if( folder == null || !folder.isOpen() ) {
-                folder = store.getFolder( folderName );
-                folder.open( Folder.READ_WRITE );
+            if (folder == null || !folder.isOpen()) {
+                folder = store.getFolder(folderName);
+                folder.open(Folder.READ_WRITE);
             }
 
             allMetaDataList.clear();
@@ -104,10 +104,10 @@ public class ImapFolder implements Matchable {
 
             isOpen = true;
 
-            log.info( "Opened " + getDescription() );
+            log.info("Opened " + getDescription());
 
-        } catch( MessagingException me ) {
-            throw new RbvStorageException( "Could not open " + getDescription(), me );
+        } catch (MessagingException me) {
+            throw new RbvStorageException("Could not open " + getDescription(), me);
         }
     }
 
@@ -119,30 +119,30 @@ public class ImapFolder implements Matchable {
     public void close() throws RbvStorageException {
 
         //first check if the folder is open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( getDescription() + " is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException(getDescription() + " is not open");
         }
 
         try {
-            if( store.isConnected() ) {
-                folder.close( true );
+            if (store.isConnected()) {
+                folder.close(true);
                 store.close();
 
-                log.info( "Closed " + getDescription() );
+                log.info("Closed " + getDescription());
             }
 
             isOpen = false;
 
-        } catch( MessagingException me ) {
-            throw new RbvStorageException( "Could not close " + getDescription(), me );
+        } catch (MessagingException me) {
+            throw new RbvStorageException("Could not close " + getDescription(), me);
         }
     }
 
     public List<MetaData> getAllMetaData() throws RbvException {
 
         //first check if the folder is open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( getDescription() + " is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException(getDescription() + " is not open");
         }
 
         try {
@@ -150,20 +150,20 @@ public class ImapFolder implements Matchable {
             newMetaDataList.clear();
 
             boolean hasNew = folder.hasNewMessages();
-            log.debug( "Has new messages in folder: " + hasNew );
+            log.debug("Has new messages in folder: " + hasNew);
             Message[] imapMessages = folder.getMessages();
 
-            for( Message imapMessage : imapMessages ) {
+            for (Message imapMessage : imapMessages) {
 
-                ImapMetaData currentMeta = createImapMetaData( ( MimeMessage ) imapMessage );
-                if( currentMeta != null ) {
-                    if( !imapMessage.getFlags().contains( Flags.Flag.FLAGGED ) ) {
-                        newMetaDataList.add( currentMeta );
+                ImapMetaData currentMeta = createImapMetaData((MimeMessage) imapMessage);
+                if (currentMeta != null) {
+                    if (!imapMessage.getFlags().contains(Flags.Flag.FLAGGED)) {
+                        newMetaDataList.add(currentMeta);
                     }
 
-                    imapMessage.setFlag( Flags.Flag.FLAGGED, true );
+                    imapMessage.setFlag(Flags.Flag.FLAGGED, true);
 
-                    allMetaDataList.add( currentMeta );
+                    allMetaDataList.add(currentMeta);
                 }
             }
 
@@ -172,8 +172,8 @@ public class ImapFolder implements Matchable {
 
             return allMetaDataList;
 
-        } catch( MessagingException me ) {
-            throw new RbvStorageException( "Could not get meta data from " + getDescription(), me );
+        } catch (MessagingException me) {
+            throw new RbvStorageException("Could not get meta data from " + getDescription(), me);
         }
     }
 
@@ -186,25 +186,25 @@ public class ImapFolder implements Matchable {
     Message[] getAllMimeMessages() throws RbvException {
 
         //first check if the folder is open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( getDescription() + " is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException(getDescription() + " is not open");
         }
 
         try {
             return folder.getMessages();
-        } catch( MessagingException me ) {
-            throw new RbvStorageException( "Could not get meta data from " + getDescription(), me );
+        } catch (MessagingException me) {
+            throw new RbvStorageException("Could not get meta data from " + getDescription(), me);
         }
     }
 
     public List<MetaData> getNewMetaData() throws RbvException {
 
         //first check if the folder is open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( getDescription() + " is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException(getDescription() + " is not open");
         }
 
-        if( isInitialPass ) {
+        if (isInitialPass) {
             isInitialPass = false;
             return getAllMetaData();
         }
@@ -214,19 +214,19 @@ public class ImapFolder implements Matchable {
 
             Message[] imapMessages = folder.getMessages();
 
-            for( Message imapMessage : imapMessages ) {
-                if( !imapMessage.getFlags().contains( Flags.Flag.FLAGGED ) ) {
-                    imapMessage.setFlag( Flags.Flag.FLAGGED, true );
+            for (Message imapMessage : imapMessages) {
+                if (!imapMessage.getFlags().contains(Flags.Flag.FLAGGED)) {
+                    imapMessage.setFlag(Flags.Flag.FLAGGED, true);
 
-                    ImapMetaData currentMeta = createImapMetaData( ( MimeMessage ) imapMessage );
-                    if( currentMeta != null ) {
-                        allMetaDataList.add( currentMeta );
-                        newMetaDataList.add( currentMeta );
+                    ImapMetaData currentMeta = createImapMetaData((MimeMessage) imapMessage);
+                    if (currentMeta != null) {
+                        allMetaDataList.add(currentMeta);
+                        newMetaDataList.add(currentMeta);
                     }
                 }
             }
-        } catch( MessagingException me ) {
-            throw new RbvStorageException( "Could not get meta data from " + getDescription(), me );
+        } catch (MessagingException me) {
+            throw new RbvStorageException("Could not get meta data from " + getDescription(), me);
         }
 
         return newMetaDataList;
@@ -235,8 +235,8 @@ public class ImapFolder implements Matchable {
     public String getMetaDataCounts() throws RbvStorageException {
 
         //first check if the folder is open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( getDescription() + " is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException(getDescription() + " is not open");
         }
 
         return "Total messages: " + allMetaDataList.size() + ", new messages: " + newMetaDataList.size();
@@ -260,18 +260,18 @@ public class ImapFolder implements Matchable {
     public void expunge() throws RbvStorageException {
 
         //first check if the folder is open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( getDescription() + " is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException(getDescription() + " is not open");
         }
 
         try {
-            folder.setFlags( folder.getMessages(), new Flags( Flags.Flag.DELETED ), true );
+            folder.setFlags(folder.getMessages(), new Flags(Flags.Flag.DELETED), true);
             folder.expunge();
-        } catch( MessagingException me ) {
-            throw new RbvStorageException( me );
+        } catch (MessagingException me) {
+            throw new RbvStorageException(me);
         }
 
-        log.info( "Expunged " + getDescription() );
+        log.info("Expunged " + getDescription());
     }
 
     /**
@@ -285,13 +285,13 @@ public class ImapFolder implements Matchable {
                                                MimeMessage mimeMessage ) throws RbvException {
 
         try {
-            MimePackage mimePackage = new MimePackage( mimeMessage );
-            ImapMetaData metaData = new ImapMetaData( mimePackage );
+            MimePackage mimePackage = new MimePackage(mimeMessage);
+            ImapMetaData metaData = new ImapMetaData(mimePackage);
 
             return metaData;
 
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( "Could not get meta data from " + getDescription(), pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException("Could not get meta data from " + getDescription(), pe);
         }
 
     }

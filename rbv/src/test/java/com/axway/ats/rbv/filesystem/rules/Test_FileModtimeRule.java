@@ -38,8 +38,8 @@ import com.axway.ats.rbv.filesystem.rules.FileModtimeRule;
 import com.axway.ats.rbv.model.MetaDataIncorrectException;
 import com.axway.ats.rbv.model.RbvException;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FileModtimeRule.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FileModtimeRule.class })
 public class Test_FileModtimeRule extends BaseTest {
 
     public static long               modtime      = 1221216297020L;
@@ -51,22 +51,22 @@ public class Test_FileModtimeRule extends BaseTest {
     @Before
     public void setUpTest_FileMD5Rule() throws PackageException, RbvException {
 
-        meta = createMock( FileSystemMetaData.class );
-        pack = createMock( FilePackage.class );
+        meta = createMock(FileSystemMetaData.class);
+        pack = createMock(FilePackage.class);
     }
 
     @Test
     public void isMatchConstructWithModTimeExpectTruePositive() throws Exception {
 
-        expect( pack.getModTime() ).andReturn( modtime );
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( modtime,
-                                                    "isMatchConstructWithModTimeExpectTruePositive",
-                                                    true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FileModtimeRule rule = new FileModtimeRule(modtime,
+                                                   "isMatchConstructWithModTimeExpectTruePositive",
+                                                   true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -74,15 +74,15 @@ public class Test_FileModtimeRule extends BaseTest {
     @Test
     public void isMatchConstructWithModTimeExpectTrueNegativeWrongFile() throws Exception {
 
-        expect( pack.getModTime() ).andReturn( 123L );
+        expect(pack.getModTime()).andReturn(123L);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( modtime,
-                                                    "isMatchConstructWithModTimeExpectTrueNegativeWrongFile",
-                                                    true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileModtimeRule rule = new FileModtimeRule(modtime,
+                                                   "isMatchConstructWithModTimeExpectTrueNegativeWrongFile",
+                                                   true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
 
@@ -91,15 +91,15 @@ public class Test_FileModtimeRule extends BaseTest {
     @Test
     public void isMatchConstructWithModTimeExpectTrueNegative() throws Exception {
 
-        expect( pack.getModTime() ).andReturn( modtime );
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( 123l,
-                                                    "isMatchConstructWithModTimeExpectTrueNegative",
-                                                    true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileModtimeRule rule = new FileModtimeRule(123l,
+                                                   "isMatchConstructWithModTimeExpectTrueNegative",
+                                                   true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
 
@@ -108,19 +108,19 @@ public class Test_FileModtimeRule extends BaseTest {
     @Test
     public void isMatchConstructWithFileExpectTruePositive() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getModTime() ).andReturn( modtime );
-        expect( pack.getModTime() ).andReturn( modtime );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getModTime()).andReturn(modtime);
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( null,
-                                                    testFilePath,
-                                                    "isMatchConstructWithFileExpectTruePositive",
-                                                    true );
+        FileModtimeRule rule = new FileModtimeRule(null,
+                                                   testFilePath,
+                                                   "isMatchConstructWithFileExpectTruePositive",
+                                                   true);
 
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -128,46 +128,46 @@ public class Test_FileModtimeRule extends BaseTest {
     @Test
     public void isMatchConstructWithFileExpectTrueNegativeWrongFile() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getModTime() ).andReturn( modtime );
-        expect( pack.getModTime() ).andReturn( 123l );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getModTime()).andReturn(modtime);
+        expect(pack.getModTime()).andReturn(123l);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( null,
-                                                    testFilePath,
-                                                    "isMatchConstructWithFileExpectTrueNegativeWrongFile",
-                                                    true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FileModtimeRule rule = new FileModtimeRule(null,
+                                                   testFilePath,
+                                                   "isMatchConstructWithFileExpectTrueNegativeWrongFile",
+                                                   true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
 
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchInvalidMetaDataContent() throws Exception {
 
-        expect( pack.getModTime() ).andReturn( modtime );
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( 123l, "isMatchInvalidMetaDataContent", true );
+        FileModtimeRule rule = new FileModtimeRule(123l, "isMatchInvalidMetaDataContent", true);
         MetaData metaData = new MetaData();
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullMetaData() throws Exception {
 
-        expect( pack.getModTime() ).andReturn( modtime );
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( 123, "isMatchNullMetaData", true );
-        assertFalse( rule.isMatch( null ) );
+        FileModtimeRule rule = new FileModtimeRule(123, "isMatchNullMetaData", true);
+        assertFalse(rule.isMatch(null));
 
         verifyAll();
     }
@@ -175,13 +175,13 @@ public class Test_FileModtimeRule extends BaseTest {
     @Test
     public void constructorWithMachine() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getModTime() ).andReturn( modtime );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( null, testFilePath, "constructorWithMachine", true );
-        assertTrue( rule != null );
+        FileModtimeRule rule = new FileModtimeRule(null, testFilePath, "constructorWithMachine", true);
+        assertTrue(rule != null);
 
         verifyAll();
     }
@@ -189,16 +189,16 @@ public class Test_FileModtimeRule extends BaseTest {
     @Test
     public void constructorWithMachineNullMachine() throws Exception {
 
-        expectNew( FilePackage.class, null, null, testFilePath ).andReturn( pack );
-        expect( pack.getModTime() ).andReturn( modtime );
+        expectNew(FilePackage.class, null, null, testFilePath).andReturn(pack);
+        expect(pack.getModTime()).andReturn(modtime);
 
         replayAll();
 
-        FileModtimeRule rule = new FileModtimeRule( null,
-                                                    testFilePath,
-                                                    "constructorWithMachineNullMachine",
-                                                    true );
-        assertTrue( rule != null );
+        FileModtimeRule rule = new FileModtimeRule(null,
+                                                   testFilePath,
+                                                   "constructorWithMachineNullMachine",
+                                                   true);
+        assertTrue(rule != null);
 
         verifyAll();
 

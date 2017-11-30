@@ -41,7 +41,7 @@ public class FileSizeRule extends AbstractRule {
                          String ruleName,
                          boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
         this.srcSize = size;
     }
 
@@ -59,15 +59,15 @@ public class FileSizeRule extends AbstractRule {
                          String ruleName,
                          boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         try {
             //get source file's size
-            FilePackage file = new FilePackage( atsAgent, filePath );
+            FilePackage file = new FilePackage(atsAgent, filePath);
             this.srcSize = file.getSize();
 
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
 
     }
@@ -78,17 +78,17 @@ public class FileSizeRule extends AbstractRule {
 
         boolean actuaResult = false;
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 //get destination file's size
                 long destSize = file.getSize();
 
                 actuaResult = this.srcSize == destSize;
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
         return actuaResult;
@@ -97,16 +97,17 @@ public class FileSizeRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with size " + ( getExpectedResult()
+        return "which expects file with size " + (getExpectedResult()
                                                                       ? ""
-                                                                      : "different than " ) + "'"
+                                                                      : "different than ")
+               + "'"
                + this.srcSize + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

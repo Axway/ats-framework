@@ -37,7 +37,7 @@ import com.axway.ats.rbv.storage.Matchable;
 
 public class DbFolder implements Matchable {
 
-    private static Logger             log = Logger.getLogger( DbFolder.class );
+    private static Logger             log = Logger.getLogger(DbFolder.class);
 
     private DbQuery                   searchQuery;
     private DbProvider                dbProvider;
@@ -62,8 +62,8 @@ public class DbFolder implements Matchable {
     public void open() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( isOpen ) {
-            throw new MatchableAlreadyOpenException( "DB folder is already open" );
+        if (isOpen) {
+            throw new MatchableAlreadyOpenException("DB folder is already open");
         }
 
         allMetaDataMap = new HashMap<String, MetaData>();
@@ -71,25 +71,25 @@ public class DbFolder implements Matchable {
         isOpen = true;
         didPollingOccured = false;
 
-        log.debug( "Opened " + getDescription() );
+        log.debug("Opened " + getDescription());
     }
 
     public void close() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "DB folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("DB folder is not open");
         }
 
-        log.debug( "Closed " + getDescription() );
+        log.debug("Closed " + getDescription());
         isOpen = false;
     }
 
     public List<MetaData> getAllMetaData() throws RbvException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "DB folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("DB folder is not open");
         }
 
         allMetaDataMap.clear();
@@ -97,21 +97,21 @@ public class DbFolder implements Matchable {
         List<MetaData> metaDataValues = new ArrayList<MetaData>();
         refresh();
 
-        metaDataValues.addAll( allMetaDataMap.values() );
+        metaDataValues.addAll(allMetaDataMap.values());
         return metaDataValues;
     }
 
     public List<MetaData> getNewMetaData() throws RbvException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "DB folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("DB folder is not open");
         }
 
         List<MetaData> metaDataValues = new ArrayList<MetaData>();
         refresh();
 
-        metaDataValues.addAll( newMetaDataMap.values() );
+        metaDataValues.addAll(newMetaDataMap.values());
         return metaDataValues;
     }
 
@@ -125,46 +125,46 @@ public class DbFolder implements Matchable {
         HashMap<String, MetaData> oldMetaDataMap = allMetaDataMap;
         allMetaDataMap = new HashMap<String, MetaData>();
 
-        log.debug( "Run DB query '" + this.searchQuery.getQuery() + "'" );
+        log.debug("Run DB query '" + this.searchQuery.getQuery() + "'");
 
         DbRecordValuesList[] queryResults;
         try {
-            queryResults = dbProvider.select( this.searchQuery );
-        } catch( DbException dbe ) {
-            throw new RbvException( dbe );
+            queryResults = dbProvider.select(this.searchQuery);
+        } catch (DbException dbe) {
+            throw new RbvException(dbe);
         }
 
-        if( queryResults != null ) {
-            for( DbRecordValuesList queryResult : queryResults ) {
+        if (queryResults != null) {
+            for (DbRecordValuesList queryResult : queryResults) {
                 DbMetaData currentData = new DbMetaData();
                 StringBuffer metaDataHash = new StringBuffer();
 
-                for( DbRecordValue recordValue : queryResult ) {
-                    DbMetaDataKey key = new DbMetaDataKey( recordValue.getDbColumn() );
+                for (DbRecordValue recordValue : queryResult) {
+                    DbMetaDataKey key = new DbMetaDataKey(recordValue.getDbColumn());
                     Object value = recordValue.getValue();
 
-                    currentData.putProperty( key.toString(), value );
+                    currentData.putProperty(key.toString(), value);
 
                     //calculate the hash
-                    metaDataHash.append( key.toString() );
-                    metaDataHash.append( recordValue.getValueAsString() );
+                    metaDataHash.append(key.toString());
+                    metaDataHash.append(recordValue.getValueAsString());
                 }
 
                 try {
                     //compute MD5 so we don't keep the whole StringBuffer in memory
-                    MessageDigest metaDataHashDigest = MessageDigest.getInstance( "MD5" );
-                    String metaDataSum = new String( metaDataHashDigest.digest( metaDataHash.toString()
-                                                                                            .getBytes() ) );
+                    MessageDigest metaDataHashDigest = MessageDigest.getInstance("MD5");
+                    String metaDataSum = new String(metaDataHashDigest.digest(metaDataHash.toString()
+                                                                                          .getBytes()));
 
-                    if( !oldMetaDataMap.containsKey( metaDataSum ) ) {
-                        newMetaDataMap.put( metaDataSum, currentData );
+                    if (!oldMetaDataMap.containsKey(metaDataSum)) {
+                        newMetaDataMap.put(metaDataSum, currentData);
                     }
 
                     //always put the record in the map holding all meta data
-                    allMetaDataMap.put( metaDataSum, currentData );
+                    allMetaDataMap.put(metaDataSum, currentData);
 
-                } catch( NoSuchAlgorithmException e ) {
-                    throw new RuntimeException( e );
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -175,12 +175,12 @@ public class DbFolder implements Matchable {
     public String getMetaDataCounts() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "DB folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("DB folder is not open");
         }
 
-        if( !didPollingOccured ) {
-            throw new RbvStorageException( "DbFolder.getMetaDataCounts() called before any polling" );
+        if (!didPollingOccured) {
+            throw new RbvStorageException("DbFolder.getMetaDataCounts() called before any polling");
         }
 
         return "Total DB records: " + allMetaDataMap.size() + ", new DB records: " + newMetaDataMap.size();

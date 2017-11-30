@@ -51,7 +51,7 @@ public class DbMetaDataKey {
     public DbMetaDataKey( String tableName,
                           String columnName ) {
 
-        this( tableName, columnName, 0 );
+        this(tableName, columnName, 0);
     }
 
     /**
@@ -63,7 +63,7 @@ public class DbMetaDataKey {
     public DbMetaDataKey( String columnName,
                           int index ) {
 
-        this( "", columnName, index );
+        this("", columnName, index);
     }
 
     /**
@@ -91,16 +91,16 @@ public class DbMetaDataKey {
 
         StringBuilder hash = new StringBuilder();
 
-        if( tableName != null && tableName.length() > 0 ) {
-            hash.append( tableName );
-            hash.append( "." );
+        if (tableName != null && tableName.length() > 0) {
+            hash.append(tableName);
+            hash.append(".");
         }
 
-        hash.append( columnName );
+        hash.append(columnName);
 
-        if( index > 0 ) {
-            hash.append( "." );
-            hash.append( index );
+        if (index > 0) {
+            hash.append(".");
+            hash.append(index);
         }
 
         return hash.toString();

@@ -38,7 +38,7 @@ import com.axway.ats.rbv.filesystem.FileSystemMetaData;
 import com.axway.ats.rbv.filesystem.rules.FileContentRule;
 import com.axway.ats.rbv.model.RbvException;
 
-@RunWith(PowerMockRunner.class)
+@RunWith( PowerMockRunner.class)
 public class Test_FileContentRule extends BaseTest {
 
     private static final String EXPRESSION = "Some expression";
@@ -49,58 +49,58 @@ public class Test_FileContentRule extends BaseTest {
     @Before
     public void setUp() {
 
-        testFilePackage = createMock( FilePackage.class );
+        testFilePackage = createMock(FilePackage.class);
     }
 
     @Test
     public void isMatch() throws Exception {
 
-        expect( testFilePackage.grep( EXPRESSION, false ) ).andReturn( new String[]{ EXPRESSION } );
+        expect(testFilePackage.grep(EXPRESSION, false)).andReturn(new String[]{ EXPRESSION });
         replayAll();
 
-        FileContentRule rule = new FileContentRule( EXPRESSION, RULE_NAME, false, true );
-        MetaData metaData = new FileSystemMetaData( testFilePackage );
+        FileContentRule rule = new FileContentRule(EXPRESSION, RULE_NAME, false, true);
+        MetaData metaData = new FileSystemMetaData(testFilePackage);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
         verifyAll();
     }
 
     @Test
     public void isMatchNegative() throws Exception {
 
-        expect( testFilePackage.grep( EXPRESSION, false ) ).andReturn( new String[0] );
+        expect(testFilePackage.grep(EXPRESSION, false)).andReturn(new String[0]);
         replayAll();
 
-        FileContentRule rule = new FileContentRule( EXPRESSION, RULE_NAME, false, true );
-        MetaData metaData = new FileSystemMetaData( testFilePackage );
+        FileContentRule rule = new FileContentRule(EXPRESSION, RULE_NAME, false, true);
+        MetaData metaData = new FileSystemMetaData(testFilePackage);
 
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNegativeException() throws Exception {
 
-        expect( testFilePackage.grep( EXPRESSION, false ) ).andThrow( new PackageException( "" ) );
+        expect(testFilePackage.grep(EXPRESSION, false)).andThrow(new PackageException(""));
         replayAll();
 
-        FileContentRule rule = new FileContentRule( EXPRESSION, RULE_NAME, false, true );
-        MetaData metaData = new FileSystemMetaData( testFilePackage );
+        FileContentRule rule = new FileContentRule(EXPRESSION, RULE_NAME, false, true);
+        MetaData metaData = new FileSystemMetaData(testFilePackage);
 
-        rule.isMatch( metaData );
+        rule.isMatch(metaData);
         verifyAll();
     }
 
     @Test
     public void isMatchRegularExpression() throws Exception {
 
-        expect( testFilePackage.grep( EXPRESSION, true ) ).andReturn( new String[]{ EXPRESSION } );
+        expect(testFilePackage.grep(EXPRESSION, true)).andReturn(new String[]{ EXPRESSION });
         replayAll();
 
-        FileContentRule rule = new FileContentRule( EXPRESSION, RULE_NAME, true, true );
-        MetaData metaData = new FileSystemMetaData( testFilePackage );
+        FileContentRule rule = new FileContentRule(EXPRESSION, RULE_NAME, true, true);
+        MetaData metaData = new FileSystemMetaData(testFilePackage);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
         verifyAll();
     }
 
@@ -108,12 +108,12 @@ public class Test_FileContentRule extends BaseTest {
     public void getMetaDataKeys() throws Exception {
 
         replayAll();
-        FileContentRule rule = new FileContentRule( EXPRESSION, RULE_NAME, true, true );
+        FileContentRule rule = new FileContentRule(EXPRESSION, RULE_NAME, true, true);
 
         ArrayList<String> expected = new ArrayList<String>();
-        expected.add( FileSystemMetaData.FILE_PACKAGE );
+        expected.add(FileSystemMetaData.FILE_PACKAGE);
 
-        assertTrue( Arrays.equals( expected.toArray(), rule.getMetaDataKeys().toArray() ) );
+        assertTrue(Arrays.equals(expected.toArray(), rule.getMetaDataKeys().toArray()));
 
         verifyAll();
     }

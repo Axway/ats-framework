@@ -31,29 +31,28 @@ import com.axway.ats.rbv.storage.Matchable;
 
 public class Monitor {
 
-    private static final Logger log = Logger.getLogger( Monitor.class );
+    private static final Logger log              = Logger.getLogger(Monitor.class);
 
-    private String            name;
-    private Matchable         matchable;
-    private final Executor    executor;
-    private PollingParameters pollingParameters;
-    private int               pollAttemptsLeft;
-    private int               pollAttemptsDone = 0;
-    private MonitorListener   monitorListener;
-    private boolean           expectedResult;
-    private boolean           actualResult;
+    private String              name;
+    private Matchable           matchable;
+    private final Executor      executor;
+    private PollingParameters   pollingParameters;
+    private int                 pollAttemptsLeft;
+    private int                 pollAttemptsDone = 0;
+    private MonitorListener     monitorListener;
+    private boolean             expectedResult;
+    private boolean             actualResult;
 
-    private final boolean endOnFirstMatch;
-    private final boolean endOnFirstFailure;
+    private final boolean       endOnFirstMatch;
+    private final boolean       endOnFirstFailure;
 
-    private Timer   timer;
-    private boolean isActive;
+    private Timer               timer;
+    private boolean             isActive;
 
-    private String lastRuleName;
-    private String lastError;
+    private String              lastRuleName;
+    private String              lastError;
 
-    private List<MetaData> matchedMetaData;
-    
+    private List<MetaData>      matchedMetaData;
 
     public Monitor( String name,
                     Matchable matchable,
@@ -66,7 +65,7 @@ public class Monitor {
         this.name = name;
         this.matchable = matchable;
         this.executor = new MetaExecutor();
-        this.executor.setRootRule( rootRule );
+        this.executor.setRootRule(rootRule);
         this.pollingParameters = pollingParameters;
         this.expectedResult = expectedResult;
         this.endOnFirstMatch = endOnFirstMatch;
@@ -97,8 +96,8 @@ public class Monitor {
     public synchronized void start(
                                     MonitorListener monitorListener ) throws RbvException {
 
-        if( isActive ) {
-            throw new RbvException( "Monitor '" + name + "' is already running" );
+        if (isActive) {
+            throw new RbvException("Monitor '" + name + "' is already running");
         }
 
         logExpectedBehaviour();
@@ -112,9 +111,9 @@ public class Monitor {
         matchable.open();
 
         timer = new Timer();
-        timer.schedule( new MonitorTimerTask(),
-                        pollingParameters.getInitialDelay(),
-                        pollingParameters.getPollInterval() );
+        timer.schedule(new MonitorTimerTask(),
+                       pollingParameters.getInitialDelay(),
+                       pollingParameters.getPollInterval());
 
         isActive = true;
     }
@@ -123,12 +122,12 @@ public class Monitor {
                                    boolean didErrorOccur, String errorMessage ) {
 
         this.lastError = errorMessage;
-        
-        if( executor instanceof BasicExecutor ) {
-            lastRuleName = ( ( BasicExecutor ) executor ).getLastRuleName();
+
+        if (executor instanceof BasicExecutor) {
+            lastRuleName = ((BasicExecutor) executor).getLastRuleName();
         }
-            
-        if( isActive ) {
+
+        if (isActive) {
             try {
                 timer.cancel();
                 matchable.close();
@@ -136,17 +135,17 @@ public class Monitor {
                 //if we have at least one match then we succeeded
                 actualResult = matchedMetaData.size() > 0;
 
-            } catch( Exception e ) {
-                log.error( "Exception while ending monitor '" + name + "'", e );
+            } catch (Exception e) {
+                log.error("Exception while ending monitor '" + name + "'", e);
                 actualResult = !expectedResult;
 
             } finally {
                 isActive = false;
 
-                if( !didErrorOccur ) {
-                    monitorListener.setFinished( name, ( actualResult == expectedResult ) );
+                if (!didErrorOccur) {
+                    monitorListener.setFinished(name, (actualResult == expectedResult));
                 } else {
-                    monitorListener.setFinished( name, false );
+                    monitorListener.setFinished(name, false);
                 }
             }
         }
@@ -154,12 +153,12 @@ public class Monitor {
 
     public synchronized void cancelExecution() throws RbvException {
 
-        if( isActive ) {
+        if (isActive) {
 
             timer.cancel();
             matchable.close();
 
-            log.debug( name + " execution has been cancelled" );
+            log.debug(name + " execution has been cancelled");
 
             isActive = false;
         }
@@ -167,8 +166,8 @@ public class Monitor {
 
     public MetaData getFirstMatchedMetaData() {
 
-        if( matchedMetaData.size() > 0 ) {
-            return matchedMetaData.get( 0 );
+        if (matchedMetaData.size() > 0) {
+            return matchedMetaData.get(0);
         } else {
             //we either did not run the monitor or no matches
             return null;
@@ -203,23 +202,23 @@ public class Monitor {
     private void logExpectedBehaviour() {
 
         StringBuilder msg = new StringBuilder();
-        msg.append( name );
-        msg.append( " expects to" );
-        if( !expectedResult ) {
-            msg.append( " not" );
+        msg.append(name);
+        msg.append(" expects to");
+        if (!expectedResult) {
+            msg.append(" not");
         }
-        msg.append( " match " );
-        msg.append( matchable.getDescription() );
-        msg.append( "; Will" );
-        if( !endOnFirstMatch ) {
-            msg.append( " not" );
+        msg.append(" match ");
+        msg.append(matchable.getDescription());
+        msg.append("; Will");
+        if (!endOnFirstMatch) {
+            msg.append(" not");
         }
-        msg.append( " end on first match; Will" );
-        if( !endOnFirstFailure ) {
-            msg.append( " not" );
+        msg.append(" end on first match; Will");
+        if (!endOnFirstFailure) {
+            msg.append(" not");
         }
-        msg.append( " end on first failure;" );
-        log.info( msg );
+        msg.append(" end on first failure;");
+        log.info(msg);
     }
 
     private class MonitorTimerTask extends TimerTask {
@@ -227,66 +226,66 @@ public class Monitor {
         @Override
         public void run() {
 
-            synchronized( Monitor.this ) {
+            synchronized (Monitor.this) {
                 try {
                     //first check if the monitor is active - it might have already been canceled
                     //in this case we don't want to execute anything else or we'll get exceptions
                     //because the matchable has already been closed
-                    if( !isActive ) {
+                    if (!isActive) {
                         return;
                     }
 
                     ++pollAttemptsDone;
-                    log.info( name + " polling for " + matchable.getDescription() + ", attempts left: "
-                              + pollAttemptsLeft );
+                    log.info(name + " polling for " + matchable.getDescription() + ", attempts left: "
+                             + pollAttemptsLeft);
 
                     List<MetaData> metaDataReceived;
-                    if( endOnFirstMatch && endOnFirstFailure ) {
+                    if (endOnFirstMatch && endOnFirstFailure) {
                         metaDataReceived = matchable.getNewMetaData();
                     } else {
                         metaDataReceived = matchable.getAllMetaData();
                     }
-                    log.info( name + " " + matchable.getMetaDataCounts() );
+                    log.info(name + " " + matchable.getMetaDataCounts());
 
                     String status = null;
-                    if( expectedResult == true ) {
+                    if (expectedResult == true) {
                         // expecting to match data
-                        
+
                         // evaluate using the proper matchable executor
-                        List<MetaData> meta = executor.evaluate( metaDataReceived );
-                        if( meta != null && !meta.isEmpty() ) {
+                        List<MetaData> meta = executor.evaluate(metaDataReceived);
+                        if (meta != null && !meta.isEmpty()) {
                             matchedMetaData = meta;
-                            if( endOnFirstMatch ) {
-                                end( false, "" );
+                            if (endOnFirstMatch) {
+                                end(false, "");
                                 return;
                             }
-                        } else if( endOnFirstFailure ) {
+                        } else if (endOnFirstFailure) {
                             status = "Expected to find " + matchable.getDescription()
                                      + " on all attempts, but did not find it on attempt number " + pollAttemptsDone;
-                            end( true, status );
+                            end(true, status);
                         } else {
                             status = "Expected to find " + matchable.getDescription()
                                      + ", but did not find it";
                         }
                     } else {
                         // expecting to not match data
-                        
-                        matchedMetaData = executor.evaluate( metaDataReceived );
-                        if( matchedMetaData == null || matchedMetaData.isEmpty() ) {
+
+                        matchedMetaData = executor.evaluate(metaDataReceived);
+                        if (matchedMetaData == null || matchedMetaData.isEmpty()) {
                             //nothing was matched
                             matchedMetaData = new ArrayList<MetaData>();
 
                             //if the expected monitor result is false
                             //this means that we don't expect any meta data to match
                             //so if endOnFirstMatch is true, we should end immediately
-                            if( endOnFirstMatch ) {
-                                end( false, "" );
+                            if (endOnFirstMatch) {
+                                end(false, "");
                                 return;
                             }
-                        } else if( endOnFirstFailure ) {
+                        } else if (endOnFirstFailure) {
                             status = "Expected to not find " + matchable.getDescription()
-                            + " on all attempts, but found it on attempt number " + pollAttemptsDone;
-                            end( true, status );
+                                     + " on all attempts, but found it on attempt number " + pollAttemptsDone;
+                            end(true, status);
                         } else {
                             status = "Expected to not find " + matchable.getDescription()
                                      + ", but found it";
@@ -297,13 +296,13 @@ public class Monitor {
                     pollAttemptsLeft--;
 
                     //check if we should end
-                    if( pollAttemptsLeft == 0 ) {
-                        log.info( name + " no more attempts left - done" );
-                        end( false, status );
+                    if (pollAttemptsLeft == 0) {
+                        log.info(name + " no more attempts left - done");
+                        end(false, status);
                     }
-                } catch( Exception e ) {
-                    log.error( "Exception during monitor execution", e );
-                    end( true, "Exception during monitor execution: " + e.getMessage() );
+                } catch (Exception e) {
+                    log.error("Exception during monitor execution", e);
+                    end(true, "Exception during monitor execution: " + e.getMessage());
                 }
             }
         }

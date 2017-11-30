@@ -22,8 +22,8 @@ public class PollingParameters {
     private int  pollAttempts;
 
     public PollingParameters( long initialDelay,
-                             long pollInterval,
-                             int pollAttempts ) {
+                              long pollInterval,
+                              int pollAttempts ) {
 
         this.initialDelay = initialDelay;
         this.pollInterval = pollInterval;

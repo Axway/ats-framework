@@ -49,145 +49,145 @@ public class Test_DbDateFieldRule extends BaseTest {
         testMetaData = new DbMetaData();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set( Calendar.MINUTE, 0 );
-        calendar.set( Calendar.SECOND, 0 );
-        calendar.set( Calendar.MILLISECOND, 0 );
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         today = calendar.getTime();
 
-        timestampRule = new DbDateFieldRule( "test",
-                                             calendar.getTime(),
-                                             MatchRelation.EXACT,
-                                             "isMatchTimestamp",
-                                             true );
+        timestampRule = new DbDateFieldRule("test",
+                                            calendar.getTime(),
+                                            MatchRelation.EXACT,
+                                            "isMatchTimestamp",
+                                            true);
         // go to tomorrow
-        calendar.add( Calendar.DAY_OF_YEAR, 1 );
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
         tomorrow = calendar.getTime();
     }
 
     @Test
     public void isMatchRelationBeforeDatePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "2007-10-09 15:00:00" );
+        testMetaData.putProperty("test", "2007-10-09 15:00:00");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191941800",
-                                                    MatchRelation.BEFORE_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchRelationBeforeDatePositive",
-                                                    true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191941800",
+                                                   MatchRelation.BEFORE_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchRelationBeforeDatePositive",
+                                                   true);
+        assertTrue(rule.isMatch(testMetaData));
     }
-    
+
     @Test
     public void isMatchRelationExactDatePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "2007-10-09 15:00:00" );
+        testMetaData.putProperty("test", "2007-10-09 15:00:00");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191942000",
-                                                    MatchRelation.EXACT,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchRelationExactDatePositive",
-                                                    true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191942000",
+                                                   MatchRelation.EXACT,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchRelationExactDatePositive",
+                                                   true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationBeforeDateNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "2007-10-09 15:00:00" );
+        testMetaData.putProperty("test", "2007-10-09 15:00:00");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191942200",
-                                                    MatchRelation.BEFORE_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchRelationBeforeDateNegative",
-                                                    true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191942200",
+                                                   MatchRelation.BEFORE_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchRelationBeforeDateNegative",
+                                                   true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationAfterDatePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", "2007-10-09 15:00:00" );
+        testMetaData.putProperty("test", "2007-10-09 15:00:00");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191942200",
-                                                    MatchRelation.AFTER_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchRelationAfterDatePositive",
-                                                    true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191942200",
+                                                   MatchRelation.AFTER_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchRelationAfterDatePositive",
+                                                   true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchRelationAfterDateNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "2007-10-09 15:00:00" );
+        testMetaData.putProperty("test", "2007-10-09 15:00:00");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191941800",
-                                                    MatchRelation.AFTER_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchRelationAfterDateNegative",
-                                                    true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191941800",
+                                                   MatchRelation.AFTER_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchRelationAfterDateNegative",
+                                                   true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullActualValuePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", null );
+        testMetaData.putProperty("test", null);
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    null,
-                                                    MatchRelation.AFTER_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchNullActualValue",
-                                                    true );
-        assertTrue( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   null,
+                                                   MatchRelation.AFTER_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchNullActualValue",
+                                                   true);
+        assertTrue(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullActualValueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", null );
+        testMetaData.putProperty("test", null);
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191941800",
-                                                    MatchRelation.AFTER_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchNullActualValue",
-                                                    true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191941800",
+                                                   MatchRelation.AFTER_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchNullActualValue",
+                                                   true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchNullExpectedValueNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", "1191941800" );
+        testMetaData.putProperty("test", "1191941800");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    null,
-                                                    MatchRelation.AFTER_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchNullActualValue",
-                                                    true );
-        assertFalse( rule.isMatch( testMetaData ) );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   null,
+                                                   MatchRelation.AFTER_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchNullActualValue",
+                                                   true);
+        assertFalse(rule.isMatch(testMetaData));
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchWrongActualDateFormat() throws RbvException {
 
-        testMetaData.putProperty( "test", "test123" );
+        testMetaData.putProperty("test", "test123");
 
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    "1191941800",
-                                                    MatchRelation.BEFORE_DATE,
-                                                    "yyyy-MM-dd HH:mm:ss",
-                                                    "isMatchWrongActualDateFormat",
-                                                    true );
-        rule.isMatch( testMetaData );
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   "1191941800",
+                                                   MatchRelation.BEFORE_DATE,
+                                                   "yyyy-MM-dd HH:mm:ss",
+                                                   "isMatchWrongActualDateFormat",
+                                                   true);
+        rule.isMatch(testMetaData);
     }
 
     // --- TIMESTAMP tests ---
@@ -195,45 +195,47 @@ public class Test_DbDateFieldRule extends BaseTest {
     @Test
     public void isMatchDatePositive() throws RbvException {
 
-        testMetaData.putProperty( "test", new Timestamp( today.getTime() ) );
-        assertTrue( timestampRule.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", new Timestamp(today.getTime()));
+        assertTrue(timestampRule.isMatch(testMetaData));
     }
 
     @Test
     public void isMatchDateNegative() throws RbvException {
 
-        testMetaData.putProperty( "test", new Timestamp( tomorrow.getTime() ) );
-        assertFalse( timestampRule.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", new Timestamp(tomorrow.getTime()));
+        assertFalse(timestampRule.isMatch(testMetaData));
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchDateNegativeWrongType() throws RbvException {
 
-        testMetaData.putProperty( "test", tomorrow );
-        assertFalse( timestampRule.isMatch( testMetaData ) );
+        testMetaData.putProperty("test", tomorrow);
+        assertFalse(timestampRule.isMatch(testMetaData));
     }
-    
+
     @Test
     public void isMatchDatePositiveBefore() throws RbvException {
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    tomorrow,
-                                                    MatchRelation.BEFORE_DATE,
-                                                    "isMatchWrongActualDateFormat",
-                                                    true );
-        
-        testMetaData.putProperty( "test", new Timestamp( today.getTime() ) );
-        assertTrue( rule.isMatch( testMetaData ) );
+
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   tomorrow,
+                                                   MatchRelation.BEFORE_DATE,
+                                                   "isMatchWrongActualDateFormat",
+                                                   true);
+
+        testMetaData.putProperty("test", new Timestamp(today.getTime()));
+        assertTrue(rule.isMatch(testMetaData));
     }
-    
+
     @Test
     public void isMatchDatePositiveAfter() throws RbvException {
-        DbDateFieldRule rule = new DbDateFieldRule( "test",
-                                                    today,
-                                                    MatchRelation.AFTER_DATE,
-                                                    "isMatchWrongActualDateFormat",
-                                                    true );
-        
-        testMetaData.putProperty( "test", new Timestamp( tomorrow.getTime() ) );
-        assertTrue( rule.isMatch( testMetaData ) );
+
+        DbDateFieldRule rule = new DbDateFieldRule("test",
+                                                   today,
+                                                   MatchRelation.AFTER_DATE,
+                                                   "isMatchWrongActualDateFormat",
+                                                   true);
+
+        testMetaData.putProperty("test", new Timestamp(tomorrow.getTime()));
+        assertTrue(rule.isMatch(testMetaData));
     }
 }

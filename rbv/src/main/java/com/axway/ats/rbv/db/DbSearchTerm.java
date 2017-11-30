@@ -35,7 +35,7 @@ public class DbSearchTerm implements SearchTerm {
     @PublicAtsApi
     public DbSearchTerm( String selectSQL ) {
 
-        this.dbQuery = new DbQuery( selectSQL, new ArrayList<Object>() );
+        this.dbQuery = new DbQuery(selectSQL, new ArrayList<Object>());
     }
 
     public DbQuery getDbQuery() {

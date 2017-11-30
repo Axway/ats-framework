@@ -15,11 +15,11 @@
  */
 package com.axway.ats.rbv.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchMetaDataKeyException extends RbvException {
 
     public NoSuchMetaDataKeyException( String key ) {
 
-        super( "Meta data does not contain the key '" + key + "'" );
+        super("Meta data does not contain the key '" + key + "'");
     }
 }

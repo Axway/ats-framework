@@ -26,7 +26,7 @@ import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.model.RbvStorageException;
 import com.axway.ats.rbv.rules.AbstractRule;
 
-@SuppressWarnings("boxing")
+@SuppressWarnings( "boxing")
 public class FileGidRule extends AbstractRule {
 
     private long gid;
@@ -35,7 +35,7 @@ public class FileGidRule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         //init members
         this.gid = gid;
@@ -55,14 +55,14 @@ public class FileGidRule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         // get source file's gid
         try {
-            FilePackage file = new FilePackage( atsAgent, filePath );
+            FilePackage file = new FilePackage(atsAgent, filePath);
             this.gid = file.getGid();
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -71,10 +71,10 @@ public class FileGidRule extends AbstractRule {
                                  MetaData metaData ) throws RbvException {
 
         boolean actualResult = false;
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
 
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 //get destination file's GID
@@ -82,14 +82,14 @@ public class FileGidRule extends AbstractRule {
 
                 // if either of the GID values (expected and actual) is the NOT_SUPPORTED
                 // value then we are not able to verify them and we should return true
-                if( this.gid == FilePackage.ATTRIBUTE_NOT_SUPPORTED
-                    || destGid == FilePackage.ATTRIBUTE_NOT_SUPPORTED ) {
+                if (this.gid == FilePackage.ATTRIBUTE_NOT_SUPPORTED
+                    || destGid == FilePackage.ATTRIBUTE_NOT_SUPPORTED) {
                     actualResult = true;
                 } else {
                     actualResult = destGid == this.gid;
                 }
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
         return actualResult;
@@ -98,15 +98,16 @@ public class FileGidRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with GID " + ( getExpectedResult()
+        return "which expects file with GID " + (getExpectedResult()
                                                                      ? ""
-                                                                     : "different than " ) + "'" + this.gid + "'";
+                                                                     : "different than ")
+               + "'" + this.gid + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

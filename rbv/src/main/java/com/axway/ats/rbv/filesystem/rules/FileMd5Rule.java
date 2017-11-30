@@ -36,7 +36,7 @@ public class FileMd5Rule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         this.srcMD5 = md5sum;
         this.binaryMode = true;
@@ -58,16 +58,16 @@ public class FileMd5Rule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         try {
-            FilePackage filePackage = new FilePackage( atsAgent, file );
+            FilePackage filePackage = new FilePackage(atsAgent, file);
 
-            this.srcMD5 = filePackage.getMd5sum( binaryMode );
+            this.srcMD5 = filePackage.getMd5sum(binaryMode);
             this.binaryMode = binaryMode;
 
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -85,16 +85,16 @@ public class FileMd5Rule extends AbstractRule {
                         String ruleName,
                         boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         try {
-            FilePackage filePackage = new FilePackage( atsAgent, file );
+            FilePackage filePackage = new FilePackage(atsAgent, file);
 
             this.srcMD5 = filePackage.getMd5sum();
             this.binaryMode = true;
 
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -104,15 +104,15 @@ public class FileMd5Rule extends AbstractRule {
 
         boolean actualResult = false;
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
-                String destMD5 = file.getMd5sum( this.binaryMode );
-                actualResult = !StringUtils.isNullOrEmpty( destMD5 ) && destMD5.equals( this.srcMD5 );
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+                String destMD5 = file.getMd5sum(this.binaryMode);
+                actualResult = !StringUtils.isNullOrEmpty(destMD5) && destMD5.equals(this.srcMD5);
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
 
@@ -121,16 +121,18 @@ public class FileMd5Rule extends AbstractRule {
 
     @Override
     protected String getRuleDescription() {
-        return "which expects file with MD5 sum " + ( getExpectedResult()
+
+        return "which expects file with MD5 sum " + (getExpectedResult()
                                                                          ? ""
-                                                                         : "different than " ) + "'"
+                                                                         : "different than ")
+               + "'"
                + this.srcMD5 + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

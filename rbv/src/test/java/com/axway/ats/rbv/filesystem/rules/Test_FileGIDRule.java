@@ -39,9 +39,9 @@ import com.axway.ats.rbv.filesystem.FileSystemMetaData;
 import com.axway.ats.rbv.filesystem.rules.FileGidRule;
 import com.axway.ats.rbv.model.RbvException;
 
-@SuppressWarnings("boxing")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FileGidRule.class })
+@SuppressWarnings( "boxing")
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FileGidRule.class })
 public class Test_FileGIDRule extends BaseTest {
 
     public static FileGidRule        rule;
@@ -51,39 +51,39 @@ public class Test_FileGIDRule extends BaseTest {
     @Before
     public void setUpTest_FilePathRule() {
 
-        meta = createMock( FileSystemMetaData.class );
-        pack = createMock( FilePackage.class );
+        meta = createMock(FileSystemMetaData.class);
+        pack = createMock(FilePackage.class);
     }
 
     @Test
     public void getRuleDescFile() {
 
-        rule = new FileGidRule( 1, "ruleName", true );
+        rule = new FileGidRule(1, "ruleName", true);
 
-        assertEquals( rule.getRuleDescription(), "which expects file with GID '1'" );
+        assertEquals(rule.getRuleDescription(), "which expects file with GID '1'");
     }
 
     @Test
     public void getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
 
-        rule = new FileGidRule( 1, "ruleName", true );
+        rule = new FileGidRule(1, "ruleName", true);
 
-        assertEquals( rule.getMetaDataKeys(), metaKeys );
+        assertEquals(rule.getMetaDataKeys(), metaKeys);
     }
 
     @Test
     public void performMatch() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getGid() ).andReturn( 1L );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getGid()).andReturn(1L);
 
         replayAll();
 
-        rule = new FileGidRule( 1, "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileGidRule(1, "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
@@ -91,27 +91,27 @@ public class Test_FileGIDRule extends BaseTest {
     @Test
     public void performMatchNotSupported() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getGid() ).andReturn( FilePackage.ATTRIBUTE_NOT_SUPPORTED );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getGid()).andReturn(FilePackage.ATTRIBUTE_NOT_SUPPORTED);
 
         replayAll();
 
-        rule = new FileGidRule( 1, "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileGidRule(1, "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void performMatchNegativeWxception() throws RbvException, PackageException {
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getGid() ).andThrow( new PackageException( "" ) );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getGid()).andThrow(new PackageException(""));
 
         replayAll();
 
-        rule = new FileGidRule( 1, "ruleName", true );
-        rule.performMatch( meta );
+        rule = new FileGidRule(1, "ruleName", true);
+        rule.performMatch(meta);
 
         verifyAll();
     }
@@ -119,18 +119,18 @@ public class Test_FileGIDRule extends BaseTest {
     @Test
     public void performMatchOtherFile() throws Exception {
 
-        FilePackage remotePack = createMock( FilePackage.class );
+        FilePackage remotePack = createMock(FilePackage.class);
 
-        expectNew( FilePackage.class, null, null, "/root/file.name" ).andReturn( remotePack );
-        expect( remotePack.getGid() ).andReturn( 1L );
+        expectNew(FilePackage.class, null, null, "/root/file.name").andReturn(remotePack);
+        expect(remotePack.getGid()).andReturn(1L);
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getGid() ).andReturn( 1L );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getGid()).andReturn(1L);
 
         replayAll();
 
-        rule = new FileGidRule( null, "/root/file.name", "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileGidRule(null, "/root/file.name", "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
@@ -138,33 +138,33 @@ public class Test_FileGIDRule extends BaseTest {
     @Test
     public void performMatchOtherFileNull() throws Exception {
 
-        FilePackage remotePack = createMock( FilePackage.class );
+        FilePackage remotePack = createMock(FilePackage.class);
 
-        expectNew( FilePackage.class, null, null, "/root/file.name" ).andReturn( remotePack );
-        expect( remotePack.getGid() ).andReturn( 1L );
+        expectNew(FilePackage.class, null, null, "/root/file.name").andReturn(remotePack);
+        expect(remotePack.getGid()).andReturn(1L);
 
-        expect( meta.getFilePackage() ).andReturn( pack );
-        expect( pack.getGid() ).andReturn( 1L );
+        expect(meta.getFilePackage()).andReturn(pack);
+        expect(pack.getGid()).andReturn(1L);
 
         replayAll();
 
-        rule = new FileGidRule( null, "/root/file.name", "ruleName", true );
-        assertTrue( rule.performMatch( meta ) );
+        rule = new FileGidRule(null, "/root/file.name", "ruleName", true);
+        assertTrue(rule.performMatch(meta));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void performMatchOtherFileException() throws Exception {
 
-        FilePackage remotePack = createMock( FilePackage.class );
+        FilePackage remotePack = createMock(FilePackage.class);
 
-        expectNew( FilePackage.class, null, null, "/root/file.name" ).andReturn( remotePack );
-        expect( remotePack.getGid() ).andThrow( new PackageException( "" ) );
+        expectNew(FilePackage.class, null, null, "/root/file.name").andReturn(remotePack);
+        expect(remotePack.getGid()).andThrow(new PackageException(""));
 
         replayAll();
 
-        rule = new FileGidRule( null, "/root/file.name", "ruleName", true );
+        rule = new FileGidRule(null, "/root/file.name", "ruleName", true);
 
         verifyAll();
     }

@@ -38,8 +38,8 @@ import com.axway.ats.rbv.filesystem.rules.FilePermRule;
 import com.axway.ats.rbv.model.MetaDataIncorrectException;
 import com.axway.ats.rbv.model.RbvException;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FilePermRule.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FilePermRule.class })
 public class Test_FilePermRule extends BaseTest {
 
     public static String             permissions = "777";
@@ -50,22 +50,22 @@ public class Test_FilePermRule extends BaseTest {
     @Before
     public void setUpTest_FilePermRule() throws PackageException, RbvException {
 
-        pack = createMock( FilePackage.class );
-        meta = createMock( FileSystemMetaData.class );
+        pack = createMock(FilePackage.class);
+        meta = createMock(FileSystemMetaData.class);
     }
 
     @Test
     public void isMatchConstructorWithPermissionPositive() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( FilePackage.ATTRIBUTE_NOT_SUPPORTED );
+        expect(pack.getPermissions()).andReturn(FilePackage.ATTRIBUTE_NOT_SUPPORTED);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( FilePackage.ATTRIBUTE_NOT_SUPPORTED,
-                                              "isMatchConstructorWithPermissionPositive",
-                                              true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FilePermRule rule = new FilePermRule(FilePackage.ATTRIBUTE_NOT_SUPPORTED,
+                                             "isMatchConstructorWithPermissionPositive",
+                                             true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -73,13 +73,13 @@ public class Test_FilePermRule extends BaseTest {
     @Test
     public void isMatchConstructorWithPermissionNegative() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( 456l, "isMatchConstructorWithPermissionNegative", true );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePermRule rule = new FilePermRule(456l, "isMatchConstructorWithPermissionNegative", true);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -87,15 +87,15 @@ public class Test_FilePermRule extends BaseTest {
     @Test
     public void isMatchConstructorWithPermissionExpectFalsePositive() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( 456l,
-                                              "isMatchConstructorWithPermissionExpectFalsePositive",
-                                              false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertTrue( rule.isMatch( metaData ) );
+        FilePermRule rule = new FilePermRule(456l,
+                                             "isMatchConstructorWithPermissionExpectFalsePositive",
+                                             false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertTrue(rule.isMatch(metaData));
 
         verifyAll();
     }
@@ -103,56 +103,56 @@ public class Test_FilePermRule extends BaseTest {
     @Test
     public void isMatchConstructorWithPermissionExpectFalseNegative() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( FilePackage.ATTRIBUTE_NOT_SUPPORTED );
+        expect(pack.getPermissions()).andReturn(FilePackage.ATTRIBUTE_NOT_SUPPORTED);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( FilePackage.ATTRIBUTE_NOT_SUPPORTED,
-                                              "isMatchConstructorWithPermissionExpectFalseNegative",
-                                              false );
-        MetaData metaData = new FileSystemMetaData( pack );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePermRule rule = new FilePermRule(FilePackage.ATTRIBUTE_NOT_SUPPORTED,
+                                             "isMatchConstructorWithPermissionExpectFalseNegative",
+                                             false);
+        MetaData metaData = new FileSystemMetaData(pack);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchNullMetaDataContent() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( 123l, "isMatchNullMetaDataContent", true );
-        MetaData metaData = new FileSystemMetaData( null );
-        assertFalse( rule.isMatch( metaData ) );
+        FilePermRule rule = new FilePermRule(123l, "isMatchNullMetaDataContent", true);
+        MetaData metaData = new FileSystemMetaData(null);
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchInvalidMetaDataContent() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( 123l, "isMatchInvalidMetaDataContent", true );
+        FilePermRule rule = new FilePermRule(123l, "isMatchInvalidMetaDataContent", true);
         MetaData metaData = new MetaData();
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
         verifyAll();
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullMetaData() throws Exception {
 
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( 123l, "isMatchNullMetaData", true );
-        assertFalse( rule.isMatch( null ) );
+        FilePermRule rule = new FilePermRule(123l, "isMatchNullMetaData", true);
+        assertFalse(rule.isMatch(null));
 
         verifyAll();
     }
@@ -160,13 +160,13 @@ public class Test_FilePermRule extends BaseTest {
     @Test
     public void constructWithMachine() throws Exception {
 
-        expectNew( FilePackage.class, null, null, filePath ).andReturn( pack );
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expectNew(FilePackage.class, null, null, filePath).andReturn(pack);
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( null, filePath, "constructWithMachine", true );
-        assertTrue( rule != null );
+        FilePermRule rule = new FilePermRule(null, filePath, "constructWithMachine", true);
+        assertTrue(rule != null);
 
         verifyAll();
     }
@@ -174,13 +174,13 @@ public class Test_FilePermRule extends BaseTest {
     @Test
     public void constructWithNullMachine() throws Exception {
 
-        expectNew( FilePackage.class, null, null, filePath ).andReturn( pack );
-        expect( pack.getPermissions() ).andReturn( 123l );
+        expectNew(FilePackage.class, null, null, filePath).andReturn(pack);
+        expect(pack.getPermissions()).andReturn(123l);
 
         replayAll();
 
-        FilePermRule rule = new FilePermRule( null, filePath, "constructWithNullMachine", true );
-        assertTrue( rule != null );
+        FilePermRule rule = new FilePermRule(null, filePath, "constructWithNullMachine", true);
+        assertTrue(rule != null);
 
         verifyAll();
     }

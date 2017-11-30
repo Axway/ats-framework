@@ -29,7 +29,7 @@ import com.axway.ats.rbv.model.RbvException;
  */
 public class DbBooleanFieldRule extends DbFieldsRule {
 
-    private static final Logger log = Logger.getLogger( DbBooleanFieldRule.class );
+    private static final Logger log = Logger.getLogger(DbBooleanFieldRule.class);
 
     /**
      * Constructor 
@@ -46,7 +46,7 @@ public class DbBooleanFieldRule extends DbFieldsRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        super( tableName, fieldName, expectedValue, ruleName, expectedResult );
+        super(tableName, fieldName, expectedValue, ruleName, expectedResult);
     }
 
     /**
@@ -62,7 +62,7 @@ public class DbBooleanFieldRule extends DbFieldsRule {
                                String ruleName,
                                boolean expectedResult ) {
 
-        super( fieldName, expectedValue, ruleName, expectedResult );
+        super(fieldName, expectedValue, ruleName, expectedResult);
     }
 
     @Override
@@ -70,68 +70,68 @@ public class DbBooleanFieldRule extends DbFieldsRule {
                                     MetaData metaData ) throws RbvException {
 
         //this cast is safe, as isMatch has already checked the type of meta data
-        DbMetaData dbMetaData = ( DbMetaData ) metaData;
+        DbMetaData dbMetaData = (DbMetaData) metaData;
 
         Boolean actual = null;
-        Object actualValue = dbMetaData.getProperty( this.expectedMetaDataKey.toString() );
+        Object actualValue = dbMetaData.getProperty(this.expectedMetaDataKey.toString());
 
         // check for null        
-        if( this.expectedValue == null ) {
-            if( actualValue == null ) {
+        if (this.expectedValue == null) {
+            if (actualValue == null) {
                 return true;
             }
 
             return false;
         }
-        if( actualValue == null ) {
+        if (actualValue == null) {
             return false;
         }
 
         // check if the value is of type String
-        if( actualValue instanceof String ) {
-            if( "0".equals( actualValue ) ) {
+        if (actualValue instanceof String) {
+            if ("0".equals(actualValue)) {
                 actual = false;
-            } else if( "1".equals( actualValue ) ) {
+            } else if ("1".equals(actualValue)) {
                 actual = true;
             } else {
-                throw new MetaDataIncorrectException( "Meta data is incorrect. Received a String containing : "
-                                                      + actualValue );
+                throw new MetaDataIncorrectException("Meta data is incorrect. Received a String containing : "
+                                                     + actualValue);
             }
         }
 
         // check if value is of type Number
-        if( actualValue instanceof Number ) {
-            Number actualNumber = ( Number ) actualValue;
-            
-            if(actualNumber.byteValue() != actualNumber.doubleValue()){
+        if (actualValue instanceof Number) {
+            Number actualNumber = (Number) actualValue;
+
+            if (actualNumber.byteValue() != actualNumber.doubleValue()) {
                 // this would mean that the value has floating point digits which is wrong
-                throw new MetaDataIncorrectException( "Meta data is incorrect. Received a Number containing floating point digits: "
-                                                      + actualValue );
+                throw new MetaDataIncorrectException("Meta data is incorrect. Received a Number containing floating point digits: "
+                                                     + actualValue);
             }
-            
-            if( actualNumber.byteValue() == 0 ) {
+
+            if (actualNumber.byteValue() == 0) {
                 actual = false;
-            } else if( actualNumber.byteValue() == 1 ) {
+            } else if (actualNumber.byteValue() == 1) {
                 actual = true;
             } else {
-                throw new MetaDataIncorrectException( "Meta data is incorrect. Received a Number containing : "
-                                                      + actualValue );
+                throw new MetaDataIncorrectException("Meta data is incorrect. Received a Number containing : "
+                                                     + actualValue);
             }
         }
-        
-        // check if value is of type Number
-        if( actualValue instanceof Boolean ) {
-            actual = ( Boolean ) actualValue;
-        }
-        
-        boolean expected = ( ( Boolean ) this.expectedValue ).booleanValue();
 
-        if(actual == null){
-            throw new MetaDataIncorrectException( "Meta data is incorrect. Unexpected type of the value in the database : "
-                                                  + actualValue.getClass().getCanonicalName() );
+        // check if value is of type Number
+        if (actualValue instanceof Boolean) {
+            actual = (Boolean) actualValue;
         }
-        
-        if( expected == actual ) {
+
+        boolean expected = ((Boolean) this.expectedValue).booleanValue();
+
+        if (actual == null) {
+            throw new MetaDataIncorrectException("Meta data is incorrect. Unexpected type of the value in the database : "
+                                                 + actualValue.getClass().getCanonicalName());
+        }
+
+        if (expected == actual) {
             return true;
         }
 

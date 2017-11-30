@@ -31,7 +31,7 @@ import com.axway.ats.rbv.rules.AbstractRule;
 
 public class MimePartRule extends AbstractRule {
 
-    private static Logger log = Logger.getLogger( MimePartRule.class );
+    private static Logger log = Logger.getLogger(MimePartRule.class);
 
     private long          expectedChecksum;
     private int           partIndex;
@@ -43,16 +43,16 @@ public class MimePartRule extends AbstractRule {
                          String ruleName,
                          boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, ImapMetaData.class );
+        super(ruleName, expectedResult, ImapMetaData.class);
 
-        if( expectedMessage == null ) {
-            throw new RbvException( "Expected message passed is null" );
+        if (expectedMessage == null) {
+            throw new RbvException("Expected message passed is null");
         }
 
         try {
-            this.expectedChecksum = expectedMessage.getPartChecksum( partIndex, isPartAttachment );
-        } catch( PackageException pe ) {
-            throw new RbvException( pe );
+            this.expectedChecksum = expectedMessage.getPartChecksum(partIndex, isPartAttachment);
+        } catch (PackageException pe) {
+            throw new RbvException(pe);
         }
 
         this.partIndex = partIndex;
@@ -67,29 +67,29 @@ public class MimePartRule extends AbstractRule {
 
         //get the emailMessage
         //the meta data type check already passed, so it is safe to cast
-        MimePackage emailMessage = ( ( ImapMetaData ) metaData ).getMimePackage();
+        MimePackage emailMessage = ((ImapMetaData) metaData).getMimePackage();
 
         try {
             InputStream actualPartDataStream = null;
             try {
-                actualPartDataStream = emailMessage.getPartData( partIndex, isPartAttachment );
-            } catch( NoSuchMimePartException e ) {
+                actualPartDataStream = emailMessage.getPartData(partIndex, isPartAttachment);
+            } catch (NoSuchMimePartException e) {
                 //if there is no such mime part then the parts do not match
-                log.debug( "No MIME part at position '" + partIndex + "'" );
+                log.debug("No MIME part at position '" + partIndex + "'");
                 return false;
             }
 
-            if( actualPartDataStream != null ) {
+            if (actualPartDataStream != null) {
 
-                long actualChecksum = emailMessage.getPartChecksum( partIndex, isPartAttachment );
-                actualResult = ( expectedChecksum == actualChecksum );
+                long actualChecksum = emailMessage.getPartChecksum(partIndex, isPartAttachment);
+                actualResult = (expectedChecksum == actualChecksum);
 
             } else {
-                log.debug( "MIME part at position '" + partIndex + "' does not have any content" );
+                log.debug("MIME part at position '" + partIndex + "' does not have any content");
                 return false;
             }
-        } catch( PackageException pe ) {
-            throw new RbvException( pe );
+        } catch (PackageException pe) {
+            throw new RbvException(pe);
         }
 
         return actualResult;
@@ -99,15 +99,16 @@ public class MimePartRule extends AbstractRule {
     protected String getRuleDescription() {
 
         return "which expects message with matching MIME parts at position " + partIndex + " ("
-               + ( isPartAttachment
+               + (isPartAttachment
                                    ? "attachment"
-                                   : "regular" ) + ")";
+                                   : "regular")
+               + ")";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( ImapMetaData.MIME_PACKAGE );
+        metaKeys.add(ImapMetaData.MIME_PACKAGE);
         return metaKeys;
     }
 }

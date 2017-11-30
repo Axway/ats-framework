@@ -31,11 +31,11 @@ public class OrRuleOperation extends RuleOperation {
         boolean actualResult = false;
 
         //get all matchers result
-        for( Rule rule : rules ) {
-            if( rule instanceof AbstractRule ) {
-                lastRuleName = ( ( AbstractRule ) rule ).getRuleName();
+        for (Rule rule : rules) {
+            if (rule instanceof AbstractRule) {
+                lastRuleName = ((AbstractRule) rule).getRuleName();
             }
-            if( rule.isMatch( metaData ) ) {
+            if (rule.isMatch(metaData)) {
                 actualResult = true;
                 break;
             }

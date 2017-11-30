@@ -29,14 +29,14 @@ public abstract class AbstractImapRule extends AbstractRule {
     public AbstractImapRule( String ruleName,
                              boolean expectedResult ) {
 
-        super( ruleName, expectedResult );
+        super(ruleName, expectedResult);
     }
 
     public AbstractImapRule( String ruleName,
                              boolean expectedResult,
                              Class<? extends MetaData> metaDataClass ) {
 
-        super( ruleName, expectedResult, metaDataClass );
+        super(ruleName, expectedResult, metaDataClass);
     }
 
     public AbstractImapRule( String ruleName,
@@ -44,13 +44,13 @@ public abstract class AbstractImapRule extends AbstractRule {
                              Class<? extends MetaData> metaDataClass,
                              int priority ) {
 
-        super( ruleName, expectedResult, metaDataClass, priority );
+        super(ruleName, expectedResult, metaDataClass, priority);
     }
 
     protected void setNestedPackagePath(
                                          int[] nestedPackagePath ) {
 
-        if( nestedPackagePath == null ) {
+        if (nestedPackagePath == null) {
             this.nestedPackagePath = new int[0];
         } else {
             this.nestedPackagePath = nestedPackagePath;
@@ -62,10 +62,10 @@ public abstract class AbstractImapRule extends AbstractRule {
 
         MimePackage emailMessage;
         try {
-            emailMessage = ( ( ImapMetaData ) metaData ).getMimePackage()
-                                                        .getNeededMimePackage( nestedPackagePath );
-        } catch( NoSuchMimePackageException nsmpe ) {
-            throw new RbvException( nsmpe );
+            emailMessage = ((ImapMetaData) metaData).getMimePackage()
+                                                    .getNeededMimePackage(nestedPackagePath);
+        } catch (NoSuchMimePackageException nsmpe) {
+            throw new RbvException(nsmpe);
         }
 
         return emailMessage;

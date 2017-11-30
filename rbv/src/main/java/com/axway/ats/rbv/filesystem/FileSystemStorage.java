@@ -38,12 +38,12 @@ public class FileSystemStorage implements Storage {
     public Matchable getFolder(
                                 SearchTerm searchTerm ) {
 
-        FileSystemFolderSearchTerm folderSearchTerm = ( FileSystemFolderSearchTerm ) searchTerm;
-        return new FileSystemFolder( atsAgent,
-                                     folderSearchTerm.getPath(),
-                                     folderSearchTerm.getFileName(),
-                                     folderSearchTerm.isRegExp(),
-                                     folderSearchTerm.isIncludeDirs() );
+        FileSystemFolderSearchTerm folderSearchTerm = (FileSystemFolderSearchTerm) searchTerm;
+        return new FileSystemFolder(atsAgent,
+                                    folderSearchTerm.getPath(),
+                                    folderSearchTerm.getFileName(),
+                                    folderSearchTerm.isRegExp(),
+                                    folderSearchTerm.isIncludeDirs());
     }
 
 }

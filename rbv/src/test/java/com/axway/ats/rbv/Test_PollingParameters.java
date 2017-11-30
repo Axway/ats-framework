@@ -21,29 +21,28 @@ import org.junit.Test;
 
 import com.axway.ats.rbv.PollingParameters;
 
-
 public class Test_PollingParameters extends BaseTest {
 
     @Test
     public void testGetters() {
 
-        PollingParameters params = new PollingParameters( 100, 200, 5 );
+        PollingParameters params = new PollingParameters(100, 200, 5);
 
-        assertTrue( params.getInitialDelay() == 100 );
-        assertTrue( params.getPollInterval() == 200 );
-        assertTrue( params.getPollAttempts() == 5 );
+        assertTrue(params.getInitialDelay() == 100);
+        assertTrue(params.getPollInterval() == 200);
+        assertTrue(params.getPollAttempts() == 5);
     }
 
     @Test
     public void testSetters() {
 
-        PollingParameters params = new PollingParameters( 10, 20, 1 );
-        params.setInitialDelay( 100 );
-        params.setPollInterval( 200 );
-        params.setPollAttempts( 5 );
+        PollingParameters params = new PollingParameters(10, 20, 1);
+        params.setInitialDelay(100);
+        params.setPollInterval(200);
+        params.setPollAttempts(5);
 
-        assertTrue( params.getInitialDelay() == 100 );
-        assertTrue( params.getPollInterval() == 200 );
-        assertTrue( params.getPollAttempts() == 5 );
+        assertTrue(params.getInitialDelay() == 100);
+        assertTrue(params.getPollInterval() == 200);
+        assertTrue(params.getPollAttempts() == 5);
     }
 }

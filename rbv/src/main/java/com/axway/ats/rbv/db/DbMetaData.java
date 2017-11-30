@@ -31,7 +31,7 @@ public class DbMetaData extends MetaData {
                              DbMetaDataKey dbMetaDataKey,
                              Object value ) throws RbvException {
 
-        putProperty( dbMetaDataKey.toString(), value );
+        putProperty(dbMetaDataKey.toString(), value);
     }
 
     /**
@@ -44,6 +44,6 @@ public class DbMetaData extends MetaData {
     public Object getProperty(
                                DbMetaDataKey dbMetaDataKey ) throws RbvException {
 
-        return getProperty( dbMetaDataKey.toString() );
+        return getProperty(dbMetaDataKey.toString());
     }
 }

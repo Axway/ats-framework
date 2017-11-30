@@ -33,8 +33,8 @@ public abstract class DbFieldsRule extends AbstractRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( ruleName, expectedResult, DbMetaData.class );
-        this.expectedMetaDataKey = new DbMetaDataKey( tableName, fieldName );
+        super(ruleName, expectedResult, DbMetaData.class);
+        this.expectedMetaDataKey = new DbMetaDataKey(tableName, fieldName);
         this.expectedValue = expectedValue;
     }
 
@@ -43,8 +43,8 @@ public abstract class DbFieldsRule extends AbstractRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( ruleName, expectedResult, DbMetaData.class );
-        this.expectedMetaDataKey = new DbMetaDataKey( fieldName, 0 );
+        super(ruleName, expectedResult, DbMetaData.class);
+        this.expectedMetaDataKey = new DbMetaDataKey(fieldName, 0);
         this.expectedValue = expectedValue;
     }
 
@@ -56,7 +56,7 @@ public abstract class DbFieldsRule extends AbstractRule {
     public final List<String> getMetaDataKeys() {
 
         List<String> keys = new ArrayList<String>();
-        keys.add( this.expectedMetaDataKey.toString() );
+        keys.add(this.expectedMetaDataKey.toString());
         return keys;
     }
 
@@ -65,12 +65,12 @@ public abstract class DbFieldsRule extends AbstractRule {
 
         StringBuilder ruleDescription = new StringBuilder();
 
-        ruleDescription.append( "on table '" + expectedMetaDataKey.getTableName() + "'," );
-        ruleDescription.append( " column '" + expectedMetaDataKey.getColumnName() + "'," );
-        if( !getExpectedResult() ) {
-            ruleDescription.append( " not" );
+        ruleDescription.append("on table '" + expectedMetaDataKey.getTableName() + "',");
+        ruleDescription.append(" column '" + expectedMetaDataKey.getColumnName() + "',");
+        if (!getExpectedResult()) {
+            ruleDescription.append(" not");
         }
-        ruleDescription.append( " expected value '" + expectedValue + "'" );
+        ruleDescription.append(" expected value '" + expectedValue + "'");
 
         return ruleDescription.toString();
     }

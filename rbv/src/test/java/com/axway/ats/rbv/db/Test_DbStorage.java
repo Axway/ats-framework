@@ -29,14 +29,14 @@ public class Test_DbStorage extends BaseTest {
     @Test
     public void getFolderWithSearchTerm() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        assertNotNull( storage.getFolder( new DbSearchTerm( "" ) ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        assertNotNull(storage.getFolder(new DbSearchTerm("")));
     }
 
-    @Test(expected = RbvStorageException.class)
+    @Test( expected = RbvStorageException.class)
     public void getFolderNullSearchTerm() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        storage.getFolder( null );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        storage.getFolder(null);
     }
 }

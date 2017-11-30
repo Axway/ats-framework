@@ -30,23 +30,23 @@ public class Test_DbMetaDataKey extends BaseTest {
 
         DbMetaDataKey metaKey;
 
-        metaKey = new DbMetaDataKey( new DbColumn( "table", "column", 13 ) );
-        assertEquals( metaKey.getTableName(), "table" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 13 );
-        assertEquals( metaKey.toString(), "table.column.13" );
+        metaKey = new DbMetaDataKey(new DbColumn("table", "column", 13));
+        assertEquals(metaKey.getTableName(), "table");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 13);
+        assertEquals(metaKey.toString(), "table.column.13");
 
-        metaKey = new DbMetaDataKey( new DbColumn( "column", 5 ) );
-        assertEquals( metaKey.getTableName(), "" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 5 );
-        assertEquals( metaKey.toString(), "column.5" );
+        metaKey = new DbMetaDataKey(new DbColumn("column", 5));
+        assertEquals(metaKey.getTableName(), "");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 5);
+        assertEquals(metaKey.toString(), "column.5");
 
-        metaKey = new DbMetaDataKey( new DbColumn( "table", "column" ) );
-        assertEquals( metaKey.getTableName(), "table" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 0 );
-        assertEquals( metaKey.toString(), "table.column" );
+        metaKey = new DbMetaDataKey(new DbColumn("table", "column"));
+        assertEquals(metaKey.getTableName(), "table");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 0);
+        assertEquals(metaKey.toString(), "table.column");
     }
 
     @Test
@@ -54,11 +54,11 @@ public class Test_DbMetaDataKey extends BaseTest {
 
         DbMetaDataKey metaKey;
 
-        metaKey = new DbMetaDataKey( "column" );
-        assertEquals( metaKey.getTableName(), "" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 0 );
-        assertEquals( metaKey.toString(), "column" );
+        metaKey = new DbMetaDataKey("column");
+        assertEquals(metaKey.getTableName(), "");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 0);
+        assertEquals(metaKey.toString(), "column");
     }
 
     @Test
@@ -66,11 +66,11 @@ public class Test_DbMetaDataKey extends BaseTest {
 
         DbMetaDataKey metaKey;
 
-        metaKey = new DbMetaDataKey( "table", "column" );
-        assertEquals( metaKey.getTableName(), "table" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 0 );
-        assertEquals( metaKey.toString(), "table.column" );
+        metaKey = new DbMetaDataKey("table", "column");
+        assertEquals(metaKey.getTableName(), "table");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 0);
+        assertEquals(metaKey.toString(), "table.column");
     }
 
     @Test
@@ -78,11 +78,11 @@ public class Test_DbMetaDataKey extends BaseTest {
 
         DbMetaDataKey metaKey;
 
-        metaKey = new DbMetaDataKey( "column", 15 );
-        assertEquals( metaKey.getTableName(), "" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 15 );
-        assertEquals( metaKey.toString(), "column.15" );
+        metaKey = new DbMetaDataKey("column", 15);
+        assertEquals(metaKey.getTableName(), "");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 15);
+        assertEquals(metaKey.toString(), "column.15");
     }
 
     @Test
@@ -90,11 +90,11 @@ public class Test_DbMetaDataKey extends BaseTest {
 
         DbMetaDataKey metaKey;
 
-        metaKey = new DbMetaDataKey( "table", "column", 15 );
-        assertEquals( metaKey.getTableName(), "table" );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 15 );
-        assertEquals( metaKey.toString(), "table.column.15" );
+        metaKey = new DbMetaDataKey("table", "column", 15);
+        assertEquals(metaKey.getTableName(), "table");
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 15);
+        assertEquals(metaKey.toString(), "table.column.15");
     }
 
     @Test
@@ -102,10 +102,10 @@ public class Test_DbMetaDataKey extends BaseTest {
 
         DbMetaDataKey metaKey;
 
-        metaKey = new DbMetaDataKey( null, "column", 15 );
-        assertEquals( metaKey.getTableName(), null );
-        assertEquals( metaKey.getColumnName(), "column" );
-        assertEquals( metaKey.getIndex(), 15 );
-        assertEquals( metaKey.toString(), "column.15" );
+        metaKey = new DbMetaDataKey(null, "column", 15);
+        assertEquals(metaKey.getTableName(), null);
+        assertEquals(metaKey.getColumnName(), "column");
+        assertEquals(metaKey.getIndex(), 15);
+        assertEquals(metaKey.toString(), "column.15");
     }
 }

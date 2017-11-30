@@ -45,7 +45,7 @@ public class FileFolderRule extends AbstractRule {
                            String ruleName,
                            boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         //initialize members
         this.isFileExpected = isFile;
@@ -64,7 +64,7 @@ public class FileFolderRule extends AbstractRule {
                            boolean expectedResult,
                            int priority ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class, priority );
+        super(ruleName, expectedResult, FileSystemMetaData.class, priority);
 
         //initialize members
         this.isFileExpected = isFile;
@@ -74,18 +74,18 @@ public class FileFolderRule extends AbstractRule {
     public boolean performMatch(
                                  MetaData metaData ) throws RbvException {
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             // get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 // check if the entity is a file           
-                if( file.isFile() == this.isFileExpected ) {
+                if (file.isFile() == this.isFileExpected) {
                     return true;
                 }
 
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
         return false;
@@ -94,18 +94,18 @@ public class FileFolderRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return new StringBuilder().append( "which expects a '" )
-                                  .append( this.isFileExpected
+        return new StringBuilder().append("which expects a '")
+                                  .append(this.isFileExpected
                                                               ? "file"
-                                                              : "folder" )
-                                  .append( "'" )
+                                                              : "folder")
+                                  .append("'")
                                   .toString();
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

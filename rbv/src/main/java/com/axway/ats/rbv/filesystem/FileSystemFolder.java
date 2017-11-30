@@ -37,7 +37,7 @@ import com.axway.ats.rbv.storage.Matchable;
 
 public class FileSystemFolder implements Matchable {
 
-    private static final Logger       log = Logger.getLogger( FileSystemFolder.class );
+    private static final Logger       log = Logger.getLogger(FileSystemFolder.class);
 
     private boolean                   isOpen;
     private String                    atsAgent;
@@ -62,8 +62,8 @@ public class FileSystemFolder implements Matchable {
         this.fileName = fileName;
         this.isRegExp = isRegExp;
         this.includeSubDirs = includeSubDirs;
-        this.fileSystemOperations = new FileSystemOperations( this.atsAgent );
-        this.systemOperations = new SystemOperations( this.atsAgent );
+        this.fileSystemOperations = new FileSystemOperations(this.atsAgent);
+        this.systemOperations = new SystemOperations(this.atsAgent);
         this.allMetaData = new HashMap<String, MetaData>();
         this.newMetaData = new ArrayList<MetaData>();
     }
@@ -71,8 +71,8 @@ public class FileSystemFolder implements Matchable {
     public void open() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( isOpen ) {
-            throw new MatchableAlreadyOpenException( "File system folder is already open" );
+        if (isOpen) {
+            throw new MatchableAlreadyOpenException("File system folder is already open");
         }
 
         try {
@@ -80,9 +80,9 @@ public class FileSystemFolder implements Matchable {
             this.osType = this.systemOperations.getOperatingSystemType();
 
             // provide path valid for the target host
-            this.path = IoUtils.normalizeDirPath( path, this.osType );
-        } catch( Exception e ) {
-            throw new RbvStorageException( "Could not open " + getDescription(), e );
+            this.path = IoUtils.normalizeDirPath(path, this.osType);
+        } catch (Exception e) {
+            throw new RbvStorageException("Could not open " + getDescription(), e);
         }
 
         isOpen = true;
@@ -91,8 +91,8 @@ public class FileSystemFolder implements Matchable {
     public void close() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "File system folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("File system folder is not open");
         }
 
         isOpen = false;
@@ -101,8 +101,8 @@ public class FileSystemFolder implements Matchable {
     public String getMetaDataCounts() throws RbvStorageException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "File system folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("File system folder is not open");
         }
 
         return "Total files: " + allMetaData.size() + ", new files: " + newMetaData.size();
@@ -111,13 +111,13 @@ public class FileSystemFolder implements Matchable {
     public List<MetaData> getAllMetaData() throws RbvException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "File system folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("File system folder is not open");
         }
 
         newMetaData.clear();
 
-        if( fileName == null ) {
+        if (fileName == null) {
             fileName = ".*";
             isRegExp = true;
         }
@@ -127,57 +127,57 @@ public class FileSystemFolder implements Matchable {
         //fetch dir contents recursively
         String[] fileList;
         try {
-            fileList = this.fileSystemOperations.findFiles( path, fileName, isRegExp, true, includeSubDirs );
-        } catch( Exception e ) {
+            fileList = this.fileSystemOperations.findFiles(path, fileName, isRegExp, true, includeSubDirs);
+        } catch (Exception e) {
             final String notExistMessageSuffix = "does not exist or is not a folder";
-            if( ( e.getMessage() != null && e.getMessage().endsWith( notExistMessageSuffix ) )
-                || ( e.getCause() != null && e.getCause().getMessage() != null && e.getCause()
+            if ( (e.getMessage() != null && e.getMessage().endsWith(notExistMessageSuffix))
+                 || (e.getCause() != null && e.getCause().getMessage() != null && e.getCause()
                                                                                    .getMessage()
-                                                                                   .endsWith( notExistMessageSuffix ) ) ) {
+                                                                                   .endsWith(notExistMessageSuffix))) {
 
-                log.warn( getDescription() + " does not exist, skipping to next poll attempt" );
+                log.warn(getDescription() + " does not exist, skipping to next poll attempt");
                 return new ArrayList<MetaData>();
             }
-            throw new RbvException( "Unable to list the contents of " + path, e );
+            throw new RbvException("Unable to list the contents of " + path, e);
         }
 
-        if( fileList != null ) {
+        if (fileList != null) {
 
-            for( String fileName : fileList ) {
+            for (String fileName : fileList) {
 
                 try {
-                    FilePackage file = new FilePackage( atsAgent, fileName.trim(), osType );
-                    MetaData metaData = new FileSystemMetaData( file );
+                    FilePackage file = new FilePackage(atsAgent, fileName.trim(), osType);
+                    MetaData metaData = new FileSystemMetaData(file);
 
                     // The way files are compared is by combining their name+path,
                     // modification time, user and group ID in a hash string
                     String hashKey = file.getUniqueIdentifier();
 
-                    if( !allMetaData.containsKey( hashKey ) ) {
-                        newMetaData.add( metaData );
+                    if (!allMetaData.containsKey(hashKey)) {
+                        newMetaData.add(metaData);
                     }
 
-                    tempMetaData.put( hashKey, metaData );
-                } catch( PackageException e ) {
+                    tempMetaData.put(hashKey, metaData);
+                } catch (PackageException e) {
                     // the creation of the package somehow failed - a simple explanation would be that
                     // the filed was removed during the execution of this method or something similar;
-                    log.warn( "Unable to build up metadata for " + fileName, e );
+                    log.warn("Unable to build up metadata for " + fileName, e);
                     // either way we need not throw an exception but only continue iterating
                 }
             }
         }
 
         allMetaData.clear();
-        allMetaData.putAll( tempMetaData );
+        allMetaData.putAll(tempMetaData);
 
-        return new ArrayList<MetaData>( allMetaData.values() );
+        return new ArrayList<MetaData>(allMetaData.values());
     }
 
     public List<MetaData> getNewMetaData() throws RbvException {
 
         //first check if the folder is already open
-        if( !isOpen ) {
-            throw new MatchableNotOpenException( "File system folder is not open" );
+        if (!isOpen) {
+            throw new MatchableNotOpenException("File system folder is not open");
         }
 
         getAllMetaData();
@@ -188,13 +188,13 @@ public class FileSystemFolder implements Matchable {
     public String getDescription() {
 
         String description;
-        if( StringUtils.isNullOrEmpty( fileName ) ) {
+        if (StringUtils.isNullOrEmpty(fileName)) {
             description = "folder '" + path + "'";
         } else {
             description = "file '" + path + fileName + "'";
         }
 
-        if( atsAgent.equals( FileSystemStorage.LOCAL_AGENT ) ) {
+        if (atsAgent.equals(FileSystemStorage.LOCAL_AGENT)) {
             return description;
         } else {
             return description + " on '" + atsAgent + "'";

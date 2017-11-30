@@ -42,7 +42,7 @@ public class FileModtimeRule extends AbstractRule {
                             String ruleName,
                             boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         this.srcModtime = modtime;
     }
@@ -61,14 +61,14 @@ public class FileModtimeRule extends AbstractRule {
                             String ruleName,
                             boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         try {
             //get source file's size
-            FilePackage file = new FilePackage( atsAgent, filePath );
+            FilePackage file = new FilePackage(atsAgent, filePath);
             this.srcModtime = file.getModTime();
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -78,9 +78,9 @@ public class FileModtimeRule extends AbstractRule {
 
         boolean actualResult = false;
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 //get destination file's size
@@ -88,8 +88,8 @@ public class FileModtimeRule extends AbstractRule {
 
                 actualResult = destModtime == this.srcModtime;
 
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
         return actualResult;
@@ -98,16 +98,17 @@ public class FileModtimeRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with mod time " + ( getExpectedResult()
+        return "which expects file with mod time " + (getExpectedResult()
                                                                           ? ""
-                                                                          : "different than " ) + "'"
+                                                                          : "different than ")
+               + "'"
                + this.srcModtime + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

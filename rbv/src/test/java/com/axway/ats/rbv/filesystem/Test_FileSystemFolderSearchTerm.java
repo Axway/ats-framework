@@ -27,16 +27,16 @@ public class Test_FileSystemFolderSearchTerm extends BaseTest {
     @Test
     public void constructorWithNoFolder() {
 
-        FileSystemFolderSearchTerm searchTerm = new FileSystemFolderSearchTerm( "/test/", null, true );
-        assertEquals( "/test/", searchTerm.getPath() );
-        assertEquals( true, searchTerm.isIncludeDirs() );
+        FileSystemFolderSearchTerm searchTerm = new FileSystemFolderSearchTerm("/test/", null, true);
+        assertEquals("/test/", searchTerm.getPath());
+        assertEquals(true, searchTerm.isIncludeDirs());
     }
 
     @Test
     public void constructorWithFolder() {
 
-        FileSystemFolderSearchTerm searchTerm = new FileSystemFolderSearchTerm( "/test/", null, true, false );
-        assertEquals( "/test/", searchTerm.getPath() );
-        assertEquals( false, searchTerm.isIncludeDirs() );
+        FileSystemFolderSearchTerm searchTerm = new FileSystemFolderSearchTerm("/test/", null, true, false);
+        assertEquals("/test/", searchTerm.getPath());
+        assertEquals(false, searchTerm.isIncludeDirs());
     }
 }

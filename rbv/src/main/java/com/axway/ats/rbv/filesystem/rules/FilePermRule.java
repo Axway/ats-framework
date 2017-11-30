@@ -43,7 +43,7 @@ public class FilePermRule extends AbstractRule {
                          String ruleName,
                          boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
         this.sourcePermissions = permissions;
     }
 
@@ -61,15 +61,15 @@ public class FilePermRule extends AbstractRule {
                          String ruleName,
                          boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         try {
             //get source file's permissions
-            FilePackage file = new FilePackage( atsAgent, filePath );
+            FilePackage file = new FilePackage(atsAgent, filePath);
             this.sourcePermissions = file.getPermissions();
 
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -79,21 +79,21 @@ public class FilePermRule extends AbstractRule {
 
         boolean actualResult = false;
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 long destPerm = file.getPermissions();
 
-                if( this.sourcePermissions == FilePackage.ATTRIBUTE_NOT_SUPPORTED
-                    && destPerm == FilePackage.ATTRIBUTE_NOT_SUPPORTED ) {
+                if (this.sourcePermissions == FilePackage.ATTRIBUTE_NOT_SUPPORTED
+                    && destPerm == FilePackage.ATTRIBUTE_NOT_SUPPORTED) {
                     actualResult = true;
                 } else {
                     actualResult = destPerm == this.sourcePermissions;
                 }
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
         return actualResult;
@@ -102,16 +102,17 @@ public class FilePermRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with permissions " + ( getExpectedResult()
+        return "which expects file with permissions " + (getExpectedResult()
                                                                              ? ""
-                                                                             : "different than " ) + "'"
+                                                                             : "different than ")
+               + "'"
                + this.sourcePermissions + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

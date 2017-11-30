@@ -36,8 +36,8 @@ public class Test_DbFolder extends BaseTest {
     @Test
     public void open() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
     }
@@ -45,8 +45,8 @@ public class Test_DbFolder extends BaseTest {
     @Test
     public void close() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
         folder.close();
@@ -55,13 +55,13 @@ public class Test_DbFolder extends BaseTest {
     @Test
     public void getAllMetaData() throws Exception {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
 
         List<MetaData> metaData = folder.getAllMetaData();
-        assertEquals( 2, metaData.size() );
+        assertEquals(2, metaData.size());
 
         folder.close();
     }
@@ -69,13 +69,13 @@ public class Test_DbFolder extends BaseTest {
     @Test
     public void getNewMetaData() throws Exception {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
 
         List<MetaData> metaData = folder.getNewMetaData();
-        assertEquals( 2, metaData.size() );
+        assertEquals(2, metaData.size());
 
         folder.close();
     }
@@ -83,25 +83,25 @@ public class Test_DbFolder extends BaseTest {
     @Test
     public void getMetaDataCounts() throws Exception {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
         folder.getNewMetaData();
-        assertEquals( "Total DB records: 2, new DB records: 2", folder.getMetaDataCounts() );
+        assertEquals("Total DB records: 2, new DB records: 2", folder.getMetaDataCounts());
         folder.close();
     }
 
     @Test
     public void getMetaDataCountsSecondPolling() throws Exception {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
         folder.getNewMetaData();
         folder.getNewMetaData();
-        assertEquals( "Total DB records: 2, new DB records: 0", folder.getMetaDataCounts() );
+        assertEquals("Total DB records: 2, new DB records: 0", folder.getMetaDataCounts());
         folder.close();
     }
 
@@ -110,8 +110,8 @@ public class Test_DbFolder extends BaseTest {
 
         MockDbProvider dbProvider = new MockDbProvider();
 
-        DbStorage storage = new DbStorage( dbProvider );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(dbProvider);
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
         folder.getNewMetaData();
@@ -120,15 +120,15 @@ public class Test_DbFolder extends BaseTest {
         dbProvider.incrementSeed();
 
         folder.getNewMetaData();
-        assertEquals( "Total DB records: 2, new DB records: 2", folder.getMetaDataCounts() );
+        assertEquals("Total DB records: 2, new DB records: 2", folder.getMetaDataCounts());
         folder.close();
     }
 
-    @Test(expected = RbvStorageException.class)
+    @Test( expected = RbvStorageException.class)
     public void getMetaDataCountsBeforePolling() throws Exception {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
         folder.getMetaDataCounts();
@@ -137,53 +137,53 @@ public class Test_DbFolder extends BaseTest {
     @Test
     public void getDescription() throws RbvException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.getDescription();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void getAllMetaDataNegativeFolderNotOpen() throws RbvException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.getAllMetaData();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void getNewMetaDataNegativeFolderNotOpen() throws RbvException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.getNewMetaData();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void closeNegativeFolderNotOpen() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.close();
     }
 
-    @Test(expected = MatchableNotOpenException.class)
+    @Test( expected = MatchableNotOpenException.class)
     public void getMetaDataCountsNegativeFolderNotOpen() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.getMetaDataCounts();
     }
 
-    @Test(expected = MatchableAlreadyOpenException.class)
+    @Test( expected = MatchableAlreadyOpenException.class)
     public void openNegativeFolderAlreadyOpen() throws RbvStorageException {
 
-        DbStorage storage = new DbStorage( new MockDbProvider() );
-        Matchable folder = storage.getFolder( new DbSearchTerm( "" ) );
+        DbStorage storage = new DbStorage(new MockDbProvider());
+        Matchable folder = storage.getFolder(new DbSearchTerm(""));
 
         folder.open();
         folder.open();

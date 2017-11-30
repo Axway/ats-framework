@@ -34,14 +34,14 @@ public class ImapEncryptedFolderSearchTerm extends ImapFolderSearchTerm {
                                           String password,
                                           PackageEncryptor packageEncryptor ) {
 
-        this( userName, password, "INBOX", packageEncryptor );
+        this(userName, password, "INBOX", packageEncryptor);
     }
 
     /**
      * This constructor will instantiate a search term
      * which references the given IMAP folder for a given user
      * and password
-
+    
      * @param userName      the IMAP user name
      * @param password      the password
      * @param folderName    the IMAP folder name
@@ -51,7 +51,7 @@ public class ImapEncryptedFolderSearchTerm extends ImapFolderSearchTerm {
                                           String folderName,
                                           PackageEncryptor packageEncryptor ) {
 
-        super( userName, password, folderName );
+        super(userName, password, folderName);
 
         this.packageEncryptor = packageEncryptor;
     }

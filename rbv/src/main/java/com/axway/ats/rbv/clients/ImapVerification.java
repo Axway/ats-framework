@@ -76,11 +76,11 @@ public class ImapVerification extends VerificationSkeleton {
 
         this.monitorName += userName;
 
-        ImapStorage storage = new ImapStorage( imapServer );
-        folder = storage.getFolder( new ImapFolderSearchTerm( userName, password ) );
+        ImapStorage storage = new ImapStorage(imapServer);
+        folder = storage.getFolder(new ImapFolderSearchTerm(userName, password));
         this.executor = new MetaExecutor();
     }
-    
+
     /**
      * Create an IMAP verification component for encrypted message
      *
@@ -100,8 +100,8 @@ public class ImapVerification extends VerificationSkeleton {
 
         this.monitorName += userName;
 
-        ImapStorage storage = new ImapStorage( imapServer );
-        folder = storage.getFolder( new ImapEncryptedFolderSearchTerm( userName, password, packageEncryptor ) );
+        ImapStorage storage = new ImapStorage(imapServer);
+        folder = storage.getFolder(new ImapEncryptedFolderSearchTerm(userName, password, packageEncryptor));
         this.executor = new MetaExecutor();
     }
 
@@ -130,7 +130,7 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkAttachmentNumber(
                                        int expectNumAttachments ) {
 
-        checkAttachmentNumber( expectNumAttachments, new int[0] );
+        checkAttachmentNumber(expectNumAttachments, new int[0]);
     }
 
     /**
@@ -145,13 +145,13 @@ public class ImapVerification extends VerificationSkeleton {
                                        int... nestedPackagePath ) {
 
         //create the rule
-        MimePartCountRule attachmentCountRule = new MimePartCountRule( nestedPackagePath,
-                                                                       expectNumAttachments,
-                                                                       true,
-                                                                       "checkAttachmentNumber"
-                                                                               + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                       true );
-        rootRule.addRule( attachmentCountRule );
+        MimePartCountRule attachmentCountRule = new MimePartCountRule(nestedPackagePath,
+                                                                      expectNumAttachments,
+                                                                      true,
+                                                                      "checkAttachmentNumber"
+                                                                            + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                      true);
+        rootRule.addRule(attachmentCountRule);
     }
 
     /**
@@ -165,7 +165,7 @@ public class ImapVerification extends VerificationSkeleton {
                                               String searchString,
                                               int partIndex ) {
 
-        checkStringInRegularBodyPart( searchString, partIndex, new int[0] );
+        checkStringInRegularBodyPart(searchString, partIndex, new int[0]);
     }
 
     /**
@@ -182,15 +182,15 @@ public class ImapVerification extends VerificationSkeleton {
                                               int... nestedPackagePath ) {
 
         //create the rule
-        StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
-                                                                          searchString,
-                                                                          false,
-                                                                          partIndex,
-                                                                          false,
-                                                                          "checkStringInRegularBodyPart"
-                                                                                  + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                          true );
-        rootRule.addRule( stringInPartRule );
+        StringInMimePartRule stringInPartRule = new StringInMimePartRule(nestedPackagePath,
+                                                                         searchString,
+                                                                         false,
+                                                                         partIndex,
+                                                                         false,
+                                                                         "checkStringInRegularBodyPart"
+                                                                                + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                         true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -204,7 +204,7 @@ public class ImapVerification extends VerificationSkeleton {
                                              String searchRegex,
                                              int partIndex ) {
 
-        checkRegexInRegularBodyPart( searchRegex, partIndex, new int[0] );
+        checkRegexInRegularBodyPart(searchRegex, partIndex, new int[0]);
     }
 
     /**
@@ -221,15 +221,15 @@ public class ImapVerification extends VerificationSkeleton {
                                              int... nestedPackagePath ) {
 
         //create the rule
-        StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
-                                                                          searchRegex,
-                                                                          true,
-                                                                          partIndex,
-                                                                          false,
-                                                                          "checkRegexInRegularBodyPart"
-                                                                                  + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                          true );
-        rootRule.addRule( stringInPartRule );
+        StringInMimePartRule stringInPartRule = new StringInMimePartRule(nestedPackagePath,
+                                                                         searchRegex,
+                                                                         true,
+                                                                         partIndex,
+                                                                         false,
+                                                                         "checkRegexInRegularBodyPart"
+                                                                                + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                         true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -243,7 +243,7 @@ public class ImapVerification extends VerificationSkeleton {
                                          String searchString,
                                          int attachmentIndex ) {
 
-        checkStringInAttachment( searchString, attachmentIndex, new int[0] );
+        checkStringInAttachment(searchString, attachmentIndex, new int[0]);
     }
 
     /**
@@ -260,15 +260,15 @@ public class ImapVerification extends VerificationSkeleton {
                                          int... nestedPackagePath ) {
 
         //create the rule
-        StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
-                                                                          searchString,
-                                                                          false,
-                                                                          attachmentIndex,
-                                                                          true,
-                                                                          "checkStringInAttachment"
-                                                                                  + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                          true );
-        rootRule.addRule( stringInPartRule );
+        StringInMimePartRule stringInPartRule = new StringInMimePartRule(nestedPackagePath,
+                                                                         searchString,
+                                                                         false,
+                                                                         attachmentIndex,
+                                                                         true,
+                                                                         "checkStringInAttachment"
+                                                                               + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                         true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -282,7 +282,7 @@ public class ImapVerification extends VerificationSkeleton {
                                         String searchRegex,
                                         int attachmentIndex ) {
 
-        checkRegexInAttachment( searchRegex, attachmentIndex, new int[0] );
+        checkRegexInAttachment(searchRegex, attachmentIndex, new int[0]);
     }
 
     /**
@@ -299,15 +299,15 @@ public class ImapVerification extends VerificationSkeleton {
                                         int... nestedPackagePath ) {
 
         //create the rule
-        StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
-                                                                          searchRegex,
-                                                                          true,
-                                                                          attachmentIndex,
-                                                                          true,
-                                                                          "checkRegexgInAttachment"
-                                                                                  + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                          true );
-        rootRule.addRule( stringInPartRule );
+        StringInMimePartRule stringInPartRule = new StringInMimePartRule(nestedPackagePath,
+                                                                         searchRegex,
+                                                                         true,
+                                                                         attachmentIndex,
+                                                                         true,
+                                                                         "checkRegexgInAttachment"
+                                                                               + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                         true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -321,7 +321,7 @@ public class ImapVerification extends VerificationSkeleton {
                                             String searchRegex,
                                             int attachmentIndex ) {
 
-        checkRegexInAttachmentName( searchRegex, attachmentIndex, new int[0] );
+        checkRegexInAttachmentName(searchRegex, attachmentIndex, new int[0]);
     }
 
     /**
@@ -338,13 +338,13 @@ public class ImapVerification extends VerificationSkeleton {
                                             int... nestedPackagePath ) {
 
         //create the rule
-        AttachmentNameRule attachmentNameRule = new AttachmentNameRule( nestedPackagePath,
-                                                                        searchRegex,
-                                                                        attachmentIndex,
-                                                                        "checkRegexInAttachmentName"
-                                                                                + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                        true );
-        rootRule.addRule( attachmentNameRule );
+        AttachmentNameRule attachmentNameRule = new AttachmentNameRule(nestedPackagePath,
+                                                                       searchRegex,
+                                                                       attachmentIndex,
+                                                                       "checkRegexInAttachmentName"
+                                                                                        + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                       true);
+        rootRule.addRule(attachmentNameRule);
     }
 
     /**
@@ -356,7 +356,7 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkBody(
                            String body ) {
 
-        checkBody( body, new int[0] );
+        checkBody(body, new int[0]);
     }
 
     /**
@@ -371,13 +371,13 @@ public class ImapVerification extends VerificationSkeleton {
                            int... nestedPackagePath ) {
 
         //create the rule
-        StringInMimePartRule stringInPartRule = new StringInMimePartRule( nestedPackagePath,
-                                                                          body,
-                                                                          false,
-                                                                          "checkBody"
-                                                                                  + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                          true );
-        rootRule.addRule( stringInPartRule );
+        StringInMimePartRule stringInPartRule = new StringInMimePartRule(nestedPackagePath,
+                                                                         body,
+                                                                         false,
+                                                                         "checkBody"
+                                                                                + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                         true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -393,7 +393,7 @@ public class ImapVerification extends VerificationSkeleton {
                              String headerValue,
                              HeaderMatchMode searchWhere ) {
 
-        checkHeader( headerName, headerValue, searchWhere, new int[0] );
+        checkHeader(headerName, headerValue, searchWhere, new int[0]);
     }
 
     /**
@@ -412,14 +412,14 @@ public class ImapVerification extends VerificationSkeleton {
                              int... nestedPackagePath ) {
 
         //create the rule
-        HeaderRule stringInPartRule = new HeaderRule( nestedPackagePath,
-                                                      headerName,
-                                                      headerValue,
-                                                      searchWhere,
-                                                      "checkHeader"
-                                                              + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                      true );
-        rootRule.addRule( stringInPartRule );
+        HeaderRule stringInPartRule = new HeaderRule(nestedPackagePath,
+                                                     headerName,
+                                                     headerValue,
+                                                     searchWhere,
+                                                     "checkHeader"
+                                                                  + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                     true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -438,7 +438,7 @@ public class ImapVerification extends VerificationSkeleton {
                              int partIndex,
                              HeaderMatchMode searchWhere ) {
 
-        checkHeader( headerName, headerValue, partIndex, searchWhere, new int[0] );
+        checkHeader(headerName, headerValue, partIndex, searchWhere, new int[0]);
     }
 
     /**
@@ -460,16 +460,16 @@ public class ImapVerification extends VerificationSkeleton {
                              int... nestedPackagePath ) {
 
         //create the rule
-        HeaderRule stringInPartRule = new HeaderRule( nestedPackagePath,
-                                                      headerName,
-                                                      headerValue,
-                                                      partIndex,
-                                                      -1,
-                                                      searchWhere,
-                                                      "checkHeader"
-                                                              + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                      true );
-        rootRule.addRule( stringInPartRule );
+        HeaderRule stringInPartRule = new HeaderRule(nestedPackagePath,
+                                                     headerName,
+                                                     headerValue,
+                                                     partIndex,
+                                                     -1,
+                                                     searchWhere,
+                                                     "checkHeader"
+                                                                  + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                     true);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -481,7 +481,7 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkHeaderForMessageTag(
                                           String messageTag ) {
 
-        checkHeaderForMessageTag( messageTag, new int[0] );
+        checkHeaderForMessageTag(messageTag, new int[0]);
     }
 
     /**
@@ -497,15 +497,15 @@ public class ImapVerification extends VerificationSkeleton {
 
         //create the rule
         //set this rule with highest priority, so it is evaluated first
-        HeaderRule stringInPartRule = new HeaderRule( nestedPackagePath,
-                                                      "Automation-Message-Tag",
-                                                      messageTag,
-                                                      HeaderMatchMode.FIND,
-                                                      "checkMessageTagHeader"
-                                                              + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                      true,
-                                                      Integer.MIN_VALUE );
-        rootRule.addRule( stringInPartRule );
+        HeaderRule stringInPartRule = new HeaderRule(nestedPackagePath,
+                                                     "Automation-Message-Tag",
+                                                     messageTag,
+                                                     HeaderMatchMode.FIND,
+                                                     "checkMessageTagHeader"
+                                                                           + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                     true,
+                                                     Integer.MIN_VALUE);
+        rootRule.addRule(stringInPartRule);
     }
 
     /**
@@ -519,7 +519,7 @@ public class ImapVerification extends VerificationSkeleton {
                               String subject,
                               SubjectMatchMode searchWhere ) {
 
-        checkSubject( subject, searchWhere, new int[0] );
+        checkSubject(subject, searchWhere, new int[0]);
     }
 
     /**
@@ -536,13 +536,13 @@ public class ImapVerification extends VerificationSkeleton {
                               int... nestedPackagePath ) {
 
         //create the rule
-        SubjectRule subjectRule = new SubjectRule( nestedPackagePath,
-                                                   subject,
-                                                   searchWhere,
-                                                   "checkSubject"
-                                                           + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                   true );
-        rootRule.addRule( subjectRule );
+        SubjectRule subjectRule = new SubjectRule(nestedPackagePath,
+                                                  subject,
+                                                  searchWhere,
+                                                  "checkSubject"
+                                                               + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                  true);
+        rootRule.addRule(subjectRule);
     }
 
     /**
@@ -554,7 +554,7 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkSubject(
                               String subject ) {
 
-        checkSubject( subject, new int[0] );
+        checkSubject(subject, new int[0]);
     }
 
     /**
@@ -569,13 +569,13 @@ public class ImapVerification extends VerificationSkeleton {
                               int... nestedPackagePath ) {
 
         //create the rule
-        SubjectRule subjectRule = new SubjectRule( nestedPackagePath,
-                                                   subject,
-                                                   SubjectMatchMode.EQUALS,
-                                                   "checkSubject"
-                                                           + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                   true );
-        rootRule.addRule( subjectRule );
+        SubjectRule subjectRule = new SubjectRule(nestedPackagePath,
+                                                  subject,
+                                                  SubjectMatchMode.EQUALS,
+                                                  "checkSubject"
+                                                                           + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                  true);
+        rootRule.addRule(subjectRule);
     }
 
     /**
@@ -585,7 +585,7 @@ public class ImapVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkSignature() {
 
-        checkSignature( new int[0], null );
+        checkSignature(new int[0], null);
     }
 
     /**
@@ -597,7 +597,7 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkSignature(
                                 int[] nestedPackagePath ) {
 
-        checkSignature( nestedPackagePath, null );
+        checkSignature(nestedPackagePath, null);
     }
 
     /**
@@ -609,7 +609,7 @@ public class ImapVerification extends VerificationSkeleton {
     public void checkSignature(
                                 PackageEncryptor signer ) {
 
-        checkSignature( new int[0], signer );
+        checkSignature(new int[0], signer);
     }
 
     /**
@@ -624,12 +624,12 @@ public class ImapVerification extends VerificationSkeleton {
                                 PackageEncryptor signer ) {
 
         //create the rule
-        SMimeSignatureRule subjectRule = new SMimeSignatureRule( nestedPackagePath,
-                                                                 signer,
-                                                                 "checkSignature"
-                                                                         + getNestedMimePackagePathDescription( nestedPackagePath ),
-                                                                 true );
-        rootRule.addRule( subjectRule );
+        SMimeSignatureRule subjectRule = new SMimeSignatureRule(nestedPackagePath,
+                                                                signer,
+                                                                "checkSignature"
+                                                                        + getNestedMimePackagePathDescription(nestedPackagePath),
+                                                                true);
+        rootRule.addRule(subjectRule);
     }
 
     /**
@@ -649,7 +649,7 @@ public class ImapVerification extends VerificationSkeleton {
         List<MetaData> matchedMetaData = verifyObjectExists();
 
         // At this place we know the verification succeeded and there is exactly one MimePackage matched
-        return ( ( ImapMetaData ) matchedMetaData.get( 0 ) ).getMimePackage();
+        return ((ImapMetaData) matchedMetaData.get(0)).getMimePackage();
     }
 
     /**
@@ -684,7 +684,7 @@ public class ImapVerification extends VerificationSkeleton {
         List<MetaData> matchedMetaData = verifyObjectAlwaysExists();
 
         // At this place we know the verification succeeded and there is exactly one MimePackage matched
-        return ( ( ImapMetaData ) matchedMetaData.get( 0 ) ).getMimePackage();
+        return ((ImapMetaData) matchedMetaData.get(0)).getMimePackage();
     }
 
     /**
@@ -711,10 +711,10 @@ public class ImapVerification extends VerificationSkeleton {
     private String getNestedMimePackagePathDescription(
                                                         int[] nestedPackagePath ) {
 
-        if( nestedPackagePath == null || nestedPackagePath.length == 0 ) {
+        if (nestedPackagePath == null || nestedPackagePath.length == 0) {
             return "";
         } else {
-            return " in nested MIME package " + Arrays.toString( nestedPackagePath );
+            return " in nested MIME package " + Arrays.toString(nestedPackagePath);
         }
     }
 }

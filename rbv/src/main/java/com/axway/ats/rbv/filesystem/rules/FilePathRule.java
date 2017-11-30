@@ -43,7 +43,7 @@ public class FilePathRule extends AbstractRule {
      */
     public FilePathRule( String path, String ruleName, boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
         this.path = path;
     }
 
@@ -57,7 +57,7 @@ public class FilePathRule extends AbstractRule {
      */
     public FilePathRule( String path, String ruleName, boolean expectedResult, int priority ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class, priority );
+        super(ruleName, expectedResult, FileSystemMetaData.class, priority);
         this.path = path;
     }
 
@@ -73,7 +73,7 @@ public class FilePathRule extends AbstractRule {
     public FilePathRule( String directory, String filenameRegex, String ruleName, boolean expectedResult,
                          int priority ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class, priority );
+        super(ruleName, expectedResult, FileSystemMetaData.class, priority);
         this.path = directory;
         this.filenameRegex = filenameRegex;
     }
@@ -84,24 +84,24 @@ public class FilePathRule extends AbstractRule {
 
         boolean actualResult = false;
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             String destAbsolutePath = file.getAbsolutePath();
-            log.info( "Actual value is '" + destAbsolutePath + "'" );
+            log.info("Actual value is '" + destAbsolutePath + "'");
 
-            if( filenameRegex == null ) {
-                actualResult = !StringUtils.isNullOrEmpty( destAbsolutePath )
-                               && destAbsolutePath.equals( this.path );
+            if (filenameRegex == null) {
+                actualResult = !StringUtils.isNullOrEmpty(destAbsolutePath)
+                               && destAbsolutePath.equals(this.path);
             } else {
                 String fileName = file.getName();
-                String filePath = IoUtils.getFilePath( destAbsolutePath );
+                String filePath = IoUtils.getFilePath(destAbsolutePath);
 
-                Pattern pattern = Pattern.compile( filenameRegex );
-                Matcher matcher = pattern.matcher( fileName );
+                Pattern pattern = Pattern.compile(filenameRegex);
+                Matcher matcher = pattern.matcher(fileName);
 
-                actualResult = !StringUtils.isNullOrEmpty( filePath ) && filePath.equals( this.path )
+                actualResult = !StringUtils.isNullOrEmpty(filePath) && filePath.equals(this.path)
                                && matcher.matches();
             }
         }
@@ -112,16 +112,16 @@ public class FilePathRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        StringBuilder description = new StringBuilder( "which expects file with name " );
-        if( !getExpectedResult() ) {
-            description.append( "different than " );
+        StringBuilder description = new StringBuilder("which expects file with name ");
+        if (!getExpectedResult()) {
+            description.append("different than ");
         }
-        description.append( "'" );
-        description.append( this.path );
-        if( filenameRegex != null ) {
-            description.append( filenameRegex );
+        description.append("'");
+        description.append(this.path);
+        if (filenameRegex != null) {
+            description.append(filenameRegex);
         }
-        description.append( "'" );
+        description.append("'");
 
         return description.toString();
     }
@@ -129,7 +129,7 @@ public class FilePathRule extends AbstractRule {
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

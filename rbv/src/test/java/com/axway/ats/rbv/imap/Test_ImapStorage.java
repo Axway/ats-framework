@@ -39,24 +39,24 @@ public class Test_ImapStorage extends BaseTest {
     public static void setUpTest_ImapStorage() throws IOException {
 
         Properties imapProps = new Properties();
-        imapProps.load( Test_ImapStorage.class.getResourceAsStream( "imapConfig.txt" ) );
+        imapProps.load(Test_ImapStorage.class.getResourceAsStream("imapConfig.txt"));
 
-        imapServer = imapProps.getProperty( "imapServer" );
-        imapPass = imapProps.getProperty( "imapPass" );
-        imapInboxFolder = imapProps.getProperty( "imapInboxFolder" );
+        imapServer = imapProps.getProperty("imapServer");
+        imapPass = imapProps.getProperty("imapPass");
+        imapInboxFolder = imapProps.getProperty("imapInboxFolder");
     }
 
     @Test
     public void getFolder() throws RbvException {
 
-        ImapStorage storage = new ImapStorage( imapServer );
-        assertNotNull( storage.getFolder( new ImapFolderSearchTerm( user, imapPass ) ) );
+        ImapStorage storage = new ImapStorage(imapServer);
+        assertNotNull(storage.getFolder(new ImapFolderSearchTerm(user, imapPass)));
     }
 
     @Test
     public void getFolderByName() throws RbvException {
 
-        ImapStorage storage = new ImapStorage( imapServer );
-        assertNotNull( storage.getFolder( new ImapFolderSearchTerm( user, imapPass, imapInboxFolder ) ) );
+        ImapStorage storage = new ImapStorage(imapServer);
+        assertNotNull(storage.getFolder(new ImapFolderSearchTerm(user, imapPass, imapInboxFolder)));
     }
 }

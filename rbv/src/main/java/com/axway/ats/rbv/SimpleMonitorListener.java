@@ -24,7 +24,7 @@ import com.axway.ats.rbv.model.RbvException;
 
 public class SimpleMonitorListener implements MonitorListener {
 
-    private static final Logger log = Logger.getLogger( SimpleMonitorListener.class );
+    private static final Logger log = Logger.getLogger(SimpleMonitorListener.class);
 
     private List<Monitor>       monitors;
     private int                 totalNumMonitors;
@@ -45,10 +45,10 @@ public class SimpleMonitorListener implements MonitorListener {
      * @throws RbvException
      */
     public String evaluateMonitors(
-                                     long timeout ) throws RbvException {
+                                    long timeout ) throws RbvException {
 
-        if( isEvaluating ) {
-            throw new RbvException( "Trying to start SimpleMonitor, but it is already running and is not finished" );
+        if (isEvaluating) {
+            throw new RbvException("Trying to start SimpleMonitor, but it is already running and is not finished");
         }
 
         totalNumMonitors = monitors.size();
@@ -56,48 +56,48 @@ public class SimpleMonitorListener implements MonitorListener {
         isEvaluating = true;
 
         try {
-            synchronized( this ) {
+            synchronized (this) {
                 //start all monitors
-                for( Monitor monitor : monitors ) {
-                    monitor.start( this );
+                for (Monitor monitor : monitors) {
+                    monitor.start(this);
                 }
 
-                wait( timeout );
+                wait(timeout);
             }
 
             //cancel any remaining monitors
-            if( numFinishedMonitors != totalNumMonitors ) {
+            if (numFinishedMonitors != totalNumMonitors) {
                 cancelAllMonitors();
             }
 
             //first check if the timeout has been exceeded
-            if( isEvaluating ) {
-                log.error( "Monitors did not finish in the given timeout " + timeout );
+            if (isEvaluating) {
+                log.error("Monitors did not finish in the given timeout " + timeout);
 
                 isEvaluating = false;
                 return "Monitors did not finish in the given timeout " + timeout;
             }
 
-        } catch( InterruptedException ie ) {
-            log.debug( "InterruptedException has been thrown" );
+        } catch (InterruptedException ie) {
+            log.debug("InterruptedException has been thrown");
         }
 
         // we will return null if no error appeared
         boolean first = true;
         StringBuilder error = new StringBuilder();
-        for( Monitor monitor : monitors ) {
+        for (Monitor monitor : monitors) {
             String lastError = monitor.getLastError();
-            if( !StringUtils.isNullOrEmpty( lastError ) ) {
-                if( first ) {
+            if (!StringUtils.isNullOrEmpty(lastError)) {
+                if (first) {
                     first = false;
                 } else {
-                    error.append( "; " );
+                    error.append("; ");
                 }
-                error.append( lastError );
+                error.append(lastError);
             }
         }
 
-        if( error.length() == 0 ) {
+        if (error.length() == 0) {
             return null;
         } else {
             return error.toString();
@@ -108,16 +108,16 @@ public class SimpleMonitorListener implements MonitorListener {
                              String monitorName,
                              boolean result ) {
 
-        if( result == true ) {
+        if (result == true) {
 
             numFinishedMonitors++;
 
             //check if all monitors have finished execution
-            if( numFinishedMonitors == totalNumMonitors ) {
+            if (numFinishedMonitors == totalNumMonitors) {
 
-                log.info( "Matched all rules - evaluation passed!" );
+                log.info("Matched all rules - evaluation passed!");
 
-                synchronized( this ) {
+                synchronized (this) {
                     //notify the waiting thread
                     isEvaluating = false;
 
@@ -127,9 +127,9 @@ public class SimpleMonitorListener implements MonitorListener {
 
         } else {
             //if one of the monitors fails we stop execution
-            log.info( "Monitor '" + monitorName + "' finished unsuccessfully - evaluation failed" );
+            log.info("Monitor '" + monitorName + "' finished unsuccessfully - evaluation failed");
 
-            synchronized( this ) {
+            synchronized (this) {
                 //notify the waiting thread
                 isEvaluating = false;
 
@@ -141,12 +141,12 @@ public class SimpleMonitorListener implements MonitorListener {
     private void cancelAllMonitors() {
 
         //cancel all the other monitors
-        for( Monitor monitor : monitors ) {
+        for (Monitor monitor : monitors) {
             try {
                 monitor.cancelExecution();
-            } catch( RbvException e ) {
+            } catch (RbvException e) {
                 //just log a warning here, because we've already set the result to false
-                log.warn( "Monitor '" + monitor.getName() + "' could not be cancelled", e );
+                log.warn("Monitor '" + monitor.getName() + "' could not be cancelled", e);
             }
         }
     }

@@ -25,7 +25,7 @@ import com.axway.ats.rbv.model.RbvException;
 
 /**
  */
-@SuppressWarnings("boxing")
+@SuppressWarnings( "boxing")
 public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
 
     private static final int                LOWEST_PRIORITY = Integer.MAX_VALUE;
@@ -45,7 +45,7 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
     public AbstractRule( String ruleName,
                          boolean expectedResult ) {
 
-        this( ruleName, expectedResult, MetaData.class, LOWEST_PRIORITY );
+        this(ruleName, expectedResult, MetaData.class, LOWEST_PRIORITY);
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
                          boolean expectedResult,
                          Class<? extends MetaData> metaDataClass ) {
 
-        this( ruleName, expectedResult, metaDataClass, LOWEST_PRIORITY );
+        this(ruleName, expectedResult, metaDataClass, LOWEST_PRIORITY);
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
                          Class<? extends MetaData> metaDataClass,
                          int priority ) {
 
-        this.log = Logger.getLogger( this.getClass() );
+        this.log = Logger.getLogger(this.getClass());
         this.ruleName = ruleName;
         this.ruleUniqueId = randomIds.nextInt();
         this.expectedResult = expectedResult;
@@ -85,24 +85,24 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
     public final boolean isMatch(
                                   MetaData metaData ) throws RbvException {
 
-        if( metaData == null ) {
-            throw new RbvException( "Meta data passed is null" );
+        if (metaData == null) {
+            throw new RbvException("Meta data passed is null");
         }
 
-        if( !metaDataClass.isInstance( metaData ) ) {
-            throw new MetaDataIncorrectException( "Meta data is incorrect - expected instance of "
-                                                  + metaDataClass.getName() );
+        if (!metaDataClass.isInstance(metaData)) {
+            throw new MetaDataIncorrectException("Meta data is incorrect - expected instance of "
+                                                 + metaDataClass.getName());
         }
 
         final String ruleDescription = "'" + ruleName + "' " + getRuleDescription();
-        log.info( "Starting evaluation of rule " + ruleDescription );
-        log.info( "Processing meta data " + metaData.toString() );
+        log.info("Starting evaluation of rule " + ruleDescription);
+        log.info("Processing meta data " + metaData.toString());
 
-        boolean actualResult = performMatch( metaData );
-        if( actualResult == expectedResult ) {
-            log.info( "Matched rule " + ruleDescription );
+        boolean actualResult = performMatch(metaData);
+        if (actualResult == expectedResult) {
+            log.info("Matched rule " + ruleDescription);
         } else {
-            log.info( "Did not match rule " + ruleDescription );
+            log.info("Did not match rule " + ruleDescription);
         }
 
         return actualResult == expectedResult;
@@ -140,15 +140,15 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
     public int compareTo(
                           AbstractRule otherRule ) {
 
-        int result = Integer.valueOf( this.priority ).compareTo( otherRule.getPriority() );
+        int result = Integer.valueOf(this.priority).compareTo(otherRule.getPriority());
         // even if the priority of these rules are the same we need to be able to
         // distinguish between different rules (for instance when putting rules with
         // the same priority but different names in a Set we need to be able to put both
         // rules in the Set even if they have the same priority) ...
-        if( result == 0 ) {
+        if (result == 0) {
             // thanks to the unique rule id users can use more than one rule with same name and priority
-            return ( this.ruleName + this.ruleUniqueId ).compareTo( otherRule.ruleName
-                                                                    + otherRule.ruleUniqueId );
+            return (this.ruleName + this.ruleUniqueId).compareTo(otherRule.ruleName
+                                                                 + otherRule.ruleUniqueId);
         }
         return result;
     }

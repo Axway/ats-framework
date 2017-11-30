@@ -37,73 +37,73 @@ public class Test_MimePartCountRule extends BaseTest {
     public void setUp() throws Exception {
 
         MimePackage mailMessage = null;
-        mailMessage = new MimePackage( Test_MimePartCountRule.class.getResourceAsStream( "mail_with_one_attachment.msg" ) );
+        mailMessage = new MimePackage(Test_MimePartCountRule.class.getResourceAsStream("mail_with_one_attachment.msg"));
 
-        metaData = new ImapMetaData( mailMessage );
+        metaData = new ImapMetaData(mailMessage);
     }
 
     @Test
     public void matchRegularMimePartsCountPositive() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 2, false, "matchRegularMimePartsCountPositive", true );
+        MimePartCountRule rule = new MimePartCountRule(2, false, "matchRegularMimePartsCountPositive", true);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
 
     }
 
     @Test
     public void matchAttachmentsCountPositive() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 1, true, "matchAttachmentsCountPositive", true );
+        MimePartCountRule rule = new MimePartCountRule(1, true, "matchAttachmentsCountPositive", true);
 
-        assertTrue( rule.isMatch( metaData ) );
+        assertTrue(rule.isMatch(metaData));
 
     }
 
     @Test
     public void matchRegularMimePartsCountNegative() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 1, false, "matchRegularMimePartsCountNegative", true );
+        MimePartCountRule rule = new MimePartCountRule(1, false, "matchRegularMimePartsCountNegative", true);
 
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
     }
 
     @Test
     public void matchAttachmentsCountNegative() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 5, true, "matchAttachmentsCountNegative", true );
+        MimePartCountRule rule = new MimePartCountRule(5, true, "matchAttachmentsCountNegative", true);
 
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
     }
 
-    @Test(expected = RbvException.class)
+    @Test( expected = RbvException.class)
     public void isMatchNullMetaData() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 5, true, "isMatchNullMetaData", true );
+        MimePartCountRule rule = new MimePartCountRule(5, true, "isMatchNullMetaData", true);
 
-        assertFalse( rule.isMatch( null ) );
+        assertFalse(rule.isMatch(null));
 
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchWrongMetaData() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 5, true, "isMatchEmptyMetaData", true );
+        MimePartCountRule rule = new MimePartCountRule(5, true, "isMatchEmptyMetaData", true);
 
         metaData = new MetaData();
-        assertFalse( rule.isMatch( metaData ) );
+        assertFalse(rule.isMatch(metaData));
 
     }
 
-    @Test(expected = MetaDataIncorrectException.class)
+    @Test( expected = MetaDataIncorrectException.class)
     public void isMatchEmptyMetaData() throws RbvException {
 
-        MimePartCountRule rule = new MimePartCountRule( 5, true, "isMatchEmptyMetaData", true );
+        MimePartCountRule rule = new MimePartCountRule(5, true, "isMatchEmptyMetaData", true);
 
-        metaData = new ImapMetaData( null );
-        assertFalse( rule.isMatch( metaData ) );
+        metaData = new ImapMetaData(null);
+        assertFalse(rule.isMatch(metaData));
 
     }
 }

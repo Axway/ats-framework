@@ -34,7 +34,7 @@ public class FileOwnerNameRule extends AbstractRule {
                               String ruleName,
                               boolean expectedResult ) {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         //init members
         this.owner = owner;
@@ -45,14 +45,14 @@ public class FileOwnerNameRule extends AbstractRule {
                               String ruleName,
                               boolean expectedResult ) throws RbvException {
 
-        super( ruleName, expectedResult, FileSystemMetaData.class );
+        super(ruleName, expectedResult, FileSystemMetaData.class);
 
         // get source file's owner name
         try {
-            FilePackage file = new FilePackage( atsAgent, filePath );
+            FilePackage file = new FilePackage(atsAgent, filePath);
             this.owner = file.getOwnerName();
-        } catch( PackageException pe ) {
-            throw new RbvStorageException( pe );
+        } catch (PackageException pe) {
+            throw new RbvStorageException(pe);
         }
     }
 
@@ -62,9 +62,9 @@ public class FileOwnerNameRule extends AbstractRule {
 
         boolean actualResult = false;
 
-        if( metaData instanceof FileSystemMetaData ) {
+        if (metaData instanceof FileSystemMetaData) {
             //get the file from the meta data
-            FilePackage file = ( ( FileSystemMetaData ) metaData ).getFilePackage();
+            FilePackage file = ((FileSystemMetaData) metaData).getFilePackage();
 
             try {
                 //get destination file's owner name
@@ -72,13 +72,13 @@ public class FileOwnerNameRule extends AbstractRule {
 
                 // if either of the owner name values (expected and actual) is the NOT_SUPPORTED
                 // value then we are not able to verify them and we should return true
-                if( this.owner == null || destOwner == null ) {
+                if (this.owner == null || destOwner == null) {
                     actualResult = true;
                 } else {
-                    actualResult = destOwner.equals( this.owner );
+                    actualResult = destOwner.equals(this.owner);
                 }
-            } catch( PackageException pe ) {
-                throw new RbvStorageException( pe );
+            } catch (PackageException pe) {
+                throw new RbvStorageException(pe);
             }
         }
 
@@ -88,16 +88,17 @@ public class FileOwnerNameRule extends AbstractRule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with Owner Name " + ( getExpectedResult()
+        return "which expects file with Owner Name " + (getExpectedResult()
                                                                             ? ""
-                                                                            : "different than " ) + "'"
+                                                                            : "different than ")
+               + "'"
                + this.owner + "'";
     }
 
     public List<String> getMetaDataKeys() {
 
         List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( FileSystemMetaData.FILE_PACKAGE );
+        metaKeys.add(FileSystemMetaData.FILE_PACKAGE);
         return metaKeys;
     }
 }

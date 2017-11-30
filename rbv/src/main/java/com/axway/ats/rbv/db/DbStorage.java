@@ -25,7 +25,7 @@ import com.axway.ats.rbv.storage.Storage;
 
 public class DbStorage implements Storage {
 
-    private static final Logger log = Logger.getLogger( DbStorage.class );
+    private static final Logger log = Logger.getLogger(DbStorage.class);
 
     private DbProvider          dbProvider;
 
@@ -33,21 +33,21 @@ public class DbStorage implements Storage {
 
         this.dbProvider = dbProvider;
 
-        log.debug( "DB storage successfully initialized" );
+        log.debug("DB storage successfully initialized");
     }
 
     public Matchable getFolder(
                                 SearchTerm searchTerm ) throws RbvStorageException {
 
-        if( searchTerm == null ) {
-            throw new RbvStorageException( "Search term is null" );
+        if (searchTerm == null) {
+            throw new RbvStorageException("Search term is null");
         }
 
-        if( ! ( searchTerm instanceof DbSearchTerm ) ) {
-            throw new RbvStorageException( "Search term " + searchTerm.getClass().getSimpleName()
-                                           + " is not supported" );
+        if (! (searchTerm instanceof DbSearchTerm)) {
+            throw new RbvStorageException("Search term " + searchTerm.getClass().getSimpleName()
+                                          + " is not supported");
         }
 
-        return new DbFolder( ( DbSearchTerm ) searchTerm, dbProvider );
+        return new DbFolder((DbSearchTerm) searchTerm, dbProvider);
     }
 }

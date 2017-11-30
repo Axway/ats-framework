@@ -26,7 +26,7 @@ import com.axway.ats.rbv.model.RbvException;
 /**
  * Base class for all rule operations
  */
-@SuppressWarnings("boxing")
+@SuppressWarnings( "boxing")
 public abstract class RuleOperation implements Rule {
 
     protected Set<Rule> rules;
@@ -50,11 +50,11 @@ public abstract class RuleOperation implements Rule {
     public void addRule(
                          Rule rule ) {
 
-        this.rules.add( rule );
+        this.rules.add(rule);
 
         // if the priority of this rule is higher then we need
         // to update this
-        if( rule.getPriority() < this.priority ) {
+        if (rule.getPriority() < this.priority) {
             this.priority = rule.getPriority();
         }
     }
@@ -67,12 +67,12 @@ public abstract class RuleOperation implements Rule {
     public void addRules(
                           List<Rule> newRules ) {
 
-        for( Rule rule : newRules ) {
-            this.rules.add( rule );
+        for (Rule rule : newRules) {
+            this.rules.add(rule);
 
             // if the priority of this rule is higher then we need
             // to update this
-            if( rule.getPriority() < this.priority ) {
+            if (rule.getPriority() < this.priority) {
                 this.priority = rule.getPriority();
             }
         }
@@ -84,7 +84,7 @@ public abstract class RuleOperation implements Rule {
     public List<Rule> getRules() {
 
         List<Rule> rulesList = new ArrayList<Rule>();
-        rulesList.addAll( this.rules );
+        rulesList.addAll(this.rules);
         return rulesList;
     }
 
@@ -98,7 +98,7 @@ public abstract class RuleOperation implements Rule {
     public int compareTo(
                           Rule otherRule ) {
 
-        return Integer.valueOf( this.priority ).compareTo( otherRule.getPriority() );
+        return Integer.valueOf(this.priority).compareTo(otherRule.getPriority());
     }
 
     public abstract boolean isMatch(
@@ -112,17 +112,18 @@ public abstract class RuleOperation implements Rule {
     public List<String> getMetaDataKeys() {
 
         List<String> keys = new ArrayList<String>();
-        for( Rule rule : this.rules ) {
-            keys.addAll( rule.getMetaDataKeys() );
+        for (Rule rule : this.rules) {
+            keys.addAll(rule.getMetaDataKeys());
         }
 
         return keys;
     }
-    
+
     /**
      * Clear all rules set
      */
     public void clearRules() {
+
         this.rules.clear();
     }
 

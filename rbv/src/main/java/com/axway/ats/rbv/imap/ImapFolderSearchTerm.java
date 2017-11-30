@@ -38,14 +38,14 @@ public class ImapFolderSearchTerm implements SearchTerm {
     public ImapFolderSearchTerm( String userName,
                                  String password ) {
 
-        this( userName, password, "INBOX" );
+        this(userName, password, "INBOX");
     }
 
     /**
      * This constructor will instantiate a search term
      * which references the given IMAP folder for a given user
      * and password
-
+    
      * @param userName      the IMAP user name
      * @param password      the password
      * @param folderName    the IMAP folder name

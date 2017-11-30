@@ -66,7 +66,7 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public FileSystemVerification( String fileOrFolderPath ) {
 
-        this( null, fileOrFolderPath );
+        this(null, fileOrFolderPath);
     }
 
     /**
@@ -79,7 +79,7 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public FileSystemVerification( String directory, String fileOrFolderName, boolean isRegEx ) {
 
-        this( null, directory, fileOrFolderName, isRegEx );
+        this(null, directory, fileOrFolderName, isRegEx);
     }
 
     /**
@@ -89,29 +89,29 @@ public class FileSystemVerification extends VerificationSkeleton {
      * @param fileOrFolderPath  the full path to the file or folder to check
      */
     @PublicAtsApi
-    public FileSystemVerification( @Validate(name = "atsAgent", type = ValidationType.NONE) String atsAgent,
-                                   @Validate(name = "fileOrFolderPath", type = ValidationType.STRING_NOT_EMPTY) String fileOrFolderPath ) {
+    public FileSystemVerification( @Validate( name = "atsAgent", type = ValidationType.NONE) String atsAgent,
+                                   @Validate( name = "fileOrFolderPath", type = ValidationType.STRING_NOT_EMPTY) String fileOrFolderPath ) {
 
         super();
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, fileOrFolderPath } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, fileOrFolderPath });
 
-        File targetFileOrFolder = new File( fileOrFolderPath );
+        File targetFileOrFolder = new File(fileOrFolderPath);
 
         this.atsAgent = atsAgent;
         this.directory = targetFileOrFolder.getParent();
 
         // get the folder
         FileSystemStorage storage;
-        if( this.atsAgent == null ) {
+        if (this.atsAgent == null) {
             storage = new FileSystemStorage();
         } else {
-            storage = new FileSystemStorage( this.atsAgent );
+            storage = new FileSystemStorage(this.atsAgent);
         }
-        folder = storage.getFolder( new FileSystemFolderSearchTerm( directory, targetFileOrFolder.getName(),
-                                                                    false, false ) );
+        folder = storage.getFolder(new FileSystemFolderSearchTerm(directory, targetFileOrFolder.getName(),
+                                                                  false, false));
         this.executor = new MetaExecutor();
     }
 
@@ -124,34 +124,34 @@ public class FileSystemVerification extends VerificationSkeleton {
      * @param isRegEx           if true <b>fileName</b> will be treated as regular expression
      */
     @PublicAtsApi
-    public FileSystemVerification( @Validate(name = "atsAgent", type = ValidationType.NONE) String atsAgent,
-                                   @Validate(name = "directory", type = ValidationType.STRING_NOT_EMPTY) String directory,
-                                   @Validate(name = "fileOrFolderName", type = ValidationType.STRING_NOT_EMPTY) String fileOrFolderName,
-                                   @Validate(name = "isRegEx", type = ValidationType.NONE) boolean isRegEx ) {
+    public FileSystemVerification( @Validate( name = "atsAgent", type = ValidationType.NONE) String atsAgent,
+                                   @Validate( name = "directory", type = ValidationType.STRING_NOT_EMPTY) String directory,
+                                   @Validate( name = "fileOrFolderName", type = ValidationType.STRING_NOT_EMPTY) String fileOrFolderName,
+                                   @Validate( name = "isRegEx", type = ValidationType.NONE) boolean isRegEx ) {
 
         super();
 
-        if( fileOrFolderName == null ) {
+        if (fileOrFolderName == null) {
             fileOrFolderName = ".*";
             isRegEx = true;
         }
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, directory, fileOrFolderName,
-                                                                isRegEx } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, directory, fileOrFolderName,
+                                                               isRegEx });
 
         this.atsAgent = atsAgent;
         this.directory = directory;
 
         FileSystemStorage storage;
-        if( this.atsAgent == null ) {
+        if (this.atsAgent == null) {
             storage = new FileSystemStorage();
         } else {
-            storage = new FileSystemStorage( this.atsAgent );
+            storage = new FileSystemStorage(this.atsAgent);
         }
-        folder = storage.getFolder( new FileSystemFolderSearchTerm( directory, fileOrFolderName, isRegEx,
-                                                                    false ) );
+        folder = storage.getFolder(new FileSystemFolderSearchTerm(directory, fileOrFolderName, isRegEx,
+                                                                  false));
 
         this.executor = new MetaExecutor();
     }
@@ -167,8 +167,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkSize( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileSizeRule rule = new FileSizeRule( srcAtsAgent, srcFile, "checkSize", true );
-        rootRule.addRule( rule );
+        FileSizeRule rule = new FileSizeRule(srcAtsAgent, srcFile, "checkSize", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -184,9 +184,9 @@ public class FileSystemVerification extends VerificationSkeleton {
     public void checkContents( String expression, boolean isRegularExpression,
                                boolean expectedResult ) throws RbvException {
 
-        FileContentRule rule = new FileContentRule( expression, "checkContents", isRegularExpression,
-                                                    expectedResult );
-        rootRule.addRule( rule );
+        FileContentRule rule = new FileContentRule(expression, "checkContents", isRegularExpression,
+                                                   expectedResult);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -210,17 +210,17 @@ public class FileSystemVerification extends VerificationSkeleton {
     public void checkAsciiArmor( boolean isAsciiArmour ) throws RbvException {
 
         // check if the file has a "-----BEGIN PGP MESSAGE-----" message
-        checkContents( "-----BEGIN PGP MESSAGE-----", false, isAsciiArmour );
+        checkContents("-----BEGIN PGP MESSAGE-----", false, isAsciiArmour);
 
         // check if the file has a line longer than 65 characters
         StringBuilder buffer = new StringBuilder();
-        for( int i = 0; i < 65; i++ ) {
-            buffer.append( "." );
+        for (int i = 0; i < 65; i++) {
+            buffer.append(".");
         }
-        checkContents( buffer.toString(), true, !isAsciiArmour );
+        checkContents(buffer.toString(), true, !isAsciiArmour);
 
         // check if the file has a "-----END PGP MESSAGE-----" message
-        checkContents( "-----END PGP MESSAGE-----", false, isAsciiArmour );
+        checkContents("-----END PGP MESSAGE-----", false, isAsciiArmour);
     }
 
     /**
@@ -234,8 +234,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkSizeDifferent( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileSizeRule rule = new FileSizeRule( srcAtsAgent, srcFile, "checkSizeDifferent", false );
-        rootRule.addRule( rule );
+        FileSizeRule rule = new FileSizeRule(srcAtsAgent, srcFile, "checkSizeDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -247,8 +247,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkSize( long size ) {
 
-        FileSizeRule rule = new FileSizeRule( size, "checkSize", true );
-        rootRule.addRule( rule );
+        FileSizeRule rule = new FileSizeRule(size, "checkSize", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -260,8 +260,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkSizeDifferent( long size ) {
 
-        FileSizeRule rule = new FileSizeRule( size, "checkSizeDifferent", false );
-        rootRule.addRule( rule );
+        FileSizeRule rule = new FileSizeRule(size, "checkSizeDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -275,8 +275,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkModificationTime( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileModtimeRule rule = new FileModtimeRule( srcAtsAgent, srcFile, "checkModificationTime", true );
-        rootRule.addRule( rule );
+        FileModtimeRule rule = new FileModtimeRule(srcAtsAgent, srcFile, "checkModificationTime", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -290,9 +290,9 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkModificationTimeDifferent( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileModtimeRule rule = new FileModtimeRule( srcAtsAgent, srcFile, "checkModificationTimeDifferent",
-                                                    false );
-        rootRule.addRule( rule );
+        FileModtimeRule rule = new FileModtimeRule(srcAtsAgent, srcFile, "checkModificationTimeDifferent",
+                                                   false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -304,8 +304,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkModificationTime( long modTime ) {
 
-        FileModtimeRule rule = new FileModtimeRule( modTime, "checkModificationTime", true );
-        rootRule.addRule( rule );
+        FileModtimeRule rule = new FileModtimeRule(modTime, "checkModificationTime", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -317,8 +317,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkModificationTimeDifferent( long modTime ) {
 
-        FileModtimeRule rule = new FileModtimeRule( modTime, "checkModificationTimeDifferent", false );
-        rootRule.addRule( rule );
+        FileModtimeRule rule = new FileModtimeRule(modTime, "checkModificationTimeDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -331,8 +331,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkOwnerName( String owner ) throws RbvException {
 
-        FileOwnerNameRule rule = new FileOwnerNameRule( owner, "checkOwnerName", true );
-        rootRule.addRule( rule );
+        FileOwnerNameRule rule = new FileOwnerNameRule(owner, "checkOwnerName", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -345,8 +345,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkGroupName( String group ) throws RbvException {
 
-        FileGroupNameRule rule = new FileGroupNameRule( group, "checkGroupName", true );
-        rootRule.addRule( rule );
+        FileGroupNameRule rule = new FileGroupNameRule(group, "checkGroupName", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -360,8 +360,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkUID( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileUidRule rule = new FileUidRule( srcAtsAgent, srcFile, "checkUID", true );
-        rootRule.addRule( rule );
+        FileUidRule rule = new FileUidRule(srcAtsAgent, srcFile, "checkUID", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -375,8 +375,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkUIDDifferent( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileUidRule rule = new FileUidRule( srcAtsAgent, srcFile, "checkUIDDifferent", false );
-        rootRule.addRule( rule );
+        FileUidRule rule = new FileUidRule(srcAtsAgent, srcFile, "checkUIDDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -388,8 +388,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkUID( long uid ) {
 
-        FileUidRule rule = new FileUidRule( uid, "checkUID", true );
-        rootRule.addRule( rule );
+        FileUidRule rule = new FileUidRule(uid, "checkUID", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -401,8 +401,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkUIDDifferent( long uid ) {
 
-        FileUidRule rule = new FileUidRule( uid, "checkUIDDifferent", false );
-        rootRule.addRule( rule );
+        FileUidRule rule = new FileUidRule(uid, "checkUIDDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -416,8 +416,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkGID( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileGidRule rule = new FileGidRule( srcAtsAgent, srcFile, "checkGID", true );
-        rootRule.addRule( rule );
+        FileGidRule rule = new FileGidRule(srcAtsAgent, srcFile, "checkGID", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -431,8 +431,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkGIDDifferent( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileGidRule rule = new FileGidRule( srcAtsAgent, srcFile, "checkGIDDifferent", false );
-        rootRule.addRule( rule );
+        FileGidRule rule = new FileGidRule(srcAtsAgent, srcFile, "checkGIDDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -444,8 +444,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkGID( long gid ) {
 
-        FileGidRule rule = new FileGidRule( gid, "checkGID", true );
-        rootRule.addRule( rule );
+        FileGidRule rule = new FileGidRule(gid, "checkGID", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -457,8 +457,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkGIDDifferent( long gid ) {
 
-        FileGidRule rule = new FileGidRule( gid, "checkGIDDifferent", false );
-        rootRule.addRule( rule );
+        FileGidRule rule = new FileGidRule(gid, "checkGIDDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -472,8 +472,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkPermissions( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FilePermRule rule = new FilePermRule( srcAtsAgent, srcFile, "checkPermissions", true );
-        rootRule.addRule( rule );
+        FilePermRule rule = new FilePermRule(srcAtsAgent, srcFile, "checkPermissions", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -487,8 +487,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkPermissionsDifferent( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FilePermRule rule = new FilePermRule( srcAtsAgent, srcFile, "checkPermissionsDifferent", false );
-        rootRule.addRule( rule );
+        FilePermRule rule = new FilePermRule(srcAtsAgent, srcFile, "checkPermissionsDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -500,8 +500,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkPermissions( long permissions ) {
 
-        FilePermRule rule = new FilePermRule( permissions, "checkPermissions", true );
-        rootRule.addRule( rule );
+        FilePermRule rule = new FilePermRule(permissions, "checkPermissions", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -513,8 +513,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkPermissionsDifferent( long permissions ) {
 
-        FilePermRule rule = new FilePermRule( permissions, "checkPermissionsDifferent", false );
-        rootRule.addRule( rule );
+        FilePermRule rule = new FilePermRule(permissions, "checkPermissionsDifferent", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -528,8 +528,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkMd5( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileMd5Rule rule = new FileMd5Rule( srcAtsAgent, srcFile, "checkMd5", true );
-        rootRule.addRule( rule );
+        FileMd5Rule rule = new FileMd5Rule(srcAtsAgent, srcFile, "checkMd5", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -544,8 +544,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkMd5( String srcAtsAgent, String srcFile, boolean binaryMode ) throws RbvException {
 
-        FileMd5Rule rule = new FileMd5Rule( srcAtsAgent, srcFile, binaryMode, "checkMd5", true );
-        rootRule.addRule( rule );
+        FileMd5Rule rule = new FileMd5Rule(srcAtsAgent, srcFile, binaryMode, "checkMd5", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -559,8 +559,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkMd5Different( String srcAtsAgent, String srcFile ) throws RbvException {
 
-        FileMd5Rule rule = new FileMd5Rule( srcAtsAgent, srcFile, "checkMd5Different", false );
-        rootRule.addRule( rule );
+        FileMd5Rule rule = new FileMd5Rule(srcAtsAgent, srcFile, "checkMd5Different", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -576,8 +576,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     public void checkMd5Different( String srcAtsAgent, String srcFile,
                                    boolean binaryMode ) throws RbvException {
 
-        FileMd5Rule rule = new FileMd5Rule( srcAtsAgent, srcFile, binaryMode, "checkMd5Different", false );
-        rootRule.addRule( rule );
+        FileMd5Rule rule = new FileMd5Rule(srcAtsAgent, srcFile, binaryMode, "checkMd5Different", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -589,8 +589,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkMd5( String md5 ) {
 
-        FileMd5Rule rule = new FileMd5Rule( md5, "checkMd5", true );
-        rootRule.addRule( rule );
+        FileMd5Rule rule = new FileMd5Rule(md5, "checkMd5", true);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -602,8 +602,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void checkMd5Different( String md5 ) {
 
-        FileMd5Rule rule = new FileMd5Rule( md5, "checkMd5Different", false );
-        rootRule.addRule( rule );
+        FileMd5Rule rule = new FileMd5Rule(md5, "checkMd5Different", false);
+        rootRule.addRule(rule);
     }
 
     /**
@@ -623,8 +623,8 @@ public class FileSystemVerification extends VerificationSkeleton {
         List<MetaData> matchedMetaData = verifyObjectExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
-        for( int i = 0; i < matchedMetaData.size(); i++ ) {
-            matchedFilePackages[i] = ( ( FileSystemMetaData ) matchedMetaData.get( i ) ).getFilePackage();
+        for (int i = 0; i < matchedMetaData.size(); i++) {
+            matchedFilePackages[i] = ((FileSystemMetaData) matchedMetaData.get(i)).getFilePackage();
         }
 
         return matchedFilePackages;
@@ -664,8 +664,8 @@ public class FileSystemVerification extends VerificationSkeleton {
         List<MetaData> matchedMetaData = verifyObjectAlwaysExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
-        for( int i = 0; i < matchedMetaData.size(); i++ ) {
-            matchedFilePackages[i] = ( ( FileSystemMetaData ) matchedMetaData.get( i ) ).getFilePackage();
+        for (int i = 0; i < matchedMetaData.size(); i++) {
+            matchedFilePackages[i] = ((FileSystemMetaData) matchedMetaData.get(i)).getFilePackage();
         }
 
         return matchedFilePackages;
@@ -705,8 +705,8 @@ public class FileSystemVerification extends VerificationSkeleton {
         List<MetaData> matchedMetaData = verifyObjectExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
-        for( int i = 0; i < matchedMetaData.size(); i++ ) {
-            matchedFilePackages[i] = ( ( FileSystemMetaData ) matchedMetaData.get( i ) ).getFilePackage();
+        for (int i = 0; i < matchedMetaData.size(); i++) {
+            matchedFilePackages[i] = ((FileSystemMetaData) matchedMetaData.get(i)).getFilePackage();
         }
 
         return matchedFilePackages;
@@ -746,8 +746,8 @@ public class FileSystemVerification extends VerificationSkeleton {
         List<MetaData> matchedMetaData = verifyObjectAlwaysExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
-        for( int i = 0; i < matchedMetaData.size(); i++ ) {
-            matchedFilePackages[i] = ( ( FileSystemMetaData ) matchedMetaData.get( i ) ).getFilePackage();
+        for (int i = 0; i < matchedMetaData.size(); i++) {
+            matchedFilePackages[i] = ((FileSystemMetaData) matchedMetaData.get(i)).getFilePackage();
         }
 
         return matchedFilePackages;
@@ -773,7 +773,7 @@ public class FileSystemVerification extends VerificationSkeleton {
     @Override
     protected String getMonitorName() {
 
-        if( this.atsAgent == null ) {
+        if (this.atsAgent == null) {
             return "local_file_monitor";
         }
         return "file_monitor_" + this.atsAgent;
@@ -783,15 +783,15 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         // set the second highest priority for this rule - if the file path is correct the second most
         // important thing is to check if the entity is a file
-        FileFolderRule rule = new FileFolderRule( true, "checkIsFile", true, Integer.MIN_VALUE );
-        rootRule.addRule( rule );
+        FileFolderRule rule = new FileFolderRule(true, "checkIsFile", true, Integer.MIN_VALUE);
+        rootRule.addRule(rule);
     }
 
     private void addFolderCheckRule() {
 
         // set the second highest priority for this rule - if the folder path is correct the second most
         // important thing is to check if the entity is a folder
-        FileFolderRule rule = new FileFolderRule( false, "checkIsFile", true, Integer.MIN_VALUE );
-        rootRule.addRule( rule );
+        FileFolderRule rule = new FileFolderRule(false, "checkIsFile", true, Integer.MIN_VALUE);
+        rootRule.addRule(rule);
     }
 }

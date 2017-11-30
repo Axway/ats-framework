@@ -49,13 +49,13 @@ public class DbSnapshot extends DbVerification {
     public DbSnapshot( TestBox testBox,
                        String table ) throws RbvException {
 
-        this( testBox.getHost(),
-              testBox.getDbPort(),
-              testBox.getDbName(),
-              testBox.getDbUser(),
-              testBox.getDbPass(),
-              new DbSearchTerm( "SELECT * FROM " + table ),
-              testBox.getDbType() );
+        this(testBox.getHost(),
+             testBox.getDbPort(),
+             testBox.getDbName(),
+             testBox.getDbUser(),
+             testBox.getDbPass(),
+             new DbSearchTerm("SELECT * FROM " + table),
+             testBox.getDbType());
     }
 
     /** Create a DB verification component using the data provided
@@ -69,13 +69,13 @@ public class DbSnapshot extends DbVerification {
     public DbSnapshot( TestBox testBox,
                        DbSearchTerm searchTerm ) throws RbvException {
 
-        this( testBox.getHost(),
-              testBox.getDbPort(),
-              testBox.getDbName(),
-              testBox.getDbUser(),
-              testBox.getDbPass(),
-              searchTerm,
-              testBox.getDbType() );
+        this(testBox.getHost(),
+             testBox.getDbPort(),
+             testBox.getDbName(),
+             testBox.getDbUser(),
+             testBox.getDbPass(),
+             searchTerm,
+             testBox.getDbType());
     }
 
     private DbSnapshot( String host,
@@ -86,17 +86,17 @@ public class DbSnapshot extends DbVerification {
                         DbSearchTerm searchTerm,
                         String dbType ) throws RbvException {
 
-        super( host, port, database, user, password, searchTerm, dbType, new HashMap<String, Object>() );
+        super(host, port, database, user, password, searchTerm, dbType, new HashMap<String, Object>());
 
         this.folder.open();
-        this.executor = new SnapshotExecutor( this.folder.getAllMetaData() );
+        this.executor = new SnapshotExecutor(this.folder.getAllMetaData());
         this.folder.close();
     }
 
     DbSnapshot( DbSearchTerm searchTerm,
                 DbProvider dbProvider ) throws RbvException {
 
-        super( searchTerm, dbProvider );
+        super(searchTerm, dbProvider);
     }
 
     /**
@@ -109,7 +109,7 @@ public class DbSnapshot extends DbVerification {
                              List<String> metaDataKeys ) {
 
         // add to list of excluded keys
-        ( ( SnapshotExecutor ) this.executor ).excludeKeys( metaDataKeys );
+        ((SnapshotExecutor) this.executor).excludeKeys(metaDataKeys);
 
     }
 
@@ -123,8 +123,8 @@ public class DbSnapshot extends DbVerification {
                             String metaDataKey ) {
 
         List<String> list = new ArrayList<String>();
-        list.add( metaDataKey );
-        ( ( SnapshotExecutor ) this.executor ).excludeKeys( list );
+        list.add(metaDataKey);
+        ((SnapshotExecutor) this.executor).excludeKeys(list);
 
     }
 
@@ -164,28 +164,28 @@ public class DbSnapshot extends DbVerification {
                                            String fieldName,
                                            String value ) throws RbvException {
 
-        DbStringFieldRule keyRule = new DbStringFieldRule( keyTableName,
-                                                           keyFieldName,
-                                                           keyValue,
-                                                           DbStringFieldRule.MatchRelation.EQUALS,
-                                                           "checkKeyValueEquals",
-                                                           true );
+        DbStringFieldRule keyRule = new DbStringFieldRule(keyTableName,
+                                                          keyFieldName,
+                                                          keyValue,
+                                                          DbStringFieldRule.MatchRelation.EQUALS,
+                                                          "checkKeyValueEquals",
+                                                          true);
 
-        DbStringFieldRule matchingRule = new DbStringFieldRule( tableName,
-                                                                fieldName,
-                                                                value,
-                                                                DbStringFieldRule.MatchRelation.EQUALS,
-                                                                "checkFieldValueEquals",
-                                                                true );
-        matchingRule.setDbEncryptor( dbEncryptor );
-        checkFieldValueChanged( keyRule, matchingRule );
+        DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
+                                                               fieldName,
+                                                               value,
+                                                               DbStringFieldRule.MatchRelation.EQUALS,
+                                                               "checkFieldValueEquals",
+                                                               true);
+        matchingRule.setDbEncryptor(dbEncryptor);
+        checkFieldValueChanged(keyRule, matchingRule);
     }
 
     private void checkFieldValueChanged(
                                          Rule keyRule,
                                          Rule matchingRule ) throws RbvException {
 
-        ( ( SnapshotExecutor ) this.executor ).addRule( keyRule, matchingRule );
+        ((SnapshotExecutor) this.executor).addRule(keyRule, matchingRule);
     }
 
     @Override
