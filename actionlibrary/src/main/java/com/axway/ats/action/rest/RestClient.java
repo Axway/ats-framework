@@ -107,7 +107,7 @@ public class RestClient {
 
     private String                     uri;
     private List<String>               resourcePath                   = new ArrayList<String>();
-    private Map<String, Object>        requestHeaders                 = new HashMap<String, Object>();
+    private Map<String, List<Object>>  requestHeaders                 = new HashMap<String, List<Object>>();
 
     private Map<String, List<String>>  requestParameters              = new HashMap<String, List<String>>();
 
@@ -229,8 +229,8 @@ public class RestClient {
             newClient.resourcePath.add( path );
         }
 
-        newClient.requestHeaders = new HashMap<String, Object>();
-        for( Entry<String, Object> entry : this.requestHeaders.entrySet() ) {
+        newClient.requestHeaders = new HashMap<String, List<Object>>();
+        for( Entry<String, List<Object>> entry : this.requestHeaders.entrySet() ) {
             newClient.requestHeaders.put( entry.getKey(), entry.getValue() );
         }
 
@@ -396,7 +396,16 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestHeader( String name, String value ) {
 
-        requestHeaders.put( name, value );
+        if( hasHeader( name ) ) {
+            List<Object> values = new ArrayList<>( requestHeaders.get( name ) );
+            values.add( value );
+            requestHeaders.replace( name, values );
+
+        } else {
+            List<Object> values = new ArrayList<>();
+            values.add( value );
+            requestHeaders.put( name, values );
+        }
 
         return this;
     }
@@ -412,7 +421,16 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestHeader( String name, int value ) {
 
-        requestHeaders.put( name, value );
+        if( hasHeader( name ) ) {
+            List<Object> values = new ArrayList<>( requestHeaders.get( name ) );
+            values.add( value );
+            requestHeaders.replace( name, values );
+
+        } else {
+            List<Object> values = new ArrayList<>();
+            values.add( value );
+            requestHeaders.put( name, values );
+        }
 
         return this;
     }
@@ -428,7 +446,16 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestHeader( String name, long value ) {
 
-        requestHeaders.put( name, value );
+        if( hasHeader( name ) ) {
+            List<Object> values = new ArrayList<>( requestHeaders.get( name ) );
+            values.add( value );
+            requestHeaders.replace( name, values );
+
+        } else {
+            List<Object> values = new ArrayList<>();
+            values.add( value );
+            requestHeaders.put( name, values );
+        }
 
         return this;
     }
@@ -1037,8 +1064,11 @@ public class RestClient {
         }
 
         // add request headers
-        for( Entry<String, Object> requestHeaderEntry : requestHeaders.entrySet() ) {
-            invocationBuilder.header( requestHeaderEntry.getKey(), requestHeaderEntry.getValue() );
+        for( Entry<String, List<Object>> requestHeaderEntry : requestHeaders.entrySet() ) {
+            List<Object> headerValues = requestHeaderEntry.getValue();
+            for ( Object headerValue : headerValues ) {
+                invocationBuilder.header( requestHeaderEntry.getKey(), headerValue );
+            }
         }
 
         // add request cookies
@@ -1095,6 +1125,20 @@ public class RestClient {
             responseMessage.delete( responseMessage.length() - 1, responseMessage.length() );
             log.info( responseMessage );
         }
+    }
+
+    /** 
+     * Checks if request header with the given key/name has already been added
+     * @param name the header key/name
+     * @return true if header with that key/name was already added, false otherwise
+    */
+    private boolean hasHeader( String name ) {
+
+        if( StringUtils.isNullOrEmpty( name ) ) {
+            throw new RestException( "Error while adding request header. Header name/key is null or empty." );
+        }
+
+        return requestHeaders.containsKey( name );
     }
 
     private class RequestFilter implements ClientRequestFilter {
