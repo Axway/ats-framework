@@ -60,7 +60,7 @@ public class ActionExecutionStatistic implements Serializable {
     public void registerExecutionResult(
                                          boolean passed ) {
 
-        if( passed ) {
+        if (passed) {
             this.numberPassed++;
         } else {
             this.numberFailed++;

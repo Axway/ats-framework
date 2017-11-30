@@ -62,8 +62,8 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
     //the default task listeners
     private List<ActionTaskListener>  defaultTaskListeners;
 
-    private IterationTimeoutManager itManager;
-    
+    private IterationTimeoutManager   itManager;
+
     /**
      * @param queueName
      * @param actionRequests
@@ -81,15 +81,15 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
                                                              NoSuchActionException,
                                                              NoCompatibleMethodFoundException {
 
-        super( queueName, actionRequests, rampUpStartPattern, executionPattern, null, parameterDataProviders,
-               listeners );
+        super(queueName, actionRequests, rampUpStartPattern, executionPattern, null, parameterDataProviders,
+              listeners);
 
         this.numThreads = rampUpStartPattern.getThreadCount();
         this.numThreadsPerStep = rampUpStartPattern.getThreadCountPerStep();
         this.rampUpInterval = rampUpStartPattern.getRampUpInterval();
 
         //calculate the number of groups necessary
-        if( rampUpInterval == 0 ) {
+        if (rampUpInterval == 0) {
             this.numThreadGroups = 1;
             this.numThreadsInLastGroup = numThreads;
         } else {
@@ -98,7 +98,7 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
 
             //as this is a division of integers if the remainder was > 0,
             //then we have one additional group
-            if( this.numThreadsInLastGroup > 0 ) {
+            if (this.numThreadsInLastGroup > 0) {
                 this.numThreadGroups++;
             } else {
                 this.numThreadsInLastGroup = numThreadsPerStep;
@@ -109,7 +109,7 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
 
         //init the default listeners
         this.defaultTaskListeners = new ArrayList<ActionTaskListener>();
-        this.defaultTaskListeners.add( new SimpleActionTaskListener() );
+        this.defaultTaskListeners.add(new SimpleActionTaskListener());
     }
 
     @Override
@@ -123,62 +123,62 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
                                                                    ThreadingPatternNotSupportedException {
 
         //check the state first
-        if( state != ActionTaskLoaderState.NOT_STARTED ) {
-            throw new ActionTaskLoaderException( "Cannot schedule load queue " + queueName
-                                                 + " - it has already been scheduled" );
+        if (state != ActionTaskLoaderState.NOT_STARTED) {
+            throw new ActionTaskLoaderException("Cannot schedule load queue " + queueName
+                                                + " - it has already been scheduled");
         }
 
         //create the executor - terminate threads when finished
-        ThreadPoolExecutor executor = ( ThreadPoolExecutor ) Executors.newCachedThreadPool();
-        executor.setKeepAliveTime( 0, TimeUnit.SECONDS );
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        executor.setKeepAliveTime(0, TimeUnit.SECONDS);
 
-        ExecutorCompletionService<Object> executionService = new ExecutorCompletionService<Object>( executor );
+        ExecutorCompletionService<Object> executionService = new ExecutorCompletionService<Object>(executor);
 
         //synchronization aids
         threadsManagers = new ArrayList<ThreadsManager>();
 
         // create the thread for managing max iteration length
         int iterationTimeout = startPattern.getIterationTimeout();
-        if( iterationTimeout > 0 ) {
-            itManager = new IterationTimeoutManager( iterationTimeout );
+        if (iterationTimeout > 0) {
+            itManager = new IterationTimeoutManager(iterationTimeout);
         }
 
         taskFutures = new ArrayList<Future<Object>>();
 
-        for( int i = 0; i < numThreadGroups; i++ ) {
+        for (int i = 0; i < numThreadGroups; i++) {
 
             //create the thread iterations manager for this group
             ThreadsManager threadsManager = new ThreadsManager();
 
-            int numThreadsInGroup = ( i != numThreadGroups - 1 )
-                                                                 ? numThreadsPerStep
-                                                                 : numThreadsInLastGroup;
+            int numThreadsInGroup = (i != numThreadGroups - 1)
+                                                               ? numThreadsPerStep
+                                                               : numThreadsInLastGroup;
             //distribute executions per timeFrame according to the number of threads
             int executionsPerTimeFrame = executionPattern.getExecutionsPerTimeFrame();
-            int[] executionsPerTimeFramePerThread = new EvenLoadDistributingUtils().getEvenLoad( executionsPerTimeFrame,
-                                                                                                 numThreads );
-            if( numThreads > executionsPerTimeFrame && executionsPerTimeFrame > 0 ) {
-                throw new ActionTaskLoaderException( "We cannot evenly distribute " + executionsPerTimeFrame
-                                                     + " iterations per time frame to " + numThreads
-                                                     + " threads. Iterations per time frame must be at least as many as threads!" );
+            int[] executionsPerTimeFramePerThread = new EvenLoadDistributingUtils().getEvenLoad(executionsPerTimeFrame,
+                                                                                                numThreads);
+            if (numThreads > executionsPerTimeFrame && executionsPerTimeFrame > 0) {
+                throw new ActionTaskLoaderException("We cannot evenly distribute " + executionsPerTimeFrame
+                                                    + " iterations per time frame to " + numThreads
+                                                    + " threads. Iterations per time frame must be at least as many as threads!");
             }
 
-            for( int j = 0; j < numThreadsInGroup; j++ ) {
-                Future<Object> taskFuture = executionService.submit( ActionTaskFactory.createTask( caller,
-                                                                                                   queueName,
-                                                                                                   executionPattern,
-                                                                                                   executionsPerTimeFramePerThread[j],
-                                                                                                   threadsManager,
-                                                                                                   itManager,
-                                                                                                   actionRequests,
-                                                                                                   parameterDataProviders,
-                                                                                                   defaultTaskListeners,
-                                                                                                   isUseSynchronizedIterations ),
-                                                                     null );
-                taskFutures.add( taskFuture );
+            for (int j = 0; j < numThreadsInGroup; j++) {
+                Future<Object> taskFuture = executionService.submit(ActionTaskFactory.createTask(caller,
+                                                                                                 queueName,
+                                                                                                 executionPattern,
+                                                                                                 executionsPerTimeFramePerThread[j],
+                                                                                                 threadsManager,
+                                                                                                 itManager,
+                                                                                                 actionRequests,
+                                                                                                 parameterDataProviders,
+                                                                                                 defaultTaskListeners,
+                                                                                                 isUseSynchronizedIterations),
+                                                                    null);
+                taskFutures.add(taskFuture);
             }
 
-            threadsManagers.add( threadsManager );
+            threadsManagers.add(threadsManager);
         }
 
         state = ActionTaskLoaderState.SCHEDULED;
@@ -188,33 +188,33 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
     public synchronized void start() throws ActionExecutionException, ActionTaskLoaderException {
 
         //check the state first
-        if( state != ActionTaskLoaderState.SCHEDULED ) {
-            throw new ActionTaskLoaderException( "Cannot start load queue " + queueName
-                                                 + " - it has not been scheduled yet" );
+        if (state != ActionTaskLoaderState.SCHEDULED) {
+            throw new ActionTaskLoaderException("Cannot start load queue " + queueName
+                                                + " - it has not been scheduled yet");
         }
 
         state = ActionTaskLoaderState.RUNNING;
 
-        if( blockUntilCompletion || rampUpInterval == 0 ) {
+        if (blockUntilCompletion || rampUpInterval == 0) {
             // we can stay here until all tasks are started
             startAllTasks();
         } else {
             // we know it will take time until all tasks are started
             // but we are not allowed to wait - so we start all the
             // tasks from another thread
-            Thread helpThread = new Thread( new Runnable() {
+            Thread helpThread = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
 
                     startAllTasks();
                 }
-            } );
+            });
             helpThread.start();
         }
 
         //block until completed if necessary
-        if( blockUntilCompletion ) {
+        if (blockUntilCompletion) {
             waitUntilFinished();
         }
     }
@@ -223,9 +223,9 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
     public synchronized void resume() throws ActionExecutionException, ActionTaskLoaderException {
 
         //check the state first
-        if( state != ActionTaskLoaderState.PAUSED ) {
-            throw new ActionTaskLoaderException( "Cannot resume load queue " + queueName
-                                                 + " - it has not been paused yet" );
+        if (state != ActionTaskLoaderState.PAUSED) {
+            throw new ActionTaskLoaderException("Cannot resume load queue " + queueName
+                                                + " - it has not been paused yet");
         }
 
         state = ActionTaskLoaderState.RUNNING;
@@ -236,20 +236,20 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
     private void startAllTasks() {
 
         // start iterations timeout manager before starting the threads
-        if( itManager != null && !itManager.isAlive() ) {
+        if (itManager != null && !itManager.isAlive()) {
             itManager.start();
         }
 
-        this.endGate = new CountDownLatch( numThreads );
+        this.endGate = new CountDownLatch(numThreads);
 
         //start all thread groups one by one
-        for( int i = 0; i < threadsManagers.size(); i++ ) {
+        for (int i = 0; i < threadsManagers.size(); i++) {
 
-            threadsManagers.get( i ).start();
+            threadsManagers.get(i).start();
             try {
-                Thread.sleep( rampUpInterval );
-            } catch( InterruptedException ie ) {
-                log.error( "Interrupted exception caught at before starting thread group " + ( i + 1 ), ie );
+                Thread.sleep(rampUpInterval);
+            } catch (InterruptedException ie) {
+                log.error("Interrupted exception caught at before starting thread group " + (i + 1), ie);
             }
         }
     }
@@ -258,12 +258,12 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
     public void cancel() {
 
         //cancel only if still running
-        log.debug( "Cancelling all tasks" );
+        log.debug("Cancelling all tasks");
 
-        for( Future<Object> taskFuture : taskFutures ) {
-            taskFuture.cancel( true );
+        for (Future<Object> taskFuture : taskFutures) {
+            taskFuture.cancel(true);
 
-            log.debug( "Cancelled all tasks with state " + state );
+            log.debug("Cancelled all tasks with state " + state);
         }
 
         //notify the listeners
@@ -275,12 +275,12 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
 
         //wait only if the load queue has already been started or resumed
         //if it was only scheduled, then we don't need to wait
-        while( state == ActionTaskLoaderState.RUNNING || state == ActionTaskLoaderState.PAUSED ) {
+        while (state == ActionTaskLoaderState.RUNNING || state == ActionTaskLoaderState.PAUSED) {
             //block until all tasks exit
             try {
                 wait();
-            } catch( InterruptedException ie ) {
-                log.error( "Interrupted exception caught", ie );
+            } catch (InterruptedException ie) {
+                log.error("Interrupted exception caught", ie);
             }
         }
     }
@@ -288,17 +288,17 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
     @Override
     public synchronized boolean waitUntilPaused() {
 
-        if( state == ActionTaskLoaderState.PAUSED ) {
+        if (state == ActionTaskLoaderState.PAUSED) {
             return true;
         }
 
         //wait only if the load queue has already been running
-        if( state == ActionTaskLoaderState.RUNNING ) {
+        if (state == ActionTaskLoaderState.RUNNING) {
             //block until all tasks exit
             try {
                 wait();
-            } catch( InterruptedException ie ) {
-                log.error( "Interrupted exception caught", ie );
+            } catch (InterruptedException ie) {
+                log.error("Interrupted exception caught", ie);
             }
         }
 
@@ -310,7 +310,7 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
         @Override
         public void onStart() {
 
-            log.registerThreadWithLoadQueue( queueName );
+            log.registerThreadWithLoadQueue(queueName);
         }
 
         @Override
@@ -320,7 +320,7 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
             endGate.countDown();
 
             //if all tasks have paused we need to update the load queue state
-            if( endGate.getCount() == 0 ) {
+            if (endGate.getCount() == 0) {
 
                 //notify the listeners that execution has paused
                 callOnPause();
@@ -330,17 +330,17 @@ public class RampUpQueueLoader extends AbstractQueueLoader {
         @Override
         public synchronized void onFinish( Throwable throwable ) {
 
-            if( throwable != null ) {
+            if (throwable != null) {
 
                 //log the error
-                log.error( "Exception caught while executing a task", throwable );
+                log.error("Exception caught while executing a task", throwable);
             }
 
             //this task has finished, so decrement the end gate counter
             endGate.countDown();
 
             //if all tasks have finished we need to end
-            if( endGate.getCount() == 0 ) {
+            if (endGate.getCount() == 0) {
 
                 //notify the listeners that execution has finished
                 callOnFinish();

@@ -32,7 +32,7 @@ import com.axway.ats.agent.core.model.InitializationHandler;
 
 public class ComponentRepository {
 
-    private static final Logger                 log               = Logger.getLogger( ComponentRepository.class );
+    private static final Logger                 log               = Logger.getLogger(ComponentRepository.class);
 
     private static final ComponentRepository    actionMapInstance = new ComponentRepository();
 
@@ -44,7 +44,7 @@ public class ComponentRepository {
     private ComponentRepository() {
 
         componentsPerCaller = new HashMap<String, Map<String, Component>>();
-        componentsPerCaller.put( DEFAULT_CALLER, new HashMap<String, Component>() );
+        componentsPerCaller.put(DEFAULT_CALLER, new HashMap<String, Component>());
     }
 
     public static ComponentRepository getInstance() {
@@ -63,14 +63,14 @@ public class ComponentRepository {
 
         String componentName = component.getComponentName();
 
-        Map<String, Component> components = componentsPerCaller.get( DEFAULT_CALLER );
+        Map<String, Component> components = componentsPerCaller.get(DEFAULT_CALLER);
 
         //first check if we have such component defined
-        if( components.containsKey( componentName ) ) {
-            throw new ComponentAlreadyDefinedException( componentName );
+        if (components.containsKey(componentName)) {
+            throw new ComponentAlreadyDefinedException(componentName);
         }
 
-        components.put( componentName, component );
+        components.put(componentName, component);
     }
 
     /**
@@ -83,7 +83,7 @@ public class ComponentRepository {
     public Component getComponent(
                                    String componentName ) throws NoSuchComponentException {
 
-        return getComponentPerCaller( DEFAULT_CALLER, componentName );
+        return getComponentPerCaller(DEFAULT_CALLER, componentName);
     }
 
     /**
@@ -96,7 +96,7 @@ public class ComponentRepository {
     public ComponentActionMap getComponentActionMap(
                                                      String componentName ) throws NoSuchComponentException {
 
-        return getComponentActionMap( DEFAULT_CALLER, componentName );
+        return getComponentActionMap(DEFAULT_CALLER, componentName);
     }
 
     /**
@@ -111,7 +111,7 @@ public class ComponentRepository {
                                                      String caller,
                                                      String componentName ) throws NoSuchComponentException {
 
-        return getComponentPerCaller( caller, componentName ).getActionMap();
+        return getComponentPerCaller(caller, componentName).getActionMap();
     }
 
     /**
@@ -123,15 +123,15 @@ public class ComponentRepository {
      */
     public ComponentEnvironment getComponentEnvironment(
                                                          String componentName )
-                                                                               throws NoSuchComponentException {
+                                                                                throws NoSuchComponentException {
 
-        Component component = getComponentPerCaller( DEFAULT_CALLER, componentName );
+        Component component = getComponentPerCaller(DEFAULT_CALLER, componentName);
 
-        if( component.getEnvironments() == null || component.getEnvironments().isEmpty() ) {
+        if (component.getEnvironments() == null || component.getEnvironments().isEmpty()) {
             return null;
         }
 
-        return component.getEnvironments().get( 0 );
+        return component.getEnvironments().get(0);
     }
 
     /**
@@ -146,20 +146,21 @@ public class ComponentRepository {
     public ComponentEnvironment getComponentEnvironment(
                                                          String componentName,
                                                          String environmentName )
-                                                                                 throws NoSuchComponentException,
-                                                                                 NoSuchEnvironmentException {
+                                                                                  throws NoSuchComponentException,
+                                                                                  NoSuchEnvironmentException {
 
-        List<ComponentEnvironment> environments = getComponentPerCaller( DEFAULT_CALLER, componentName ).getEnvironments();
+        List<ComponentEnvironment> environments = getComponentPerCaller(DEFAULT_CALLER,
+                                                                        componentName).getEnvironments();
 
-        if( environments != null ) {
-            for( ComponentEnvironment env : environments ) {
-                if( env.getEnvironmentName().equals( environmentName ) ) {
+        if (environments != null) {
+            for (ComponentEnvironment env : environments) {
+                if (env.getEnvironmentName().equals(environmentName)) {
                     return env;
                 }
             }
         }
 
-        throw new NoSuchEnvironmentException( componentName, environmentName );
+        throw new NoSuchEnvironmentException(componentName, environmentName);
     }
 
     /**
@@ -169,53 +170,53 @@ public class ComponentRepository {
      */
     public List<Component> getAllComponents() {
 
-        return new ArrayList<Component>( componentsPerCaller.get( DEFAULT_CALLER ).values() );
+        return new ArrayList<Component>(componentsPerCaller.get(DEFAULT_CALLER).values());
     }
 
     public void initializeAllComponents() {
 
         //initialize the components
         List<Component> components = getAllComponents();
-        for( Component component : components ) {
+        for (Component component : components) {
             ComponentActionMap actionMap = component.getActionMap();
             Class<? extends InitializationHandler> initClass = actionMap.getInitializationHandler();
 
             //skip the initialization phase if the component has not declared a handler
-            if( initClass != null ) {
+            if (initClass != null) {
                 String initClassName = initClass.getName();
 
                 try {
                     InitializationHandler initHandler = initClass.newInstance();
                     initHandler.initializeComponent();
 
-                    log.info( "Component '" + actionMap.getComponentName() + "' initialized successfully" );
-                } catch( IllegalAccessException iae ) {
-                    log.error( "Could not instantiate initialization handler '" + initClassName
-                               + "' - it should have a no-argument public constructor" );
-                } catch( InstantiationException ie ) {
-                    log.error( "Could not instantiate initialization handler '" + initClassName
-                               + "' - it should have a no-argument public constructor" );
-                } catch( Exception e ) {
-                    log.error( "Exception during initialization for component '"
-                                       + actionMap.getComponentName() + "'",
-                               e );
+                    log.info("Component '" + actionMap.getComponentName() + "' initialized successfully");
+                } catch (IllegalAccessException iae) {
+                    log.error("Could not instantiate initialization handler '" + initClassName
+                              + "' - it should have a no-argument public constructor");
+                } catch (InstantiationException ie) {
+                    log.error("Could not instantiate initialization handler '" + initClassName
+                              + "' - it should have a no-argument public constructor");
+                } catch (Exception e) {
+                    log.error("Exception during initialization for component '"
+                              + actionMap.getComponentName() + "'",
+                              e);
                 }
             } else {
-                log.debug( "Component '" + actionMap.getComponentName()
-                           + "' does not have an initialization handler" );
+                log.debug("Component '" + actionMap.getComponentName()
+                          + "' does not have an initialization handler");
             }
 
             //create the component backup if it does not exist yet
             try {
                 List<ComponentEnvironment> componentEnvironments = component.getEnvironments();
-                if( componentEnvironments != null ) {
-                    for( ComponentEnvironment componentEnvironment : componentEnvironments ) {
+                if (componentEnvironments != null) {
+                    for (ComponentEnvironment componentEnvironment : componentEnvironments) {
 
                         componentEnvironment.backupOnlyIfNotAlreadyDone();
                     }
                 }
-            } catch( AgentException ae ) {
-                log.error( ae.getMessage(), ae );
+            } catch (AgentException ae) {
+                log.error(ae.getMessage(), ae);
             }
         }
     }
@@ -224,14 +225,14 @@ public class ComponentRepository {
 
         //finalize each component
         List<Component> components = getAllComponents();
-        for( Component component : components ) {
+        for (Component component : components) {
             ComponentActionMap actionMap = component.getActionMap();
             Class<? extends FinalizationHandler> finalizationClass = actionMap.getFinalizationHandler();
 
             //skip the finalization phase if the component has not declared a handler
-            if( finalizationClass == null ) {
-                log.debug( "Component '" + actionMap.getComponentName()
-                           + "' does not have a finalization handler" );
+            if (finalizationClass == null) {
+                log.debug("Component '" + actionMap.getComponentName()
+                          + "' does not have a finalization handler");
                 continue;
             }
 
@@ -242,16 +243,16 @@ public class ComponentRepository {
                 // TODO Add some maximum finalization processing time and log error with interrupt otherwise
                 finalizationHandler.finalizeComponent();
 
-                log.info( "Component '" + actionMap.getComponentName() + "' finalized successfully" );
-            } catch( IllegalAccessException iae ) {
-                log.error( "Could not instantiate finalization handler '" + finalizationClassName
-                           + "' - it should have a no-argument public constructor" );
-            } catch( InstantiationException ie ) {
-                log.error( "Could not instantiate finalization handler '" + finalizationClassName
-                           + "' - it should have a no-argument public constructor" );
-            } catch( Exception e ) {
-                log.error( "Exception during initialization for component '" + actionMap.getComponentName()
-                           + "'", e );
+                log.info("Component '" + actionMap.getComponentName() + "' finalized successfully");
+            } catch (IllegalAccessException iae) {
+                log.error("Could not instantiate finalization handler '" + finalizationClassName
+                          + "' - it should have a no-argument public constructor");
+            } catch (InstantiationException ie) {
+                log.error("Could not instantiate finalization handler '" + finalizationClassName
+                          + "' - it should have a no-argument public constructor");
+            } catch (Exception e) {
+                log.error("Exception during initialization for component '" + actionMap.getComponentName()
+                          + "'", e);
             }
         }
     }
@@ -261,13 +262,13 @@ public class ComponentRepository {
      */
     public void clear() {
 
-        for( Entry<String, Map<String, Component>> componentEntry : componentsPerCaller.entrySet() ) {
+        for (Entry<String, Map<String, Component>> componentEntry : componentsPerCaller.entrySet()) {
 
             Map<String, Component> components = componentEntry.getValue();
 
             //clear the action maps
-            for( Component component : components.values() ) {
-                if( component.getActionMap() != null ) {
+            for (Component component : components.values()) {
+                if (component.getActionMap() != null) {
                     component.getActionMap().clear();
                 }
             }
@@ -280,44 +281,44 @@ public class ComponentRepository {
                                              String caller,
                                              String componentName ) throws NoSuchComponentException {
 
-        if( !componentsPerCaller.get( DEFAULT_CALLER ).containsKey( componentName ) ) {
+        if (!componentsPerCaller.get(DEFAULT_CALLER).containsKey(componentName)) {
             // we do not know about component with such name
-            throw new NoSuchComponentException( componentName );
+            throw new NoSuchComponentException(componentName);
         }
 
         // find components for this caller
-        Map<String, Component> components = componentsPerCaller.get( caller );
-        if( components == null ) {
+        Map<String, Component> components = componentsPerCaller.get(caller);
+        if (components == null) {
 
-            synchronized( componentsPerCaller ) {
+            synchronized (componentsPerCaller) {
 
-                components = componentsPerCaller.get( caller );
-                if( components == null ) {
+                components = componentsPerCaller.get(caller);
+                if (components == null) {
                     components = new HashMap<String, Component>();
-                    componentsPerCaller.put( caller, components );
+                    componentsPerCaller.put(caller, components);
                 }
             }
         }
 
         // find component by its name
-        Component component = components.get( componentName );
-        if( component == null ) {
+        Component component = components.get(componentName);
+        if (component == null) {
 
             // Here we need to sync on the 'atsAgent' String, which is not good solution at all,
             // because there can be another sync on the same string in the JVM (possible deadlocks).
             // We will try to prevent that adding a 'unique' prefix
-            synchronized( ( "ATS_STRING_LOCK-" + componentName ).intern() ) {
+            synchronized ( ("ATS_STRING_LOCK-" + componentName).intern()) {
 
-                component = components.get( componentName );
-                if( component == null ) {
+                component = components.get(componentName);
+                if (component == null) {
 
                     // this caller needs a fresh component copy
-                    log.info( "Create a new instance of '" + componentName + "' component for calls from "
-                              + caller );
-                    Component defaultComponent = componentsPerCaller.get( DEFAULT_CALLER )
-                                                                    .get( componentName );
+                    log.info("Create a new instance of '" + componentName + "' component for calls from "
+                             + caller);
+                    Component defaultComponent = componentsPerCaller.get(DEFAULT_CALLER)
+                                                                    .get(componentName);
                     component = defaultComponent.getNewCopy();
-                    components.put( componentName, component );
+                    components.put(componentName, component);
                 }
             }
         }

@@ -27,7 +27,8 @@ public class ThreadContext {
     public static final String                      TEMPLATE_ACTION_VERIFICATION_CONFIGURATOR = "TEMPLATE_ACTION_VERIFICATION_CONFIGURATOR";
 
     private static ThreadLocal<Map<String, Object>> threadLocalContext                        = new ThreadLocal<Map<String, Object>>() {
-                                                                                                  public Map<String, Object> initialValue() {
+                                                                                                  public Map<String, Object>
+                                                                                                          initialValue() {
 
                                                                                                       // initially add a map
                                                                                                       return new HashMap<String, Object>();
@@ -37,30 +38,30 @@ public class ThreadContext {
     public static Object getAttribute(
                                        String name ) {
 
-        return threadLocalContext.get().get( name );
+        return threadLocalContext.get().get(name);
     }
 
     public static String[] getAttributeNames() {
 
         return threadLocalContext.get()
                                  .keySet()
-                                 .toArray( new String[threadLocalContext.get().keySet().size()] );
+                                 .toArray(new String[threadLocalContext.get().keySet().size()]);
     }
 
     public static void removeAttribute(
                                         String name ) {
 
-        threadLocalContext.get().remove( name );
+        threadLocalContext.get().remove(name);
     }
 
     public static void setAttribute(
                                      String name,
                                      Object object ) {
 
-        if( object == null ) {
-            throw new IllegalArgumentException( "Parameter '" + name + "' can not be null" );
+        if (object == null) {
+            throw new IllegalArgumentException("Parameter '" + name + "' can not be null");
         }
-        threadLocalContext.get().put( name, object );
+        threadLocalContext.get().put(name, object);
     }
 
     public static void clear() {

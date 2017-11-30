@@ -30,8 +30,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.axway.ats.agent.core.MainComponentLoader;
 import com.axway.ats.agent.webapp.agentservice.AgentWsRequestListener;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MainComponentLoader.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { MainComponentLoader.class })
 public class Test_AgentWsRequestListener extends BaseTestWebapps {
 
     private MainComponentLoader mockMainLoader;
@@ -40,27 +40,27 @@ public class Test_AgentWsRequestListener extends BaseTestWebapps {
     public void setUp() {
 
         // create the mocks
-        mockStatic( MainComponentLoader.class );
-        mockMainLoader = createMock( MainComponentLoader.class );
+        mockStatic(MainComponentLoader.class);
+        mockMainLoader = createMock(MainComponentLoader.class);
     }
 
     @Test
     public void requestDestroyedPositive() {
 
         AgentWsRequestListener requestListener = new AgentWsRequestListener();
-        requestListener.requestDestroyed( null );
+        requestListener.requestDestroyed(null);
     }
 
     @Test
     public void requestInitializedPositive() {
 
-        expect( MainComponentLoader.getInstance() ).andReturn( mockMainLoader );
+        expect(MainComponentLoader.getInstance()).andReturn(mockMainLoader);
         mockMainLoader.blockIfLoading();
 
         replayAll();
 
         AgentWsRequestListener requestListener = new AgentWsRequestListener();
-        requestListener.requestInitialized( null );
+        requestListener.requestInitialized(null);
 
         verifyAll();
     }

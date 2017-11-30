@@ -100,11 +100,11 @@ public class ScheduleCustomJvmMonitoringPojo extends BasePojo {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "JmxPort: " + this.jmxPort + ", " )
-          .append( "Alias: " + this.alias + ", " )
-          .append( "MBeanName: " + this.mbeanName + ", " )
-          .append( "Unit: " + this.unit + ", " )
-          .append( "MBeanAttributes" + this.mbeanAttributes );
+        sb.append("JmxPort: " + this.jmxPort + ", ")
+          .append("Alias: " + this.alias + ", ")
+          .append("MBeanName: " + this.mbeanName + ", ")
+          .append("Unit: " + this.unit + ", ")
+          .append("MBeanAttributes" + this.mbeanAttributes);
 
         return sb.toString();
     }

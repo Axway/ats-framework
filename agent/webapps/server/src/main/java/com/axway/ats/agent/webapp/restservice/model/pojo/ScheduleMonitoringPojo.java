@@ -21,47 +21,47 @@ import java.util.Map;
 
 public class ScheduleMonitoringPojo extends BasePojo {
 
-	private String reading;
-	private List<MapEntryPojo> readingParameters;
+    private String             reading;
+    private List<MapEntryPojo> readingParameters;
 
-	public ScheduleMonitoringPojo() {
+    public ScheduleMonitoringPojo() {
 
-	}
+    }
 
-	public ScheduleMonitoringPojo(String reading, List<MapEntryPojo> readingParameters) {
-		this.reading = reading;
-		this.readingParameters = readingParameters;
-	}
+    public ScheduleMonitoringPojo( String reading, List<MapEntryPojo> readingParameters ) {
+        this.reading = reading;
+        this.readingParameters = readingParameters;
+    }
 
-	public String getReading() {
+    public String getReading() {
 
-		return reading;
-	}
+        return reading;
+    }
 
-	public void setReading(String reading) {
+    public void setReading( String reading ) {
 
-		this.reading = reading;
-	}
+        this.reading = reading;
+    }
 
-	public List<MapEntryPojo> getReadingParameters() {
+    public List<MapEntryPojo> getReadingParameters() {
 
-		return readingParameters;
-	}
+        return readingParameters;
+    }
 
-	public void setReadingParameters(List<MapEntryPojo> readingParameters) {
+    public void setReadingParameters( List<MapEntryPojo> readingParameters ) {
 
-		this.readingParameters = readingParameters;
-	}
+        this.readingParameters = readingParameters;
+    }
 
-	public Map<String, String> getReadingParametersAsMap() {
+    public Map<String, String> getReadingParametersAsMap() {
 
-		Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
 
-		for (MapEntryPojo readingParameter : readingParameters) {
-			map.put(readingParameter.getKey(), readingParameter.getValue());
-		}
+        for (MapEntryPojo readingParameter : readingParameters) {
+            map.put(readingParameter.getKey(), readingParameter.getValue());
+        }
 
-		return map;
-	}
+        return map;
+    }
 
 }

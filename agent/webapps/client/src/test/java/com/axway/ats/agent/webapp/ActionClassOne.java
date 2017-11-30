@@ -27,76 +27,76 @@ public class ActionClassOne {
 
     private static int[] VALID_CONSTANTS = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-    @Action(name = "action 1")
+    @Action( name = "action 1")
     public void action1(
-                         @Parameter(name = "valueToMatch") int value ) {
+                         @Parameter( name = "valueToMatch") int value ) {
 
         ACTION_VALUE = value;
-        Logger.getLogger( ActionClassOne.class ).info( "Method action 1 has been executed" );
+        Logger.getLogger(ActionClassOne.class).info("Method action 1 has been executed");
     }
 
-    @Action(name = "action array")
+    @Action( name = "action array")
     public int action1(
-                        @Parameter(name = "valueToMatch", validation = ValidationType.NUMBER_CONSTANT, args = { "VALID_CONSTANTS" }) int[] values ) {
+                        @Parameter( name = "valueToMatch", validation = ValidationType.NUMBER_CONSTANT, args = { "VALID_CONSTANTS" }) int[] values ) {
 
         ACTION_VALUE = values[values.length - 1];
-        Logger.getLogger( ActionClassOne.class ).info( "Method action array has been executed" );
+        Logger.getLogger(ActionClassOne.class).info("Method action array has been executed");
 
         return ACTION_VALUE;
     }
 
-    @Action(name = "action long")
+    @Action( name = "action long")
     public long actionLong(
-                            @Parameter(name = "valueToMatch") long value ) {
+                            @Parameter( name = "valueToMatch") long value ) {
 
         return value;
     }
 
-    @Action(name = "action double")
+    @Action( name = "action double")
     public double actionDouble(
-                                @Parameter(name = "valueToMatch") double value ) {
+                                @Parameter( name = "valueToMatch") double value ) {
 
         return value;
     }
 
-    @Action(name = "action float")
+    @Action( name = "action float")
     public float actionFloat(
-                              @Parameter(name = "valueToMatch") float value ) {
+                              @Parameter( name = "valueToMatch") float value ) {
 
         return value;
     }
 
-    @Action(name = "action boolean")
+    @Action( name = "action boolean")
     public boolean actionBoolean(
-                                  @Parameter(name = "valueToMatch") boolean value ) {
+                                  @Parameter( name = "valueToMatch") boolean value ) {
 
         return value;
     }
 
-    @Action(name = "action short")
+    @Action( name = "action short")
     public short actionShort(
-                              @Parameter(name = "valueToMatch") short value ) {
+                              @Parameter( name = "valueToMatch") short value ) {
 
         return value;
     }
 
-    @Action(name = "action byte")
+    @Action( name = "action byte")
     public byte actionByte(
-                            @Parameter(name = "valueToMatch") byte value ) {
+                            @Parameter( name = "valueToMatch") byte value ) {
 
         return value;
     }
 
-    @Action(name = "action string")
+    @Action( name = "action string")
     public String actionString(
-                                @Parameter(name = "valueToMatch", validation = ValidationType.STRING_NOT_EMPTY) String value ) {
+                                @Parameter( name = "valueToMatch", validation = ValidationType.STRING_NOT_EMPTY) String value ) {
 
         return value;
     }
 
-    @Action(name = "action wrong type")
+    @Action( name = "action wrong type")
     public ActionClassOne actionString(
-                                        @Parameter(name = "valueToMatch") ActionClassOne value ) {
+                                        @Parameter( name = "valueToMatch") ActionClassOne value ) {
 
         return value;
     }

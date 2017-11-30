@@ -34,8 +34,8 @@ import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.junit.BaseTestWebapps;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Test_AgentEnvironmentCleanupClient.TestEnvironmentClient.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { Test_AgentEnvironmentCleanupClient.TestEnvironmentClient.class })
 public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     private static final String TEST_COMPONENT_NAME         = "agenttest";
     private static final int    AGENT_DEFAULT_PORT_FOR_TEST = 8089;
@@ -54,28 +54,28 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     public void setUp() {
 
         // create the mocks
-        mockLocalExecutor = createMock( LocalExecutor.class );
-        mockRemoteExecutor = createMock( RemoteExecutor.class );
+        mockLocalExecutor = createMock(LocalExecutor.class);
+        mockRemoteExecutor = createMock(RemoteExecutor.class);
 
-        AtsSystemProperties.setAgentDefaultPort( AGENT_DEFAULT_PORT_FOR_TEST );
+        AtsSystemProperties.setAgentDefaultPort(AGENT_DEFAULT_PORT_FOR_TEST);
     }
 
     @After
     public void cleanUp() {
 
-        AtsSystemProperties.setAgentDefaultPort( portNumberBeforeTest ); // restore
+        AtsSystemProperties.setAgentDefaultPort(portNumberBeforeTest); // restore
     }
 
     @Test
     public void cleanLocalPositive() throws Exception {
 
-        expectNew( LocalExecutor.class ).andReturn( mockLocalExecutor );
-        mockLocalExecutor.restore( TEST_COMPONENT_NAME, null, null );
+        expectNew(LocalExecutor.class).andReturn(mockLocalExecutor);
+        mockLocalExecutor.restore(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "local" );
-        envClient.restore( TEST_COMPONENT_NAME );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("local");
+        envClient.restore(TEST_COMPONENT_NAME);
 
         verifyAll();
     }
@@ -83,13 +83,13 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void cleanRemotePositive() throws Exception {
 
-        expectNew( RemoteExecutor.class, "10.1.1.1:8089" ).andReturn( mockRemoteExecutor );
-        mockRemoteExecutor.restore( TEST_COMPONENT_NAME, null, null );
+        expectNew(RemoteExecutor.class, "10.1.1.1:8089").andReturn(mockRemoteExecutor);
+        mockRemoteExecutor.restore(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "10.1.1.1" );
-        envClient.restore( TEST_COMPONENT_NAME );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("10.1.1.1");
+        envClient.restore(TEST_COMPONENT_NAME);
 
         verifyAll();
     }
@@ -97,12 +97,12 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void cleanAllLocalPositive() throws Exception {
 
-        expectNew( LocalExecutor.class ).andReturn( mockLocalExecutor );
-        mockLocalExecutor.restoreAll( null );
+        expectNew(LocalExecutor.class).andReturn(mockLocalExecutor);
+        mockLocalExecutor.restoreAll(null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "local" );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("local");
         envClient.restoreAllComponents();
 
         verifyAll();
@@ -111,12 +111,12 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void cleanAllRemotePositive() throws Exception {
 
-        expectNew( RemoteExecutor.class, "10.1.1.1:8089" ).andReturn( mockRemoteExecutor );
-        mockRemoteExecutor.restoreAll( null );
+        expectNew(RemoteExecutor.class, "10.1.1.1:8089").andReturn(mockRemoteExecutor);
+        mockRemoteExecutor.restoreAll(null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "10.1.1.1" );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("10.1.1.1");
         envClient.restoreAllComponents();
 
         verifyAll();
@@ -125,13 +125,13 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void backupLocalPositive() throws Exception {
 
-        expectNew( LocalExecutor.class ).andReturn( mockLocalExecutor );
-        mockLocalExecutor.backup( TEST_COMPONENT_NAME, null, null );
+        expectNew(LocalExecutor.class).andReturn(mockLocalExecutor);
+        mockLocalExecutor.backup(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "local" );
-        envClient.backup( TEST_COMPONENT_NAME );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("local");
+        envClient.backup(TEST_COMPONENT_NAME);
 
         verifyAll();
     }
@@ -139,13 +139,13 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void backupRemotePositive() throws Exception {
 
-        expectNew( RemoteExecutor.class, "10.1.1.1:8089" ).andReturn( mockRemoteExecutor );
-        mockRemoteExecutor.backup( TEST_COMPONENT_NAME, null, null );
+        expectNew(RemoteExecutor.class, "10.1.1.1:8089").andReturn(mockRemoteExecutor);
+        mockRemoteExecutor.backup(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "10.1.1.1" );
-        envClient.backup( TEST_COMPONENT_NAME );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("10.1.1.1");
+        envClient.backup(TEST_COMPONENT_NAME);
 
         verifyAll();
     }
@@ -153,12 +153,12 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void backupAllLocalPositive() throws Exception {
 
-        expectNew( LocalExecutor.class ).andReturn( mockLocalExecutor );
-        mockLocalExecutor.backupAll( null );
+        expectNew(LocalExecutor.class).andReturn(mockLocalExecutor);
+        mockLocalExecutor.backupAll(null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "local" );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("local");
         envClient.backupAllComponents();
 
         verifyAll();
@@ -167,12 +167,12 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
     @Test
     public void backupAllRemotePositive() throws Exception {
 
-        expectNew( RemoteExecutor.class, "10.1.1.1:8089" ).andReturn( mockRemoteExecutor );
-        mockRemoteExecutor.backupAll( null );
+        expectNew(RemoteExecutor.class, "10.1.1.1:8089").andReturn(mockRemoteExecutor);
+        mockRemoteExecutor.backupAll(null);
 
         replayAll();
 
-        TestEnvironmentClient envClient = new TestEnvironmentClient( "10.1.1.1" );
+        TestEnvironmentClient envClient = new TestEnvironmentClient("10.1.1.1");
         envClient.backupAllComponents();
 
         verifyAll();
@@ -185,7 +185,7 @@ public class Test_AgentEnvironmentCleanupClient extends BaseTestWebapps {
 
         public TestEnvironmentClient( String host ) {
 
-            super( host );
+            super(host);
         }
     }
 }

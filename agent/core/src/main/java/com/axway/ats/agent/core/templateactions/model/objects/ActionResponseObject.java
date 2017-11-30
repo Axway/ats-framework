@@ -47,50 +47,50 @@ public class ActionResponseObject extends AbstractActionObject {
                                                                               XmlUtilitiesException,
                                                                               InvalidMatcherException {
 
-        super( actionsXmlName, action );
+        super(actionsXmlName, action);
 
-        resolveHttpResponseCodeResult( action.getActionNodeWithoutBody() );
+        resolveHttpResponseCodeResult(action.getActionNodeWithoutBody());
     }
 
     @Override
     protected void resolveHttpHeaders( Node actionResponse ) throws XmlReaderException,
                                                              InvalidMatcherException {
 
-        Node[] expectedHeaders = xmlUtilities.getSignificantResponseHeaders( actionResponse );
-        for( int iExpected = 0; iExpected < expectedHeaders.length; iExpected++ ) {
-            String headerName = xmlUtilities.getNodeAttribute( expectedHeaders[iExpected],
-                                                               TOKEN_HEADER_NAME_ATTRIBUTE );
-            String headerValue = xmlUtilities.getNodeAttribute( expectedHeaders[iExpected],
-                                                                TOKEN_HEADER_VALUE_ATTRIBUTE );
+        Node[] expectedHeaders = xmlUtilities.getSignificantResponseHeaders(actionResponse);
+        for (int iExpected = 0; iExpected < expectedHeaders.length; iExpected++) {
+            String headerName = xmlUtilities.getNodeAttribute(expectedHeaders[iExpected],
+                                                              TOKEN_HEADER_NAME_ATTRIBUTE);
+            String headerValue = xmlUtilities.getNodeAttribute(expectedHeaders[iExpected],
+                                                               TOKEN_HEADER_VALUE_ATTRIBUTE);
 
             TemplateHeaderMatchMode matchMode;
-            if( headerValue.contains( "${=" ) ) {
+            if (headerValue.contains("${=")) {
                 matchMode = TemplateHeaderMatchMode.EXTRACT;
-            } else if( headerValue.contains( "${" ) ) {
-                if( headerValue.startsWith( "${CONTAINS=" ) ) {
-                    headerValue = headerValue.substring( "${CONTAINS=".length(), headerValue.length() - 1 );
+            } else if (headerValue.contains("${")) {
+                if (headerValue.startsWith("${CONTAINS=")) {
+                    headerValue = headerValue.substring("${CONTAINS=".length(), headerValue.length() - 1);
                     matchMode = TemplateHeaderMatchMode.CONTAINS;
-                } else if( headerValue.startsWith( "${RANGE=" ) ) {
-                    headerValue = headerValue.substring( "${RANGE=".length(), headerValue.length() - 1 );
+                } else if (headerValue.startsWith("${RANGE=")) {
+                    headerValue = headerValue.substring("${RANGE=".length(), headerValue.length() - 1);
                     matchMode = TemplateHeaderMatchMode.RANGE;
-                } else if( headerValue.startsWith( "${LIST=" ) ) {
-                    headerValue = headerValue.substring( "${LIST=".length(), headerValue.length() - 1 );
+                } else if (headerValue.startsWith("${LIST=")) {
+                    headerValue = headerValue.substring("${LIST=".length(), headerValue.length() - 1);
                     matchMode = TemplateHeaderMatchMode.LIST;
-                } else if( headerValue.startsWith( "${REGEX=" ) ) {
-                    headerValue = headerValue.substring( "${REGEX=".length(), headerValue.length() - 1 );
+                } else if (headerValue.startsWith("${REGEX=")) {
+                    headerValue = headerValue.substring("${REGEX=".length(), headerValue.length() - 1);
                     matchMode = TemplateHeaderMatchMode.REGEX;
-                } else if( "${RANDOM}".equals( headerValue ) ) {
+                } else if ("${RANDOM}".equals(headerValue)) {
                     matchMode = TemplateHeaderMatchMode.RANDOM;
                     headerValue = null;
                 } else {
                     // the "Location" header can contain some user parameters like ${serverUrl}
-                    if( headerName.equalsIgnoreCase( HeaderMatcher.LOCATION_HEADER_NAME ) ) {
+                    if (headerName.equalsIgnoreCase(HeaderMatcher.LOCATION_HEADER_NAME)) {
                         // TODO: For that header again we may have variables inside. 
                         // Generally cookies are automatically processed but if there is var. we should effectively use it 
                         // as regex RANDOM area or replace var before whole location header match
                         matchMode = TemplateHeaderMatchMode.EQUALS;
                     } else {
-                        throw new InvalidMatcherException( headerValue + " contains unknown matcher key" );
+                        throw new InvalidMatcherException(headerValue + " contains unknown matcher key");
                     }
                 }
             } else {
@@ -99,10 +99,10 @@ public class ActionResponseObject extends AbstractActionObject {
             }
 
             // we need the headers in order to construct the request
-            httpHeaders.add( new ActionHeader( headerName, headerValue ) );
+            httpHeaders.add(new ActionHeader(headerName, headerValue));
 
             // we need the headers matcher in order to verify the response
-            httpHeaderMatchers.add( new HeaderMatcher( headerName, headerValue, matchMode ) );
+            httpHeaderMatchers.add(new HeaderMatcher(headerName, headerValue, matchMode));
         }
     }
 
@@ -113,10 +113,10 @@ public class ActionResponseObject extends AbstractActionObject {
 
     private void resolveHttpResponseCodeResult( Node actionResponse ) throws XmlReaderException {
 
-        Node expectedResultNode = XmlUtilities.getFirstChildNode( actionResponse,
-                                                                  TOKEN_HTTP_RESPONSE_RESULT );
-        if( expectedResultNode == null ) {
-            throw new XmlReaderException( actionsXmlName, "No " + TOKEN_HTTP_RESPONSE_RESULT + " node" );
+        Node expectedResultNode = XmlUtilities.getFirstChildNode(actionResponse,
+                                                                 TOKEN_HTTP_RESPONSE_RESULT);
+        if (expectedResultNode == null) {
+            throw new XmlReaderException(actionsXmlName, "No " + TOKEN_HTTP_RESPONSE_RESULT + " node");
         } else {
             responseCodeResult = expectedResultNode.getTextContent();
         }

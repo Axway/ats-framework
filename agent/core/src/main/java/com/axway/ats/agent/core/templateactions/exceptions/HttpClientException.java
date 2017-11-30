@@ -23,12 +23,12 @@ public class HttpClientException extends AgentException {
 
     public HttpClientException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public HttpClientException( String message,
                                 Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

@@ -45,30 +45,30 @@ public final class ActionHandler {
      * @throws NoCompatibleMethodFoundException if no compatible method is found for this action
      */
     public static Object executeAction( String caller, String componentName, String actionName,
-                                 Object[] args ) throws NoSuchComponentException, NoSuchActionException,
-                                                 ActionExecutionException, InternalComponentException,
-                                                 NoCompatibleMethodFoundException {
+                                        Object[] args ) throws NoSuchComponentException, NoSuchActionException,
+                                                        ActionExecutionException, InternalComponentException,
+                                                        NoCompatibleMethodFoundException {
 
         //get the component action map for this caller
         //if component with this name does not exist, a NoSuchComponentException is thrown
         ComponentActionMap actionMap = ComponentRepository.getInstance()
-                                                          .getComponentActionMap( caller, componentName );
+                                                          .getComponentActionMap(caller, componentName);
 
         //get the argument types
         Class<?>[] argTypes = new Class<?>[args.length];
-        for( int i = 0; i < args.length; i++ ) {
-            if( args[i] == null ) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == null) {
                 argTypes[i] = Void.TYPE;
             } else {
                 argTypes[i] = args[i].getClass();
             }
         }
 
-        ActionMethod actionMethod = actionMap.getActionMethod( actionName, argTypes );
-        Object actionClassInstance = actionMap.getCachedActionClassInstance( caller, actionMethod );
+        ActionMethod actionMethod = actionMap.getActionMethod(actionName, argTypes);
+        Object actionClassInstance = actionMap.getCachedActionClassInstance(caller, actionMethod);
 
         //invoke the action
-        return actionMethod.invoke( actionClassInstance, args, true );
+        return actionMethod.invoke(actionClassInstance, args, true);
     }
 
     /**
@@ -82,9 +82,9 @@ public final class ActionHandler {
 
         try {
             // check if the component is loaded
-            ComponentRepository.getInstance().getComponentActionMap( caller, componentName );
+            ComponentRepository.getInstance().getComponentActionMap(caller, componentName);
             return true;
-        } catch( NoSuchComponentException e ) {
+        } catch (NoSuchComponentException e) {
             return false;
         }
     }

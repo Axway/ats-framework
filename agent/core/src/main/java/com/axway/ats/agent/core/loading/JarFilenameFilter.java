@@ -24,7 +24,7 @@ public class JarFilenameFilter implements FilenameFilter {
                            File dir,
                            String name ) {
 
-        return name.endsWith( ".jar" );
+        return name.endsWith(".jar");
     }
 
 }

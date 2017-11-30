@@ -24,7 +24,7 @@ import java.util.List;
  * per loader. This class will be serialized and transferred between the Agent
  * client and the core Agent subsystem
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public final class LoaderDataConfig implements Serializable {
 
     private List<ParameterDataConfig> parameterProviders;
@@ -55,7 +55,7 @@ public final class LoaderDataConfig implements Serializable {
      */
     public void addParameterConfig( ParameterDataConfig parameterData ) {
 
-        parameterProviders.add( parameterData );
+        parameterProviders.add(parameterData);
     }
 
     /**
@@ -68,20 +68,20 @@ public final class LoaderDataConfig implements Serializable {
 
         // one instance of the configurator per loader
         List<LoaderDataConfig> distributedLoaderDataConfigs = new ArrayList<LoaderDataConfig>();
-        for( int iConfigurator = 0; iConfigurator < agents; iConfigurator++ ) {
-            distributedLoaderDataConfigs.add( new LoaderDataConfig() );
+        for (int iConfigurator = 0; iConfigurator < agents; iConfigurator++) {
+            distributedLoaderDataConfigs.add(new LoaderDataConfig());
         }
 
-        for( int iProvider = 0; iProvider < parameterProviders.size(); iProvider++ ) {
+        for (int iProvider = 0; iProvider < parameterProviders.size(); iProvider++) {
             // split the provider - one instance of the configurator per loader
-            AbstractParameterDataConfig parameterProvider = ( AbstractParameterDataConfig ) parameterProviders.get( iProvider );
-            List<ParameterDataConfig> distributedParameterProviders = parameterProvider.distribute( agents );
+            AbstractParameterDataConfig parameterProvider = (AbstractParameterDataConfig) parameterProviders.get(iProvider);
+            List<ParameterDataConfig> distributedParameterProviders = parameterProvider.distribute(agents);
 
             // we know here the number of configurators is the same as the number of providers
             // assign one provider to each configurator
-            for( int iConfigurator = 0; iConfigurator < agents; iConfigurator++ ) {
-                distributedLoaderDataConfigs.get( iConfigurator )
-                                            .addParameterConfig( distributedParameterProviders.get( iConfigurator ) );
+            for (int iConfigurator = 0; iConfigurator < agents; iConfigurator++) {
+                distributedLoaderDataConfigs.get(iConfigurator)
+                                            .addParameterConfig(distributedParameterProviders.get(iConfigurator));
             }
         }
 

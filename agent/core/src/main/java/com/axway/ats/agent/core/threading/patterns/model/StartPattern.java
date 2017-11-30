@@ -23,6 +23,6 @@ public interface StartPattern {
 
     public void setBlockUntilCompletion(
                                          boolean blockUntilCompletion );
-    
+
     public int getIterationTimeout();
 }

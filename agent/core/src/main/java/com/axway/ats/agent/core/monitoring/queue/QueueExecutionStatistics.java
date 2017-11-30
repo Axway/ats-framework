@@ -50,14 +50,14 @@ public class QueueExecutionStatistics {
     public void initActionExecutionResults(
                                             String queueName ) throws AgentException {
 
-        Map<String, ActionExecutionStatistic> thisQueueStatics = actionsPerQueue.get( queueName );
-        if( thisQueueStatics != null ) {
+        Map<String, ActionExecutionStatistic> thisQueueStatics = actionsPerQueue.get(queueName);
+        if (thisQueueStatics != null) {
             // there is already information about queue with same name, maybe this is another run of same test
             // cleanup this info
             thisQueueStatics.clear();
         } else {
             // unknown queue
-            actionsPerQueue.put( queueName, new HashMap<String, ActionExecutionStatistic>() );
+            actionsPerQueue.put(queueName, new HashMap<String, ActionExecutionStatistic>());
         }
     }
 
@@ -70,9 +70,9 @@ public class QueueExecutionStatistics {
     public List<ActionExecutionStatistic> getActionExecutionResults(
                                                                      String queueName ) throws AgentException {
 
-        Collection<ActionExecutionStatistic> thisQueueStatics = actionsPerQueue.get( queueName ).values();
+        Collection<ActionExecutionStatistic> thisQueueStatics = actionsPerQueue.get(queueName).values();
 
-        return new ArrayList<ActionExecutionStatistic>( thisQueueStatics );
+        return new ArrayList<ActionExecutionStatistic>(thisQueueStatics);
     }
 
     /**
@@ -88,17 +88,17 @@ public class QueueExecutionStatistics {
                                                             boolean passed ) {
 
         // find the queue, we know it is available as the initialize method was already called
-        Map<String, ActionExecutionStatistic> thisQueueStatics = actionsPerQueue.get( queueName );
+        Map<String, ActionExecutionStatistic> thisQueueStatics = actionsPerQueue.get(queueName);
 
         // find the action
-        ActionExecutionStatistic thisActionStatistic = thisQueueStatics.get( actionName );
-        if( thisActionStatistic == null ) {
+        ActionExecutionStatistic thisActionStatistic = thisQueueStatics.get(actionName);
+        if (thisActionStatistic == null) {
             // new action
-            thisActionStatistic = new ActionExecutionStatistic( actionName );
-            thisQueueStatics.put( actionName, thisActionStatistic );
+            thisActionStatistic = new ActionExecutionStatistic(actionName);
+            thisQueueStatics.put(actionName, thisActionStatistic);
         }
 
         // register the action execution result
-        thisActionStatistic.registerExecutionResult( passed );
+        thisActionStatistic.registerExecutionResult(passed);
     }
 }

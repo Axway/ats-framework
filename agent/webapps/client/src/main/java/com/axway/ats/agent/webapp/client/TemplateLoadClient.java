@@ -63,7 +63,7 @@ public class TemplateLoadClient extends LoadClient {
     @PublicAtsApi
     public TemplateLoadClient() {
 
-        this( null );
+        this(null);
     }
 
     /**
@@ -73,7 +73,7 @@ public class TemplateLoadClient extends LoadClient {
     @PublicAtsApi
     public TemplateLoadClient( String[] atsAgents ) {
 
-        super( atsAgents );
+        super(atsAgents);
 
         this.globalHeadersMatchers = new HashSet<HeaderMatcher>();
         this.verificators = new HashMap<String, TemplateActionResponseVerificator>();
@@ -89,19 +89,19 @@ public class TemplateLoadClient extends LoadClient {
         super.configureAgentLoaders();
 
         // get the configurator instance
-        TemplateActionsResponseVerificationConfigurator verificationConfigurator = new TemplateActionsResponseVerificationConfigurator( queueName );
+        TemplateActionsResponseVerificationConfigurator verificationConfigurator = new TemplateActionsResponseVerificationConfigurator(queueName);
 
         // add globally applicable header matchers
-        verificationConfigurator.addGlobalHeaderMatchers( globalHeadersMatchers );
+        verificationConfigurator.addGlobalHeaderMatchers(globalHeadersMatchers);
 
         // add action verificators
-        for( TemplateActionResponseVerificator verificator : verificators.values() ) {
-            verificationConfigurator.addActionVerificator( verificator );
+        for (TemplateActionResponseVerificator verificator : verificators.values()) {
+            verificationConfigurator.addActionVerificator(verificator);
         }
 
         // send the info to all loaders
-        for( String loader : loaderAddresses ) {
-            new TemplateActionsResponseVerificationClient( loader, verificationConfigurator ).send();
+        for (String loader : loaderAddresses) {
+            new TemplateActionsResponseVerificationClient(loader, verificationConfigurator).send();
         }
     }
 
@@ -116,7 +116,7 @@ public class TemplateLoadClient extends LoadClient {
     @PublicAtsApi
     public void skipGlobalHeader( String headerToSkip ) throws InvalidMatcherException {
 
-        globalHeadersMatchers.add( new HeaderMatcher( headerToSkip, null, TemplateHeaderMatchMode.RANDOM ) );
+        globalHeadersMatchers.add(new HeaderMatcher(headerToSkip, null, TemplateHeaderMatchMode.RANDOM));
     }
 
     /**
@@ -130,8 +130,8 @@ public class TemplateLoadClient extends LoadClient {
     @PublicAtsApi
     public void skipGlobalHeaders( String[] headersToSkip ) throws InvalidMatcherException {
 
-        for( String headerToSkip : headersToSkip ) {
-            skipGlobalHeader( headerToSkip );
+        for (String headerToSkip : headersToSkip) {
+            skipGlobalHeader(headerToSkip);
         }
     }
 
@@ -147,8 +147,8 @@ public class TemplateLoadClient extends LoadClient {
     public void skipHeader( String actionName, int stepNumber,
                             String headerToSkip ) throws InvalidMatcherException {
 
-        List<HeaderMatcher> stepMatchers = getStepHeaderMatchers( actionName, stepNumber );
-        stepMatchers.add( new HeaderMatcher( headerToSkip, null, TemplateHeaderMatchMode.RANDOM ) );
+        List<HeaderMatcher> stepMatchers = getStepHeaderMatchers(actionName, stepNumber);
+        stepMatchers.add(new HeaderMatcher(headerToSkip, null, TemplateHeaderMatchMode.RANDOM));
     }
 
     /**
@@ -163,9 +163,9 @@ public class TemplateLoadClient extends LoadClient {
     public void skipHeaders( String actionName, int stepNumber,
                              String[] headersToSkip ) throws InvalidMatcherException {
 
-        List<HeaderMatcher> stepMatchers = getStepHeaderMatchers( actionName, stepNumber );
-        for( String headerToSkip : headersToSkip ) {
-            stepMatchers.add( new HeaderMatcher( headerToSkip, null, TemplateHeaderMatchMode.RANDOM ) );
+        List<HeaderMatcher> stepMatchers = getStepHeaderMatchers(actionName, stepNumber);
+        for (String headerToSkip : headersToSkip) {
+            stepMatchers.add(new HeaderMatcher(headerToSkip, null, TemplateHeaderMatchMode.RANDOM));
         }
     }
 
@@ -183,8 +183,8 @@ public class TemplateLoadClient extends LoadClient {
     public void checkHeader( String actionName, int stepNumber, String headerName, String headerValueToMatch,
                              TemplateHeaderMatchMode matchMode ) throws InvalidMatcherException {
 
-        List<HeaderMatcher> stepMatchers = getStepHeaderMatchers( actionName, stepNumber );
-        stepMatchers.add( new HeaderMatcher( headerName, headerValueToMatch, matchMode ) );
+        List<HeaderMatcher> stepMatchers = getStepHeaderMatchers(actionName, stepNumber);
+        stepMatchers.add(new HeaderMatcher(headerName, headerValueToMatch, matchMode));
     }
 
     /**
@@ -199,8 +199,8 @@ public class TemplateLoadClient extends LoadClient {
     @PublicAtsApi
     public void setGlobalContentLenghtHeaderRange( int offsetValue ) throws InvalidMatcherException {
 
-        globalHeadersMatchers.add( new HeaderMatcher( "Content-Length", String.valueOf( offsetValue ),
-                                                      TemplateHeaderMatchMode.RANGE_OFFSET ) );
+        globalHeadersMatchers.add(new HeaderMatcher("Content-Length", String.valueOf(offsetValue),
+                                                    TemplateHeaderMatchMode.RANGE_OFFSET));
     }
 
     /**
@@ -218,8 +218,8 @@ public class TemplateLoadClient extends LoadClient {
     public void checkBodyNode( String actionName, int stepNumber, String nodeXPath, String valueToMatch,
                                TemplateBodyNodeMatchMode matchMode ) throws InvalidMatcherException {
 
-        List<ResponseMatcher> stepMatchers = getStepBodyMatchers( actionName, stepNumber );
-        stepMatchers.add( new XPathBodyMatcher( nodeXPath, valueToMatch, matchMode ) );
+        List<ResponseMatcher> stepMatchers = getStepBodyMatchers(actionName, stepNumber);
+        stepMatchers.add(new XPathBodyMatcher(nodeXPath, valueToMatch, matchMode));
     }
 
     /**
@@ -232,7 +232,7 @@ public class TemplateLoadClient extends LoadClient {
     @PublicAtsApi
     public void checkBodyByContainedText( String actionName, int stepNumber, String searchedText ) {
 
-        checkBodyByContainedText( actionName, stepNumber, searchedText, false );
+        checkBodyByContainedText(actionName, stepNumber, searchedText, false);
     }
 
     /**
@@ -247,8 +247,8 @@ public class TemplateLoadClient extends LoadClient {
     public void checkBodyByContainedText( String actionName, int stepNumber, String searchedText,
                                           boolean isRegEx ) {
 
-        List<ResponseMatcher> stepMatchers = getStepBodyMatchers( actionName, stepNumber );
-        stepMatchers.add( new TextBodyMatcher( searchedText, isRegEx ) );
+        List<ResponseMatcher> stepMatchers = getStepBodyMatchers(actionName, stepNumber);
+        stepMatchers.add(new TextBodyMatcher(searchedText, isRegEx));
     }
 
     /**
@@ -262,29 +262,29 @@ public class TemplateLoadClient extends LoadClient {
     public void checkBodyForNotContainedText( String actionName, int stepNumber, String searchedText,
                                               boolean isRegex ) {
 
-        List<ResponseMatcher> stepMatchers = getStepBodyMatchers( actionName, stepNumber );
-        stepMatchers.add( new TextBodyMatcher( searchedText, isRegex, true ) );
+        List<ResponseMatcher> stepMatchers = getStepBodyMatchers(actionName, stepNumber);
+        stepMatchers.add(new TextBodyMatcher(searchedText, isRegex, true));
     }
 
     private List<HeaderMatcher> getStepHeaderMatchers( String actionName, int stepNumber ) {
 
-        TemplateActionResponseVerificator actionVerificator = verificators.get( actionName );
-        if( actionVerificator == null ) {
-            actionVerificator = new TemplateActionResponseVerificator( actionName );
-            verificators.put( actionName, actionVerificator );
+        TemplateActionResponseVerificator actionVerificator = verificators.get(actionName);
+        if (actionVerificator == null) {
+            actionVerificator = new TemplateActionResponseVerificator(actionName);
+            verificators.put(actionName, actionVerificator);
         }
 
-        return actionVerificator.getStepHeaderMatchers( stepNumber );
+        return actionVerificator.getStepHeaderMatchers(stepNumber);
     }
 
     private List<ResponseMatcher> getStepBodyMatchers( String actionName, int stepNumber ) {
 
-        TemplateActionResponseVerificator actionVerificator = verificators.get( actionName );
-        if( actionVerificator == null ) {
-            actionVerificator = new TemplateActionResponseVerificator( actionName );
-            verificators.put( actionName, actionVerificator );
+        TemplateActionResponseVerificator actionVerificator = verificators.get(actionName);
+        if (actionVerificator == null) {
+            actionVerificator = new TemplateActionResponseVerificator(actionName);
+            verificators.put(actionName, actionVerificator);
         }
 
-        return actionVerificator.getStepBodyMatchers( stepNumber );
+        return actionVerificator.getStepBodyMatchers(stepNumber);
     }
 }

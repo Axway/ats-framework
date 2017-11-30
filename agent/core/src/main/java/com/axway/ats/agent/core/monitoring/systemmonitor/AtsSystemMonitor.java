@@ -34,7 +34,7 @@ import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
  */
 public class AtsSystemMonitor extends PerformanceMonitor {
 
-    private static final Logger                   log                           = Logger.getLogger( AtsSystemMonitor.class );
+    private static final Logger                   log                           = Logger.getLogger(AtsSystemMonitor.class);
 
     private SigarWrapper                          sigarWrapper;
 
@@ -48,55 +48,55 @@ public class AtsSystemMonitor extends PerformanceMonitor {
     public void init(
                       ReadingBean[] readings ) throws Exception {
 
-        log.info( "Initializing the ATS System Monitor" );
+        log.info("Initializing the ATS System Monitor");
 
         try {
             this.sigarWrapper = new SigarWrapper();
-        } catch( SigarException e ) {
-            log.error( "Error initializing the Sigar System", e );
-            throw new Exception( "Error initializing the Sigar System", e );
+        } catch (SigarException e) {
+            log.error("Error initializing the Sigar System", e);
+            throw new Exception("Error initializing the Sigar System", e);
         }
 
         List<ReadingBean> staticReadings = new ArrayList<ReadingBean>();
         List<ReadingBean> dynamicReadings = new ArrayList<ReadingBean>();
-        for( ReadingBean reading : readings ) {
-            if( !reading.isDynamicReading() ) {
-                staticReadings.add( reading );
+        for (ReadingBean reading : readings) {
+            if (!reading.isDynamicReading()) {
+                staticReadings.add(reading);
             } else {
                 // check if this process has parent
-                String parentProcessName = reading.getParameter( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME );
-                if( parentProcessName != null ) {
+                String parentProcessName = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME);
+                if (parentProcessName != null) {
                     final String parentProcessId = parentProcessName + "-" + reading.getName();
-                    if( !parentProcessReadingInstances.containsKey( parentProcessId ) ) {
-                        ParentProcessReadingBean prentProcessBean = new ParentProcessReadingBean( reading.getId(),
-                                                                                                  reading.getMonitorName(),
-                                                                                                  parentProcessName,
-                                                                                                  reading.getName(),
-                                                                                                  reading.getUnit() );
-                        prentProcessBean.setParameters( reading.getParameters() );
-                        parentProcessReadingInstances.put( parentProcessId, prentProcessBean );
+                    if (!parentProcessReadingInstances.containsKey(parentProcessId)) {
+                        ParentProcessReadingBean prentProcessBean = new ParentProcessReadingBean(reading.getId(),
+                                                                                                 reading.getMonitorName(),
+                                                                                                 parentProcessName,
+                                                                                                 reading.getName(),
+                                                                                                 reading.getUnit());
+                        prentProcessBean.setParameters(reading.getParameters());
+                        parentProcessReadingInstances.put(parentProcessId, prentProcessBean);
                     }
                 }
-                dynamicReadings.add( reading );
+                dynamicReadings.add(reading);
             }
         }
 
-        ReadingInstancesFactory.init( sigarWrapper, getPollInterval() );
+        ReadingInstancesFactory.init(sigarWrapper, getPollInterval());
 
         // create the actual static reading instances
-        staticReadingInstances = ReadingInstancesFactory.createStaticReadingInstances( sigarWrapper,
-                                                                                       staticReadings );
+        staticReadingInstances = ReadingInstancesFactory.createStaticReadingInstances(sigarWrapper,
+                                                                                      staticReadings);
 
         // remember the initial dynamic readings
-        initialDynamicReadings = new ArrayList<ReadingBean>( dynamicReadings );
+        initialDynamicReadings = new ArrayList<ReadingBean>(dynamicReadings);
 
         // create the list of dynamic reading instances. Initializing lastPollTime and lastLongValue to make correct
         // calculations on the first poll
-        if( initialDynamicReadings.size() > 0 ) {
-            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances( sigarWrapper,
-                                                                                                     parentProcessReadingInstances,
-                                                                                                     initialDynamicReadings,
-                                                                                                     dynamicReadingInstances );
+        if (initialDynamicReadings.size() > 0) {
+            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances(sigarWrapper,
+                                                                                                    parentProcessReadingInstances,
+                                                                                                    initialDynamicReadings,
+                                                                                                    dynamicReadingInstances);
         }
     }
 
@@ -110,13 +110,13 @@ public class AtsSystemMonitor extends PerformanceMonitor {
     @Override
     public List<ReadingBean> pollNewDataForFirstTime() throws Exception {
 
-         return doPoll( true );
+        return doPoll(true);
     }
 
     @Override
     public List<ReadingBean> pollNewData() throws Exception {
 
-        return doPoll( false );
+        return doPoll(false);
     }
 
     public List<ReadingBean> doPoll(
@@ -125,31 +125,31 @@ public class AtsSystemMonitor extends PerformanceMonitor {
         List<ReadingBean> redingsResult = new ArrayList<ReadingBean>();
 
         // clear the values from previous poll for all parent processes
-        for( ParentProcessReadingBean parentProcessReading : parentProcessReadingInstances.values() ) {
+        for (ParentProcessReadingBean parentProcessReading : parentProcessReadingInstances.values()) {
             parentProcessReading.resetValue();
         }
 
         // update the list of dynamic reading instances
-        if( initialDynamicReadings.size() > 0 ) {
-            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances( sigarWrapper,
-                                                                                                     parentProcessReadingInstances,
-                                                                                                     initialDynamicReadings,
-                                                                                                     dynamicReadingInstances );
+        if (initialDynamicReadings.size() > 0) {
+            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances(sigarWrapper,
+                                                                                                    parentProcessReadingInstances,
+                                                                                                    initialDynamicReadings,
+                                                                                                    dynamicReadingInstances);
         }
 
         // refresh the Sigar's info
         this.sigarWrapper.refresh();
 
         // poll the static reading instances
-        redingsResult.addAll( pollReadingInstances( staticReadingInstances ) );
+        redingsResult.addAll(pollReadingInstances(staticReadingInstances));
 
         // poll the dynamic reading instances
-        if( initialDynamicReadings.size() > 0 ) {
-            redingsResult.addAll( pollReadingInstances( dynamicReadingInstances ) );
+        if (initialDynamicReadings.size() > 0) {
+            redingsResult.addAll(pollReadingInstances(dynamicReadingInstances));
         }
 
         // add the parent process values
-        redingsResult.addAll( pollParentProcessInstances( parentProcessReadingInstances.values() ) );
+        redingsResult.addAll(pollParentProcessInstances(parentProcessReadingInstances.values()));
 
         return redingsResult;
     }
@@ -159,12 +159,12 @@ public class AtsSystemMonitor extends PerformanceMonitor {
 
         List<ReadingBean> redingsResult = new ArrayList<ReadingBean>();
 
-        for( ReadingInstance readingInstance : readingInstances ) {
+        for (ReadingInstance readingInstance : readingInstances) {
             float value = readingInstance.poll();
 
             ReadingBean newResult = readingInstance.getNewCopy();
-            newResult.setValue( String.valueOf( value ) );
-            redingsResult.add( newResult );
+            newResult.setValue(String.valueOf(value));
+            redingsResult.add(newResult);
         }
 
         return redingsResult;
@@ -175,13 +175,13 @@ public class AtsSystemMonitor extends PerformanceMonitor {
 
         List<ReadingBean> redingsResult = new ArrayList<ReadingBean>();
 
-        for( ParentProcessReadingBean readingInstance : parentProcessReadingInstances ) {
+        for (ParentProcessReadingBean readingInstance : parentProcessReadingInstances) {
             // get the collected value from all children
             float value = readingInstance.poll();
 
             ReadingBean newResult = readingInstance.getNewCopy();
-            newResult.setValue( String.valueOf( value ) );
-            redingsResult.add( newResult );
+            newResult.setValue(String.valueOf(value));
+            redingsResult.add(newResult);
         }
 
         return redingsResult;

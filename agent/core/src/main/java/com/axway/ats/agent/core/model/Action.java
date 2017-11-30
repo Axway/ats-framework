@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
  * This annotation is used to declare a java method as an ATS Agent Action.
  * Note that all action names should be unique in the scope of the Agent component.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Retention( RetentionPolicy.RUNTIME)
+@Target( ElementType.METHOD)
 public @interface Action {
 
     /**

@@ -56,10 +56,10 @@ public class TemplateActionResponseVerificator implements Serializable {
     public List<HeaderMatcher> getStepHeaderMatchers(
                                                       int stepIndex ) {
 
-        List<HeaderMatcher> headerMatchersForThisStep = headerMatchersMap.get( stepIndex );
-        if( headerMatchersForThisStep == null ) {
+        List<HeaderMatcher> headerMatchersForThisStep = headerMatchersMap.get(stepIndex);
+        if (headerMatchersForThisStep == null) {
             headerMatchersForThisStep = new ArrayList<HeaderMatcher>();
-            headerMatchersMap.put( stepIndex, headerMatchersForThisStep );
+            headerMatchersMap.put(stepIndex, headerMatchersForThisStep);
         }
 
         return headerMatchersForThisStep;
@@ -69,19 +69,19 @@ public class TemplateActionResponseVerificator implements Serializable {
                                        int stepIndex,
                                        List<HeaderMatcher> stepMatchers ) {
 
-        headerMatchersMap.put( stepIndex, stepMatchers );
+        headerMatchersMap.put(stepIndex, stepMatchers);
     }
 
     public List<ResponseMatcher> getStepBodyMatchers(
                                                       int stepIndex ) {
 
-        List<ResponseMatcher> bodyMatchersForThisStep = bodyMatchersMap.get( stepIndex );
-        if( bodyMatchersForThisStep == null ) {
+        List<ResponseMatcher> bodyMatchersForThisStep = bodyMatchersMap.get(stepIndex);
+        if (bodyMatchersForThisStep == null) {
             List<ResponseMatcher> bodyMatchers = new ArrayList<ResponseMatcher>();
-            bodyMatchersMap.put( stepIndex, bodyMatchers );
+            bodyMatchersMap.put(stepIndex, bodyMatchers);
             return bodyMatchers;
         } else {
-            return bodyMatchersMap.get( stepIndex );
+            return bodyMatchersMap.get(stepIndex);
         }
     }
 
@@ -89,6 +89,6 @@ public class TemplateActionResponseVerificator implements Serializable {
                                      int stepIndex,
                                      List<ResponseMatcher> stepMatchers ) {
 
-        bodyMatchersMap.put( stepIndex, stepMatchers );
+        bodyMatchersMap.put(stepIndex, stepMatchers);
     }
 }

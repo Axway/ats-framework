@@ -40,7 +40,7 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public EnvironmentCleanupClient( String atsAgent ) {
 
-        super( atsAgent, null );
+        super(atsAgent, null);
     }
 
     /**
@@ -52,17 +52,17 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void restore( String componentName ) throws AgentException {
 
-        log.info( "Executing restore for component '" + componentName + "'" );
+        log.info("Executing restore for component '" + componentName + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.restore( componentName, null, null );
+            localExecutor.restore(componentName, null, null);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.restore( componentName, null, null );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.restore(componentName, null, null);
         }
 
-        log.info( "Finished executing restore for component '" + componentName + "'" );
+        log.info("Finished executing restore for component '" + componentName + "'");
     }
 
     /**
@@ -75,19 +75,19 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void restore( String componentName, String environmentName ) throws AgentException {
 
-        log.info( "Executing restore for component '" + componentName + "' using environment configuration '"
-                  + environmentName + "'" );
+        log.info("Executing restore for component '" + componentName + "' using environment configuration '"
+                 + environmentName + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.restore( componentName, environmentName, null );
+            localExecutor.restore(componentName, environmentName, null);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.restore( componentName, environmentName, null );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.restore(componentName, environmentName, null);
         }
 
-        log.info( "Finished executing restore for component '" + componentName
-                  + "' using environment configuration '" + environmentName + "'" );
+        log.info("Finished executing restore for component '" + componentName
+                 + "' using environment configuration '" + environmentName + "'");
     }
 
     /**
@@ -100,19 +100,19 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void restoreFrom( String componentName, String folderPath ) throws AgentException {
 
-        log.info( "Executing restore for component '" + componentName + "' from folder '" + folderPath
-                  + "'" );
+        log.info("Executing restore for component '" + componentName + "' from folder '" + folderPath
+                 + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.restore( componentName, null, folderPath );
+            localExecutor.restore(componentName, null, folderPath);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.restore( componentName, null, folderPath );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.restore(componentName, null, folderPath);
         }
 
-        log.info( "Finished executing restore for component '" + componentName + "' from folder '"
-                  + folderPath + "'" );
+        log.info("Finished executing restore for component '" + componentName + "' from folder '"
+                 + folderPath + "'");
     }
 
     /**
@@ -127,19 +127,19 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     public void restoreFrom( String componentName, String environmentName,
                              String folderPath ) throws AgentException {
 
-        log.info( "Executing restore for component '" + componentName + "' using environment '"
-                  + environmentName + "' from folder '" + folderPath + "'" );
+        log.info("Executing restore for component '" + componentName + "' using environment '"
+                 + environmentName + "' from folder '" + folderPath + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.restore( componentName, environmentName, folderPath );
+            localExecutor.restore(componentName, environmentName, folderPath);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.restore( componentName, environmentName, folderPath );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.restore(componentName, environmentName, folderPath);
         }
 
-        log.info( "Finished executing restore for component '" + componentName + "' using environment '"
-                  + environmentName + "' from folder '" + folderPath + "'" );
+        log.info("Finished executing restore for component '" + componentName + "' using environment '"
+                 + environmentName + "' from folder '" + folderPath + "'");
     }
 
     /**
@@ -150,17 +150,17 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void restoreAllComponents() throws AgentException {
 
-        log.info( "Executing restore for all registered components" );
+        log.info("Executing restore for all registered components");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.restoreAll( null );
+            localExecutor.restoreAll(null);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.restoreAll( null );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.restoreAll(null);
         }
 
-        log.info( "Finished executing restore for all registered components" );
+        log.info("Finished executing restore for all registered components");
     }
 
     /**
@@ -172,19 +172,19 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void restoreAllComponents( String environmentName ) throws AgentException {
 
-        log.info( "Executing cleanup for all registered components using environment configuration '"
-                  + environmentName + "'" );
+        log.info("Executing cleanup for all registered components using environment configuration '"
+                 + environmentName + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.restoreAll( environmentName );
+            localExecutor.restoreAll(environmentName);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.restoreAll( environmentName );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.restoreAll(environmentName);
         }
 
-        log.info( "Finished executing cleanup for all registered components using environment configuration '"
-                  + environmentName + "'" );
+        log.info("Finished executing cleanup for all registered components using environment configuration '"
+                 + environmentName + "'");
     }
 
     /**
@@ -196,17 +196,17 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void backup( String componentName ) throws AgentException {
 
-        log.info( "Executing backup for component '" + componentName + "'" );
+        log.info("Executing backup for component '" + componentName + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.backup( componentName, null, null );
+            localExecutor.backup(componentName, null, null);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.backup( componentName, null, null );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.backup(componentName, null, null);
         }
 
-        log.info( "Finished executing backup for component '" + componentName + "'" );
+        log.info("Finished executing backup for component '" + componentName + "'");
     }
 
     /**
@@ -219,19 +219,19 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void backup( String componentName, String environmentName ) throws AgentException {
 
-        log.info( "Executing backup for component '" + componentName + "' using environment '"
-                  + environmentName + "'" );
+        log.info("Executing backup for component '" + componentName + "' using environment '"
+                 + environmentName + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.backup( componentName, environmentName, null );
+            localExecutor.backup(componentName, environmentName, null);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.backup( componentName, environmentName, null );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.backup(componentName, environmentName, null);
         }
 
-        log.info( "Finished executing backup for component '" + componentName + "' using environment '"
-                  + environmentName + "'" );
+        log.info("Finished executing backup for component '" + componentName + "' using environment '"
+                 + environmentName + "'");
     }
 
     /**
@@ -245,18 +245,18 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void backupTo( String componentName, String folderPath ) throws AgentException {
 
-        log.info( "Executing backup for component '" + componentName + "' to folder '" + folderPath + "'" );
+        log.info("Executing backup for component '" + componentName + "' to folder '" + folderPath + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.backup( componentName, null, folderPath );
+            localExecutor.backup(componentName, null, folderPath);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.backup( componentName, null, folderPath );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.backup(componentName, null, folderPath);
         }
 
-        log.info( "Finished executing backup for component '" + componentName + "' to folder '" + folderPath
-                  + "'" );
+        log.info("Finished executing backup for component '" + componentName + "' to folder '" + folderPath
+                 + "'");
     }
 
     /**
@@ -271,20 +271,20 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     public void backupTo( String componentName, String environmentName,
                           String folderPath ) throws AgentException {
 
-        log.info( "Executing backup for component '" + componentName + "' using environment configuration '"
-                  + environmentName + "' to folder '" + folderPath + "'" );
+        log.info("Executing backup for component '" + componentName + "' using environment configuration '"
+                 + environmentName + "' to folder '" + folderPath + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.backup( componentName, environmentName, folderPath );
+            localExecutor.backup(componentName, environmentName, folderPath);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.backup( componentName, environmentName, folderPath );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.backup(componentName, environmentName, folderPath);
         }
 
-        log.info( "Finished executing backup for component '" + componentName
-                  + "' using environment configuration '" + environmentName + "' to folder '" + folderPath
-                  + "'" );
+        log.info("Finished executing backup for component '" + componentName
+                 + "' using environment configuration '" + environmentName + "' to folder '" + folderPath
+                 + "'");
     }
 
     /**
@@ -295,17 +295,17 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void backupAllComponents() throws AgentException {
 
-        log.info( "Executing backup for all registered components" );
+        log.info("Executing backup for all registered components");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.backupAll( null );
+            localExecutor.backupAll(null);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.backupAll( null );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.backupAll(null);
         }
 
-        log.info( "Finished executing backup for all registered components" );
+        log.info("Finished executing backup for all registered components");
     }
 
     /**
@@ -318,19 +318,19 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     @PublicAtsApi
     public void backupAllComponents( String environmentName ) throws AgentException {
 
-        log.info( "Executing backup for all registered components using environment configuration '"
-                  + environmentName + "'" );
+        log.info("Executing backup for all registered components using environment configuration '"
+                 + environmentName + "'");
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            localExecutor.backupAll( environmentName );
+            localExecutor.backupAll(environmentName);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-            remoteExecutor.backupAll( environmentName );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+            remoteExecutor.backupAll(environmentName);
         }
 
-        log.info( "Finished executing backup for all registered components using environment configuration '"
-                  + environmentName + "'" );
+        log.info("Finished executing backup for all registered components using environment configuration '"
+                 + environmentName + "'");
     }
 
     /**
@@ -347,7 +347,7 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     public void setDatabaseConnection( String dbHost, String dbName, int dbPort, String userName,
                                        String userPassword ) throws AgentException {
 
-        setDatabaseConnection( 0, dbHost, dbName, dbPort, userName, userPassword );
+        setDatabaseConnection(0, dbHost, dbName, dbPort, userName, userPassword);
     }
 
     /**
@@ -366,29 +366,29 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
                                        String userName, String userPassword ) throws AgentException {
 
         Properties dbProperties = new Properties();
-        dbProperties.put( EnvironmentConfigurator.DB_CONFIGURATION_INDEX, databaseIndex );
-        if( !StringUtils.isNullOrEmpty( dbHost ) ) {
-            dbProperties.put( EnvironmentConfigurator.DB_HOST, dbHost );
+        dbProperties.put(EnvironmentConfigurator.DB_CONFIGURATION_INDEX, databaseIndex);
+        if (!StringUtils.isNullOrEmpty(dbHost)) {
+            dbProperties.put(EnvironmentConfigurator.DB_HOST, dbHost);
         }
-        if( dbPort > 0 ) {
-            dbProperties.put( EnvironmentConfigurator.DB_PORT, dbPort );
+        if (dbPort > 0) {
+            dbProperties.put(EnvironmentConfigurator.DB_PORT, dbPort);
         }
-        if( !StringUtils.isNullOrEmpty( dbName ) ) {
-            dbProperties.put( EnvironmentConfigurator.DB_NAME, dbName );
+        if (!StringUtils.isNullOrEmpty(dbName)) {
+            dbProperties.put(EnvironmentConfigurator.DB_NAME, dbName);
         }
-        if( !StringUtils.isNullOrEmpty( userName ) ) {
-            dbProperties.put( EnvironmentConfigurator.DB_USER_NAME, userName );
+        if (!StringUtils.isNullOrEmpty(userName)) {
+            dbProperties.put(EnvironmentConfigurator.DB_USER_NAME, userName);
         }
-        if( !StringUtils.isNullOrEmpty( userPassword ) ) {
-            dbProperties.put( EnvironmentConfigurator.DB_USER_PASSWORD, userPassword );
+        if (!StringUtils.isNullOrEmpty(userPassword)) {
+            dbProperties.put(EnvironmentConfigurator.DB_USER_PASSWORD, userPassword);
         }
 
         List<Properties> dbPropertiesList = new ArrayList<Properties>();
-        dbPropertiesList.add( dbProperties );
+        dbPropertiesList.add(dbProperties);
 
-        EnvironmentConfigurator envronmentConfigurator = new EnvironmentConfigurator( component,
-                                                                                      dbPropertiesList );
-        pushConfiguration( envronmentConfigurator );
+        EnvironmentConfigurator envronmentConfigurator = new EnvironmentConfigurator(component,
+                                                                                     dbPropertiesList);
+        pushConfiguration(envronmentConfigurator);
     }
 
     /**
@@ -400,17 +400,17 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
     private void pushConfiguration( Configurator configurator ) throws AgentException {
 
         List<Configurator> configurators = new ArrayList<Configurator>();
-        configurators.add( configurator );
+        configurators.add(configurator);
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             // the already loaded Agent components are first unloaded
             MainComponentLoader.getInstance().destroy();
 
             // the initialization procedure implicitly applies the new configurations and then loads up again the Agent components
-            MainComponentLoader.getInstance().initialize( configurators );
+            MainComponentLoader.getInstance().initialize(configurators);
         } else {
             // send the Agent configuration
-            new RemoteConfigurationManager().pushConfiguration( atsAgent, configurator );
+            new RemoteConfigurationManager().pushConfiguration(atsAgent, configurator);
         }
     }
 }

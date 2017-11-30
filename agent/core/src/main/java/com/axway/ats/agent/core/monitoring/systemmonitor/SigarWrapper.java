@@ -37,7 +37,7 @@ import com.axway.ats.core.monitoring.MonitorConfigurationException;
  */
 public class SigarWrapper {
 
-    private static final Logger log             = Logger.getLogger( SigarWrapper.class );
+    private static final Logger log             = Logger.getLogger(SigarWrapper.class);
 
     private Sigar               sigar;
 
@@ -65,18 +65,18 @@ public class SigarWrapper {
 
         try {
             sigar = new Sigar();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             final String errorMsg = "Error creating instance of Sigar front-end class";
-            log.error( errorMsg, e );
-            throw new MonitorConfigurationException( errorMsg, e );
+            log.error(errorMsg, e);
+            throw new MonitorConfigurationException(errorMsg, e);
         }
 
         try {
             refresh();
-        } catch( UnsatisfiedLinkError ule ) {
+        } catch (UnsatisfiedLinkError ule) {
             final String errorMsg = "It seems that Sigar native libraries are not found on the system. They are expected in the same folder where the Sigar jar file is located.";
-            log.error( errorMsg, ule );
-            throw new MonitorConfigurationException( errorMsg, ule );
+            log.error(errorMsg, ule);
+            throw new MonitorConfigurationException(errorMsg, ule);
         }
     }
 
@@ -93,15 +93,15 @@ public class SigarWrapper {
             this.memory = this.sigar.getMem();
             this.cpu = this.sigar.getCpu();
             this.cpuPerc = this.sigar.getCpuPerc();
-            if( !OperatingSystemType.getCurrentOsType().equals( OperatingSystemType.AIX ) ) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.AIX)) {
                 this.netstat = this.sigar.getNetStat();
                 this.tcp = this.sigar.getTcp();
             }
-            this.loadAvrg = new SigarLoadAverage( this.sigar );
-        } catch( Exception e ) {
+            this.loadAvrg = new SigarLoadAverage(this.sigar);
+        } catch (Exception e) {
             final String errorMsg = "Error retrieving data from the Sigar monitoring system";
-            log.error( errorMsg, e );
-            throw new MonitorConfigurationException( errorMsg, e );
+            log.error(errorMsg, e);
+            throw new MonitorConfigurationException(errorMsg, e);
         }
 
     }
@@ -125,11 +125,11 @@ public class SigarWrapper {
                                  long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcCpu( pid ).getPercent();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcCpu(pid).getPercent();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
         return -1;
     }
@@ -138,11 +138,11 @@ public class SigarWrapper {
                                          long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcCpu( pid ).getSys();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcCpu(pid).getSys();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
         return -1;
     }
@@ -151,11 +151,11 @@ public class SigarWrapper {
                                        long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcCpu( pid ).getUser();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcCpu(pid).getUser();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
         return -1;
     }
@@ -164,11 +164,11 @@ public class SigarWrapper {
                                         long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcCpu( pid ).getTotal();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcCpu(pid).getTotal();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
         return -1;
     }
@@ -177,11 +177,11 @@ public class SigarWrapper {
                                   long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcMem( pid ).getSize();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcMem(pid).getSize();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
 
         return -1;
@@ -191,11 +191,11 @@ public class SigarWrapper {
                                    long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcMem( pid ).getResident();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcMem(pid).getResident();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
 
         return -1;
@@ -205,11 +205,11 @@ public class SigarWrapper {
                                  long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcMem( pid ).getShare();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcMem(pid).getShare();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
 
         return -1;
@@ -219,11 +219,11 @@ public class SigarWrapper {
                                      long pid ) {
 
         try {
-            if( !isFaultyProcess( pid ) ) {
-                return sigar.getProcMem( pid ).getPageFaults();
+            if (!isFaultyProcess(pid)) {
+                return sigar.getProcMem(pid).getPageFaults();
             }
-        } catch( SigarException se ) {
-            updateFaultyProcessesList( pid );
+        } catch (SigarException se) {
+            updateFaultyProcessesList(pid);
         }
         return -1;
     }
@@ -236,14 +236,14 @@ public class SigarWrapper {
     private void updateFaultyProcessesList(
                                             long pid ) {
 
-        log.error( "Unable to collect data about process with ID " + pid
-                   + ". We will not be monitoring this process anymore!" );
-        faultyProcesses.add( pid );
+        log.error("Unable to collect data about process with ID " + pid
+                  + ". We will not be monitoring this process anymore!");
+        faultyProcesses.add(pid);
     }
 
     private boolean isFaultyProcess(
                                      long pid ) {
 
-        return faultyProcesses.contains( pid );
+        return faultyProcesses.contains(pid);
     }
 }

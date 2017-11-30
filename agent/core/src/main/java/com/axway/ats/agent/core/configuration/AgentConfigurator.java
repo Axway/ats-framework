@@ -29,10 +29,10 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  * It is run explicitly from the tests, probably just once for the whole set of
  * tests in some "setUp" like method
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AgentConfigurator implements Configurator {
 
-    private static final Logger        log                               = Logger.getLogger( AgentConfigurator.class );
+    private static final Logger        log                               = Logger.getLogger(AgentConfigurator.class);
 
     private static final String        SETTINGS_FILENAME                 = "ats.agent.properties";
 
@@ -60,11 +60,11 @@ public class AgentConfigurator implements Configurator {
      */
     public AgentConfigurator( String pathToConfigFile ) {
 
-        try (FileInputStream fis = new FileInputStream( new File( pathToConfigFile, SETTINGS_FILENAME ) )) {
-            agentFileProperties.load( fis );
-        } catch( Exception e ) {
+        try (FileInputStream fis = new FileInputStream(new File(pathToConfigFile, SETTINGS_FILENAME))) {
+            agentFileProperties.load(fis);
+        } catch (Exception e) {
             // Agent settings file not provided, or there is an error reading it
-            log.debug( "Could not load " + SETTINGS_FILENAME + " from directory " + pathToConfigFile );
+            log.debug("Could not load " + SETTINGS_FILENAME + " from directory " + pathToConfigFile);
         }
     }
 
@@ -94,13 +94,13 @@ public class AgentConfigurator implements Configurator {
          */
 
         // set the Agent components folder
-        setAgentComponentsFolder( configSettings );
+        setAgentComponentsFolder(configSettings);
 
         // set initial delay before start for polling
-        setMonitorInitialDelay( configSettings );
+        setMonitorInitialDelay(configSettings);
 
         // set the poll interval
-        setMonitorPollInterval( configSettings );
+        setMonitorPollInterval(configSettings);
 
     }
 
@@ -111,7 +111,7 @@ public class AgentConfigurator implements Configurator {
      */
     public static String getConnectionProtocol( String host ) {
 
-        return protocolsPerHost.get( host );
+        return protocolsPerHost.get(host);
     }
 
     /**
@@ -121,7 +121,7 @@ public class AgentConfigurator implements Configurator {
      */
     public static void setConnectionProtocol( String host, String protocol ) {
 
-        protocolsPerHost.put( host, protocol );
+        protocolsPerHost.put(host, protocol);
     }
 
     private void setAgentComponentsFolder( ConfigurationSettings configSettings ) {
@@ -130,22 +130,22 @@ public class AgentConfigurator implements Configurator {
 
         // value provided from remote Agent client
         String oldComponentsFolder = configSettings.getComponentsFolder();
-        String newComponentsFolder = agentRemoteProperties.getProperty( COMPONENTS_FOLDER );
+        String newComponentsFolder = agentRemoteProperties.getProperty(COMPONENTS_FOLDER);
         loadSource = "remotely provided value";
 
         // look for other configuration ways just the first time(e.g. during load time)
-        if( newComponentsFolder == null && oldComponentsFolder == null ) {
+        if (newComponentsFolder == null && oldComponentsFolder == null) {
             // look for other configuration ways just the first time(e.g. during load time)
 
             // value provided as a system property
-            newComponentsFolder = AtsSystemProperties.getPropertyAsString( COMPONENTS_FOLDER );
+            newComponentsFolder = AtsSystemProperties.getPropertyAsString(COMPONENTS_FOLDER);
             loadSource = "system property value";
-            if( newComponentsFolder == null ) {
+            if (newComponentsFolder == null) {
 
                 // value provided from an Agent configuration file(placed in the Agent war file)
-                newComponentsFolder = agentFileProperties.getProperty( COMPONENTS_FOLDER );
+                newComponentsFolder = agentFileProperties.getProperty(COMPONENTS_FOLDER);
                 loadSource = "Agent configuration file value";
-                if( newComponentsFolder == null ) {
+                if (newComponentsFolder == null) {
 
                     // default value
                     newComponentsFolder = "../actions";
@@ -154,12 +154,12 @@ public class AgentConfigurator implements Configurator {
             }
         }
 
-        if( newComponentsFolder != null && !newComponentsFolder.equals( oldComponentsFolder ) ) {
-            configSettings.setComponentsFolder( newComponentsFolder );
-            log.info( "Agent components are expected in '" + newComponentsFolder + "' folder - using "
-                      + loadSource );
+        if (newComponentsFolder != null && !newComponentsFolder.equals(oldComponentsFolder)) {
+            configSettings.setComponentsFolder(newComponentsFolder);
+            log.info("Agent components are expected in '" + newComponentsFolder + "' folder - using "
+                     + loadSource);
         } else {
-            log.info( "Agent components are expected in '" + oldComponentsFolder + "' folder" );
+            log.info("Agent components are expected in '" + oldComponentsFolder + "' folder");
         }
     }
 
@@ -169,22 +169,22 @@ public class AgentConfigurator implements Configurator {
 
         // value provided from remote Agent client
         int oldMonitorPollInterval = configSettings.getMonitorPollInterval();
-        int newMonitorPollInterval = parseStringAsNonNegativeNumber( agentRemoteProperties.getProperty( MONITOR_POLL_INTERVAL ) );
+        int newMonitorPollInterval = parseStringAsNonNegativeNumber(agentRemoteProperties.getProperty(MONITOR_POLL_INTERVAL));
         loadSource = "remotely provided value";
 
-        if( newMonitorPollInterval == 0 && oldMonitorPollInterval == 0 ) {
+        if (newMonitorPollInterval == 0 && oldMonitorPollInterval == 0) {
             // look for other configuration ways just the first time(e.g. during load time)
 
             // value provided as a system property
-            newMonitorPollInterval = AtsSystemProperties.getPropertyAsNonNegativeNumber( MONITOR_POLL_INTERVAL,
-                                                                                         0 );
+            newMonitorPollInterval = AtsSystemProperties.getPropertyAsNonNegativeNumber(MONITOR_POLL_INTERVAL,
+                                                                                        0);
             loadSource = "system property value";
-            if( newMonitorPollInterval == 0 ) {
+            if (newMonitorPollInterval == 0) {
 
                 // value provided from an Agent configuration file(placed in the Agent war file)
-                newMonitorPollInterval = parseStringAsNonNegativeNumber( agentFileProperties.getProperty( MONITOR_POLL_INTERVAL ) );
+                newMonitorPollInterval = parseStringAsNonNegativeNumber(agentFileProperties.getProperty(MONITOR_POLL_INTERVAL));
                 loadSource = "Agent configuration file value";
-                if( newMonitorPollInterval == 0 ) {
+                if (newMonitorPollInterval == 0) {
 
                     // default value
                     newMonitorPollInterval = 5;
@@ -193,12 +193,12 @@ public class AgentConfigurator implements Configurator {
             }
         }
 
-        if( newMonitorPollInterval != 0 && newMonitorPollInterval != oldMonitorPollInterval ) {
-            configSettings.setMonitorPollInterval( newMonitorPollInterval );
-            log.info( "Agent components poll interval is " + newMonitorPollInterval + " seconds - using "
-                      + loadSource );
+        if (newMonitorPollInterval != 0 && newMonitorPollInterval != oldMonitorPollInterval) {
+            configSettings.setMonitorPollInterval(newMonitorPollInterval);
+            log.info("Agent components poll interval is " + newMonitorPollInterval + " seconds - using "
+                     + loadSource);
         } else {
-            log.info( "Agent components poll interval is " + oldMonitorPollInterval + " seconds" );
+            log.info("Agent components poll interval is " + oldMonitorPollInterval + " seconds");
         }
     }
 
@@ -208,19 +208,19 @@ public class AgentConfigurator implements Configurator {
 
         // do not check settings provided from remote Agent client as it is too late for this
         int oldMonitorInitialDelay = configSettings.getMonitorInitialDelay();
-        if( oldMonitorInitialDelay == 0 ) {
+        if (oldMonitorInitialDelay == 0) {
             // look for other configuration ways just the first time(e.g. during load time)
 
             // value provided as a system property
-            int newMonitorInitialDelay = AtsSystemProperties.getPropertyAsNonNegativeNumber( MONITOR_INITIAL_DELAY_BEFORE_POLL,
-                                                                                             0 );
+            int newMonitorInitialDelay = AtsSystemProperties.getPropertyAsNonNegativeNumber(MONITOR_INITIAL_DELAY_BEFORE_POLL,
+                                                                                            0);
             loadSource = "system property value";
-            if( newMonitorInitialDelay == 0 ) {
+            if (newMonitorInitialDelay == 0) {
 
                 // value provided from an Agent configuration file(placed in the Agent WAR file)
-                newMonitorInitialDelay = parseStringAsNonNegativeNumber( agentFileProperties.getProperty( MONITOR_INITIAL_DELAY_BEFORE_POLL ) );
+                newMonitorInitialDelay = parseStringAsNonNegativeNumber(agentFileProperties.getProperty(MONITOR_INITIAL_DELAY_BEFORE_POLL));
                 loadSource = "Agent configuration file value";
-                if( newMonitorInitialDelay == 0 ) {
+                if (newMonitorInitialDelay == 0) {
 
                     // default value
                     newMonitorInitialDelay = 0;
@@ -228,9 +228,9 @@ public class AgentConfigurator implements Configurator {
                 }
             }
 
-            configSettings.setMonitorInitialDelay( newMonitorInitialDelay );
-            log.info( "Agent components loading initial delay  is set to " + newMonitorInitialDelay
-                      + " seconds using " + loadSource );
+            configSettings.setMonitorInitialDelay(newMonitorInitialDelay);
+            log.info("Agent components loading initial delay  is set to " + newMonitorInitialDelay
+                     + " seconds using " + loadSource);
         }
     }
 
@@ -250,16 +250,16 @@ public class AgentConfigurator implements Configurator {
     private static int parseStringAsNonNegativeNumber( String valueAsString ) {
 
         int intValue = 0;
-        if( valueAsString != null ) {
+        if (valueAsString != null) {
             try {
-                intValue = Integer.parseInt( valueAsString );
-            } catch( NumberFormatException nfe ) {
-                log.warn( "String '" + valueAsString
-                          + "' could not be parsed as a valid number and will be ignored", nfe );
+                intValue = Integer.parseInt(valueAsString);
+            } catch (NumberFormatException nfe) {
+                log.warn("String '" + valueAsString
+                         + "' could not be parsed as a valid number and will be ignored", nfe);
             }
-            if( intValue < 0 ) {
-                log.warn( new IllegalArgumentException( "String '" + valueAsString
-                                                        + "' is not a positive number and will be ignored" ) );
+            if (intValue < 0) {
+                log.warn(new IllegalArgumentException("String '" + valueAsString
+                                                      + "' is not a positive number and will be ignored"));
                 intValue = 0;
             }
         }

@@ -37,8 +37,8 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.junit.BaseTestWebapps;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AgentServicePool.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { AgentServicePool.class })
 public class Test_RemoteConfigurationManager extends BaseTestWebapps {
 
     private AgentServicePool mockAgentServicePool;
@@ -48,22 +48,22 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
     public void setUp() {
 
         // create the mocks
-        mockStatic( AgentServicePool.class );
-        mockAgentServicePool = createMock( AgentServicePool.class );
-        mockAgentService = createMock( AgentService.class );
+        mockStatic(AgentServicePool.class);
+        mockAgentServicePool = createMock(AgentServicePool.class);
+        mockAgentService = createMock(AgentService.class);
     }
 
     @Test
     public void pushConfigurationPositive() throws AgentException, AgentException_Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.0.0.2" ) ).andReturn( mockAgentService );
-        mockAgentService.pushConfiguration( isA( byte[].class ) );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.0.0.2")).andReturn(mockAgentService);
+        mockAgentService.pushConfiguration(isA(byte[].class));
 
         replayAll();
 
-        new RemoteConfigurationManager().pushConfiguration( "10.0.0.2",
-                                                            new RemoteLoggingConfigurator( "127.0.0.1" ) );
+        new RemoteConfigurationManager().pushConfiguration("10.0.0.2",
+                                                           new RemoteLoggingConfigurator("127.0.0.1"));
 
         // verify results
         verifyAll();
@@ -72,36 +72,36 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
         //                                                                           new RemoteLoggingConfigurator() ) );
     }
 
-    @Test(expected = AgentException.class)
+    @Test( expected = AgentException.class)
     public void pushConfigurationNegativeException() throws AgentException, AgentException_Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.0.0.3" ) ).andReturn( mockAgentService );
-        mockAgentService.pushConfiguration( isA( byte[].class ) );
-        expectLastCall().andThrow( new AgentException_Exception( "test",
-                                                                 new com.axway.ats.agent.webapp.client.AgentException() ) );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.0.0.3")).andReturn(mockAgentService);
+        mockAgentService.pushConfiguration(isA(byte[].class));
+        expectLastCall().andThrow(new AgentException_Exception("test",
+                                                               new com.axway.ats.agent.webapp.client.AgentException()));
 
         replayAll();
 
-        new RemoteConfigurationManager().pushConfiguration( "10.0.0.3",
-                                                            new RemoteLoggingConfigurator( "127.0.0.1" ) );
+        new RemoteConfigurationManager().pushConfiguration("10.0.0.3",
+                                                           new RemoteLoggingConfigurator("127.0.0.1"));
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = AgentException.class)
+    @Test( expected = AgentException.class)
     public void pushConfigurationNegativeRuntimeException() throws AgentException, AgentException_Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.0.0.3" ) ).andReturn( mockAgentService );
-        mockAgentService.pushConfiguration( isA( byte[].class ) );
-        expectLastCall().andThrow( new RuntimeException() );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.0.0.3")).andReturn(mockAgentService);
+        mockAgentService.pushConfiguration(isA(byte[].class));
+        expectLastCall().andThrow(new RuntimeException());
 
         replayAll();
 
-        new RemoteConfigurationManager().pushConfiguration( "10.0.0.3",
-                                                            new RemoteLoggingConfigurator( "127.0.0.1" ) );
+        new RemoteConfigurationManager().pushConfiguration("10.0.0.3",
+                                                           new RemoteLoggingConfigurator("127.0.0.1"));
 
         // verify results
         verifyAll();

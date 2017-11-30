@@ -19,13 +19,13 @@ package com.axway.ats.agent.core.exceptions;
  * Exception thrown when a call to a non-existent environment
  * is made.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchEnvironmentException extends AgentException {
 
     public NoSuchEnvironmentException( String componentName,
                                        String environmentName ) {
 
-        super( "Component '" + componentName + "' doesn't contain environment with name '" + environmentName
-               + "'" );
+        super("Component '" + componentName + "' doesn't contain environment with name '" + environmentName
+              + "'");
     }
 }

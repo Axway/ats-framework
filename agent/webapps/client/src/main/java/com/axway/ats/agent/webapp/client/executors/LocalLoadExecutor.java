@@ -57,9 +57,9 @@ public class LocalLoadExecutor extends LocalExecutor {
     public Object executeAction( ActionRequest actionRequest ) throws AgentException {
 
         List<ActionRequest> actions = new ArrayList<ActionRequest>();
-        actions.add( actionRequest );
+        actions.add(actionRequest);
 
-        executeActions( actions );
+        executeActions(actions);
 
         //can't return anything as each action is executed multiple times
         return null;
@@ -68,44 +68,47 @@ public class LocalLoadExecutor extends LocalExecutor {
     @Override
     public void executeActions( List<ActionRequest> actionRequests ) throws AgentException {
 
-        log.info( "Start executing action queue '" + queueName + "'."
-                  + ( threadingPattern.isBlockUntilCompletion()
-                                                                ? " And wait to finish."
-                                                                : "" ) );
+        log.info("Start executing action queue '" + queueName + "'."
+                 + (threadingPattern.isBlockUntilCompletion()
+                                                              ? " And wait to finish."
+                                                              : ""));
         // start queue in the database and retrieve its ID
-        int queueId = retrieveQueueId( queueSequence, HostUtils.getLocalHostIP() );
+        int queueId = retrieveQueueId(queueSequence, HostUtils.getLocalHostIP());
 
         try {
-            MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller()).executeActions( "LOCAL", queueName, queueId,
-                                                                     actionRequests, threadingPattern,
-                                                                     loaderDataConfig );
+            MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller()).executeActions("LOCAL", queueName,
+                                                                                                queueId,
+                                                                                                actionRequests,
+                                                                                                threadingPattern,
+                                                                                                loaderDataConfig);
 
-            if( threadingPattern.isBlockUntilCompletion() ) {
+            if (threadingPattern.isBlockUntilCompletion()) {
 
-                log.endLoadQueue( queueName, LoadQueueResult.PASSED );
-                log.info( "Finished executing action queue '" + queueName + "'" );
+                log.endLoadQueue(queueName, LoadQueueResult.PASSED);
+                log.info("Finished executing action queue '" + queueName + "'");
             } else {
                 // wait in another thread until the queue finish
-                ImportantThread helpThread = new ImportantThread( new Runnable() {
+                ImportantThread helpThread = new ImportantThread(new Runnable() {
                     @Override
                     public void run() {
 
                         try {
-                            MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller()).waitUntilQueueFinish( queueName );
-                            log.endLoadQueue( queueName, LoadQueueResult.PASSED );
-                            log.info( "Finished executing action queue '" + queueName + "'" );
-                        } catch( NoSuchLoadQueueException e ) {
-                            log.error( "Error waiting for action queue '" + queueName + "' completion", e );
-                            log.endLoadQueue( queueName, LoadQueueResult.FAILED );
+                            MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller())
+                                                      .waitUntilQueueFinish(queueName);
+                            log.endLoadQueue(queueName, LoadQueueResult.PASSED);
+                            log.info("Finished executing action queue '" + queueName + "'");
+                        } catch (NoSuchLoadQueueException e) {
+                            log.error("Error waiting for action queue '" + queueName + "' completion", e);
+                            log.endLoadQueue(queueName, LoadQueueResult.FAILED);
                         }
                     }
-                } );
-                helpThread.setDescription( queueName );
+                });
+                helpThread.setDescription(queueName);
                 helpThread.start();
-                log.info( "Action queue '" + queueName + "' scheduled for asynchronous execution" );
+                log.info("Action queue '" + queueName + "' scheduled for asynchronous execution");
             }
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 }

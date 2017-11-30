@@ -17,11 +17,11 @@ package com.axway.ats.agent.core.configuration;
 
 import com.axway.ats.agent.core.exceptions.AgentException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ConfigurationException extends AgentException {
 
     public ConfigurationException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

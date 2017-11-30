@@ -30,12 +30,12 @@ public class SessionNotFoundException extends RuntimeException {
     }
 
     public SessionNotFoundException( String message ) {
-        super( message );
+        super(message);
     }
 
     public SessionNotFoundException( String message,
                                      Throwable throwable ) {
-        super( message, throwable );
+        super(message, throwable);
     }
 
 }

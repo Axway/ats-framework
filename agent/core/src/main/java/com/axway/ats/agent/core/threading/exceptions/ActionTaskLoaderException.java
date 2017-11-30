@@ -17,11 +17,11 @@ package com.axway.ats.agent.core.threading.exceptions;
 
 import com.axway.ats.agent.core.exceptions.AgentException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ActionTaskLoaderException extends AgentException {
 
     public ActionTaskLoaderException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

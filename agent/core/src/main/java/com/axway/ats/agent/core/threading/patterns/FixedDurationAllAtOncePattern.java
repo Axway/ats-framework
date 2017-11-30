@@ -43,7 +43,7 @@ public final class FixedDurationAllAtOncePattern extends ThreadingPattern
     public FixedDurationAllAtOncePattern( int threadCount, boolean blockUntilCompletion, int duration,
                                           long intervalBetweenIterations ) {
 
-        super( threadCount, intervalBetweenIterations, -1, -1, blockUntilCompletion );
+        super(threadCount, intervalBetweenIterations, -1, -1, blockUntilCompletion);
 
         this.duration = duration;
     }
@@ -63,8 +63,8 @@ public final class FixedDurationAllAtOncePattern extends ThreadingPattern
                                           long minIntervalBetweenIterations,
                                           long maxIntervalBetweenIterations ) {
 
-        super( threadCount, 0, minIntervalBetweenIterations, maxIntervalBetweenIterations,
-               blockUntilCompletion );
+        super(threadCount, 0, minIntervalBetweenIterations, maxIntervalBetweenIterations,
+              blockUntilCompletion);
 
         this.duration = duration;
     }
@@ -80,7 +80,7 @@ public final class FixedDurationAllAtOncePattern extends ThreadingPattern
     @PublicAtsApi
     public FixedDurationAllAtOncePattern( int threadCount, boolean blockUntilCompletion, int duration ) {
 
-        super( threadCount, 0, -1, -1, blockUntilCompletion );
+        super(threadCount, 0, -1, -1, blockUntilCompletion);
 
         this.duration = duration;
     }
@@ -109,24 +109,24 @@ public final class FixedDurationAllAtOncePattern extends ThreadingPattern
 
         String description = "Fixed duration all at once - " + NUMBER_THREADS_TOKEN + " threads in "
                              + duration + " seconds, ";
-        if( intervalBetweenIterations > 0 ) {
+        if (intervalBetweenIterations > 0) {
             description += intervalBetweenIterations + " ms interval between iterations";
-        } else if( minIntervalBetweenIterations >= 0 ) {
+        } else if (minIntervalBetweenIterations >= 0) {
             description += minIntervalBetweenIterations + " to " + maxIntervalBetweenIterations
                            + " ms varying interval";
         } else {
             description += "no interval between iterations";
         }
-        if( iterationTimeout > 0 ) {
+        if (iterationTimeout > 0) {
             description += ", " + iterationTimeout + " secs iteration timeout";
         }
-        if( useSynchronizedIterations ) {
+        if (useSynchronizedIterations) {
             description += ", running synchronized iterations";
         }
-        if( timeFrame > 0 ) {
+        if (timeFrame > 0) {
             description += ", max " + executionsPerTimeFrame + " total iterations per " + timeFrame + " secs";
         }
-        if( queuePassRateInPercents > 0 ) {
+        if (queuePassRateInPercents > 0) {
             description += ", pass if " + queuePassRateInPercents + "% of the iterations pass";
         }
         return description;
@@ -135,12 +135,12 @@ public final class FixedDurationAllAtOncePattern extends ThreadingPattern
     private FixedDurationAllAtOncePattern newInstance( int calculatedThreadCount,
                                                        int calculatedExecutionsPerTimeFrame ) {
 
-        FixedDurationAllAtOncePattern pattern = new FixedDurationAllAtOncePattern( calculatedThreadCount,
-                                                                                   this.blockUntilCompletion,
-                                                                                   this.duration,
-                                                                                   this.intervalBetweenIterations );
-        pattern.setMinIntervalBetweenIterations( this.minIntervalBetweenIterations );
-        pattern.setMaxIntervalBetweenIterations( this.maxIntervalBetweenIterations );
+        FixedDurationAllAtOncePattern pattern = new FixedDurationAllAtOncePattern(calculatedThreadCount,
+                                                                                  this.blockUntilCompletion,
+                                                                                  this.duration,
+                                                                                  this.intervalBetweenIterations);
+        pattern.setMinIntervalBetweenIterations(this.minIntervalBetweenIterations);
+        pattern.setMaxIntervalBetweenIterations(this.maxIntervalBetweenIterations);
         pattern.timeFrame = this.timeFrame;
         pattern.executionsPerTimeFrame = calculatedExecutionsPerTimeFrame;
         pattern.iterationTimeout = this.iterationTimeout;
@@ -151,27 +151,27 @@ public final class FixedDurationAllAtOncePattern extends ThreadingPattern
     public List<ThreadingPattern> distribute( int numHosts ) {
 
         List<ThreadingPattern> distributedPatterns = new ArrayList<ThreadingPattern>();
-        if( threadCount < numHosts ) {
-            log.warn( "We cannot distribute just " + threadCount + " threads on " + numHosts
-                      + " hosts. So all work will be done by one host" );
-            distributedPatterns.add( this );
-        } else if( this.timeFrame > 0 && executionsPerTimeFrame < numHosts ) {
-            log.warn( "We cannot distribute just " + executionsPerTimeFrame + " iterations per time frame on "
-                      + numHosts + " hosts. So all work will be done by one host" );
-            distributedPatterns.add( this );
+        if (threadCount < numHosts) {
+            log.warn("We cannot distribute just " + threadCount + " threads on " + numHosts
+                     + " hosts. So all work will be done by one host");
+            distributedPatterns.add(this);
+        } else if (this.timeFrame > 0 && executionsPerTimeFrame < numHosts) {
+            log.warn("We cannot distribute just " + executionsPerTimeFrame + " iterations per time frame on "
+                     + numHosts + " hosts. So all work will be done by one host");
+            distributedPatterns.add(this);
         } else {
 
             // for each host - distribute the total number of threads
-            int[] threadCountValues = new EvenLoadDistributingUtils().getEvenLoad( threadCount, numHosts );
+            int[] threadCountValues = new EvenLoadDistributingUtils().getEvenLoad(threadCount, numHosts);
             // for each host - distribute the number of executions per time frame
-            int[] executionsPerTimeFrameDistValues = new EvenLoadDistributingUtils().getEvenLoad( executionsPerTimeFrame,
-                                                                                                  numHosts );
-            for( int i = 0; i < numHosts; i++ ) {
+            int[] executionsPerTimeFrameDistValues = new EvenLoadDistributingUtils().getEvenLoad(executionsPerTimeFrame,
+                                                                                                 numHosts);
+            for (int i = 0; i < numHosts; i++) {
                 FixedDurationAllAtOncePattern newThreadingPattern;
-                newThreadingPattern = newInstance( threadCountValues[i],
-                                                   executionsPerTimeFrameDistValues[i] );
-                newThreadingPattern.setUseSynchronizedIterations( this.isUseSynchronizedIterations() );
-                distributedPatterns.add( newThreadingPattern );
+                newThreadingPattern = newInstance(threadCountValues[i],
+                                                  executionsPerTimeFrameDistValues[i]);
+                newThreadingPattern.setUseSynchronizedIterations(this.isUseSynchronizedIterations());
+                distributedPatterns.add(newThreadingPattern);
             }
         }
 

@@ -34,7 +34,7 @@ import com.axway.ats.core.monitoring.MonitorConfigurationException;
  */
 public class MBeanWrapper {
 
-    private static final Logger   log = Logger.getLogger( MBeanWrapper.class );
+    private static final Logger   log = Logger.getLogger(MBeanWrapper.class);
 
     private MBeanServerConnection connection;
     private int                   jvmPort;
@@ -43,18 +43,18 @@ public class MBeanWrapper {
 
         this.jvmPort = jvmPort;
         try {
-            JMXConnector connector = JMXConnectorFactory.newJMXConnector( new JMXServiceURL( "service:jmx:rmi:///jndi/rmi://localhost:"
-                                                                                             + this.jvmPort
-                                                                                             + "/jmxrmi" ),
-                                                                          null );
+            JMXConnector connector = JMXConnectorFactory.newJMXConnector(new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"
+                                                                                           + this.jvmPort
+                                                                                           + "/jmxrmi"),
+                                                                         null);
             connector.connect();
 
             this.connection = connector.getMBeanServerConnection();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             final String msg = "Error initializing the JMV monitor. Unable to connect to JVM at port "
                                + this.jvmPort;
-            log.error( msg, e );
-            throw new MonitorConfigurationException( msg, e );
+            log.error(msg, e);
+            throw new MonitorConfigurationException(msg, e);
         }
     }
 
@@ -69,20 +69,20 @@ public class MBeanWrapper {
 
         Set<ObjectName> mBeanNames;
         try {
-            mBeanNames = connection.queryNames( new ObjectName( name ), null );
-        } catch( Exception e ) {
+            mBeanNames = connection.queryNames(new ObjectName(name), null);
+        } catch (Exception e) {
             final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched patter is "
                                     + name;
-            log.error( errorMsg, e );
-            throw new MonitorConfigurationException( errorMsg, e );
+            log.error(errorMsg, e);
+            throw new MonitorConfigurationException(errorMsg, e);
         }
 
-        if( mBeanNames.size() != 1 ) {
+        if (mBeanNames.size() != 1) {
             final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched patter is "
                                     + name + ". We expected to find 1, but found " + mBeanNames
                                     + " MBean names.";
-            log.error( errorMsg );
-            throw new MonitorConfigurationException( errorMsg );
+            log.error(errorMsg);
+            throw new MonitorConfigurationException(errorMsg);
         }
 
         Iterator<ObjectName> it = mBeanNames.iterator();
@@ -101,24 +101,24 @@ public class MBeanWrapper {
                               String attributeName ) {
 
         try {
-            for( MBeanAttributeInfo attInfo : connection.getMBeanInfo( objectName ).getAttributes() ) {
+            for (MBeanAttributeInfo attInfo : connection.getMBeanInfo(objectName).getAttributes()) {
 
                 String attName = attInfo.getName();
-                if( attName.equals( attributeName ) ) {
-                    return connection.getAttribute( objectName, attributeName );
+                if (attName.equals(attributeName)) {
+                    return connection.getAttribute(objectName, attributeName);
                 }
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
             final String errorMsg = "Error getting the value of the '" + attributeName
                                     + "' attribute of MBean with name '" + objectName + "'";
-            log.error( errorMsg, e );
-            throw new MonitorConfigurationException( errorMsg, e );
+            log.error(errorMsg, e);
+            throw new MonitorConfigurationException(errorMsg, e);
         }
 
         final String errorMsg = "Error getting the value of the '" + attributeName
                                 + "' attribute of MBean with name '" + objectName
                                 + "': The attribute is not found!";
-        log.error( errorMsg );
-        throw new MonitorConfigurationException( errorMsg );
+        log.error(errorMsg);
+        throw new MonitorConfigurationException(errorMsg);
     }
 }

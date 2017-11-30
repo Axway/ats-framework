@@ -15,7 +15,7 @@
  */
 package com.axway.ats.agent.core.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AgentException extends Exception {
 
     public AgentException() {
@@ -25,17 +25,17 @@ public class AgentException extends Exception {
 
     public AgentException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public AgentException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public AgentException( String message,
                            Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

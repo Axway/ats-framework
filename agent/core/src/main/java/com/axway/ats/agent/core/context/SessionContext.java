@@ -30,11 +30,11 @@ public class SessionContext extends Context {
 
     public static synchronized SessionContext getCurrentContext() throws ContextException {
 
-        if( currentContextId == null || !contexts.containsKey( currentContextId ) ) {
-            throw new ContextException( "No session context has been set - you need to first enter a session context" );
+        if (currentContextId == null || !contexts.containsKey(currentContextId)) {
+            throw new ContextException("No session context has been set - you need to first enter a session context");
         }
 
-        return contexts.get( currentContextId );
+        return contexts.get(currentContextId);
     }
 
     public static synchronized void setCurrentContext(
@@ -42,14 +42,14 @@ public class SessionContext extends Context {
 
         currentContextId = id;
 
-        if( !contexts.containsKey( id ) ) {
-            contexts.put( id, new SessionContext() );
+        if (!contexts.containsKey(id)) {
+            contexts.put(id, new SessionContext());
         }
     }
 
     public static synchronized void exitCurrentContext() {
 
-        contexts.remove( currentContextId );
+        contexts.remove(currentContextId);
         currentContextId = null;
     }
 }

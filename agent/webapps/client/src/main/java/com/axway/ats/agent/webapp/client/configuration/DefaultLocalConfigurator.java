@@ -22,7 +22,7 @@ import com.axway.ats.agent.core.configuration.Configurator;
  * This is the default local configurator for ATS Agent.
  * It is passed to the bootstrap loader the first time ATS Agent is initialized
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DefaultLocalConfigurator implements Configurator {
 
     @Override

@@ -73,9 +73,9 @@ public class ScheduleJvmMonitoringPojo extends BasePojo {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "JvmPort: " + this.jvmPort + ", " )
-          .append( "Alias: " + this.alias + ", " )
-          .append( "JvmReadingTypes: " + Arrays.toString( this.jvmReadingTypes ) );
+        sb.append("JvmPort: " + this.jvmPort + ", ")
+          .append("Alias: " + this.alias + ", ")
+          .append("JvmReadingTypes: " + Arrays.toString(this.jvmReadingTypes));
 
         return sb.toString();
 

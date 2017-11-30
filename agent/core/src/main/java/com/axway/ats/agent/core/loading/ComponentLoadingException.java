@@ -15,12 +15,12 @@
  */
 package com.axway.ats.agent.core.loading;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ComponentLoadingException extends Exception {
 
     public ComponentLoadingException( String componentName,
                                       String reason ) {
 
-        super( "Problem while loading component '" + componentName + "': " + reason );
+        super("Problem while loading component '" + componentName + "': " + reason);
     }
 }

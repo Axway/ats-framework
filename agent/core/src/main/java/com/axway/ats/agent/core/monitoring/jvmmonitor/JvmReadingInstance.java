@@ -40,10 +40,10 @@ public abstract class JvmReadingInstance extends SharedReadingBean {
 
     // format the given float CPU usage values, output 4 digits after decimal point
     // which are later multiplied by 100
-    private static final DecimalFormat CPU_USAGE_FORMATTER = new DecimalFormat( "#.####" );
+    private static final DecimalFormat CPU_USAGE_FORMATTER = new DecimalFormat("#.####");
 
     static {
-        CPU_USAGE_FORMATTER.setDecimalFormatSymbols( new DecimalFormatSymbols( Locale.US ) );
+        CPU_USAGE_FORMATTER.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
     }
 
     public JvmReadingInstance( MBeanServerConnection connection,
@@ -53,12 +53,12 @@ public abstract class JvmReadingInstance extends SharedReadingBean {
                                String unit,
                                float normalizationFactor ) {
 
-        super( monitorClass, name, unit, normalizationFactor );
+        super(monitorClass, name, unit, normalizationFactor);
 
-        this.dbId = Integer.parseInt( dbId );
+        this.dbId = Integer.parseInt(dbId);
         this.connection = connection;
 
-        setParameters( parameters );
+        setParameters(parameters);
 
         newInstanceFlag = true;
 

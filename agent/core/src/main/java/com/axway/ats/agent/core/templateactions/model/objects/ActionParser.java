@@ -48,10 +48,10 @@ public class ActionParser {
                                                                              XmlReaderException {
 
         // plain HTTP request/response
-        actionNodeWithoutBody = XmlUtilities.getFirstChildNode( XmlUtilities.stringToXmlDocumentObj( requestOrResponseAction ),
-                                                                isRequest
-                                                                          ? TemplateActionsXmlDefinitions.TOKEN_HTTP_REQUEST
-                                                                          : TemplateActionsXmlDefinitions.TOKEN_HTTP_RESPONSE );
+        actionNodeWithoutBody = XmlUtilities.getFirstChildNode(XmlUtilities.stringToXmlDocumentObj(requestOrResponseAction),
+                                                               isRequest
+                                                                         ? TemplateActionsXmlDefinitions.TOKEN_HTTP_REQUEST
+                                                                         : TemplateActionsXmlDefinitions.TOKEN_HTTP_RESPONSE);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ActionParser {
      */
     public String getBodyContentAsString() {
 
-        return new String( bodyBytes );
+        return new String(bodyBytes);
     }
 
     /**
@@ -121,7 +121,7 @@ public class ActionParser {
 
     private XmlUtilities getXmlUtilities() {
 
-        if( xmlUtilities == null ) {
+        if (xmlUtilities == null) {
             xmlUtilities = new XmlUtilities();
         }
         return xmlUtilities;

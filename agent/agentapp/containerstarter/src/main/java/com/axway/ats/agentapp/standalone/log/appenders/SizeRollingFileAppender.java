@@ -32,7 +32,7 @@ public class SizeRollingFileAppender extends RollingFileAppender {
     Instantiate a SizeRollingFileAppender and open the file designated by
     <code>filename</code>. The opened filename will become the ouput
     destination for this appender.
-
+    
     <p>If the <code>append</code> parameter is true, the file will be
     appended to. Otherwise, the file desginated by
     <code>filename</code> will be truncated before being opened.
@@ -41,22 +41,22 @@ public class SizeRollingFileAppender extends RollingFileAppender {
                                     String filename,
                                     boolean append ) throws IOException {
 
-        super( layout, filename, append );
+        super(layout, filename, append);
     }
 
     /**
     Implements the usual roll over behaviour.
-
+    
     <p>If <code>MaxBackupIndex</code> is positive, then files
     {<code>File.1</code>, ..., <code>File.MaxBackupIndex -1</code>}
     are renamed to {<code>File.2</code>, ...,
     <code>File.MaxBackupIndex</code>}. Moreover, <code>File</code> is
     renamed <code>File.1</code> and closed. A new <code>File</code> is
     created to receive further log output.
-
+    
     <p>If <code>MaxBackupIndex</code> is equal to zero, then the
     <code>File</code> is truncated with no backup files created.
-
+    
     */
     @Override
     public// synchronization not necessary since doAppend is alreasy synched
@@ -65,52 +65,52 @@ public class SizeRollingFileAppender extends RollingFileAppender {
         File target;
         File file;
 
-        if( qw != null ) {
-            long size = ( ( CountingQuietWriter ) qw ).getCount();
-            LogLog.debug( "rolling over count=" + size );
+        if (qw != null) {
+            long size = ((CountingQuietWriter) qw).getCount();
+            LogLog.debug("rolling over count=" + size);
             //   if operation fails, do not roll again until
             //      maxFileSize more bytes are written
             nextRollover = size + maxFileSize;
         }
-        LogLog.debug( "maxBackupIndex=" + maxBackupIndex );
+        LogLog.debug("maxBackupIndex=" + maxBackupIndex);
 
         boolean renameSucceeded = true;
         // If maxBackups <= 0, then there is no file renaming to be done.
-        if( maxBackupIndex > 0 ) {
+        if (maxBackupIndex > 0) {
             // Delete the oldest file, to keep Windows happy.
-            file = new File( fileName.substring( 0, fileName.lastIndexOf( '.' ) ) + "." + maxBackupIndex
-                             + ".log" );
-            if( file.exists() )
+            file = new File(fileName.substring(0, fileName.lastIndexOf('.')) + "." + maxBackupIndex
+                            + ".log");
+            if (file.exists())
                 renameSucceeded = file.delete();
 
             // Map {(maxBackupIndex - 1), ..., 2, 1} to {maxBackupIndex, ..., 3, 2}
-            for( int i = maxBackupIndex - 1; i >= 1 && renameSucceeded; i-- ) {
-                file = new File( fileName.substring( 0, fileName.lastIndexOf( '.' ) ) + "." + i + ".log" );
-                if( file.exists() ) {
-                    target = new File( fileName.substring( 0, fileName.lastIndexOf( '.' ) ) + "." + ( i + 1 )
-                                       + ".log" );
-                    LogLog.debug( "Renaming file " + file + " to " + target );
-                    renameSucceeded = file.renameTo( target );
+            for (int i = maxBackupIndex - 1; i >= 1 && renameSucceeded; i--) {
+                file = new File(fileName.substring(0, fileName.lastIndexOf('.')) + "." + i + ".log");
+                if (file.exists()) {
+                    target = new File(fileName.substring(0, fileName.lastIndexOf('.')) + "." + (i + 1)
+                                      + ".log");
+                    LogLog.debug("Renaming file " + file + " to " + target);
+                    renameSucceeded = file.renameTo(target);
                 }
             }
 
-            if( renameSucceeded ) {
+            if (renameSucceeded) {
                 // Rename fileName to fileName.1
-                target = new File( fileName.substring( 0, fileName.lastIndexOf( '.' ) ) + "." + 1 + ".log" );
+                target = new File(fileName.substring(0, fileName.lastIndexOf('.')) + "." + 1 + ".log");
 
                 this.closeFile(); // keep windows happy.
 
-                file = new File( fileName );
-                LogLog.debug( "Renaming file " + file + " to " + target );
-                renameSucceeded = file.renameTo( target );
+                file = new File(fileName);
+                LogLog.debug("Renaming file " + file + " to " + target);
+                renameSucceeded = file.renameTo(target);
                 //
                 //   if file rename failed, reopen file with append = true
                 //
-                if( !renameSucceeded ) {
+                if (!renameSucceeded) {
                     try {
-                        this.setFile( fileName, true, bufferedIO, bufferSize );
-                    } catch( IOException e ) {
-                        LogLog.error( "setFile(" + fileName + ", true) call failed.", e );
+                        this.setFile(fileName, true, bufferedIO, bufferSize);
+                    } catch (IOException e) {
+                        LogLog.error("setFile(" + fileName + ", true) call failed.", e);
                     }
                 }
             }
@@ -119,14 +119,14 @@ public class SizeRollingFileAppender extends RollingFileAppender {
         //
         //   if all renames were successful, then
         //
-        if( renameSucceeded ) {
+        if (renameSucceeded) {
             try {
                 // This will also close the file. This is OK since multiple
                 // close operations are safe.
-                this.setFile( fileName, false, bufferedIO, bufferSize );
+                this.setFile(fileName, false, bufferedIO, bufferSize);
                 nextRollover = 0;
-            } catch( IOException e ) {
-                LogLog.error( "setFile(" + fileName + ", false) call failed.", e );
+            } catch (IOException e) {
+                LogLog.error("setFile(" + fileName + ", false) call failed.", e);
             }
         }
     }
@@ -134,17 +134,17 @@ public class SizeRollingFileAppender extends RollingFileAppender {
     /**
     This method differentiates RollingFileAppender from its super
     class.
-
+    
     @since 0.9.0
     */
     @Override
     protected void subAppend(
                               LoggingEvent event ) {
 
-        super.subAppend( event );
-        if( fileName != null && qw != null ) {
-            long size = ( ( CountingQuietWriter ) qw ).getCount();
-            if( size >= maxFileSize && size >= nextRollover ) {
+        super.subAppend(event);
+        if (fileName != null && qw != null) {
+            long size = ((CountingQuietWriter) qw).getCount();
+            if (size >= maxFileSize && size >= nextRollover) {
                 rollOver();
             }
         }

@@ -59,9 +59,9 @@ public class Component {
     public ComponentEnvironment getEnvironment(
                                                 String environmentName ) {
 
-        if( componentEnvironments != null ) {
-            for( ComponentEnvironment componentEnvironment : componentEnvironments ) {
-                if( componentEnvironment.getEnvironmentName().equals( environmentName ) ) {
+        if (componentEnvironments != null) {
+            for (ComponentEnvironment componentEnvironment : componentEnvironments) {
+                if (componentEnvironment.getEnvironmentName().equals(environmentName)) {
                     return componentEnvironment;
                 }
             }
@@ -71,14 +71,14 @@ public class Component {
 
     public Component getNewCopy() {
 
-        Component newComponent = new Component( this.componentName );
+        Component newComponent = new Component(this.componentName);
 
         newComponent.componentActionMap = this.componentActionMap.getNewCopy();
 
         newComponent.componentEnvironments = new ArrayList<ComponentEnvironment>();
-        if( componentEnvironments != null ) {
-            for( ComponentEnvironment environment : componentEnvironments ) {
-                newComponent.componentEnvironments.add( environment.getNewCopy() );
+        if (componentEnvironments != null) {
+            for (ComponentEnvironment environment : componentEnvironments) {
+                newComponent.componentEnvironments.add(environment.getNewCopy());
             }
         }
 

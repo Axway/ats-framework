@@ -68,44 +68,44 @@ public abstract class ResponseMatcher implements Serializable {
                                             String valueToMatch,
                                             String text ) throws XmlUtilitiesException {
 
-        Logger log = Logger.getLogger( this.getClass() );
+        Logger log = Logger.getLogger(this.getClass());
 
         // apply the current user parameters
-        valueToMatch = XmlUtilities.applyUserParameters( valueToMatch );
+        valueToMatch = XmlUtilities.applyUserParameters(valueToMatch);
 
         //FIXME: Limited to one variable only
-        int findex = valueToMatch.indexOf( "${=" ) + "${=".length();
-        String userParameterName = valueToMatch.substring( findex, valueToMatch.indexOf( "}", findex ) );
+        int findex = valueToMatch.indexOf("${=") + "${=".length();
+        String userParameterName = valueToMatch.substring(findex, valueToMatch.indexOf("}", findex));
 
         // TODO check the regex accuracy. currently escaped *, ., *, ^, -, ?  and $, {, }
-        String patternToMatch = valueToMatch.replace( "(", "\\(" )
-                                            .replace( ")", "\\)" )
-                                            .replace( "*", "\\*" )
-                                            .replace( ".", "\\." )
-                                            .replace( "^", "\\^" )
-                                            .replace( "-", "\\-" )
-                                            .replace( "|", "\\|" )
-                                            .replace( "?", "\\?" )
-                                            .replaceAll( "\\$\\{\\=.*\\}", "(.*)" );
+        String patternToMatch = valueToMatch.replace("(", "\\(")
+                                            .replace(")", "\\)")
+                                            .replace("*", "\\*")
+                                            .replace(".", "\\.")
+                                            .replace("^", "\\^")
+                                            .replace("-", "\\-")
+                                            .replace("|", "\\|")
+                                            .replace("?", "\\?")
+                                            .replaceAll("\\$\\{\\=.*\\}", "(.*)");
         // escape $ { and }, and ${RANDOM} after we have replaced ${=...}
-        patternToMatch = patternToMatch.replace( "${RANDOM}", ".*" )
-        // match this place as value for the variable
-                                       .replace( "$", "\\$" )
-                                       .replace( "{", "\\{" )
-                                       .replace( "}", "\\}" );
+        patternToMatch = patternToMatch.replace("${RANDOM}", ".*")
+                                       // match this place as value for the variable
+                                       .replace("$", "\\$")
+                                       .replace("{", "\\{")
+                                       .replace("}", "\\}");
 
-        Matcher matcher = Pattern.compile( patternToMatch ).matcher( text );
-        if( matcher.find() && matcher.groupCount() == 1 ) {
-            String userParameterValue = matcher.group( 1 );
-            if( log.isDebugEnabled() ) {
-                log.debug( "Extracted new user parameter from " + description + ": '" + userParameterName
-                           + "' = '" + userParameterValue + "'" );
+        Matcher matcher = Pattern.compile(patternToMatch).matcher(text);
+        if (matcher.find() && matcher.groupCount() == 1) {
+            String userParameterValue = matcher.group(1);
+            if (log.isDebugEnabled()) {
+                log.debug("Extracted new user parameter from " + description + ": '" + userParameterName
+                          + "' = '" + userParameterValue + "'");
             }
-            ThreadContext.setAttribute( userParameterName, userParameterValue );
+            ThreadContext.setAttribute(userParameterName, userParameterValue);
             return true;
         } else {
-            log.error( "Could not extract the expected user parameter '" + userParameterName + "' from "
-                       + text + " for " + toString() );
+            log.error("Could not extract the expected user parameter '" + userParameterName + "' from "
+                      + text + " for " + toString());
             return false;
         }
     }

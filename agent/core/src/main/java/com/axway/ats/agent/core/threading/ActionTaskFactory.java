@@ -63,14 +63,14 @@ public class ActionTaskFactory {
                                              List<ParameterDataProvider> parameterDataProviders,
                                              List<ActionTaskListener> listeners,
                                              boolean isUseSynchronizedIterations )
-                                                                                  throws ActionExecutionException,
-                                                                                  NoSuchComponentException,
-                                                                                  NoSuchActionException,
-                                                                                  NoCompatibleMethodFoundException,
-                                                                                  ThreadingPatternNotSupportedException {
+                                                                                   throws ActionExecutionException,
+                                                                                   NoSuchComponentException,
+                                                                                   NoSuchActionException,
+                                                                                   NoCompatibleMethodFoundException,
+                                                                                   ThreadingPatternNotSupportedException {
 
-        if( executionPattern instanceof FixedInvocationsExecutionPattern ) {
-            FixedInvocationsExecutionPattern fixedInvocationsExecutionPattern = ( FixedInvocationsExecutionPattern ) executionPattern;
+        if (executionPattern instanceof FixedInvocationsExecutionPattern) {
+            FixedInvocationsExecutionPattern fixedInvocationsExecutionPattern = (FixedInvocationsExecutionPattern) executionPattern;
 
             int iterationCount = fixedInvocationsExecutionPattern.getIterationCount();
             long intervalBetweenIterations = fixedInvocationsExecutionPattern.getIntervalBetweenIterations();
@@ -78,24 +78,24 @@ public class ActionTaskFactory {
             long maxIntervalBetweenIterations = fixedInvocationsExecutionPattern.getMaxIntervalBetweenIterations();
             long timeFrame = fixedInvocationsExecutionPattern.getTimeFrame();
 
-            return new MultipleInvocationsActionTask( caller,
-                                                      queueName,
-                                                      threadsManager,
-                                                      itManager,
-                                                      iterationCount,
-                                                      intervalBetweenIterations,
-                                                      minIntervalBetweenIterations,
-                                                      maxIntervalBetweenIterations,
-                                                      executionsPerTimeFrame,
-                                                      timeFrame,
-                                                      actionRequests,
-                                                      parameterDataProviders,
-                                                      listeners,
-                                                      isUseSynchronizedIterations );
+            return new MultipleInvocationsActionTask(caller,
+                                                     queueName,
+                                                     threadsManager,
+                                                     itManager,
+                                                     iterationCount,
+                                                     intervalBetweenIterations,
+                                                     minIntervalBetweenIterations,
+                                                     maxIntervalBetweenIterations,
+                                                     executionsPerTimeFrame,
+                                                     timeFrame,
+                                                     actionRequests,
+                                                     parameterDataProviders,
+                                                     listeners,
+                                                     isUseSynchronizedIterations);
 
-        } else if( executionPattern instanceof FixedDurationExecutionPattern ) {
+        } else if (executionPattern instanceof FixedDurationExecutionPattern) {
 
-            FixedDurationExecutionPattern fixedDurationExecutionPattern = ( FixedDurationExecutionPattern ) executionPattern;
+            FixedDurationExecutionPattern fixedDurationExecutionPattern = (FixedDurationExecutionPattern) executionPattern;
 
             int duration = fixedDurationExecutionPattern.getDuration();
             long intervalBetweenIterations = fixedDurationExecutionPattern.getIntervalBetweenIterations();
@@ -104,20 +104,20 @@ public class ActionTaskFactory {
             long timeFrame = fixedDurationExecutionPattern.getTimeFrame();
 
             return new FixedDurationActionTask(caller, queueName,
-                                                threadsManager,
-                                                itManager,
-                                                duration,
-                                                intervalBetweenIterations,
-                                                minIntervalpBetweenIterations,
-                                                maxIntervalBetweenIterations,
-                                                executionsPerTimeFrame,
-                                                timeFrame,
-                                                actionRequests,
-                                                parameterDataProviders,
-                                                listeners,
-                                                isUseSynchronizedIterations );
+                                               threadsManager,
+                                               itManager,
+                                               duration,
+                                               intervalBetweenIterations,
+                                               minIntervalpBetweenIterations,
+                                               maxIntervalBetweenIterations,
+                                               executionsPerTimeFrame,
+                                               timeFrame,
+                                               actionRequests,
+                                               parameterDataProviders,
+                                               listeners,
+                                               isUseSynchronizedIterations);
         } else {
-            throw new ThreadingPatternNotSupportedException( executionPattern.getClass().getSimpleName() );
+            throw new ThreadingPatternNotSupportedException(executionPattern.getClass().getSimpleName());
         }
     }
 }

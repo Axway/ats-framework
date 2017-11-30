@@ -20,7 +20,7 @@ import java.util.List;
 import com.axway.ats.agent.core.action.ActionMethod;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoCompatibleMethodFoundException extends AgentException {
 
     private static final String LINE_SEPARATOR = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
@@ -35,26 +35,26 @@ public class NoCompatibleMethodFoundException extends AgentException {
                                              String actionName ) {
 
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append( message );
-        messageBuilder.append( ", more information below:" + LINE_SEPARATOR );
-        messageBuilder.append( "action name '" + actionName + "', component name '" + componentName + "'"
-                               + LINE_SEPARATOR );
-        messageBuilder.append( "argument types: { " );
-        for( Class<?> argType : argTypes ) {
-            if( argType != null ) {
-                messageBuilder.append( argType.getName() );
+        messageBuilder.append(message);
+        messageBuilder.append(", more information below:" + LINE_SEPARATOR);
+        messageBuilder.append("action name '" + actionName + "', component name '" + componentName + "'"
+                              + LINE_SEPARATOR);
+        messageBuilder.append("argument types: { ");
+        for (Class<?> argType : argTypes) {
+            if (argType != null) {
+                messageBuilder.append(argType.getName());
             } else {
-                messageBuilder.append( "null" );
+                messageBuilder.append("null");
             }
-            messageBuilder.append( "," );
+            messageBuilder.append(",");
         }
-        messageBuilder.delete( messageBuilder.length() - 1, messageBuilder.length() );
-        messageBuilder.append( " }" + LINE_SEPARATOR );
-        messageBuilder.append( "available implementing methods:" + LINE_SEPARATOR );
+        messageBuilder.delete(messageBuilder.length() - 1, messageBuilder.length());
+        messageBuilder.append(" }" + LINE_SEPARATOR);
+        messageBuilder.append("available implementing methods:" + LINE_SEPARATOR);
 
-        for( ActionMethod actionMethod : actionMethods ) {
-            messageBuilder.append( actionMethod.getMethod().toString() );
-            messageBuilder.append( LINE_SEPARATOR );
+        for (ActionMethod actionMethod : actionMethods) {
+            messageBuilder.append(actionMethod.getMethod().toString());
+            messageBuilder.append(LINE_SEPARATOR);
         }
 
         this.message = messageBuilder.toString();

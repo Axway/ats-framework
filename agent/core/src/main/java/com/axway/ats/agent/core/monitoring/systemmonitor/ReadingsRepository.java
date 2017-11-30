@@ -47,7 +47,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class ReadingsRepository {
 
-    private Logger                     log                   = Logger.getLogger( ReadingsRepository.class );
+    private Logger                     log                   = Logger.getLogger(ReadingsRepository.class);
 
     /** We assign a unique id to each reading. 
      * This id is not the actual DB id
@@ -89,9 +89,9 @@ public class ReadingsRepository {
                                                       String readingName,
                                                       Map<String, String> parameters ) throws UnsupportedReadingException {
 
-        ReadingBean reading = xmlRepository.getReadingDefinition( readingName );
-        reading.setId( getNewUniqueId() );
-        reading.setParameters( parameters );
+        ReadingBean reading = xmlRepository.getReadingDefinition(readingName);
+        reading.setId(getNewUniqueId());
+        reading.setParameters(parameters);
         return reading;
     }
 
@@ -99,10 +99,10 @@ public class ReadingsRepository {
                                                              Set<String> readingNames ) throws UnsupportedReadingException {
 
         List<ReadingBean> readingBeans = new ArrayList<ReadingBean>();
-        for( String readingName : readingNames ) {
-            ReadingBean reading = xmlRepository.getReadingDefinition( readingName );
-            reading.setId( getNewUniqueId() );
-            readingBeans.add( reading );
+        for (String readingName : readingNames) {
+            ReadingBean reading = xmlRepository.getReadingDefinition(readingName);
+            reading.setId(getNewUniqueId());
+            readingBeans.add(reading);
         }
 
         return readingBeans;
@@ -123,7 +123,7 @@ public class ReadingsRepository {
 
     public void cleanRepository() {
 
-        if( this.xmlRepository != null ) {
+        if (this.xmlRepository != null) {
             this.xmlRepository.cleanRepository();
         } else {
             this.xmlRepository = new XmlReadingsRepository();
@@ -154,18 +154,18 @@ public class ReadingsRepository {
             // clear previously loaded monitors
             this.alreadyLoadedMonitors.clear();
 
-            for( String configurationFile : configurationFiles ) {
+            for (String configurationFile : configurationFiles) {
                 InputStream configurationFileStream;
-                if( configurationFile.contains( ".jar!" ) ) {
-                    configurationFileStream = readFileFromJar( configurationFile );
+                if (configurationFile.contains(".jar!")) {
+                    configurationFileStream = readFileFromJar(configurationFile);
                 } else {
-                    configurationFileStream = readStandAloneFile( configurationFile );
+                    configurationFileStream = readStandAloneFile(configurationFile);
                 }
 
                 // fill the repository with readings definitions
-                readConfiguration( configurationFile, configurationFileStream );
+                readConfiguration(configurationFile, configurationFileStream);
             }
-        } catch( MonitorConfigurationException e ) {
+        } catch (MonitorConfigurationException e) {
             // on error empty the repository with readings definitions, so we know it is all clean
             cleanRepository();
             // on error clear previously loaded monitors
@@ -178,26 +178,26 @@ public class ReadingsRepository {
                                          String jarFile ) throws MonitorConfigurationException {
 
         // extract the file path in the jar
-        String configurationFile = jarFile.substring( jarFile.lastIndexOf( '!' ) + 2, jarFile.length() );
-        log.info( "Loading monitoring service configuration file '" + configurationFile + "' from "
-                  + jarFile );
+        String configurationFile = jarFile.substring(jarFile.lastIndexOf('!') + 2, jarFile.length());
+        log.info("Loading monitoring service configuration file '" + configurationFile + "' from "
+                 + jarFile);
         try {
-            return IoUtils.readFileFromJar( jarFile, configurationFile );
-        } catch( IOException e ) {
-            throw new MonitorConfigurationException( "Error loading monitoring service configuration file '"
-                                                     + configurationFile + "' from " + jarFile );
+            return IoUtils.readFileFromJar(jarFile, configurationFile);
+        } catch (IOException e) {
+            throw new MonitorConfigurationException("Error loading monitoring service configuration file '"
+                                                    + configurationFile + "' from " + jarFile);
         }
     }
 
     private InputStream readStandAloneFile(
                                             String configurationFile ) throws MonitorConfigurationException {
 
-        log.info( "Loading monitoring service configuration file '" + configurationFile + "'" );
+        log.info("Loading monitoring service configuration file '" + configurationFile + "'");
         try {
-            return IoUtils.readFile( configurationFile );
-        } catch( IOException e ) {
-            throw new MonitorConfigurationException( "Error loading monitoring service configuration file '"
-                                                     + configurationFile + "'" );
+            return IoUtils.readFile(configurationFile);
+        } catch (IOException e) {
+            throw new MonitorConfigurationException("Error loading monitoring service configuration file '"
+                                                    + configurationFile + "'");
         }
     }
 
@@ -205,28 +205,28 @@ public class ReadingsRepository {
                             String configurationFileName,
                             InputStream configurationFileStream ) throws MonitorConfigurationException {
 
-        this.readingParseState.rememberConfigurationFileName( configurationFileName );
+        this.readingParseState.rememberConfigurationFileName(configurationFileName);
 
         Document xmlDocument;
         try {
-            xmlDocument = XmlUtils.loadXMLFile( configurationFileStream );
-        } catch( IOException e ) {
-            throw new MonitorConfigurationException( "Error reading configuration file '"
-                                                     + configurationFileName + "'", e );
-        } catch( SAXException e ) {
-            throw new MonitorConfigurationException( "Error parsing configuration file '"
-                                                     + configurationFileName + "'", e );
+            xmlDocument = XmlUtils.loadXMLFile(configurationFileStream);
+        } catch (IOException e) {
+            throw new MonitorConfigurationException("Error reading configuration file '"
+                                                    + configurationFileName + "'", e);
+        } catch (SAXException e) {
+            throw new MonitorConfigurationException("Error parsing configuration file '"
+                                                    + configurationFileName + "'", e);
         }
 
         Element rootElement = xmlDocument.getDocumentElement();
 
         // iterate over all children, all of them being monitors
         NodeList monitorLevelElements = rootElement.getChildNodes();
-        for( int i = 0; i < monitorLevelElements.getLength(); i++ ) {
-            Node monitorLevelElement = monitorLevelElements.item( i );
-            if( monitorLevelElement.getNodeType() == Node.ELEMENT_NODE
-                && monitorLevelElement.getNodeName().equals( MONITOR_NODE ) ) {
-                extractMonitor( ( Element ) monitorLevelElement );
+        for (int i = 0; i < monitorLevelElements.getLength(); i++) {
+            Node monitorLevelElement = monitorLevelElements.item(i);
+            if (monitorLevelElement.getNodeType() == Node.ELEMENT_NODE
+                && monitorLevelElement.getNodeName().equals(MONITOR_NODE)) {
+                extractMonitor((Element) monitorLevelElement);
             }
         }
 
@@ -242,42 +242,42 @@ public class ReadingsRepository {
     private void extractMonitor(
                                  Element monitorLevelElement ) throws MonitorConfigurationException {
 
-        String monitorClass = extractAttribute( monitorLevelElement, MONITOR_NODE__CLASS );
-        if( monitorClass == null ) {
-            this.readingParseState.throwException( "No monitor class specified" );
+        String monitorClass = extractAttribute(monitorLevelElement, MONITOR_NODE__CLASS);
+        if (monitorClass == null) {
+            this.readingParseState.throwException("No monitor class specified");
         }
-        if( this.alreadyLoadedMonitors.containsKey( monitorClass ) ) {
+        if (this.alreadyLoadedMonitors.containsKey(monitorClass)) {
             // the jar, that had monitor with the same name as the current one
-            String alreadyProcessedJarFilename = extractJarFilepath( this.alreadyLoadedMonitors.get( monitorClass ) );
+            String alreadyProcessedJarFilename = extractJarFilepath(this.alreadyLoadedMonitors.get(monitorClass));
             // the currently processed jar, which contains custom performance monitor
-            String currentJarFilename = extractJarFilepath( this.readingParseState.configurationFileName );
+            String currentJarFilename = extractJarFilepath(this.readingParseState.configurationFileName);
             String errMsg = "Duplicated monitor class name. Monitor '" + monitorClass
                             + "' is presented in both '" + alreadyProcessedJarFilename + "' and '"
                             + currentJarFilename + "'";
-            throw new MonitorConfigurationException( errMsg );
+            throw new MonitorConfigurationException(errMsg);
         }
-        this.readingParseState.rememberMonitorClass( monitorClass );
+        this.readingParseState.rememberMonitorClass(monitorClass);
 
         // iterate over all children, all of them being filters
         NodeList readingLevelElements = monitorLevelElement.getChildNodes();
-        for( int i = 0; i < readingLevelElements.getLength(); i++ ) {
-            Node readingLevelElement = readingLevelElements.item( i );
-            if( readingLevelElement.getNodeType() == Node.ELEMENT_NODE
-                && readingLevelElement.getNodeName().equals( READING_NODE ) ) {
-                extractReading( ( Element ) readingLevelElement, monitorClass );
+        for (int i = 0; i < readingLevelElements.getLength(); i++) {
+            Node readingLevelElement = readingLevelElements.item(i);
+            if (readingLevelElement.getNodeType() == Node.ELEMENT_NODE
+                && readingLevelElement.getNodeName().equals(READING_NODE)) {
+                extractReading((Element) readingLevelElement, monitorClass);
             }
         }
 
         // remember that this monitor's readings were already loaded 
-        this.alreadyLoadedMonitors.put( this.readingParseState.monitorClass,
-                                        this.readingParseState.configurationFileName );
+        this.alreadyLoadedMonitors.put(this.readingParseState.monitorClass,
+                                       this.readingParseState.configurationFileName);
         this.readingParseState.forgetMonitorClass();
     }
 
     private String extractJarFilepath( String configFilepath ) {
 
-        return configFilepath.substring( configFilepath.indexOf( ":" ) + 1,
-                                         configFilepath.indexOf( "!/" ) );
+        return configFilepath.substring(configFilepath.indexOf(":") + 1,
+                                        configFilepath.indexOf("!/"));
     }
 
     /**
@@ -290,29 +290,29 @@ public class ReadingsRepository {
                                  Element readingLevelElement,
                                  String monitorClass ) throws MonitorConfigurationException {
 
-        String readingName = extractAttribute( readingLevelElement, READING_NODE__NAME );
-        if( readingName == null ) {
-            this.readingParseState.throwException( "No reading name specified" );
+        String readingName = extractAttribute(readingLevelElement, READING_NODE__NAME);
+        if (readingName == null) {
+            this.readingParseState.throwException("No reading name specified");
         }
-        this.readingParseState.rememberReadingName( readingName );
+        this.readingParseState.rememberReadingName(readingName);
 
-        String readingUnit = extractAttribute( readingLevelElement, READING_NODE__UNIT );
-        if( readingUnit == null ) {
-            this.readingParseState.throwException( "No reading unit specified" );
+        String readingUnit = extractAttribute(readingLevelElement, READING_NODE__UNIT);
+        if (readingUnit == null) {
+            this.readingParseState.throwException("No reading unit specified");
         }
 
         boolean dynamicReadingValue = false;
-        String dynamicReading = extractAttribute( readingLevelElement, READING_NODE__DYNAMIC );
-        if( dynamicReading != null && "true".equals( dynamicReading.trim() ) ) {
+        String dynamicReading = extractAttribute(readingLevelElement, READING_NODE__DYNAMIC);
+        if (dynamicReading != null && "true".equals(dynamicReading.trim())) {
             dynamicReadingValue = true;
         }
 
-        ReadingBean readingBean = new ReadingBean( monitorClass, readingName, readingUnit );
-        readingBean.setDynamicReading( dynamicReadingValue );
-        this.xmlRepository.addReading( readingName, readingBean );
+        ReadingBean readingBean = new ReadingBean(monitorClass, readingName, readingUnit);
+        readingBean.setDynamicReading(dynamicReadingValue);
+        this.xmlRepository.addReading(readingName, readingBean);
 
         // inform the user what we got
-        log.debug( readingBean.getDescription() );
+        log.debug(readingBean.getDescription());
         this.readingParseState.forgetReadingName();
     }
 
@@ -328,11 +328,11 @@ public class ReadingsRepository {
                                      String attribName ) {
 
         NamedNodeMap attributes = element.getAttributes();
-        for( int i = 0; i < attributes.getLength(); i++ ) {
-            Attr attribute = ( Attr ) attributes.item( i );
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Attr attribute = (Attr) attributes.item(i);
 
             String propertyName = attribute.getName();
-            if( attribName.equals( propertyName ) ) {
+            if (attribName.equals(propertyName)) {
                 return attribute.getValue();
             }
         }
@@ -350,7 +350,7 @@ public class ReadingsRepository {
                                           String monitoredHost,
                                           List<ReadingBean> readings ) throws DatabaseAccessException {
 
-        this.dbRepository.updateDatabaseRepository( monitoredHost, readings );
+        this.dbRepository.updateDatabaseRepository(monitoredHost, readings);
     }
 
     /**
@@ -400,18 +400,18 @@ public class ReadingsRepository {
         public void throwException(
                                     String userMessage ) throws MonitorConfigurationException {
 
-            StringBuilder errorMessage = new StringBuilder( userMessage );
-            if( configurationFileName != null ) {
-                errorMessage.append( "; Configuration file: " + configurationFileName );
+            StringBuilder errorMessage = new StringBuilder(userMessage);
+            if (configurationFileName != null) {
+                errorMessage.append("; Configuration file: " + configurationFileName);
             }
-            if( monitorClass != null ) {
-                errorMessage.append( "; Monitor class: " + monitorClass );
+            if (monitorClass != null) {
+                errorMessage.append("; Monitor class: " + monitorClass);
             }
-            if( readingName != null ) {
-                errorMessage.append( "; Reading name: " + readingName );
+            if (readingName != null) {
+                errorMessage.append("; Reading name: " + readingName);
             }
 
-            throw new MonitorConfigurationException( errorMessage.toString() );
+            throw new MonitorConfigurationException(errorMessage.toString());
         }
     }
 }

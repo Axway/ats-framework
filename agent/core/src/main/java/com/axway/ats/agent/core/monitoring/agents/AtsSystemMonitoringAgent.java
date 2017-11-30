@@ -41,9 +41,9 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
-    private static Logger            log                         = Logger.getLogger( AtsSystemMonitoringAgent.class );
+    private static Logger            log                         = Logger.getLogger(AtsSystemMonitoringAgent.class);
 
-    private static AtsDbLogger       dblog                       = AtsDbLogger.getLogger( AtsSystemMonitoringAgent.class.getName() );
+    private static AtsDbLogger       dblog                       = AtsDbLogger.getLogger(AtsSystemMonitoringAgent.class.getName());
 
     private static final int         MAX_LENGTH_STATISTIC_IDS    = 950;
     private static final int         MAX_LENGTH_STATISTIC_VALUES = 7950;
@@ -63,13 +63,13 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
         this.pollErrors = new HashMap<String, Integer>();
 
         // set the new start polling interval
-        setPollInterval( pollInterval * 1000 ); // make it in seconds
-        setExecutorTimeOffset( executorTimeOffset );
+        setPollInterval(pollInterval * 1000); // make it in seconds
+        setExecutorTimeOffset(executorTimeOffset);
 
         // if the test has ended without stopping the monitoring process
         // we now need to stop the monitoring process
-        if( monitors.size() > 0 ) {
-            log.warn( "There are some monitors running from before. We will try to deinitialize them now" );
+        if (monitors.size() > 0) {
+            log.warn("There are some monitors running from before. We will try to deinitialize them now");
             stopMonitoring();
         }
     }
@@ -77,38 +77,38 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     @Override
     public void startMonitoring() {
 
-        monitoringThread = new MonitoringThread( pollInterval, executorTimeOffset );
+        monitoringThread = new MonitoringThread(pollInterval, executorTimeOffset);
         monitoringThread.start();
     }
 
     @Override
     public void stopMonitoring() {
 
-        log.info( "Stopping the monitor process" );
-        if( monitoringThread == null ) {
-            log.warn( "Cannot stop the monitoring thread as it is currently not "
-                      + "running. The monitoring was either not started at all, "
-                      + "or it was already stopped." );
+        log.info("Stopping the monitor process");
+        if (monitoringThread == null) {
+            log.warn("Cannot stop the monitoring thread as it is currently not "
+                     + "running. The monitoring was either not started at all, "
+                     + "or it was already stopped.");
             return;
         }
         monitoringThread.stopRunning();
 
         // wait for up to 2 times the polling interval until the thread exit out
         boolean threadStopped = false;
-        for( int i = 0; i < 10 * this.pollInterval / 1000; i++ ) {
+        for (int i = 0; i < 10 * this.pollInterval / 1000; i++) {
             threadStopped = monitoringThread.isStopped();
-            if( threadStopped ) {
-                log.info( "Successfully stoped the monitor process" );
+            if (threadStopped) {
+                log.info("Successfully stoped the monitor process");
                 break;
             } else {
                 try {
-                    Thread.sleep( 200 );
-                } catch( InterruptedException e ) {}
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {}
             }
         }
 
-        if( !threadStopped ) {
-            log.error( "Could not stop the monitor process in the regular way. We will try to abort the thread" );
+        if (!threadStopped) {
+            log.error("Could not stop the monitor process in the regular way. We will try to abort the thread");
             monitoringThread.interrupt();
         }
 
@@ -120,22 +120,22 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     public void addMonitor(
                             PerformanceMonitor monitor ) {
 
-        log.info( "Attaching monitor: " + monitor.getDescription() );
-        if( isMonitorAlreadyPresent( monitor ) ) {
-            log.error( "Monitor already attached: " + monitor.getDescription() );
+        log.info("Attaching monitor: " + monitor.getDescription());
+        if (isMonitorAlreadyPresent(monitor)) {
+            log.error("Monitor already attached: " + monitor.getDescription());
         } else {
-            monitors.add( monitor );
+            monitors.add(monitor);
         }
     }
 
     public void resetTheMonitoringAgent() {
 
-        for( PerformanceMonitor monitor : monitors ) {
-            log.info( "Deinitializing monitor: " + monitor.getDescription() );
+        for (PerformanceMonitor monitor : monitors) {
+            log.info("Deinitializing monitor: " + monitor.getDescription());
             try {
                 monitor.deinit();
-            } catch( Exception e ) {
-                log.error( "Error deinitializing monitor: " + monitor.getDescription(), e );
+            } catch (Exception e) {
+                log.error("Error deinitializing monitor: " + monitor.getDescription(), e);
             }
         }
 
@@ -147,8 +147,8 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     private boolean isMonitorAlreadyPresent(
                                              PerformanceMonitor thisMonitor ) {
 
-        for( PerformanceMonitor monitor : monitors ) {
-            if( monitor.getClass().getName().equals( thisMonitor.getClass().getName() ) ) {
+        for (PerformanceMonitor monitor : monitors) {
+            if (monitor.getClass().getName().equals(thisMonitor.getClass().getName())) {
                 return true;
             }
         }
@@ -162,7 +162,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
     class MonitoringThread extends Thread {
 
-        private Logger                  log = Logger.getLogger( MonitoringThread.class );
+        private Logger                  log = Logger.getLogger(MonitoringThread.class);
 
         private final int               pollInterval;
         private long                    executorTimeOffset;
@@ -180,70 +180,70 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
             this.executorTimeOffset = executorTimeOffset;
             this.callerId = ThreadsPerCaller.getCaller();
 
-            setName( "Monitoring_system-" + this.callerId );
+            setName("Monitoring_system-" + this.callerId);
 
-            log.debug( "Monitoring thread started at timestamp " + new Date() );
+            log.debug("Monitoring thread started at timestamp " + new Date());
         }
 
         @Override
         public void run() {
 
-            ThreadsPerCaller.registerThread( this.callerId );
+            ThreadsPerCaller.registerThread(this.callerId);
 
-            log.info( "Started monitoring in intervals of " + pollInterval + " milliseconds" );
+            log.info("Started monitoring in intervals of " + pollInterval + " milliseconds");
             try {
                 boolean hasFailureInPreviousPoll = false;
                 int lastPollDuration = 0;
-                while( monitoringThreadState == MONITORING_THREAD_STATE.RUNNING ) {
+                while (monitoringThreadState == MONITORING_THREAD_STATE.RUNNING) {
 
                     int sleepTimeBeforeNextPoll = pollInterval - lastPollDuration;
-                    if( sleepTimeBeforeNextPoll < 0 ) {
+                    if (sleepTimeBeforeNextPoll < 0) {
                         // we get here when the last poll took longer than the
                         // user provided poll interval
                         sleepTimeBeforeNextPoll = 0;
-                        log.warn( "Last poll time took longer than the poll interval."
-                                  + " Details: last poll duration " + lastPollDuration
-                                  + " ms, poll interval is " + pollInterval
-                                  + " ms. You should probably consider increasing the poll interval" );
+                        log.warn("Last poll time took longer than the poll interval."
+                                 + " Details: last poll duration " + lastPollDuration
+                                 + " ms, poll interval is " + pollInterval
+                                 + " ms. You should probably consider increasing the poll interval");
                     } else {
-                        if( sleepTimeBeforeNextPoll > pollInterval ) {
+                        if (sleepTimeBeforeNextPoll > pollInterval) {
                             sleepTimeBeforeNextPoll = 0;
-                            log.warn( "Polling duration is calculated as negative number (" + lastPollDuration
-                                      + " ms). Possible reason is that system "
-                                      + "time had been changed back. Poll will be issued now." );
+                            log.warn("Polling duration is calculated as negative number (" + lastPollDuration
+                                     + " ms). Possible reason is that system "
+                                     + "time had been changed back. Poll will be issued now.");
                         }
                     }
 
-                    Thread.sleep( sleepTimeBeforeNextPoll );
+                    Thread.sleep(sleepTimeBeforeNextPoll);
 
                     long startPollingTime = System.currentTimeMillis();
                     long currentTimestamp = System.currentTimeMillis() + this.executorTimeOffset;
 
                     // poll for new data
                     List<MonitorResults> newResults = new ArrayList<MonitorResults>();
-                    for( PerformanceMonitor monitor : monitors ) {
+                    for (PerformanceMonitor monitor : monitors) {
                         String monitorDescription = monitor.getDescription();
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "Poll data for monitor: " + monitorDescription );
+                        if (log.isDebugEnabled()) {
+                            log.debug("Poll data for monitor: " + monitorDescription);
                         }
                         try {
-                            if( !monitor.isInitialized() ) {
+                            if (!monitor.isInitialized()) {
 
-                                MonitorResults results = new MonitorResults( currentTimestamp,
-                                                                             monitor.pollNewDataForFirstTime() );
-                                if( ! ( monitor instanceof AtsSystemMonitor )
-                                    && ! ( monitor instanceof AtsJvmMonitor ) ) {
+                                MonitorResults results = new MonitorResults(currentTimestamp,
+                                                                            monitor.pollNewDataForFirstTime());
+                                if (! (monitor instanceof AtsSystemMonitor)
+                                    && ! (monitor instanceof AtsJvmMonitor)) {
                                     // this is a custom monitor, so will add the
                                     // '[custom]' prefix
-                                    for( ReadingBean reading : results.getReadings() ) {
-                                        if( reading instanceof ReadingBean ) {
-                                            ReadingBean newReading = ( ReadingBean ) reading;
-                                            newReading.setName( CUSTOM_READING_PREFIX
-                                                                + newReading.getName() );
+                                    for (ReadingBean reading : results.getReadings()) {
+                                        if (reading instanceof ReadingBean) {
+                                            ReadingBean newReading = (ReadingBean) reading;
+                                            newReading.setName(CUSTOM_READING_PREFIX
+                                                               + newReading.getName());
                                         }
                                     }
                                 }
-                                newResults.add( results );
+                                newResults.add(results);
 
                                 // The monitor passed the 'first time poll', so
                                 // we got the list of FullReadingBean.
@@ -252,53 +252,53 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                                 // time.
                                 monitor.setInitialized();
                             } else {
-                                newResults.add( new MonitorResults( currentTimestamp,
-                                                                    monitor.pollNewData() ) );
+                                newResults.add(new MonitorResults(currentTimestamp,
+                                                                  monitor.pollNewData()));
 
                             }
-                            if( hasFailureInPreviousPoll ) {
+                            if (hasFailureInPreviousPoll) {
                                 // reset the polling errors counter because the
                                 // monitor is now OK
-                                pollErrors.remove( monitorDescription );
+                                pollErrors.remove(monitorDescription);
                             }
-                        } catch( Throwable th ) {
-                            handlePollError( currentTimestamp, monitorDescription, th );
+                        } catch (Throwable th) {
+                            handlePollError(currentTimestamp, monitorDescription, th);
                         }
                     }
 
-                    if( newResults.size() > 0 ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "new data: " + newResults.toString() );
+                    if (newResults.size() > 0) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("new data: " + newResults.toString());
                         }
 
                         int resultsAddeed = 0;
 
-                        if( newResults.size() > 0 ) {
+                        if (newResults.size() > 0) {
 
                             // update the DB definitions if needed
-                            for( MonitorResults monitorResult : newResults ) {
-                                updateDatabaseRepository( HostUtils.getLocalHostIP(), monitorResult.getReadings() );
+                            for (MonitorResults monitorResult : newResults) {
+                                updateDatabaseRepository(HostUtils.getLocalHostIP(), monitorResult.getReadings());
                             }
 
                             // log the results to the database
-                            resultsAddeed = logResults( newResults );
-                            log.debug( "Successfully sent " + resultsAddeed
-                                       + " system monitoring results to the logging database" );
+                            resultsAddeed = logResults(newResults);
+                            log.debug("Successfully sent " + resultsAddeed
+                                      + " system monitoring results to the logging database");
                         } else {
-                            log.warn( "No new system monitoring results to log" );
+                            log.warn("No new system monitoring results to log");
                         }
                     }
 
-                    lastPollDuration = ( int ) ( System.currentTimeMillis() - startPollingTime );
+                    lastPollDuration = (int) (System.currentTimeMillis() - startPollingTime);
 
                     // check if there is a failure during the poll
                     hasFailureInPreviousPoll = newResults.size() == 0;
                 }
-            } catch( InterruptedException e ) {
+            } catch (InterruptedException e) {
                 // we have been stopped by interrupting the monitoring thread
-                log.error( "Monitoring thread was interrupted", e );
-            } catch( Throwable th ) {
-                log.error( "Monitoring is aborted due to unexpected error", th );
+                log.error("Monitoring thread was interrupted", e);
+            } catch (Throwable th) {
+                log.error("Monitoring is aborted due to unexpected error", th);
             } finally {
                 this.monitoringThreadState = MONITORING_THREAD_STATE.STOPPED;
                 ThreadsPerCaller.unregisterThread();
@@ -327,21 +327,21 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                                       Throwable th ) {
 
             Integer monitorErrors = 0;
-            if( pollErrors.containsKey( monitorDescription ) ) {
-                monitorErrors = pollErrors.get( monitorDescription );
+            if (pollErrors.containsKey(monitorDescription)) {
+                monitorErrors = pollErrors.get(monitorDescription);
             }
             monitorErrors++;
-            pollErrors.put( monitorDescription, monitorErrors );
+            pollErrors.put(monitorDescription, monitorErrors);
 
-            if( monitorErrors < MAX_NUMBER_LOGGED_ERRORS ) {
-                log.error( "Error polling monitor '" + monitorDescription
-                           + "'. All polled values from all monitors will be skipped for "
-                           + TimeUtils.getFormattedDateTillMilliseconds( new Date( currentTimestamp ) )
-                           + " timestamp", th );
-            } else if( monitorErrors == MAX_NUMBER_LOGGED_ERRORS ) {
-                log.error( "This is the " + MAX_NUMBER_LOGGED_ERRORS
-                           + "th and last time we are logging polling error for monitor: "
-                           + monitorDescription, th );
+            if (monitorErrors < MAX_NUMBER_LOGGED_ERRORS) {
+                log.error("Error polling monitor '" + monitorDescription
+                          + "'. All polled values from all monitors will be skipped for "
+                          + TimeUtils.getFormattedDateTillMilliseconds(new Date(currentTimestamp))
+                          + " timestamp", th);
+            } else if (monitorErrors == MAX_NUMBER_LOGGED_ERRORS) {
+                log.error("This is the " + MAX_NUMBER_LOGGED_ERRORS
+                          + "th and last time we are logging polling error for monitor: "
+                          + monitorDescription, th);
             }
         }
 
@@ -351,8 +351,8 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
             // counter to hold the number of results which have logged
             int resultsAddeed = 0;
 
-            for( MonitorResults newResultsLine : monitorResults ) {
-                resultsAddeed += logResultsForOneTimestamp( newResultsLine );
+            for (MonitorResults newResultsLine : monitorResults) {
+                resultsAddeed += logResultsForOneTimestamp(newResultsLine);
             }
 
             return resultsAddeed;
@@ -367,53 +367,53 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
             // for their values
             StringBuilder statisticDbIds = new StringBuilder();
             StringBuilder statisticValues = new StringBuilder();
-            for( ReadingBean reading : resultsLine.getReadings() ) {
-                String readingDbId = String.valueOf( reading.getDbId() );
-                if( readingDbId == null ) {
+            for (ReadingBean reading : resultsLine.getReadings()) {
+                String readingDbId = String.valueOf(reading.getDbId());
+                if (readingDbId == null) {
                     /*log.error( "We do not have information in the database about this reading ["
                                + reading.toString() + "]. We will not insert this reading in the database." );*/
-                    log.error( "This reading [" + reading.toString()
-                               + "] does not have set a reading ID which indicates an error in some of the attached monitors. We will not insert this reading in the database." );
+                    log.error("This reading [" + reading.toString()
+                              + "] does not have set a reading ID which indicates an error in some of the attached monitors. We will not insert this reading in the database.");
                     continue;
                 }
                 String readingValue = reading.getValue();
-                if( readingValue == null ) {
-                    log.error( "Null value is passed for this reading [" + reading.toString()
-                               + "]. We will not insert this reading in the database." );
+                if (readingValue == null) {
+                    log.error("Null value is passed for this reading [" + reading.toString()
+                              + "]. We will not insert this reading in the database.");
                     continue;
                 }
-                statisticDbIds.append( readingDbId );
-                statisticDbIds.append( "_" );
+                statisticDbIds.append(readingDbId);
+                statisticDbIds.append("_");
 
-                statisticValues.append( readingValue );
-                statisticValues.append( "_" );
+                statisticValues.append(readingValue);
+                statisticValues.append("_");
 
                 resultsAddeed++;
 
-                if( statisticDbIds.length() > MAX_LENGTH_STATISTIC_IDS
-                    || statisticValues.length() > MAX_LENGTH_STATISTIC_VALUES ) {
+                if (statisticDbIds.length() > MAX_LENGTH_STATISTIC_IDS
+                    || statisticValues.length() > MAX_LENGTH_STATISTIC_VALUES) {
                     // we have to send a chunk
-                    statisticDbIds.setLength( statisticDbIds.length() - 1 );
-                    statisticValues.setLength( statisticValues.length() - 1 );
-                    dblog.insertSystemStatistcs( HostUtils.getLocalHostIP(),
-                                                 statisticDbIds.toString(),
-                                                 statisticValues.toString(),
-                                                 resultsLine.getTimestamp() );
+                    statisticDbIds.setLength(statisticDbIds.length() - 1);
+                    statisticValues.setLength(statisticValues.length() - 1);
+                    dblog.insertSystemStatistcs(HostUtils.getLocalHostIP(),
+                                                statisticDbIds.toString(),
+                                                statisticValues.toString(),
+                                                resultsLine.getTimestamp());
 
-                    statisticDbIds.setLength( 0 );
-                    statisticValues.setLength( 0 );
+                    statisticDbIds.setLength(0);
+                    statisticValues.setLength(0);
                 }
             }
 
-            if( statisticDbIds.length() > 0 ) {
+            if (statisticDbIds.length() > 0) {
                 // send the last(or only) chunk
-                statisticDbIds.setLength( statisticDbIds.length() - 1 );
-                statisticValues.setLength( statisticValues.length() - 1 );
+                statisticDbIds.setLength(statisticDbIds.length() - 1);
+                statisticValues.setLength(statisticValues.length() - 1);
 
-                dblog.insertSystemStatistcs( HostUtils.getLocalHostIP(),
-                                             statisticDbIds.toString(),
-                                             statisticValues.toString(),
-                                             resultsLine.getTimestamp() );
+                dblog.insertSystemStatistcs(HostUtils.getLocalHostIP(),
+                                            statisticDbIds.toString(),
+                                            statisticValues.toString(),
+                                            resultsLine.getTimestamp());
             }
 
             return resultsAddeed;
@@ -424,10 +424,10 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                                                List<ReadingBean> readings ) throws MonitoringException {
 
             try {
-                ReadingsRepository.getInstance().updateDatabaseRepository( monitoredHost, readings );
-            } catch( DatabaseAccessException e ) {
-                throw new MonitoringException( "Could not update the logging database with new statistic definitions for "
-                                               + monitoredHost, e );
+                ReadingsRepository.getInstance().updateDatabaseRepository(monitoredHost, readings);
+            } catch (DatabaseAccessException e) {
+                throw new MonitoringException("Could not update the logging database with new statistic definitions for "
+                                              + monitoredHost, e);
             }
         }
 

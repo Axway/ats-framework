@@ -43,35 +43,35 @@ public class ActionRequestObject extends AbstractActionObject {
                                                                          XmlUtilitiesException,
                                                                          InvalidMatcherException {
 
-        super( actionsXml, action );
+        super(actionsXml, action);
 
-        resolveHttpUrl( action.getActionNodeWithoutBody() );
+        resolveHttpUrl(action.getActionNodeWithoutBody());
 
-        resolveHttpMethod( action.getActionNodeWithoutBody() );
+        resolveHttpMethod(action.getActionNodeWithoutBody());
     }
 
     @Override
     protected void resolveHttpHeaders( Node actionRequest ) throws XmlReaderException {
 
-        for( Node httpHeaderNode : XmlUtilities.getChildrenNodes( actionRequest, TOKEN_HTTP_HEADER ) ) {
+        for (Node httpHeaderNode : XmlUtilities.getChildrenNodes(actionRequest, TOKEN_HTTP_HEADER)) {
             // get header name
-            String headerName = xmlUtilities.getNodeAttribute( httpHeaderNode, TOKEN_HEADER_NAME_ATTRIBUTE );
+            String headerName = xmlUtilities.getNodeAttribute(httpHeaderNode, TOKEN_HEADER_NAME_ATTRIBUTE);
             // get header value and modify its value if user wants it
-            String headerValue = xmlUtilities.getNodeAttribute( httpHeaderNode,
-                                                                TOKEN_HEADER_VALUE_ATTRIBUTE );
+            String headerValue = xmlUtilities.getNodeAttribute(httpHeaderNode,
+                                                               TOKEN_HEADER_VALUE_ATTRIBUTE);
 
-            if( HeaderMatcher.TRANSFER_ENCODING_HEADER_NAME.equalsIgnoreCase( headerName )
-                && ( "chunked".equalsIgnoreCase( headerValue ) ) ) {
+            if (HeaderMatcher.TRANSFER_ENCODING_HEADER_NAME.equalsIgnoreCase(headerName)
+                && ("chunked".equalsIgnoreCase(headerValue))) {
                 // we currently do not enforce chunked requests
                 continue;
             }
-            httpHeaders.add( new ActionHeader( headerName, headerValue ) );
+            httpHeaders.add(new ActionHeader(headerName, headerValue));
         }
     }
 
     public String getHttpUrl() throws XmlUtilitiesException {
 
-        return XmlUtilities.applyUserParameters( httpUrl );
+        return XmlUtilities.applyUserParameters(httpUrl);
     }
 
     public String getHttpMethod() {
@@ -81,9 +81,9 @@ public class ActionRequestObject extends AbstractActionObject {
 
     private void resolveHttpUrl( Node actionRequest ) throws XmlReaderException {
 
-        Node httpUrlNode = XmlUtilities.getFirstChildNode( actionRequest, TOKEN_HTTP_REQUEST_URL );
-        if( httpUrlNode == null ) {
-            throw new XmlReaderException( actionsXmlName, "No " + TOKEN_HTTP_REQUEST_URL + " node" );
+        Node httpUrlNode = XmlUtilities.getFirstChildNode(actionRequest, TOKEN_HTTP_REQUEST_URL);
+        if (httpUrlNode == null) {
+            throw new XmlReaderException(actionsXmlName, "No " + TOKEN_HTTP_REQUEST_URL + " node");
         } else {
             httpUrl = httpUrlNode.getTextContent();
         }
@@ -91,12 +91,12 @@ public class ActionRequestObject extends AbstractActionObject {
 
     private void resolveHttpMethod( Node actionRequest ) throws XmlReaderException, XmlUtilitiesException {
 
-        String httpRequestMethod = xmlUtilities.getNodeAttribute( actionRequest, TOKEN_HTTP_REQUEST_METHOD );
-        if( httpRequestMethod == null ) {
-            throw new XmlReaderException( actionsXmlName,
-                                          "No " + TOKEN_HTTP_REQUEST_METHOD + " attribute in "
-                                                          + xmlUtilities.xmlNodeToString( actionRequest )
-                                                          + " node" );
+        String httpRequestMethod = xmlUtilities.getNodeAttribute(actionRequest, TOKEN_HTTP_REQUEST_METHOD);
+        if (httpRequestMethod == null) {
+            throw new XmlReaderException(actionsXmlName,
+                                         "No " + TOKEN_HTTP_REQUEST_METHOD + " attribute in "
+                                                         + xmlUtilities.xmlNodeToString(actionRequest)
+                                                         + " node");
         } else {
             httpMethod = httpRequestMethod;
         }

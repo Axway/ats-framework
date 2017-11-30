@@ -50,9 +50,9 @@ import com.axway.ats.agentapp.standalone.utils.ThreadUtils;
 
 public class ContainerStarter {
 
-    private static final Logger log                      = Logger.getLogger( ContainerStarter.class );
-    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                  // NOTE: on change sync with ATSSystemProperties
-    private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                                      // NOTE: on change sync with ATSSystemProperties
+    private static final Logger log                      = Logger.getLogger(ContainerStarter.class);
+    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                // NOTE: on change sync with ATSSystemProperties
+    private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                                    // NOTE: on change sync with ATSSystemProperties
 
     /**
      * Entry point for the premain java agent starting the ATS Agent
@@ -63,7 +63,7 @@ public class ContainerStarter {
     public static void premain( String agentArgs, Instrumentation inst ) throws IOException {
 
         Server server = startServer();
-        startCleanerThread( server );
+        startCleanerThread(server);
     }
 
     /**
@@ -89,36 +89,36 @@ public class ContainerStarter {
         addAppender();
 
         final int agentPort = getAgentDefaultPort();
-        log.info( "Starting ATS agent at port: " + agentPort );
+        log.info("Starting ATS agent at port: " + agentPort);
 
         final String jettyHome = getJettyHome();
 
-        logSystemInformation( jettyHome );
+        logSystemInformation(jettyHome);
 
         // start the server
         Connector connector = new SelectChannelConnector();
-        connector.setPort( agentPort );
+        connector.setPort(agentPort);
 
         Server server = new Server();
-        server.setConnectors( new Connector[]{ connector } );
+        server.setConnectors(new Connector[]{ connector });
 
         WebAppContext webApp = new WebAppContext();
-        webApp.setContextPath( "/agentapp" );
-        webApp.setWar( jettyHome + "/webapp/agentapp.war" );
+        webApp.setContextPath("/agentapp");
+        webApp.setWar(jettyHome + "/webapp/agentapp.war");
 
-        server.setHandler( webApp );
-        server.setStopAtShutdown( true );
+        server.setHandler(webApp);
+        server.setStopAtShutdown(true);
 
-        setExtraClasspath( webApp, jettyHome );
+        setExtraClasspath(webApp, jettyHome);
 
         try {
             server.start();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
-            System.exit( 1 );
+            System.exit(1);
         }
 
-        log.info( "ATS agent started" );
+        log.info("ATS agent started");
         return server;
     }
 
@@ -134,22 +134,22 @@ public class ContainerStarter {
         // Make more attempts in short interval in order to stop this check
         // as soon as possible.
         int maxAttempts = 100;
-        while( !server.isRunning() ) {
+        while (!server.isRunning()) {
             try {
-                Thread.sleep( 50 );
-            } catch( InterruptedException e ) {
-                log.error( "Interrupted while waiting for the agent to start.", e );
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                log.error("Interrupted while waiting for the agent to start.", e);
             }
 
-            if( maxAttempts == 0 ) {
-                throw new AgentException( "Jetty server not running." );
+            if (maxAttempts == 0) {
+                throw new AgentException("Jetty server not running.");
             }
 
             --maxAttempts;
         }
 
-        CleaningThread cleanerThread = new CleaningThread( server, ThreadUtils.getInstance()
-                                                                              .getAllThreadIDsExceptMain() );
+        CleaningThread cleanerThread = new CleaningThread(server, ThreadUtils.getInstance()
+                                                                             .getAllThreadIDsExceptMain());
         cleanerThread.start();
     }
 
@@ -160,25 +160,25 @@ public class ContainerStarter {
 
         // find the current class in the agent jar.
         String jettyHome = ContainerStarter.class.getClassLoader()
-                                                 .getResource( ContainerStarter.class.getCanonicalName()
-                                                                                     .replaceAll( "\\.", "/" )
-                                                               + ".class" )
+                                                 .getResource(ContainerStarter.class.getCanonicalName()
+                                                                                    .replaceAll("\\.", "/")
+                                                              + ".class")
                                                  .toString();
         // get rid of the 'jar:' prefix and the path after the jar's name
-        jettyHome = jettyHome.substring( 4, jettyHome.lastIndexOf( '!' ) );
+        jettyHome = jettyHome.substring(4, jettyHome.lastIndexOf('!'));
         // get rid of the jar name at the end
-        jettyHome = jettyHome.substring( 0, jettyHome.lastIndexOf( '/' ) );
+        jettyHome = jettyHome.substring(0, jettyHome.lastIndexOf('/'));
         // Directly read system property in order not to add dependency to common library
-        boolean isWindows = System.getProperty( "os.name" ).toLowerCase().startsWith( "win" );
-        if( isWindows ) {
-            jettyHome = jettyHome.substring( "file:/".length() );
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
+        if (isWindows) {
+            jettyHome = jettyHome.substring("file:/".length());
         } else {
-            jettyHome = jettyHome.substring( "file:".length() );
+            jettyHome = jettyHome.substring("file:".length());
         }
         try {
-            jettyHome = URLDecoder.decode( jettyHome, "UTF-8" );
-        } catch( UnsupportedEncodingException e ) {
-            throw new RuntimeException( "Unable to decode Jetty home path", e );
+            jettyHome = URLDecoder.decode(jettyHome, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Unable to decode Jetty home path", e);
         }
 
         return jettyHome;
@@ -186,12 +186,12 @@ public class ContainerStarter {
 
     private static void setExtraClasspath( WebAppContext webApp, String jettyHome ) {
 
-        final String lineSeparator = System.getProperty( "line.separator" );
+        final String lineSeparator = System.getProperty("line.separator");
 
-        String jarFilesReference = getJarFilesReference( jettyHome + "/actions_dependencies" );
-        webApp.setExtraClasspath( jarFilesReference );
-        log.debug( "Additional libraries inserted into Jetty's classpath: " + lineSeparator
-                   + jarFilesReference.replaceAll( ",;", lineSeparator ) );
+        String jarFilesReference = getJarFilesReference(jettyHome + "/actions_dependencies");
+        webApp.setExtraClasspath(jarFilesReference);
+        log.debug("Additional libraries inserted into Jetty's classpath: " + lineSeparator
+                  + jarFilesReference.replaceAll(",;", lineSeparator));
     }
 
     /**
@@ -205,21 +205,21 @@ public class ContainerStarter {
         StringBuffer jarsReference = new StringBuffer();
 
         try {
-            File[] files = new File( folder ).listFiles();
-            if( files != null ) {
-                for( File file : files ) {
-                    if( file.isDirectory() ) {
-                        jarsReference.append( getJarFilesReference( file.getAbsolutePath() ) );
-                    } else if( file.getName().endsWith( ".jar" ) ) {
-                        jarsReference.append( folder );
-                        jarsReference.append( "/" );
-                        jarsReference.append( file.getName() );
-                        jarsReference.append( ",;" );
+            File[] files = new File(folder).listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        jarsReference.append(getJarFilesReference(file.getAbsolutePath()));
+                    } else if (file.getName().endsWith(".jar")) {
+                        jarsReference.append(folder);
+                        jarsReference.append("/");
+                        jarsReference.append(file.getName());
+                        jarsReference.append(",;");
                     }
                 }
             }
-        } catch( Exception e ) {
-            log.warn( "Error searching for jar files into '" + folder + "' folder" );
+        } catch (Exception e) {
+            log.warn("Error searching for jar files into '" + folder + "' folder");
         }
 
         return jarsReference.toString();
@@ -234,14 +234,14 @@ public class ContainerStarter {
         Integer defaultPort = null;
         String portValueAsStr = null;
         try {
-            portValueAsStr = System.getProperty( DEFAULT_AGENT_PORT_KEY );
-            defaultPort = Integer.parseInt( portValueAsStr );
-        } catch( NumberFormatException iae ) {
-            System.err.println( "System property with name '" + DEFAULT_AGENT_PORT_KEY
-                                + "' has a non integer value '" + portValueAsStr + "'" );
+            portValueAsStr = System.getProperty(DEFAULT_AGENT_PORT_KEY);
+            defaultPort = Integer.parseInt(portValueAsStr);
+        } catch (NumberFormatException iae) {
+            System.err.println("System property with name '" + DEFAULT_AGENT_PORT_KEY
+                               + "' has a non integer value '" + portValueAsStr + "'");
         }
 
-        if( defaultPort == null ) {
+        if (defaultPort == null) {
             defaultPort = DEFAULT_AGENT_PORT_VALUE;
         }
         return defaultPort;
@@ -250,33 +250,33 @@ public class ContainerStarter {
     private static void writePidFile() {
 
         String pid = getCurrentProcessId();
-        if( pid == null ) {
-            log.warn( "Uable to get the current process ID, which means that we can't stop the agent later" );
+        if (pid == null) {
+            log.warn("Uable to get the current process ID, which means that we can't stop the agent later");
             return;
         }
 
         String jettyHome = getJettyHome();
-        String logsFolderPath = new File( jettyHome ).getParent();
+        String logsFolderPath = new File(jettyHome).getParent();
         String pidFilePath = logsFolderPath + "/logs/atsAgent_" + getAgentDefaultPort() + ".pid";
 
-        File pidFile = new File( pidFilePath );
-        if( pidFile.exists() ) {
-            log.warn( "PID file '" + pidFile.getAbsolutePath()
-                      + "' already exists. We will overwrite it now!" );
+        File pidFile = new File(pidFilePath);
+        if (pidFile.exists()) {
+            log.warn("PID file '" + pidFile.getAbsolutePath()
+                     + "' already exists. We will overwrite it now!");
         }
 
         FileWriter writer = null;
         try {
-            writer = new FileWriter( pidFile, false );
-            writer.write( pid );
-        } catch( Exception e ) {
-            log.warn( "Error writing pid file" );
+            writer = new FileWriter(pidFile, false);
+            writer.write(pid);
+        } catch (Exception e) {
+            log.warn("Error writing pid file");
         } finally {
-            if( writer != null ) {
+            if (writer != null) {
                 try {
                     writer.close();
-                } catch( IOException e ) {
-                    log.warn( "Error closing pid file" );
+                } catch (IOException e) {
+                    log.warn("Error closing pid file");
                 }
             }
         }
@@ -291,18 +291,18 @@ public class ContainerStarter {
 
         // something like '<pid>@<hostname>', at least in SUN / Oracle JVMs
         final String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-        final int index = jvmName.indexOf( '@' );
+        final int index = jvmName.indexOf('@');
 
-        if( index < 1 ) {
+        if (index < 1) {
             // part before '@' empty
-            log.warn( "Cannot extract the system process ID of this agent instance" );
+            log.warn("Cannot extract the system process ID of this agent instance");
             return null;
         }
 
         try {
-            return Long.toString( Long.parseLong( jvmName.substring( 0, index ) ) );
-        } catch( NumberFormatException e ) {
-            log.warn( "Cannot extract the system process ID of this agent instance" );
+            return Long.toString(Long.parseLong(jvmName.substring(0, index)));
+        } catch (NumberFormatException e) {
+            log.warn("Cannot extract the system process ID of this agent instance");
             return null;
         }
     }
@@ -311,65 +311,65 @@ public class ContainerStarter {
 
         Map<Object, Object> variables = System.getProperties();
         Level logLevel = Level.INFO;
-        String pattern = ( String ) variables.get( "logging.pattern" );
-        String agentPort = ( String ) variables.get( "ats.agent.default.port" );
-        String agentSeverity = ( String ) variables.get( "logging.severity" );
+        String pattern = (String) variables.get("logging.pattern");
+        String agentPort = (String) variables.get("ats.agent.default.port");
+        String agentSeverity = (String) variables.get("logging.severity");
 
         // check agent logging severity and set the appropriate level
-        if( "INFO".equalsIgnoreCase( agentSeverity ) ) {
+        if ("INFO".equalsIgnoreCase(agentSeverity)) {
             logLevel = Level.INFO;
-        } else if( "DEBUG".equalsIgnoreCase( agentSeverity ) ) {
+        } else if ("DEBUG".equalsIgnoreCase(agentSeverity)) {
             logLevel = Level.DEBUG;
-        } else if( "WARN".equalsIgnoreCase( agentSeverity ) ) {
+        } else if ("WARN".equalsIgnoreCase(agentSeverity)) {
             logLevel = Level.WARN;
-        } else if( "ERROR".equalsIgnoreCase( agentSeverity ) ) {
+        } else if ("ERROR".equalsIgnoreCase(agentSeverity)) {
             logLevel = Level.ERROR;
-        } else if( "FATAL".equalsIgnoreCase( agentSeverity ) ) {
+        } else if ("FATAL".equalsIgnoreCase(agentSeverity)) {
             logLevel = Level.FATAL;
         } else {
-            log.info( "Unknown severity level is set: " + agentSeverity
-                      + ". Possible values are: DEBUG, INFO, WARN, ERROR, FATAL." );
+            log.info("Unknown severity level is set: " + agentSeverity
+                     + ". Possible values are: DEBUG, INFO, WARN, ERROR, FATAL.");
         }
 
         String logPath = "./logs/ATSAgentAudit_" + agentPort + ".log";
-        PatternLayout layout = new PatternLayout( "%d{ISO8601} - {%p} [%t] %c{2}: %x %m%n" );
+        PatternLayout layout = new PatternLayout("%d{ISO8601} - {%p} [%t] %c{2}: %x %m%n");
 
         Logger rootLogger = Logger.getRootLogger();
         FileAppender attachedAppender = null;
-        if( pattern != null && !pattern.trim().isEmpty() ) {
+        if (pattern != null && !pattern.trim().isEmpty()) {
             pattern = pattern.trim().toLowerCase();
-            if( "day".equals( pattern ) ) {
-                attachedAppender = new DailyRollingFileAppender( layout, logPath, "'.'MM-dd'.log'" );
-            } else if( "hour".equals( pattern ) ) {
-                attachedAppender = new DailyRollingFileAppender( layout, logPath, "'.'MM-dd-HH'.log'" );
-            } else if( "minute".equals( pattern ) ) {
-                attachedAppender = new DailyRollingFileAppender( layout, logPath, "'.'MM-dd-HH-mm'.log'" );
-            } else if( pattern.endsWith( "kb" ) || pattern.endsWith( "mb" ) || pattern.endsWith( "gb" ) ) {
-                attachedAppender = new SizeRollingFileAppender( layout, logPath, true );
-                ( ( SizeRollingFileAppender ) attachedAppender ).setMaxFileSize( pattern );
-                ( ( SizeRollingFileAppender ) attachedAppender ).setMaxBackupIndex( 10 );
+            if ("day".equals(pattern)) {
+                attachedAppender = new DailyRollingFileAppender(layout, logPath, "'.'MM-dd'.log'");
+            } else if ("hour".equals(pattern)) {
+                attachedAppender = new DailyRollingFileAppender(layout, logPath, "'.'MM-dd-HH'.log'");
+            } else if ("minute".equals(pattern)) {
+                attachedAppender = new DailyRollingFileAppender(layout, logPath, "'.'MM-dd-HH-mm'.log'");
+            } else if (pattern.endsWith("kb") || pattern.endsWith("mb") || pattern.endsWith("gb")) {
+                attachedAppender = new SizeRollingFileAppender(layout, logPath, true);
+                ((SizeRollingFileAppender) attachedAppender).setMaxFileSize(pattern);
+                ((SizeRollingFileAppender) attachedAppender).setMaxBackupIndex(10);
             } else {
-                System.err.println( "ERROR: '" + pattern
-                                    + "' is invalid pattern for log4j rolling file appender" );
-                System.exit( 1 );
+                System.err.println("ERROR: '" + pattern
+                                   + "' is invalid pattern for log4j rolling file appender");
+                System.exit(1);
             }
         }
-        if( attachedAppender == null ) {
+        if (attachedAppender == null) {
 
             attachedAppender = new FileAppender();
-            attachedAppender.setFile( logPath );
-            attachedAppender.setLayout( layout );
-            attachedAppender.setAppend( false );
+            attachedAppender.setFile(logPath);
+            attachedAppender.setLayout(layout);
+            attachedAppender.setAppend(false);
         }
         attachedAppender.activateOptions();
-        rootLogger.setLevel( logLevel );
-        rootLogger.addAppender( attachedAppender );
+        rootLogger.setLevel(logLevel);
+        rootLogger.addAppender(attachedAppender);
 
         // adding filter for Jetty messages
-        Logger mortbayLogger = Logger.getLogger( "org.mortbay" );
-        mortbayLogger.setAdditivity( false );
-        mortbayLogger.setLevel( Level.ERROR );
-        mortbayLogger.addAppender( attachedAppender );
+        Logger mortbayLogger = Logger.getLogger("org.mortbay");
+        mortbayLogger.setAdditivity(false);
+        mortbayLogger.setLevel(Level.ERROR);
+        mortbayLogger.addAppender(attachedAppender);
 
     }
 
@@ -384,38 +384,38 @@ public class ContainerStarter {
 
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-            while( netInterfaces.hasMoreElements() ) {
-                NetworkInterface netInterface = ( NetworkInterface ) netInterfaces.nextElement();
-                if( !netInterface.isLoopback() ) {
+            while (netInterfaces.hasMoreElements()) {
+                NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
+                if (!netInterface.isLoopback()) {
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
                     InetAddress ipAddress = null;
-                    while( ipAddresses.hasMoreElements() ) {
-                        ipAddress = ( InetAddress ) ipAddresses.nextElement();
+                    while (ipAddresses.hasMoreElements()) {
+                        ipAddress = (InetAddress) ipAddresses.nextElement();
 
-                        if( ipAddress instanceof java.net.Inet4Address ) {
-                            Inet4Address ipv4 = ( Inet4Address ) ipAddress;
-                            if( !ipv4.isLoopbackAddress()
-                                && !LOCAL_HOST_NAME.equals( ipv4.getCanonicalHostName() )
-                                && !LOCAL_HOST_IPv4.equals( ipv4.getCanonicalHostName() ) ) {
+                        if (ipAddress instanceof java.net.Inet4Address) {
+                            Inet4Address ipv4 = (Inet4Address) ipAddress;
+                            if (!ipv4.isLoopbackAddress()
+                                && !LOCAL_HOST_NAME.equals(ipv4.getCanonicalHostName())
+                                && !LOCAL_HOST_IPv4.equals(ipv4.getCanonicalHostName())) {
                                 // we found an appropriate IPv4 address
-                                ipList.add( ipv4 );
+                                ipList.add(ipv4);
                             }
                         } else //if( ip instanceof java.net.Inet6Address )
                         {
-                            Inet6Address ipv6 = ( Inet6Address ) ipAddress;
+                            Inet6Address ipv6 = (Inet6Address) ipAddress;
                             // FIXME: currently we do not filter out the temporary IPv6 addresses
-                            if( !ipv6.isLinkLocalAddress()
-                                && !LOCAL_HOST_IPv6.equals( ipv6.getCanonicalHostName() ) ) {
+                            if (!ipv6.isLinkLocalAddress()
+                                && !LOCAL_HOST_IPv6.equals(ipv6.getCanonicalHostName())) {
                                 // We found an appropriate IPv6 address. Remember it, but keep searching for an appropriate IPv4 address.
-                                ipList.add( ipv6 );
+                                ipList.add(ipv6);
                             }
                         }
                     }
                 }
             }
-        } catch( SocketException se ) {
-            log.error( "Error obtaining the local host address", se );
+        } catch (SocketException se) {
+            log.error("Error obtaining the local host address", se);
         }
         return ipList;
     }
@@ -425,31 +425,31 @@ public class ContainerStarter {
         StringBuilder systemInformation = new StringBuilder();
 
         try {
-            appendMessage( systemInformation, "ATS version: '",
-                           AtsVersionExtractor.getATSVersion( jettyHome + "/webapp/agentapp.war" ) );
-        } catch( Exception e ) {}
-        appendMessage( systemInformation, " os.name: '", ( String ) System.getProperty( "os.name" ) );
-        appendMessage( systemInformation, " os.arch: '", ( String ) System.getProperty( "os.arch" ) );
-        appendMessage( systemInformation, " java.version: '",
-                       ( String ) System.getProperty( "java.version" ) );
-        appendMessage( systemInformation, " java.home: '", ( String ) System.getProperty( "java.home" ) );
+            appendMessage(systemInformation, "ATS version: '",
+                          AtsVersionExtractor.getATSVersion(jettyHome + "/webapp/agentapp.war"));
+        } catch (Exception e) {}
+        appendMessage(systemInformation, " os.name: '", (String) System.getProperty("os.name"));
+        appendMessage(systemInformation, " os.arch: '", (String) System.getProperty("os.arch"));
+        appendMessage(systemInformation, " java.version: '",
+                      (String) System.getProperty("java.version"));
+        appendMessage(systemInformation, " java.home: '", (String) System.getProperty("java.home"));
 
         List<String> ipList = new ArrayList<String>();
-        for( InetAddress ip : getAllIPAddresses() ) {
-            ipList.add( ip.getHostAddress() );
+        for (InetAddress ip : getAllIPAddresses()) {
+            ipList.add(ip.getHostAddress());
         }
-        appendMessage( systemInformation, " IP addresses: '", ipList.toString() );
+        appendMessage(systemInformation, " IP addresses: '", ipList.toString());
 
-        log.info( "System information : " + systemInformation.toString() );
+        log.info("System information : " + systemInformation.toString());
     }
 
     private static void appendMessage( StringBuilder message, String valueDesc, String value ) {
 
-        if( value != null && value.length() > 0 ) {
-            if( message.length() > 0 ) {
-                message.append( "," );
+        if (value != null && value.length() > 0) {
+            if (message.length() > 0) {
+                message.append(",");
             }
-            message.append( valueDesc + value + "'" );
+            message.append(valueDesc + value + "'");
         }
     }
 }

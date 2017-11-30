@@ -53,11 +53,11 @@ import com.axway.ats.core.utils.StringUtils;
 class ActionClassGenerator {
 
     static {
-        PatternLayout layout = new PatternLayout( "%m%n" );
-        BasicConfigurator.configure( new ConsoleAppender( layout ) );
+        PatternLayout layout = new PatternLayout("%m%n");
+        BasicConfigurator.configure(new ConsoleAppender(layout));
     }
 
-    private static final Logger               log            = Logger.getLogger( ActionClassGenerator.class );
+    private static final Logger               log            = Logger.getLogger(ActionClassGenerator.class);
 
     private final static String               LINE_SEPARATOR = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
@@ -98,12 +98,12 @@ class ActionClassGenerator {
 
     public static boolean isAnActionClass( Method method ) {
 
-        if( ( method.getAnnotation( Action.class ) == null )
-            && ( method.getAnnotation( TemplateAction.class ) == null ) ) {
+        if ( (method.getAnnotation(Action.class) == null)
+             && (method.getAnnotation(TemplateAction.class) == null)) {
             return false;
         }
 
-        if( !Modifier.isPublic( method.getModifiers() ) ) {
+        if (!Modifier.isPublic(method.getModifiers())) {
             return false;
         }
 
@@ -122,99 +122,99 @@ class ActionClassGenerator {
     public void generate() throws ParserConfigurationException, IOException, SAXException,
                            ClassNotFoundException, AgentException {
 
-        File descriptorFile = new File( descriptorFileName );
-        if( !descriptorFile.exists() ) {
-            throw new BuildException( "Descriptor file " + descriptorFile
-                                      + " does not exist. Absolute path of searched file: "
-                                      + descriptorFile.getAbsolutePath() );
+        File descriptorFile = new File(descriptorFileName);
+        if (!descriptorFile.exists()) {
+            throw new BuildException("Descriptor file " + descriptorFile
+                                     + " does not exist. Absolute path of searched file: "
+                                     + descriptorFile.getAbsolutePath());
         }
 
-        log.info( "Parsing configuration file " + descriptorFile.getAbsoluteFile() );
+        log.info("Parsing configuration file " + descriptorFile.getAbsoluteFile());
 
         ConfigurationParser configParser = new ConfigurationParser();
-        configParser.parse( new FileInputStream( descriptorFile ), descriptorFile.getAbsolutePath() );
+        configParser.parse(new FileInputStream(descriptorFile), descriptorFile.getAbsolutePath());
 
         //first generate the cleanup client class
-        generateCleanupHandlerStub( configParser );
+        generateCleanupHandlerStub(configParser);
 
         //get the javadocs for all actions in the action class
-        ActionJavadocExtractor javadocExtractor = new ActionJavadocExtractor( sourceDir );
+        ActionJavadocExtractor javadocExtractor = new ActionJavadocExtractor(sourceDir);
         Map<String, String> actionJavadocMap = javadocExtractor.extractJavaDocs();
 
         boolean errorsWhileProcessing = false;
 
         //next we need to generate the action classes
         Set<String> actionClassNames = configParser.getActionClassNames();
-        for( String actionClassName : actionClassNames ) {
+        for (String actionClassName : actionClassNames) {
 
             Class<?> actionClass;
 
             try {
-                actionClass = Class.forName( actionClassName );
-            } catch( ClassNotFoundException cnfe ) {
-                log.error( "Could not find class '" + actionClassName + "' or a referenced class", cnfe );
+                actionClass = Class.forName(actionClassName);
+            } catch (ClassNotFoundException cnfe) {
+                log.error("Could not find class '" + actionClassName + "' or a referenced class", cnfe);
                 errorsWhileProcessing = true;
                 continue;
-            } catch( ExceptionInInitializerError eiie ) {
-                log.error( "Could not initialize a static constant or execute a static section in '"
-                           + actionClassName + "' or a referenced class", eiie );
+            } catch (ExceptionInInitializerError eiie) {
+                log.error("Could not initialize a static constant or execute a static section in '"
+                          + actionClassName + "' or a referenced class", eiie);
                 errorsWhileProcessing = true;
                 continue;
             }
 
             //check if stub generation should be skipped
-            if( !needStubGeneration( actionClass ) ) {
-                log.info( "Skipping client stub generation for action class '" + actionClass.getName()
-                          + "'" );
+            if (!needStubGeneration(actionClass)) {
+                log.info("Skipping client stub generation for action class '" + actionClass.getName()
+                         + "'");
                 continue;
             }
 
             String targetActionClassPackage = originalTargetPackage;
 
-            log.info( "Source package: " + originalSourcePackage );
+            log.info("Source package: " + originalSourcePackage);
 
             //if the source package attribute has been initialized, then we should
             //replace it with the target package, otherwise use only the target package
-            if( originalSourcePackage != null && actionClass.getName().contains( originalSourcePackage ) ) {
+            if (originalSourcePackage != null && actionClass.getName().contains(originalSourcePackage)) {
                 targetActionClassPackage = actionClass.getPackage()
                                                       .getName()
-                                                      .replace( originalSourcePackage,
-                                                                originalTargetPackage );
+                                                      .replace(originalSourcePackage,
+                                                               originalTargetPackage);
             }
 
             //create the package folder structure
-            String targetPath = createPackageIfDoesNotExist( targetActionClassPackage );
+            String targetPath = createPackageIfDoesNotExist(targetActionClassPackage);
             String destFileName = targetPath + "/" + actionClass.getSimpleName() + ".java";
 
-            log.info( "Writing generated stub to '" + destFileName + "'" );
+            log.info("Writing generated stub to '" + destFileName + "'");
 
             PrintWriter fileWriter = null;
             try {
-                fileWriter = new PrintWriter( new FileOutputStream( new File( destFileName ) ) );
+                fileWriter = new PrintWriter(new FileOutputStream(new File(destFileName)));
 
-                fileWriter.write( generateStub( configParser.getComponentName(), actionClass,
-                                                targetActionClassPackage, originalTargetPackage,
-                                                actionJavadocMap ) );
+                fileWriter.write(generateStub(configParser.getComponentName(), actionClass,
+                                              targetActionClassPackage, originalTargetPackage,
+                                              actionJavadocMap));
                 fileWriter.flush();
             } finally {
-                IoUtils.closeStream( fileWriter );
+                IoUtils.closeStream(fileWriter);
             }
         }
 
-        if( errorsWhileProcessing ) {
-            throw new RuntimeException( "There were some errors while creating the Agent action client and server jars. Please review the console output above." );
+        if (errorsWhileProcessing) {
+            throw new RuntimeException("There were some errors while creating the Agent action client and server jars. Please review the console output above.");
         }
     }
 
     private String createPackageIfDoesNotExist( String packageName ) {
 
         //replace the package separator with file separator
-        String targetPath = destDir + "/" + packageName.replace( ".", "/" );
-        File targetPathDir = new File( targetPath );
-        if( !targetPathDir.exists() ) {
-            log.info( "Creating package '" + packageName + "'" );
-            if( !targetPathDir.mkdirs() ) {
-                throw new BuildException( "Could not create target package '" + targetPath + "'" );
+        String targetPath = destDir + "/" + packageName.replace(".", "/");
+        File targetPathDir = new File(targetPath);
+        if (!targetPathDir.exists()) {
+            log.info("Creating package '" + packageName + "'");
+            if (!targetPathDir.mkdirs()) {
+                throw new BuildException("Could not create target package '" + targetPath + "'");
             }
         }
 
@@ -225,102 +225,103 @@ class ActionClassGenerator {
                                  String originalTargetPackage, Map<String, String> actionJavadocMap ) {
 
         try {
-            log.info( "Generating stub for action class '" + actionClass.getCanonicalName() + "'" );
+            log.info("Generating stub for action class '" + actionClass.getCanonicalName() + "'");
 
             //first we need to generate the method definitions
             StringBuilder methodsDefinition = new StringBuilder();
             StringBuilder publicConstants = new StringBuilder();
 
             Method[] actionClassMethods = actionClass.getMethods();
-            for( Method actionClassMethod : actionClassMethods ) {
-                if( isAnActionClass( actionClassMethod ) ) {
-                    Action actionAnnotation = actionClassMethod.getAnnotation( Action.class );
-                    TemplateAction templateActionAnnotation = actionClassMethod.getAnnotation( TemplateAction.class );
+            for (Method actionClassMethod : actionClassMethods) {
+                if (isAnActionClass(actionClassMethod)) {
+                    Action actionAnnotation = actionClassMethod.getAnnotation(Action.class);
+                    TemplateAction templateActionAnnotation = actionClassMethod.getAnnotation(TemplateAction.class);
 
                     String actionName;
-                    if( actionAnnotation != null ) {
+                    if (actionAnnotation != null) {
                         actionName = actionAnnotation.name();
                     } else {
                         actionName = templateActionAnnotation.name();
                     }
 
                     // if the 'name' attribute is empty, generate an action method name
-                    if( StringUtils.isNullOrEmpty( actionName ) ) {
+                    if (StringUtils.isNullOrEmpty(actionName)) {
 
-                        actionName = ActionMethod.buildActionMethodName( actionClassMethod );
+                        actionName = ActionMethod.buildActionMethodName(actionClassMethod);
                     }
 
                     // check if this is a transfer action and it has the necessary return type
                     String transferUnit = "";
-                    if ( actionAnnotation != null ) {
+                    if (actionAnnotation != null) {
                         transferUnit = actionAnnotation.transferUnit();
                     }
-                    if( actionAnnotation != null && transferUnit.length() > 0
-                        && actionClassMethod.getReturnType() != Long.class ) {
-                        throw new BuildException( "Action '" + actionName
-                                                  + "' has a declared transfer unit, but the return type is not Long" );
+                    if (actionAnnotation != null && transferUnit.length() > 0
+                        && actionClassMethod.getReturnType() != Long.class) {
+                        throw new BuildException("Action '" + actionName
+                                                 + "' has a declared transfer unit, but the return type is not Long");
                     }
 
-                    String actionJavaDoc = actionJavadocMap.get( actionName );
+                    String actionJavaDoc = actionJavadocMap.get(actionName);
 
                     //first append the action javadoc (if any)
-                    if( actionJavaDoc != null ) {
-                        methodsDefinition.append( actionJavaDoc );
+                    if (actionJavaDoc != null) {
+                        methodsDefinition.append(actionJavaDoc);
                     }
 
                     //then process the method body and append it
                     boolean registerActionExecution = true;
-                    if( actionAnnotation != null ){
-                        registerActionExecution = actionAnnotation.registerActionExecution(); 
+                    if (actionAnnotation != null) {
+                        registerActionExecution = actionAnnotation.registerActionExecution();
                     }
-                    String actionDefinition = generateActionDefinition( actionName, actionClassMethod, transferUnit, registerActionExecution );
-                    methodsDefinition.append( actionDefinition );
+                    String actionDefinition = generateActionDefinition(actionName, actionClassMethod, transferUnit,
+                                                                       registerActionExecution);
+                    methodsDefinition.append(actionDefinition);
 
                     //get any enum constants
-                    publicConstants.append( generateEnumConstants( actionClassMethod ) );
+                    publicConstants.append(generateEnumConstants(actionClassMethod));
                 }
             }
 
             //generate the public constants
-            publicConstants.append( generateConstantsDefinition( actionClass ) );
+            publicConstants.append(generateConstantsDefinition(actionClass));
 
             ClassTemplateProcessor classProcessor;
-            if( customTemplates.containsKey( actionClass.getName() ) ) {
+            if (customTemplates.containsKey(actionClass.getName())) {
                 //use the custom template supplied
-                classProcessor = new ClassTemplateProcessor( new File( customTemplates.get( actionClass.getName() ) ),
-                                                             originalSourcePackage, originalTargetPackage,
-                                                             targetActionClassPackage, actionClass,
-                                                             componentName, methodsDefinition.toString(),
-                                                             publicConstants.toString() );
+                classProcessor = new ClassTemplateProcessor(new File(customTemplates.get(actionClass.getName())),
+                                                            originalSourcePackage, originalTargetPackage,
+                                                            targetActionClassPackage, actionClass,
+                                                            componentName, methodsDefinition.toString(),
+                                                            publicConstants.toString());
             } else {
                 //use default template
-                classProcessor = new ClassTemplateProcessor( originalSourcePackage, originalTargetPackage,
-                                                             targetActionClassPackage, actionClass,
-                                                             componentName, methodsDefinition.toString(),
-                                                             publicConstants.toString() );
+                classProcessor = new ClassTemplateProcessor(originalSourcePackage, originalTargetPackage,
+                                                            targetActionClassPackage, actionClass,
+                                                            componentName, methodsDefinition.toString(),
+                                                            publicConstants.toString());
             }
 
             return classProcessor.processTemplate();
-        } catch( Exception e ) {
-            throw new BuildException( e );
+        } catch (Exception e) {
+            throw new BuildException(e);
         }
     }
 
     private void generateCleanupHandlerStub( ConfigurationParser configParser ) {
 
         String cleanupHandlerClassName = configParser.getCleanupHandler();
-        log.info( "Generating stub for cleanup handler class '" + cleanupHandlerClassName + "'" );
+        log.info("Generating stub for cleanup handler class '" + cleanupHandlerClassName + "'");
 
         Class<?> cleanupHandlerClass;
 
         try {
-            cleanupHandlerClass = Class.forName( cleanupHandlerClassName );
-        } catch( ClassNotFoundException cnfe ) {
-            log.warn( "Could not find class '" + cleanupHandlerClassName + "'" );
+            cleanupHandlerClass = Class.forName(cleanupHandlerClassName);
+        } catch (ClassNotFoundException cnfe) {
+            log.warn("Could not find class '" + cleanupHandlerClassName + "'");
             return;
-        } catch( ExceptionInInitializerError eiie ) {
-            log.warn( "Could not initialize a static constant or execute a static section in '"
-                      + cleanupHandlerClassName + "' or a referenced class", eiie );
+        } catch (ExceptionInInitializerError eiie) {
+            log.warn("Could not initialize a static constant or execute a static section in '"
+                     + cleanupHandlerClassName + "' or a referenced class", eiie);
             return;
         }
 
@@ -329,36 +330,36 @@ class ActionClassGenerator {
 
             // if the source package attribute has been initialized, then we should
             // replace it with the target package, otherwise use only the target package
-            if( originalSourcePackage != null
-                && cleanupHandlerClass.getName().contains( originalSourcePackage ) ) {
+            if (originalSourcePackage != null
+                && cleanupHandlerClass.getName().contains(originalSourcePackage)) {
                 targetActionClassPackage = cleanupHandlerClass.getPackage()
                                                               .getName()
-                                                              .replace( originalSourcePackage,
-                                                                        originalTargetPackage );
+                                                              .replace(originalSourcePackage,
+                                                                       originalTargetPackage);
             }
 
             ClassTemplateProcessor classProcessor;
             //use default template
-            classProcessor = new ClassTemplateProcessor( ClassTemplateProcessor.CLEANUP_CLASS_TEMPLATE, "",
-                                                         "", targetActionClassPackage, cleanupHandlerClass,
-                                                         configParser.getComponentName(), "",
-                                                         generateConstantsDefinition( cleanupHandlerClass ) );
+            classProcessor = new ClassTemplateProcessor(ClassTemplateProcessor.CLEANUP_CLASS_TEMPLATE, "",
+                                                        "", targetActionClassPackage, cleanupHandlerClass,
+                                                        configParser.getComponentName(), "",
+                                                        generateConstantsDefinition(cleanupHandlerClass));
 
             String classBody = classProcessor.processTemplate();
 
             //create the package folder structure
-            String targetPath = createPackageIfDoesNotExist( targetActionClassPackage );
+            String targetPath = createPackageIfDoesNotExist(targetActionClassPackage);
             String destFileName = targetPath + "/" + cleanupHandlerClass.getSimpleName() + ".java";
 
-            log.info( "Writing generated cleanup stub to '" + destFileName + "'" );
+            log.info("Writing generated cleanup stub to '" + destFileName + "'");
 
-            PrintWriter fileWriter = new PrintWriter( new FileOutputStream( new File( destFileName ) ) );
-            fileWriter.write( classBody );
+            PrintWriter fileWriter = new PrintWriter(new FileOutputStream(new File(destFileName)));
+            fileWriter.write(classBody);
             fileWriter.flush();
             fileWriter.close();
 
-        } catch( Exception e ) {
-            throw new BuildException( e );
+        } catch (Exception e) {
+            throw new BuildException(e);
         }
     }
 
@@ -367,55 +368,55 @@ class ActionClassGenerator {
         StringBuilder constantsDeclaration = new StringBuilder();
 
         Field[] fields = actionClass.getFields();
-        for( Field field : fields ) {
+        for (Field field : fields) {
             int fieldModifiers = field.getModifiers();
 
             //get the field only if it public static final
-            if( Modifier.isPublic( fieldModifiers ) && Modifier.isStatic( fieldModifiers )
-                && Modifier.isFinal( fieldModifiers ) ) {
+            if (Modifier.isPublic(fieldModifiers) && Modifier.isStatic(fieldModifiers)
+                && Modifier.isFinal(fieldModifiers)) {
 
                 String fieldName = field.getName();
 
-                log.info( "Generating declaration for public static constant " + fieldName );
+                log.info("Generating declaration for public static constant " + fieldName);
 
-                Object fieldValue = field.get( null );
+                Object fieldValue = field.get(null);
 
-                constantsDeclaration.append( LINE_SEPARATOR );
-                constantsDeclaration.append( "    public static final " );
-                constantsDeclaration.append( field.getType().getSimpleName() );
-                constantsDeclaration.append( " " + fieldName + " = " );
-                if( fieldValue.getClass().isArray() ) {
-                    constantsDeclaration.append( "{ " );
+                constantsDeclaration.append(LINE_SEPARATOR);
+                constantsDeclaration.append("    public static final ");
+                constantsDeclaration.append(field.getType().getSimpleName());
+                constantsDeclaration.append(" " + fieldName + " = ");
+                if (fieldValue.getClass().isArray()) {
+                    constantsDeclaration.append("{ ");
                     boolean firstTime = true;
-                    for( int i = 0; i < Array.getLength( fieldValue ); i++ ) {
-                        Object arrayFieldValue = Array.get( fieldValue, i );
-                        if( firstTime ) {
+                    for (int i = 0; i < Array.getLength(fieldValue); i++) {
+                        Object arrayFieldValue = Array.get(fieldValue, i);
+                        if (firstTime) {
                             firstTime = false;
                         } else {
-                            constantsDeclaration.append( "," );
-                            constantsDeclaration.append( LINE_SEPARATOR );
+                            constantsDeclaration.append(",");
+                            constantsDeclaration.append(LINE_SEPARATOR);
                         }
-                        if( arrayFieldValue instanceof String ) {
+                        if (arrayFieldValue instanceof String) {
                             //we'll need extra quotes for strings
-                            constantsDeclaration.append( "\"" );
-                            constantsDeclaration.append( arrayFieldValue );
-                            constantsDeclaration.append( "\"" );
+                            constantsDeclaration.append("\"");
+                            constantsDeclaration.append(arrayFieldValue);
+                            constantsDeclaration.append("\"");
                         } else {
-                            constantsDeclaration.append( arrayFieldValue );
+                            constantsDeclaration.append(arrayFieldValue);
                         }
                     }
-                    constantsDeclaration.append( "};" );
-                    constantsDeclaration.append( LINE_SEPARATOR );
+                    constantsDeclaration.append("};");
+                    constantsDeclaration.append(LINE_SEPARATOR);
                 } else {
-                    if( fieldValue instanceof String ) {
+                    if (fieldValue instanceof String) {
                         //we'll need extra quotes for strings
-                        constantsDeclaration.append( "\"" );
-                        constantsDeclaration.append( fieldValue );
-                        constantsDeclaration.append( "\";" );
+                        constantsDeclaration.append("\"");
+                        constantsDeclaration.append(fieldValue);
+                        constantsDeclaration.append("\";");
                     } else {
-                        constantsDeclaration.append( fieldValue + ";" );
+                        constantsDeclaration.append(fieldValue + ";");
                     }
-                    constantsDeclaration.append( LINE_SEPARATOR );
+                    constantsDeclaration.append(LINE_SEPARATOR);
                 }
             }
         }
@@ -427,78 +428,78 @@ class ActionClassGenerator {
 
         StringBuilder enumConstantsBuilder = new StringBuilder();
 
-        for( Class<?> paramType : method.getParameterTypes() ) {
+        for (Class<?> paramType : method.getParameterTypes()) {
 
             //if this is an array parameter, get the type of the elements
-            if( paramType.isArray() ) {
+            if (paramType.isArray()) {
                 paramType = paramType.getComponentType();
             }
 
-            if( paramType.isEnum() ) {
+            if (paramType.isEnum()) {
                 //check if this definition has already been added
-                List<Class<?>> addedEnums = addedEnumConstants.get( method.getDeclaringClass() );
-                if( addedEnums != null && addedEnums.contains( paramType ) ) {
+                List<Class<?>> addedEnums = addedEnumConstants.get(method.getDeclaringClass());
+                if (addedEnums != null && addedEnums.contains(paramType)) {
                     continue;
                 }
 
-                for( Object enumConstant : paramType.getEnumConstants() ) {
-                    enumConstantsBuilder.append( "    public static final String " );
-                    enumConstantsBuilder.append( paramType.getSimpleName().toUpperCase() );
-                    enumConstantsBuilder.append( "_" );
-                    enumConstantsBuilder.append( enumConstant.toString().toUpperCase() );
-                    enumConstantsBuilder.append( " = \"" );
-                    enumConstantsBuilder.append( enumConstant.toString().toUpperCase() );
-                    enumConstantsBuilder.append( "\";" + LINE_SEPARATOR );
+                for (Object enumConstant : paramType.getEnumConstants()) {
+                    enumConstantsBuilder.append("    public static final String ");
+                    enumConstantsBuilder.append(paramType.getSimpleName().toUpperCase());
+                    enumConstantsBuilder.append("_");
+                    enumConstantsBuilder.append(enumConstant.toString().toUpperCase());
+                    enumConstantsBuilder.append(" = \"");
+                    enumConstantsBuilder.append(enumConstant.toString().toUpperCase());
+                    enumConstantsBuilder.append("\";" + LINE_SEPARATOR);
                 }
 
                 //add the enum type to the list
-                if( addedEnums == null ) {
+                if (addedEnums == null) {
                     addedEnums = new ArrayList<Class<?>>();
-                    addedEnumConstants.put( method.getDeclaringClass(), addedEnums );
+                    addedEnumConstants.put(method.getDeclaringClass(), addedEnums);
                 }
 
-                addedEnums.add( paramType );
+                addedEnums.add(paramType);
             }
         }
 
         return enumConstantsBuilder;
     }
 
-    private String generateActionDefinition( String actionName, 
+    private String generateActionDefinition( String actionName,
                                              Method actionImplementation,
                                              String transferUnit,
                                              boolean registerAction ) {
 
-        log.info( "Generating method implementation for action '" + actionName + "'" );
+        log.info("Generating method implementation for action '" + actionName + "'");
 
         String[] paramNames = new String[actionImplementation.getParameterTypes().length];
         String[] paramTypes = new String[actionImplementation.getParameterTypes().length];
 
         Annotation[][] parameterAnnotations = actionImplementation.getParameterAnnotations();
-        for( int i = 0; i < parameterAnnotations.length; i++ ) {
+        for (int i = 0; i < parameterAnnotations.length; i++) {
             Class<?> paramType = actionImplementation.getParameterTypes()[i];
 
             Annotation[] currentParamAnnotations = parameterAnnotations[i];
 
             Parameter paramAnnotation = null;
-            for( int j = 0; j < currentParamAnnotations.length; j++ ) {
-                if( currentParamAnnotations[j] instanceof Parameter ) {
-                    paramAnnotation = ( Parameter ) currentParamAnnotations[j];
+            for (int j = 0; j < currentParamAnnotations.length; j++) {
+                if (currentParamAnnotations[j] instanceof Parameter) {
+                    paramAnnotation = (Parameter) currentParamAnnotations[j];
                     break;
                 }
             }
 
-            if( paramAnnotation == null ) {
-                throw new BuildException( "No @Parameter annotation for one of the parameters of action method "
-                                          + actionImplementation.toString() );
+            if (paramAnnotation == null) {
+                throw new BuildException("No @Parameter annotation for one of the parameters of action method "
+                                         + actionImplementation.toString());
             }
 
             paramNames[i] = paramAnnotation.name();
 
-            if( paramType.isArray() && paramType.getComponentType().isEnum() ) {
+            if (paramType.isArray() && paramType.getComponentType().isEnum()) {
                 //array of enums should be represented by array of String in the generated stub
                 paramTypes[i] = "String[]";
-            } else if( paramType.isEnum() ) {
+            } else if (paramType.isEnum()) {
                 //enums should be represented by Strings in the generated stub
                 paramTypes[i] = "String";
             } else {
@@ -507,29 +508,29 @@ class ActionClassGenerator {
         }
 
         //parameters and arguments
-        if( paramNames.length != paramTypes.length ) {
-            throw new BuildException( "Parameter names count different than parameter types count for action method "
-                                      + actionImplementation.toString() );
+        if (paramNames.length != paramTypes.length) {
+            throw new BuildException("Parameter names count different than parameter types count for action method "
+                                     + actionImplementation.toString());
         }
 
-        Annotation deprecatedAnnotation = actionImplementation.getAnnotation( Deprecated.class );
-        boolean isDeprecated = ( deprecatedAnnotation != null );
+        Annotation deprecatedAnnotation = actionImplementation.getAnnotation(Deprecated.class);
+        boolean isDeprecated = (deprecatedAnnotation != null);
 
         try {
-            return new MethodTemplateProcessor( actionImplementation, actionName, paramNames, registerAction,
-                                                paramTypes, transferUnit, isDeprecated ).processTemplate();
-        } catch( IOException ioe ) {
-            throw new BuildException( ioe );
+            return new MethodTemplateProcessor(actionImplementation, actionName, paramNames, registerAction,
+                                               paramTypes, transferUnit, isDeprecated).processTemplate();
+        } catch (IOException ioe) {
+            throw new BuildException(ioe);
         }
     }
 
     private boolean needStubGeneration( Class<?> actionClass ) {
 
         Annotation[] annotations = actionClass.getAnnotations();
-        for( Annotation annotation : annotations ) {
-            if( annotation instanceof ClientStubGeneration ) {
-                ClientStubGeneration clientStubAnnotation = ( ClientStubGeneration ) annotation;
-                if( clientStubAnnotation.skip() ) {
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof ClientStubGeneration) {
+                ClientStubGeneration clientStubAnnotation = (ClientStubGeneration) annotation;
+                if (clientStubAnnotation.skip()) {
                     return false;
                 }
             }

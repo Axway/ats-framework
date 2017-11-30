@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
  * which is currently being registered has already been defined.
  * The exception provides information of the implementing method.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ActionAlreadyDefinedException extends AgentException {
 
     private String message;
@@ -34,12 +34,12 @@ public class ActionAlreadyDefinedException extends AgentException {
         super();
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "Action '" + actionName + "' has already been defined for component " );
-        sb.append( componentName );
-        sb.append( " - implementation is " );
-        sb.append( implemenationMethod.getDeclaringClass().getName() );
-        sb.append( "." );
-        sb.append( implemenationMethod.getName() );
+        sb.append("Action '" + actionName + "' has already been defined for component ");
+        sb.append(componentName);
+        sb.append(" - implementation is ");
+        sb.append(implemenationMethod.getDeclaringClass().getName());
+        sb.append(".");
+        sb.append(implemenationMethod.getName());
 
         message = sb.toString();
     }

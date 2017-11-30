@@ -56,76 +56,76 @@ public class ParameterDataProviderFactory {
         ParameterDataProvider parameterDataProvider;
 
         Class<?> parameterConfigClass = parameterConfig.getClass();
-        if( parameterConfigClass == RangeDataConfig.class ) {
-            RangeDataConfig rangeDataConfig = ( RangeDataConfig ) parameterConfig;
+        if (parameterConfigClass == RangeDataConfig.class) {
+            RangeDataConfig rangeDataConfig = (RangeDataConfig) parameterConfig;
 
             //there are different types of range providers, so
             //choose the right one, based on the arguments
-            if( rangeDataConfig.getStaticValue() != null ) {
-                parameterDataProvider = new StringRangeParameterDataProvider( rangeDataConfig.getParameterName(),
-                                                                              rangeDataConfig.getStaticValue(),
-                                                                              ( Integer ) rangeDataConfig.getRangeStart(),
-                                                                              ( Integer ) rangeDataConfig.getRangeEnd(),
-                                                                              parameterConfig.getParameterProviderLevel() );
+            if (rangeDataConfig.getStaticValue() != null) {
+                parameterDataProvider = new StringRangeParameterDataProvider(rangeDataConfig.getParameterName(),
+                                                                             rangeDataConfig.getStaticValue(),
+                                                                             (Integer) rangeDataConfig.getRangeStart(),
+                                                                             (Integer) rangeDataConfig.getRangeEnd(),
+                                                                             parameterConfig.getParameterProviderLevel());
             } else {
-                parameterDataProvider = new IntegerRangeParameterDataProvider( rangeDataConfig.getParameterName(),
-                                                                               ( Integer ) rangeDataConfig.getRangeStart(),
-                                                                               ( Integer ) rangeDataConfig.getRangeEnd(),
-                                                                               parameterConfig.getParameterProviderLevel() );
+                parameterDataProvider = new IntegerRangeParameterDataProvider(rangeDataConfig.getParameterName(),
+                                                                              (Integer) rangeDataConfig.getRangeStart(),
+                                                                              (Integer) rangeDataConfig.getRangeEnd(),
+                                                                              parameterConfig.getParameterProviderLevel());
             }
 
-        } else if( parameterConfigClass == ListDataConfig.class ) {
-            ListDataConfig listDataConfig = ( ListDataConfig ) parameterConfig;
-            parameterDataProvider = new ListParameterDataProvider( listDataConfig.getParameterName(),
-                                                                   listDataConfig.getValues(),
-                                                                   listDataConfig.getParameterProviderLevel() );
+        } else if (parameterConfigClass == ListDataConfig.class) {
+            ListDataConfig listDataConfig = (ListDataConfig) parameterConfig;
+            parameterDataProvider = new ListParameterDataProvider(listDataConfig.getParameterName(),
+                                                                  listDataConfig.getValues(),
+                                                                  listDataConfig.getParameterProviderLevel());
 
-        } else if( parameterConfigClass == FileNamesDataConfig.class ) {
-            FileNamesDataConfig fileNamesDataConfig = ( FileNamesDataConfig ) parameterConfig;
-            parameterDataProvider = new FileNamesParameterDataProvider( fileNamesDataConfig.getParameterName(),
-                                                                        fileNamesDataConfig.getFileContainers(),
-                                                                        fileNamesDataConfig.getRecursiveSearch(),
-                                                                        fileNamesDataConfig.getReturnFullPath(),
-                                                                        fileNamesDataConfig.getParameterProviderLevel() );
-        } else if( parameterConfigClass == UsernameDataConfig.class ) {
+        } else if (parameterConfigClass == FileNamesDataConfig.class) {
+            FileNamesDataConfig fileNamesDataConfig = (FileNamesDataConfig) parameterConfig;
+            parameterDataProvider = new FileNamesParameterDataProvider(fileNamesDataConfig.getParameterName(),
+                                                                       fileNamesDataConfig.getFileContainers(),
+                                                                       fileNamesDataConfig.getRecursiveSearch(),
+                                                                       fileNamesDataConfig.getReturnFullPath(),
+                                                                       fileNamesDataConfig.getParameterProviderLevel());
+        } else if (parameterConfigClass == UsernameDataConfig.class) {
 
-            UsernameDataConfig nameDataConfig = ( UsernameDataConfig ) parameterConfig;
+            UsernameDataConfig nameDataConfig = (UsernameDataConfig) parameterConfig;
 
-            if( nameDataConfig.getValues() != null ) {
+            if (nameDataConfig.getValues() != null) {
 
-                parameterDataProvider = new ListParameterDataProvider( nameDataConfig.getParameterName(),
-                                                                       nameDataConfig.getValues(),
-                                                                       nameDataConfig.getParameterProviderLevel(),
-                                                                       UsernameDataConfig.class );
+                parameterDataProvider = new ListParameterDataProvider(nameDataConfig.getParameterName(),
+                                                                      nameDataConfig.getValues(),
+                                                                      nameDataConfig.getParameterProviderLevel(),
+                                                                      UsernameDataConfig.class);
 
             } else {
-                parameterDataProvider = new StringRangeParameterDataProvider( nameDataConfig.getParameterName(),
-                                                                              nameDataConfig.getStaticValue(),
-                                                                              ( Integer ) nameDataConfig.getRangeStart(),
-                                                                              ( Integer ) nameDataConfig.getRangeEnd(),
-                                                                              parameterConfig.getParameterProviderLevel(),
-                                                                              UsernameDataConfig.class );
+                parameterDataProvider = new StringRangeParameterDataProvider(nameDataConfig.getParameterName(),
+                                                                             nameDataConfig.getStaticValue(),
+                                                                             (Integer) nameDataConfig.getRangeStart(),
+                                                                             (Integer) nameDataConfig.getRangeEnd(),
+                                                                             parameterConfig.getParameterProviderLevel(),
+                                                                             UsernameDataConfig.class);
             }
-        } else if( parameterConfigClass.getGenericSuperclass() == CustomParameterDataConfig.class ) {
+        } else if (parameterConfigClass.getGenericSuperclass() == CustomParameterDataConfig.class) {
             // custom data provider
-            CustomParameterDataConfig customDataConfig = ( CustomParameterDataConfig ) parameterConfig;
+            CustomParameterDataConfig customDataConfig = (CustomParameterDataConfig) parameterConfig;
 
             try {
                 // find the constructor of the custom data provider
                 Constructor<? extends CustomParameterDataProvider> constructor = customDataConfig.getDataProviderClass()
-                                                                                                 .getDeclaredConstructor( String.class,
-                                                                                                                          Map.class,
-                                                                                                                          ParameterProviderLevel.class );
+                                                                                                 .getDeclaredConstructor(String.class,
+                                                                                                                         Map.class,
+                                                                                                                         ParameterProviderLevel.class);
                 // call the constructor of the custom data provider
-                parameterDataProvider = ( CustomParameterDataProvider ) constructor.newInstance( customDataConfig.getParameterName(),
-                                                                                                 customDataConfig.getControlTokens(),
-                                                                                                 customDataConfig.getParameterProviderLevel() );
+                parameterDataProvider = (CustomParameterDataProvider) constructor.newInstance(customDataConfig.getParameterName(),
+                                                                                              customDataConfig.getControlTokens(),
+                                                                                              customDataConfig.getParameterProviderLevel());
 
-            } catch( Exception e ) {
-                throw new ParameterDataProviderNotSupportedException( parameterConfigClass );
+            } catch (Exception e) {
+                throw new ParameterDataProviderNotSupportedException(parameterConfigClass);
             }
         } else {
-            throw new ParameterDataProviderNotSupportedException( parameterConfigClass );
+            throw new ParameterDataProviderNotSupportedException(parameterConfigClass);
         }
 
         //initialize the newly created provider

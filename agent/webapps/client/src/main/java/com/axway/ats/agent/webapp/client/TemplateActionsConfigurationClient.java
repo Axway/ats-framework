@@ -39,50 +39,50 @@ public class TemplateActionsConfigurationClient extends AbstractAgentClient {
     @PublicAtsApi
     public TemplateActionsConfigurationClient( String atsAgent ) {
 
-        super( atsAgent, "some fake component" );
+        super(atsAgent, "some fake component");
     }
 
     @PublicAtsApi
     public void setMatchingFilesBySize( boolean matchFilesBySize ) throws AgentException {
 
         Properties taProperties = new Properties();
-        taProperties.put( TemplateActionsConfigurator.MATCH_FILES_BY_SIZE,
-                          String.valueOf( matchFilesBySize ) );
+        taProperties.put(TemplateActionsConfigurator.MATCH_FILES_BY_SIZE,
+                         String.valueOf(matchFilesBySize));
 
-        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator( taProperties );
-        pushConfiguration( templateActionsConfigurator );
+        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator(taProperties);
+        pushConfiguration(templateActionsConfigurator);
     }
 
     @PublicAtsApi
     public void setMatchingFilesByContent( boolean matchFilesByContent ) throws AgentException {
 
         Properties taProperties = new Properties();
-        taProperties.put( TemplateActionsConfigurator.MATCH_FILES_BY_CONTENT,
-                          String.valueOf( matchFilesByContent ) );
+        taProperties.put(TemplateActionsConfigurator.MATCH_FILES_BY_CONTENT,
+                         String.valueOf(matchFilesByContent));
 
-        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator( taProperties );
-        pushConfiguration( templateActionsConfigurator );
+        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator(taProperties);
+        pushConfiguration(templateActionsConfigurator);
     }
 
     @PublicAtsApi
     public void setTemplateActionsFolder( String templateActionsFolder ) throws AgentException {
 
         Properties taProperties = new Properties();
-        taProperties.put( TemplateActionsConfigurator.AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY,
-                          templateActionsFolder );
+        taProperties.put(TemplateActionsConfigurator.AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY,
+                         templateActionsFolder);
 
-        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator( taProperties );
-        pushConfiguration( templateActionsConfigurator );
+        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator(taProperties);
+        pushConfiguration(templateActionsConfigurator);
     }
 
     private void pushConfiguration( Configurator configurator ) throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
 
             configurator.apply();
         } else {
             // send the Agent configuration
-            new RemoteConfigurationManager().pushConfiguration( atsAgent, configurator );
+            new RemoteConfigurationManager().pushConfiguration(atsAgent, configurator);
         }
     }
 }

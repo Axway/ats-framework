@@ -44,7 +44,7 @@ public class ThreadUtils {
 
     public static synchronized ThreadUtils getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new ThreadUtils();
         }
         return instance;
@@ -54,8 +54,8 @@ public class ThreadUtils {
                              final long id ) {
 
         List<Thread> threads = getAllThreads();
-        for( Thread thread : threads ) {
-            if( thread.getId() == id ) {
+        for (Thread thread : threads) {
+            if (thread.getId() == id) {
                 return thread;
             }
         }
@@ -74,10 +74,10 @@ public class ThreadUtils {
         Set<Long> res = new HashSet<Long>();
 
         // get the IDs of all threads except main
-        for( long id : threadIDs ) {
-            Thread t = getThread( id );
-            if( t != null && !"main".equals( t.getName() ) ) {
-                res.add( id );
+        for (long id : threadIDs) {
+            Thread t = getThread(id);
+            if (t != null && !"main".equals(t.getName())) {
+                res.add(id);
             }
         }
 
@@ -99,12 +99,12 @@ public class ThreadUtils {
         do {
             nAlloc *= 2; // increase the size since more threads may have been created
             threads = new Thread[nAlloc];
-            n = root.enumerate( threads, true ); // get all active threads from this thread group
-        } while( n == nAlloc ); // stop if all active threads are enumerated
+            n = root.enumerate(threads, true); // get all active threads from this thread group
+        } while (n == nAlloc); // stop if all active threads are enumerated
 
         List<Thread> res = new ArrayList<Thread>();
-        for( Thread th : threads ) {
-            res.add( th );
+        for (Thread th : threads) {
+            res.add(th);
         }
 
         return res;
@@ -115,14 +115,14 @@ public class ThreadUtils {
      */
     public ThreadGroup getRootThreadGroup() {
 
-        if( rootThreadGroup != null ) {
+        if (rootThreadGroup != null) {
             return rootThreadGroup;
         }
 
         rootThreadGroup = Thread.currentThread().getThreadGroup();
         ThreadGroup ptg;
 
-        while( ( ptg = rootThreadGroup.getParent() ) != null ) {
+        while ( (ptg = rootThreadGroup.getParent()) != null) {
             rootThreadGroup = ptg;
         }
 

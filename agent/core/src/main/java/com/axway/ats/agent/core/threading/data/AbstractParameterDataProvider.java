@@ -31,7 +31,7 @@ public abstract class AbstractParameterDataProvider implements ParameterDataProv
     protected String                 parameterName;
     protected Class<?>               dataProviderInstance;
     protected ParameterProviderLevel parameterProviderLevel;
-    
+
     // can be used when need to keep indexes in order to distribute next parameter values 
     protected HashMap<Long, Integer> perThreadIndexes;
     // can be used when need to keep some special object in order to distribute next parameter values
@@ -57,25 +57,25 @@ public abstract class AbstractParameterDataProvider implements ParameterDataProv
 
     @Override
     public final ArgumentValue getValue(
-                                        List<ArgumentValue> previousValues ) {
+                                         List<ArgumentValue> previousValues ) {
 
-       ArgumentValue value = null;
-       if( parameterProviderLevel.equals( ParameterProviderLevel.PER_THREAD ) ) {
+        ArgumentValue value = null;
+        if (parameterProviderLevel.equals(ParameterProviderLevel.PER_THREAD)) {
 
-           //return the next value for the current thread
-           value = generateNewValuePerThread( Thread.currentThread().getId(), previousValues );
-       } else if( parameterProviderLevel.equals( ParameterProviderLevel.PER_THREAD_STATIC ) ) {
+            //return the next value for the current thread
+            value = generateNewValuePerThread(Thread.currentThread().getId(), previousValues);
+        } else if (parameterProviderLevel.equals(ParameterProviderLevel.PER_THREAD_STATIC)) {
 
-           //always return one and the same value per thread
-           value = generateNewValuePerThreadStatic( Thread.currentThread().getId(), previousValues );
-       } else {
-           // PER_INVOCATION
-           //each time return a new value
-           value = generateNewValuePerInvocation( previousValues );
-       }
+            //always return one and the same value per thread
+            value = generateNewValuePerThreadStatic(Thread.currentThread().getId(), previousValues);
+        } else {
+            // PER_INVOCATION
+            //each time return a new value
+            value = generateNewValuePerInvocation(previousValues);
+        }
 
-       return value;
-   }
+        return value;
+    }
 
     @Override
     public String getParameterName() {
@@ -104,7 +104,7 @@ public abstract class AbstractParameterDataProvider implements ParameterDataProv
      * @return the newly generated values
      */
     protected abstract ArgumentValue generateNewValuePerInvocation(
-                                                                   List<ArgumentValue> alreadyResolvedValues );
+                                                                    List<ArgumentValue> alreadyResolvedValues );
 
     /**
      * Generate a new value for this argument. For PER_THREAD provider level
@@ -127,6 +127,5 @@ public abstract class AbstractParameterDataProvider implements ParameterDataProv
     protected abstract ArgumentValue generateNewValuePerThreadStatic(
                                                                       long currentThreadId,
                                                                       List<ArgumentValue> alreadyResolvedValues );
-                    
-            
+
 }

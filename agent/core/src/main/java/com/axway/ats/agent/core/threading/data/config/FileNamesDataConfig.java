@@ -26,7 +26,7 @@ import com.axway.ats.agent.core.threading.exceptions.ParameterDataProviderInital
  * This class is initialized using a folder - the input parameters will be generated
  * using the file names in this folder. The folder can be scanned recursively.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class FileNamesDataConfig extends AbstractParameterDataConfig {
 
     private static final String MATCH_ALL_PATTERN = ".*";
@@ -46,9 +46,9 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
     public FileNamesDataConfig( String parameterName,
                                 String folderName ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD );
+        super(parameterName, ParameterProviderLevel.PER_THREAD);
 
-        this.fileContainers.add( new FileContainer( folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN ) );
+        this.fileContainers.add(new FileContainer(folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN));
         this.recursiveSearch = true;
         this.returnFullPath = true;
     }
@@ -65,9 +65,9 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                                 String folderName,
                                 boolean returnFullPath ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD );
+        super(parameterName, ParameterProviderLevel.PER_THREAD);
 
-        this.fileContainers.add( new FileContainer( folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN ) );
+        this.fileContainers.add(new FileContainer(folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN));
         this.recursiveSearch = true;
         this.returnFullPath = returnFullPath;
     }
@@ -79,7 +79,7 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
      */
     public FileNamesDataConfig( String parameterName ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD );
+        super(parameterName, ParameterProviderLevel.PER_THREAD);
 
         this.recursiveSearch = true;
         this.returnFullPath = true;
@@ -97,9 +97,9 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                                 String folderName,
                                 ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
-        this.fileContainers.add( new FileContainer( folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN ) );
+        this.fileContainers.add(new FileContainer(folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN));
         this.recursiveSearch = true;
         this.returnFullPath = true;
     }
@@ -118,9 +118,9 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                                 boolean recursiveSearch,
                                 ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
-        this.fileContainers.add( new FileContainer( folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN ) );
+        this.fileContainers.add(new FileContainer(folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN));
         this.recursiveSearch = recursiveSearch;
         this.returnFullPath = true;
     }
@@ -141,9 +141,9 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                                 boolean returnFullPath,
                                 ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
-        this.fileContainers.add( new FileContainer( folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN ) );
+        this.fileContainers.add(new FileContainer(folderName, HUNDRED_PERCENTS, MATCH_ALL_PATTERN));
         this.recursiveSearch = recursiveSearch;
         this.returnFullPath = returnFullPath;
     }
@@ -164,7 +164,7 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                                 boolean returnFullPath,
                                 ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.fileContainers = fileContainers;
         this.recursiveSearch = recursiveSearch;
@@ -190,7 +190,7 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                            String folderName,
                            int percent ) {
 
-        addFolder( folderName, percent, MATCH_ALL_PATTERN );
+        addFolder(folderName, percent, MATCH_ALL_PATTERN);
     }
 
     public void addFolder(
@@ -198,7 +198,7 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
                            int percent,
                            String pattern ) {
 
-        this.fileContainers.add( new FileContainer( folderName, percent, pattern ) );
+        this.fileContainers.add(new FileContainer(folderName, percent, pattern));
     }
 
     public void setRecursiveSearch(
@@ -229,12 +229,12 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
 
         // currently we do not split (but we clone) this data configurator
         List<ParameterDataConfig> distributedParameterProviders = new ArrayList<ParameterDataConfig>();
-        for( int i = 0; i < agents; i++ ) {
-            distributedParameterProviders.add( new FileNamesDataConfig( this.parameterName,
-                                                                        this.fileContainers,
-                                                                        this.recursiveSearch,
-                                                                        this.returnFullPath,
-                                                                        this.parameterProviderLevel ) );
+        for (int i = 0; i < agents; i++) {
+            distributedParameterProviders.add(new FileNamesDataConfig(this.parameterName,
+                                                                      this.fileContainers,
+                                                                      this.recursiveSearch,
+                                                                      this.returnFullPath,
+                                                                      this.parameterProviderLevel));
         }
         return distributedParameterProviders;
     }
@@ -243,15 +243,15 @@ public class FileNamesDataConfig extends AbstractParameterDataConfig {
     public void verifyDataConfig() throws ParameterDataProviderInitalizationException {
 
         int fileContainerPercents = 0;
-        for( FileContainer container : getFileContainers() ) {
+        for (FileContainer container : getFileContainers()) {
             fileContainerPercents += container.getPercentage();
         }
-        if( fileContainerPercents != 100 ) {
-            throw new ParameterDataProviderInitalizationException( "The sum of percentages of all folders for the file data configurator '"
-                                                                   + this.parameterName
-                                                                   + "' is "
-                                                                   + fileContainerPercents
-                                                                   + "% (different than 100)" );
+        if (fileContainerPercents != 100) {
+            throw new ParameterDataProviderInitalizationException("The sum of percentages of all folders for the file data configurator '"
+                                                                  + this.parameterName
+                                                                  + "' is "
+                                                                  + fileContainerPercents
+                                                                  + "% (different than 100)");
         }
     }
 

@@ -40,8 +40,8 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.ArgumentWrapper;
 import com.axway.ats.junit.BaseTestWebapps;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AgentServicePool.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { AgentServicePool.class })
 public class Test_RemoteExecutor extends BaseTestWebapps {
 
     private AgentServicePool    mockAgentServicePool;
@@ -53,52 +53,52 @@ public class Test_RemoteExecutor extends BaseTestWebapps {
     public void setUp() {
 
         // create the mocks
-        mockStatic( AgentServicePool.class );
-        mockAgentServicePool = createMock( AgentServicePool.class );
+        mockStatic(AgentServicePool.class);
+        mockAgentServicePool = createMock(AgentServicePool.class);
 
-        mockStatic( AgentService.class );
-        mockAgentService = createMock( AgentService.class );
+        mockStatic(AgentService.class);
+        mockAgentService = createMock(AgentService.class);
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     @Test
     public void executeActionPositive() throws Exception {
 
-        Object resultToReturn = new Integer( 4 );
+        Object resultToReturn = new Integer(4);
 
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
-        objectOutStream.writeObject( resultToReturn );
+        ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
+        objectOutStream.writeObject(resultToReturn);
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.1.1.3" ) ).andReturn( mockAgentService );
-        expect( mockAgentService.executeAction( eq( TEST_COMPONENT_NAME ), eq( "action 1" ),
-                                                ( List<ArgumentWrapper> ) notNull() ) ).andReturn( byteOutStream.toByteArray() );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.1.1.3")).andReturn(mockAgentService);
+        expect(mockAgentService.executeAction(eq(TEST_COMPONENT_NAME), eq("action 1"),
+                                              (List<ArgumentWrapper>) notNull())).andReturn(byteOutStream.toByteArray());
 
         replayAll();
 
-        RemoteExecutor remoteExecutor = new RemoteExecutor( "10.1.1.3" );
-        Object actualResult = remoteExecutor.executeAction( new ActionRequest( TEST_COMPONENT_NAME,
-                                                                               "action 1",
-                                                                               new Object[]{ 1 } ) );
+        RemoteExecutor remoteExecutor = new RemoteExecutor("10.1.1.3");
+        Object actualResult = remoteExecutor.executeAction(new ActionRequest(TEST_COMPONENT_NAME,
+                                                                             "action 1",
+                                                                             new Object[]{ 1 }));
 
         verifyAll();
 
-        assertEquals( resultToReturn, actualResult );
+        assertEquals(resultToReturn, actualResult);
     }
 
     @Test
     public void cleanPositive() throws Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.1.1.4" ) ).andReturn( mockAgentService );
-        mockAgentService.restoreEnvironment( TEST_COMPONENT_NAME, null, null );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.1.1.4")).andReturn(mockAgentService);
+        mockAgentService.restoreEnvironment(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
-        RemoteExecutor remoteExecutor = new RemoteExecutor( "10.1.1.4" );
-        remoteExecutor.restore( TEST_COMPONENT_NAME, null, null );
+        RemoteExecutor remoteExecutor = new RemoteExecutor("10.1.1.4");
+        remoteExecutor.restore(TEST_COMPONENT_NAME, null, null);
 
         verifyAll();
     }
@@ -106,14 +106,14 @@ public class Test_RemoteExecutor extends BaseTestWebapps {
     @Test
     public void cleanAllPositive() throws Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.1.1.4" ) ).andReturn( mockAgentService );
-        mockAgentService.restoreEnvironment( null, null, null );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.1.1.4")).andReturn(mockAgentService);
+        mockAgentService.restoreEnvironment(null, null, null);
 
         replayAll();
 
-        RemoteExecutor remoteExecutor = new RemoteExecutor( "10.1.1.4" );
-        remoteExecutor.restoreAll( null );
+        RemoteExecutor remoteExecutor = new RemoteExecutor("10.1.1.4");
+        remoteExecutor.restoreAll(null);
 
         verifyAll();
     }
@@ -121,14 +121,14 @@ public class Test_RemoteExecutor extends BaseTestWebapps {
     @Test
     public void backupPositive() throws Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.1.1.4" ) ).andReturn( mockAgentService );
-        mockAgentService.backupEnvironment( TEST_COMPONENT_NAME, null, null );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.1.1.4")).andReturn(mockAgentService);
+        mockAgentService.backupEnvironment(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
-        RemoteExecutor remoteExecutor = new RemoteExecutor( "10.1.1.4" );
-        remoteExecutor.backup( TEST_COMPONENT_NAME, null, null );
+        RemoteExecutor remoteExecutor = new RemoteExecutor("10.1.1.4");
+        remoteExecutor.backup(TEST_COMPONENT_NAME, null, null);
 
         verifyAll();
     }
@@ -136,14 +136,14 @@ public class Test_RemoteExecutor extends BaseTestWebapps {
     @Test
     public void backupAllPositive() throws Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.1.1.4" ) ).andReturn( mockAgentService );
-        mockAgentService.backupEnvironment( null, null, null );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.1.1.4")).andReturn(mockAgentService);
+        mockAgentService.backupEnvironment(null, null, null);
 
         replayAll();
 
-        RemoteExecutor remoteExecutor = new RemoteExecutor( "10.1.1.4" );
-        remoteExecutor.backupAll( null );
+        RemoteExecutor remoteExecutor = new RemoteExecutor("10.1.1.4");
+        remoteExecutor.backupAll(null);
 
         verifyAll();
     }
@@ -151,13 +151,13 @@ public class Test_RemoteExecutor extends BaseTestWebapps {
     @Test
     public void waitUntilAllQueuesFinishPositive() throws Exception {
 
-        expect( AgentServicePool.getInstance() ).andReturn( mockAgentServicePool );
-        expect( mockAgentServicePool.getClient( "10.1.1.4" ) ).andReturn( mockAgentService );
+        expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
+        expect(mockAgentServicePool.getClient("10.1.1.4")).andReturn(mockAgentService);
         mockAgentService.waitUntilAllQueuesFinish();
 
         replayAll();
 
-        RemoteExecutor remoteExecutor = new RemoteExecutor( "10.1.1.4" );
+        RemoteExecutor remoteExecutor = new RemoteExecutor("10.1.1.4");
         remoteExecutor.waitUntilQueueFinish();
 
         verifyAll();

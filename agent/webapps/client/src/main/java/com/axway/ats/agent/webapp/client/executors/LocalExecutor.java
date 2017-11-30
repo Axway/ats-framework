@@ -42,13 +42,13 @@ public class LocalExecutor extends AbstractClientExecutor {
 
     public LocalExecutor() throws AgentException {
 
-        if( !isLocalMachineConfigured ) {
+        if (!isLocalMachineConfigured) {
 
             DefaultLocalConfigurator localConfigurator = new DefaultLocalConfigurator();
             List<Configurator> configurators = new ArrayList<Configurator>();
-            configurators.add( localConfigurator );
+            configurators.add(localConfigurator);
 
-            MainComponentLoader.getInstance().initialize( configurators );
+            MainComponentLoader.getInstance().initialize(configurators);
 
             isLocalMachineConfigured = true;
         }
@@ -61,13 +61,13 @@ public class LocalExecutor extends AbstractClientExecutor {
         String componentName = actionRequest.getComponentName();
         Object[] arguments = actionRequest.getArguments();
 
-        log.info( "Start executing action '" + actionName + "' with arguments "
-                  + StringUtils.methodInputArgumentsToString( arguments ) );
+        log.info("Start executing action '" + actionName + "' with arguments "
+                 + StringUtils.methodInputArgumentsToString(arguments));
 
         //FIXME: swap with ActionRequest
-        Object result = ActionHandler.executeAction( ComponentRepository.DEFAULT_CALLER,
-                                                                   componentName, actionName, arguments );
-        log.info( "Successfully executed action '" + actionName + "'" );
+        Object result = ActionHandler.executeAction(ComponentRepository.DEFAULT_CALLER,
+                                                    componentName, actionName, arguments);
+        log.info("Successfully executed action '" + actionName + "'");
 
         return result;
     }
@@ -75,23 +75,22 @@ public class LocalExecutor extends AbstractClientExecutor {
     @Override
     public boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException {
 
-        return ActionHandler.isComponentLoaded( ComponentRepository.DEFAULT_CALLER,
-                                                              actionRequest.getComponentName() );
+        return ActionHandler.isComponentLoaded(ComponentRepository.DEFAULT_CALLER,
+                                               actionRequest.getComponentName());
     }
-    
+
     @Override
     public String getAgentHome() throws AgentException {
 
-        return System.getProperty( AtsSystemProperties.AGENT_HOME_FOLDER );
+        return System.getProperty(AtsSystemProperties.AGENT_HOME_FOLDER);
     }
-    
 
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
         ActiveDbAppender appender = ActiveDbAppender.getCurrentInstance();
 
-        if( appender != null ) {
+        if (appender != null) {
             return appender.getNumberPendingLogEvents();
         }
 
@@ -102,26 +101,26 @@ public class LocalExecutor extends AbstractClientExecutor {
     public void restore( String componentName, String environmentName,
                          String folderPath ) throws AgentException {
 
-        EnvironmentHandler.getInstance().restore( componentName, environmentName, folderPath );
+        EnvironmentHandler.getInstance().restore(componentName, environmentName, folderPath);
     }
 
     @Override
     public void restoreAll( String environmentName ) throws AgentException {
 
-        EnvironmentHandler.getInstance().restoreAll( environmentName );
+        EnvironmentHandler.getInstance().restoreAll(environmentName);
     }
 
     @Override
     public void backup( String componentName, String environmentName,
                         String folderPath ) throws AgentException {
 
-        EnvironmentHandler.getInstance().backup( componentName, environmentName, folderPath );
+        EnvironmentHandler.getInstance().backup(componentName, environmentName, folderPath);
     }
 
     @Override
     public void backupAll( String environmentName ) throws AgentException {
 
-        EnvironmentHandler.getInstance().backupAll( environmentName );
+        EnvironmentHandler.getInstance().backupAll(environmentName);
     }
 
     @Override

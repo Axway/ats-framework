@@ -17,15 +17,15 @@ package com.axway.ats.agent.webapp.restservice.model.pojo;
 
 public class DbConnectionPojo extends BasePojo {
 
-    private long    timestamp;
-    private String  dbHost;
-    private String  dbName;
-    private String  dbUser;
-    private String  dbPass;
+    private long   timestamp;
+    private String dbHost;
+    private String dbName;
+    private String dbUser;
+    private String dbPass;
     // As of writing this code, only batch and empty (non-batch) are available as modes
-    private String  mode;
-    private int     loggingThreshold;
-    private String  maxNumberLogEvents;
+    private String mode;
+    private int    loggingThreshold;
+    private String maxNumberLogEvents;
 
     public DbConnectionPojo() {}
 
@@ -102,22 +102,22 @@ public class DbConnectionPojo extends BasePojo {
     }
 
     public String getMode() {
-    
+
         return mode;
     }
 
     public void setMode( String mode ) {
-    
+
         this.mode = mode;
     }
 
     public String getMaxNumberLogEvents() {
-    
+
         return maxNumberLogEvents;
     }
 
     public void setMaxNumberLogEvents( String maxNumberLogEvents ) {
-    
+
         this.maxNumberLogEvents = maxNumberLogEvents;
     }
 

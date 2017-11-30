@@ -28,7 +28,7 @@ import com.axway.ats.core.monitoring.UnsupportedReadingException;
  */
 public class XmlReadingsRepository {
 
-    private static final Logger          log = Logger.getLogger( XmlReadingsRepository.class );
+    private static final Logger      log = Logger.getLogger(XmlReadingsRepository.class);
 
     private Map<String, ReadingBean> readings;
 
@@ -40,14 +40,15 @@ public class XmlReadingsRepository {
     void addReading(
                      String readingName,
                      ReadingBean reading ) {
-        if( readings.containsKey( readingName ) ) {
-            ReadingBean alreadyAddedReading = readings.get( readingName );
-            log.warn( "The reading [" + alreadyAddedReading + "], collected from monitor '" 
-                                      + alreadyAddedReading.getMonitorName() 
-                                      + "' will be replaced with [" + reading + "], collected from monitor '" 
-                                      + reading.getMonitorName() + "'" );
+
+        if (readings.containsKey(readingName)) {
+            ReadingBean alreadyAddedReading = readings.get(readingName);
+            log.warn("The reading [" + alreadyAddedReading + "], collected from monitor '"
+                     + alreadyAddedReading.getMonitorName()
+                     + "' will be replaced with [" + reading + "], collected from monitor '"
+                     + reading.getMonitorName() + "'");
         }
-        readings.put( readingName, reading );
+        readings.put(readingName, reading);
     }
 
     void cleanRepository() {
@@ -61,11 +62,11 @@ public class XmlReadingsRepository {
     }
 
     ReadingBean getReadingDefinition(
-                                          String readingName ) throws UnsupportedReadingException {
+                                      String readingName ) throws UnsupportedReadingException {
 
-        ReadingBean readingBean = this.readings.get( readingName );
-        if( readingBean == null ) {
-            throw new UnsupportedReadingException( readingName );
+        ReadingBean readingBean = this.readings.get(readingName);
+        if (readingBean == null) {
+            throw new UnsupportedReadingException(readingName);
         }
 
         /* 

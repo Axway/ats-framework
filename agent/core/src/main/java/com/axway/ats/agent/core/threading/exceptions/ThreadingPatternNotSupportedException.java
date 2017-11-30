@@ -17,11 +17,11 @@ package com.axway.ats.agent.core.threading.exceptions;
 
 import com.axway.ats.agent.core.exceptions.AgentException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ThreadingPatternNotSupportedException extends AgentException {
 
     public ThreadingPatternNotSupportedException( String patternName ) {
 
-        super( "Multi-threading pattern " + patternName + " not supported" );
+        super("Multi-threading pattern " + patternName + " not supported");
     }
 }

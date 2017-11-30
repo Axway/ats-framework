@@ -56,59 +56,59 @@ public class LoadQueueFactory {
      * @throws ThreadingPatternNotSupportedException if the supplied threading pattern is not supported
      */
     public static final QueueLoader createLoadQueue( String queueName,
-                                                          List<ActionRequest> actionRequests,
-                                                          ThreadingPattern threadingPattern,
-                                                          List<ParameterDataProvider> parameterDataProviders,
-                                                          List<QueueLoaderListener> listeners ) throws NoSuchComponentException,
-                                                                                                     NoSuchActionException,
-                                                                                                     NoCompatibleMethodFoundException,
-                                                                                                     ThreadingPatternNotSupportedException {
+                                                     List<ActionRequest> actionRequests,
+                                                     ThreadingPattern threadingPattern,
+                                                     List<ParameterDataProvider> parameterDataProviders,
+                                                     List<QueueLoaderListener> listeners ) throws NoSuchComponentException,
+                                                                                           NoSuchActionException,
+                                                                                           NoCompatibleMethodFoundException,
+                                                                                           ThreadingPatternNotSupportedException {
 
-        if( listeners == null ) {
+        if (listeners == null) {
             listeners = new ArrayList<QueueLoaderListener>();
         }
 
-        if( threadingPattern.getClass() == AllAtOncePattern.class ) {
+        if (threadingPattern.getClass() == AllAtOncePattern.class) {
 
             //convert the "all at once" to "ramp up pattern"
-            AllAtOncePattern allAtOncePattern = ( AllAtOncePattern ) threadingPattern;
-            RampUpPattern rampUpPattern = new RampUpPattern( allAtOncePattern.getThreadCount(),
-                                                             allAtOncePattern.isBlockUntilCompletion(),
-                                                             allAtOncePattern.getIterationCount(),
-                                                             allAtOncePattern.getIntervalBetweenIterations() );
-            rampUpPattern.setMinIntervalBetweenIterations( allAtOncePattern.getMinIntervalBetweenIterations() );
-            rampUpPattern.setMaxIntervalBetweenIterations( allAtOncePattern.getMaxIntervalBetweenIterations() );
-            rampUpPattern.setIterationTimeout( allAtOncePattern.getIterationTimeout() );
-            
-            return new RampUpQueueLoader( queueName, actionRequests, rampUpPattern, allAtOncePattern,
-                                               parameterDataProviders, listeners );
+            AllAtOncePattern allAtOncePattern = (AllAtOncePattern) threadingPattern;
+            RampUpPattern rampUpPattern = new RampUpPattern(allAtOncePattern.getThreadCount(),
+                                                            allAtOncePattern.isBlockUntilCompletion(),
+                                                            allAtOncePattern.getIterationCount(),
+                                                            allAtOncePattern.getIntervalBetweenIterations());
+            rampUpPattern.setMinIntervalBetweenIterations(allAtOncePattern.getMinIntervalBetweenIterations());
+            rampUpPattern.setMaxIntervalBetweenIterations(allAtOncePattern.getMaxIntervalBetweenIterations());
+            rampUpPattern.setIterationTimeout(allAtOncePattern.getIterationTimeout());
 
-        } else if( threadingPattern.getClass() == FixedDurationAllAtOncePattern.class ) {
+            return new RampUpQueueLoader(queueName, actionRequests, rampUpPattern, allAtOncePattern,
+                                         parameterDataProviders, listeners);
+
+        } else if (threadingPattern.getClass() == FixedDurationAllAtOncePattern.class) {
 
             //convert the "fixed duration all at once" to "fixed duration ramp up pattern"
-            FixedDurationAllAtOncePattern allAtOncePattern = ( FixedDurationAllAtOncePattern ) threadingPattern;
-            FixedDurationRampUpPattern rampUpPattern = new FixedDurationRampUpPattern( allAtOncePattern.getThreadCount(),
-                                                                                       allAtOncePattern.isBlockUntilCompletion(),
-                                                                                       allAtOncePattern.getDuration(),
-                                                                                       allAtOncePattern.getIntervalBetweenIterations() );
-            rampUpPattern.setMinIntervalBetweenIterations( allAtOncePattern.getMinIntervalBetweenIterations() );
-            rampUpPattern.setMaxIntervalBetweenIterations( allAtOncePattern.getMaxIntervalBetweenIterations() );
-            rampUpPattern.setIterationTimeout( threadingPattern.getIterationTimeout() );
-            
-            return new RampUpQueueLoader( queueName, actionRequests, rampUpPattern, allAtOncePattern,
-                                               parameterDataProviders, listeners );
+            FixedDurationAllAtOncePattern allAtOncePattern = (FixedDurationAllAtOncePattern) threadingPattern;
+            FixedDurationRampUpPattern rampUpPattern = new FixedDurationRampUpPattern(allAtOncePattern.getThreadCount(),
+                                                                                      allAtOncePattern.isBlockUntilCompletion(),
+                                                                                      allAtOncePattern.getDuration(),
+                                                                                      allAtOncePattern.getIntervalBetweenIterations());
+            rampUpPattern.setMinIntervalBetweenIterations(allAtOncePattern.getMinIntervalBetweenIterations());
+            rampUpPattern.setMaxIntervalBetweenIterations(allAtOncePattern.getMaxIntervalBetweenIterations());
+            rampUpPattern.setIterationTimeout(threadingPattern.getIterationTimeout());
 
-        } else if( threadingPattern.getClass() == RampUpPattern.class
-                   || threadingPattern.getClass() == FixedDurationRampUpPattern.class ) {
+            return new RampUpQueueLoader(queueName, actionRequests, rampUpPattern, allAtOncePattern,
+                                         parameterDataProviders, listeners);
+
+        } else if (threadingPattern.getClass() == RampUpPattern.class
+                   || threadingPattern.getClass() == FixedDurationRampUpPattern.class) {
 
             //this is a real ramp-up pattern
-            return new RampUpQueueLoader( queueName, actionRequests,
-                                               ( RampUpStartPattern ) threadingPattern,
-                                               ( ExecutionPattern ) threadingPattern, parameterDataProviders,
-                                               listeners );
+            return new RampUpQueueLoader(queueName, actionRequests,
+                                         (RampUpStartPattern) threadingPattern,
+                                         (ExecutionPattern) threadingPattern, parameterDataProviders,
+                                         listeners);
 
         } else {
-            throw new ThreadingPatternNotSupportedException( threadingPattern.getClass().getSimpleName() );
+            throw new ThreadingPatternNotSupportedException(threadingPattern.getClass().getSimpleName());
         }
     }
 }

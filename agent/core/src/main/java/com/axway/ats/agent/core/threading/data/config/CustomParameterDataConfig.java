@@ -27,7 +27,7 @@ import com.axway.ats.agent.core.threading.data.CustomParameterDataProvider;
  * Data configuration which is supposed to be extended by a particular custom implementation.
  * It can be used to implement a custom way of providing data for the executed actions.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public abstract class CustomParameterDataConfig extends AbstractParameterDataConfig {
 
     /**
@@ -50,7 +50,7 @@ public abstract class CustomParameterDataConfig extends AbstractParameterDataCon
     public CustomParameterDataConfig( String parameterName,
                                       Map<String, String> controlTokens,
                                       ParameterProviderLevel parameterProviderLevel ) {
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.controlTokens = controlTokens;
     }

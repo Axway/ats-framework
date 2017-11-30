@@ -18,7 +18,7 @@ package com.axway.ats.agent.core.monitoring.exceptions;
 /**
  * Thrown whenever the operation that is called has terminated abnormally
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class OperationUnsuccessfulException extends Exception {
 
     /**
@@ -38,7 +38,7 @@ public class OperationUnsuccessfulException extends Exception {
     public OperationUnsuccessfulException( String message,
                                            Throwable throwable ) {
 
-        super( message +" Cause message and trace: " + throwable.getMessage(), throwable );
+        super(message + " Cause message and trace: " + throwable.getMessage(), throwable);
     }
 
     /**
@@ -48,6 +48,6 @@ public class OperationUnsuccessfulException extends Exception {
      */
     public OperationUnsuccessfulException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 }

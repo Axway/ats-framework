@@ -41,9 +41,9 @@ public class AgentSystemMonitor {
     private AtsSystemMonitoringAgent monitoringAgent;
 
     public Set<ReadingBean> scheduleSystemMonitoring(
-                                                          String[] systemReadingTypes ) {
+                                                      String[] systemReadingTypes ) {
 
-        return ReadingTypes.expandSystemReadings( systemReadingTypes );
+        return ReadingTypes.expandSystemReadings(systemReadingTypes);
     }
 
     public void initializeMonitoring(
@@ -51,57 +51,57 @@ public class AgentSystemMonitor {
                                       int pollInterval,
                                       long executorTimeOffset ) {
 
-        monitoringAgent = new AtsSystemMonitoringAgent( pollInterval, executorTimeOffset );
+        monitoringAgent = new AtsSystemMonitoringAgent(pollInterval, executorTimeOffset);
 
-        if( pollInterval < 1 ) {
-            throw new MonitoringException( "The interval for collecting statistical data must be at least 1 second. You have specified "
-                                           + pollInterval + " seconds" );
+        if (pollInterval < 1) {
+            throw new MonitoringException("The interval for collecting statistical data must be at least 1 second. You have specified "
+                                          + pollInterval + " seconds");
         }
 
         Map<String, List<ReadingBean>> readingsPerMonitor = new HashMap<String, List<ReadingBean>>();
 
         // load all the monitors and initialize them
-        for( ReadingBean reading : readings ) {
-            List<ReadingBean> readingsForThisMonitor = readingsPerMonitor.get( reading.getMonitorName() );
-            if( readingsForThisMonitor == null ) {
+        for (ReadingBean reading : readings) {
+            List<ReadingBean> readingsForThisMonitor = readingsPerMonitor.get(reading.getMonitorName());
+            if (readingsForThisMonitor == null) {
                 readingsForThisMonitor = new ArrayList<ReadingBean>();
-                readingsPerMonitor.put( reading.getMonitorName(), readingsForThisMonitor );
+                readingsPerMonitor.put(reading.getMonitorName(), readingsForThisMonitor);
             }
-            readingsForThisMonitor.add( reading );
+            readingsForThisMonitor.add(reading);
 
         }
 
-        for( String monitorClassName : readingsPerMonitor.keySet() ) {
-            initializeMonitor( monitorClassName, readingsPerMonitor.get( monitorClassName ), pollInterval );
+        for (String monitorClassName : readingsPerMonitor.keySet()) {
+            initializeMonitor(monitorClassName, readingsPerMonitor.get(monitorClassName), pollInterval);
         }
     }
 
     public ReadingBean scheduleMonitoring(
-                                               String readingType,
-                                               Map<String, String> readingParameters ) {
+                                           String readingType,
+                                           Map<String, String> readingParameters ) {
 
-        return ReadingsRepository.getInstance().getReadingXmlDefinition( readingType, readingParameters );
+        return ReadingsRepository.getInstance().getReadingXmlDefinition(readingType, readingParameters);
     }
 
     public Set<ReadingBean> scheduleProcessMonitoring(
-                                                           String parentProcess,
-                                                           String processPattern,
-                                                           String processAlias,
-                                                           String processUsername,
-                                                           String[] processReadingTypes ) {
+                                                       String parentProcess,
+                                                       String processPattern,
+                                                       String processAlias,
+                                                       String processUsername,
+                                                       String[] processReadingTypes ) {
 
-        return ReadingTypes.expandProcessReadings( parentProcess,
-                                                   processPattern,
-                                                   processAlias,
-                                                   processUsername,
-                                                   processReadingTypes );
+        return ReadingTypes.expandProcessReadings(parentProcess,
+                                                  processPattern,
+                                                  processAlias,
+                                                  processUsername,
+                                                  processReadingTypes);
     }
 
     public ReadingBean scheduleJvmMonitoring(
-                                                  String readingType,
-                                                  Map<String, String> readingParameters ) {
+                                              String readingType,
+                                              Map<String, String> readingParameters ) {
 
-        return ReadingsRepository.getInstance().getReadingXmlDefinition( readingType, readingParameters );
+        return ReadingsRepository.getInstance().getReadingXmlDefinition(readingType, readingParameters);
     }
 
     public int scheduleCustomJvmMonitoring() {
@@ -113,7 +113,7 @@ public class AgentSystemMonitor {
                                           String monitoredHost,
                                           List<ReadingBean> readings ) throws DatabaseAccessException {
 
-        ReadingsRepository.getInstance().updateDatabaseRepository( monitoredHost, readings );
+        ReadingsRepository.getInstance().updateDatabaseRepository(monitoredHost, readings);
     }
 
     public void initializeMonitoringContext() throws IOException {
@@ -126,11 +126,11 @@ public class AgentSystemMonitor {
         // start all the monitors
         try {
             monitoringAgent.startMonitoring();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             // unable to start the monitoring process
             // deinitialize all monitors
             monitoringAgent.resetTheMonitoringAgent();
-            throw new OperationUnsuccessfulException( "Unable to start the monitoring agent", e );
+            throw new OperationUnsuccessfulException("Unable to start the monitoring agent", e);
         }
     }
 
@@ -138,8 +138,8 @@ public class AgentSystemMonitor {
 
         try {
             monitoringAgent.stopMonitoring();
-        } catch( Exception e ) {
-            throw new OperationUnsuccessfulException( "Unable to stop the monitoring agent", e );
+        } catch (Exception e) {
+            throw new OperationUnsuccessfulException("Unable to stop the monitoring agent", e);
         }
     }
 
@@ -151,39 +151,39 @@ public class AgentSystemMonitor {
         // try to make an instance of the monitor class
         Object monitorInstance;
         try {
-            monitorInstance = Class.forName( monitorClassName ).newInstance();
-        } catch( InstantiationException e ) {
-            throw new MonitorConfigurationException( "InstantiationException while constructing '"
-                                                     + monitorClassName
-                                                     + "' monitor. Exception error message: "
-                                                     + e.getMessage() );
-        } catch( IllegalAccessException e ) {
-            throw new MonitorConfigurationException( "IllegalAccessException while constructing '"
-                                                     + monitorClassName
-                                                     + "' monitor. Exception error message: "
-                                                     + e.getMessage() );
-        } catch( ClassNotFoundException e ) {
-            throw new MonitorConfigurationException( "ClassNotFoundException while constructing '"
-                                                     + monitorClassName
-                                                     + "' monitor. Exception error message: "
-                                                     + e.getMessage() );
+            monitorInstance = Class.forName(monitorClassName).newInstance();
+        } catch (InstantiationException e) {
+            throw new MonitorConfigurationException("InstantiationException while constructing '"
+                                                    + monitorClassName
+                                                    + "' monitor. Exception error message: "
+                                                    + e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new MonitorConfigurationException("IllegalAccessException while constructing '"
+                                                    + monitorClassName
+                                                    + "' monitor. Exception error message: "
+                                                    + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new MonitorConfigurationException("ClassNotFoundException while constructing '"
+                                                    + monitorClassName
+                                                    + "' monitor. Exception error message: "
+                                                    + e.getMessage());
         }
 
         // check if it implements the needed interface
-        if( ! ( monitorInstance instanceof PerformanceMonitor ) ) {
-            throw new MonitorConfigurationException( monitorClassName + " is not a valid monitor class" );
+        if (! (monitorInstance instanceof PerformanceMonitor)) {
+            throw new MonitorConfigurationException(monitorClassName + " is not a valid monitor class");
         }
-        PerformanceMonitor monitor = ( PerformanceMonitor ) monitorInstance;
+        PerformanceMonitor monitor = (PerformanceMonitor) monitorInstance;
 
         try {
             // initialize the monitor
-            monitor.setPollInterval( pollInterval );
-            monitor.init( readings.toArray( new ReadingBean[readings.size()] ) );
-        } catch( Throwable e ) {
-            throw new MonitorConfigurationException( "Error initializing " + monitorClassName + " monitor: "
-                                                     + e.getMessage(), e );
+            monitor.setPollInterval(pollInterval);
+            monitor.init(readings.toArray(new ReadingBean[readings.size()]));
+        } catch (Throwable e) {
+            throw new MonitorConfigurationException("Error initializing " + monitorClassName + " monitor: "
+                                                    + e.getMessage(), e);
         }
-        monitoringAgent.addMonitor( monitor );
+        monitoringAgent.addMonitor(monitor);
     }
 
 }

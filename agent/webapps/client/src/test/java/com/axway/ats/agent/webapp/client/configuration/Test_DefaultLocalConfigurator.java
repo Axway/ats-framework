@@ -28,7 +28,7 @@ public class Test_DefaultLocalConfigurator extends BaseTestWebapps {
     public void needsApplying() throws ConfigurationException {
 
         DefaultLocalConfigurator localConfigurator = new DefaultLocalConfigurator();
-        assertTrue( localConfigurator.needsApplying() );
+        assertTrue(localConfigurator.needsApplying());
     }
 
     @Test

@@ -27,7 +27,7 @@ import org.eclipse.jetty.server.Server;
  */
 public class CleaningThread extends Thread {
 
-    private static final Logger log = Logger.getLogger( CleaningThread.class );
+    private static final Logger log = Logger.getLogger(CleaningThread.class);
 
     private final Server        server;
     private final Set<Long>     threadIDs;
@@ -35,43 +35,43 @@ public class CleaningThread extends Thread {
     public CleaningThread( Server server,
                            Set<Long> threadIDs ) {
 
-        super( "JettyAgentCleaner" );
+        super("JettyAgentCleaner");
 
         this.server = server;
         this.threadIDs = threadIDs;
 
-        setDaemon( true );
+        setDaemon(true);
     }
 
     @Override
     public void run() {
 
-        log.info( "Starting Cleaner Thread for the Jetty Web Container Agent." );
+        log.info("Starting Cleaner Thread for the Jetty Web Container Agent.");
 
         int exitCode = 0;
 
         boolean loop = true;
         try {
-            while( loop ) {
+            while (loop) {
                 List<Thread> allThreads = ThreadUtils.getInstance().getAllThreads();
                 loop = false;
 
-                for( Thread t : allThreads ) {
+                for (Thread t : allThreads) {
                     // daemon: skip it.
-                    if( t.isDaemon() ) {
-                        log.debug( "Skipping daemon thread: " + t.getName() + " [id=" + t.getId() + "]" );
+                    if (t.isDaemon()) {
+                        log.debug("Skipping daemon thread: " + t.getName() + " [id=" + t.getId() + "]");
                         continue;
                     }
 
-                    if( t.getName().startsWith( "DestroyJavaVM" ) ) {
-                        log.debug( "Skipping destroy thread thread: " + t.getName() + " [id=" + t.getId()
-                                   + "]" );
+                    if (t.getName().startsWith("DestroyJavaVM")) {
+                        log.debug("Skipping destroy thread thread: " + t.getName() + " [id=" + t.getId()
+                                  + "]");
                         continue;
                     }
 
                     // skip the threads that were started with the Jetty server
-                    if( threadIDs.contains( t.getId() ) ) {
-                        log.debug( "Skipping Jetty thread: " + t.getName() + " [id=" + t.getId() + "]" );
+                    if (threadIDs.contains(t.getId())) {
+                        log.debug("Skipping Jetty thread: " + t.getName() + " [id=" + t.getId() + "]");
                         continue;
                     }
 
@@ -79,10 +79,10 @@ public class CleaningThread extends Thread {
                     // loop, continue in the while loop (loop=true)
                     loop = true;
                     try {
-                        log.info( "Waiting on thread " + t.getName() + " [id=" + t.getId() + "]" );
+                        log.info("Waiting on thread " + t.getName() + " [id=" + t.getId() + "]");
                         t.join();
-                    } catch( Exception ex ) {
-                        log.error( "Error when joining thread.", ex );
+                    } catch (Exception ex) {
+                        log.error("Error when joining thread.", ex);
                     }
                     break;
                 }
@@ -90,23 +90,23 @@ public class CleaningThread extends Thread {
             // We went through a whole for-loop without finding any thread
             // to join. We can close the server and exit the JVM since all the
             // threads of the main application should have finished.
-        } catch( Exception ex ) {
+        } catch (Exception ex) {
             exitCode = -1;
-            log.error( "Unexpected exception while waitnig for the main application to finish.", ex );
+            log.error("Unexpected exception while waitnig for the main application to finish.", ex);
         } finally {
             try {
                 // if we reach here it means the only non-daemon threads
                 // that remain are the Jetty server threads - or that we got an
                 // unexpected exception/error.
                 // Stop the server and exit the JVM.
-                log.info( "Stopping the Jetty server." );
+                log.info("Stopping the Jetty server.");
                 server.stop();
-            } catch( Exception ex ) {
-                log.error( "Error closing the server.", ex );
+            } catch (Exception ex) {
+                log.error("Error closing the server.", ex);
             }
 
-            log.info( "Exiting the JVM." );
-            Runtime.getRuntime().exit( exitCode );
+            log.info("Exiting the JVM.");
+            Runtime.getRuntime().exit(exitCode);
         }
     }
 }

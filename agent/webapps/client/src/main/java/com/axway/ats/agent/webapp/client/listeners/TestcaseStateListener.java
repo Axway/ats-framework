@@ -35,7 +35,7 @@ import com.axway.ats.log.AtsDbLogger;
 
 public class TestcaseStateListener implements ITestcaseStateListener {
 
-    private static Logger                log = Logger.getLogger( TestcaseStateListener.class );
+    private static Logger                log = Logger.getLogger(TestcaseStateListener.class);
 
     // list of configured agents
     private static List<String>          configuredAgents;
@@ -50,7 +50,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
     public static synchronized TestcaseStateListener getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new TestcaseStateListener();
         }
         return instance;
@@ -66,7 +66,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     @Override
     public void onTestEnd() {
 
-        if( configuredAgents == null ) {
+        if (configuredAgents == null) {
 
             // onTestStart had never been called,
             // maybe onTestEnd is produced by test skipped event before starting a testcase
@@ -75,17 +75,17 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
         waitImportantThreadsToFinish();
 
-        for( String atsAgent : configuredAgents ) {
+        for (String atsAgent : configuredAgents) {
 
             try {
 
                 //get the client
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+                AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
                 agentServicePort.onTestEnd();
 
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
-                log.error( "Can't send onTestEnd event to ATS agent '" + atsAgent + "'", e );
+                log.error("Can't send onTestEnd event to ATS agent '" + atsAgent + "'", e);
             }
         }
         configuredAgents = null;
@@ -100,39 +100,39 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
 
-        if( configuredAgents == null ) {
+        if (configuredAgents == null) {
 
             // No TestCase is started so we won't configure the remote agents
             return;
         }
 
-        for( String atsAgent : atsAgents ) {
+        for (String atsAgent : atsAgents) {
 
             // configure only not configured agents
-            if( !configuredAgents.contains( atsAgent ) ) {
+            if (!configuredAgents.contains(atsAgent)) {
 
                 // Here we need to sync on the 'atsAgent' String, which is not good solution at all,
                 // because there can be another sync on the same string in the JVM (possible deadlocks).
                 // We will try to prevent that adding a 'unique' prefix
-                synchronized( ( "ATS_STRING_LOCK-" + atsAgent ).intern() ) {
+                synchronized ( ("ATS_STRING_LOCK-" + atsAgent).intern()) {
 
-                    if( !configuredAgents.contains( atsAgent ) ) {
+                    if (!configuredAgents.contains(atsAgent)) {
 
                         // Pass the logging configuration to the remote agent
-                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator( atsAgent );
-                        new RemoteConfigurationManager().pushConfiguration( atsAgent,
-                                                                            remoteLoggingConfigurator );
+                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(atsAgent);
+                        new RemoteConfigurationManager().pushConfiguration(atsAgent,
+                                                                           remoteLoggingConfigurator);
 
                         try {
                             AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                          .getClient( atsAgent );
-                            agentServicePort.onTestStart( getCurrentTestCaseState() );
-                        } catch( AgentException_Exception ae ) {
+                                                                            .getClient(atsAgent);
+                            agentServicePort.onTestStart(getCurrentTestCaseState());
+                        } catch (AgentException_Exception ae) {
 
-                            throw new AgentException( ae.getMessage() );
+                            throw new AgentException(ae.getMessage());
                         }
 
-                        configuredAgents.add( atsAgent );
+                        configuredAgents.add(atsAgent);
                     }
                 }
 
@@ -148,14 +148,14 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      */
     private TestCaseState getCurrentTestCaseState() {
 
-        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger( ActionClient.class.getName() )
-                                                                         .getCurrentTestCaseState();
-        if( testCaseState == null ) {
+        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger(ActionClient.class.getName())
+                                                                          .getCurrentTestCaseState();
+        if (testCaseState == null) {
             return null;
         } else {
             TestCaseState wsTestCaseState = new TestCaseState();
-            wsTestCaseState.setTestcaseId( testCaseState.getTestcaseId() );
-            wsTestCaseState.setRunId( testCaseState.getRunId() );
+            wsTestCaseState.setTestcaseId(testCaseState.getTestcaseId());
+            wsTestCaseState.setRunId(testCaseState.getRunId());
             return wsTestCaseState;
         }
     }
@@ -168,19 +168,19 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
         try {
             Set<Thread> threads = Thread.getAllStackTraces().keySet();
-            for( Thread th : threads ) {
-                if( th != null && th.isAlive() && ( th instanceof ImportantThread ) ) {
-                    log.warn( "There is a still running Agent action queue '"
-                              + ( ( ImportantThread ) th ).getDescription()
-                              + "'. Now we will wait for its completion. "
-                              + "If you want to skip this warning, you must explicitly wait in your test code for the queue completion." );
+            for (Thread th : threads) {
+                if (th != null && th.isAlive() && (th instanceof ImportantThread)) {
+                    log.warn("There is a still running Agent action queue '"
+                             + ((ImportantThread) th).getDescription()
+                             + "'. Now we will wait for its completion. "
+                             + "If you want to skip this warning, you must explicitly wait in your test code for the queue completion.");
                     try {
                         th.join();
-                    } catch( InterruptedException ie ) {}
+                    } catch (InterruptedException ie) {}
                 }
             }
-        } catch( Exception e ) {
-            log.warn( "Error waiting for all important threads to finish.", e );
+        } catch (Exception e) {
+            log.warn("Error waiting for all important threads to finish.", e);
         }
     }
 
@@ -191,9 +191,9 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     public void cleanupInternalObjectResources( String atsAgent, String internalObjectResourceId ) {
 
         try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
-            agentServicePort.cleanupInternalObjectResources( internalObjectResourceId );
-        } catch( Exception e ) {
+            AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+            agentServicePort.cleanupInternalObjectResources(internalObjectResourceId);
+        } catch (Exception e) {
             // As this code is triggered when the garbage collector disposes the client side object
             // at the Test Executor side, the following message seems confusing:
             // log.error( "Can't cleanup resource with identifier " + internalObjectResourceId + " on ATS agent '" + atsAgent + "'", e );

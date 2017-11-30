@@ -19,11 +19,11 @@ package com.axway.ats.agent.core.threading.exceptions;
  * This exception is thrown when an attempting to access a load queue
  * which does not exist
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchLoadQueueException extends ActionTaskLoaderException {
 
     public NoSuchLoadQueueException( String queueName ) {
 
-        super( "No action queue with name '" + queueName + "' is present" );
+        super("No action queue with name '" + queueName + "' is present");
     }
 }

@@ -33,7 +33,7 @@ public class UserTemplateActionInvoker extends UserActionInvoker {
 
     public UserTemplateActionInvoker( String componentName ) throws NoSuchComponentException {
 
-        super( componentName );
+        super(componentName);
     }
 
     /**
@@ -62,21 +62,21 @@ public class UserTemplateActionInvoker extends UserActionInvoker {
                                            String actionMethodName,
                                            Object[] parameterValues,
                                            String wantedXpathEntry ) throws ActionExecutionException,
-                                                                    NoSuchActionException,
-                                                                    NoSuchComponentException,
-                                                                    SecurityException,
-                                                                    InternalComponentException,
-                                                                    NoCompatibleMethodFoundException,
-                                                                    NoSuchMethodException {
+                                                                     NoSuchActionException,
+                                                                     NoSuchComponentException,
+                                                                     SecurityException,
+                                                                     InternalComponentException,
+                                                                     NoCompatibleMethodFoundException,
+                                                                     NoSuchMethodException {
 
-        String[][] valueArrays = invoke( actionClass,
-                                         actionMethodName,
-                                         parameterValues,
-                                         new String[]{ wantedXpathEntry } );
-        if( valueArrays.length > 0 && valueArrays[0].length > 0 ) {
+        String[][] valueArrays = invoke(actionClass,
+                                        actionMethodName,
+                                        parameterValues,
+                                        new String[]{ wantedXpathEntry });
+        if (valueArrays.length > 0 && valueArrays[0].length > 0) {
             return valueArrays[0][0];
         } else {
-            throw new ActionExecutionException( "At least one value was expected, but nothing was returned" );
+            throw new ActionExecutionException("At least one value was expected, but nothing was returned");
         }
     }
 
@@ -105,22 +105,22 @@ public class UserTemplateActionInvoker extends UserActionInvoker {
                                                      String actionMethodName,
                                                      Object[] parameterValues,
                                                      String wantedXpathEntry )
-                                                                              throws ActionExecutionException,
-                                                                              NoSuchActionException,
-                                                                              NoSuchComponentException,
-                                                                              SecurityException,
-                                                                              InternalComponentException,
-                                                                              NoCompatibleMethodFoundException,
-                                                                              NoSuchMethodException {
+                                                                               throws ActionExecutionException,
+                                                                               NoSuchActionException,
+                                                                               NoSuchComponentException,
+                                                                               SecurityException,
+                                                                               InternalComponentException,
+                                                                               NoCompatibleMethodFoundException,
+                                                                               NoSuchMethodException {
 
-        String[][] valueArrays = invoke( actionClass,
-                                         actionMethodName,
-                                         parameterValues,
-                                         new String[]{ wantedXpathEntry } );
-        if( valueArrays.length > 0 ) {
+        String[][] valueArrays = invoke(actionClass,
+                                        actionMethodName,
+                                        parameterValues,
+                                        new String[]{ wantedXpathEntry });
+        if (valueArrays.length > 0) {
             return valueArrays[0];
         } else {
-            throw new ActionExecutionException( "At least one array of values was expected, but no one was returned" );
+            throw new ActionExecutionException("At least one array of values was expected, but no one was returned");
         }
     }
 
@@ -128,30 +128,30 @@ public class UserTemplateActionInvoker extends UserActionInvoker {
                                                       Class<?> actionClass,
                                                       String actionMethodName,
                                                       Object[] parameterValues )
-                                                                                throws ActionExecutionException,
-                                                                                NoSuchActionException,
-                                                                                NoSuchComponentException,
-                                                                                SecurityException,
-                                                                                InternalComponentException,
-                                                                                NoCompatibleMethodFoundException,
-                                                                                NoSuchMethodException {
+                                                                                 throws ActionExecutionException,
+                                                                                 NoSuchActionException,
+                                                                                 NoSuchComponentException,
+                                                                                 SecurityException,
+                                                                                 InternalComponentException,
+                                                                                 NoCompatibleMethodFoundException,
+                                                                                 NoSuchMethodException {
 
-        Object actionObject = resolveActionObject( actionClass );
-        Method actionMethod = resolveActionMethod( actionMethodName, parameterValues );
-        String actionName = resolveActionName( false, actionMethod );
+        Object actionObject = resolveActionObject(actionClass);
+        Method actionMethod = resolveActionMethod(actionMethodName, parameterValues);
+        String actionName = resolveActionName(false, actionMethod);
 
         // construct a template action and invoke it
-        TemplateActionMethod templateActionMethod = new TemplateActionMethod( componentName,
-                                                                              actionName,
-                                                                              actionClass.getSimpleName(),
-                                                                              actionMethod.getName(),
-                                                                              actionMethod,
-                                                                              actionClass );
-        templateActionMethod.setReturnResponseBodyAsString( true );
-        String content = ( String ) templateActionMethod.invoke( actionObject, parameterValues, false );
+        TemplateActionMethod templateActionMethod = new TemplateActionMethod(componentName,
+                                                                             actionName,
+                                                                             actionClass.getSimpleName(),
+                                                                             actionMethod.getName(),
+                                                                             actionMethod,
+                                                                             actionClass);
+        templateActionMethod.setReturnResponseBodyAsString(true);
+        String content = (String) templateActionMethod.invoke(actionObject, parameterValues, false);
 
-        if( content == null ) {
-            throw new ActionExecutionException( "Can't return the last response body" );
+        if (content == null) {
+            throw new ActionExecutionException("Can't return the last response body");
         }
         return content;
     }
@@ -181,26 +181,26 @@ public class UserTemplateActionInvoker extends UserActionInvoker {
                               String actionMethodName,
                               Object[] parameterValues,
                               String[] wantedXpathEntries ) throws ActionExecutionException,
-                                                           NoSuchActionException, NoSuchComponentException,
-                                                           SecurityException, NoSuchMethodException,
-                                                           InternalComponentException,
-                                                           NoCompatibleMethodFoundException {
+                                                            NoSuchActionException, NoSuchComponentException,
+                                                            SecurityException, NoSuchMethodException,
+                                                            InternalComponentException,
+                                                            NoCompatibleMethodFoundException {
 
-        Object actionObject = resolveActionObject( actionClass );
-        Method actionMethod = resolveActionMethod( actionMethodName, parameterValues );
-        String actionName = resolveActionName( false, actionMethod );
+        Object actionObject = resolveActionObject(actionClass);
+        Method actionMethod = resolveActionMethod(actionMethodName, parameterValues);
+        String actionName = resolveActionName(false, actionMethod);
 
         // construct a template action and invoke it
-        TemplateActionMethod templateActionMethod = new TemplateActionMethod( componentName,
-                                                                              actionName,
-                                                                              actionClass.getSimpleName(),
-                                                                              actionMethod.getName(),
-                                                                              actionMethod,
-                                                                              actionClass );
-        templateActionMethod.setWantedXpathEntries( wantedXpathEntries );
-        CompositeResult result = ( CompositeResult ) templateActionMethod.invoke( actionObject,
-                                                                                  parameterValues,
-                                                                                  false );
-        return ( String[][] ) result.getReturnResult();
+        TemplateActionMethod templateActionMethod = new TemplateActionMethod(componentName,
+                                                                             actionName,
+                                                                             actionClass.getSimpleName(),
+                                                                             actionMethod.getName(),
+                                                                             actionMethod,
+                                                                             actionClass);
+        templateActionMethod.setWantedXpathEntries(wantedXpathEntries);
+        CompositeResult result = (CompositeResult) templateActionMethod.invoke(actionObject,
+                                                                               parameterValues,
+                                                                               false);
+        return (String[][]) result.getReturnResult();
     }
 }

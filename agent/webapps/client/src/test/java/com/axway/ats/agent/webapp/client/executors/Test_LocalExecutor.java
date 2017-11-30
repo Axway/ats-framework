@@ -47,8 +47,8 @@ import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.junit.BaseTestWebapps;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MainComponentLoader.class, EnvironmentHandler.class, MultiThreadedActionHandler.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { MainComponentLoader.class, EnvironmentHandler.class, MultiThreadedActionHandler.class })
 public class Test_LocalExecutor extends BaseTestWebapps {
 
     private MainComponentLoader        mockMainLoader;
@@ -60,44 +60,44 @@ public class Test_LocalExecutor extends BaseTestWebapps {
     @BeforeClass
     public static void setUpTest_LocalExecutor() throws AgentException {
 
-        Component component = new Component( TEST_COMPONENT_NAME );
-        ComponentActionMap actionMap = new ComponentActionMap( TEST_COMPONENT_NAME );
-        actionMap.registerActionClass( ActionClassOne.class );
-        component.setActionMap( actionMap );
+        Component component = new Component(TEST_COMPONENT_NAME);
+        ComponentActionMap actionMap = new ComponentActionMap(TEST_COMPONENT_NAME);
+        actionMap.registerActionClass(ActionClassOne.class);
+        component.setActionMap(actionMap);
 
         ComponentRepository componentRepository = ComponentRepository.getInstance();
         componentRepository.clear();
-        componentRepository.putComponent( component );
+        componentRepository.putComponent(component);
     }
 
     @Before
     public void setUp() {
 
         // create the mocks
-        mockStatic( MainComponentLoader.class );
-        mockMainLoader = createMock( MainComponentLoader.class );
+        mockStatic(MainComponentLoader.class);
+        mockMainLoader = createMock(MainComponentLoader.class);
 
-        mockStatic( EnvironmentHandler.class );
-        mockEnvironmentHandler = createMock( EnvironmentHandler.class );
+        mockStatic(EnvironmentHandler.class);
+        mockEnvironmentHandler = createMock(EnvironmentHandler.class);
 
-        mockStatic( MultiThreadedActionHandler.class );
-        mockMultiThreadedActionHandler = createMock( MultiThreadedActionHandler.class );
+        mockStatic(MultiThreadedActionHandler.class);
+        mockMultiThreadedActionHandler = createMock(MultiThreadedActionHandler.class);
 
         //init the test values
         ActionClassOne.ACTION_VALUE = 0;
 
         //prevent loading of agent components from the classpath
-        Whitebox.setInternalState( LocalExecutor.class, "isLocalMachineConfigured", true );
+        Whitebox.setInternalState(LocalExecutor.class, "isLocalMachineConfigured", true);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     @Test
     public void constructor() throws Exception {
 
-        Whitebox.setInternalState( LocalExecutor.class, "isLocalMachineConfigured", false );
+        Whitebox.setInternalState(LocalExecutor.class, "isLocalMachineConfigured", false);
 
-        expect( MainComponentLoader.getInstance() ).andReturn( mockMainLoader );
-        mockMainLoader.initialize( isA( ArrayList.class ) );
+        expect(MainComponentLoader.getInstance()).andReturn(mockMainLoader);
+        mockMainLoader.initialize(isA(ArrayList.class));
 
         replayAll();
 
@@ -105,8 +105,8 @@ public class Test_LocalExecutor extends BaseTestWebapps {
 
         verifyAll();
 
-        assertTrue( ( Boolean ) Whitebox.getInternalState( LocalExecutor.class,
-                                                           "isLocalMachineConfigured" ) );
+        assertTrue((Boolean) Whitebox.getInternalState(LocalExecutor.class,
+                                                       "isLocalMachineConfigured"));
     }
 
     @Test
@@ -118,72 +118,72 @@ public class Test_LocalExecutor extends BaseTestWebapps {
 
         verifyAll();
 
-        assertTrue( ( Boolean ) Whitebox.getInternalState( LocalExecutor.class,
-                                                           "isLocalMachineConfigured" ) );
+        assertTrue((Boolean) Whitebox.getInternalState(LocalExecutor.class,
+                                                       "isLocalMachineConfigured"));
     }
 
     @Test
     public void executeActionPositive() throws Exception {
 
         LocalExecutor localExecutor = new LocalExecutor();
-        localExecutor.executeAction( new ActionRequest( TEST_COMPONENT_NAME, "action 1",
-                                                        new Object[]{ 1 } ) );
+        localExecutor.executeAction(new ActionRequest(TEST_COMPONENT_NAME, "action 1",
+                                                      new Object[]{ 1 }));
 
-        assertEquals( 1, ActionClassOne.ACTION_VALUE );
+        assertEquals(1, ActionClassOne.ACTION_VALUE);
     }
 
     @Test
     public void cleanPositive() throws Exception {
 
-        expect( EnvironmentHandler.getInstance() ).andReturn( mockEnvironmentHandler );
-        mockEnvironmentHandler.restore( TEST_COMPONENT_NAME, null, null );
+        expect(EnvironmentHandler.getInstance()).andReturn(mockEnvironmentHandler);
+        mockEnvironmentHandler.restore(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
         LocalExecutor localExecutor = new LocalExecutor();
-        localExecutor.restore( TEST_COMPONENT_NAME, null, null );
+        localExecutor.restore(TEST_COMPONENT_NAME, null, null);
     }
 
     @Test
     public void cleanAllPositive() throws Exception {
 
-        expect( EnvironmentHandler.getInstance() ).andReturn( mockEnvironmentHandler );
-        mockEnvironmentHandler.restoreAll( null );
+        expect(EnvironmentHandler.getInstance()).andReturn(mockEnvironmentHandler);
+        mockEnvironmentHandler.restoreAll(null);
 
         replayAll();
 
         LocalExecutor localExecutor = new LocalExecutor();
-        localExecutor.restoreAll( null );
+        localExecutor.restoreAll(null);
     }
 
     @Test
     public void backupPositive() throws Exception {
 
-        expect( EnvironmentHandler.getInstance() ).andReturn( mockEnvironmentHandler );
-        mockEnvironmentHandler.backup( TEST_COMPONENT_NAME, null, null );
+        expect(EnvironmentHandler.getInstance()).andReturn(mockEnvironmentHandler);
+        mockEnvironmentHandler.backup(TEST_COMPONENT_NAME, null, null);
 
         replayAll();
 
         LocalExecutor localExecutor = new LocalExecutor();
-        localExecutor.backup( TEST_COMPONENT_NAME, null, null );
+        localExecutor.backup(TEST_COMPONENT_NAME, null, null);
     }
 
     @Test
     public void backupAllPositive() throws Exception {
 
-        expect( EnvironmentHandler.getInstance() ).andReturn( mockEnvironmentHandler );
-        mockEnvironmentHandler.backupAll( null );
+        expect(EnvironmentHandler.getInstance()).andReturn(mockEnvironmentHandler);
+        mockEnvironmentHandler.backupAll(null);
 
         replayAll();
 
         LocalExecutor localExecutor = new LocalExecutor();
-        localExecutor.backupAll( null );
+        localExecutor.backupAll(null);
     }
 
     @Test
     public void waitUntilAllQueuesFinishPositive() throws Exception {
 
-        expect( MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller()) ).andReturn( mockMultiThreadedActionHandler );
+        expect(MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller())).andReturn(mockMultiThreadedActionHandler);
         mockMultiThreadedActionHandler.waitUntilAllQueuesFinish();
 
         replayAll();

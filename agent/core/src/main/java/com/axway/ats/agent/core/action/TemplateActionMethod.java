@@ -51,30 +51,30 @@ import com.axway.ats.log.model.CheckpointResult;
  */
 public class TemplateActionMethod extends ActionMethod {
 
-    private static Logger    log                  = Logger.getLogger( TemplateActionMethod.class );
+    private static Logger     log                  = Logger.getLogger(TemplateActionMethod.class);
 
-    private String           actionClassName;                                                      // the java class name
-    private String           actionMethodName;                                                     // the java method name
+    private String            actionClassName;                                                    // the java class name
+    private String            actionMethodName;                                                   // the java method name
 
-    private String[]         wantedXpathEntries;
-    private boolean          returnResponseBodyAsString;
+    private String[]          wantedXpathEntries;
+    private boolean           returnResponseBodyAsString;
 
-    private boolean          isLoggingInBatchMode = false;
+    private boolean           isLoggingInBatchMode = false;
 
     private final AtsDbLogger autoLogger;
 
     public TemplateActionMethod( String componentName, String actionName, String actionClassName,
                                  String actionMethodName, Method method, Class<?> actualClass ) {
 
-        super( componentName, actionName, method, actualClass );
+        super(componentName, actionName, method, actualClass);
 
         this.actionClassName = actionClassName;
         this.actionMethodName = actionMethodName;
         // Intentionally get logger from AbstractActionTask class so use the same logger for action start/end checkpoints.
         // Otherwise if using current class and changing additivity flag of TemplateActionMethod to false will disable checkpoint logging
-        this.autoLogger = AtsDbLogger.getLogger( AbstractActionTask.class.getName() );
+        this.autoLogger = AtsDbLogger.getLogger(AbstractActionTask.class.getName());
 
-        if( ActiveDbAppender.getCurrentInstance() != null ) {
+        if (ActiveDbAppender.getCurrentInstance() != null) {
             isLoggingInBatchMode = ActiveDbAppender.getCurrentInstance().isBatchMode();
         }
     }
@@ -99,34 +99,34 @@ public class TemplateActionMethod extends ActionMethod {
                                                           IllegalAccessException, InvocationTargetException,
                                                           ActionExecutionException {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "Executing '" + actionName + "' with arguments "
-                       + StringUtils.methodInputArgumentsToString( parameterValues ) );
+        if (log.isDebugEnabled()) {
+            log.debug("Executing '" + actionName + "' with arguments "
+                      + StringUtils.methodInputArgumentsToString(parameterValues));
         }
 
-        TemplateActionsResponseVerificationConfigurator responseVerificationConfigurator = ( TemplateActionsResponseVerificationConfigurator ) ThreadContext.getAttribute( ThreadContext.TEMPLATE_ACTION_VERIFICATION_CONFIGURATOR );
+        TemplateActionsResponseVerificationConfigurator responseVerificationConfigurator = (TemplateActionsResponseVerificationConfigurator) ThreadContext.getAttribute(ThreadContext.TEMPLATE_ACTION_VERIFICATION_CONFIGURATOR);
         String actionsXml = getActionsXml();
 
         //  insert any customer parameters into the thread scope map
-        for( int iParameter = 0; iParameter < parameterNames.size(); iParameter++ ) {
+        for (int iParameter = 0; iParameter < parameterNames.size(); iParameter++) {
 
             Object value = parameterValues[iParameter];
 
             // if the value is an object with more than one values, add them in a Queue
-            if( value != null && ( value instanceof Iterable || value.getClass().isArray() ) ) {
+            if (value != null && (value instanceof Iterable || value.getClass().isArray())) {
                 Queue<Object> queue = new LinkedList<Object>();
-                if( value instanceof Iterable ) {
-                    for( Object oneValue : ( Iterable<?> ) value ) {
-                        queue.add( oneValue );
+                if (value instanceof Iterable) {
+                    for (Object oneValue : (Iterable<?>) value) {
+                        queue.add(oneValue);
                     }
                 } else {
-                    for( Object oneValue : ( Object[] ) value ) {
-                        queue.add( oneValue );
+                    for (Object oneValue : (Object[]) value) {
+                        queue.add(oneValue);
                     }
                 }
                 value = queue;
             }
-            ThreadContext.setAttribute( parameterNames.get( iParameter ), value );
+            ThreadContext.setAttribute(parameterNames.get(iParameter), value);
         }
 
         long actionStartTimestamp = -1;
@@ -134,20 +134,20 @@ public class TemplateActionMethod extends ActionMethod {
         long totalTimeOfAllActionStepsBetweenReqAndResp = 0;
         Object objectToReturn = null;
         String checkpointName;
-        if( AbstractActionTask.REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS ) {
+        if (AbstractActionTask.REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS) {
             checkpointName = actionName + "-net";
         } else {
             checkpointName = actionName;
         }
         try {
-            log.info( "START running template actions from " + actionsXml );
+            log.info("START running template actions from " + actionsXml);
 
             actionStartTimestamp = System.currentTimeMillis();
-            if( isRegisterActionExecution() && !isLoggingInBatchMode ) {
-                autoLogger.startCheckpoint( checkpointName, "", actionStartTimestamp );
+            if (isRegisterActionExecution() && !isLoggingInBatchMode) {
+                autoLogger.startCheckpoint(checkpointName, "", actionStartTimestamp);
             }
 
-            XmlReader xmlReader = new XmlReader( actionsXml );
+            XmlReader xmlReader = new XmlReader(actionsXml);
             XmlUtilities xmlUtilities = new XmlUtilities();
 
             long xmlParsingTime = System.currentTimeMillis() - actionStartTimestamp;
@@ -156,21 +156,21 @@ public class TemplateActionMethod extends ActionMethod {
 
             int actionNum = 1;
             long currentTimeOfActionStepRequest;
-            NetworkingStopWatch stopWatch = new NetworkingStopWatch( actionMethodName );
-            while( xmlReader.goToNextAction() ) {
+            NetworkingStopWatch stopWatch = new NetworkingStopWatch(actionMethodName);
+            while (xmlReader.goToNextAction()) {
 
                 String actionStep = actionMethodName + "[" + actionNum + "]";
-                stopWatch.step0_SetNewContext( actionStep );
+                stopWatch.step0_SetNewContext(actionStep);
                 String httpUrl = xmlReader.getRequestHttpUrl();
                 String httpMethod = xmlReader.getRequestHttpMethod();
                 List<ActionHeader> httpHeaders = xmlReader.getRequestHttpHeaders();
 
                 // connect to the specified URL
-                HttpClient httpClient = new HttpClient( httpUrl, httpMethod, httpHeaders, stopWatch );
+                HttpClient httpClient = new HttpClient(httpUrl, httpMethod, httpHeaders, stopWatch);
                 // send HTTP request
                 String fileToSend = xmlReader.getRequestResourceFile();
-                httpClient.sendHttpRequest( actionStep, fileToSend,
-                                            xmlReader.hasParamsInRequestResourceFile() );
+                httpClient.sendHttpRequest(actionStep, fileToSend,
+                                           xmlReader.hasParamsInRequestResourceFile());
 
                 currentTimeOfActionStepRequest = stopWatch.getNetworkingTime();
                 // Measure and log time between last data sent and start of receive.
@@ -181,14 +181,14 @@ public class TemplateActionMethod extends ActionMethod {
                 ActionResponseObject expectedHttpResponseNode = xmlReader.getResponse();
                 // disconnect the connection
                 //                httpClient.disconnect(); // TODO: why this is needed. This is also before getting response
-                if( xmlReader.isLastAction()
-                    && ( wantedXpathEntries != null || returnResponseBodyAsString ) ) {
-                    if( returnResponseBodyAsString ) {
+                if (xmlReader.isLastAction()
+                    && (wantedXpathEntries != null || returnResponseBodyAsString)) {
+                    if (returnResponseBodyAsString) {
 
                         // this is the last action and user wants to extract the response content as string
-                        ActionParser actualHttpResponse = xmlUtilities.readActionResponse( httpClient,
-                                                                                           actionsXml,
-                                                                                           actionNum, true );
+                        ActionParser actualHttpResponse = xmlUtilities.readActionResponse(httpClient,
+                                                                                          actionsXml,
+                                                                                          actionNum, true);
                         String contentAsString = actualHttpResponse.getBodyContentAsString();
                         actualHttpResponse.cleanupMembers();
                         objectToReturn = contentAsString;
@@ -196,11 +196,11 @@ public class TemplateActionMethod extends ActionMethod {
                     } else {
 
                         // this is the last action and user wants to extract some data from the response
-                        ActionParser actualHttpResponse = xmlUtilities.readActionResponse( httpClient,
-                                                                                           actionsXml,
-                                                                                           actionNum, false );
-                        String[][] extractedXpathEntries = XmlUtilities.extractXpathEntries( null,
-                                                                                             wantedXpathEntries );
+                        ActionParser actualHttpResponse = xmlUtilities.readActionResponse(httpClient,
+                                                                                          actionsXml,
+                                                                                          actionNum, false);
+                        String[][] extractedXpathEntries = XmlUtilities.extractXpathEntries(null,
+                                                                                            wantedXpathEntries);
                         actualHttpResponse.cleanupMembers();
 
                         objectToReturn = extractedXpathEntries;
@@ -209,84 +209,84 @@ public class TemplateActionMethod extends ActionMethod {
 
                 } else {
                     // verify the received response
-                    xmlUtilities.verifyResponse( actionsXml, actionMethodName, actionNum,
-                                                 expectedHttpResponseNode, httpClient,
-                                                 responseVerificationConfigurator );
+                    xmlUtilities.verifyResponse(actionsXml, actionMethodName, actionNum,
+                                                expectedHttpResponseNode, httpClient,
+                                                responseVerificationConfigurator);
                 }
 
                 long currentTimeOfActionStepEnd = stopWatch.getNetworkingTime();
                 totalTimeOfAllActionStepsNet += currentTimeOfActionStepEnd;
                 totalTimeOfAllActionStepsBetweenReqAndResp += stopWatch.getTimeBetweenReqAndResponse();
 
-                if( HttpClient.logTimer.isTraceEnabled() ) {
-                    HttpClient.logTimer.trace( "This action step " + actionStep
-                                               + " time between end of send request and start of getting response time took "
-                                               + stopWatch.getTimeBetweenReqAndResponse() + " ms" );
-                    HttpClient.logTimer.trace( "This action step " + actionStep
-                                               + " response network time took " + ( currentTimeOfActionStepEnd
-                                                                                    - currentTimeOfActionStepRequest )
-                                               + " ms" );
-                    HttpClient.logTimer.trace( "This action step " + actionStep + " total network time took "
-                                               + currentTimeOfActionStepEnd + " ms" );
+                if (HttpClient.logTimer.isTraceEnabled()) {
+                    HttpClient.logTimer.trace("This action step " + actionStep
+                                              + " time between end of send request and start of getting response time took "
+                                              + stopWatch.getTimeBetweenReqAndResponse() + " ms");
+                    HttpClient.logTimer.trace("This action step " + actionStep
+                                              + " response network time took " + (currentTimeOfActionStepEnd
+                                                                                  - currentTimeOfActionStepRequest)
+                                              + " ms");
+                    HttpClient.logTimer.trace("This action step " + actionStep + " total network time took "
+                                              + currentTimeOfActionStepEnd + " ms");
                 }
 
                 actionNum++;
             }
 
-            if( isRegisterActionExecution() ) {
-                if( HttpClient.logTimer.isTraceEnabled() ) {
-                    HttpClient.logTimer.trace( "\t    Total net time: " + totalTimeOfAllActionStepsNet
-                                               + "(action " + actionsXml + ")| actionStartTimestamp : "
-                                               + ( actionStartTimestamp - xmlParsingTime )
-                                               + "| total time between Req and Resp: "
-                                               + totalTimeOfAllActionStepsBetweenReqAndResp );
+            if (isRegisterActionExecution()) {
+                if (HttpClient.logTimer.isTraceEnabled()) {
+                    HttpClient.logTimer.trace("\t    Total net time: " + totalTimeOfAllActionStepsNet
+                                              + "(action " + actionsXml + ")| actionStartTimestamp : "
+                                              + (actionStartTimestamp - xmlParsingTime)
+                                              + "| total time between Req and Resp: "
+                                              + totalTimeOfAllActionStepsBetweenReqAndResp);
                 }
-                if( isLoggingInBatchMode ) {
-                    autoLogger.insertCheckpoint( checkpointName, actionStartTimestamp - xmlParsingTime,
-                                                 totalTimeOfAllActionStepsNet, 0L /* transferSize */,
-                                                 "" /* unit name */, CheckpointResult.PASSED );
+                if (isLoggingInBatchMode) {
+                    autoLogger.insertCheckpoint(checkpointName, actionStartTimestamp - xmlParsingTime,
+                                                totalTimeOfAllActionStepsNet, 0L /* transferSize */,
+                                                "" /* unit name */, CheckpointResult.PASSED);
                 } else {
-                    autoLogger.endCheckpoint( checkpointName, 0L /* transferSize */, CheckpointResult.PASSED,
-                                              actionStartTimestamp - xmlParsingTime
-                                              /* the XML parsing time was previously added to the actionStartTimestamp (but after starting the Checkpoint) */
-                                                                                                              + totalTimeOfAllActionStepsNet );
+                    autoLogger.endCheckpoint(checkpointName, 0L /* transferSize */, CheckpointResult.PASSED,
+                                             actionStartTimestamp - xmlParsingTime
+                                             /* the XML parsing time was previously added to the actionStartTimestamp (but after starting the Checkpoint) */
+                                                                                                             + totalTimeOfAllActionStepsNet);
                 }
             }
-            log.info( "COMPLETE running template actions from " + actionsXml );
-        } catch( Exception e ) {
-            if( isRegisterActionExecution() ) {
-                if( isLoggingInBatchMode ) {
-                    autoLogger.insertCheckpoint( checkpointName, 0L /* response time */,
-                                                 CheckpointResult.FAILED );
+            log.info("COMPLETE running template actions from " + actionsXml);
+        } catch (Exception e) {
+            if (isRegisterActionExecution()) {
+                if (isLoggingInBatchMode) {
+                    autoLogger.insertCheckpoint(checkpointName, 0L /* response time */,
+                                                CheckpointResult.FAILED);
                 } else {
-                    autoLogger.endCheckpoint( checkpointName, 0L /* transfer size */,
-                                              CheckpointResult.FAILED );
+                    autoLogger.endCheckpoint(checkpointName, 0L /* transfer size */,
+                                             CheckpointResult.FAILED);
                 }
             }
-            throw new ActionExecutionException( "Error executing a template action", e );
+            throw new ActionExecutionException("Error executing a template action", e);
         }
 
-        if( AbstractActionTask.REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS ) {
+        if (AbstractActionTask.REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS) {
             // Time between end of request and start of response reading - could be enabled only for some detailed investigations
-            autoLogger.insertCheckpoint( actionName + "-betweenReqAndResp", actionStartTimestamp,
-                                         totalTimeOfAllActionStepsBetweenReqAndResp, 0L, null,
-                                         CheckpointResult.PASSED );
+            autoLogger.insertCheckpoint(actionName + "-betweenReqAndResp", actionStartTimestamp,
+                                        totalTimeOfAllActionStepsBetweenReqAndResp, 0L, null,
+                                        CheckpointResult.PASSED);
         }
 
-        return new CompositeResult( objectToReturn, totalTimeOfAllActionStepsNet );
+        return new CompositeResult(objectToReturn, totalTimeOfAllActionStepsNet);
     }
 
     private String getActionsXml() throws ActionExecutionException {
 
         String templateActionFilesHome = ConfigurationSettings.getInstance().getTemplateActionsFolder();
 
-        if( templateActionFilesHome == null ) {
-            throw new ActionExecutionException( "Cannot execute template actions as the "
-                                                + TemplateActionsConfigurator.AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY
-                                                + " configuration property is not set" );
+        if (templateActionFilesHome == null) {
+            throw new ActionExecutionException("Cannot execute template actions as the "
+                                               + TemplateActionsConfigurator.AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY
+                                               + " configuration property is not set");
         }
         // normalize the directory path for this system
-        templateActionFilesHome = IoUtils.normalizeDirPath( templateActionFilesHome );
+        templateActionFilesHome = IoUtils.normalizeDirPath(templateActionFilesHome);
 
         return templateActionFilesHome + componentName + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
                + actionClassName + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + actionMethodName + ".xml";

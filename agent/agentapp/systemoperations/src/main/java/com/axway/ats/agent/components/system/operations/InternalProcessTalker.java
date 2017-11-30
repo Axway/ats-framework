@@ -27,319 +27,319 @@ public class InternalProcessTalker extends CallerRelatedAction {
 
     public InternalProcessTalker( String caller ) {
 
-        super( caller );
+        super(caller);
     }
 
     @Action
     public String initProcessTalker(
-                                     @Parameter(name = "command") String command ) {
+                                     @Parameter( name = "command") String command ) {
 
         // Add a new instance into the repository and return its unique counter 
         // which will be used in next calls
-        return dataRepo.addObject( OBJECT_KEY_PREFIX, new LocalProcessTalker( command ) );
+        return dataRepo.addObject(OBJECT_KEY_PREFIX, new LocalProcessTalker(command));
     }
 
     @Action
     public void setCommand(
-                            @Parameter(name = "internalProcessId") String internalProcessId,
-                            @Parameter(name = "command") String command ) {
+                            @Parameter( name = "internalProcessId") String internalProcessId,
+                            @Parameter( name = "command") String command ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).setCommand( command );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).setCommand(command);
     }
 
     @Action
     public void setDefaultOperationTimeout(
-                                            @Parameter(name = "internalProcessId") String internalProcessId,
-                                            @Parameter(name = "defaultTimeoutSeconds") int defaultTimeoutSeconds ) {
+                                            @Parameter( name = "internalProcessId") String internalProcessId,
+                                            @Parameter( name = "defaultTimeoutSeconds") int defaultTimeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).setDefaultOperationTimeout( defaultTimeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).setDefaultOperationTimeout(defaultTimeoutSeconds);
     }
 
     @Action
     public String getPendingToMatchContent(
-                                            @Parameter(name = "internalProcessId") String internalProcessId ) {
+                                            @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).getPendingToMatchContent();
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).getPendingToMatchContent();
     }
 
     @Action
     public String getCurrentStandardOutContents(
-                                                 @Parameter(name = "internalProcessId") String internalProcessId ) {
+                                                 @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).getCurrentStandardOutContents();
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).getCurrentStandardOutContents();
     }
 
     @Action
     public String getCurrentStandardErrContents(
-                                                 @Parameter(name = "internalProcessId") String internalProcessId ) {
+                                                 @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).getCurrentStandardErrContents();
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).getCurrentStandardErrContents();
     }
 
     @Action
     public void expect(
-                        @Parameter(name = "internalProcessId") String internalProcessId,
-                        @Parameter(name = "pattern") String pattern ) {
+                        @Parameter( name = "internalProcessId") String internalProcessId,
+                        @Parameter( name = "pattern") String pattern ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expect( pattern );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expect(pattern);
     }
 
     @Action
     public void expectByRegex(
-                               @Parameter(name = "internalProcessId") String internalProcessId,
-                               @Parameter(name = "pattern") String pattern ) {
+                               @Parameter( name = "internalProcessId") String internalProcessId,
+                               @Parameter( name = "pattern") String pattern ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectByRegex( pattern );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectByRegex(pattern);
     }
 
     @Action
     public void expect(
-                        @Parameter(name = "internalProcessId") String internalProcessId,
-                        @Parameter(name = "pattern") String pattern,
-                        @Parameter(name = "timeoutSeconds") int timeoutSeconds ) {
+                        @Parameter( name = "internalProcessId") String internalProcessId,
+                        @Parameter( name = "pattern") String pattern,
+                        @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expect( pattern,
-                                                                                     timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expect(pattern,
+                                                                              timeoutSeconds);
     }
-    
+
     @Action
     public void expectErr(
-                        @Parameter(name = "internalProcessId" ) String internalProcessId,
-                        @Parameter(name = "pattern") String pattern,
-                        @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+                           @Parameter( name = "internalProcessId") String internalProcessId,
+                           @Parameter( name = "pattern") String pattern,
+                           @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectErr( pattern,
-                                                                                     timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectErr(pattern,
+                                                                                 timeoutSeconds);
     }
 
     @Action
     public void expectByRegex(
-                               @Parameter(name = "internalProcessId") String internalProcessId,
-                               @Parameter(name = "pattern") String pattern,
-                               @Parameter(name = "timeoutSeconds") int timeoutSeconds ) {
+                               @Parameter( name = "internalProcessId") String internalProcessId,
+                               @Parameter( name = "pattern") String pattern,
+                               @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectByRegex( pattern,
-                                                                                            timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectByRegex(pattern,
+                                                                                     timeoutSeconds);
     }
-    
+
     @Action
     public void expectErrByRegex(
-                               @Parameter(name = "internalProcessId" ) String internalProcessId,
-                               @Parameter(name = "pattern") String pattern,
-                               @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+                                  @Parameter( name = "internalProcessId") String internalProcessId,
+                                  @Parameter( name = "pattern") String pattern,
+                                  @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectErrByRegex( pattern,
-                                                                                            timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectErrByRegex(pattern,
+                                                                                        timeoutSeconds);
     }
 
     @Action
     public void expectClose(
-                             @Parameter(name = "internalProcessId") String internalProcessId ) {
+                             @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX + internalProcessId ) ).expectClose();
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).expectClose();
     }
 
     @Action
     public void expectClose(
-                             @Parameter(name = "internalProcessId") String internalProcessId,
-                             @Parameter(name = "timeOutSeconds") int timeOutSeconds ) {
+                             @Parameter( name = "internalProcessId") String internalProcessId,
+                             @Parameter( name = "timeOutSeconds") int timeOutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectClose( timeOutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectClose(timeOutSeconds);
     }
 
     @Action
     public void send(
-                      @Parameter(name = "internalProcessId") String internalProcessId,
-                      @Parameter(name = "text") String text ) {
+                      @Parameter( name = "internalProcessId") String internalProcessId,
+                      @Parameter( name = "text") String text ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX + internalProcessId ) ).send( text );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).send(text);
     }
 
     @Action
     public void sendEnterKey(
-                              @Parameter(name = "internalProcessId") String internalProcessId ) {
+                              @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX + internalProcessId ) ).sendEnterKey();
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).sendEnterKey();
     }
 
     @Action
     public void sendEnterKeyInLoop(
-                                    @Parameter(name = "internalProcessId") String internalProcessId,
-                                    @Parameter(name = "intermediatePattern") String intermediatePattern,
-                                    @Parameter(name = "finalPattern") String finalPattern,
-                                    @Parameter(name = "maxLoopTimes") int maxLoopTimes ) {
+                                    @Parameter( name = "internalProcessId") String internalProcessId,
+                                    @Parameter( name = "intermediatePattern") String intermediatePattern,
+                                    @Parameter( name = "finalPattern") String finalPattern,
+                                    @Parameter( name = "maxLoopTimes") int maxLoopTimes ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).sendEnterKeyInLoop( intermediatePattern,
-                                                                                                 finalPattern,
-                                                                                                 maxLoopTimes );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).sendEnterKeyInLoop(intermediatePattern,
+                                                                                          finalPattern,
+                                                                                          maxLoopTimes);
     }
 
     @Action
     public int expectAny(
-                          @Parameter(name = "internalProcessId") String internalProcessId,
-                          @Parameter(name = "patterns") String[] patterns ) {
+                          @Parameter( name = "internalProcessId") String internalProcessId,
+                          @Parameter( name = "patterns") String[] patterns ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).expectAny( patterns );
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).expectAny(patterns);
     }
 
     @Action
     public int expectAny(
-                          @Parameter(name = "internalProcessId") String internalProcessId,
-                          @Parameter(name = "patterns") String[] patterns,
-                          @Parameter(name = "timeoutSeconds") int timeoutSeconds ) {
+                          @Parameter( name = "internalProcessId") String internalProcessId,
+                          @Parameter( name = "patterns") String[] patterns,
+                          @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).expectAny( patterns,
-                                                                                               timeoutSeconds );
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).expectAny(patterns,
+                                                                                        timeoutSeconds);
     }
-    
+
     @Action
     public int expectErrAny(
-                          @Parameter(name = "internalProcessId" ) String internalProcessId,
-                          @Parameter(name = "patterns") String[] patterns,
-                          @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+                             @Parameter( name = "internalProcessId") String internalProcessId,
+                             @Parameter( name = "patterns") String[] patterns,
+                             @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).expectErrAny( patterns,
-                                                                                               timeoutSeconds );
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).expectErrAny(patterns,
+                                                                                           timeoutSeconds);
     }
 
     @Action
     public int expectAnyByRegex(
-                                 @Parameter(name = "internalProcessId") String internalProcessId,
-                                 @Parameter(name = "regexPatterns") String[] regexPatterns ) {
+                                 @Parameter( name = "internalProcessId") String internalProcessId,
+                                 @Parameter( name = "regexPatterns") String[] regexPatterns ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).expectAnyByRegex( regexPatterns );
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).expectAnyByRegex(regexPatterns);
     }
 
     @Action
     public int expectAnyByRegex(
-                                 @Parameter(name = "internalProcessId") String internalProcessId,
-                                 @Parameter(name = "regexPatterns") String[] regexPatterns,
-                                 @Parameter(name = "timeoutSeconds") int timeoutSeconds ) {
+                                 @Parameter( name = "internalProcessId") String internalProcessId,
+                                 @Parameter( name = "regexPatterns") String[] regexPatterns,
+                                 @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).expectAnyByRegex( regexPatterns,
-                                                                                                      timeoutSeconds );
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).expectAnyByRegex(regexPatterns,
+                                                                                               timeoutSeconds);
     }
-    
+
     @Action
     public int expectErrAnyByRegex(
-                                 @Parameter(name = "internalProcessId" ) String internalProcessId,
-                                 @Parameter(name = "regexPatterns") String[] regexPatterns,
-                                 @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+                                    @Parameter( name = "internalProcessId") String internalProcessId,
+                                    @Parameter( name = "regexPatterns") String[] regexPatterns,
+                                    @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).expectErrAnyByRegex( regexPatterns,
-                                                                                                      timeoutSeconds );
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).expectErrAnyByRegex(regexPatterns,
+                                                                                                  timeoutSeconds);
     }
 
     @Action
     public void expectAll(
-                           @Parameter(name = "internalProcessId") String internalProcessId,
-                           @Parameter(name = "patterns") String[] patterns ) {
+                           @Parameter( name = "internalProcessId") String internalProcessId,
+                           @Parameter( name = "patterns") String[] patterns ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectAll( patterns );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectAll(patterns);
     }
 
     @Action
     public void expectAll(
-                           @Parameter(name = "internalProcessId") String internalProcessId,
-                           @Parameter(name = "patterns") String[] patterns,
-                           @Parameter(name = "timeoutSeconds") int timeoutSeconds ) {
+                           @Parameter( name = "internalProcessId") String internalProcessId,
+                           @Parameter( name = "patterns") String[] patterns,
+                           @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectAll( patterns,
-                                                                                        timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectAll(patterns,
+                                                                                 timeoutSeconds);
     }
-    
+
     @Action
     public void expectErrAll(
-                           @Parameter(name = "internalProcessId" ) String internalProcessId,
-                           @Parameter(name = "patterns") String[] patterns,
-                           @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+                              @Parameter( name = "internalProcessId") String internalProcessId,
+                              @Parameter( name = "patterns") String[] patterns,
+                              @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectErrAll( patterns,
-                                                                                        timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectErrAll(patterns,
+                                                                                    timeoutSeconds);
     }
 
     @Action
     public void expectAllByRegex(
-                                  @Parameter(name = "internalProcessId") String internalProcessId,
-                                  @Parameter(name = "regexPatterns") String[] regexPatterns ) {
+                                  @Parameter( name = "internalProcessId") String internalProcessId,
+                                  @Parameter( name = "regexPatterns") String[] regexPatterns ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectAnyByRegex( regexPatterns );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectAnyByRegex(regexPatterns);
     }
 
     @Action
     public void expectAllByRegex(
-                                  @Parameter(name = "internalProcessId") String internalProcessId,
-                                  @Parameter(name = "regexPatterns") String[] regexPatterns,
-                                  @Parameter(name = "timeoutSeconds") int timeoutSeconds ) {
+                                  @Parameter( name = "internalProcessId") String internalProcessId,
+                                  @Parameter( name = "regexPatterns") String[] regexPatterns,
+                                  @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectAnyByRegex( regexPatterns,
-                                                                                               timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectAnyByRegex(regexPatterns,
+                                                                                        timeoutSeconds);
     }
-    
+
     @Action
     public void expectErrAllByRegex(
-                                  @Parameter(name = "internalProcessId" ) String internalProcessId,
-                                  @Parameter(name = "regexPatterns") String[] regexPatterns,
-                                  @Parameter(name = "timeoutSeconds") int timeoutSeconds) {
+                                     @Parameter( name = "internalProcessId") String internalProcessId,
+                                     @Parameter( name = "regexPatterns") String[] regexPatterns,
+                                     @Parameter( name = "timeoutSeconds") int timeoutSeconds ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).expectErrAnyByRegex( regexPatterns,
-                                                                                               timeoutSeconds );
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).expectErrAnyByRegex(regexPatterns,
+                                                                                           timeoutSeconds);
     }
 
     @Action
     public boolean isClosed(
-                             @Parameter(name = "internalProcessId") String internalProcessId ) {
+                             @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).isClosed();
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).isClosed();
     }
 
     @Action
     public int getExitValue(
-                             @Parameter(name = "internalProcessId") String internalProcessId ) {
+                             @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        return ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                            + internalProcessId ) ).getExitValue();
+        return ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                        + internalProcessId)).getExitValue();
     }
 
     @Action
     public void killExternalProcess(
-                                     @Parameter(name = "internalProcessId") String internalProcessId ) {
+                                     @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).killExternalProcess();
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).killExternalProcess();
     }
 
     @Action
     public void killExternalProcessWithChildren(
-                                                 @Parameter(name = "internalProcessId") String internalProcessId ) {
+                                                 @Parameter( name = "internalProcessId") String internalProcessId ) {
 
-        ( ( LocalProcessTalker ) dataRepo.getObject( OBJECT_KEY_PREFIX
-                                                     + internalProcessId ) ).killExternalProcessWithChildren();
+        ((LocalProcessTalker) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                 + internalProcessId)).killExternalProcessWithChildren();
     }
 }

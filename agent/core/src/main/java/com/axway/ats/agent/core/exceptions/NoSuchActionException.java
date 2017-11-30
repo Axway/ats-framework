@@ -19,12 +19,12 @@ package com.axway.ats.agent.core.exceptions;
  * Exception thrown when a call to a non-existent action
  * is made. 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchActionException extends AgentException {
 
     public NoSuchActionException( String actionName,
                                   String componentName ) {
 
-        super( "No action '" + actionName + "' has been defined for component " + componentName );
+        super("No action '" + actionName + "' has been defined for component " + componentName);
     }
 }

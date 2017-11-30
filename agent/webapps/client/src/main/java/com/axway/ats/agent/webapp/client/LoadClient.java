@@ -54,7 +54,7 @@ public class LoadClient {
     @PublicAtsApi
     public LoadClient() {
 
-        this( ( String[] ) null );
+        this((String[]) null);
     }
 
     /**
@@ -65,9 +65,9 @@ public class LoadClient {
     @PublicAtsApi
     public LoadClient( String atsAgent ) {
 
-        this( ( atsAgent != null )
-                                   ? new String[]{ atsAgent }
-                                   : null );
+        this( (atsAgent != null)
+                                 ? new String[]{ atsAgent }
+                                 : null);
     }
 
     /**
@@ -78,13 +78,13 @@ public class LoadClient {
     @PublicAtsApi
     public LoadClient( String[] atsAgents ) {
 
-        if( atsAgents == null ) {
+        if (atsAgents == null) {
             atsAgents = new String[0];
         }
 
         // add default port in case none is not provided by the user
-        atsAgents = HostUtils.getAtsAgentsIpAndPort( atsAgents );
-        this.loaderAddresses = new HashSet<String>( Arrays.asList( atsAgents ) );
+        atsAgents = HostUtils.getAtsAgentsIpAndPort(atsAgents);
+        this.loaderAddresses = new HashSet<String>(Arrays.asList(atsAgents));
 
         this.loaderDataConfig = new LoaderDataConfig();
     }
@@ -95,12 +95,12 @@ public class LoadClient {
      */
     protected void configureAgentLoaders() throws AgentException {
 
-        if( loaderAddresses.size() == 0 ) {
-            throw new ActionExecutionException( "No Agent loaders are defined to run actions on" );
+        if (loaderAddresses.size() == 0) {
+            throw new ActionExecutionException("No Agent loaders are defined to run actions on");
         }
 
-        if( actionQueue == null ) {
-            throw new ActionExecutionException( "The loader action queue is empty. You first need to start the queuing process and then execute the queued actions" );
+        if (actionQueue == null) {
+            throw new ActionExecutionException("The loader action queue is empty. You first need to start the queuing process and then execute the queued actions");
         }
     }
 
@@ -112,9 +112,9 @@ public class LoadClient {
     public void addLoaderHost( String agentLoader ) {
 
         // add default port in case none is not provided by the user
-        agentLoader = HostUtils.getAtsAgentIpAndPort( agentLoader );
+        agentLoader = HostUtils.getAtsAgentIpAndPort(agentLoader);
 
-        loaderAddresses.add( agentLoader );
+        loaderAddresses.add(agentLoader);
     }
 
     /**
@@ -137,7 +137,7 @@ public class LoadClient {
     public void addParameterDataConfigurator( ParameterDataConfig parameterDataConfig ) throws AgentException {
 
         parameterDataConfig.verifyDataConfig();
-        this.loaderDataConfig.addParameterConfig( parameterDataConfig );
+        this.loaderDataConfig.addParameterConfig(parameterDataConfig);
     }
 
     /**
@@ -148,7 +148,7 @@ public class LoadClient {
     public void startQueueing( String queueName ) {
 
         this.queueName = queueName;
-        actionQueue = ActionQueue.getNewInstance( this.loaderAddresses, queueName );
+        actionQueue = ActionQueue.getNewInstance(this.loaderAddresses, queueName);
         actionQueue.startQueueing();
     }
 
@@ -165,29 +165,29 @@ public class LoadClient {
         boolean isThereUsernameConfigurator = false;
         boolean isThereUsernameParam = false;
 
-        for( ParameterDataConfig dataConfig : loaderDataConfig.getParameterConfigurations() ) {
+        for (ParameterDataConfig dataConfig : loaderDataConfig.getParameterConfigurations()) {
 
             // check if UsernameDataConfigurator is used more than once
-            if( isThereUsernameConfigurator ) {
-                throw new ActionExecutionException( "You have used Username Data Configurator more than once. This is not allowed." );
+            if (isThereUsernameConfigurator) {
+                throw new ActionExecutionException("You have used Username Data Configurator more than once. This is not allowed.");
             }
 
-            if( dataConfig instanceof UsernameDataConfig ) {
+            if (dataConfig instanceof UsernameDataConfig) {
                 isThereUsernameConfigurator = true;
 
                 // user names are specified
-                ( ( UsernameDataConfig ) dataConfig ).verifyUsernamesAreWEnough( threadingPattern.getThreadCount() );
-            } else if( "username".equals( dataConfig.getParameterName() ) ) {
+                ((UsernameDataConfig) dataConfig).verifyUsernamesAreWEnough(threadingPattern.getThreadCount());
+            } else if ("username".equals(dataConfig.getParameterName())) {
                 isThereUsernameParam = true;
             }
         }
 
-        if( isThereUsernameConfigurator && isThereUsernameParam ) {
-            throw new ActionExecutionException( "The parameter \"username\" can not be used for another data configurator "
-                                                + "when Username data configurator is used." );
+        if (isThereUsernameConfigurator && isThereUsernameParam) {
+            throw new ActionExecutionException("The parameter \"username\" can not be used for another data configurator "
+                                               + "when Username data configurator is used.");
         }
 
-        actionQueue.executeQueuedActions( new ArrayList<String>( this.loaderAddresses ), threadingPattern,
-                                          loaderDataConfig );
+        actionQueue.executeQueuedActions(new ArrayList<String>(this.loaderAddresses), threadingPattern,
+                                         loaderDataConfig);
     }
 }

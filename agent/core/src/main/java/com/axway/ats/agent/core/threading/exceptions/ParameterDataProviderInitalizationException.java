@@ -20,11 +20,11 @@ import com.axway.ats.agent.core.exceptions.AgentException;
 /**
  * Exception thrown if a parameter data provider cannot be initialized
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ParameterDataProviderInitalizationException extends AgentException {
 
     public ParameterDataProviderInitalizationException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

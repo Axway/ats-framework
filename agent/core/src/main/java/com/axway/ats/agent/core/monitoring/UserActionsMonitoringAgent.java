@@ -32,10 +32,10 @@ import com.axway.ats.core.threads.ThreadsPerCaller;
  */
 public class UserActionsMonitoringAgent {
 
-    private static Logger                                  log                           = Logger.getLogger( UserActionsMonitoringAgent.class );
+    private static Logger                                  log       = Logger.getLogger(UserActionsMonitoringAgent.class);
 
     // instance for each remote caller
-    private static Map<String, UserActionsMonitoringAgent> instances                     = new HashMap<String, UserActionsMonitoringAgent>();
+    private static Map<String, UserActionsMonitoringAgent> instances = new HashMap<String, UserActionsMonitoringAgent>();
 
     // a map which remembers how many users are currently running a particular action
     private Map<String, Integer>                           runningActionsMap;
@@ -56,10 +56,10 @@ public class UserActionsMonitoringAgent {
     public static synchronized UserActionsMonitoringAgent getInstance(
                                                                        String caller ) {
 
-        UserActionsMonitoringAgent instance = instances.get( caller );
-        if( instance == null ) {
+        UserActionsMonitoringAgent instance = instances.get(caller);
+        if (instance == null) {
             instance = new UserActionsMonitoringAgent();
-            instances.put( caller, instance );
+            instances.put(caller, instance);
         }
         return instance;
     }
@@ -82,17 +82,17 @@ public class UserActionsMonitoringAgent {
                                  long startTimestamp,
                                  int pollInterval ) {
 
-        if( monitoringThread != null && monitoringThread.isAlive() ) {
-            log.warn( "The user activity monitor is running from a previous run. We will stop it now" );
+        if (monitoringThread != null && monitoringThread.isAlive()) {
+            log.warn("The user activity monitor is running from a previous run. We will stop it now");
 
             monitoringThread.interrupt();
         }
 
-        log.info( "Starting user activity monitor at intervals of " + pollInterval + " seconds" );
+        log.info("Starting user activity monitor at intervals of " + pollInterval + " seconds");
 
         resetTheMonitoringAgent();
 
-        monitoringThread = new MonitoringThread( startTimestamp, pollInterval );
+        monitoringThread = new MonitoringThread(startTimestamp, pollInterval);
         monitoringThread.start();
     }
 
@@ -103,8 +103,8 @@ public class UserActionsMonitoringAgent {
      */
     public void stopMonitoring() {
 
-        if( monitoringThread == null ) {
-            log.warn( "Stopping the user activity monitor is skipped as it was not running. Possible cause - not started yet or already stopped." );
+        if (monitoringThread == null) {
+            log.warn("Stopping the user activity monitor is skipped as it was not running. Possible cause - not started yet or already stopped.");
             resetTheMonitoringAgent();
             return;
         }
@@ -114,7 +114,7 @@ public class UserActionsMonitoringAgent {
 
         resetTheMonitoringAgent();
 
-        log.info( "Stopped user activity monitor" );
+        log.info("Stopped user activity monitor");
     }
 
     /**
@@ -128,12 +128,12 @@ public class UserActionsMonitoringAgent {
     public synchronized void actionStarted(
                                             String actionName ) {
 
-        if( monitoringThread != null ) {
-            Integer nRunning = runningActionsMap.get( actionName );
-            if( nRunning == null ) {
-                runningActionsMap.put( actionName, 1 );
+        if (monitoringThread != null) {
+            Integer nRunning = runningActionsMap.get(actionName);
+            if (nRunning == null) {
+                runningActionsMap.put(actionName, 1);
             } else {
-                runningActionsMap.put( actionName, nRunning + 1 );
+                runningActionsMap.put(actionName, nRunning + 1);
             }
         }
     }
@@ -149,9 +149,9 @@ public class UserActionsMonitoringAgent {
     public synchronized void actionEnded(
                                           String actionName ) {
 
-        if( monitoringThread != null ) {
-            Integer nRunning = runningActionsMap.get( actionName );
-            if( nRunning == null ) {
+        if (monitoringThread != null) {
+            Integer nRunning = runningActionsMap.get(actionName);
+            if (nRunning == null) {
                 /* We can not END this actions as it is not been STARTED
                  *
                  * This can be a normal situation if the test is aborted, the actions
@@ -161,7 +161,7 @@ public class UserActionsMonitoringAgent {
                  * is ending, so we come right here
                  */
             } else {
-                runningActionsMap.put( actionName, nRunning - 1 );
+                runningActionsMap.put(actionName, nRunning - 1);
             }
         }
     }
@@ -171,7 +171,7 @@ public class UserActionsMonitoringAgent {
      */
     private synchronized Map<String, Integer> getRunningActionsMapCopy() {
 
-        return new HashMap<String, Integer>( this.runningActionsMap );
+        return new HashMap<String, Integer>(this.runningActionsMap);
     }
 
     /**
@@ -187,7 +187,7 @@ public class UserActionsMonitoringAgent {
      */
     class MonitoringThread extends Thread {
 
-        private Logger    log = Logger.getLogger( MonitoringThread.class );
+        private Logger    log = Logger.getLogger(MonitoringThread.class);
 
         private long      currentTimestamp;
         private final int pollInterval;
@@ -202,32 +202,32 @@ public class UserActionsMonitoringAgent {
 
             this.callerId = ThreadsPerCaller.getCaller();
 
-            setName( "Monitoring_users-" + this.callerId );
+            setName("Monitoring_users-" + this.callerId);
         }
 
         @Override
         public void run() {
 
-            ThreadsPerCaller.registerThread( this.callerId );
+            ThreadsPerCaller.registerThread(this.callerId);
 
-            log.info( "Started monitoring user activity in intervals of " + pollInterval + " milliseconds" );
+            log.info("Started monitoring user activity in intervals of " + pollInterval + " milliseconds");
             try {
                 int lastPollTime = 0;
-                while( true ) {
+                while (true) {
 
                     // we don't measure, but we calculate the timestamp, so it is synchronized
                     // between all monitored machines
                     this.currentTimestamp += pollInterval;
 
                     int sleepTimeBeforeNextPoll = pollInterval - lastPollTime;
-                    if( sleepTimeBeforeNextPoll < 0 ) {
+                    if (sleepTimeBeforeNextPoll < 0) {
                         // we get here when the last poll took longer than the user provided poll interval
                         sleepTimeBeforeNextPoll = 0;
-                        log.warn( "Last poll time took longer than the poll interval."
-                                  + " Details: last poll time " + lastPollTime + " ms, poll interval is "
-                                  + pollInterval + " ms" );
+                        log.warn("Last poll time took longer than the poll interval."
+                                 + " Details: last poll time " + lastPollTime + " ms, poll interval is "
+                                 + pollInterval + " ms");
                     }
-                    Thread.sleep( sleepTimeBeforeNextPoll );
+                    Thread.sleep(sleepTimeBeforeNextPoll);
 
                     long startPollingTime = System.currentTimeMillis();
 
@@ -238,15 +238,15 @@ public class UserActionsMonitoringAgent {
 
                     // register how many users run each action
                     Map<String, Integer> lastRunningActionsMapChunks = getRunningActionsMapCopy();
-                    for( Entry<String, Integer> actionMapChunk : lastRunningActionsMapChunks.entrySet() ) {
+                    for (Entry<String, Integer> actionMapChunk : lastRunningActionsMapChunks.entrySet()) {
 
                         int usersRunningThisAction = actionMapChunk.getValue();
 
-                        ReadingBean newReadingBean = new ReadingBean( null,
-                                                                      "[users] " + actionMapChunk.getKey(),
-                                                                      "Count" );
-                        newReadingBean.setValue( String.valueOf( usersRunningThisAction ) );
-                        newReadingBeans.add( newReadingBean );
+                        ReadingBean newReadingBean = new ReadingBean(null,
+                                                                     "[users] " + actionMapChunk.getKey(),
+                                                                     "Count");
+                        newReadingBean.setValue(String.valueOf(usersRunningThisAction));
+                        newReadingBeans.add(newReadingBean);
 
                         totalUserActions += usersRunningThisAction;
 
@@ -254,29 +254,28 @@ public class UserActionsMonitoringAgent {
 
                     // register the total number of users, we always have this statistic
                     String totalUsers = "Total";
-                    ReadingBean newTotalUsersReadingBean = new ReadingBean( null,
-                                                                                    "[users] "
-                                                                                          + totalUsers,
-                                                                                    "Count" );
+                    ReadingBean newTotalUsersReadingBean = new ReadingBean(null,
+                                                                           "[users] "
+                                                                                 + totalUsers,
+                                                                           "Count");
 
-                    newTotalUsersReadingBean.setValue( String.valueOf( totalUserActions ) );
-                    newReadingBeans.add( newTotalUsersReadingBean );
+                    newTotalUsersReadingBean.setValue(String.valueOf(totalUserActions));
+                    newReadingBeans.add(newTotalUsersReadingBean);
 
+                    MonitorResults newMonitorResults = new MonitorResults(currentTimestamp,
+                                                                          newReadingBeans);
 
-                    MonitorResults newMonitorResults = new MonitorResults( currentTimestamp,
-                                                                           newReadingBeans );
+                    lastPollTime = (int) (System.currentTimeMillis() - startPollingTime);
 
-                    lastPollTime = ( int ) ( System.currentTimeMillis() - startPollingTime );
-                    
                     // log the results in the DB
-                    UserActivityLoggingUtils.logCollectedResults( agentAddress, newMonitorResults );
+                    UserActivityLoggingUtils.logCollectedResults(agentAddress, newMonitorResults);
 
                 }
-            } catch( InterruptedException e ) {
+            } catch (InterruptedException e) {
                 // we have been stopped, this is expected
-                log.info( "Stopped monitoring the user activity" );
-            } catch( Exception e ) {
-                log.error( "User activity monitoring is aborted due to unexpected error", e );
+                log.info("Stopped monitoring the user activity");
+            } catch (Exception e) {
+                log.error("User activity monitoring is aborted due to unexpected error", e);
             } finally {
                 ThreadsPerCaller.unregisterThread();
             }

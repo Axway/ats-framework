@@ -46,7 +46,7 @@ public class ActionMethodContainer {
     //init the custom type comparison rules
     static {
         customComparisonRules = new ArrayList<TypeComparisonRule>();
-        customComparisonRules.add( new StringToEnumRule() );
+        customComparisonRules.add(new StringToEnumRule());
     }
 
     /**
@@ -70,36 +70,36 @@ public class ActionMethodContainer {
     public boolean add( ActionMethod actionMethod ) throws ActionAlreadyDefinedException {
 
         // if there is at least one method check for ambiguity
-        if( actionMethods.size() > 0 ) {
+        if (actionMethods.size() > 0) {
 
             Class<?>[] newMethodParamTypes = actionMethod.getMethod().getParameterTypes();
 
             //find the action method implementation based on the arguments
-            MethodFinder methodFinder = new MethodFinder( "methods for action " + actionName, getMethods(),
-                                                          customComparisonRules );
+            MethodFinder methodFinder = new MethodFinder("methods for action " + actionName, getMethods(),
+                                                         customComparisonRules);
 
             //get the most specific method which accepts these parameters
             try {
-                Method mostSpecificMethod = methodFinder.findMethod( newMethodParamTypes );
+                Method mostSpecificMethod = methodFinder.findMethod(newMethodParamTypes);
 
                 //if the most specific method accepts the same parameters as our method
                 //then we have ambiguity, which should not be allowed
-                if( Arrays.equals( newMethodParamTypes, mostSpecificMethod.getParameterTypes() ) ) {
-                    throw new ActionAlreadyDefinedException( actionName, componentName, mostSpecificMethod );
+                if (Arrays.equals(newMethodParamTypes, mostSpecificMethod.getParameterTypes())) {
+                    throw new ActionAlreadyDefinedException(actionName, componentName, mostSpecificMethod);
                 }
 
-            } catch( NoSuchMethodException e ) {
+            } catch (NoSuchMethodException e) {
                 //method which accepts there argument does not exist, we can safely add it
 
-            } catch( AmbiguousMethodException e ) {
+            } catch (AmbiguousMethodException e) {
                 //this should not happen, as there cannot be ambiguity between two method parameters,
                 //unless they are exactly the same, which we don't allow to happen
-                throw new RuntimeException( "AmbiguousMethodException caught while searching for action methods" );
+                throw new RuntimeException("AmbiguousMethodException caught while searching for action methods");
             }
         }
 
         //add the action method
-        return actionMethods.add( actionMethod );
+        return actionMethods.add(actionMethod);
     }
 
     /**
@@ -112,31 +112,31 @@ public class ActionMethodContainer {
     public ActionMethod get( Class<?>[] argTypes ) throws NoCompatibleMethodFoundException {
 
         //find the action method implementation based on the arguments
-        MethodFinder methodFinder = new MethodFinder( "methods for action " + actionName, getMethods(),
-                                                      customComparisonRules );
+        MethodFinder methodFinder = new MethodFinder("methods for action " + actionName, getMethods(),
+                                                     customComparisonRules);
         try {
-            Method implementingMethod = methodFinder.findMethod( argTypes );
-            for( ActionMethod actionMethod : actionMethods ) {
-                if( actionMethod.getMethod().equals( implementingMethod ) ) {
+            Method implementingMethod = methodFinder.findMethod(argTypes);
+            for (ActionMethod actionMethod : actionMethods) {
+                if (actionMethod.getMethod().equals(implementingMethod)) {
 
                     //we found the proper method, so return it for execution
                     return actionMethod;
                 }
             }
-        } catch( NoSuchMethodException e ) {
+        } catch (NoSuchMethodException e) {
             //obviously no method which accepts these argument has been found
-            throw new NoCompatibleMethodFoundException( "Could not find compatible action method", argTypes,
-                                                        actionMethods, componentName, actionName );
+            throw new NoCompatibleMethodFoundException("Could not find compatible action method", argTypes,
+                                                       actionMethods, componentName, actionName);
 
-        } catch( AmbiguousMethodException e ) {
+        } catch (AmbiguousMethodException e) {
             //there was more than one method matching the given arguments, and not one of them was specific enough
-            throw new NoCompatibleMethodFoundException( "Ambigous methods", argTypes, actionMethods,
-                                                        componentName, actionName );
+            throw new NoCompatibleMethodFoundException("Ambigous methods", argTypes, actionMethods,
+                                                       componentName, actionName);
         }
 
         //should never happen, but just in case
-        throw new NoCompatibleMethodFoundException( "Could not find compatible action method", argTypes,
-                                                    actionMethods, componentName, actionName );
+        throw new NoCompatibleMethodFoundException("Could not find compatible action method", argTypes,
+                                                   actionMethods, componentName, actionName);
     }
 
     /**
@@ -145,8 +145,8 @@ public class ActionMethodContainer {
     private List<Method> getMethods() {
 
         ArrayList<Method> methods = new ArrayList<Method>();
-        for( ActionMethod actionMethod : actionMethods ) {
-            methods.add( actionMethod.getMethod() );
+        for (ActionMethod actionMethod : actionMethods) {
+            methods.add(actionMethod.getMethod());
         }
 
         return methods;
@@ -154,13 +154,13 @@ public class ActionMethodContainer {
 
     public ActionMethodContainer getNewCopy() {
 
-        ActionMethodContainer newActionMethodContainer = new ActionMethodContainer( this.componentName,
-                                                                                    this.actionName );
+        ActionMethodContainer newActionMethodContainer = new ActionMethodContainer(this.componentName,
+                                                                                   this.actionName);
 
-        for( ActionMethod actionMethod : this.actionMethods ) {
+        for (ActionMethod actionMethod : this.actionMethods) {
             try {
-                newActionMethodContainer.add( actionMethod.getNewCopy() );
-            } catch( ActionAlreadyDefinedException e ) {
+                newActionMethodContainer.add(actionMethod.getNewCopy());
+            } catch (ActionAlreadyDefinedException e) {
                 /*
                  * This cannot happen, because this action was already verified
                  * to be OK when loaded for first time for the default agent component

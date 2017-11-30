@@ -74,7 +74,7 @@ import com.axway.ats.core.filesystem.LocalFileSystemOperations;
  */
 public class XmlUtilities {
 
-    private static final Logger   log                              = Logger.getLogger( XmlUtilities.class );
+    private static final Logger   log                              = Logger.getLogger(XmlUtilities.class);
 
     public static final int       MAX_RESPONSE_BODY_BYTES_TO_PRINT = 512 * 1024;
 
@@ -91,12 +91,12 @@ public class XmlUtilities {
 
         Boolean templateActionsMatchFilesBySize = ConfigurationSettings.getInstance()
                                                                        .isTemplateActionsMatchFilesBySize();
-        if( templateActionsMatchFilesBySize != null ) {
+        if (templateActionsMatchFilesBySize != null) {
             matchFilesBySize = templateActionsMatchFilesBySize.booleanValue();
         }
         Boolean templateActionsMatchFilesByContent = ConfigurationSettings.getInstance()
                                                                           .isTemplateActionsMatchFilesByContent();
-        if( templateActionsMatchFilesByContent != null ) {
+        if (templateActionsMatchFilesByContent != null) {
             matchFilesByContent = templateActionsMatchFilesByContent.booleanValue();
         }
     }
@@ -104,9 +104,9 @@ public class XmlUtilities {
     public static Node getFirstChildNode( Node parentNode, String childNodeName ) {
 
         NodeList childrenNodes = parentNode.getChildNodes();
-        for( int iChildren = 0; iChildren < childrenNodes.getLength(); iChildren++ ) {
-            Node childNode = childrenNodes.item( iChildren );
-            if( childNodeName.equalsIgnoreCase( childNode.getNodeName() ) ) {
+        for (int iChildren = 0; iChildren < childrenNodes.getLength(); iChildren++) {
+            Node childNode = childrenNodes.item(iChildren);
+            if (childNodeName.equalsIgnoreCase(childNode.getNodeName())) {
                 return childNode;
             }
         }
@@ -116,9 +116,9 @@ public class XmlUtilities {
     public String getNodeAttribute( Node node, String attributeName ) {
 
         NamedNodeMap attMap = node.getAttributes();
-        for( int i = 0; i < attMap.getLength(); i++ ) {
-            Node attNode = attMap.item( i );
-            if( attributeName.equalsIgnoreCase( attNode.getNodeName() ) ) {
+        for (int i = 0; i < attMap.getLength(); i++) {
+            Node attNode = attMap.item(i);
+            if (attributeName.equalsIgnoreCase(attNode.getNodeName())) {
                 return attNode.getNodeValue();
             }
         }
@@ -134,23 +134,23 @@ public class XmlUtilities {
      */
     public String applyUserParametersInCookieHeader( String cookiesToModify ) {
 
-        StringBuffer newCookiesString = new StringBuffer( cookiesToModify.length() );
-        Matcher cookieMatcher = HeaderMatcher.COOKIE_VALUE_PATTERN.matcher( cookiesToModify );
-        while( cookieMatcher.find() ) {
-            String cookieName = cookieMatcher.group( 1 );
-            if( cookieName != null ) {
+        StringBuffer newCookiesString = new StringBuffer(cookiesToModify.length());
+        Matcher cookieMatcher = HeaderMatcher.COOKIE_VALUE_PATTERN.matcher(cookiesToModify);
+        while (cookieMatcher.find()) {
+            String cookieName = cookieMatcher.group(1);
+            if (cookieName != null) {
 
-                Object newCookieValue = ThreadContext.getAttribute( ThreadContext.COOKIE_VAR_PREFFIX
-                                                                    + cookieName );
-                if( newCookieValue != null
-                    && !HeaderMatcher.COOKIE_ATTRIBUTE_NAMES_TO_SKIP.contains( cookieName.toLowerCase() ) ) {
+                Object newCookieValue = ThreadContext.getAttribute(ThreadContext.COOKIE_VAR_PREFFIX
+                                                                   + cookieName);
+                if (newCookieValue != null
+                    && !HeaderMatcher.COOKIE_ATTRIBUTE_NAMES_TO_SKIP.contains(cookieName.toLowerCase())) {
 
-                    cookieMatcher.appendReplacement( newCookiesString,
-                                                     "$1=\"" + newCookieValue.toString() + "\"" );
+                    cookieMatcher.appendReplacement(newCookiesString,
+                                                    "$1=\"" + newCookieValue.toString() + "\"");
                 }
             }
         }
-        cookieMatcher.appendTail( newCookiesString );
+        cookieMatcher.appendTail(newCookiesString);
 
         return newCookiesString.toString();
     }
@@ -165,50 +165,50 @@ public class XmlUtilities {
      */
     public static String applyUserParameters( String stringToModify ) throws XmlUtilitiesException {
 
-        StringBuilder sb = new StringBuilder( stringToModify );
+        StringBuilder sb = new StringBuilder(stringToModify);
 
         int paramStartIndex = -1;
-        for( String key : ThreadContext.getAttributeNames() ) {
+        for (String key : ThreadContext.getAttributeNames()) {
 
             String paramName = "${" + key + "}";
-            paramStartIndex = sb.indexOf( paramName );
-            if( paramStartIndex > -1 ) {
+            paramStartIndex = sb.indexOf(paramName);
+            if (paramStartIndex > -1) {
 
-                Object paramValue = ThreadContext.getAttribute( key );
-                if( paramValue instanceof Queue<?> ) {
+                Object paramValue = ThreadContext.getAttribute(key);
+                if (paramValue instanceof Queue<?>) {
 
-                    Queue<?> valuesQueue = ( Queue<?> ) paramValue;
-                    while( ( paramStartIndex = sb.indexOf( paramName, paramStartIndex ) ) > -1 ) {
+                    Queue<?> valuesQueue = (Queue<?>) paramValue;
+                    while ( (paramStartIndex = sb.indexOf(paramName, paramStartIndex)) > -1) {
 
                         // replace the first occurrence of the parameter and remove its value from the Queue
                         Object value = valuesQueue.poll();
-                        if( value == null ) {
+                        if (value == null) {
 
-                            throw new XmlUtilitiesException( "The number of parameters " + paramName
-                                                             + " is more than the number of provided values for them." );
+                            throw new XmlUtilitiesException("The number of parameters " + paramName
+                                                            + " is more than the number of provided values for them.");
                         }
-                        sb.replace( paramStartIndex, paramStartIndex + paramName.length(), value.toString() );
+                        sb.replace(paramStartIndex, paramStartIndex + paramName.length(), value.toString());
                     }
 
                 } else {
 
-                    while( ( paramStartIndex = sb.indexOf( paramName, paramStartIndex ) ) > -1 ) {
+                    while ( (paramStartIndex = sb.indexOf(paramName, paramStartIndex)) > -1) {
 
-                        sb.replace( paramStartIndex, paramStartIndex + paramName.length(),
-                                    paramValue.toString() );
+                        sb.replace(paramStartIndex, paramStartIndex + paramName.length(),
+                                   paramValue.toString());
                     }
                 }
             }
         }
 
-        while( ( paramStartIndex = sb.indexOf( "${", paramStartIndex ) ) > -1 ) {
+        while ( (paramStartIndex = sb.indexOf("${", paramStartIndex)) > -1) {
 
-            if( sb.indexOf( "}", paramStartIndex ) > -1 && sb.charAt( paramStartIndex + 2 ) != '=' ) {
+            if (sb.indexOf("}", paramStartIndex) > -1 && sb.charAt(paramStartIndex + 2) != '=') {
 
                 // TODO - change to warn after detailed review. Currently it seems this method is applied before new parameters extraction
-                log.info( "Currently there is no value to replace parameter "
-                          + sb.substring( paramStartIndex, sb.indexOf( "}", paramStartIndex ) + 1 )
-                          + ". Increase HttpClient's logging severity to 'TRACE' in order to see the current request data." );
+                log.info("Currently there is no value to replace parameter "
+                         + sb.substring(paramStartIndex, sb.indexOf("}", paramStartIndex) + 1)
+                         + ". Increase HttpClient's logging severity to 'TRACE' in order to see the current request data.");
             }
             paramStartIndex++;
         }
@@ -225,11 +225,11 @@ public class XmlUtilities {
      */
     public static String[][] extractXpathEntries( Node node, String[] wantedXpathEntries ) throws Exception {
 
-        List<String[]> values = new ArrayList<String[]>( wantedXpathEntries.length );
-        for( String expression : wantedXpathEntries ) {
-            values.add( getByXpath( node, expression ) );
+        List<String[]> values = new ArrayList<String[]>(wantedXpathEntries.length);
+        for (String expression : wantedXpathEntries) {
+            values.add(getByXpath(node, expression));
         }
-        return values.toArray( new String[values.size()][] );
+        return values.toArray(new String[values.size()][]);
     }
 
     /**
@@ -244,11 +244,11 @@ public class XmlUtilities {
                             ActionResponseObject expectedHttpResponseObject, HttpClient httpClient,
                             TemplateActionsResponseVerificationConfigurator responseVerificationConfigurator ) throws Exception {
 
-        ActionParser actualHttpResponse = readActionResponse( httpClient, actionsXml,
-                                                              currentActionRequestNumber, false );
-        if( HttpClient.log.isTraceEnabled() ) {
+        ActionParser actualHttpResponse = readActionResponse(httpClient, actionsXml,
+                                                             currentActionRequestNumber, false);
+        if (HttpClient.log.isTraceEnabled()) {
             String causeMsg = "Print response for debugging purposes";
-            logActualResponse( causeMsg, actionName, currentActionRequestNumber, actualHttpResponse, false );
+            logActualResponse(causeMsg, actionName, currentActionRequestNumber, actualHttpResponse, false);
         }
 
         // stepMatchers now are after reading response so not to influence StopWatches
@@ -256,39 +256,39 @@ public class XmlUtilities {
         List<ResponseMatcher> stepMatchers = new ArrayList<ResponseMatcher>();
 
         // add all matchers from the XML file
-        List<XPathBodyMatcher> xpathBodyMatchers = applyUserParameters( expectedHttpResponseObject.getXpathBodyMatchers() );
-        stepMatchers.addAll( xpathBodyMatchers );
+        List<XPathBodyMatcher> xpathBodyMatchers = applyUserParameters(expectedHttpResponseObject.getXpathBodyMatchers());
+        stepMatchers.addAll(xpathBodyMatchers);
 
         // add all matchers from the test case
-        TemplateActionResponseVerificator responseVerificator = responseVerificationConfigurator.getActionVerificator( actionName );
-        if( responseVerificator != null ) {
+        TemplateActionResponseVerificator responseVerificator = responseVerificationConfigurator.getActionVerificator(actionName);
+        if (responseVerificator != null) {
             // there is a verificator for this action
-            stepMatchers.addAll( responseVerificator.getStepBodyMatchers( currentActionRequestNumber ) );
+            stepMatchers.addAll(responseVerificator.getStepBodyMatchers(currentActionRequestNumber));
         }
 
         try {
             // Compare HTTP response code
             String expectedResponseResult = expectedHttpResponseObject.getResponseResult();
-            String actualResponseResult = getFirstChildNode( actualHttpResponse.getActionNodeWithoutBody(),
-                                                             TOKEN_HTTP_RESPONSE_RESULT ).getTextContent();
-            if( !expectedResponseResult.equalsIgnoreCase( actualResponseResult ) ) {
+            String actualResponseResult = getFirstChildNode(actualHttpResponse.getActionNodeWithoutBody(),
+                                                            TOKEN_HTTP_RESPONSE_RESULT).getTextContent();
+            if (!expectedResponseResult.equalsIgnoreCase(actualResponseResult)) {
 
                 String causeMsg = "Expected response result '" + expectedResponseResult
                                   + "' is different than the actual '" + actualResponseResult + "'.";
-                logActualResponse( causeMsg, actionName, currentActionRequestNumber, actualHttpResponse,
-                                   true );
-                throw new XmlUtilitiesException( causeMsg );
+                logActualResponse(causeMsg, actionName, currentActionRequestNumber, actualHttpResponse,
+                                  true);
+                throw new XmlUtilitiesException(causeMsg);
             }
 
             // Compare response headers. It extracts any user parameters if present in the headers.
-            verifyResponseHeaders( actionName, currentActionRequestNumber,
-                                   expectedHttpResponseObject.getHttpHeaderMatchers(), actualHttpResponse,
-                                   responseVerificationConfigurator );
+            verifyResponseHeaders(actionName, currentActionRequestNumber,
+                                  expectedHttpResponseObject.getHttpHeaderMatchers(), actualHttpResponse,
+                                  responseVerificationConfigurator);
 
             // Compare response files
-            verifyResponseFile( expectedHttpResponseObject, actualHttpResponse.getActionNodeWithoutBody() );
+            verifyResponseFile(expectedHttpResponseObject, actualHttpResponse.getActionNodeWithoutBody());
 
-            if( !stepMatchers.isEmpty() ) {
+            if (!stepMatchers.isEmpty()) {
 
                 // TODO verify the response body here
             }
@@ -296,7 +296,7 @@ public class XmlUtilities {
             actualHttpResponse.cleanupMembers();
         }
 
-        log.info( actionName + "[" + currentActionRequestNumber + "] -> " + "Verified HTTP response" );
+        log.info(actionName + "[" + currentActionRequestNumber + "] -> " + "Verified HTTP response");
     }
 
     /**
@@ -309,36 +309,36 @@ public class XmlUtilities {
 
         List<Node> significantHeaders = new ArrayList<Node>();
 
-        Node[] allHeaders = getChildrenNodes( responseNode, TOKEN_HTTP_HEADER );
-        for( Node header : allHeaders ) {
-            String headerName = getNodeAttribute( header, TOKEN_HEADER_NAME_ATTRIBUTE );
-            if( HttpClient.log.isTraceEnabled() ) {
-                HttpClient.log.trace( "header found: '" + headerName + "', value: '"
-                                      + getNodeAttribute( header, TOKEN_HEADER_VALUE_ATTRIBUTE ) + "'" );
+        Node[] allHeaders = getChildrenNodes(responseNode, TOKEN_HTTP_HEADER);
+        for (Node header : allHeaders) {
+            String headerName = getNodeAttribute(header, TOKEN_HEADER_NAME_ATTRIBUTE);
+            if (HttpClient.log.isTraceEnabled()) {
+                HttpClient.log.trace("header found: '" + headerName + "', value: '"
+                                     + getNodeAttribute(header, TOKEN_HEADER_VALUE_ATTRIBUTE) + "'");
             }
 
             // Set-Cookie must always be a significant header
-            if( headerName.equalsIgnoreCase( HeaderMatcher.SET_COOKIE_HEADER_NAME ) ) {
-                significantHeaders.add( header );
+            if (headerName.equalsIgnoreCase(HeaderMatcher.SET_COOKIE_HEADER_NAME)) {
+                significantHeaders.add(header);
                 continue;
             }
 
             boolean isSignificantHeader = true;
-            for( String nonSignificantHeader : TemplateActionsXmlDefinitions.NON_SIGNIFICANT_HEADERS ) {
-                if( headerName.equalsIgnoreCase( nonSignificantHeader ) ) {
+            for (String nonSignificantHeader : TemplateActionsXmlDefinitions.NON_SIGNIFICANT_HEADERS) {
+                if (headerName.equalsIgnoreCase(nonSignificantHeader)) {
                     isSignificantHeader = false;
-                    if( HttpClient.log.isTraceEnabled() ) {
-                        HttpClient.log.trace( "header '" + headerName
-                                              + "' not loaded from XML file as it is a not important one" );
+                    if (HttpClient.log.isTraceEnabled()) {
+                        HttpClient.log.trace("header '" + headerName
+                                             + "' not loaded from XML file as it is a not important one");
                     }
                     break;
                 }
             }
-            if( isSignificantHeader ) {
-                significantHeaders.add( header );
+            if (isSignificantHeader) {
+                significantHeaders.add(header);
             }
         }
-        return significantHeaders.toArray( new Node[significantHeaders.size()] );
+        return significantHeaders.toArray(new Node[significantHeaders.size()]);
     }
 
     /**
@@ -352,13 +352,13 @@ public class XmlUtilities {
         StringWriter sw = new StringWriter();
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty( OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "4" );
-            transformer.setOutputProperty( OutputPropertiesFactory.S_KEY_LINE_SEPARATOR, "\n" );
-            transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-            transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
-            transformer.transform( new DOMSource( node ), new StreamResult( sw ) );
-        } catch( TransformerException te ) {
-            throw new XmlUtilitiesException( "Error transforming XML node to String", te );
+            transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "4");
+            transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_LINE_SEPARATOR, "\n");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.transform(new DOMSource(node), new StreamResult(sw));
+        } catch (TransformerException te) {
+            throw new XmlUtilitiesException("Error transforming XML node to String", te);
         }
         return sw.toString().trim();
     }
@@ -374,9 +374,9 @@ public class XmlUtilities {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            return db.parse( new ByteArrayInputStream( xmlString.getBytes() ) );
-        } catch( Exception e ) {
-            throw new XmlUtilitiesException( "Error transforming String to XML document", e );
+            return db.parse(new ByteArrayInputStream(xmlString.getBytes()));
+        } catch (Exception e) {
+            throw new XmlUtilitiesException("Error transforming String to XML document", e);
         }
     }
 
@@ -384,20 +384,20 @@ public class XmlUtilities {
 
         List<Node> childrenList = new ArrayList<Node>();
         NodeList childrenNodes = parentNode.getChildNodes();
-        for( int iChildren = 0; iChildren < childrenNodes.getLength(); iChildren++ ) {
-            Node childNode = childrenNodes.item( iChildren );
-            if( childNode.getNodeType() == Node.ELEMENT_NODE ) {
-                if( childrenName == null ) {
+        for (int iChildren = 0; iChildren < childrenNodes.getLength(); iChildren++) {
+            Node childNode = childrenNodes.item(iChildren);
+            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                if (childrenName == null) {
                     // get all children
-                    childrenList.add( childNode );
-                } else if( childNode.getNodeName().equalsIgnoreCase( childrenName ) ) {
+                    childrenList.add(childNode);
+                } else if (childNode.getNodeName().equalsIgnoreCase(childrenName)) {
                     // get children with specified name only
-                    childrenList.add( childNode );
+                    childrenList.add(childNode);
                 }
             }
         }
 
-        return childrenList.toArray( new Node[childrenList.size()] );
+        return childrenList.toArray(new Node[childrenList.size()]);
     }
 
     /**
@@ -416,13 +416,13 @@ public class XmlUtilities {
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document dom = db.newDocument();
 
-        Node httpActions = dom.createElement( TOKEN_HTTP_ACTIONS );
-        dom.appendChild( httpActions );
-        Node httpAction = dom.createElement( TOKEN_HTTP_ACTION );
-        httpActions.appendChild( httpAction );
+        Node httpActions = dom.createElement(TOKEN_HTTP_ACTIONS);
+        dom.appendChild(httpActions);
+        Node httpAction = dom.createElement(TOKEN_HTTP_ACTION);
+        httpActions.appendChild(httpAction);
 
-        Node actualResponseWithoutBodyNode = dom.createElement( TOKEN_HTTP_RESPONSE );
-        httpAction.appendChild( actualResponseWithoutBodyNode );
+        Node actualResponseWithoutBodyNode = dom.createElement(TOKEN_HTTP_RESPONSE);
+        httpAction.appendChild(actualResponseWithoutBodyNode);
 
         // read connection input stream bytes
         int contentLength = 0;
@@ -433,29 +433,29 @@ public class XmlUtilities {
         responseCode = httpClient.getUrlConnection().getResponseCode(); // this effectively may send request and wait for response
         httpClient.getNetworkingStopWatch().step7_EndGetResponseCode();
 
-        if( httpClient.getUrlConnection().getDoInput()
+        if (httpClient.getUrlConnection().getDoInput()
             // if the response code is "302 Found" we assume that the response body is empty
-            && responseCode != 302 ) {
+            && responseCode != 302) {
 
             // save the retrieved file
-            Node resourceFileNode = httpClient.httpBodyToXml( dom, actionsXml, actionNum,
-                                                              saveResponseBodyBytes );
-            if( httpClient.getResponseBodyBytes() != null ) { // for disc write or error logging
+            Node resourceFileNode = httpClient.httpBodyToXml(dom, actionsXml, actionNum,
+                                                             saveResponseBodyBytes);
+            if (httpClient.getResponseBodyBytes() != null) { // for disc write or error logging
                 responseBodyBytes = httpClient.getResponseBodyBytes();
             }
-            if( resourceFileNode != null ) {
-                actualResponseWithoutBodyNode.appendChild( resourceFileNode );
-                if( ( ( Element ) resourceFileNode ).hasAttribute( "size" ) ) {
-                    contentLength = Integer.parseInt( ( ( Element ) resourceFileNode ).getAttribute( "size" ) );
+            if (resourceFileNode != null) {
+                actualResponseWithoutBodyNode.appendChild(resourceFileNode);
+                if ( ((Element) resourceFileNode).hasAttribute("size")) {
+                    contentLength = Integer.parseInt( ((Element) resourceFileNode).getAttribute("size"));
                 }
             }
         }
 
         // add headers
-        actualResponseWithoutBodyNode = httpClient.readHeaders( dom, actualResponseWithoutBodyNode,
-                                                                contentLength );
-        ActionParser actionResponse = new ActionParser( actualResponseWithoutBodyNode, responseBodyBytes );
-        actionResponse.setContentType( httpClient.getUrlConnection().getContentType() );
+        actualResponseWithoutBodyNode = httpClient.readHeaders(dom, actualResponseWithoutBodyNode,
+                                                               contentLength);
+        ActionParser actionResponse = new ActionParser(actualResponseWithoutBodyNode, responseBodyBytes);
+        actionResponse.setContentType(httpClient.getUrlConnection().getContentType());
         return actionResponse;
     }
 
@@ -479,54 +479,54 @@ public class XmlUtilities {
                                    TemplateActionsResponseVerificationConfigurator verificationConfigurator ) throws XmlUtilitiesException,
                                                                                                               InvalidMatcherException {
 
-        Node[] actualHeaderNodes = getChildrenNodes( actualHttpResponse.getActionNodeWithoutBody(),
-                                                     TOKEN_HTTP_HEADER );
+        Node[] actualHeaderNodes = getChildrenNodes(actualHttpResponse.getActionNodeWithoutBody(),
+                                                    TOKEN_HTTP_HEADER);
 
         // Collect all header matchers from the XML file and the test code.
         // We keep them in a map, so if same header is specified in the XML and the test, the one coming
         // from the test will get precedence
         Map<String, HeaderMatcher> headerMatchersMap = new HashMap<String, HeaderMatcher>();
         // Collect all matchers coming from the static XML file
-        for( HeaderMatcher headerMatcher : expectedHeaderMatchers ) {
-            headerMatchersMap.put( headerMatcher.getHeaderName(), headerMatcher );
+        for (HeaderMatcher headerMatcher : expectedHeaderMatchers) {
+            headerMatchersMap.put(headerMatcher.getHeaderName(), headerMatcher);
         }
         // Collect all global header matchers, this is coming from the test case
-        for( HeaderMatcher globalHeaderMatcher : verificationConfigurator.getGlobalHeaderMatchers() ) {
+        for (HeaderMatcher globalHeaderMatcher : verificationConfigurator.getGlobalHeaderMatchers()) {
             // header matcher from global rule so we assume it is not significant if not already existing - forceOptionalHeaderIfNotAlreadyExisting=true
-            headerMatchersMap = addHeaderMatcherToMap( headerMatchersMap, globalHeaderMatcher, true );
+            headerMatchersMap = addHeaderMatcherToMap(headerMatchersMap, globalHeaderMatcher, true);
         }
 
         // Collect all matchers coming from the test case
         // We do not check if this is an important header, this way user can specify to check a header for
         // this action step even if it is classified globally as a not important header
-        TemplateActionResponseVerificator responseVerificator = verificationConfigurator.getActionVerificator( actionName );
-        if( responseVerificator != null ) {
-            List<HeaderMatcher> headerMatchers = responseVerificator.getStepHeaderMatchers( stepIndex );
-            for( HeaderMatcher headerMatcher : headerMatchers ) {
+        TemplateActionResponseVerificator responseVerificator = verificationConfigurator.getActionVerificator(actionName);
+        if (responseVerificator != null) {
+            List<HeaderMatcher> headerMatchers = responseVerificator.getStepHeaderMatchers(stepIndex);
+            for (HeaderMatcher headerMatcher : headerMatchers) {
                 // header matcher from Java test code so we assume it is significant - forceOptionalHeaderIfNotAlreadyExisting=false
-                headerMatchersMap = addHeaderMatcherToMap( headerMatchersMap, headerMatcher, false );
+                headerMatchersMap = addHeaderMatcherToMap(headerMatchersMap, headerMatcher, false);
             }
         }
 
         // Now try to match all available header matchers for this action step
         boolean[] processedHeaderNodes = new boolean[actualHeaderNodes.length];
-        for( HeaderMatcher headerMatcher : headerMatchersMap.values() ) {
-            for( int i = 0; i < actualHeaderNodes.length; i++ ) {
-                String actualHeaderName = getNodeAttribute( actualHeaderNodes[i],
-                                                            TOKEN_HEADER_NAME_ATTRIBUTE );
-                if( actualHeaderName.equals( headerMatcher.getHeaderName() ) ) {
+        for (HeaderMatcher headerMatcher : headerMatchersMap.values()) {
+            for (int i = 0; i < actualHeaderNodes.length; i++) {
+                String actualHeaderName = getNodeAttribute(actualHeaderNodes[i],
+                                                           TOKEN_HEADER_NAME_ATTRIBUTE);
+                if (actualHeaderName.equals(headerMatcher.getHeaderName())) {
                     // mark the header node as processed
                     processedHeaderNodes[i] = true;
 
                     // try to match this header
-                    String actualHeaderValue = getNodeAttribute( actualHeaderNodes[i],
-                                                                 TOKEN_HEADER_VALUE_ATTRIBUTE );
-                    if( !headerMatcher.performMatch( null, actualHeaderValue ) ) {
+                    String actualHeaderValue = getNodeAttribute(actualHeaderNodes[i],
+                                                                TOKEN_HEADER_VALUE_ATTRIBUTE);
+                    if (!headerMatcher.performMatch(null, actualHeaderValue)) {
                         // header did not match
                         String causeMsg = "Did not match header value '" + actualHeaderValue + "' for "
                                           + headerMatcher.toString() + ".";
-                        logActualResponse( causeMsg, actionName, stepIndex, actualHttpResponse, true );
-                        throw new XmlUtilitiesException( causeMsg );
+                        logActualResponse(causeMsg, actionName, stepIndex, actualHttpResponse, true);
+                        throw new XmlUtilitiesException(causeMsg);
                     }
                     break;
                 }
@@ -535,11 +535,11 @@ public class XmlUtilities {
 
         // check if some matchers were not processed at all
         // this means some expected header was not received
-        for( HeaderMatcher headerMatcher : headerMatchersMap.values() ) {
-            if( !headerMatcher.wasProcessed() && !headerMatcher.isOptionalHeader() ) {
+        for (HeaderMatcher headerMatcher : headerMatchersMap.values()) {
+            if (!headerMatcher.wasProcessed() && !headerMatcher.isOptionalHeader()) {
                 String causeMsg = "Did not receive the expected header for " + headerMatcher.toString() + ".";
-                logActualResponse( causeMsg, actionName, stepIndex, actualHttpResponse, true );
-                throw new XmlUtilitiesException( causeMsg );
+                logActualResponse(causeMsg, actionName, stepIndex, actualHttpResponse, true);
+                throw new XmlUtilitiesException(causeMsg);
             }
         }
     }
@@ -549,19 +549,19 @@ public class XmlUtilities {
                                    boolean forceOptionalHeaderIfNotAlreadyExisting ) throws InvalidMatcherException {
 
         final String headerName = headerMatcher.getHeaderName();
-        if( headerMatcher.isMergingMatcher() && headerMatchersMap.containsKey( headerName ) ) {
+        if (headerMatcher.isMergingMatcher() && headerMatchersMap.containsKey(headerName)) {
             // this header is already present in the map and we must merge it with the existing one
             // instead of replacing it
-            headerMatcher.mergeTo( headerMatchersMap.get( headerName ) );
-            headerMatchersMap.put( headerName, headerMatcher );
+            headerMatcher.mergeTo(headerMatchersMap.get(headerName));
+            headerMatchersMap.put(headerName, headerMatcher);
         } else {
-            if( !headerMatchersMap.containsKey( headerName ) ) {
+            if (!headerMatchersMap.containsKey(headerName)) {
                 // no such header exists in template/map so far
                 // so we should not enforce the global header matcher in the particular request
-                headerMatcher.setOptionalHeader( forceOptionalHeaderIfNotAlreadyExisting );
+                headerMatcher.setOptionalHeader(forceOptionalHeaderIfNotAlreadyExisting);
             }
             // add this header to the map, if there is already an existing one for this header name - we will override it
-            headerMatchersMap.put( headerName, headerMatcher );
+            headerMatchersMap.put(headerName, headerMatcher);
         }
         return headerMatchersMap;
     }
@@ -570,32 +570,32 @@ public class XmlUtilities {
                                      Node actualHttpResponseNode ) throws XmlUtilitiesException {
 
         String expectedResponseFile = expectedHttpResponseNode.getResourceFile();
-        Node actualResponseFileNode = getFirstChildNode( actualHttpResponseNode, TOKEN_HTTP_RESOURCE_FILE );
-        if( expectedResponseFile == null && actualResponseFileNode == null ) {
+        Node actualResponseFileNode = getFirstChildNode(actualHttpResponseNode, TOKEN_HTTP_RESOURCE_FILE);
+        if (expectedResponseFile == null && actualResponseFileNode == null) {
 
             // no file is expected and no file was received
-        } else if( expectedResponseFile != null && actualResponseFileNode != null ) {
-            if( matchFilesBySize || matchFilesByContent /* pre-check before MD5 sum */ ) {
+        } else if (expectedResponseFile != null && actualResponseFileNode != null) {
+            if (matchFilesBySize || matchFilesByContent /* pre-check before MD5 sum */ ) {
 
                 String expectedFileSize = expectedHttpResponseNode.getResourceFileSize();
-                String actualFileSize = getNodeAttribute( actualResponseFileNode, "size" );
+                String actualFileSize = getNodeAttribute(actualResponseFileNode, "size");
 
-                if( ( actualFileSize == null && expectedFileSize != null )
-                    || ( actualFileSize != null && expectedFileSize == null )
-                    || ( actualFileSize != null && !actualFileSize.equals( expectedFileSize ) ) ) {
+                if ( (actualFileSize == null && expectedFileSize != null)
+                     || (actualFileSize != null && expectedFileSize == null)
+                     || (actualFileSize != null && !actualFileSize.equals(expectedFileSize))) {
 
-                    throw new XmlUtilitiesException( "The expected response file '" + expectedResponseFile
-                                                     + "' has the length of " + expectedFileSize
-                                                     + " while the actual has the length of "
-                                                     + actualFileSize );
+                    throw new XmlUtilitiesException("The expected response file '" + expectedResponseFile
+                                                    + "' has the length of " + expectedFileSize
+                                                    + " while the actual has the length of "
+                                                    + actualFileSize);
                 }
 
             }
-            if( matchFilesByContent ) {
+            if (matchFilesByContent) {
 
                 // compare both files using MD5 sums
-                String actualResponseFile = expectedResponseFile.substring( 0,
-                                                                            expectedResponseFile.lastIndexOf( AtsSystemProperties.SYSTEM_FILE_SEPARATOR ) )
+                String actualResponseFile = expectedResponseFile.substring(0,
+                                                                           expectedResponseFile.lastIndexOf(AtsSystemProperties.SYSTEM_FILE_SEPARATOR))
                                             + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + "actual"
                                             + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
                                             + Thread.currentThread().getName()
@@ -609,39 +609,39 @@ public class XmlUtilities {
                 // optimization - check first file size:
 
                 try {
-                    expectedFileMD5Sum = localFileOperations.computeMd5Sum( expectedResponseFile,
-                                                                            Md5SumMode.BINARY );
-                } catch( Exception e ) {
-                    throw new XmlUtilitiesException( "Error calculating MD5 sum for " + expectedResponseFile,
-                                                     e );
+                    expectedFileMD5Sum = localFileOperations.computeMd5Sum(expectedResponseFile,
+                                                                           Md5SumMode.BINARY);
+                } catch (Exception e) {
+                    throw new XmlUtilitiesException("Error calculating MD5 sum for " + expectedResponseFile,
+                                                    e);
                 }
 
                 try {
-                    actualFileMD5Sum = localFileOperations.computeMd5Sum( actualResponseFile,
-                                                                          Md5SumMode.BINARY );
-                } catch( Exception e ) {
-                    throw new XmlUtilitiesException( "Error calculating MD5 sum for " + actualResponseFile,
-                                                     e );
+                    actualFileMD5Sum = localFileOperations.computeMd5Sum(actualResponseFile,
+                                                                         Md5SumMode.BINARY);
+                } catch (Exception e) {
+                    throw new XmlUtilitiesException("Error calculating MD5 sum for " + actualResponseFile,
+                                                    e);
                 }
 
-                if( !expectedFileMD5Sum.equalsIgnoreCase( actualFileMD5Sum ) ) {
-                    throw new XmlUtilitiesException( "The expected response file '" + expectedResponseFile
-                                                     + "' is not the same as the actual '"
-                                                     + actualResponseFile + "'" );
+                if (!expectedFileMD5Sum.equalsIgnoreCase(actualFileMD5Sum)) {
+                    throw new XmlUtilitiesException("The expected response file '" + expectedResponseFile
+                                                    + "' is not the same as the actual '"
+                                                    + actualResponseFile + "'");
                 }
             }
 
         } else {
-            throw new XmlUtilitiesException( "Expected to " + ( expectedResponseFile != null
-                                                                                             ? "receive the "
-                                                                                               + expectedResponseFile
-                                                                                               + " file"
-                                                                                             : "not receive a response file" )
-                                             + ", but " + ( actualResponseFileNode != null
-                                                                                           ? "received the "
-                                                                                             + actualResponseFileNode.getTextContent()
+            throw new XmlUtilitiesException("Expected to " + (expectedResponseFile != null
+                                                                                           ? "receive the "
+                                                                                             + expectedResponseFile
                                                                                              + " file"
-                                                                                           : "did not receive a response file" ) );
+                                                                                           : "not receive a response file")
+                                            + ", but " + (actualResponseFileNode != null
+                                                                                         ? "received the "
+                                                                                           + actualResponseFileNode.getTextContent()
+                                                                                           + " file"
+                                                                                         : "did not receive a response file"));
         }
     }
 
@@ -658,15 +658,15 @@ public class XmlUtilities {
 
         List<XPathBodyMatcher> actualXpathBodyMatchers = new ArrayList<XPathBodyMatcher>();
 
-        for( XPathBodyMatcher matcher : staticXpathBodyMatchers ) {
+        for (XPathBodyMatcher matcher : staticXpathBodyMatchers) {
             String matcherValue = matcher.getMatcherValue();
-            String attributeName = ( String ) ThreadContext.getAttribute( matcherValue );
-            if( attributeName != null ) {
-                matcherValue = ThreadContext.getAttribute( attributeName ).toString();
+            String attributeName = (String) ThreadContext.getAttribute(matcherValue);
+            if (attributeName != null) {
+                matcherValue = ThreadContext.getAttribute(attributeName).toString();
             }
 
-            actualXpathBodyMatchers.add( new XPathBodyMatcher( matcher.getXpath(), matcherValue,
-                                                               matcher.getMatchMode() ) );
+            actualXpathBodyMatchers.add(new XPathBodyMatcher(matcher.getXpath(), matcherValue,
+                                                             matcher.getMatchMode()));
         }
 
         return actualXpathBodyMatchers;
@@ -683,17 +683,17 @@ public class XmlUtilities {
 
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
-        XPathExpression xPathExpression = xPath.compile( expression );
+        XPathExpression xPathExpression = xPath.compile(expression);
 
-        NodeList nlist = ( NodeList ) xPathExpression.evaluate( node, XPathConstants.NODESET );
+        NodeList nlist = (NodeList) xPathExpression.evaluate(node, XPathConstants.NODESET);
 
         int nodeListSize = nlist.getLength();
-        List<String> values = new ArrayList<String>( nodeListSize );
-        for( int index = 0; index < nlist.getLength(); index++ ) {
-            Node aNode = nlist.item( index );
-            values.add( aNode.getTextContent() );
+        List<String> values = new ArrayList<String>(nodeListSize);
+        for (int index = 0; index < nlist.getLength(); index++) {
+            Node aNode = nlist.item(index);
+            values.add(aNode.getTextContent());
         }
-        return values.toArray( new String[values.size()] );
+        return values.toArray(new String[values.size()]);
     }
 
     /**
@@ -712,31 +712,31 @@ public class XmlUtilities {
             StringBuilder logMsg = new StringBuilder();
             logMsg.append( /*"Response verification failed. " + */causeMsg + "\n Dumping response of action "
                            + actionName + "[" + stepNumber + "]:\n"
-                           + xmlNodeToString( actualHttpResponse.getActionNodeWithoutBody() ) );
+                           + xmlNodeToString(actualHttpResponse.getActionNodeWithoutBody()));
 
             // append missing body
-            if( isContentPrintable( actualHttpResponse.getContentType() ) ) {
+            if (isContentPrintable(actualHttpResponse.getContentType())) {
 
                 StringBuilder bodySB = new StringBuilder();
-                if( actualHttpResponse.getBodyContentAsString() == null ) {
-                    bodySB.append( " null (Increase Log4J severity of " + HttpClient.class.getName()
-                                   + " logger to TRACE if you want body contents)" );
+                if (actualHttpResponse.getBodyContentAsString() == null) {
+                    bodySB.append(" null (Increase Log4J severity of " + HttpClient.class.getName()
+                                  + " logger to TRACE if you want body contents)");
                 } else {
-                    bodySB.append( actualHttpResponse.getBodyContentAsString() );
+                    bodySB.append(actualHttpResponse.getBodyContentAsString());
                 }
-                logMsg.append( "\nResponse body:\n" );
-                logMsg.append( bodySB );
+                logMsg.append("\nResponse body:\n");
+                logMsg.append(bodySB);
             }
 
-            if( isError ) {
-                HttpClient.log.error( logMsg );
+            if (isError) {
+                HttpClient.log.error(logMsg);
             } else {
-                HttpClient.log.trace( logMsg );
+                HttpClient.log.trace(logMsg);
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            log.error( "Error during logging the actual response for " + actionName + "[" + stepNumber + "]",
-                       e );
+            log.error("Error during logging the actual response for " + actionName + "[" + stepNumber + "]",
+                      e);
         }
     }
 
@@ -747,13 +747,13 @@ public class XmlUtilities {
      */
     private boolean isContentPrintable( String contentType ) {
 
-        if( contentType == null ) {
+        if (contentType == null) {
             return false;
         }
 
         contentType = contentType.toLowerCase();
-        for( String printableContentType : PRINTABLE_CONTENT_TYPES ) {
-            if( contentType.startsWith( printableContentType ) ) {
+        for (String printableContentType : PRINTABLE_CONTENT_TYPES) {
+            if (contentType.startsWith(printableContentType)) {
                 return true;
             }
         }

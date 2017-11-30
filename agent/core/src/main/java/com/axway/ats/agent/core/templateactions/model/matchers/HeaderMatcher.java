@@ -31,7 +31,7 @@ import com.axway.ats.agent.core.templateactions.model.matchers.mode.TemplateHead
 
 public class HeaderMatcher extends ResponseMatcher {
 
-    private static final Logger     log                            = Logger.getLogger( HeaderMatcher.class );
+    private static final Logger     log                            = Logger.getLogger(HeaderMatcher.class);
 
     private static final long       serialVersionUID               = 1;
 
@@ -69,68 +69,68 @@ public class HeaderMatcher extends ResponseMatcher {
      *                   | "{" | "}" | SP | HT
      *
      */
-    public static final Pattern     COOKIE_VALUE_PATTERN           = Pattern.compile( "\\$?([\\w\\_\\-\\#]+)\\=(?:(?:\\\"([^\\\"]*)\\\")|(?:([^\\;\\\"\\;\\s]+)(?=\\;|$)))" );
+    public static final Pattern     COOKIE_VALUE_PATTERN           = Pattern.compile("\\$?([\\w\\_\\-\\#]+)\\=(?:(?:\\\"([^\\\"]*)\\\")|(?:([^\\;\\\"\\;\\s]+)(?=\\;|$)))");
 
     public static final String      COOKIE_HEADER_NAME             = "Cookie";
     public static final String      SET_COOKIE_HEADER_NAME         = "Set-Cookie";
     public static final String      CONTENT_LENGTH_HEADER_NAME     = "Content-Length";
     public static final String      TRANSFER_ENCODING_HEADER_NAME  = "Transfer-Encoding";
     public static final String      LOCATION_HEADER_NAME           = "Location";
-    public static final Set<String> COOKIE_ATTRIBUTE_NAMES_TO_SKIP = new HashSet<String>( Arrays.asList( new String[]{ "Path".toLowerCase(),
-            "Domain".toLowerCase(),
-            "Version".toLowerCase(),
-            "Expires".toLowerCase(),
-            "Comment".toLowerCase(),
-            "Max-Age".toLowerCase(),
-            "Secure".toLowerCase(),
-            "HttpOnly".toLowerCase()                              } ) );
+    public static final Set<String> COOKIE_ATTRIBUTE_NAMES_TO_SKIP = new HashSet<String>(Arrays.asList(new String[]{ "Path".toLowerCase(),
+                                                                                                                     "Domain".toLowerCase(),
+                                                                                                                     "Version".toLowerCase(),
+                                                                                                                     "Expires".toLowerCase(),
+                                                                                                                     "Comment".toLowerCase(),
+                                                                                                                     "Max-Age".toLowerCase(),
+                                                                                                                     "Secure".toLowerCase(),
+                                                                                                                     "HttpOnly".toLowerCase() }));
 
     public HeaderMatcher( String headerName,
                           String headerValueToMatch,
                           TemplateHeaderMatchMode matchMode ) throws InvalidMatcherException {
 
         super();
-        if( headerName == null || headerName.trim().length() == 0 ) {
-            throw new InvalidMatcherException( "The header name can not be null or empty string: '"
-                                               + headerName + "'" );
+        if (headerName == null || headerName.trim().length() == 0) {
+            throw new InvalidMatcherException("The header name can not be null or empty string: '"
+                                              + headerName + "'");
         }
 
-        if( matchMode == TemplateHeaderMatchMode.RANGE ) {
+        if (matchMode == TemplateHeaderMatchMode.RANGE) {
             String errMsgPrefix = "The value '" + headerValueToMatch + "' of header '" + headerName
                                   + "' is not a well formatted numeric range string: ";
-            String[] rangeTokens = headerValueToMatch.split( "-" );
-            if( rangeTokens.length != 2 ) {
-                throw new InvalidMatcherException( errMsgPrefix
-                                                   + "The ',' delimiter must be present once, but it is present "
-                                                   + rangeTokens.length + " times" );
+            String[] rangeTokens = headerValueToMatch.split("-");
+            if (rangeTokens.length != 2) {
+                throw new InvalidMatcherException(errMsgPrefix
+                                                  + "The ',' delimiter must be present once, but it is present "
+                                                  + rangeTokens.length + " times");
             }
             try {
-                minValue = Integer.parseInt( rangeTokens[0].trim() );
-            } catch( NumberFormatException nfe ) {
-                throw new InvalidMatcherException( errMsgPrefix + "The minumum value is not a valid number" );
+                minValue = Integer.parseInt(rangeTokens[0].trim());
+            } catch (NumberFormatException nfe) {
+                throw new InvalidMatcherException(errMsgPrefix + "The minumum value is not a valid number");
             }
             try {
-                maxValue = Integer.parseInt( rangeTokens[1].trim() );
-            } catch( NumberFormatException nfe ) {
-                throw new InvalidMatcherException( errMsgPrefix + "The maxmimum value is not a valid number" );
+                maxValue = Integer.parseInt(rangeTokens[1].trim());
+            } catch (NumberFormatException nfe) {
+                throw new InvalidMatcherException(errMsgPrefix + "The maxmimum value is not a valid number");
             }
-            if( minValue > maxValue ) {
-                throw new InvalidMatcherException( errMsgPrefix
-                                                   + "The mimium value is bigger than the maxmimum value" );
+            if (minValue > maxValue) {
+                throw new InvalidMatcherException(errMsgPrefix
+                                                  + "The mimium value is bigger than the maxmimum value");
             }
-        } else if( matchMode == TemplateHeaderMatchMode.RANGE_OFFSET ) {
+        } else if (matchMode == TemplateHeaderMatchMode.RANGE_OFFSET) {
             try {
-                offsetValue = Integer.parseInt( headerValueToMatch.trim() );
-            } catch( NumberFormatException nfe ) {
-                throw new InvalidMatcherException( "The value '" + headerValueToMatch + "' of header '"
-                                                   + headerName + "' is not a valid number" );
+                offsetValue = Integer.parseInt(headerValueToMatch.trim());
+            } catch (NumberFormatException nfe) {
+                throw new InvalidMatcherException("The value '" + headerValueToMatch + "' of header '"
+                                                  + headerName + "' is not a valid number");
             }
-            if( offsetValue < 1 ) {
-                throw new InvalidMatcherException( "The value '" + headerValueToMatch + "' of header '"
-                                                   + headerName + "' must be a number greater than 1" );
+            if (offsetValue < 1) {
+                throw new InvalidMatcherException("The value '" + headerValueToMatch + "' of header '"
+                                                  + headerName + "' must be a number greater than 1");
             }
-        } else if( matchMode == TemplateHeaderMatchMode.LIST ) {
-            listValues = headerValueToMatch.split( "," );
+        } else if (matchMode == TemplateHeaderMatchMode.LIST) {
+            listValues = headerValueToMatch.split(",");
         }
 
         this.headerName = headerName;
@@ -144,7 +144,7 @@ public class HeaderMatcher extends ResponseMatcher {
      */
     public HeaderMatcher( HeaderMatcher other ) {
 
-        super( other );
+        super(other);
         // immutable objects so no new copy needed
         this.headerName = other.headerName;
         this.headerValueToMatch = other.headerValueToMatch;
@@ -186,22 +186,22 @@ public class HeaderMatcher extends ResponseMatcher {
                          HeaderMatcher that ) throws InvalidMatcherException {
 
         // we expect that isMergingMatcher returns true, we make sure this is always true before calling this method
-        if( this.matchMode == TemplateHeaderMatchMode.RANGE_OFFSET ) {
+        if (this.matchMode == TemplateHeaderMatchMode.RANGE_OFFSET) {
             // check the base value is a number
             try {
-                Integer.parseInt( that.headerValueToMatch );
-            } catch( NumberFormatException nfe ) {
-                throw new InvalidMatcherException( "Can not create a RANGE_OFFSET header matcher as the value '"
-                                                   + headerValueToMatch
-                                                   + "' of header '"
-                                                   + headerName
-                                                   + "' is not a numeric value" );
+                Integer.parseInt(that.headerValueToMatch);
+            } catch (NumberFormatException nfe) {
+                throw new InvalidMatcherException("Can not create a RANGE_OFFSET header matcher as the value '"
+                                                  + headerValueToMatch
+                                                  + "' of header '"
+                                                  + headerName
+                                                  + "' is not a numeric value");
             }
 
             this.headerValueToMatch = that.headerValueToMatch;
         } else {
-            throw new InvalidMatcherException( "Can not merge header matcher:\n" + this.toString()
-                                               + "\n to header matcher:\n" + that.toString() );
+            throw new InvalidMatcherException("Can not merge header matcher:\n" + this.toString()
+                                              + "\n to header matcher:\n" + that.toString());
         }
     }
 
@@ -210,92 +210,92 @@ public class HeaderMatcher extends ResponseMatcher {
                                  Object expectedObject,
                                  Object actualObject ) {
 
-        String actualText = ( String ) actualObject;
+        String actualText = (String) actualObject;
 
         markProcessed();
 
         boolean actualResult = false;
-        if( actualText != null ) {
+        if (actualText != null) {
 
-            if( headerName.equalsIgnoreCase( SET_COOKIE_HEADER_NAME ) ) {
+            if (headerName.equalsIgnoreCase(SET_COOKIE_HEADER_NAME)) {
 
-                Matcher matcher = COOKIE_VALUE_PATTERN.matcher( actualText );
-                while( matcher.find() ) {
+                Matcher matcher = COOKIE_VALUE_PATTERN.matcher(actualText);
+                while (matcher.find()) {
 
-                    String cookieName = matcher.group( 1 );
-                    if( cookieName != null ) {
+                    String cookieName = matcher.group(1);
+                    if (cookieName != null) {
 
                         // see the COOKIE_VALUE_PATTERN JavaDoc
-                        String cookieValue = matcher.group( 2 );
-                        if( cookieValue == null ) {
-                            cookieValue = matcher.group( 3 );
+                        String cookieValue = matcher.group(2);
+                        if (cookieValue == null) {
+                            cookieValue = matcher.group(3);
                         }
-                        if( !COOKIE_ATTRIBUTE_NAMES_TO_SKIP.contains( cookieName.toLowerCase() ) ) {
+                        if (!COOKIE_ATTRIBUTE_NAMES_TO_SKIP.contains(cookieName.toLowerCase())) {
 
-                            log.info( "New cookie '" + cookieName + "' with value '" + cookieValue + "'" );
-                            ThreadContext.setAttribute( ThreadContext.COOKIE_VAR_PREFFIX + cookieName,
-                                                        cookieValue );
+                            log.info("New cookie '" + cookieName + "' with value '" + cookieValue + "'");
+                            ThreadContext.setAttribute(ThreadContext.COOKIE_VAR_PREFFIX + cookieName,
+                                                       cookieValue);
                             actualResult = true;
                         }
                     } else {
 
-                        log.warn( "The '" + SET_COOKIE_HEADER_NAME + "' header has unexpected format '"
-                                  + actualText + "'" );
+                        log.warn("The '" + SET_COOKIE_HEADER_NAME + "' header has unexpected format '"
+                                 + actualText + "'");
                     }
                 }
             } else {
 
                 int actualHeaderNumericValue;
-                switch( matchMode ){
+                switch (matchMode) {
 
                     case EQUALS:
 
                         try {
                             String expectedResult = headerValueToMatch;
-                            if( headerValueToMatch != null && headerValueToMatch.contains( "${" ) ) {
-                                expectedResult = XmlUtilities.applyUserParameters( headerValueToMatch );
+                            if (headerValueToMatch != null && headerValueToMatch.contains("${")) {
+                                expectedResult = XmlUtilities.applyUserParameters(headerValueToMatch);
                             }
-                            actualResult = actualText.equals( expectedResult );
-                        } catch( XmlUtilitiesException e ) {
-                            log.error( "Can not apply user parameters", e );
+                            actualResult = actualText.equals(expectedResult);
+                        } catch (XmlUtilitiesException e) {
+                            log.error("Can not apply user parameters", e);
                         }
                         break;
                     case CONTAINS:
 
-                        actualResult = actualText.contains( headerValueToMatch );
+                        actualResult = actualText.contains(headerValueToMatch);
                         break;
                     case RANGE:
 
                         try {
-                            actualHeaderNumericValue = Integer.parseInt( actualText );
+                            actualHeaderNumericValue = Integer.parseInt(actualText);
                             actualResult = minValue <= actualHeaderNumericValue
                                            && actualHeaderNumericValue <= maxValue;
-                        } catch( NumberFormatException nfe ) {
-                            log.warn( "The value '" + actualText + "' of header '" + headerName
-                                      + "' is not a numeric value" );
+                        } catch (NumberFormatException nfe) {
+                            log.warn("The value '" + actualText + "' of header '" + headerName
+                                     + "' is not a numeric value");
                         }
                         break;
                     case RANGE_OFFSET:
 
-                        int baseValue = Integer.parseInt( headerValueToMatch );
-                        if( baseValue >= 0 ) {
+                        int baseValue = Integer.parseInt(headerValueToMatch);
+                        if (baseValue >= 0) {
                             try {
-                                actualHeaderNumericValue = Integer.parseInt( actualText );
-                                actualResult = ( baseValue - offsetValue <= actualHeaderNumericValue )
-                                               && ( actualHeaderNumericValue <= baseValue + offsetValue );
-                            } catch( NumberFormatException nfe ) {
-                                log.warn( "The value '" + actualText + "' of header '" + headerName
-                                          + "' is not a numeric value" );
+                                actualHeaderNumericValue = Integer.parseInt(actualText);
+                                actualResult = (baseValue - offsetValue <= actualHeaderNumericValue)
+                                               && (actualHeaderNumericValue <= baseValue + offsetValue);
+                            } catch (NumberFormatException nfe) {
+                                log.warn("The value '" + actualText + "' of header '" + headerName
+                                         + "' is not a numeric value");
                             }
                         } else {
-                            log.warn( "Can not execute a range offset verification as the base value must be greater or equal 0, but it is '"
-                                      + baseValue + "'. " + toString() );
+                            log.warn("Can not execute a range offset verification as the base value must be greater or equal 0, but it is '"
+                                     + baseValue + "'. " + toString());
                         }
                         break;
                     case LIST:
 
-                        for( String listValue : listValues ) {
-                            if( listValue.equals( actualText ) ) {
+                        for (String listValue : listValues) {
+                            if (listValue.equals(actualText)) {
                                 actualResult = true;
                                 break;
                             }
@@ -303,7 +303,7 @@ public class HeaderMatcher extends ResponseMatcher {
                         break;
                     case REGEX:
 
-                        actualResult = Pattern.compile( headerValueToMatch ).matcher( actualText ).find();
+                        actualResult = Pattern.compile(headerValueToMatch).matcher(actualText).find();
                         break;
                     case RANDOM:
 
@@ -312,24 +312,24 @@ public class HeaderMatcher extends ResponseMatcher {
                     case EXTRACT:
 
                         try {
-                            actualResult = extractUserParameter( "response header",
-                                                                 headerValueToMatch,
-                                                                 actualText );
-                        } catch( XmlUtilitiesException e ) {
-                            log.error( "Can not extract user parameter", e );
+                            actualResult = extractUserParameter("response header",
+                                                                headerValueToMatch,
+                                                                actualText);
+                        } catch (XmlUtilitiesException e) {
+                            log.error("Can not extract user parameter", e);
                         }
                         break;
                 }
             }
-            if( log.isDebugEnabled() ) {
-                if( actualResult ) {
-                    log.debug( "Matched the value '" + actualText + "' for " + toString() );
+            if (log.isDebugEnabled()) {
+                if (actualResult) {
+                    log.debug("Matched the value '" + actualText + "' for " + toString());
                 } else {
-                    log.debug( "Did not match the value '" + actualText + "' for " + toString() );
+                    log.debug("Did not match the value '" + actualText + "' for " + toString());
                 }
             }
         } else {
-            log.error( "Header '" + headerName + "' not found. Needed for " + toString() );
+            log.error("Header '" + headerName + "' not found. Needed for " + toString());
         }
         return actualResult;
     }
@@ -339,16 +339,16 @@ public class HeaderMatcher extends ResponseMatcher {
 
         String description = "Header matcher: header name is '" + headerName + "', match mode is "
                              + matchMode;
-        if( matchMode != TemplateHeaderMatchMode.RANDOM ) {
+        if (matchMode != TemplateHeaderMatchMode.RANDOM) {
             description += ", header expected value is ";
-            if( matchMode == TemplateHeaderMatchMode.RANGE ) {
+            if (matchMode == TemplateHeaderMatchMode.RANGE) {
                 description += "between " + minValue + " and " + maxValue;
-            } else if( matchMode == TemplateHeaderMatchMode.RANGE_OFFSET ) {
-                int baseValue = Integer.parseInt( headerValueToMatch );
-                description += "between " + ( baseValue - offsetValue ) + " and "
-                               + ( baseValue + offsetValue );
-            } else if( matchMode == TemplateHeaderMatchMode.LIST ) {
-                description += "one of {" + Arrays.toString( listValues ) + "}";
+            } else if (matchMode == TemplateHeaderMatchMode.RANGE_OFFSET) {
+                int baseValue = Integer.parseInt(headerValueToMatch);
+                description += "between " + (baseValue - offsetValue) + " and "
+                               + (baseValue + offsetValue);
+            } else if (matchMode == TemplateHeaderMatchMode.LIST) {
+                description += "one of {" + Arrays.toString(listValues) + "}";
             } else {
                 description += "'" + headerValueToMatch + "'";
             }

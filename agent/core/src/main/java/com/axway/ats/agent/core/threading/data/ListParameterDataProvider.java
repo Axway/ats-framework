@@ -34,7 +34,7 @@ public class ListParameterDataProvider extends AbstractParameterDataProvider {
                                List<?> values,
                                ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.values = values;
         this.valuesSize = values.size();
@@ -46,7 +46,7 @@ public class ListParameterDataProvider extends AbstractParameterDataProvider {
                                ParameterProviderLevel parameterProviderLevel,
                                Class<?> dataProviderInstance ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.values = values;
         this.valuesSize = values.size();
@@ -62,13 +62,13 @@ public class ListParameterDataProvider extends AbstractParameterDataProvider {
 
     @Override
     protected ArgumentValue generateNewValuePerInvocation(
-                                              List<ArgumentValue> alreadyResolvedValues ) {
+                                                           List<ArgumentValue> alreadyResolvedValues ) {
 
-        if( currentIndex >= valuesSize ) {
+        if (currentIndex >= valuesSize) {
             currentIndex = 0;
         }
 
-        return new ArgumentValue( parameterName, values.get( currentIndex++ ) );
+        return new ArgumentValue(parameterName, values.get(currentIndex++));
     }
 
     @Override
@@ -76,18 +76,18 @@ public class ListParameterDataProvider extends AbstractParameterDataProvider {
                                                        long currentThreadId,
                                                        List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) { // isStaticValue = false
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) { // isStaticValue = false
 
             valueIndexPerThread++;
         } else {
             valueIndexPerThread = currentIndex;
         }
-        if( valueIndexPerThread >= valuesSize ) {
+        if (valueIndexPerThread >= valuesSize) {
             valueIndexPerThread = 0;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName, values.get( valueIndexPerThread ) );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName, values.get(valueIndexPerThread));
     }
 
     @Override
@@ -95,19 +95,19 @@ public class ListParameterDataProvider extends AbstractParameterDataProvider {
                                                              long currentThreadId,
                                                              List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
-            return new ArgumentValue( parameterName, values.get( valueIndexPerThread ) );
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
+            return new ArgumentValue(parameterName, values.get(valueIndexPerThread));
         }
-        if( currentIndex >= valuesSize ) {
+        if (currentIndex >= valuesSize) {
             currentIndex = 0;
         }
         valueIndexPerThread = currentIndex++;
-        if( valueIndexPerThread >= valuesSize ) {
+        if (valueIndexPerThread >= valuesSize) {
             valueIndexPerThread = 0;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName, values.get( valueIndexPerThread ) );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName, values.get(valueIndexPerThread));
     }
 
 }

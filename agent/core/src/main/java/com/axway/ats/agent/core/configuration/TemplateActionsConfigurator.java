@@ -31,7 +31,7 @@ public class TemplateActionsConfigurator implements Configurator {
 
     private static final long   serialVersionUID                        = 1L;
 
-    private static final Logger log                                     = Logger.getLogger( TemplateActionsConfigurator.class );
+    private static final Logger log                                     = Logger.getLogger(TemplateActionsConfigurator.class);
 
     private static final String SETTINGS_FILENAME                       = "ats.agent.properties";
 
@@ -53,9 +53,9 @@ public class TemplateActionsConfigurator implements Configurator {
      */
     public TemplateActionsConfigurator( String pathToConfigFile ) {
 
-        try (FileInputStream fis = new FileInputStream( new File( pathToConfigFile, SETTINGS_FILENAME ) )) {
-            agentFileProperties.load( fis );
-        } catch( Exception e ) {
+        try (FileInputStream fis = new FileInputStream(new File(pathToConfigFile, SETTINGS_FILENAME))) {
+            agentFileProperties.load(fis);
+        } catch (Exception e) {
             // Agent settings file not provided, or there is an error reading it
         }
     }
@@ -76,13 +76,13 @@ public class TemplateActionsConfigurator implements Configurator {
         ConfigurationSettings configSettings = ConfigurationSettings.getInstance();
 
         // set the home folder with template actions
-        setAgentTemplateActionsFolder( configSettings );
+        setAgentTemplateActionsFolder(configSettings);
 
         // set the boolean value for downloaded files verification method - by size or not
-        setMatchFilesBySize( configSettings );
+        setMatchFilesBySize(configSettings);
 
         // set the boolean value for downloaded files verification method - by its content or not
-        setMatchFilesByContent( configSettings );
+        setMatchFilesByContent(configSettings);
     }
 
     private void setMatchFilesByContent( ConfigurationSettings configSettings ) {
@@ -94,35 +94,35 @@ public class TemplateActionsConfigurator implements Configurator {
                                                                                                       : configSettings.isTemplateActionsMatchFilesByContent()
                                                                                                                       .toString();
         // value provided from remote Agent client
-        String matchFilesByContent = agentRemoteProperties.getProperty( MATCH_FILES_BY_CONTENT );
+        String matchFilesByContent = agentRemoteProperties.getProperty(MATCH_FILES_BY_CONTENT);
         loadSource = "remotely provided value";
 
-        if( matchFilesByContent == null && oldMatchFilesByContent == null ) {
+        if (matchFilesByContent == null && oldMatchFilesByContent == null) {
 
             // value provided as a system property
             loadSource = "system property value";
-            if( null == AtsSystemProperties.getPropertyAsBoolean( MATCH_FILES_BY_CONTENT ) ) {
+            if (null == AtsSystemProperties.getPropertyAsBoolean(MATCH_FILES_BY_CONTENT)) {
 
                 // default value
                 matchFilesByContent = "false";
                 loadSource = "default value";
             } else {
-                matchFilesByContent = String.valueOf( AtsSystemProperties.getPropertyAsBoolean( MATCH_FILES_BY_CONTENT ) );
+                matchFilesByContent = String.valueOf(AtsSystemProperties.getPropertyAsBoolean(MATCH_FILES_BY_CONTENT));
             }
         }
 
-        if( matchFilesByContent != null && !matchFilesByContent.equals( oldMatchFilesByContent ) ) {
+        if (matchFilesByContent != null && !matchFilesByContent.equals(oldMatchFilesByContent)) {
 
-            configSettings.setTemplateActionsMatchFilesByContent( Boolean.parseBoolean( matchFilesByContent ) );
-            log.info( "Agent template actions will " + ( configSettings.isTemplateActionsMatchFilesByContent()
-                                                                                                               ? ""
-                                                                                                               : "NOT " )
-                      + "verify downloaded files by its content - using " + loadSource );
+            configSettings.setTemplateActionsMatchFilesByContent(Boolean.parseBoolean(matchFilesByContent));
+            log.info("Agent template actions will " + (configSettings.isTemplateActionsMatchFilesByContent()
+                                                                                                             ? ""
+                                                                                                             : "NOT ")
+                     + "verify downloaded files by its content - using " + loadSource);
         } else {
-            log.info( "Agent template actions will " + ( configSettings.isTemplateActionsMatchFilesByContent()
-                                                                                                               ? ""
-                                                                                                               : "NOT " )
-                      + "verify downloaded files by its content" );
+            log.info("Agent template actions will " + (configSettings.isTemplateActionsMatchFilesByContent()
+                                                                                                             ? ""
+                                                                                                             : "NOT ")
+                     + "verify downloaded files by its content");
         }
     }
 
@@ -135,35 +135,35 @@ public class TemplateActionsConfigurator implements Configurator {
                                                                                                 : configSettings.isTemplateActionsMatchFilesBySize()
                                                                                                                 .toString();
         // value provided from remote Agent client
-        String matchFilesBySize = agentRemoteProperties.getProperty( MATCH_FILES_BY_SIZE );
+        String matchFilesBySize = agentRemoteProperties.getProperty(MATCH_FILES_BY_SIZE);
         loadSource = "remotely provided value";
 
-        if( matchFilesBySize == null && oldMatchFilesBySize == null ) {
+        if (matchFilesBySize == null && oldMatchFilesBySize == null) {
 
             // value provided as a system property
             loadSource = "system property value";
-            if( null == AtsSystemProperties.getPropertyAsBoolean( MATCH_FILES_BY_SIZE ) ) {
+            if (null == AtsSystemProperties.getPropertyAsBoolean(MATCH_FILES_BY_SIZE)) {
 
                 // default value
                 matchFilesBySize = "false";
                 loadSource = "default value";
             } else {
-                matchFilesBySize = String.valueOf( AtsSystemProperties.getPropertyAsBoolean( MATCH_FILES_BY_SIZE ) );
+                matchFilesBySize = String.valueOf(AtsSystemProperties.getPropertyAsBoolean(MATCH_FILES_BY_SIZE));
             }
         }
 
-        if( matchFilesBySize != null && !matchFilesBySize.equals( oldMatchFilesBySize ) ) {
+        if (matchFilesBySize != null && !matchFilesBySize.equals(oldMatchFilesBySize)) {
 
-            configSettings.setTemplateActionsMatchFilesBySize( Boolean.parseBoolean( matchFilesBySize ) );
-            log.info( "Agent template actions will " + ( configSettings.isTemplateActionsMatchFilesBySize()
-                                                                                                            ? ""
-                                                                                                            : "NOT " )
-                      + "verify downloaded files by size - using " + loadSource );
+            configSettings.setTemplateActionsMatchFilesBySize(Boolean.parseBoolean(matchFilesBySize));
+            log.info("Agent template actions will " + (configSettings.isTemplateActionsMatchFilesBySize()
+                                                                                                          ? ""
+                                                                                                          : "NOT ")
+                     + "verify downloaded files by size - using " + loadSource);
         } else {
-            log.info( "Agent template actions will " + ( configSettings.isTemplateActionsMatchFilesBySize()
-                                                                                                            ? ""
-                                                                                                            : "NOT " )
-                      + "verify downloaded files by size" );
+            log.info("Agent template actions will " + (configSettings.isTemplateActionsMatchFilesBySize()
+                                                                                                          ? ""
+                                                                                                          : "NOT ")
+                     + "verify downloaded files by size");
         }
     }
 
@@ -173,20 +173,20 @@ public class TemplateActionsConfigurator implements Configurator {
 
         String oldTemplateActionsFolder = configSettings.getTemplateActionsFolder();
         // value provided from remote Agent client
-        String templateActionsFolder = agentRemoteProperties.getProperty( AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY );
+        String templateActionsFolder = agentRemoteProperties.getProperty(AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY);
         loadSource = "remotely provided value";
 
-        if( templateActionsFolder == null && oldTemplateActionsFolder == null ) {
+        if (templateActionsFolder == null && oldTemplateActionsFolder == null) {
 
             // value provided as a system property
-            templateActionsFolder = AtsSystemProperties.getPropertyAsString( AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY );
+            templateActionsFolder = AtsSystemProperties.getPropertyAsString(AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY);
             loadSource = "system property value";
-            if( templateActionsFolder == null ) {
+            if (templateActionsFolder == null) {
 
                 // value provided from an Agent configuration file(placed in the Agent war file)
-                templateActionsFolder = agentFileProperties.getProperty( AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY );
+                templateActionsFolder = agentFileProperties.getProperty(AGENT__TEMPLATE_ACTIONS_FOLDER_PROPERTY);
                 loadSource = "Agent configuration file value";
-                if( templateActionsFolder == null ) {
+                if (templateActionsFolder == null) {
 
                     // default value
                     templateActionsFolder = "../templateactions";
@@ -195,13 +195,13 @@ public class TemplateActionsConfigurator implements Configurator {
             }
         }
 
-        if( templateActionsFolder != null && !templateActionsFolder.equals( oldTemplateActionsFolder ) ) {
+        if (templateActionsFolder != null && !templateActionsFolder.equals(oldTemplateActionsFolder)) {
 
-            configSettings.setTemplateActionsFolder( templateActionsFolder );
-            log.info( "Agent template actions are expected in '" + templateActionsFolder + "' folder - using "
-                      + loadSource );
+            configSettings.setTemplateActionsFolder(templateActionsFolder);
+            log.info("Agent template actions are expected in '" + templateActionsFolder + "' folder - using "
+                     + loadSource);
         } else {
-            log.info( "Agent template actions are expected in '" + oldTemplateActionsFolder + "' folder" );
+            log.info("Agent template actions are expected in '" + oldTemplateActionsFolder + "' folder");
         }
     }
 

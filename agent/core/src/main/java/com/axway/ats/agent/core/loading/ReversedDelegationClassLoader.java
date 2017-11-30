@@ -26,14 +26,14 @@ public class ReversedDelegationClassLoader extends URLClassLoader {
     public ReversedDelegationClassLoader( URL[] urls,
                                           ClassLoader parent ) {
 
-        super( urls, parent );
+        super(urls, parent);
     }
 
     @Override
     public void addURL(
                         URL url ) {
 
-        super.addURL( url );
+        super.addURL(url);
     }
 
     @Override
@@ -41,20 +41,20 @@ public class ReversedDelegationClassLoader extends URLClassLoader {
                                final String name ) throws ClassNotFoundException {
 
         // First, check if the class has already been loaded
-        Class<?> c = findLoadedClass( name );
-        if( c == null ) {
+        Class<?> c = findLoadedClass(name);
+        if (c == null) {
             try {
                 //then try to load the class
-                c = findClass( name );
-            } catch( ClassNotFoundException e ) {
+                c = findClass(name);
+            } catch (ClassNotFoundException e) {
                 //If still not found, then invoke the parent's loadClass 
                 //in order to find the class.
                 ClassLoader parent = getParent();
 
-                if( parent != null ) {
-                    c = parent.loadClass( name );
+                if (parent != null) {
+                    c = parent.loadClass(name);
                 } else {
-                    throw new ClassNotFoundException( name );
+                    throw new ClassNotFoundException(name);
                 }
             }
         }
@@ -65,16 +65,16 @@ public class ReversedDelegationClassLoader extends URLClassLoader {
     public InputStream getResourceAsStream(
                                             String name ) {
 
-        URL url = getResource( name );
+        URL url = getResource(name);
         try {
-            if( url != null ) {
+            if (url != null) {
                 URLConnection urlConnection = url.openConnection();
-                urlConnection.setUseCaches( false );
+                urlConnection.setUseCaches(false);
                 return urlConnection.getInputStream();
             } else {
                 return null;
             }
-        } catch( IOException e ) {
+        } catch (IOException e) {
             return null;
         }
     }

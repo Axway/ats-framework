@@ -19,11 +19,11 @@ package com.axway.ats.agent.core.exceptions;
  * Exception thrown when a call to a non-existent component
  * is made. 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchComponentException extends AgentException {
 
     public NoSuchComponentException( String componentName ) {
 
-        super( "Component '" + componentName + "' is not registered" );
+        super("Component '" + componentName + "' is not registered");
     }
 }

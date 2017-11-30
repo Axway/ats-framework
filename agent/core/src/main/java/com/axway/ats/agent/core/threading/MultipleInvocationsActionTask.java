@@ -78,9 +78,9 @@ public class MultipleInvocationsActionTask extends AbstractActionTask {
                                                                                 NoSuchActionException,
                                                                                 NoCompatibleMethodFoundException {
 
-        super( caller, queueName, threadsManager, itManager, actionRequests, dataProviders,
-               intervalBetweenIterations, minIntervalBetweenIterations, maxIntervalBetweenIterations,
-               listeners );
+        super(caller, queueName, threadsManager, itManager, actionRequests, dataProviders,
+              intervalBetweenIterations, minIntervalBetweenIterations, maxIntervalBetweenIterations,
+              listeners);
 
         this.totalIterations = totalIterations;
         this.currentIterations = 0;
@@ -96,7 +96,7 @@ public class MultipleInvocationsActionTask extends AbstractActionTask {
     @Override
     public ActionTaskResult execute() {
 
-        if( timeFrameStartTimestamp == 0 ) {
+        if (timeFrameStartTimestamp == 0) {
             // we enter this method for first time
             timeFrameStartTimestamp = Calendar.getInstance().getTimeInMillis();
         }
@@ -104,11 +104,11 @@ public class MultipleInvocationsActionTask extends AbstractActionTask {
         ActionTaskResult executionResult = null;
         try {
             //invoke all the iterations of this queue
-            while( currentIterations < totalIterations ) {
+            while (currentIterations < totalIterations) {
 
                 // check if we have been interrupted
-                if( Thread.interrupted() ) {
-                    log.debug( "Actions queue '" + queueName + "' has been cancelled - exiting" );
+                if (Thread.interrupted()) {
+                    log.debug("Actions queue '" + queueName + "' has been cancelled - exiting");
                     executionResult = ActionTaskResult.CANCELED;
                     break;
                 }
@@ -121,19 +121,19 @@ public class MultipleInvocationsActionTask extends AbstractActionTask {
                     sleepBetweenIterations();
 
                     // check for speed restriction only if it's not the final iteration
-                    if( totalExecutionsPerTimeFrame > 0 && currentIterations < totalIterations - 1 ) {
-                        evaluateSpeedProgress( 0 );
+                    if (totalExecutionsPerTimeFrame > 0 && currentIterations < totalIterations - 1) {
+                        evaluateSpeedProgress(0);
                     }
 
-                } catch( InterruptedException ie ) {
-                    log.warn( "Actions queue '" + queueName + "' has been cancelled - exiting" );
+                } catch (InterruptedException ie) {
+                    log.warn("Actions queue '" + queueName + "' has been cancelled - exiting");
                     executionResult = ActionTaskResult.CANCELED;
                     break;
                 }
 
                 currentIterations++;
 
-                if( isUseSynchronizedIterations && currentIterations < totalIterations ) {
+                if (isUseSynchronizedIterations && currentIterations < totalIterations) {
                     //we are synchronizing the iterations and we have more iterations to execute, 
                     //we have to pause now. We will be awaken when all threads have paused
                     executionResult = ActionTaskResult.PAUSED;
@@ -141,13 +141,13 @@ public class MultipleInvocationsActionTask extends AbstractActionTask {
                 }
             }
         } finally {
-            if( itManager != null && executionResult != ActionTaskResult.PAUSED ) {
+            if (itManager != null && executionResult != ActionTaskResult.PAUSED) {
                 // this queue is going down
                 itManager.shutdown();
             }
         }
 
-        if( executionResult == null ) {
+        if (executionResult == null) {
             executionResult = ActionTaskResult.FINISHED;
         }
         return executionResult;

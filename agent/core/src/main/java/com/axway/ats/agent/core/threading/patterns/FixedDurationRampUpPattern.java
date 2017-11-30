@@ -48,18 +48,18 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
                                        long intervalBetweenIterations, long rampUpInterval,
                                        int threadCountPerStep ) {
 
-        super( threadCount, intervalBetweenIterations, -1, -1, blockUntilCompletion );
+        super(threadCount, intervalBetweenIterations, -1, -1, blockUntilCompletion);
 
         this.duration = duration;
 
         this.rampUpInterval = rampUpInterval;
 
         //check the argument now
-        if( threadCountPerStep <= 0 ) {
-            throw new IllegalArgumentException( "The thread count per step must be a positive integer" );
+        if (threadCountPerStep <= 0) {
+            throw new IllegalArgumentException("The thread count per step must be a positive integer");
         }
-        if( threadCountPerStep >= threadCount ) {
-            throw new IllegalArgumentException( "The thread count per step must be smaller than the total thread count" );
+        if (threadCountPerStep >= threadCount) {
+            throw new IllegalArgumentException("The thread count per step must be smaller than the total thread count");
         }
 
         this.threadCountPerStep = threadCountPerStep;
@@ -80,10 +80,10 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
                                        long minIntervalBetweenIterations, long maxIntervalBetweenIterations,
                                        long rampUpInterval, int threadCountPerStep ) {
 
-        this( threadCount, blockUntilCompletion, duration, 0, rampUpInterval, threadCountPerStep );
+        this(threadCount, blockUntilCompletion, duration, 0, rampUpInterval, threadCountPerStep);
 
-        setMinIntervalBetweenIterations( minIntervalBetweenIterations );
-        setMaxIntervalBetweenIterations( maxIntervalBetweenIterations );
+        setMinIntervalBetweenIterations(minIntervalBetweenIterations);
+        setMaxIntervalBetweenIterations(maxIntervalBetweenIterations);
     }
 
     /**
@@ -98,7 +98,7 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
     public FixedDurationRampUpPattern( int threadCount, boolean blockUntilCompletion, int duration,
                                        long intervalBetweenIterations ) {
 
-        super( threadCount, intervalBetweenIterations, -1, -1, blockUntilCompletion );
+        super(threadCount, intervalBetweenIterations, -1, -1, blockUntilCompletion);
 
         this.duration = duration;
         this.rampUpInterval = 0;
@@ -115,7 +115,7 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
     @PublicAtsApi
     public FixedDurationRampUpPattern( int threadCount, boolean blockUntilCompletion, int duration ) {
 
-        this( threadCount, blockUntilCompletion, duration, 0 );
+        this(threadCount, blockUntilCompletion, duration, 0);
     }
 
     @Override
@@ -142,18 +142,18 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
         String description = "Fixed duration ramp up - " + NUMBER_THREADS_TOKEN + " total threads in "
                              + duration + " seconds, " + threadCountPerStep + " threads every "
                              + rampUpInterval + " ms, ";
-        if( intervalBetweenIterations > 0 ) {
+        if (intervalBetweenIterations > 0) {
             description += intervalBetweenIterations + " ms interval between iterations";
-        } else if( minIntervalBetweenIterations >= 0 ) {
+        } else if (minIntervalBetweenIterations >= 0) {
             description += minIntervalBetweenIterations + " to " + maxIntervalBetweenIterations
                            + " ms varying interval";
         } else {
             description += "no interval between iterations";
         }
-        if( iterationTimeout > 0 ) {
+        if (iterationTimeout > 0) {
             description += ", " + iterationTimeout + " secs iteration timeout";
         }
-        if( queuePassRateInPercents > 0 ) {
+        if (queuePassRateInPercents > 0) {
             description += ", pass if " + queuePassRateInPercents + "% of the iterations pass";
         }
         return description;
@@ -162,14 +162,14 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
     private FixedDurationRampUpPattern newInstance( int calculatedThreadCount,
                                                     int calculatedThreadCountPerStep ) {
 
-        FixedDurationRampUpPattern pattern = new FixedDurationRampUpPattern( calculatedThreadCount,
-                                                                             this.blockUntilCompletion,
-                                                                             this.duration,
-                                                                             this.intervalBetweenIterations,
-                                                                             this.rampUpInterval,
-                                                                             calculatedThreadCountPerStep );
-        pattern.setMinIntervalBetweenIterations( this.minIntervalBetweenIterations );
-        pattern.setMaxIntervalBetweenIterations( this.maxIntervalBetweenIterations );
+        FixedDurationRampUpPattern pattern = new FixedDurationRampUpPattern(calculatedThreadCount,
+                                                                            this.blockUntilCompletion,
+                                                                            this.duration,
+                                                                            this.intervalBetweenIterations,
+                                                                            this.rampUpInterval,
+                                                                            calculatedThreadCountPerStep);
+        pattern.setMinIntervalBetweenIterations(this.minIntervalBetweenIterations);
+        pattern.setMaxIntervalBetweenIterations(this.maxIntervalBetweenIterations);
         pattern.timeFrame = this.timeFrame;
         pattern.executionsPerTimeFrame = this.executionsPerTimeFrame;
         pattern.iterationTimeout = this.iterationTimeout;
@@ -180,29 +180,29 @@ public final class FixedDurationRampUpPattern extends ThreadingPattern
     public List<ThreadingPattern> distribute( int numHosts ) {
 
         List<ThreadingPattern> distributedPatterns = new ArrayList<ThreadingPattern>();
-        if( threadCount < numHosts ) {
-            log.warn( "We cannot distribute just " + threadCount + " threads on " + numHosts
-                      + " hosts. So all work will be done by one host" );
-            distributedPatterns.add( this );
-        } else if( this.timeFrame > 0 && executionsPerTimeFrame < numHosts ) {
-            log.warn( "We cannot distribute just " + executionsPerTimeFrame + " iterations per time frame on "
-                      + numHosts + " hosts. So all work will be done by one host" );
-            distributedPatterns.add( this );
+        if (threadCount < numHosts) {
+            log.warn("We cannot distribute just " + threadCount + " threads on " + numHosts
+                     + " hosts. So all work will be done by one host");
+            distributedPatterns.add(this);
+        } else if (this.timeFrame > 0 && executionsPerTimeFrame < numHosts) {
+            log.warn("We cannot distribute just " + executionsPerTimeFrame + " iterations per time frame on "
+                     + numHosts + " hosts. So all work will be done by one host");
+            distributedPatterns.add(this);
         } else {
             // for each host - distribute the total number of threads
-            int[] threadCountDistributionValues = new EvenLoadDistributingUtils().getEvenLoad( threadCount,
-                                                                                               numHosts );
+            int[] threadCountDistributionValues = new EvenLoadDistributingUtils().getEvenLoad(threadCount,
+                                                                                              numHosts);
             // for each host - distribute the number of threads per step
-            if( threadCountPerStep < numHosts ) {
-                throw new IllegalArgumentException( "The thread count per step [" + threadCountPerStep
-                                                    + "] must be at least as much as the number of agents ["
-                                                    + numHosts + "]" );
+            if (threadCountPerStep < numHosts) {
+                throw new IllegalArgumentException("The thread count per step [" + threadCountPerStep
+                                                   + "] must be at least as much as the number of agents ["
+                                                   + numHosts + "]");
             }
-            int[] stepThreadCountDistributionValues = new EvenLoadDistributingUtils().getEvenLoad( threadCountPerStep,
-                                                                                                   numHosts );
-            for( int i = 0; i < numHosts; i++ ) {
-                distributedPatterns.add( newInstance( threadCountDistributionValues[i],
-                                                      stepThreadCountDistributionValues[i] ) );
+            int[] stepThreadCountDistributionValues = new EvenLoadDistributingUtils().getEvenLoad(threadCountPerStep,
+                                                                                                  numHosts);
+            for (int i = 0; i < numHosts; i++) {
+                distributedPatterns.add(newInstance(threadCountDistributionValues[i],
+                                                    stepThreadCountDistributionValues[i]));
             }
         }
 

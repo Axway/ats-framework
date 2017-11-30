@@ -29,42 +29,42 @@ public class AtsVersionExtractor {
 
     public static void main( String[] args ) throws Exception {
 
-        System.out.println( getATSVersion( getWarLocation() ) );
+        System.out.println(getATSVersion(getWarLocation()));
     }
 
     public static String getATSVersion( String warFileLocation ) throws Exception {
 
         ZipInputStream coreJarInputStream = null;
-        ZipFile war = new ZipFile( new File( warFileLocation ) );
+        ZipFile war = new ZipFile(new File(warFileLocation));
         try {
             Enumeration<? extends ZipEntry> warEntries = war.entries();
             ZipEntry autoCoreJar = null;
-            while( warEntries.hasMoreElements() ) {
+            while (warEntries.hasMoreElements()) {
                 ZipEntry zipEntry = warEntries.nextElement();
-                if( zipEntry.getName().contains( "WEB-INF/lib/ats-core" ) ) { // including
-                                                                                  // ats-corelibrary
+                if (zipEntry.getName().contains("WEB-INF/lib/ats-core")) { // including
+                                                                           // ats-corelibrary
                     autoCoreJar = zipEntry;
                     break;
                 }
             }
-            if( autoCoreJar == null ) {
-                throw new RuntimeException( "Unable to find ats-core JAR in WEB-INF/lib/ folder of the war file" );
+            if (autoCoreJar == null) {
+                throw new RuntimeException("Unable to find ats-core JAR in WEB-INF/lib/ folder of the war file");
             }
 
-            coreJarInputStream = new ZipInputStream( war.getInputStream( autoCoreJar ) );
+            coreJarInputStream = new ZipInputStream(war.getInputStream(autoCoreJar));
             ZipEntry zipEntry = null;
-            while( ( zipEntry = coreJarInputStream.getNextEntry() ) != null ) {
-                if( ATS_VERSION_FILE.equals( zipEntry.getName() ) ) {
-                    byte[] bytes = new byte[( int ) zipEntry.getSize()];
-                    coreJarInputStream.read( bytes, 0, bytes.length );
-                    return new String( bytes, "UTF-8" );
+            while ( (zipEntry = coreJarInputStream.getNextEntry()) != null) {
+                if (ATS_VERSION_FILE.equals(zipEntry.getName())) {
+                    byte[] bytes = new byte[(int) zipEntry.getSize()];
+                    coreJarInputStream.read(bytes, 0, bytes.length);
+                    return new String(bytes, "UTF-8");
                 }
             }
         } finally {
-            if( coreJarInputStream != null ) {
+            if (coreJarInputStream != null) {
                 coreJarInputStream.close();
             }
-            if( war != null ) {
+            if (war != null) {
                 war.close();
             }
         }
@@ -78,16 +78,16 @@ public class AtsVersionExtractor {
                                                              .getCodeSource()
                                                              .getLocation()
                                                              .getPath();
-            String decodedPath = URLDecoder.decode( currentJarPath, "UTF-8" ); // solve the problem with spaces and
-                                                                               // special characters
-            File currentJarFile = new File( decodedPath );
+            String decodedPath = URLDecoder.decode(currentJarPath, "UTF-8"); // solve the problem with spaces and
+                                                                             // special characters
+            File currentJarFile = new File(decodedPath);
             decodedPath = currentJarFile.getParentFile().getCanonicalPath();
-            if( !decodedPath.endsWith( "/" ) && !decodedPath.endsWith( "\\" ) ) {
+            if (!decodedPath.endsWith("/") && !decodedPath.endsWith("\\")) {
                 decodedPath = decodedPath + "/";
             }
             return decodedPath + WAR_FILE_RELATIVE_LOCATION;
-        } catch( Exception e ) {
-            throw new RuntimeException( "Unable to find " + WAR_FILE_RELATIVE_LOCATION + " file", e );
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to find " + WAR_FILE_RELATIVE_LOCATION + " file", e);
         }
     }
 }

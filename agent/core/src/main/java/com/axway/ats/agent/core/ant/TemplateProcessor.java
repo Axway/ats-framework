@@ -42,8 +42,8 @@ class TemplateProcessor {
     public TemplateProcessor( InputStream templateStream,
                               String templateName ) throws IOException {
 
-        if( templateStream == null ) {
-            throw new BuildException( "Could not read template " + templateName );
+        if (templateStream == null) {
+            throw new BuildException("Could not read template " + templateName);
         }
 
         //init the placeholders
@@ -52,9 +52,9 @@ class TemplateProcessor {
         //read the template
         int temlateLength = templateStream.available();
         byte[] templateBuffer = new byte[temlateLength];
-        templateStream.read( templateBuffer );
+        templateStream.read(templateBuffer);
 
-        template = new String( templateBuffer );
+        template = new String(templateBuffer);
     }
 
     public String processTemplate() {
@@ -63,12 +63,12 @@ class TemplateProcessor {
 
         //replace the placeholders with the appropriate values
         Set<Map.Entry<String, String>> placeHolders = placeHolderValues.entrySet();
-        for( Map.Entry<String, String> placeHolderEntry : placeHolders ) {
+        for (Map.Entry<String, String> placeHolderEntry : placeHolders) {
 
             String placeHolder = placeHolderEntry.getKey();
             String value = placeHolderEntry.getValue();
 
-            processedTemplate = processedTemplate.replace( placeHolder, value );
+            processedTemplate = processedTemplate.replace(placeHolder, value);
         }
 
         return processedTemplate;

@@ -31,24 +31,24 @@ public class ImportantThread extends Thread {
     public ImportantThread() {
 
         super();
-        setName( NAME_PREFIX + getName() );
+        setName(NAME_PREFIX + getName());
     }
 
     public ImportantThread( Runnable target ) {
 
-        super( target );
-        setName( NAME_PREFIX + getName() );
+        super(target);
+        setName(NAME_PREFIX + getName());
     }
 
     public ImportantThread( String name ) {
 
-        super( name );
+        super(name);
     }
 
     public ImportantThread( Runnable target,
                             String name ) {
 
-        super( target, name );
+        super(target, name);
     }
 
     public String getDescription() {

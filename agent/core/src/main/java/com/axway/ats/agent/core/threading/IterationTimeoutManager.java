@@ -68,20 +68,20 @@ public class IterationTimeoutManager extends Thread {
 
         Thread thread = Thread.currentThread();
 
-        synchronized( this.threads ) {
+        synchronized (this.threads) {
             // find the soonest iteration start time
-            if( this.nextIterationStartTime > iterationStartTime ) {
+            if (this.nextIterationStartTime > iterationStartTime) {
                 this.nextIterationStartTime = iterationStartTime;
             }
 
             // set the start time of the next iteration for this thread
             String threadName = thread.getName();
-            ThreadDescriptor threadDesc = this.threads.get( threadName );
-            if( threadDesc == null ) { // add the thread if not known
+            ThreadDescriptor threadDesc = this.threads.get(threadName);
+            if (threadDesc == null) { // add the thread if not known
                 threadDesc = new ThreadDescriptor();
                 threadDesc.actionTask = actionTask;
                 threadDesc.thread = thread;
-                this.threads.put( threadName, threadDesc );
+                this.threads.put(threadName, threadDesc);
             }
             threadDesc.iterationStartTime = iterationStartTime;
         }
@@ -94,17 +94,17 @@ public class IterationTimeoutManager extends Thread {
 
         String threadName = Thread.currentThread().getName();
 
-        synchronized( this.threads ) {
-            ThreadDescriptor threadDesc = this.threads.get( threadName );
-            if( threadDesc != null ) {
+        synchronized (this.threads) {
+            ThreadDescriptor threadDesc = this.threads.get(threadName);
+            if (threadDesc != null) {
                 long thisThreadIterationStartTime = threadDesc.iterationStartTime;
                 threadDesc.iterationStartTime = NOT_SET_START_TIME;
 
-                if( thisThreadIterationStartTime == this.nextIterationStartTime ) {
+                if (thisThreadIterationStartTime == this.nextIterationStartTime) {
                     // we have to recalculate the start time of the next iteration
                     this.nextIterationStartTime = NOT_SET_START_TIME;
-                    for( ThreadDescriptor _threadDesc : threads.values() ) {
-                        if( this.nextIterationStartTime > _threadDesc.iterationStartTime ) {
+                    for (ThreadDescriptor _threadDesc : threads.values()) {
+                        if (this.nextIterationStartTime > _threadDesc.iterationStartTime) {
                             this.nextIterationStartTime = _threadDesc.iterationStartTime;
                         }
                     }
@@ -119,7 +119,7 @@ public class IterationTimeoutManager extends Thread {
     @Override
     public void run() {
 
-        Thread.currentThread().setName( THREAD_NAME + Thread.currentThread().getName() );
+        Thread.currentThread().setName(THREAD_NAME + Thread.currentThread().getName());
 
         // waiting for the first iteration to start
         waitForNextIterationStart();
@@ -137,13 +137,13 @@ public class IterationTimeoutManager extends Thread {
             // clear the next iteration start time, we will calculate it while cycling over the threads
             this.nextIterationStartTime = NOT_SET_START_TIME;
 
-            synchronized( this.threads ) {
+            synchronized (this.threads) {
                 // check if some iterations are late
                 Iterator<ThreadDescriptor> it = this.threads.values().iterator();
-                while( it.hasNext() ) {
+                while (it.hasNext()) {
                     ThreadDescriptor threadDesc = it.next();
 
-                    if( !threadDesc.thread.isAlive() || threadDesc.actionTask.isExternallyInterrupted() ) {
+                    if (!threadDesc.thread.isAlive() || threadDesc.actionTask.isExternallyInterrupted()) {
                         // 1. thread is not alive
                         // 2. thread is externally interrupted - for example user canceled the queue
                         // in both cases, we do not want to manage this thread anymore
@@ -154,18 +154,18 @@ public class IterationTimeoutManager extends Thread {
                         thereAreAliveThreads = true; // will keep cycling
 
                         // check if the thread is timed-out, it is still alive, probably sleeping before next iteration
-                        if( !threadDesc.actionTask.isTimedOut() // do not deal with timed out threads, this flag will be cleared before next iteration
+                        if (!threadDesc.actionTask.isTimedOut() // do not deal with timed out threads, this flag will be cleared before next iteration
                             && threadDesc.iterationStartTime != NOT_SET_START_TIME // do not deal with threads with unknown iteration start time
                         ) {
-                            if( threadDesc.iterationStartTime + timeoutMillis <= now ) {
+                            if (threadDesc.iterationStartTime + timeoutMillis <= now) {
                                 // thread has hit the timeout, it is time to interrupt it
 
                                 // 1. mark the thread as timed out.
                                 // This way when it receive an InterruptedException, it will know
                                 // it was interrupted due to timeout
-                                threadDesc.actionTask.setTimedOut( ( int ) ( ( now
-                                                                               - threadDesc.iterationStartTime )
-                                                                             / 1000 ) );
+                                threadDesc.actionTask.setTimedOut((int) ( (now
+                                                                           - threadDesc.iterationStartTime)
+                                                                          / 1000));
 
                                 // 2. clear the start time.
                                 // If this thread sleeps between iterations, 
@@ -178,7 +178,7 @@ public class IterationTimeoutManager extends Thread {
                                 threadDesc.thread.interrupt();
                             } else {
                                 // the timeout is not hit, but we need to find the next iteration start time
-                                if( this.nextIterationStartTime > threadDesc.iterationStartTime ) {
+                                if (this.nextIterationStartTime > threadDesc.iterationStartTime) {
                                     this.nextIterationStartTime = threadDesc.iterationStartTime;
                                 }
                             }
@@ -186,7 +186,7 @@ public class IterationTimeoutManager extends Thread {
                     }
                 }
             }
-        } while( thereAreAliveThreads && !this.isQueueOver );
+        } while (thereAreAliveThreads && !this.isQueueOver);
     }
 
     /**
@@ -196,10 +196,10 @@ public class IterationTimeoutManager extends Thread {
 
         String threadName = Thread.currentThread().getName();
 
-        synchronized( this.threads ) {
-            ThreadDescriptor threadDesc = this.threads.get( threadName );
-            if( threadDesc != null ) {
-                this.threads.remove( threadName );
+        synchronized (this.threads) {
+            ThreadDescriptor threadDesc = this.threads.get(threadName);
+            if (threadDesc != null) {
+                this.threads.remove(threadName);
                 this.isQueueOver = this.threads.size() == 0;
             }
         }
@@ -211,14 +211,14 @@ public class IterationTimeoutManager extends Thread {
     private void waitForNextIterationStart() {
 
         do {
-            if( this.isQueueOver ) {
+            if (this.isQueueOver) {
                 return;
             }
 
             try {
-                Thread.sleep( 1000 );
-            } catch( InterruptedException e ) {}
-        } while( this.nextIterationStartTime == NOT_SET_START_TIME );
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+        } while (this.nextIterationStartTime == NOT_SET_START_TIME);
     }
 
     /**
@@ -228,7 +228,7 @@ public class IterationTimeoutManager extends Thread {
 
         do {
             long timeToSleep = this.nextIterationStartTime + this.timeoutMillis - System.currentTimeMillis();;
-            if( timeToSleep <= 0 // there was some delay, no time to sleep
+            if (timeToSleep <= 0 // there was some delay, no time to sleep
 
                 // do not have a know iteration start time, maybe the threads are currently sleeping between iterations
                 || this.nextIterationStartTime == NOT_SET_START_TIME
@@ -243,9 +243,9 @@ public class IterationTimeoutManager extends Thread {
             // then we would sleep for that long period of time even after the queue is over.
             // That is why we sleep shortly and keep checking the <isQueueOver> flag
             try {
-                Thread.sleep( 1000 );
-            } catch( InterruptedException e ) {}
-        } while( true );
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+        } while (true);
     }
 
     class ThreadDescriptor {

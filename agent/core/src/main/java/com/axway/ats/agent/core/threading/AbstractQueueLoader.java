@@ -33,25 +33,25 @@ import com.axway.ats.log.AtsDbLogger;
 
 public abstract class AbstractQueueLoader implements QueueLoader {
 
-    protected final AtsDbLogger               log;
+    protected final AtsDbLogger           log;
 
-    protected String                         queueName;
-    protected StartPattern                   startPattern;
-    protected ExecutionPattern               executionPattern;
-    protected EndPattern                     endPattern;
-    protected List<ActionRequest>            actionRequests;
-    protected boolean                        blockUntilCompletion;
-    protected ActionTaskLoaderState          state;
-    protected List<ParameterDataProvider>    parameterDataProviders;
-    protected List<QueueLoaderListener> listeners;
+    protected String                      queueName;
+    protected StartPattern                startPattern;
+    protected ExecutionPattern            executionPattern;
+    protected EndPattern                  endPattern;
+    protected List<ActionRequest>         actionRequests;
+    protected boolean                     blockUntilCompletion;
+    protected ActionTaskLoaderState       state;
+    protected List<ParameterDataProvider> parameterDataProviders;
+    protected List<QueueLoaderListener>   listeners;
 
     AbstractQueueLoader( String queueName, List<ActionRequest> actionRequests, StartPattern startPattern,
                          ExecutionPattern executionPattern, EndPattern endPattern,
                          List<ParameterDataProvider> parameterDataProviders,
                          List<QueueLoaderListener> listeners ) throws NoSuchActionException,
-                                                                    NoCompatibleMethodFoundException {
+                                                               NoCompatibleMethodFoundException {
 
-        this.log = AtsDbLogger.getLogger( this.getClass().getName() );
+        this.log = AtsDbLogger.getLogger(this.getClass().getName());
 
         this.queueName = queueName;
         this.startPattern = startPattern;
@@ -109,8 +109,8 @@ public abstract class AbstractQueueLoader implements QueueLoader {
         state = ActionTaskLoaderState.FINISHED;
 
         //notify all listeners
-        for( QueueLoaderListener listener : listeners ) {
-            listener.onFinish( queueName );
+        for (QueueLoaderListener listener : listeners) {
+            listener.onFinish(queueName);
         }
 
         //notify the main thread that we are done

@@ -23,12 +23,12 @@ public class InvalidMatcherException extends AgentException {
 
     public InvalidMatcherException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public InvalidMatcherException( String message,
                                     Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

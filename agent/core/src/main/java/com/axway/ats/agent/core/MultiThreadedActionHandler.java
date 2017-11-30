@@ -51,17 +51,17 @@ import com.axway.ats.log.AtsDbLogger;
  */
 public class MultiThreadedActionHandler {
 
-    private static final AtsDbLogger           log = AtsDbLogger.getLogger( MultiThreadedActionHandler.class.getName() );
+    private static final AtsDbLogger                       log                           = AtsDbLogger.getLogger(MultiThreadedActionHandler.class.getName());
 
     // Map, holding all the MultiThreadedActionHandler instances for each Caller
     // < caller id, MultiThreadedActionHandler >
-    private static Map<String,MultiThreadedActionHandler> multiThreadedActionHandlerMap = new HashMap<>();
-    
+    private static Map<String, MultiThreadedActionHandler> multiThreadedActionHandlerMap = new HashMap<>();
+
     // List holding all the load queues
     // < queue name, queue loader>
-    private Map<String, QueueLoader>          queueLoadersMap;
+    private Map<String, QueueLoader>                       queueLoadersMap;
 
-    private List<QueueLoaderListener>         listeners;
+    private List<QueueLoaderListener>                      listeners;
 
     private MultiThreadedActionHandler() {
 
@@ -70,7 +70,7 @@ public class MultiThreadedActionHandler {
         this.listeners = new ArrayList<QueueLoaderListener>();
 
         //add the default listeners
-        this.listeners.add( new SimpleLoadQueueListener() );
+        this.listeners.add(new SimpleLoadQueueListener());
     }
 
     /**
@@ -78,29 +78,29 @@ public class MultiThreadedActionHandler {
      *
      * @return the instance
      */
-    public static synchronized MultiThreadedActionHandler getInstance(String caller) {
+    public static synchronized MultiThreadedActionHandler getInstance( String caller ) {
 
-        MultiThreadedActionHandler instance = multiThreadedActionHandlerMap.get( caller );
-        if( instance == null ) {
+        MultiThreadedActionHandler instance = multiThreadedActionHandlerMap.get(caller);
+        if (instance == null) {
             instance = new MultiThreadedActionHandler();
-            multiThreadedActionHandlerMap.put( caller, instance );
+            multiThreadedActionHandlerMap.put(caller, instance);
         }
 
         return instance;
     }
-    
-    public static synchronized void cancellAllQueuesFromAgent(String caller){
-       Iterator<String> it = multiThreadedActionHandlerMap.keySet().iterator();
-       while(it.hasNext()){
-           String key = it.next(); 
-           if(key.equals( caller )){
-               multiThreadedActionHandlerMap.get( key ).cancelAllQueues();
-           }
-           else{
-               log.warn( "Remaining queues from Caller [" + caller + "]: " );
-               log.warn(  multiThreadedActionHandlerMap.get( key ).queueLoadersMap.keySet().toString() );
-           }
-       }
+
+    public static synchronized void cancellAllQueuesFromAgent( String caller ) {
+
+        Iterator<String> it = multiThreadedActionHandlerMap.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            if (key.equals(caller)) {
+                multiThreadedActionHandlerMap.get(key).cancelAllQueues();
+            } else {
+                log.warn("Remaining queues from Caller [" + caller + "]: ");
+                log.warn(multiThreadedActionHandlerMap.get(key).queueLoadersMap.keySet().toString());
+            }
+        }
     }
 
     /**
@@ -134,9 +134,9 @@ public class MultiThreadedActionHandler {
                                                                     ParameterDataProviderNotSupportedException,
                                                                     ParameterDataProviderInitalizationException {
 
-        scheduleActions( caller, queueName, queueId, actionRequests, threadingPattern, loaderDataConfig,
-                         false );
-        startQueue( queueName );
+        scheduleActions(caller, queueName, queueId, actionRequests, threadingPattern, loaderDataConfig,
+                        false);
+        startQueue(queueName);
     }
 
     /**
@@ -176,30 +176,30 @@ public class MultiThreadedActionHandler {
 
         //check if we already have this queue and it has not finished yet
         //if the queue has finished, we can simply discard it
-        QueueLoader queueLoader = queueLoadersMap.get( queueName );
-        if( queueLoader != null ) {
+        QueueLoader queueLoader = queueLoadersMap.get(queueName);
+        if (queueLoader != null) {
 
-            throw new LoadQueueAlreadyExistsException( queueName, queueLoader.getState() );
+            throw new LoadQueueAlreadyExistsException(queueName, queueLoader.getState());
         }
 
         //create the data providers
         List<ParameterDataProvider> parameterDataProviders = new ArrayList<ParameterDataProvider>();
-        for( ParameterDataConfig paramDataConfigs : loaderDataConfig.getParameterConfigurations() ) {
-            parameterDataProviders.add( ParameterDataProviderFactory.createDataProvider( paramDataConfigs ) );
+        for (ParameterDataConfig paramDataConfigs : loaderDataConfig.getParameterConfigurations()) {
+            parameterDataProviders.add(ParameterDataProviderFactory.createDataProvider(paramDataConfigs));
         }
 
         //create the loader
-        queueLoader = LoadQueueFactory.createLoadQueue( queueName, actionRequests, threadingPattern,
-                                                        parameterDataProviders, listeners );
+        queueLoader = LoadQueueFactory.createLoadQueue(queueName, actionRequests, threadingPattern,
+                                                       parameterDataProviders, listeners);
 
-        log.rememberLoadQueueState( queueName, queueId, threadingPattern.getPatternDescription(),
-                                    threadingPattern.getThreadCount() );
+        log.rememberLoadQueueState(queueName, queueId, threadingPattern.getPatternDescription(),
+                                   threadingPattern.getThreadCount());
 
         //start the queue
-        queueLoader.scheduleThreads( caller, isUseSynchronizedIterations );
-        queueLoadersMap.put( queueName, queueLoader );
+        queueLoader.scheduleThreads(caller, isUseSynchronizedIterations);
+        queueLoadersMap.put(queueName, queueLoader);
 
-        log.info( "Scheduled queue '" + queueName + "'" );
+        log.info("Scheduled queue '" + queueName + "'");
     }
 
     /**
@@ -214,12 +214,12 @@ public class MultiThreadedActionHandler {
         //first cleanup the queues
         cleanupFinishedQueues();
 
-        QueueLoader queueLoader = queueLoadersMap.get( queueName );
-        if( queueLoader == null ) {
-            throw new NoSuchLoadQueueException( queueName );
+        QueueLoader queueLoader = queueLoadersMap.get(queueName);
+        if (queueLoader == null) {
+            throw new NoSuchLoadQueueException(queueName);
         }
 
-        log.info( "Starting queue '" + queueName + "'" );
+        log.info("Starting queue '" + queueName + "'");
 
         //start the queue
         queueLoader.start();
@@ -231,9 +231,9 @@ public class MultiThreadedActionHandler {
         //first cleanup the queues
         cleanupFinishedQueues();
 
-        QueueLoader queueLoader = queueLoadersMap.get( actionQueueName );
-        if( queueLoader == null ) {
-            throw new NoSuchLoadQueueException( actionQueueName );
+        QueueLoader queueLoader = queueLoadersMap.get(actionQueueName);
+        if (queueLoader == null) {
+            throw new NoSuchLoadQueueException(actionQueueName);
         }
 
         //resume the queue
@@ -246,12 +246,12 @@ public class MultiThreadedActionHandler {
     public void cancelAllQueues() {
 
         //cancel all queues
-        for( QueueLoader queueLoader : queueLoadersMap.values() ) {
+        for (QueueLoader queueLoader : queueLoadersMap.values()) {
             queueLoader.cancel();
-            if( queueLoader instanceof AbstractQueueLoader ) {
+            if (queueLoader instanceof AbstractQueueLoader) {
 
-                log.info( "Cancelled execution of queue '" + ( ( AbstractQueueLoader ) queueLoader ).getName()
-                          + "'" );
+                log.info("Cancelled execution of queue '" + ((AbstractQueueLoader) queueLoader).getName()
+                         + "'");
             }
         }
 
@@ -265,15 +265,15 @@ public class MultiThreadedActionHandler {
     public void cancelQueue( String queueName ) {
 
         //cancel queue
-        for( QueueLoader queueLoader : queueLoadersMap.values() ) {
-            if( ( queueLoader instanceof AbstractQueueLoader )
-                && ( ( AbstractQueueLoader ) queueLoader ).getName().equals( queueName ) ) {
+        for (QueueLoader queueLoader : queueLoadersMap.values()) {
+            if ( (queueLoader instanceof AbstractQueueLoader)
+                 && ((AbstractQueueLoader) queueLoader).getName().equals(queueName)) {
 
                 queueLoader.cancel();
             }
         }
 
-        log.info( "Cancelled execution of queue '" + queueName + "'" );
+        log.info("Cancelled execution of queue '" + queueName + "'");
 
         // cleanup the FINISHED queues
         cleanupFinishedQueues();
@@ -286,9 +286,9 @@ public class MultiThreadedActionHandler {
     public boolean isQueueRunning( String queueName ) {
 
         // search for the queue
-        for( QueueLoader queueLoader : queueLoadersMap.values() ) {
-            if( ( queueLoader instanceof AbstractQueueLoader )
-                && ( ( AbstractQueueLoader ) queueLoader ).getName().equals( queueName ) ) {
+        for (QueueLoader queueLoader : queueLoadersMap.values()) {
+            if ( (queueLoader instanceof AbstractQueueLoader)
+                 && ((AbstractQueueLoader) queueLoader).getName().equals(queueName)) {
 
                 return true;
             }
@@ -305,10 +305,10 @@ public class MultiThreadedActionHandler {
      */
     public void waitUntilQueueFinish( String queueName ) throws NoSuchLoadQueueException {
 
-        QueueLoader queueLoader = queueLoadersMap.get( queueName );
-        if( queueLoader == null ) {
-            log.warn( "We will not wait for queue with name '" + queueName
-                      + "' to finish as such queue is not present" );
+        QueueLoader queueLoader = queueLoadersMap.get(queueName);
+        if (queueLoader == null) {
+            log.warn("We will not wait for queue with name '" + queueName
+                     + "' to finish as such queue is not present");
         } else {
             //wait until the queue finishes
             queueLoader.waitUntilFinished();
@@ -323,8 +323,8 @@ public class MultiThreadedActionHandler {
      */
     public void waitUntilAllQueuesFinish() {
 
-        Set<QueueLoader> queueLoadersClone = new HashSet<QueueLoader>( queueLoadersMap.values() );
-        for( QueueLoader queueLoader : queueLoadersClone ) {
+        Set<QueueLoader> queueLoadersClone = new HashSet<QueueLoader>(queueLoadersMap.values());
+        for (QueueLoader queueLoader : queueLoadersClone) {
             //wait until the queue finishes
             queueLoader.waitUntilFinished();
         }
@@ -341,9 +341,9 @@ public class MultiThreadedActionHandler {
      */
     public boolean waitUntilQueueIsPaused( String queueName ) throws NoSuchLoadQueueException {
 
-        QueueLoader queueLoader = queueLoadersMap.get( queueName );
-        if( queueLoader == null ) {
-            throw new NoSuchLoadQueueException( queueName );
+        QueueLoader queueLoader = queueLoadersMap.get(queueName);
+        if (queueLoader == null) {
+            throw new NoSuchLoadQueueException(queueName);
         }
 
         //wait until the queue is paused
@@ -356,8 +356,8 @@ public class MultiThreadedActionHandler {
     public int getRunningQueuesCount() {
 
         int count = 0;
-        for( QueueLoader queueLoader : queueLoadersMap.values() ) {
-            if( queueLoader.getState() == ActionTaskLoaderState.RUNNING ) {
+        for (QueueLoader queueLoader : queueLoadersMap.values()) {
+            if (queueLoader.getState() == ActionTaskLoaderState.RUNNING) {
                 count++;
             }
         }
@@ -370,9 +370,9 @@ public class MultiThreadedActionHandler {
      */
     private synchronized void cleanupFinishedQueues() {
 
-        for( Iterator<QueueLoader> iterator = queueLoadersMap.values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<QueueLoader> iterator = queueLoadersMap.values().iterator(); iterator.hasNext();) {
             QueueLoader currentQueueLoader = iterator.next();
-            if( currentQueueLoader.getState() == ActionTaskLoaderState.FINISHED ) {
+            if (currentQueueLoader.getState() == ActionTaskLoaderState.FINISHED) {
                 iterator.remove();
             }
         }
@@ -386,9 +386,9 @@ public class MultiThreadedActionHandler {
 
         public void onFinish( String actionQueueName ) {
 
-            log.cleanupLoadQueueState( actionQueueName );
+            log.cleanupLoadQueueState(actionQueueName);
 
-            log.info( "Finished executing queue '" + actionQueueName + "'" );
+            log.info("Finished executing queue '" + actionQueueName + "'");
         }
     }
 }

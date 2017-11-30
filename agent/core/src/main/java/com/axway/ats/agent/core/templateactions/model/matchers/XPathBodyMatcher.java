@@ -26,7 +26,7 @@ import com.axway.ats.agent.core.templateactions.model.matchers.mode.TemplateBody
 
 public class XPathBodyMatcher extends ResponseMatcher {
 
-    private static final Logger       log              = Logger.getLogger( XPathBodyMatcher.class );
+    private static final Logger       log              = Logger.getLogger(XPathBodyMatcher.class);
 
     private static final long         serialVersionUID = 1;
 
@@ -49,32 +49,32 @@ public class XPathBodyMatcher extends ResponseMatcher {
         this.valueToMatch = valueToMatch;
         this.matchMode = matchMode;
 
-        if( matchMode == TemplateBodyNodeMatchMode.RANGE ) {
+        if (matchMode == TemplateBodyNodeMatchMode.RANGE) {
             String errMsgPrefix = "'" + valueToMatch + "' is not a well formatted numeric range string: ";
-            String[] rangeTokens = valueToMatch.split( "-" );
-            if( rangeTokens.length != 2 ) {
-                throw new InvalidMatcherException( errMsgPrefix
-                                                   + "The ',' delimiter must be present once, but it is present "
-                                                   + rangeTokens.length + " times" );
+            String[] rangeTokens = valueToMatch.split("-");
+            if (rangeTokens.length != 2) {
+                throw new InvalidMatcherException(errMsgPrefix
+                                                  + "The ',' delimiter must be present once, but it is present "
+                                                  + rangeTokens.length + " times");
             }
             try {
-                minValue = Integer.parseInt( rangeTokens[0].trim() );
-            } catch( NumberFormatException nfe ) {
-                throw new InvalidMatcherException( errMsgPrefix + "The minumum value is not a valid number" );
+                minValue = Integer.parseInt(rangeTokens[0].trim());
+            } catch (NumberFormatException nfe) {
+                throw new InvalidMatcherException(errMsgPrefix + "The minumum value is not a valid number");
             }
             try {
-                maxValue = Integer.parseInt( rangeTokens[1].trim() );
-            } catch( NumberFormatException nfe ) {
-                throw new InvalidMatcherException( errMsgPrefix + "The maxmimum value is not a valid number" );
+                maxValue = Integer.parseInt(rangeTokens[1].trim());
+            } catch (NumberFormatException nfe) {
+                throw new InvalidMatcherException(errMsgPrefix + "The maxmimum value is not a valid number");
             }
-            if( minValue > maxValue ) {
-                throw new InvalidMatcherException( errMsgPrefix
-                                                   + "The mimium value is bigger than the maxmimum value" );
+            if (minValue > maxValue) {
+                throw new InvalidMatcherException(errMsgPrefix
+                                                  + "The mimium value is bigger than the maxmimum value");
             }
         }
 
-        if( matchMode == TemplateBodyNodeMatchMode.LIST ) {
-            listValues = valueToMatch.split( "," );
+        if (matchMode == TemplateBodyNodeMatchMode.LIST) {
+            listValues = valueToMatch.split(",");
         }
     }
 
@@ -83,7 +83,7 @@ public class XPathBodyMatcher extends ResponseMatcher {
                                  Object expectedObject,
                                  Object actualObject ) {
 
-        Node actualNode = ( Node ) actualObject;
+        Node actualNode = (Node) actualObject;
 
         markProcessed();
 
@@ -91,60 +91,60 @@ public class XPathBodyMatcher extends ResponseMatcher {
         String actualValue = "";
 
         try {
-            String[][] xpathEntries = XmlUtilities.extractXpathEntries( actualNode, new String[]{ xpath } );
+            String[][] xpathEntries = XmlUtilities.extractXpathEntries(actualNode, new String[]{ xpath });
             // we know the xpathEntries.length == 1, as we request exactly 1 xpath
             // if xpathEntries[0].length == 0 - no entry was found
             // if xpathEntries[0].length > 1 - more than 1 entry was found, user must specify a more concrete path
-            if( xpathEntries[0].length == 1 ) {
+            if (xpathEntries[0].length == 1) {
 
                 actualValue = xpathEntries[0][0];
-                switch( matchMode ){
+                switch (matchMode) {
                     case CONTAINS:
-                        actualResult = actualValue.contains( valueToMatch );
+                        actualResult = actualValue.contains(valueToMatch);
                         break;
                     case EQUALS:
-                        actualResult = actualValue.equals( valueToMatch );
+                        actualResult = actualValue.equals(valueToMatch);
                         break;
                     case RANGE:
                         int actualNumericValue;
                         try {
-                            actualNumericValue = Integer.parseInt( actualValue );
+                            actualNumericValue = Integer.parseInt(actualValue);
                             actualResult = minValue <= actualNumericValue && actualNumericValue <= maxValue;
-                        } catch( NumberFormatException nfe ) {
-                            log.warn( "The value '" + actualValue + "' of body node '" + xpath
-                                      + "' is not a numeric value '" );
+                        } catch (NumberFormatException nfe) {
+                            log.warn("The value '" + actualValue + "' of body node '" + xpath
+                                     + "' is not a numeric value '");
                         }
                         break;
                     case LIST:
-                        for( String listValue : listValues ) {
-                            if( listValue.equals( actualValue ) ) {
+                        for (String listValue : listValues) {
+                            if (listValue.equals(actualValue)) {
                                 actualResult = true;
                                 break;
                             }
                         }
                         break;
                     case REGEX:
-                        actualResult = Pattern.compile( valueToMatch ).matcher( actualValue ).find();
+                        actualResult = Pattern.compile(valueToMatch).matcher(actualValue).find();
                         break;
                     case EXTRACT:
-                        actualResult = extractUserParameter( "response body", valueToMatch, actualValue );
+                        actualResult = extractUserParameter("response body", valueToMatch, actualValue);
                         break;
                 }
 
-                if( log.isDebugEnabled() ) {
-                    if( actualResult ) {
-                        log.debug( "Matched the value '" + actualValue + "' for " + toString() );
+                if (log.isDebugEnabled()) {
+                    if (actualResult) {
+                        log.debug("Matched the value '" + actualValue + "' for " + toString());
                     } else {
-                        log.debug( "Did not match the value '" + actualValue + "' for " + toString() );
+                        log.debug("Did not match the value '" + actualValue + "' for " + toString());
                     }
                 }
 
             } else {
-                log.error( "We expect to find exactly 1 element for " + toString() + ". But we found "
-                           + xpathEntries[0].length + " elements" );
+                log.error("We expect to find exactly 1 element for " + toString() + ". But we found "
+                          + xpathEntries[0].length + " elements");
             }
-        } catch( Exception e ) {
-            log.error( "Error extracting xpath element for " + toString(), e );
+        } catch (Exception e) {
+            log.error("Error extracting xpath element for " + toString(), e);
         }
 
         return actualResult;

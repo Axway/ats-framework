@@ -45,7 +45,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class ComponentActionMap {
 
-    private static final Logger                        log = Logger.getLogger( ComponentActionMap.class );
+    private static final Logger                        log = Logger.getLogger(ComponentActionMap.class);
 
     private String                                     componentName;
     private Class<? extends InitializationHandler>     initializationHandler;
@@ -75,28 +75,28 @@ public class ComponentActionMap {
      */
     public void registerActionClass( Class<?> actionClass ) {
 
-        log.info( "Registering action class '" + actionClass.getName() + "'" );
+        log.info("Registering action class '" + actionClass.getName() + "'");
 
-        for( Method classMethod : actionClass.getMethods() ) {
-            Action actionAnnotation = classMethod.getAnnotation( Action.class );
-            TemplateAction templateActionAnnotation = classMethod.getAnnotation( TemplateAction.class );
+        for (Method classMethod : actionClass.getMethods()) {
+            Action actionAnnotation = classMethod.getAnnotation(Action.class);
+            TemplateAction templateActionAnnotation = classMethod.getAnnotation(TemplateAction.class);
 
-            if( actionAnnotation != null || templateActionAnnotation != null ) {
+            if (actionAnnotation != null || templateActionAnnotation != null) {
                 String actionClassName = actionClass.getSimpleName();
                 String actionMethodName = classMethod.getName();
                 String actionName = actionAnnotation != null
                                                              ? actionAnnotation.name()
                                                              : templateActionAnnotation.name();
-                if( StringUtils.isNullOrEmpty( actionName ) ) {
-                    actionName = ActionMethod.buildActionMethodName( classMethod );
+                if (StringUtils.isNullOrEmpty(actionName)) {
+                    actionName = ActionMethod.buildActionMethodName(classMethod);
                 }
 
                 try {
-                    addAction( actionName, actionClassName, actionMethodName, classMethod, actionClass,
-                               actionAnnotation != null );
-                } catch( ActionAlreadyDefinedException aaee ) {
+                    addAction(actionName, actionClassName, actionMethodName, classMethod, actionClass,
+                              actionAnnotation != null);
+                } catch (ActionAlreadyDefinedException aaee) {
                     //log an error in case of a duplicate action and continue
-                    log.error( aaee.getMessage() );
+                    log.error(aaee.getMessage());
                 }
             }
         }
@@ -113,22 +113,22 @@ public class ComponentActionMap {
                             Class<?> actualClass,
                             boolean isRegularAction ) throws ActionAlreadyDefinedException {
 
-        ActionMethodContainer methodContainer = actions.get( actionName );
+        ActionMethodContainer methodContainer = actions.get(actionName);
 
-        if( methodContainer == null ) {
-            methodContainer = new ActionMethodContainer( componentName, actionName );
-            actions.put( actionName, methodContainer );
+        if (methodContainer == null) {
+            methodContainer = new ActionMethodContainer(componentName, actionName);
+            actions.put(actionName, methodContainer);
         }
 
         ActionMethod actionMethod;
-        if( isRegularAction ) {
-            actionMethod = new ActionMethod( componentName, actionName, method, actualClass );
+        if (isRegularAction) {
+            actionMethod = new ActionMethod(componentName, actionName, method, actualClass);
         } else {
-            actionMethod = new TemplateActionMethod( componentName, actionName, actionClassName,
-                                                     actionMethodName, method, actualClass );
+            actionMethod = new TemplateActionMethod(componentName, actionName, actionClassName,
+                                                    actionMethodName, method, actualClass);
         }
 
-        methodContainer.add( actionMethod );
+        methodContainer.add(actionMethod);
     }
 
     /**
@@ -146,7 +146,7 @@ public class ComponentActionMap {
                                                                             NoSuchActionException {
 
         Class<?> actionClass = actionMethod.getTheActualClass();
-        return getCachedActionClassInstance( caller, actionClass );
+        return getCachedActionClassInstance(caller, actionClass);
     }
 
     /**
@@ -166,35 +166,35 @@ public class ComponentActionMap {
         String actionClassName = actionClass.getName();
 
         try {
-            Object actionClassInstance = actionClassInstances.get( actionClassName );
-            if( actionClassInstance == null ) {
+            Object actionClassInstance = actionClassInstances.get(actionClassName);
+            if (actionClassInstance == null) {
                 Class<?> actionSuperClass = actionClass.getSuperclass();
-                if( actionSuperClass != null
+                if (actionSuperClass != null
                     && actionSuperClass.getSimpleName()
-                                       .equals( CallerRelatedAction.class.getSimpleName() ) ) {
+                                       .equals(CallerRelatedAction.class.getSimpleName())) {
                     // this is a CallerRelatedAction, we will pass the caller to it
 
-                    actionClassInstance = actionClass.getDeclaredConstructor( String.class )
-                                                     .newInstance( caller );
+                    actionClassInstance = actionClass.getDeclaredConstructor(String.class)
+                                                     .newInstance(caller);
                 } else {
                     // this is a regular Action class
                     actionClassInstance = actionClass.newInstance();
                 }
 
-                actionClassInstances.put( actionClassName, actionClassInstance );
+                actionClassInstances.put(actionClassName, actionClassInstance);
             }
 
             return actionClassInstance;
-        } catch( IllegalAccessException iae ) {
-            throw new ActionExecutionException( "Could not access action class " + actionClassName, iae );
-        } catch( InstantiationException ie ) {
-            throw new ActionExecutionException( "Could not instantiate action class " + actionClassName, ie );
-        } catch( InvocationTargetException ite ) {
-            throw new ActionExecutionException( "Could not instantiate action class " + actionClassName,
-                                                ite );
-        } catch( NoSuchMethodException nsme ) {
-            throw new ActionExecutionException( "Could not instantiate action class " + actionClassName,
-                                                nsme );
+        } catch (IllegalAccessException iae) {
+            throw new ActionExecutionException("Could not access action class " + actionClassName, iae);
+        } catch (InstantiationException ie) {
+            throw new ActionExecutionException("Could not instantiate action class " + actionClassName, ie);
+        } catch (InvocationTargetException ite) {
+            throw new ActionExecutionException("Could not instantiate action class " + actionClassName,
+                                               ite);
+        } catch (NoSuchMethodException nsme) {
+            throw new ActionExecutionException("Could not instantiate action class " + actionClassName,
+                                               nsme);
         }
     }
 
@@ -216,10 +216,10 @@ public class ComponentActionMap {
 
         try {
             return actionClass.newInstance();
-        } catch( IllegalAccessException iae ) {
-            throw new ActionExecutionException( "Could not access action class " + actionClassName, iae );
-        } catch( InstantiationException ie ) {
-            throw new ActionExecutionException( "Could not instantiate action class " + actionClassName, ie );
+        } catch (IllegalAccessException iae) {
+            throw new ActionExecutionException("Could not access action class " + actionClassName, iae);
+        } catch (InstantiationException ie) {
+            throw new ActionExecutionException("Could not instantiate action class " + actionClassName, ie);
         }
     }
 
@@ -237,11 +237,11 @@ public class ComponentActionMap {
                                                                NoCompatibleMethodFoundException {
 
         //first check if we have such action defined
-        if( !actions.containsKey( actionName ) ) {
-            throw new NoSuchActionException( actionName, componentName );
+        if (!actions.containsKey(actionName)) {
+            throw new NoSuchActionException(actionName, componentName);
         }
 
-        return actions.get( actionName ).get( argTypes );
+        return actions.get(actionName).get(argTypes);
     }
 
     /**
@@ -324,14 +324,14 @@ public class ComponentActionMap {
 
     public ComponentActionMap getNewCopy() {
 
-        ComponentActionMap newComponentActionMap = new ComponentActionMap( this.componentName );
+        ComponentActionMap newComponentActionMap = new ComponentActionMap(this.componentName);
 
         newComponentActionMap.initializationHandler = this.initializationHandler;
         newComponentActionMap.finalizationHandler = this.finalizationHandler;
         newComponentActionMap.cleanupHandler = this.cleanupHandler;
 
-        for( Entry<String, ActionMethodContainer> actionEntry : this.actions.entrySet() ) {
-            newComponentActionMap.actions.put( actionEntry.getKey(), actionEntry.getValue().getNewCopy() );
+        for (Entry<String, ActionMethodContainer> actionEntry : this.actions.entrySet()) {
+            newComponentActionMap.actions.put(actionEntry.getKey(), actionEntry.getValue().getNewCopy());
         }
 
         /* We do not clone

@@ -31,7 +31,7 @@ import com.axway.ats.agent.core.model.EnvironmentCleanupHandler;
  */
 public class EnvironmentHandler {
 
-    private static final Logger                        log = Logger.getLogger( ActionHandler.class );
+    private static final Logger                        log = Logger.getLogger(ActionHandler.class);
 
     private static EnvironmentHandler                  instance;
 
@@ -47,7 +47,7 @@ public class EnvironmentHandler {
 
     public static synchronized EnvironmentHandler getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new EnvironmentHandler();
         }
 
@@ -67,12 +67,12 @@ public class EnvironmentHandler {
      */
     public void restoreAll(
                             String environmentName ) throws ActionExecutionException,
-                                                    InternalComponentException, AgentException {
+                                                     InternalComponentException, AgentException {
 
         //restore environment for all components
-        for( Component component : ComponentRepository.getInstance().getAllComponents() ) {
+        for (Component component : ComponentRepository.getInstance().getAllComponents()) {
             String currentComponentName = component.getComponentName();
-            restore( currentComponentName, environmentName, null );
+            restore(currentComponentName, environmentName, null);
         }
     }
 
@@ -94,43 +94,43 @@ public class EnvironmentHandler {
                          String componentName,
                          String environmentName,
                          String folderPath ) throws ActionExecutionException, NoSuchComponentException,
-                                            InternalComponentException, AgentException {
+                                             InternalComponentException, AgentException {
 
-        Component component = ComponentRepository.getInstance().getComponent( componentName );
+        Component component = ComponentRepository.getInstance().getComponent(componentName);
 
-        log.debug( "Executing environment restore for component '" + componentName + "'"
-                   + ( environmentName == null
-                                              ? ""
-                                              : " using environment '" + environmentName + "'" )
-                   + ( folderPath == null
-                                         ? ""
-                                         : " from folder '" + folderPath + "'" ) );
+        log.debug("Executing environment restore for component '" + componentName + "'"
+                  + (environmentName == null
+                                             ? ""
+                                             : " using environment '" + environmentName + "'")
+                  + (folderPath == null
+                                        ? ""
+                                        : " from folder '" + folderPath + "'"));
 
         //first restore the environment associated with the current component
         ComponentEnvironment componentEnvironment;
-        if( environmentName == null ) {
-            componentEnvironment = ComponentRepository.getInstance().getComponentEnvironment( componentName );
+        if (environmentName == null) {
+            componentEnvironment = ComponentRepository.getInstance().getComponentEnvironment(componentName);
         } else {
             componentEnvironment = ComponentRepository.getInstance()
-                                                      .getComponentEnvironment( componentName,
-                                                                                environmentName );
+                                                      .getComponentEnvironment(componentName,
+                                                                               environmentName);
         }
         //check if there is environment configuration
-        if( componentEnvironment != null ) {
+        if (componentEnvironment != null) {
 
-            componentEnvironment.restore( folderPath );
+            componentEnvironment.restore(folderPath);
         }
 
         // FIXME: What about if environmentName != null, do we have to call cleanupHandler.clean()
         // or we have to add a new method in EnvironmentCleanupHandler, eg. clean( environmentName )
 
         //restore environment for the specified component
-        EnvironmentCleanupHandler cleanupHandler = getEnvironmentCleanupHandlerInstance( component );
-        if( cleanupHandler != null ) {
-            log.debug( "Executing cleanup for component '" + componentName + "'" );
+        EnvironmentCleanupHandler cleanupHandler = getEnvironmentCleanupHandlerInstance(component);
+        if (cleanupHandler != null) {
+            log.debug("Executing cleanup for component '" + componentName + "'");
             cleanupHandler.clean();
         } else {
-            log.debug( "No cleanup hanlder defined for component '" + componentName + "'" );
+            log.debug("No cleanup hanlder defined for component '" + componentName + "'");
         }
     }
 
@@ -145,13 +145,13 @@ public class EnvironmentHandler {
      */
     public void backupAll(
                            String environmentName ) throws ActionExecutionException,
-                                                   NoSuchComponentException, InternalComponentException,
-                                                   AgentException {
+                                                    NoSuchComponentException, InternalComponentException,
+                                                    AgentException {
 
         //backup environment for all components
-        for( Component component : ComponentRepository.getInstance().getAllComponents() ) {
+        for (Component component : ComponentRepository.getInstance().getAllComponents()) {
             String currentComponentName = component.getComponentName();
-            backup( currentComponentName, environmentName, null );
+            backup(currentComponentName, environmentName, null);
         }
     }
 
@@ -171,29 +171,29 @@ public class EnvironmentHandler {
                         String componentName,
                         String environmentName,
                         String folderPath ) throws ActionExecutionException, NoSuchComponentException,
-                                           InternalComponentException, AgentException {
+                                            InternalComponentException, AgentException {
 
-        log.debug( "Executing environment backup for component '" + componentName + "'"
-                   + ( environmentName == null
-                                              ? ""
-                                              : " using environment '" + environmentName + "'" )
-                   + ( folderPath == null
-                                         ? ""
-                                         : " from folder '" + folderPath + "'" ) );
+        log.debug("Executing environment backup for component '" + componentName + "'"
+                  + (environmentName == null
+                                             ? ""
+                                             : " using environment '" + environmentName + "'")
+                  + (folderPath == null
+                                        ? ""
+                                        : " from folder '" + folderPath + "'"));
 
         //backup environment for the specified component
         ComponentEnvironment componentEnvironment = null;
-        if( environmentName == null ) {
-            componentEnvironment = ComponentRepository.getInstance().getComponentEnvironment( componentName );
+        if (environmentName == null) {
+            componentEnvironment = ComponentRepository.getInstance().getComponentEnvironment(componentName);
         } else {
             componentEnvironment = ComponentRepository.getInstance()
-                                                      .getComponentEnvironment( componentName,
-                                                                                environmentName );
+                                                      .getComponentEnvironment(componentName,
+                                                                               environmentName);
         }
         //check if there is environment configuration
-        if( componentEnvironment != null ) {
+        if (componentEnvironment != null) {
 
-            componentEnvironment.backup( folderPath );
+            componentEnvironment.backup(folderPath);
         }
     }
 
@@ -207,32 +207,32 @@ public class EnvironmentHandler {
      */
     private EnvironmentCleanupHandler getEnvironmentCleanupHandlerInstance(
                                                                             Component component )
-                                                                                                 throws ActionExecutionException {
+                                                                                                  throws ActionExecutionException {
 
         String componentName = component.getComponentName();
         Class<? extends EnvironmentCleanupHandler> cleanupHandler = component.getActionMap()
                                                                              .getCleanupHandler();
 
         //no cleanup handler defined for the component
-        if( cleanupHandler == null ) {
+        if (cleanupHandler == null) {
             return null;
         }
 
         try {
 
-            EnvironmentCleanupHandler cleanupClassInstance = cleanupClassInstances.get( componentName );
-            if( cleanupClassInstance == null ) {
+            EnvironmentCleanupHandler cleanupClassInstance = cleanupClassInstances.get(componentName);
+            if (cleanupClassInstance == null) {
                 cleanupClassInstance = cleanupHandler.newInstance();
-                cleanupClassInstances.put( componentName, cleanupClassInstance );
+                cleanupClassInstances.put(componentName, cleanupClassInstance);
             }
 
             return cleanupClassInstance;
-        } catch( IllegalAccessException iae ) {
-            throw new ActionExecutionException( "Could not access cleanup class " + cleanupHandler.getName(),
-                                                iae );
-        } catch( InstantiationException ie ) {
-            throw new ActionExecutionException( "Could not instantiate cleanup class "
-                                                + cleanupHandler.getName(), ie );
+        } catch (IllegalAccessException iae) {
+            throw new ActionExecutionException("Could not access cleanup class " + cleanupHandler.getName(),
+                                               iae);
+        } catch (InstantiationException ie) {
+            throw new ActionExecutionException("Could not instantiate cleanup class "
+                                               + cleanupHandler.getName(), ie);
         }
     }
 }

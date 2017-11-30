@@ -39,33 +39,33 @@ public class ACGen extends Task {
     public void execute() {
 
         //check if all the required properites are set
-        if( descriptor == null ) {
-            throw new BuildException( "Property 'descriptor' is required - set it to the location of the Agent descriptor file" );
+        if (descriptor == null) {
+            throw new BuildException("Property 'descriptor' is required - set it to the location of the Agent descriptor file");
         }
 
-        if( sourcedir == null ) {
-            throw new BuildException( "Property 'sourcedir' is required - set it to the folder containing the source code of the action classes" );
+        if (sourcedir == null) {
+            throw new BuildException("Property 'sourcedir' is required - set it to the folder containing the source code of the action classes");
         }
 
-        if( destdir == null ) {
-            throw new BuildException( "Property 'destdir' is required - set it to the destination folder" );
+        if (destdir == null) {
+            throw new BuildException("Property 'destdir' is required - set it to the destination folder");
         }
 
-        if( targetPackage == null ) {
-            throw new BuildException( "Property 'targetPackage' is required - set it to the target package for the generated stubs" );
+        if (targetPackage == null) {
+            throw new BuildException("Property 'targetPackage' is required - set it to the target package for the generated stubs");
         }
 
-        ActionClassGenerator actionClassGen = new ActionClassGenerator( descriptor,
-                                                                        sourcedir.getAbsolutePath(),
-                                                                        destdir.getAbsolutePath(),
-                                                                        sourcePackage,
-                                                                        targetPackage,
-                                                                        customTemplates );
+        ActionClassGenerator actionClassGen = new ActionClassGenerator(descriptor,
+                                                                       sourcedir.getAbsolutePath(),
+                                                                       destdir.getAbsolutePath(),
+                                                                       sourcePackage,
+                                                                       targetPackage,
+                                                                       customTemplates);
 
         try {
             actionClassGen.generate();
-        } catch( Exception e ) {
-            throw new BuildException( e );
+        } catch (Exception e) {
+            throw new BuildException(e);
         }
     }
 
@@ -132,6 +132,6 @@ public class ACGen extends Task {
     public void addConfiguredClassTemplate(
                                             CustomClassTemplate template ) {
 
-        customTemplates.put( template.getActionClass(), template.getTemplate() );
+        customTemplates.put(template.getActionClass(), template.getTemplate());
     }
 }

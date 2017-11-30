@@ -34,7 +34,7 @@ import com.axway.ats.agent.webapp.client.AgentService;
  */
 public class RemoteConfigurationManager {
 
-    private static Logger log = Logger.getLogger( RemoteConfigurationManager.class );
+    private static Logger log = Logger.getLogger(RemoteConfigurationManager.class);
 
     /**
      * Push the provided configuration to the remote Agent
@@ -48,35 +48,35 @@ public class RemoteConfigurationManager {
                                    Configurator configurator ) throws AgentException {
 
         // get the client instance
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         List<Configurator> configurators = new ArrayList<Configurator>();
-        configurators.add( configurator );
+        configurators.add(configurator);
 
         String checkServerLogsStr = ". Check server logs for more details.";
         try {
             // serialize the configurators
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
-            objectOutStream.writeObject( configurators );
+            ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
+            objectOutStream.writeObject(configurators);
 
-            agentServicePort.pushConfiguration( byteOutStream.toByteArray() );
+            agentServicePort.pushConfiguration(byteOutStream.toByteArray());
 
-            log.info( "Successfully set the " + configurator.getDescription() + " on ATS Agent at '"
-                      + atsAgent + "'" );
-        } catch( IOException ioe ) {
+            log.info("Successfully set the " + configurator.getDescription() + " on ATS Agent at '"
+                     + atsAgent + "'");
+        } catch (IOException ioe) {
             // log hint for further serialization issue investigation
             String msg = "Could not serialize configurators" + checkServerLogsStr;
-            log.error( msg, ioe );
-            throw new AgentException( msg, ioe );
-        } catch( AgentException_Exception ae ) {
+            log.error(msg, ioe);
+            throw new AgentException(msg, ioe);
+        } catch (AgentException_Exception ae) {
             String msg = ae.getMessage() + checkServerLogsStr;
-            log.error( msg, ae );
-            throw new AgentException( msg, ae.getCause() );
-        } catch( Exception e ) {
+            log.error(msg, ae);
+            throw new AgentException(msg, ae.getCause());
+        } catch (Exception e) {
             String msg = e.getMessage() + checkServerLogsStr;
-            log.error( msg, e );
-            throw new AgentException( msg, e );
+            log.error(msg, e);
+            throw new AgentException(msg, e);
         }
     }
 }

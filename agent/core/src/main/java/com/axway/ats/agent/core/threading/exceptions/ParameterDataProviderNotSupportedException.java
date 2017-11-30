@@ -17,19 +17,19 @@ package com.axway.ats.agent.core.threading.exceptions;
 
 import com.axway.ats.agent.core.exceptions.AgentException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ParameterDataProviderNotSupportedException extends AgentException {
 
     public ParameterDataProviderNotSupportedException( Class<?> dataProviderConfigClass ) {
 
-        super( "Parameter data provider configuration of type " + dataProviderConfigClass.getName()
-               + " is not supported" );
+        super("Parameter data provider configuration of type " + dataProviderConfigClass.getName()
+              + " is not supported");
     }
 
     public ParameterDataProviderNotSupportedException( Class<?> dataProviderConfigClass,
                                                        Exception e ) {
 
-        super( "Error creating instance of parameter data provider for " + dataProviderConfigClass.getName(),
-               e );
+        super("Error creating instance of parameter data provider for " + dataProviderConfigClass.getName(),
+              e);
     }
 }

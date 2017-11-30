@@ -30,7 +30,7 @@ import com.axway.ats.core.monitoring.MonitoringException;
  */
 public class MonitoringContext {
 
-    private static final Logger      log                               = Logger.getLogger( MonitoringContext.class );
+    private static final Logger      log                               = Logger.getLogger(MonitoringContext.class);
 
     // the singleton instance
     private static MonitoringContext instance;
@@ -47,7 +47,7 @@ public class MonitoringContext {
 
     public static MonitoringContext getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new MonitoringContext();
         }
         return instance;
@@ -55,9 +55,9 @@ public class MonitoringContext {
 
     public void init() throws IOException {
 
-        if( !ReadingsRepository.getInstance().isConfigured() ) {
+        if (!ReadingsRepository.getInstance().isConfigured()) {
 
-            log.info( "Initializing the Monitoring library" );
+            log.info("Initializing the Monitoring library");
 
             List<String> configurationFiles = new ArrayList<String>();
 
@@ -65,34 +65,36 @@ public class MonitoringContext {
 
             // find the default configuration
             String defaultConfigurationFile = null;
-            if( this.getClass().getResource( DEFAULT_PERFORMANCE_CONFIGURATION ) != null ) {
+            if (this.getClass().getResource(DEFAULT_PERFORMANCE_CONFIGURATION) != null) {
                 defaultConfigurationFile = this.getClass()
-                                               .getResource( DEFAULT_PERFORMANCE_CONFIGURATION )
+                                               .getResource(DEFAULT_PERFORMANCE_CONFIGURATION)
                                                .getFile();
             }
-            if( defaultConfigurationFile != null ) {
-                configurationFiles.add( defaultConfigurationFile );
+            if (defaultConfigurationFile != null) {
+                configurationFiles.add(defaultConfigurationFile);
             } else {
-                throw new MonitoringException( "Unable to initialize the default monitoring service configuration: Unable to find the "
-                                               + DEFAULT_PERFORMANCE_CONFIGURATION + " file." );
+                throw new MonitoringException("Unable to initialize the default monitoring service configuration: Unable to find the "
+                                              + DEFAULT_PERFORMANCE_CONFIGURATION + " file.");
             }
 
             // find the custom configuration searched in the classpath
-            Enumeration<URL> customLinuxConfigurationURLs = this.getClass().getClassLoader().getResources(CUSTOM_PERFORMANCE_CONFIGURATION );
+            Enumeration<URL> customLinuxConfigurationURLs = this.getClass()
+                                                                .getClassLoader()
+                                                                .getResources(CUSTOM_PERFORMANCE_CONFIGURATION);
             int counter = 0;
-            while ( customLinuxConfigurationURLs.hasMoreElements() ) {
+            while (customLinuxConfigurationURLs.hasMoreElements()) {
                 counter++;
-                configurationFiles.add( customLinuxConfigurationURLs.nextElement().getPath() );
+                configurationFiles.add(customLinuxConfigurationURLs.nextElement().getPath());
             }
-            if( counter == 0 ) {
-                log.debug( "No custom linux configuration detected. It is searched as a "
-                        + CUSTOM_PERFORMANCE_CONFIGURATION + " file in the classpath" );
+            if (counter == 0) {
+                log.debug("No custom linux configuration detected. It is searched as a "
+                          + CUSTOM_PERFORMANCE_CONFIGURATION + " file in the classpath");
             }
 
             // 2. Parse the configuration files
-            ReadingsRepository.getInstance().loadConfigurarions( configurationFiles );
+            ReadingsRepository.getInstance().loadConfigurarions(configurationFiles);
 
-            log.info( "Successfully initialized the Monitoring service" );
+            log.info("Successfully initialized the Monitoring service");
         }
     }
 }

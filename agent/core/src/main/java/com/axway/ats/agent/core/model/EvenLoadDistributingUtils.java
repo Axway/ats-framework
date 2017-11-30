@@ -25,14 +25,14 @@ public class EvenLoadDistributingUtils {
      * @return array with [number of values for all channels without the last one, number of values for the last channel]
      */
     public int[] getEvenLoad(
-                               int numberValues,
-                               int numberChannels ) {
-        
+                              int numberValues,
+                              int numberChannels ) {
+
         int[] channelValues = new int[numberChannels];
-        for( int i = numberChannels; i > 0; i-- ) {
-            int iterations = ( int ) Math.round( ( float ) numberValues / i );
+        for (int i = numberChannels; i > 0; i--) {
+            int iterations = (int) Math.round((float) numberValues / i);
             numberValues -= iterations;
-            channelValues[i-1] = iterations;
+            channelValues[i - 1] = iterations;
         }
 
         return channelValues;

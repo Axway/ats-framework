@@ -25,19 +25,19 @@ abstract class Context {
     public Object getAttribute(
                                 String name ) {
 
-        return attribs.get( name );
+        return attribs.get(name);
     }
 
     public void removeAttribute(
                                  String name ) {
 
-        attribs.remove( name );
+        attribs.remove(name);
     }
 
     public void setAttribute(
                               String name,
                               Object object ) {
 
-        attribs.put( name, object );
+        attribs.put(name, object);
     }
 }

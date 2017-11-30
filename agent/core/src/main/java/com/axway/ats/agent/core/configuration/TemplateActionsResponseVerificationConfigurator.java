@@ -53,7 +53,7 @@ public class TemplateActionsResponseVerificationConfigurator implements Configur
     public static synchronized TemplateActionsResponseVerificationConfigurator
             getInstance( String queueName ) {
 
-        return instances.get( queueName );
+        return instances.get(queueName);
     }
 
     public TemplateActionsResponseVerificationConfigurator( String queueName ) {
@@ -79,12 +79,12 @@ public class TemplateActionsResponseVerificationConfigurator implements Configur
 
         this.verificators = new HashMap<String, TemplateActionResponseVerificator>();
 
-        instances.put( queueName, this );
+        instances.put(queueName, this);
     }
 
     public void addGlobalHeaderMatchers( Set<HeaderMatcher> globalMatchers ) {
 
-        this.globalHeadersMatchers.addAll( globalMatchers );
+        this.globalHeadersMatchers.addAll(globalMatchers);
     }
 
     /**
@@ -95,10 +95,10 @@ public class TemplateActionsResponseVerificationConfigurator implements Configur
         // FIXME - get new instance only for new thread. Use ThreadContext
         // return new instance because referenced headers are modified in merging steps in XmlUtilities.verifyResponseHeaders()
         //long startTime = System.nanoTime();
-        Set<HeaderMatcher> newCopy = new HashSet<HeaderMatcher>( globalHeadersMatchers.size() );
-        for( HeaderMatcher headerMatcher : globalHeadersMatchers ) {
-            HeaderMatcher newHeaderMatcher = new HeaderMatcher( headerMatcher );
-            newCopy.add( newHeaderMatcher );
+        Set<HeaderMatcher> newCopy = new HashSet<HeaderMatcher>(globalHeadersMatchers.size());
+        for (HeaderMatcher headerMatcher : globalHeadersMatchers) {
+            HeaderMatcher newHeaderMatcher = new HeaderMatcher(headerMatcher);
+            newCopy.add(newHeaderMatcher);
         }
         // log.debug( "**** TMP FIXME: copy global header matchers with size: " + globalHeadersMatchers.size() + ", done in " + (System.nanoTime()-startTime) + " ms.");
         return newCopy;
@@ -106,23 +106,23 @@ public class TemplateActionsResponseVerificationConfigurator implements Configur
 
     public void addActionVerificator( TemplateActionResponseVerificator verificator ) {
 
-        this.verificators.put( verificator.getActionName(), verificator );
+        this.verificators.put(verificator.getActionName(), verificator);
     }
 
     public TemplateActionResponseVerificator getActionVerificator( String actionName ) {
 
-        return this.verificators.get( actionName );
+        return this.verificators.get(actionName);
     }
 
     @Override
     public void apply() throws ConfigurationException {
 
         // the configurator has been deserialized, we need to create a new instance here
-        TemplateActionsResponseVerificationConfigurator instance = new TemplateActionsResponseVerificationConfigurator( this.queueName );
+        TemplateActionsResponseVerificationConfigurator instance = new TemplateActionsResponseVerificationConfigurator(this.queueName);
         instance.verificators = this.verificators;
 
-        for( HeaderMatcher headerMatcher : this.globalHeadersMatchers ) {
-            instance.globalHeadersMatchers.add( headerMatcher );
+        for (HeaderMatcher headerMatcher : this.globalHeadersMatchers) {
+            instance.globalHeadersMatchers.add(headerMatcher);
         }
     }
 

@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 public class TextBodyMatcher extends ResponseMatcher {
 
-    private static final Logger log              = Logger.getLogger( TextBodyMatcher.class );
+    private static final Logger log              = Logger.getLogger(TextBodyMatcher.class);
 
     private static final long   serialVersionUID = 1;
 
@@ -34,7 +34,7 @@ public class TextBodyMatcher extends ResponseMatcher {
     public TextBodyMatcher( String valueToMatch,
                             boolean isRegex ) {
 
-        this( valueToMatch, isRegex, false );
+        this(valueToMatch, isRegex, false);
     }
 
     /*
@@ -56,58 +56,58 @@ public class TextBodyMatcher extends ResponseMatcher {
                                  Object expectedObject,
                                  Object actualObject ) {
 
-        String actualText = ( String ) actualObject;
+        String actualText = (String) actualObject;
 
         markProcessed();
 
         boolean actualResult = false;
-        if( isRegex ) {
-            if( Pattern.compile( valueToMatch ).matcher( actualText ).find() ) {
+        if (isRegex) {
+            if (Pattern.compile(valueToMatch).matcher(actualText).find()) {
                 actualResult = true;
             }
         } else {
-            if( actualText.contains( valueToMatch ) ) {
+            if (actualText.contains(valueToMatch)) {
                 actualResult = true;
             }
         }
 
-        if( shouldNotBeFound ) {
+        if (shouldNotBeFound) {
             actualResult = !actualResult;
         }
 
-        if( log.isDebugEnabled() ) {
+        if (log.isDebugEnabled()) {
 
-            if( actualResult ) {
-                log.debug( "Matched " + toString() );
+            if (actualResult) {
+                log.debug("Matched " + toString());
             } else {
-                log.debug( "Did not match " + toString() + "\nActual text inspected for match:"
-                           + actualText );
+                log.debug("Did not match " + toString() + "\nActual text inspected for match:"
+                          + actualText);
             }
         }
-        matchResult = new Boolean( actualResult );
+        matchResult = new Boolean(actualResult);
         return actualResult;
     }
 
     @Override
     public String toString() {
 
-        StringBuilder toReturn = new StringBuilder( 100 );
-        toReturn.append( "Text " );
-        if( isRegex ) {
-            toReturn.append( "regular expression " );
+        StringBuilder toReturn = new StringBuilder(100);
+        toReturn.append("Text ");
+        if (isRegex) {
+            toReturn.append("regular expression ");
         }
-        toReturn.append( "matcher with expected value: " );
-        if( shouldNotBeFound ) {
-            toReturn.append( "NOT " );
+        toReturn.append("matcher with expected value: ");
+        if (shouldNotBeFound) {
+            toReturn.append("NOT ");
         }
-        toReturn.append( "'" + valueToMatch + "'" );
-        if( processed && matchResult != null && matchResult.booleanValue() == false && !shouldNotBeFound
-            && !log.isDebugEnabled() ) {
+        toReturn.append("'" + valueToMatch + "'");
+        if (processed && matchResult != null && matchResult.booleanValue() == false && !shouldNotBeFound
+            && !log.isDebugEnabled()) {
             // RegEx does not match as expected
-            toReturn.append( ". Note that error response printed below is not "
-                             + "original and is reformatted with identation and "
-                             + "new lines. Increase severity of this class to "
-                             + "debug level in order to dump actual response inspected for match" );
+            toReturn.append(". Note that error response printed below is not "
+                            + "original and is reformatted with identation and "
+                            + "new lines. Increase severity of this class to "
+                            + "debug level in order to dump actual response inspected for match");
         }
         return toReturn.toString();
     }

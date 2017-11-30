@@ -101,7 +101,7 @@ public class ConfigurationParser {
     /**
      * The logger for this class.
      */
-    private static final Logger        log                             = Logger.getLogger( ConfigurationParser.class );
+    private static final Logger        log                             = Logger.getLogger(ConfigurationParser.class);
 
     /**
      * The document supposed to be parsed.
@@ -119,20 +119,20 @@ public class ConfigurationParser {
                                                                                ParserConfigurationException {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setIgnoringElementContentWhitespace( true );
-        documentBuilderFactory.setNamespaceAware( true );
-        documentBuilderFactory.setValidating( false );
-        documentBuilderFactory.setIgnoringComments( true );
+        documentBuilderFactory.setIgnoringElementContentWhitespace(true);
+        documentBuilderFactory.setNamespaceAware(true);
+        documentBuilderFactory.setValidating(false);
+        documentBuilderFactory.setIgnoringComments(true);
 
         try {
             // skip DTD validation
-            documentBuilderFactory.setFeature( "http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
-                                               false );
-            documentBuilderFactory.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                                               false );
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
+                                              false);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                                              false);
 
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            mDocument = documentBuilder.parse( inputStream, systemId );
+            mDocument = documentBuilder.parse(inputStream, systemId);
 
             /* NOTE:
              * XSD Validation process is performed after the XML parsing (not during), 
@@ -141,24 +141,24 @@ public class ConfigurationParser {
              * we log WARN messages. It's wrong. That's why we do the validation after parsing the XML.
              */
 
-            ConfigurationParser.class.getClassLoader().getResource( "agent_descriptor.xsd" );
+            ConfigurationParser.class.getClassLoader().getResource("agent_descriptor.xsd");
 
             // XSD Validation
-            SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-            Schema schema = schemaFactory.newSchema( this.getClass()
-                                                         .getClassLoader()
-                                                         .getResource( "agent_descriptor.xsd" ) );
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(this.getClass()
+                                                        .getClassLoader()
+                                                        .getResource("agent_descriptor.xsd"));
             Validator validator = schema.newValidator();
-            validator.validate( new DOMSource( mDocument ) );
+            validator.validate(new DOMSource(mDocument));
 
-        } catch( ParserConfigurationException pce ) {
-            log.error( pce.getMessage() );
+        } catch (ParserConfigurationException pce) {
+            log.error(pce.getMessage());
             throw pce;
-        } catch( IOException ioe ) {
-            log.error( ioe.getMessage() );
+        } catch (IOException ioe) {
+            log.error(ioe.getMessage());
             throw ioe;
-        } catch( SAXException saxe ) {
-            log.error( saxe.getMessage() );
+        } catch (SAXException saxe) {
+            log.error(saxe.getMessage());
             throw saxe;
         }
     }
@@ -187,39 +187,39 @@ public class ConfigurationParser {
                                                                   SAXException, ParserConfigurationException,
                                                                   AgentException {
 
-        inititalizeParser( inputStream, systemID );
+        inititalizeParser(inputStream, systemID);
         initializeComponentMetaData();
 
         NodeList list = mDocument.getChildNodes();
-        for( int i = 0; i < list.getLength(); i++ ) {
-            Node childNode = list.item( i );
-            if( childNode.getNodeType() == Node.ELEMENT_NODE
-                && childNode.getNodeName().equals( COMPONENT ) ) {
-                componentName = childNode.getAttributes().getNamedItem( "name" ).getNodeValue();
+        for (int i = 0; i < list.getLength(); i++) {
+            Node childNode = list.item(i);
+            if (childNode.getNodeType() == Node.ELEMENT_NODE
+                && childNode.getNodeName().equals(COMPONENT)) {
+                componentName = childNode.getAttributes().getNamedItem("name").getNodeValue();
 
                 NodeList componentSubElementsList = childNode.getChildNodes();
-                for( int k = 0; k < componentSubElementsList.getLength(); k++ ) {
-                    Node componentSubElement = componentSubElementsList.item( k );
+                for (int k = 0; k < componentSubElementsList.getLength(); k++) {
+                    Node componentSubElement = componentSubElementsList.item(k);
 
-                    if( componentSubElement.getNodeName().equals( ACTION_CLASS ) ) {
+                    if (componentSubElement.getNodeName().equals(ACTION_CLASS)) {
                         String nameAttribute = componentSubElement.getAttributes()
-                                                                  .getNamedItem( "name" )
+                                                                  .getNamedItem("name")
                                                                   .getNodeValue();
-                        actionClassNames.add( nameAttribute );
-                    } else if( componentSubElement.getNodeName().equals( INITIALIZATION_HANDLER ) ) {
+                        actionClassNames.add(nameAttribute);
+                    } else if (componentSubElement.getNodeName().equals(INITIALIZATION_HANDLER)) {
                         initializationHandler = componentSubElement.getAttributes()
-                                                                   .getNamedItem( "name" )
+                                                                   .getNamedItem("name")
                                                                    .getNodeValue();
-                    } else if( componentSubElement.getNodeName().equals( FINALIZATION_HANDLER ) ) {
+                    } else if (componentSubElement.getNodeName().equals(FINALIZATION_HANDLER)) {
                         finalizationHandler = componentSubElement.getAttributes()
-                                                                 .getNamedItem( "name" )
+                                                                 .getNamedItem("name")
                                                                  .getNodeValue();
-                    } else if( componentSubElement.getNodeName().equals( CLEANUP_HANDLER ) ) {
+                    } else if (componentSubElement.getNodeName().equals(CLEANUP_HANDLER)) {
                         cleanupHandler = componentSubElement.getAttributes()
-                                                            .getNamedItem( "name" )
+                                                            .getNamedItem("name")
                                                             .getNodeValue();
-                    } else if( componentSubElement.getNodeName().equals( ENVIRONMENT ) ) {
-                        parseEnvironment( componentSubElement );
+                    } else if (componentSubElement.getNodeName().equals(ENVIRONMENT)) {
+                        parseEnvironment(componentSubElement);
                     }
                 }
             }
@@ -237,28 +237,28 @@ public class ConfigurationParser {
         NodeList environmentChildNodes = environmentNode.getChildNodes();
 
         //read the environment name
-        String environmentName = parseEnvironmentName( environmentNode );
+        String environmentName = parseEnvironmentName(environmentNode);
 
         //read the backup folder
-        String backupFolder = parseBackupFolder( environmentNode );
+        String backupFolder = parseBackupFolder(environmentNode);
 
         //now read the individual entries in the environment
         //these can be databases, files, processes, etc.
         List<EnvironmentUnit> environmentUnits = new ArrayList<EnvironmentUnit>();
-        for( int i = 0; i < environmentChildNodes.getLength(); i++ ) {
-            Node individualEnvironmentNode = environmentChildNodes.item( i );
+        for (int i = 0; i < environmentChildNodes.getLength(); i++) {
+            Node individualEnvironmentNode = environmentChildNodes.item(i);
 
-            if( individualEnvironmentNode.getNodeName().equals( DATABASE ) ) {
-                environmentUnits.add( parseDbEnvironment( individualEnvironmentNode, backupFolder ) );
-            } else if( individualEnvironmentNode.getNodeName().equals( FILE ) ) {
-                environmentUnits.add( parseFileEnvironment( individualEnvironmentNode, backupFolder ) );
-            } else if( individualEnvironmentNode.getNodeName().equals( DIRECTORY ) ) {
-                environmentUnits.add( parseDirectoryEnvironment( individualEnvironmentNode, backupFolder ) );
+            if (individualEnvironmentNode.getNodeName().equals(DATABASE)) {
+                environmentUnits.add(parseDbEnvironment(individualEnvironmentNode, backupFolder));
+            } else if (individualEnvironmentNode.getNodeName().equals(FILE)) {
+                environmentUnits.add(parseFileEnvironment(individualEnvironmentNode, backupFolder));
+            } else if (individualEnvironmentNode.getNodeName().equals(DIRECTORY)) {
+                environmentUnits.add(parseDirectoryEnvironment(individualEnvironmentNode, backupFolder));
             }
         }
 
-        environments.add( new ComponentEnvironment( componentName, environmentName, environmentUnits,
-                                                    backupFolder ) );
+        environments.add(new ComponentEnvironment(componentName, environmentName, environmentUnits,
+                                                  backupFolder));
     }
 
     /**
@@ -269,73 +269,73 @@ public class ConfigurationParser {
      */
     private String parseBackupFolder( Node environmentNode ) throws AgentException {
 
-        Node unixBackupFolderItem = environmentNode.getAttributes().getNamedItem( "backupFolder" );
-        Node winBackupFolderItem = environmentNode.getAttributes().getNamedItem( "windowsBackupFolder" );
+        Node unixBackupFolderItem = environmentNode.getAttributes().getNamedItem("backupFolder");
+        Node winBackupFolderItem = environmentNode.getAttributes().getNamedItem("windowsBackupFolder");
         String backupFolder = null;
         boolean isUnix = OperatingSystemType.getCurrentOsType().isUnix();
 
-        if( isUnix ) {
-            if( unixBackupFolderItem != null ) {
+        if (isUnix) {
+            if (unixBackupFolderItem != null) {
                 String unixBackupFolder = unixBackupFolderItem.getNodeValue();
-                if( unixBackupFolder != null && unixBackupFolder.trim().length() > 0 ) {
+                if (unixBackupFolder != null && unixBackupFolder.trim().length() > 0) {
 
                     backupFolder = unixBackupFolder.trim();
                 }
             }
 
-        } else if( winBackupFolderItem != null ) {
+        } else if (winBackupFolderItem != null) {
 
             String winBackupFolder = winBackupFolderItem.getNodeValue();
-            if( winBackupFolder != null && winBackupFolder.trim().length() > 0 ) {
+            if (winBackupFolder != null && winBackupFolder.trim().length() > 0) {
 
                 backupFolder = winBackupFolder.trim();
             }
         }
-        if( backupFolder == null ) {
+        if (backupFolder == null) {
 
-            String tempFolder = IoUtils.normalizeDirPath( AtsSystemProperties.SYSTEM_USER_TEMP_DIR );
-            backupFolder = IoUtils.normalizeDirPath( tempFolder + "agent_components_backup" );
-            log.warn( "No valid '" + ( isUnix
-                                              ? "backupFolder"
-                                              : "windowsBackupFolder" )
-                      + "' environment attribute for '" + componentName + "' component. Backup folder '"
-                      + backupFolder + "' will be used instead." );
+            String tempFolder = IoUtils.normalizeDirPath(AtsSystemProperties.SYSTEM_USER_TEMP_DIR);
+            backupFolder = IoUtils.normalizeDirPath(tempFolder + "agent_components_backup");
+            log.warn("No valid '" + (isUnix
+                                            ? "backupFolder"
+                                            : "windowsBackupFolder")
+                     + "' environment attribute for '" + componentName + "' component. Backup folder '"
+                     + backupFolder + "' will be used instead.");
         } else {
-            backupFolder = IoUtils.normalizeDirPath( backupFolder );
+            backupFolder = IoUtils.normalizeDirPath(backupFolder);
         }
 
-        if( backupFolders.contains( backupFolder ) ) {
+        if (backupFolders.contains(backupFolder)) {
 
-            throw new AgentException( "There is more than one environment configuration with the same backup folder '"
-                                      + backupFolder + "'" );
+            throw new AgentException("There is more than one environment configuration with the same backup folder '"
+                                     + backupFolder + "'");
         }
-        backupFolders.add( backupFolder );
+        backupFolders.add(backupFolder);
 
         return backupFolder;
     }
 
     private String parseEnvironmentName( Node environmentNode ) throws AgentException {
 
-        Node envNameItem = environmentNode.getAttributes().getNamedItem( "name" );
+        Node envNameItem = environmentNode.getAttributes().getNamedItem("name");
 
         String envName = null;
-        if( envNameItem != null ) {
+        if (envNameItem != null) {
             String name = envNameItem.getNodeValue();
-            if( name != null && name.trim().length() > 0 ) {
+            if (name != null && name.trim().length() > 0) {
 
                 envName = name.trim();
             }
         }
 
-        if( ( envName == null && environmentNames.size() > 0 ) || environmentNames.contains( null ) ) {
+        if ( (envName == null && environmentNames.size() > 0) || environmentNames.contains(null)) {
 
-            throw new AgentException( "More than one environment is defined. In such case you must specify environment name." );
+            throw new AgentException("More than one environment is defined. In such case you must specify environment name.");
         }
-        if( environmentNames.contains( envName ) ) {
+        if (environmentNames.contains(envName)) {
 
-            throw new AgentException( "There is more than one environment with name '" + envName + "'" );
+            throw new AgentException("There is more than one environment with name '" + envName + "'");
         }
-        environmentNames.add( envName );
+        environmentNames.add(envName);
 
         return envName;
     }
@@ -350,79 +350,79 @@ public class ConfigurationParser {
                                                 String backupFolder ) throws AgentException {
 
         //create the connection descriptor
-        DbConnection dbConnection = createConnection( dbEnvironmentNode.getAttributes() );
+        DbConnection dbConnection = createConnection(dbEnvironmentNode.getAttributes());
 
         //read the tables
         List<DbTable> dbTables = new ArrayList<DbTable>();
 
         NodeList dbChildNodes = dbEnvironmentNode.getChildNodes();
-        for( int k = 0; k < dbChildNodes.getLength(); k++ ) {
-            Node dbChildNode = dbChildNodes.item( k );
+        for (int k = 0; k < dbChildNodes.getLength(); k++) {
+            Node dbChildNode = dbChildNodes.item(k);
 
-            if( dbChildNode.getNodeName().equals( TABLE ) ) {
-                String tableName = dbChildNode.getAttributes().getNamedItem( "name" ).getNodeValue();
+            if (dbChildNode.getNodeName().equals(TABLE)) {
+                String tableName = dbChildNode.getAttributes().getNamedItem("name").getNodeValue();
 
                 String[] columnsToExclude = {};
-                if( dbChildNode.getAttributes().getNamedItem( "columnsToExclude" ) != null ) {
+                if (dbChildNode.getAttributes().getNamedItem("columnsToExclude") != null) {
                     columnsToExclude = dbChildNode.getAttributes()
-                                                  .getNamedItem( "columnsToExclude" )
+                                                  .getNamedItem("columnsToExclude")
                                                   .getNodeValue()
-                                                  .split( "," );
+                                                  .split(",");
                 }
 
                 DbTable dbTable = null;
                 // parse db table 'lock' attribute
-                if( dbChildNode.getAttributes().getNamedItem( "lock" ) != null ) {
+                if (dbChildNode.getAttributes().getNamedItem("lock") != null) {
 
-                    if( dbConnection.getDbType().equals( DbConnOracle.DATABASE_TYPE ) ) {
-                        log.warn( "Db table 'lock' attribute is NOT implemented for Oracle yet. "
-                                  + "Table locking is skipped for the moment." );
+                    if (dbConnection.getDbType().equals(DbConnOracle.DATABASE_TYPE)) {
+                        log.warn("Db table 'lock' attribute is NOT implemented for Oracle yet. "
+                                 + "Table locking is skipped for the moment.");
                     }
 
                     String nodeValue = dbChildNode.getAttributes()
-                                                  .getNamedItem( "lock" )
+                                                  .getNamedItem("lock")
                                                   .getNodeValue()
                                                   .trim();
-                    if( "false".equalsIgnoreCase( nodeValue ) || "true".equalsIgnoreCase( nodeValue ) ) {
-                        dbTable = new DbTable( tableName, Arrays.asList( columnsToExclude ),
-                                               Boolean.parseBoolean( nodeValue ) );
+                    if ("false".equalsIgnoreCase(nodeValue) || "true".equalsIgnoreCase(nodeValue)) {
+                        dbTable = new DbTable(tableName, Arrays.asList(columnsToExclude),
+                                              Boolean.parseBoolean(nodeValue));
                     } else {
-                        log.warn( "Invalid db table 'lock' attribute value '" + nodeValue
-                                  + "'. Valid values are 'true' and 'false'. The default value 'true' will be used." );
+                        log.warn("Invalid db table 'lock' attribute value '" + nodeValue
+                                 + "'. Valid values are 'true' and 'false'. The default value 'true' will be used.");
                     }
                 }
-                if( dbTable == null ) {
-                    dbTable = new DbTable( tableName, Arrays.asList( columnsToExclude ) );
+                if (dbTable == null) {
+                    dbTable = new DbTable(tableName, Arrays.asList(columnsToExclude));
                 }
 
                 // parse db table 'autoIncrementResetValue' attribute
-                if( dbChildNode.getAttributes().getNamedItem( TABLE_ATTR_AUTOINCR_RESET_VALUE ) != null ) {
-                    if( dbConnection.getDbType().equals( DbConnOracle.DATABASE_TYPE ) ) {
+                if (dbChildNode.getAttributes().getNamedItem(TABLE_ATTR_AUTOINCR_RESET_VALUE) != null) {
+                    if (dbConnection.getDbType().equals(DbConnOracle.DATABASE_TYPE)) {
 
-                        throw new AgentException( "Db table 'autoIncrementResetValue' attribute is NOT implemented for Oracle yet." );
+                        throw new AgentException("Db table 'autoIncrementResetValue' attribute is NOT implemented for Oracle yet.");
                     }
                     String autoInrcResetValue = dbChildNode.getAttributes()
-                                                           .getNamedItem( TABLE_ATTR_AUTOINCR_RESET_VALUE )
+                                                           .getNamedItem(TABLE_ATTR_AUTOINCR_RESET_VALUE)
                                                            .getNodeValue()
                                                            .trim();
                     try {
-                        Integer.parseInt( autoInrcResetValue );
-                    } catch( NumberFormatException nfe ) {
-                        throw new AgentException( "Ivalid db table 'autoIncrementResetValue' attribute value '"
-                                                  + autoInrcResetValue + "'. It must be valid number." );
+                        Integer.parseInt(autoInrcResetValue);
+                    } catch (NumberFormatException nfe) {
+                        throw new AgentException("Ivalid db table 'autoIncrementResetValue' attribute value '"
+                                                 + autoInrcResetValue + "'. It must be valid number.");
                     }
-                    dbTable.setAutoIncrementResetValue( autoInrcResetValue );
+                    dbTable.setAutoIncrementResetValue(autoInrcResetValue);
                 }
 
-                dbTables.add( dbTable );
+                dbTables.add(dbTable);
             }
         }
 
         String backupFileName = componentName + "-" + dbConnection.getDb() + ".sql";
 
         //create the environment unit
-        DatabaseEnvironmentUnit dbEnvironment = new DatabaseEnvironmentUnit( backupFolder, backupFileName,
-                                                                             dbConnection, dbTables );
+        DatabaseEnvironmentUnit dbEnvironment = new DatabaseEnvironmentUnit(backupFolder, backupFileName,
+                                                                            dbConnection, dbTables);
         return dbEnvironment;
     }
 
@@ -435,22 +435,22 @@ public class ConfigurationParser {
     private EnvironmentUnit parseFileEnvironment( Node fileEnvironmentNode, String backupFolder ) {
 
         // get the original file
-        String originalFile = fileEnvironmentNode.getAttributes().getNamedItem( "path" ).getNodeValue();
-        originalFile = IoUtils.normalizeUnixFile( originalFile );
+        String originalFile = fileEnvironmentNode.getAttributes().getNamedItem("path").getNodeValue();
+        originalFile = IoUtils.normalizeUnixFile(originalFile);
 
         // get the backup file
         String backupName;
-        if( fileEnvironmentNode.getAttributes().getNamedItem( "backupName" ) != null ) {
-            backupName = fileEnvironmentNode.getAttributes().getNamedItem( "backupName" ).getNodeValue();
+        if (fileEnvironmentNode.getAttributes().getNamedItem("backupName") != null) {
+            backupName = fileEnvironmentNode.getAttributes().getNamedItem("backupName").getNodeValue();
         } else {
-            backupName = IoUtils.getFileName( originalFile );
+            backupName = IoUtils.getFileName(originalFile);
         }
         // get the optional addition actions to executed on file restore
-        List<AdditionalAction> additionalActions = parseAdditionalActions( fileEnvironmentNode );
+        List<AdditionalAction> additionalActions = parseAdditionalActions(fileEnvironmentNode);
 
-        FileEnvironmentUnit fileEnvironment = new FileEnvironmentUnit( originalFile, backupFolder,
-                                                                       backupName );
-        fileEnvironment.addAdditionalActions( additionalActions );
+        FileEnvironmentUnit fileEnvironment = new FileEnvironmentUnit(originalFile, backupFolder,
+                                                                      backupName);
+        fileEnvironment.addAdditionalActions(additionalActions);
 
         return fileEnvironment;
     }
@@ -463,24 +463,24 @@ public class ConfigurationParser {
      */
     private EnvironmentUnit parseDirectoryEnvironment( Node directoryEnvironmentNode, String backupFolder ) {
 
-        String originalDir = directoryEnvironmentNode.getAttributes().getNamedItem( "path" ).getNodeValue();
-        originalDir = IoUtils.normalizeDirPath( originalDir );
+        String originalDir = directoryEnvironmentNode.getAttributes().getNamedItem("path").getNodeValue();
+        originalDir = IoUtils.normalizeDirPath(originalDir);
         String backupName;
 
-        if( directoryEnvironmentNode.getAttributes().getNamedItem( "backupName" ) != null ) {
-            backupName = directoryEnvironmentNode.getAttributes().getNamedItem( "backupName" ).getNodeValue();
+        if (directoryEnvironmentNode.getAttributes().getNamedItem("backupName") != null) {
+            backupName = directoryEnvironmentNode.getAttributes().getNamedItem("backupName").getNodeValue();
         } else {
             // remove the last slash and get the directory name as a file name
-            backupName = IoUtils.getFileName( originalDir.substring( 0, originalDir.length() - 1 ) );
+            backupName = IoUtils.getFileName(originalDir.substring(0, originalDir.length() - 1));
         }
 
         // get the optional addition actions to executed on directory restore
-        List<AdditionalAction> additionalActions = parseAdditionalActions( directoryEnvironmentNode );
+        List<AdditionalAction> additionalActions = parseAdditionalActions(directoryEnvironmentNode);
 
-        DirectoryEnvironmentUnit directoryEnvironment = new DirectoryEnvironmentUnit( originalDir,
-                                                                                      backupFolder,
-                                                                                      backupName );
-        directoryEnvironment.addAdditionalActions( additionalActions );
+        DirectoryEnvironmentUnit directoryEnvironment = new DirectoryEnvironmentUnit(originalDir,
+                                                                                     backupFolder,
+                                                                                     backupName);
+        directoryEnvironment.addAdditionalActions(additionalActions);
 
         return directoryEnvironment;
     }
@@ -494,18 +494,18 @@ public class ConfigurationParser {
         NodeList environmentNodeChildren = environmentNode.getChildNodes();
         List<AdditionalAction> actions = new ArrayList<AdditionalAction>();
 
-        for( int i = 0; i < environmentNodeChildren.getLength(); i++ ) {
-            Node environmentNodeChild = environmentNodeChildren.item( i );
-            if( environmentNodeChild.getNodeName().equals( "action" ) ) {
+        for (int i = 0; i < environmentNodeChildren.getLength(); i++) {
+            Node environmentNodeChild = environmentNodeChildren.item(i);
+            if (environmentNodeChild.getNodeName().equals("action")) {
                 String shellCommand;
                 int sleepInterval;
-                Node shellCommandNode = environmentNodeChild.getAttributes().getNamedItem( "command" );
-                Node sleepNode = environmentNodeChild.getAttributes().getNamedItem( "sleep" );
-                if( shellCommandNode != null && sleepNode != null ) {
+                Node shellCommandNode = environmentNodeChild.getAttributes().getNamedItem("command");
+                Node sleepNode = environmentNodeChild.getAttributes().getNamedItem("sleep");
+                if (shellCommandNode != null && sleepNode != null) {
                     shellCommand = shellCommandNode.getNodeValue();
-                    sleepInterval = Integer.parseInt( sleepNode.getNodeValue().trim() );
+                    sleepInterval = Integer.parseInt(sleepNode.getNodeValue().trim());
 
-                    actions.add( new SystemProcessAction( shellCommand, sleepInterval ) );
+                    actions.add(new SystemProcessAction(shellCommand, sleepInterval));
                 }
             }
         }
@@ -524,64 +524,64 @@ public class ConfigurationParser {
         //the default host is localhost, if the attribute host is set
         //it will override the default setting
         String host = "127.0.0.1";
-        if( nodeMap.getNamedItem( "host" ) != null ) {
-            host = nodeMap.getNamedItem( "host" ).getNodeValue();
+        if (nodeMap.getNamedItem("host") != null) {
+            host = nodeMap.getNamedItem("host").getNodeValue();
         }
-        String user = nodeMap.getNamedItem( "user" ).getNodeValue();
-        String password = nodeMap.getNamedItem( "password" ).getNodeValue();
-        String type = nodeMap.getNamedItem( "type" ).getNodeValue();
+        String user = nodeMap.getNamedItem("user").getNodeValue();
+        String password = nodeMap.getNamedItem("password").getNodeValue();
+        String type = nodeMap.getNamedItem("type").getNodeValue();
 
         Map<String, Object> customProperties = new HashMap<String, Object>();
-        if( nodeMap.getNamedItem( "port" ) != null ) {
-            String portValue = nodeMap.getNamedItem( "port" ).getNodeValue();
+        if (nodeMap.getNamedItem("port") != null) {
+            String portValue = nodeMap.getNamedItem("port").getNodeValue();
             try {
-                Integer port = Integer.parseInt( portValue );
-                customProperties.put( DbKeys.PORT_KEY, port );
-            } catch( NumberFormatException nfe ) {
-                throw new AgentException( "Cannot convert DB port number to integer: '" + portValue + "'" );
+                Integer port = Integer.parseInt(portValue);
+                customProperties.put(DbKeys.PORT_KEY, port);
+            } catch (NumberFormatException nfe) {
+                throw new AgentException("Cannot convert DB port number to integer: '" + portValue + "'");
             }
         }
 
         //get the database type
         String dbType = type.toUpperCase();
 
-        if( dbType == null ) {
-            throw new AgentException( "Database type " + type + " not supported" );
+        if (dbType == null) {
+            throw new AgentException("Database type " + type + " not supported");
         }
 
         // custom SID / Service Name (Oracle only)
-        if( dbType.equals(DbConnOracle.DATABASE_TYPE) ) {
+        if (dbType.equals(DbConnOracle.DATABASE_TYPE)) {
             //SID - identifies the database instance (database name + instance number).
             // So if your database name is some db and your instance number is 3, then your SID is somedb3.
-            if( nodeMap.getNamedItem( "sid" ) != null ) {
-                customProperties.put( OracleKeys.SID_KEY, nodeMap.getNamedItem( "sid" ).getNodeValue() );
+            if (nodeMap.getNamedItem("sid") != null) {
+                customProperties.put(OracleKeys.SID_KEY, nodeMap.getNamedItem("sid").getNodeValue());
             }
             //Service Name - A "connector" to one or more instances. It is often useful to create additional
             //  service names in a RAC environment since the service can be modified to use particular SIDs as primary
             //  or secondary connections, or to not use certain SIDs at all.
-            if( nodeMap.getNamedItem( "serviceName" ) != null ) {
-                customProperties.put( OracleKeys.SERVICE_NAME_KEY,
-                                      nodeMap.getNamedItem( "serviceName" ).getNodeValue() );
+            if (nodeMap.getNamedItem("serviceName") != null) {
+                customProperties.put(OracleKeys.SERVICE_NAME_KEY,
+                                     nodeMap.getNamedItem("serviceName").getNodeValue());
             }
         }
 
         String database;
-        if( nodeMap.getNamedItem( "name" ) != null ) {
+        if (nodeMap.getNamedItem("name") != null) {
 
-            database = nodeMap.getNamedItem( "name" ).getNodeValue();
-        } else if( dbType.equals(DbConnOracle.DATABASE_TYPE) && ( nodeMap.getNamedItem( "sid" ) != null
-                                                      || nodeMap.getNamedItem( "serviceName" ) != null ) ) {
+            database = nodeMap.getNamedItem("name").getNodeValue();
+        } else if (dbType.equals(DbConnOracle.DATABASE_TYPE) && (nodeMap.getNamedItem("sid") != null
+                                                                 || nodeMap.getNamedItem("serviceName") != null)) {
 
             database = "";
         } else {
-            throw new AgentException( "No DB Name" + ( dbType.equals( DbConnOracle.DATABASE_TYPE)
-                                                                                     ? "/SID/Service Name"
-                                                                                     : "" )
-                                      + " is specified." );
+            throw new AgentException("No DB Name" + (dbType.equals(DbConnOracle.DATABASE_TYPE)
+                                                                                               ? "/SID/Service Name"
+                                                                                               : "")
+                                     + " is specified.");
         }
 
-        return DatabaseProviderFactory.createDbConnection( dbType, host, database, user, password,
-                                                       customProperties );
+        return DatabaseProviderFactory.createDbConnection(dbType, host, database, user, password,
+                                                          customProperties);
     }
 
     public Set<String> getActionClassNames() {

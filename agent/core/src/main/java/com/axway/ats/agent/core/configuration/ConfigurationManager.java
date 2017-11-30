@@ -34,7 +34,7 @@ public class ConfigurationManager {
 
     public static synchronized ConfigurationManager getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new ConfigurationManager();
         }
 
@@ -51,8 +51,8 @@ public class ConfigurationManager {
                        List<Configurator> configurators ) throws ConfigurationException {
 
         //first revert all previous configurations
-        for( Configurator configurator : configurators ) {
-            if( configurator.needsApplying() ) {
+        for (Configurator configurator : configurators) {
+            if (configurator.needsApplying()) {
                 //first revert any previous configuration
                 configurator.revert();
 
@@ -71,7 +71,7 @@ public class ConfigurationManager {
      */
     public void revert() throws ConfigurationException {
 
-        for( Configurator configurator : currentConfigurators ) {
+        for (Configurator configurator : currentConfigurators) {
             configurator.revert();
         }
     }

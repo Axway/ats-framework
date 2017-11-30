@@ -30,6 +30,6 @@ public abstract class CallerRelatedAction {
 
         this.caller = caller;
 
-        this.dataRepo = CallerRelatedInfoRepository.getInstance( caller );
+        this.dataRepo = CallerRelatedInfoRepository.getInstance(caller);
     }
 }

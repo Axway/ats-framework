@@ -34,16 +34,16 @@ class StringToEnumRule implements TypeComparisonRule {
 
         //throw an exception of either the argument is an array and the parameter is not
         //or vice versa
-        if( isArgumentArray != isParameterArray ) {
+        if (isArgumentArray != isParameterArray) {
             return false;
         }
 
-        if( isArgumentArray ) {
+        if (isArgumentArray) {
             argType = argType.getComponentType();
             parameterType = parameterType.getComponentType();
         }
 
-        if( argType == String.class && parameterType.isEnum() ) {
+        if (argType == String.class && parameterType.isEnum()) {
             //we'll leave the actual argument to Enum conversion for the execution
             return true;
         }

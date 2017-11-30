@@ -33,14 +33,14 @@ public abstract class AbstractAgentClient {
 
     protected AbstractAgentClient( String atsAgent, String component ) {
 
-        this.log = Logger.getLogger( this.getClass() );
+        this.log = Logger.getLogger(this.getClass());
 
-        if( LOCAL_JVM.equals( atsAgent ) ) {
+        if (LOCAL_JVM.equals(atsAgent)) {
             // we will work in the local JVM, so no running external instance of ATS Agent
             this.atsAgent = atsAgent;
         } else {
             // add default port in case none is not provided by the user
-            this.atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
+            this.atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
         }
 
         this.component = component;

@@ -37,7 +37,7 @@ import com.axway.ats.core.utils.ClasspathUtils;
  */
 public class AgentWsContextListener implements ServletContextListener {
 
-    private static final Logger log = Logger.getLogger( AgentWsContextListener.class );
+    private static final Logger log = Logger.getLogger(AgentWsContextListener.class);
 
     /*
      * (non-Javadoc)
@@ -50,28 +50,28 @@ public class AgentWsContextListener implements ServletContextListener {
     public void contextInitialized( ServletContextEvent servletEvent ) {
 
         ServletContext servletContext = servletEvent.getServletContext();
-        servletContext.log( "Servlet context initialized event is received. Starting registering configurators" );
+        servletContext.log("Servlet context initialized event is received. Starting registering configurators");
         try {
             new ClasspathUtils().logProblematicJars();
-        } catch( RuntimeException e ) {
-            log.warn( "Error caught while trying to get all JARs in classpath", e );
+        } catch (RuntimeException e) {
+            log.warn("Error caught while trying to get all JARs in classpath", e);
             // do not rethrow exception as this will stop deployment on incompliant servers like JBoss
         }
 
         // create the default web service configurator
-        String pathToConfigFile = servletContext.getRealPath( "/WEB-INF" );
-        AgentConfigurator defaultConfigurator = new AgentConfigurator( pathToConfigFile );
-        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator( pathToConfigFile );
+        String pathToConfigFile = servletContext.getRealPath("/WEB-INF");
+        AgentConfigurator defaultConfigurator = new AgentConfigurator(pathToConfigFile);
+        TemplateActionsConfigurator templateActionsConfigurator = new TemplateActionsConfigurator(pathToConfigFile);
         List<Configurator> configurators = new ArrayList<Configurator>();
-        configurators.add( defaultConfigurator );
-        configurators.add( templateActionsConfigurator );
+        configurators.add(defaultConfigurator);
+        configurators.add(templateActionsConfigurator);
 
-        log.info( "Initializing ATS Agent web service, start component registration" );
+        log.info("Initializing ATS Agent web service, start component registration");
 
         try {
-            MainComponentLoader.getInstance().initialize( configurators );
-        } catch( AgentException ae ) {
-            throw new RuntimeException( "Unable to initialize Agent component loader", ae );
+            MainComponentLoader.getInstance().initialize(configurators);
+        } catch (AgentException ae) {
+            throw new RuntimeException("Unable to initialize Agent component loader", ae);
         }
     }
 
@@ -87,8 +87,8 @@ public class AgentWsContextListener implements ServletContextListener {
         // stop the component loader
         try {
             MainComponentLoader.getInstance().destroy();
-        } catch( AgentException ae ) {
-            throw new RuntimeException( "Unable to de-initialize Agent web service", ae );
+        } catch (AgentException ae) {
+            throw new RuntimeException("Unable to de-initialize Agent web service", ae);
         }
     }
 }

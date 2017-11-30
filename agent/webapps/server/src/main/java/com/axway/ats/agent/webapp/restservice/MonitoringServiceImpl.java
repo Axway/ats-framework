@@ -44,7 +44,7 @@ import com.axway.ats.core.threads.ThreadsPerCaller;
 /**
  * Entry class for any monitoring operations
  */
-@Path("monitoring")
+@Path( "monitoring")
 public class MonitoringServiceImpl extends BaseRestServiceImpl {
 
     public static final String SESSION_DATA_ATTRIB_NAME = "sessionData";
@@ -54,30 +54,30 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
      * scheduleXYZMonitoring REST method
      */
     @POST
-    @Path("initializeMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "initializeMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response initializeMonitoring(
                                           @Context HttpServletRequest request,
                                           BasePojo basePojo ) {
 
-        final String caller = getCaller( request, basePojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, basePojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, basePojo );
+            SessionData sd = getSessionData(request, basePojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            restSystemMonitor.initializeMonitoringContext( agent );
+            restSystemMonitor.initializeMonitoringContext(agent);
 
-            return Response.ok( "{\"status\":\"monitoring context initialized.\"}" ).build();
+            return Response.ok("{\"status\":\"monitoring context initialized.\"}").build();
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -85,73 +85,73 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
     }
 
     @POST
-    @Path("scheduleSystemMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleSystemMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleSystemMonitoring(
                                               @Context HttpServletRequest request,
                                               ScheduleSystemMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            Set<ReadingBean> readings = restSystemMonitor.scheduleSystemMonitoring( agent,
-                                                                                        monitoringPojo.getReadings() );
+            Set<ReadingBean> readings = restSystemMonitor.scheduleSystemMonitoring(agent,
+                                                                                   monitoringPojo.getReadings());
 
-            restSystemMonitor.setScheduledReadingTypes( readings );
+            restSystemMonitor.setScheduledReadingTypes(readings);
 
-            return Response.ok( "{\"status\":\"scheduled system monitoring for readings '"
-                                + Arrays.toString( monitoringPojo.getReadings() ) + "'\"}" )
+            return Response.ok("{\"status\":\"scheduled system monitoring for readings '"
+                               + Arrays.toString(monitoringPojo.getReadings()) + "'\"}")
                            .build();
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
     }
 
     @POST
-    @Path("scheduleMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleMonitoring(
                                         @Context HttpServletRequest request,
                                         ScheduleMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            Set<ReadingBean> readings = restSystemMonitor.scheduleMonitoring( agent,
-                                                                                  monitoringPojo.getReading(),
-                                                                                  monitoringPojo.getReadingParametersAsMap() );
+            Set<ReadingBean> readings = restSystemMonitor.scheduleMonitoring(agent,
+                                                                             monitoringPojo.getReading(),
+                                                                             monitoringPojo.getReadingParametersAsMap());
 
-            restSystemMonitor.setScheduledReadingTypes( readings );
+            restSystemMonitor.setScheduledReadingTypes(readings);
 
-            String readingParametersAsString = entrySetAsString( monitoringPojo.getReadingParametersAsMap() );
+            String readingParametersAsString = entrySetAsString(monitoringPojo.getReadingParametersAsMap());
 
-            return Response.ok( "{\"status\":\"scheduled monitoring for reading '"
-                                + monitoringPojo.getReading() + "' and readingParameters '"
-                                + readingParametersAsString + "'\"}" )
+            return Response.ok("{\"status\":\"scheduled monitoring for reading '"
+                               + monitoringPojo.getReading() + "' and readingParameters '"
+                               + readingParametersAsString + "'\"}")
                            .build();
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -159,33 +159,33 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
     }
 
     @POST
-    @Path("scheduleProcessMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleProcessMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleProcessMonitoring(
                                                @Context HttpServletRequest request,
                                                ScheduleProcessMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            Set<ReadingBean> readings = restSystemMonitor.scheduleProcessMonitoring( agent,
-                                                                                         monitoringPojo.getProcessPattern(),
-                                                                                         monitoringPojo.getProcessAlias(),
-                                                                                         monitoringPojo.getProcessUsername(),
-                                                                                         monitoringPojo.getProcessReadingTypes() );
+            Set<ReadingBean> readings = restSystemMonitor.scheduleProcessMonitoring(agent,
+                                                                                    monitoringPojo.getProcessPattern(),
+                                                                                    monitoringPojo.getProcessAlias(),
+                                                                                    monitoringPojo.getProcessUsername(),
+                                                                                    monitoringPojo.getProcessReadingTypes());
 
-            restSystemMonitor.setScheduledReadingTypes( readings );
+            restSystemMonitor.setScheduledReadingTypes(readings);
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -193,38 +193,38 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
         String statusMessage = "{\"status \": \"scheduled process monitoring with parameters '"
                                + monitoringPojo.toString() + "'\"}";
 
-        return Response.ok( statusMessage ).build();
+        return Response.ok(statusMessage).build();
     }
 
     @POST
-    @Path("scheduleChildProcessMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleChildProcessMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleChildProcessMonitoring(
                                                     @Context HttpServletRequest request,
                                                     ScheduleProcessMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            Set<ReadingBean> readings = restSystemMonitor.scheduleChildProcessMonitoring( agent,
-                                                                                              monitoringPojo.getParentProcess(),
-                                                                                              monitoringPojo.getProcessPattern(),
-                                                                                              monitoringPojo.getProcessAlias(),
-                                                                                              monitoringPojo.getProcessUsername(),
-                                                                                              monitoringPojo.getProcessReadingTypes() );
+            Set<ReadingBean> readings = restSystemMonitor.scheduleChildProcessMonitoring(agent,
+                                                                                         monitoringPojo.getParentProcess(),
+                                                                                         monitoringPojo.getProcessPattern(),
+                                                                                         monitoringPojo.getProcessAlias(),
+                                                                                         monitoringPojo.getProcessUsername(),
+                                                                                         monitoringPojo.getProcessReadingTypes());
 
-            restSystemMonitor.setScheduledReadingTypes( readings );
+            restSystemMonitor.setScheduledReadingTypes(readings);
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -232,39 +232,39 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
         String statusMessage = "{\"status \": \"scheduled child process monitoring with parameters '"
                                + monitoringPojo.toString() + "'\"}";
 
-        return Response.ok( statusMessage ).build();
+        return Response.ok(statusMessage).build();
     }
 
     @POST
-    @Path("scheduleJvmMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleJvmMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleJvmMonitoring(
                                            @Context HttpServletRequest request,
                                            ScheduleJvmMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            Set<ReadingBean> readings = restSystemMonitor.scheduleJvmMonitoring( agent,
-                                                                                     monitoringPojo.getJvmPort(),
-                                                                                     ( monitoringPojo.getAlias() == null )
-                                                                                                                           ? ""
-                                                                                                                           : monitoringPojo.getAlias(),
-                                                                                     monitoringPojo.getJvmReadingTypes() );
+            Set<ReadingBean> readings = restSystemMonitor.scheduleJvmMonitoring(agent,
+                                                                                monitoringPojo.getJvmPort(),
+                                                                                (monitoringPojo.getAlias() == null)
+                                                                                                                    ? ""
+                                                                                                                    : monitoringPojo.getAlias(),
+                                                                                monitoringPojo.getJvmReadingTypes());
 
-            restSystemMonitor.setScheduledReadingTypes( readings );
+            restSystemMonitor.setScheduledReadingTypes(readings);
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -272,39 +272,39 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
         String statusMessage = "{\"status \": \"scheduled JVM monitoring with parameters '"
                                + monitoringPojo.toString() + "'\"}";
 
-        return Response.ok( statusMessage ).build();
+        return Response.ok(statusMessage).build();
     }
 
     @POST
-    @Path("scheduleCustomJvmMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleCustomJvmMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleCustomJvmMonitoring(
                                                  @Context HttpServletRequest request,
                                                  ScheduleCustomJvmMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            Set<ReadingBean> readings = restSystemMonitor.scheduleCustomJvmMonitoring( agent,
-                                                                                           monitoringPojo.getJmxPort(),
-                                                                                           monitoringPojo.getAlias(),
-                                                                                           monitoringPojo.getMbeanName(),
-                                                                                           monitoringPojo.getUnit(),
-                                                                                           monitoringPojo.getMbeanAttributes() );
+            Set<ReadingBean> readings = restSystemMonitor.scheduleCustomJvmMonitoring(agent,
+                                                                                      monitoringPojo.getJmxPort(),
+                                                                                      monitoringPojo.getAlias(),
+                                                                                      monitoringPojo.getMbeanName(),
+                                                                                      monitoringPojo.getUnit(),
+                                                                                      monitoringPojo.getMbeanAttributes());
 
-            restSystemMonitor.setScheduledReadingTypes( readings );
+            restSystemMonitor.setScheduledReadingTypes(readings);
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -312,55 +312,55 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
         String statusMessage = "{\"status \": \"scheduled custom JVM monitoring with parameters '"
                                + monitoringPojo.toString() + "'\"}";
 
-        return Response.ok( statusMessage ).build();
+        return Response.ok(statusMessage).build();
     }
 
     @POST
-    @Path("scheduleUserActivity")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "scheduleUserActivity")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response scheduleUserActivity(
                                           @Context HttpServletRequest request,
                                           BasePojo basePojo ) {
 
-        final String caller = getCaller( request, basePojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, basePojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, basePojo );
+            SessionData sd = getSessionData(request, basePojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            restSystemMonitor.scheduleUserActivity( agent );
+            restSystemMonitor.scheduleUserActivity(agent);
 
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
 
         String statusMessage = "{\"status \": \"scheduled user activity monitoring.\"}";
 
-        return Response.ok( statusMessage ).build();
+        return Response.ok(statusMessage).build();
     }
 
     @POST
-    @Path("startMonitoring")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "startMonitoring")
+    @Consumes( MediaType.APPLICATION_JSON)
+    @Produces( MediaType.APPLICATION_JSON)
     public Response startMonitoring(
                                      @Context HttpServletRequest request,
                                      StartMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller( request, monitoringPojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, monitoringPojo, false);
+        ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData( request, monitoringPojo );
+            SessionData sd = getSessionData(request, monitoringPojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -369,16 +369,16 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
             // calculate the time offset between the agent and the test executor
             long timeOffset = System.currentTimeMillis() - monitoringPojo.getStartTimestamp();
 
-            restSystemMonitor.startMonitoring( agent,
-                                               monitoringPojo.getStartTimestamp(),
-                                               monitoringPojo.getPollingInterval(),
-                                               timeOffset );
+            restSystemMonitor.startMonitoring(agent,
+                                              monitoringPojo.getStartTimestamp(),
+                                              monitoringPojo.getPollingInterval(),
+                                              timeOffset);
 
-            return Response.ok( "{\"status\":\"monitoring started on every "
-                                + monitoringPojo.getPollingInterval() + " seconds.\"}" )
+            return Response.ok("{\"status\":\"monitoring started on every "
+                               + monitoringPojo.getPollingInterval() + " seconds.\"}")
                            .build();
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -386,42 +386,42 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
     }
 
     @POST
-    @Path("stopMonitoring")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path( "stopMonitoring")
+    @Produces( MediaType.APPLICATION_JSON)
     public Response stopMonitoring(
                                     @Context HttpServletRequest request,
                                     BasePojo basePojo ) {
 
-        final String caller = getCaller( request, basePojo, false );
-        ThreadsPerCaller.registerThread( caller );
+        final String caller = getCaller(request, basePojo, false);
+        ThreadsPerCaller.registerThread(caller);
         try {
-            SessionData sd = getSessionData( request, basePojo );
+            SessionData sd = getSessionData(request, basePojo);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             String agent = request.getLocalAddr() + ":" + request.getLocalPort();
 
-            restSystemMonitor.stopMonitoring( agent );
-        } catch( Exception e ) {
-            return Response.serverError().entity( new ErrorPojo( e ) ).build();
+            restSystemMonitor.stopMonitoring(agent);
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
 
-        return Response.ok( "{\"status\":\"monitoring stopped.\"}" ).build();
+        return Response.ok("{\"status\":\"monitoring stopped.\"}").build();
     }
 
     private String entrySetAsString(
                                      Map<String, String> readingParameters ) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "[" );
+        sb.append("[");
         Iterator<String> it = readingParameters.values().iterator();
-        while( it.hasNext() ) {
+        while (it.hasNext()) {
             String value = it.next();
-            sb.append( value ).append( ", " );
+            sb.append(value).append(", ");
         }
-        String str = sb.substring( 0, sb.length() - 1 ) + "]";
+        String str = sb.substring(0, sb.length() - 1) + "]";
         return str;
     }
 

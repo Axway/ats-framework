@@ -24,7 +24,7 @@ import com.axway.ats.agent.core.ComponentRepository;
 
 public class ComponentHotDeployTask implements Runnable {
 
-    private static final Logger    log = Logger.getLogger( ComponentHotDeployTask.class );
+    private static final Logger    log = Logger.getLogger(ComponentHotDeployTask.class);
 
     private File                   componentLocation;
     private DynamicComponentLoader componentLoader;
@@ -44,37 +44,37 @@ public class ComponentHotDeployTask implements Runnable {
 
     public void run() {
 
-        if( needReload() ) {
+        if (needReload()) {
             try {
-                log.info( "Detected modified Agent component libraries, reloading..." );
+                log.info("Detected modified Agent component libraries, reloading...");
 
                 //load the available components
-                componentLoader.loadAvailableComponents( componentRepository );
+                componentLoader.loadAvailableComponents(componentRepository);
 
-                log.info( "Done loading Agent component libraries" );
+                log.info("Done loading Agent component libraries");
 
-            } catch( Throwable e ) {
+            } catch (Throwable e) {
                 //we should catch all exceptions otherwise the deployment thread
                 //will stop - this way we give the user the chance to fix the error
-                log.error( "Exception while deploying Agent components - deployment cancelled", e );
+                log.error("Exception while deploying Agent components - deployment cancelled", e);
             }
         }
     }
 
     private boolean needReload() {
 
-        if( !componentLocation.exists() || !componentLocation.isDirectory() ) {
-            log.error( "Component location '" + componentLocation.getAbsolutePath()
-                       + "' does not exist or is not a directory - skipping it" );
+        if (!componentLocation.exists() || !componentLocation.isDirectory()) {
+            log.error("Component location '" + componentLocation.getAbsolutePath()
+                      + "' does not exist or is not a directory - skipping it");
             return false;
         }
 
         boolean result = false;
 
-        File[] jarFiles = componentLocation.listFiles( new JarFilenameFilter() );
-        if( jarFiles != null ) {
-            HashMap<String, Long> currentModificationTimes = getLastModificationTimes( jarFiles );
-            if( !currentModificationTimes.equals( lastModificationTimes ) ) {
+        File[] jarFiles = componentLocation.listFiles(new JarFilenameFilter());
+        if (jarFiles != null) {
+            HashMap<String, Long> currentModificationTimes = getLastModificationTimes(jarFiles);
+            if (!currentModificationTimes.equals(lastModificationTimes)) {
 
                 lastModificationTimes = currentModificationTimes;
                 result = true;
@@ -87,8 +87,8 @@ public class ComponentHotDeployTask implements Runnable {
     private HashMap<String, Long> getLastModificationTimes( File[] jarFiles ) {
 
         HashMap<String, Long> modificationTimes = new HashMap<String, Long>();
-        for( File jarFile : jarFiles ) {
-            modificationTimes.put( jarFile.getAbsolutePath(), jarFile.lastModified() );
+        for (File jarFile : jarFiles) {
+            modificationTimes.put(jarFile.getAbsolutePath(), jarFile.lastModified());
         }
 
         return modificationTimes;

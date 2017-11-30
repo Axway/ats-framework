@@ -21,7 +21,7 @@ import com.axway.ats.log.model.CheckpointLogLevel;
 /**
  * This configurator is used for various configurations of Agent which do not need reload of the Agent components
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class GenericAgentConfigurator implements Configurator {
 
     private CheckpointLogLevel checkpointLogLevel;
@@ -53,8 +53,8 @@ public class GenericAgentConfigurator implements Configurator {
          *              - usually our customers use same checkpoint log level for the whole run 
          *              - in many cases the events queue will not have pending events
          */
-        if( this.checkpointLogLevel != null ) {
-            SQLServerDbWriteAccess.setCheckpointLogLevel( checkpointLogLevel );
+        if (this.checkpointLogLevel != null) {
+            SQLServerDbWriteAccess.setCheckpointLogLevel(checkpointLogLevel);
         }
     }
 

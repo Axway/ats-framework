@@ -50,8 +50,8 @@ public class ActionInvoker {
      * @throws NoCompatibleMethodFoundException
      */
     public ActionInvoker( ActionRequest actionRequest ) throws NoSuchComponentException,
-                                                       NoSuchActionException,
-                                                       NoCompatibleMethodFoundException {
+                                                        NoSuchActionException,
+                                                        NoCompatibleMethodFoundException {
 
         this.actionRequest = actionRequest;
 
@@ -65,27 +65,27 @@ public class ActionInvoker {
         //get the component action map
         //if such does not exist, a NoSuchComponentException is thrown
         ComponentActionMap actionMap = ComponentRepository.getInstance()
-                                                          .getComponentActionMap( componentName );
+                                                          .getComponentActionMap(componentName);
 
         //get the argument types
         Class<?>[] argTypes = new Class<?>[args.length];
-        for( int i = 0; i < args.length; i++ ) {
-            if( args[i] == null ) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == null) {
                 argTypes[i] = Void.TYPE;
             } else {
                 argTypes[i] = args[i].getClass();
             }
         }
 
-        this.actionMethod = actionMap.getActionMethod( actionName, argTypes );
+        this.actionMethod = actionMap.getActionMethod(actionName, argTypes);
 
         //get the parameter names
         List<String> parameterNames = this.actionMethod.getParameterNames();
 
         //set the positions
         this.parameterPositions = new HashMap<String, Integer>();
-        for( int i = 0; i < parameterNames.size(); i++ ) {
-            this.parameterPositions.put( parameterNames.get( i ), i );
+        for (int i = 0; i < parameterNames.size(); i++) {
+            this.parameterPositions.put(parameterNames.get(i), i);
         }
 
         //set the initial arguments - they can later be changes with
@@ -125,11 +125,11 @@ public class ActionInvoker {
     public List<ArgumentValue> setArguments(
                                              List<ArgumentValue> argumentValues ) {
 
-        for( Entry<String, Integer> paramPositon : parameterPositions.entrySet() ) {
-            for( ArgumentValue argumentValue : argumentValues ) {
-                if( paramPositon.getKey().equals( argumentValue.getName() ) ) {
+        for (Entry<String, Integer> paramPositon : parameterPositions.entrySet()) {
+            for (ArgumentValue argumentValue : argumentValues) {
+                if (paramPositon.getKey().equals(argumentValue.getName())) {
                     args[paramPositon.getValue()] = argumentValue.getValue();
-                    argumentValues.remove( argumentValue );
+                    argumentValues.remove(argumentValue);
                     break;
                 }
             }
@@ -149,9 +149,9 @@ public class ActionInvoker {
      */
     public Object invoke(
                           Object actionClassInstance ) throws ActionExecutionException,
-                                                      InternalComponentException {
+                                                       InternalComponentException {
 
-        return invoke( actionClassInstance, false );
+        return invoke(actionClassInstance, false);
     }
 
     /**
@@ -167,8 +167,8 @@ public class ActionInvoker {
     public Object invoke(
                           Object actionClassInstance,
                           boolean validateArguments ) throws ActionExecutionException,
-                                                     InternalComponentException {
+                                                      InternalComponentException {
 
-        return actionMethod.invoke( actionClassInstance, args, validateArguments );
+        return actionMethod.invoke(actionClassInstance, args, validateArguments);
     }
 }

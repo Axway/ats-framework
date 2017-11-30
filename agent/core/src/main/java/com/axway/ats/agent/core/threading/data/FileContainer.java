@@ -32,7 +32,7 @@ public class FileContainer implements Serializable {
 
     private static final long    serialVersionUID  = 1L;
 
-    private static final Pattern PARAMETER_PATTERN = Pattern.compile( "\\$\\{([\\d\\w]+)\\}" );
+    private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\$\\{([\\d\\w]+)\\}");
 
     private String               folderName;
 
@@ -72,32 +72,32 @@ public class FileContainer implements Serializable {
     public String getFileName( Long currentThreadId, Boolean isStaticValue,
                                List<ArgumentValue> previousValues ) {
 
-        int index = getNextFileIndex( currentThreadId, isStaticValue );
-        String fileName = fileList.get( index );
-        if( this.patternParameters != null ) {
+        int index = getNextFileIndex(currentThreadId, isStaticValue);
+        String fileName = fileList.get(index);
+        if (this.patternParameters != null) {
 
             String currentPattern = this.pattern;
-            for( ArgumentValue arg : previousValues ) {
-                if( this.patternParameters.contains( arg.getName() ) ) {
-                    currentPattern = currentPattern.replace( "${" + arg.getName() + "}",
-                                                             ( String ) arg.getValue() );
+            for (ArgumentValue arg : previousValues) {
+                if (this.patternParameters.contains(arg.getName())) {
+                    currentPattern = currentPattern.replace("${" + arg.getName() + "}",
+                                                            (String) arg.getValue());
                 }
             }
             int startIndex = index;
-            Pattern p = Pattern.compile( currentPattern );
-            while( !p.matcher( IoUtils.getFileName( fileName ) ).matches() ) {
+            Pattern p = Pattern.compile(currentPattern);
+            while (!p.matcher(IoUtils.getFileName(fileName)).matches()) {
 
                 // if (isStaticValue) then this is a case when the file name didn't match the pattern and
                 // getNextFileIndex() will retrieve the same index every time, so we have to force change the
                 // current thread index => isStaticValue = false
-                index = getNextFileIndex( currentThreadId, false );
-                if( index == startIndex ) {
+                index = getNextFileIndex(currentThreadId, false);
+                if (index == startIndex) {
 
                     //we check all files in the directory and there is no file matching our pattern
-                    throw new RuntimeException( "No files matching regex pattern '" + currentPattern
-                                                + "' in directory: " + this.folderName );
+                    throw new RuntimeException("No files matching regex pattern '" + currentPattern
+                                               + "' in directory: " + this.folderName);
                 }
-                fileName = fileList.get( index );
+                fileName = fileList.get(index);
             }
         }
         return fileName;
@@ -110,7 +110,7 @@ public class FileContainer implements Serializable {
      */
     public String getFileName( List<ArgumentValue> previousValues ) {
 
-        return getFileName( null, null, previousValues );
+        return getFileName(null, null, previousValues);
     }
 
     /**
@@ -121,40 +121,40 @@ public class FileContainer implements Serializable {
      */
     private int getNextFileIndex( Long currentThreadId, Boolean isStaticValue ) {
 
-        if( currentThreadId == null ) {
+        if (currentThreadId == null) {
             // PER_INVOCATION
             // return current global (folder) index
-            if( currentIndex >= fileList.size() ) {
+            if (currentIndex >= fileList.size()) {
                 currentIndex = 0;
             }
             return currentIndex++;
         }
 
         // return the file index for the current thread
-        Integer index = threadIndexes.get( currentThreadId );
-        if( isStaticValue ) { // THREAD_STATIC
-            if( index != null ) {
+        Integer index = threadIndexes.get(currentThreadId);
+        if (isStaticValue) { // THREAD_STATIC
+            if (index != null) {
                 return index;
             } else {
                 // first run for THREAD_STATIC
-                if( currentIndex >= fileList.size() ) {
+                if (currentIndex >= fileList.size()) {
                     currentIndex = 0;
                 }
                 index = currentIndex++;
             }
         } else {
             // isStaticValue = false, THREADED parameter level
-            if( index != null ) {
+            if (index != null) {
                 index++;
             } else {
                 index = currentIndex;
             }
         }
 
-        if( index >= fileList.size() ) {
+        if (index >= fileList.size()) {
             index = 0;
         }
-        threadIndexes.put( currentThreadId, index );
+        threadIndexes.put(currentThreadId, index);
         return index;
     }
 
@@ -166,11 +166,11 @@ public class FileContainer implements Serializable {
     private Set<String> extractPatternParameters() {
 
         Set<String> parameters = new HashSet<String>();
-        Matcher matcher = PARAMETER_PATTERN.matcher( pattern );
-        while( matcher.find() ) {
-            parameters.add( matcher.group( 1 ) );
+        Matcher matcher = PARAMETER_PATTERN.matcher(pattern);
+        while (matcher.find()) {
+            parameters.add(matcher.group(1));
         }
-        if( parameters.size() == 0 ) {
+        if (parameters.size() == 0) {
             return null;
         }
         return parameters;

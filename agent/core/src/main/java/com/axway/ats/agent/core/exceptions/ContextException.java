@@ -21,11 +21,11 @@ package com.axway.ats.agent.core.exceptions;
  * an action class tries to access the current session contex, but
  * a session has not been started yet.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ContextException extends AgentException {
 
     public ContextException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

@@ -73,9 +73,9 @@ public class FixedDurationActionTask extends AbstractActionTask {
                                                                           NoSuchActionException,
                                                                           NoCompatibleMethodFoundException {
 
-        super( caller, queueName, threadsManager, itManager, actionRequests, dataProviders,
-               intervalBetweenIterations, minIntervalBetweenIterations, maxIntervalBetweenIterations,
-               listeners );
+        super(caller, queueName, threadsManager, itManager, actionRequests, dataProviders,
+              intervalBetweenIterations, minIntervalBetweenIterations, maxIntervalBetweenIterations,
+              listeners);
 
         this.totalDuration = totalDuration;
 
@@ -90,7 +90,7 @@ public class FixedDurationActionTask extends AbstractActionTask {
     @Override
     public ActionTaskResult execute() {
 
-        if( timeFrameStartTimestamp == 0 ) {
+        if (timeFrameStartTimestamp == 0) {
             // we enter this method for first time
             timeFrameStartTimestamp = Calendar.getInstance().getTimeInMillis();
             endTimestamp = timeFrameStartTimestamp + totalDuration * 1000;
@@ -100,11 +100,11 @@ public class FixedDurationActionTask extends AbstractActionTask {
 
         try {
             //invoke all the iterations of this queue
-            while( true ) {
+            while (true) {
 
                 //check if we have been interrupted
-                if( Thread.interrupted() ) {
-                    log.debug( "Actions queue '" + queueName + "' has been cancelled - exiting" );
+                if (Thread.interrupted()) {
+                    log.debug("Actions queue '" + queueName + "' has been cancelled - exiting");
                     executionResult = ActionTaskResult.CANCELED;
                     break;
                 }
@@ -116,22 +116,22 @@ public class FixedDurationActionTask extends AbstractActionTask {
                     //Sleep if needed before starting the next iteration.
                     //We will not sleep if it goes beyond the endTimestamp as we know that there will be 
                     //no more time for another iteration
-                    if( !sleepBetweenIterations( endTimestamp ) ) {
+                    if (!sleepBetweenIterations(endTimestamp)) {
                         break;
                     }
 
                     // check for speed restriction
-                    if( totalExecutionsPerTimeFrame > 0 && evaluateSpeedProgress( endTimestamp ) ) {
+                    if (totalExecutionsPerTimeFrame > 0 && evaluateSpeedProgress(endTimestamp)) {
                         // waiting for end of time frame goes beyond the end time, so no more iterations will be performed
                         break;
                     }
-                } catch( InterruptedException ie ) {
-                    log.warn( "Actions queue '" + queueName + "' has been cancelled - exiting" );
+                } catch (InterruptedException ie) {
+                    log.warn("Actions queue '" + queueName + "' has been cancelled - exiting");
                     executionResult = ActionTaskResult.CANCELED;
                     break;
                 }
 
-                if( isUseSynchronizedIterations ) {
+                if (isUseSynchronizedIterations) {
                     //we are synchronizing the iterations and we have more iterations to execute, 
                     //we have to pause now. We will be awaken when all threads have paused
                     executionResult = ActionTaskResult.PAUSED;
@@ -139,13 +139,13 @@ public class FixedDurationActionTask extends AbstractActionTask {
                 }
             }
         } finally {
-            if( itManager != null && executionResult != ActionTaskResult.PAUSED ) {
+            if (itManager != null && executionResult != ActionTaskResult.PAUSED) {
                 // this queue is going down
                 itManager.shutdown();
             }
         }
 
-        if( executionResult == null ) {
+        if (executionResult == null) {
             executionResult = ActionTaskResult.FINISHED;
         }
         return executionResult;

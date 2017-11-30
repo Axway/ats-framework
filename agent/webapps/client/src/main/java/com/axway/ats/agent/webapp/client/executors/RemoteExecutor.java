@@ -50,7 +50,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
      */
     public RemoteExecutor( String atsAgent ) throws AgentException {
 
-        this( atsAgent, true );
+        this(atsAgent, true);
     }
 
     /**
@@ -65,14 +65,14 @@ public class RemoteExecutor extends AbstractClientExecutor {
         // we assume the ATS Agent address here comes with IP and PORT
         this.atsAgent = atsAgent;
 
-        if( configureAgent ) {
+        if (configureAgent) {
             //configure the remote executor(an ATS agent)
             try {
-                TestcaseStateEventsDispacher.getInstance().onConfigureAtsAgents( Arrays.asList( atsAgent ) );
-            } catch( Exception e ) {
+                TestcaseStateEventsDispacher.getInstance().onConfigureAtsAgents(Arrays.asList(atsAgent));
+            } catch (Exception e) {
                 // we know for sure this is an AgentException, but as the interface declaration is in Core library,
                 // we could not declare the AgentException, but its parent - the regular java Exception
-                throw ( AgentException ) e;
+                throw(AgentException) e;
             }
         }
     }
@@ -99,57 +99,57 @@ public class RemoteExecutor extends AbstractClientExecutor {
         try {
             //wrap the arguments - each argument is serialized as
             //a byte stream
-            for( Object argument : arguments ) {
+            for (Object argument : arguments) {
                 ArgumentWrapper argWrapper = new ArgumentWrapper();
 
                 ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
-                objectOutStream.writeObject( argument );
+                ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
+                objectOutStream.writeObject(argument);
 
-                argWrapper.setArgumentValue( byteOutStream.toByteArray() );
-                wrappedArguments.add( argWrapper );
+                argWrapper.setArgumentValue(byteOutStream.toByteArray());
+                wrappedArguments.add(argWrapper);
             }
-        } catch( IOException ioe ) {
-            throw new AgentException( "Could not serialize input arguments", ioe );
+        } catch (IOException ioe) {
+            throw new AgentException("Could not serialize input arguments", ioe);
         }
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         try {
             //FIXME: swap with ActionWrapper
-            byte[] resultAsBytes = agentServicePort.executeAction( componentName, actionName,
-                                                                   wrappedArguments );
+            byte[] resultAsBytes = agentServicePort.executeAction(componentName, actionName,
+                                                                  wrappedArguments);
 
             //the result is returned as serialized stream
             //so we need to deserialize it
-            ByteArrayInputStream byteInStream = new ByteArrayInputStream( resultAsBytes );
-            ObjectInputStream objectInStream = new ObjectInputStream( byteInStream );
+            ByteArrayInputStream byteInStream = new ByteArrayInputStream(resultAsBytes);
+            ObjectInputStream objectInStream = new ObjectInputStream(byteInStream);
 
             result = objectInStream.readObject();
 
-        } catch( IOException ioe ) {
-            throw new AgentException( "Could not deserialize returned result from agent at " + atsAgent,
-                                      ioe );
-        } catch( AgentException_Exception ae ) {
-            throw new AgentException( "Error while executing action on agent at " + atsAgent
-                                      + ". Exception message: " + ae.getMessage() );
-        } catch( InternalComponentException_Exception ice ) {
+        } catch (IOException ioe) {
+            throw new AgentException("Could not deserialize returned result from agent at " + atsAgent,
+                                     ioe);
+        } catch (AgentException_Exception ae) {
+            throw new AgentException("Error while executing action on agent at " + atsAgent
+                                     + ". Exception message: " + ae.getMessage());
+        } catch (InternalComponentException_Exception ice) {
 
             //we need to get internal component exception info from the soap fault
             InternalComponentException faultInfo = ice.getFaultInfo();
 
             //then construct and throw a real InternalComponentException (not the JAXB mapping type above)
-            throw new com.axway.ats.agent.core.exceptions.InternalComponentException( faultInfo.getComponentName(),
-                                                                                      faultInfo.getActionName(),
-                                                                                      faultInfo.getExceptionMessage()
-                                                                                                                 + "\n["
-                                                                                                                 + HostUtils.getLocalHostIP()
-                                                                                                                 + " stacktrace]",
-                                                                                      atsAgent );
+            throw new com.axway.ats.agent.core.exceptions.InternalComponentException(faultInfo.getComponentName(),
+                                                                                     faultInfo.getActionName(),
+                                                                                     faultInfo.getExceptionMessage()
+                                                                                                                + "\n["
+                                                                                                                + HostUtils.getLocalHostIP()
+                                                                                                                + " stacktrace]",
+                                                                                     atsAgent);
 
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
 
         return result;
@@ -159,51 +159,51 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException {
 
         try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+            AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
             //FIXME: swap with ActionWrapper
-            return agentServicePort.isComponentLoaded( actionRequest.getComponentName() );
-        } catch( Exception e ) {
+            return agentServicePort.isComponentLoaded(actionRequest.getComponentName());
+        } catch (Exception e) {
             return false;
         }
     }
-    
+
     @Override
     public String getAgentHome() throws AgentException {
 
         try {
-            return AgentServicePool.getInstance().getClient( atsAgent ).getAgentHome();
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+            return AgentServicePool.getInstance().getClient(atsAgent).getAgentHome();
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 
     public List<String> getClassPath() throws AgentException {
 
-        return AgentServicePool.getInstance().getClient( atsAgent ).getClassPath();
+        return AgentServicePool.getInstance().getClient(atsAgent).getClassPath();
     }
-    
+
     public void logClassPath() throws AgentException {
 
-        AgentServicePool.getInstance().getClient( atsAgent ).logClassPath();
+        AgentServicePool.getInstance().getClient(atsAgent).logClassPath();
     }
-    
+
     public List<String> getDuplicatedJars() throws AgentException {
 
-        return AgentServicePool.getInstance().getClient( atsAgent ).getDuplicatedJars();
+        return AgentServicePool.getInstance().getClient(atsAgent).getDuplicatedJars();
     }
-    
+
     public void logDuplicatedJars() throws AgentException {
 
-        AgentServicePool.getInstance().getClient( atsAgent ).logDuplicatedJars();
+        AgentServicePool.getInstance().getClient(atsAgent).logDuplicatedJars();
     }
-    
+
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
         try {
-            return AgentServicePool.getInstance().getClient( atsAgent ).getNumberPendingLogEvents();
-        } catch( Exception e ) {
+            return AgentServicePool.getInstance().getClient(atsAgent).getNumberPendingLogEvents();
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -213,16 +213,16 @@ public class RemoteExecutor extends AbstractClientExecutor {
                          String folderPath ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         try {
-            agentServicePort.restoreEnvironment( componentName, environmentName, folderPath );
-        } catch( AgentException_Exception ae ) {
-            throw new AgentException( ae.getMessage() );
-        } catch( InternalComponentException_Exception ice ) {
-            throw new AgentException( ice.getMessage() + ", check server log for stack trace" );
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+            agentServicePort.restoreEnvironment(componentName, environmentName, folderPath);
+        } catch (AgentException_Exception ae) {
+            throw new AgentException(ae.getMessage());
+        } catch (InternalComponentException_Exception ice) {
+            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 
@@ -230,17 +230,17 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public void restoreAll( String environmentName ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         try {
             //passing null will clean all components
-            agentServicePort.restoreEnvironment( null, environmentName, null );
-        } catch( AgentException_Exception ae ) {
-            throw new AgentException( ae.getMessage() );
-        } catch( InternalComponentException_Exception ice ) {
-            throw new AgentException( ice.getMessage() + ", check server log for stack trace" );
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+            agentServicePort.restoreEnvironment(null, environmentName, null);
+        } catch (AgentException_Exception ae) {
+            throw new AgentException(ae.getMessage());
+        } catch (InternalComponentException_Exception ice) {
+            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 
@@ -249,16 +249,16 @@ public class RemoteExecutor extends AbstractClientExecutor {
                         String folderPath ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         try {
-            agentServicePort.backupEnvironment( componentName, environmentName, folderPath );
-        } catch( AgentException_Exception ae ) {
-            throw new AgentException( ae.getMessage() );
-        } catch( InternalComponentException_Exception ice ) {
-            throw new AgentException( ice.getMessage() + ", check server log for stack trace" );
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+            agentServicePort.backupEnvironment(componentName, environmentName, folderPath);
+        } catch (AgentException_Exception ae) {
+            throw new AgentException(ae.getMessage());
+        } catch (InternalComponentException_Exception ice) {
+            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 
@@ -266,17 +266,17 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public void backupAll( String environmentName ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         try {
             //passing null will backup all components
-            agentServicePort.backupEnvironment( null, environmentName, null );
-        } catch( AgentException_Exception ae ) {
-            throw new AgentException( ae.getMessage() );
-        } catch( InternalComponentException_Exception ice ) {
-            throw new AgentException( ice.getMessage() + ", check server log for stack trace" );
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+            agentServicePort.backupEnvironment(null, environmentName, null);
+        } catch (AgentException_Exception ae) {
+            throw new AgentException(ae.getMessage());
+        } catch (InternalComponentException_Exception ice) {
+            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 
@@ -294,18 +294,18 @@ public class RemoteExecutor extends AbstractClientExecutor {
          */
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient( atsAgent );
+        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 
         try {
-            log.info( "Waiting until all queues on host '" + atsAgent + "' finish execution" );
+            log.info("Waiting until all queues on host '" + atsAgent + "' finish execution");
 
             agentServicePort.waitUntilAllQueuesFinish();
-        } catch( AgentException_Exception ae ) {
-            throw new AgentException( ae.getMessage() );
-        } catch( InternalComponentException_Exception ice ) {
-            throw new AgentException( ice.getMessage() + ", check server log for stack trace" );
-        } catch( Exception e ) {
-            throw new AgentException( e.getMessage(), e );
+        } catch (AgentException_Exception ae) {
+            throw new AgentException(ae.getMessage());
+        } catch (InternalComponentException_Exception ice) {
+            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
+        } catch (Exception e) {
+            throw new AgentException(e.getMessage(), e);
         }
     }
 
@@ -326,25 +326,25 @@ public class RemoteExecutor extends AbstractClientExecutor {
         try {
             //wrap the arguments - each argument is serialized as
             //a byte stream
-            for( Object argument : arguments ) {
+            for (Object argument : arguments) {
                 ArgumentWrapper argWrapper = new ArgumentWrapper();
 
                 ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
-                objectOutStream.writeObject( argument );
+                ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
+                objectOutStream.writeObject(argument);
 
-                argWrapper.setArgumentValue( byteOutStream.toByteArray() );
-                wrappedArguments.add( argWrapper );
+                argWrapper.setArgumentValue(byteOutStream.toByteArray());
+                wrappedArguments.add(argWrapper);
             }
-        } catch( IOException ioe ) {
-            throw new AgentException( "Could not serialize input arguments", ioe );
+        } catch (IOException ioe) {
+            throw new AgentException("Could not serialize input arguments", ioe);
         }
 
         //construct the action wrapper
         ActionWrapper actionWrapper = new ActionWrapper();
-        actionWrapper.setComponentName( actionRequest.getComponentName() );
-        actionWrapper.setActionName( actionRequest.getActionName() );
-        actionWrapper.getArgs().addAll( wrappedArguments );
+        actionWrapper.setComponentName(actionRequest.getComponentName());
+        actionWrapper.setActionName(actionRequest.getActionName());
+        actionWrapper.getArgs().addAll(wrappedArguments);
 
         return actionWrapper;
     }

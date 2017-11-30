@@ -17,11 +17,11 @@ package com.axway.ats.agent.core.threading.exceptions;
 
 import com.axway.ats.agent.core.threading.ActionTaskLoaderState;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class LoadQueueAlreadyExistsException extends ActionTaskLoaderException {
 
     public LoadQueueAlreadyExistsException( String name, ActionTaskLoaderState state ) {
 
-        super( "Load queue with name '" + name + "' already exists and is in state " + state );
+        super("Load queue with name '" + name + "' already exists and is in state " + state);
     }
 }

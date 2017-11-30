@@ -78,7 +78,7 @@ public final class AgentConfigurationClient extends ActionClient {
 
         // this client works on the level of Agent distribution, 
         // not on the level of Agent components
-        super( atsAgent, "some fake component" );
+        super(atsAgent, "some fake component");
     }
 
     /**
@@ -94,13 +94,13 @@ public final class AgentConfigurationClient extends ActionClient {
 
         // load the configuration file
         Properties agentSettings = new Properties();
-        try (FileInputStream fis = new FileInputStream( new File( configurationFile ) )) {
-            agentSettings.load( fis );
-        } catch( IOException ioe ) {
-            throw new RuntimeException( "Unable to initialize Agent settings", ioe );
+        try (FileInputStream fis = new FileInputStream(new File(configurationFile))) {
+            agentSettings.load(fis);
+        } catch (IOException ioe) {
+            throw new RuntimeException("Unable to initialize Agent settings", ioe);
         }
 
-        applyConfigurationAndReloadAgentComponents( agentSettings );
+        applyConfigurationAndReloadAgentComponents(agentSettings);
     }
 
     /**
@@ -115,7 +115,7 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void setAgentConfiguration( Properties agentSettings ) throws AgentException {
 
-        applyConfigurationAndReloadAgentComponents( agentSettings );
+        applyConfigurationAndReloadAgentComponents(agentSettings);
     }
 
     /**
@@ -128,9 +128,9 @@ public final class AgentConfigurationClient extends ActionClient {
     public void setCheckpointLogLevel( CheckpointLogLevel checkpointLogLevel ) throws AgentException {
 
         GenericAgentConfigurator genericAgentConfigurator = new GenericAgentConfigurator();
-        genericAgentConfigurator.setCheckpointLogLevel( checkpointLogLevel );
+        genericAgentConfigurator.setCheckpointLogLevel(checkpointLogLevel);
 
-        applyConfiguration( genericAgentConfigurator );
+        applyConfiguration(genericAgentConfigurator);
     }
 
     /**
@@ -143,13 +143,13 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void setLogLevel( LogLevel logLevel ) throws AgentException {
 
-        RemoteLoggingConfigurator.setAtsDbLogLevelPerAgent( atsAgent, logLevel );
-        
-        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator( atsAgent );
-        
-        applyConfiguration( rlc );
+        RemoteLoggingConfigurator.setAtsDbLogLevelPerAgent(atsAgent, logLevel);
+
+        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator(atsAgent);
+
+        applyConfiguration(rlc);
     }
-    
+
     /**
      * Returns the path to the ATS agent location
      *
@@ -158,15 +158,14 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public String getAgentHome() throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
             return localExecutor.getAgentHome();
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
             return remoteExecutor.getAgentHome();
         }
     }
-    
 
     /**
      * Returns the current number of log events that are still not persisted in the log DB
@@ -177,11 +176,11 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public int getNumberPendingLogEvents() throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
             return localExecutor.getNumberPendingLogEvents();
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
             return remoteExecutor.getNumberPendingLogEvents();
         }
     }
@@ -193,11 +192,11 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public List<String> getClassPath() throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalSystemOperations operations = new LocalSystemOperations();
-            return Arrays.asList( operations.getClassPath() );
+            return Arrays.asList(operations.getClassPath());
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
             return remoteExecutor.getClassPath();
         }
     }
@@ -209,11 +208,11 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void logClassPath() throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalSystemOperations operations = new LocalSystemOperations();
             operations.logClassPath();
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
             remoteExecutor.logClassPath();
         }
     }
@@ -225,11 +224,11 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public List<String> getDuplicatedJars() throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalSystemOperations operations = new LocalSystemOperations();
-            return Arrays.asList( operations.getDuplicatedJars() );
+            return Arrays.asList(operations.getDuplicatedJars());
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
             return remoteExecutor.getDuplicatedJars();
         }
     }
@@ -241,11 +240,11 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void logDuplicatedJars() throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalSystemOperations operations = new LocalSystemOperations();
             operations.logDuplicatedJars();
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
             remoteExecutor.logDuplicatedJars();
         }
     }
@@ -272,9 +271,9 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void useHttpsConnection() {
 
-        AgentConfigurator.setConnectionProtocol( atsAgent, "https" );
+        AgentConfigurator.setConnectionProtocol(atsAgent, "https");
     }
-    
+
     /**
      * Apply the new settings
      *
@@ -284,12 +283,12 @@ public final class AgentConfigurationClient extends ActionClient {
     private void applyConfigurationAndReloadAgentComponents( Properties agentSettings ) throws AgentException {
 
         // include the Agent configuration
-        AgentConfigurator agentConfigurator = new AgentConfigurator( agentSettings );
+        AgentConfigurator agentConfigurator = new AgentConfigurator(agentSettings);
 
         List<Configurator> configurators = new ArrayList<Configurator>();
-        configurators.add( agentConfigurator );
+        configurators.add(agentConfigurator);
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             // executed in the JVM of the test executor
 
             // the already loaded Agent components are first unloaded
@@ -297,10 +296,10 @@ public final class AgentConfigurationClient extends ActionClient {
 
             // the initialization procedure implicitly applies the new configurations 
             // and then loads up again the Agent components
-            MainComponentLoader.getInstance().initialize( configurators );
+            MainComponentLoader.getInstance().initialize(configurators);
         } else {
             // send the new configuration to the remote Agent instance
-            new RemoteConfigurationManager().pushConfiguration( atsAgent, agentConfigurator );
+            new RemoteConfigurationManager().pushConfiguration(atsAgent, agentConfigurator);
         }
     }
 
@@ -312,12 +311,12 @@ public final class AgentConfigurationClient extends ActionClient {
      */
     private void applyConfiguration( Configurator configurator ) throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             // executed in the JVM of the test executor
             configurator.apply();
         } else {
             // send the new configuration to the remote Agent instance
-            new RemoteConfigurationManager().pushConfiguration( atsAgent, configurator );
+            new RemoteConfigurationManager().pushConfiguration(atsAgent, configurator);
         }
     }
 
@@ -331,14 +330,14 @@ public final class AgentConfigurationClient extends ActionClient {
     public boolean isComponentLoaded( String componentName ) throws AgentException {
 
         // construct an action request
-        ActionRequest actionRequest = new ActionRequest( componentName, "fake action name", new Object[]{} );
+        ActionRequest actionRequest = new ActionRequest(componentName, "fake action name", new Object[]{});
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             LocalExecutor localExecutor = new LocalExecutor();
-            return localExecutor.isComponentLoaded( actionRequest );
+            return localExecutor.isComponentLoaded(actionRequest);
         } else {
-            RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent, false );
-            return remoteExecutor.isComponentLoaded( actionRequest );
+            RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent, false);
+            return remoteExecutor.isComponentLoaded(actionRequest);
         }
     }
 
@@ -354,28 +353,28 @@ public final class AgentConfigurationClient extends ActionClient {
     public boolean isComponentLoaded( String componentName, int timeout ) throws AgentException {
 
         // construct an action request
-        ActionRequest actionRequest = new ActionRequest( componentName, "fake action name", new Object[]{} );
+        ActionRequest actionRequest = new ActionRequest(componentName, "fake action name", new Object[]{});
 
         AbstractClientExecutor executor;
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
             executor = new LocalExecutor();
         } else {
-            executor = new RemoteExecutor( atsAgent, false );
+            executor = new RemoteExecutor(atsAgent, false);
         }
 
         long startTimestamp = System.currentTimeMillis();
-        while( true ) {
-            if( executor.isComponentLoaded( actionRequest ) ) {
+        while (true) {
+            if (executor.isComponentLoaded(actionRequest)) {
                 // it is loaded
                 return true;
-            } else if( System.currentTimeMillis() - startTimestamp > timeout * 1000 ) {
+            } else if (System.currentTimeMillis() - startTimestamp > timeout * 1000) {
                 // not loaded for the whole timeout
                 return false;
             } else {
                 // not loaded, but we will check again
                 try {
-                    Thread.sleep( 1000 );
-                } catch( InterruptedException e ) {}
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
             }
         }
     }

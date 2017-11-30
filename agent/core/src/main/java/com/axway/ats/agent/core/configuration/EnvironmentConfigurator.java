@@ -30,10 +30,10 @@ import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.environment.EnvironmentUnit;
 import com.axway.ats.environment.database.DatabaseEnvironmentUnit;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EnvironmentConfigurator implements Configurator {
 
-    private static final Logger log                    = Logger.getLogger( EnvironmentConfigurator.class );
+    private static final Logger log                    = Logger.getLogger(EnvironmentConfigurator.class);
 
     public static final String  DB_CONFIGURATION_INDEX = "DB_CONFIGURATION_INDEX";
 
@@ -56,57 +56,57 @@ public class EnvironmentConfigurator implements Configurator {
     @Override
     public void apply() throws ConfigurationException {
 
-        for( Properties dbProperties : dbPropertiesList ) {
+        for (Properties dbProperties : dbPropertiesList) {
             int dbConfigurationIndex = -1;
-            if( dbProperties.get( DB_CONFIGURATION_INDEX ) != null ) {
-                dbConfigurationIndex = ( Integer ) dbProperties.get( DB_CONFIGURATION_INDEX );
+            if (dbProperties.get(DB_CONFIGURATION_INDEX) != null) {
+                dbConfigurationIndex = (Integer) dbProperties.get(DB_CONFIGURATION_INDEX);
             }
 
             ComponentRepository componentRepository = ComponentRepository.getInstance();
             ComponentEnvironment componentEnvironment;
             try {
-                componentEnvironment = componentRepository.getComponentEnvironment( component );
-            } catch( NoSuchComponentException nsce ) {
-                throw new ConfigurationException( "Error changing environment configuration. CAUSE: "
-                                                  + nsce.getMessage() );
+                componentEnvironment = componentRepository.getComponentEnvironment(component);
+            } catch (NoSuchComponentException nsce) {
+                throw new ConfigurationException("Error changing environment configuration. CAUSE: "
+                                                 + nsce.getMessage());
             }
 
             int foundDbConfigurationIndex = 0;
-            for( EnvironmentUnit environmentUnit : componentEnvironment.getEnvironmentUnits() ) {
-                if( environmentUnit instanceof DatabaseEnvironmentUnit ) {
-                    if( foundDbConfigurationIndex == dbConfigurationIndex ) {
-                        DatabaseEnvironmentUnit dbEnvironmentUnit = ( DatabaseEnvironmentUnit ) environmentUnit;
+            for (EnvironmentUnit environmentUnit : componentEnvironment.getEnvironmentUnits()) {
+                if (environmentUnit instanceof DatabaseEnvironmentUnit) {
+                    if (foundDbConfigurationIndex == dbConfigurationIndex) {
+                        DatabaseEnvironmentUnit dbEnvironmentUnit = (DatabaseEnvironmentUnit) environmentUnit;
                         DbConnection dbConnection = dbEnvironmentUnit.getDbConnection();
 
                         // the database port is kept in a list of custom properties
                         Map<String, Object> customProperties = dbConnection.getCustomProperties();
 
                         // get the new configuration properties
-                        String newDbHost = chooseNewProperty( dbProperties.getProperty( DB_HOST ),
-                                                              dbConnection.getHost() );
-                        String newDbName = chooseNewProperty( dbProperties.getProperty( DB_NAME ),
-                                                              dbConnection.getDb() );
-                        String newDbUserName = chooseNewProperty( dbProperties.getProperty( DB_USER_NAME ),
-                                                                  dbConnection.getUser() );
-                        String newDbUserPassword = chooseNewProperty( dbProperties.getProperty( DB_USER_PASSWORD ),
-                                                                      dbConnection.getPassword() );
-                        Object newDbPort = chooseDbPort( dbProperties.get( DB_PORT ),
-                                                         customProperties.get( DbKeys.PORT_KEY ) );
+                        String newDbHost = chooseNewProperty(dbProperties.getProperty(DB_HOST),
+                                                             dbConnection.getHost());
+                        String newDbName = chooseNewProperty(dbProperties.getProperty(DB_NAME),
+                                                             dbConnection.getDb());
+                        String newDbUserName = chooseNewProperty(dbProperties.getProperty(DB_USER_NAME),
+                                                                 dbConnection.getUser());
+                        String newDbUserPassword = chooseNewProperty(dbProperties.getProperty(DB_USER_PASSWORD),
+                                                                     dbConnection.getPassword());
+                        Object newDbPort = chooseDbPort(dbProperties.get(DB_PORT),
+                                                        customProperties.get(DbKeys.PORT_KEY));
 
                         // create a new connection object
-                        customProperties.put( DbKeys.PORT_KEY, newDbPort );
-                        DbConnection newDbConnection = DatabaseProviderFactory.createDbConnection( dbConnection.getDbType(),
-                                                                                               newDbHost,
-                                                                                               newDbName,
-                                                                                               newDbUserName,
-                                                                                               newDbUserPassword,
-                                                                                               customProperties );
+                        customProperties.put(DbKeys.PORT_KEY, newDbPort);
+                        DbConnection newDbConnection = DatabaseProviderFactory.createDbConnection(dbConnection.getDbType(),
+                                                                                                  newDbHost,
+                                                                                                  newDbName,
+                                                                                                  newDbUserName,
+                                                                                                  newDbUserPassword,
+                                                                                                  customProperties);
 
                         // apply the changes
-                        dbEnvironmentUnit.setDbConnection( newDbConnection );
+                        dbEnvironmentUnit.setDbConnection(newDbConnection);
 
-                        log.info( "Database configuration for index " + dbConfigurationIndex
-                                  + " is changed. DbConnection: " + newDbConnection.getDescription() );
+                        log.info("Database configuration for index " + dbConfigurationIndex
+                                 + " is changed. DbConnection: " + newDbConnection.getDescription());
                         return;
                     } else {
                         // still searching the exact database configuration
@@ -115,8 +115,8 @@ public class EnvironmentConfigurator implements Configurator {
                 }
             }
 
-            throw new ConfigurationException( "Database configuration with index " + dbConfigurationIndex
-                                              + " is not available" );
+            throw new ConfigurationException("Database configuration with index " + dbConfigurationIndex
+                                             + " is not available");
         }
     }
 
@@ -141,7 +141,7 @@ public class EnvironmentConfigurator implements Configurator {
                                  Object newDbPort,
                                  Object currentDbPort ) {
 
-        if( newDbPort != null ) {
+        if (newDbPort != null) {
             return newDbPort;
         } else {
             return currentDbPort;
@@ -152,7 +152,7 @@ public class EnvironmentConfigurator implements Configurator {
                                       String newProperty,
                                       String currentProperty ) {
 
-        if( newProperty != null ) {
+        if (newProperty != null) {
             return newProperty;
         } else {
             return currentProperty;

@@ -40,7 +40,7 @@ public class IntegerRangeParameterDataProvider extends AbstractParameterDataProv
                                        int rangeEnd,
                                        ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.rangeStart = rangeStart;
         this.rangeEnd = rangeEnd;
@@ -55,13 +55,13 @@ public class IntegerRangeParameterDataProvider extends AbstractParameterDataProv
 
     @Override
     protected ArgumentValue generateNewValuePerInvocation(
-                                              List<ArgumentValue> alreadyResolvedValues ) {
+                                                           List<ArgumentValue> alreadyResolvedValues ) {
 
-        if( currentValue > rangeEnd ) {
+        if (currentValue > rangeEnd) {
             currentValue = rangeStart;
         }
 
-        return new ArgumentValue( parameterName, currentValue++ );
+        return new ArgumentValue(parameterName, currentValue++);
     }
 
     @Override
@@ -69,18 +69,18 @@ public class IntegerRangeParameterDataProvider extends AbstractParameterDataProv
                                                        long currentThreadId,
                                                        List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
 
             valueIndexPerThread++;
         } else {
             valueIndexPerThread = currentValue;
         }
-        if( valueIndexPerThread > rangeEnd ) {
+        if (valueIndexPerThread > rangeEnd) {
             valueIndexPerThread = rangeStart;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName, valueIndexPerThread );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName, valueIndexPerThread);
     }
 
     @Override
@@ -88,18 +88,18 @@ public class IntegerRangeParameterDataProvider extends AbstractParameterDataProv
                                                              long currentThreadId,
                                                              List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
-            return new ArgumentValue( parameterName, valueIndexPerThread );
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
+            return new ArgumentValue(parameterName, valueIndexPerThread);
         }
-        if( currentValue > rangeEnd ) {
+        if (currentValue > rangeEnd) {
             currentValue = rangeStart;
         }
         valueIndexPerThread = currentValue++;
-        if( valueIndexPerThread > rangeEnd ) {
+        if (valueIndexPerThread > rangeEnd) {
             valueIndexPerThread = rangeStart;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName, valueIndexPerThread );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName, valueIndexPerThread);
     }
 }

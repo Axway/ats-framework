@@ -22,7 +22,7 @@ public class ActionHeader {
     private String headerValue;
 
     public ActionHeader( String headerName,
-                    String headerValue ) {
+                         String headerValue ) {
 
         this.headerName = headerName;
         this.headerValue = headerValue;

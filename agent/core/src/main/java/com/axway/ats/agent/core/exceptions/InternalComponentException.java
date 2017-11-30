@@ -25,7 +25,7 @@ import com.axway.ats.core.utils.StringUtils;
  * This exception will be thrown whenever an exception occurs during action execution
  * It will hold the simple name of the exception thrown, as well as the message
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class InternalComponentException extends AgentException {
 
     private String hostIp;
@@ -36,29 +36,29 @@ public class InternalComponentException extends AgentException {
     // This constructor is called on the Agent side
     public InternalComponentException( String componentName, String actionName, Throwable cause ) {
 
-        super( "Exception during execution of action '" + actionName + "' for component '" + componentName
-               + "' " + cause.getMessage(), cause );
+        super("Exception during execution of action '" + actionName + "' for component '" + componentName
+              + "' " + cause.getMessage(), cause);
 
         this.componentName = componentName;
         this.actionName = actionName;
-        this.exceptionMessage = getStackTrace( cause );
+        this.exceptionMessage = getStackTrace(cause);
 
         // remember the Agent host
         this.hostIp = HostUtils.getLocalHostIP();
     }
-    
+
     // this constructor is called on the Test Executor side
-    public InternalComponentException( String componentName, String actionName, String exceptionMessage, 
+    public InternalComponentException( String componentName, String actionName, String exceptionMessage,
                                        String hostIp ) {
 
-        super( "Exception during execution of action '" + actionName + "' for component '" + componentName
-               + "' at " + hostIp + "\n" + exceptionMessage );
+        super("Exception during execution of action '" + actionName + "' for component '" + componentName
+              + "' at " + hostIp + "\n" + exceptionMessage);
 
         this.componentName = componentName;
         this.actionName = actionName;
         this.exceptionMessage = exceptionMessage;
     }
-    
+
     /**
      * Extract nested exception stack trace and return it to formated string
      * @param th the exception cause
@@ -72,47 +72,47 @@ public class InternalComponentException extends AgentException {
         // list containing StringBuilders with all exception causes
         List<StringBuilder> causesList = new ArrayList<StringBuilder>();
 
-        if( exc == null ) {
+        if (exc == null) {
             return causes.toString();
         }
-        
+
         // append the machine IP, where the exception happened
-        causes.append( "\n\t[" + HostUtils.getLocalHostIP() + " error]\n");
+        causes.append("\n\t[" + HostUtils.getLocalHostIP() + " error]\n");
 
         // if chained agents are used this line could already be appended, so we check it
         String locationErrorMsg = "\n[" + HostUtils.getLocalHostIP() + " stacktrace]";
         String formattedExceptionMsg = exc.getMessage();
-        if( !formattedExceptionMsg.trim().endsWith( locationErrorMsg ) ) {
-            formattedExceptionMsg = formatMessage( formattedExceptionMsg + locationErrorMsg );
+        if (!formattedExceptionMsg.trim().endsWith(locationErrorMsg)) {
+            formattedExceptionMsg = formatMessage(formattedExceptionMsg + locationErrorMsg);
         } else {
-            formattedExceptionMsg = formatMessage( formattedExceptionMsg );
+            formattedExceptionMsg = formatMessage(formattedExceptionMsg);
         }
-        
+
         // append the exception type and the formated exception message 
-        causes.append( "\t").append( exc.getClass().getName()).append( formattedExceptionMsg );
-        
+        causes.append("\t").append(exc.getClass().getName()).append(formattedExceptionMsg);
+
         do {
-            for( StackTraceElement sck : exc.getStackTrace() ) {
-                causes.append( "\t" ).append( sck ).append( "\n" );
-                if( sck.toString().startsWith( "com.sun.xml.ws" ) ) {
+            for (StackTraceElement sck : exc.getStackTrace()) {
+                causes.append("\t").append(sck).append("\n");
+                if (sck.toString().startsWith("com.sun.xml.ws")) {
                     break;
                 }
             }
-            if( exc == exc.getCause() || exc.getCause() == null ) {
-                causesList.add( causes );
+            if (exc == exc.getCause() || exc.getCause() == null) {
+                causesList.add(causes);
                 break;
             } else {
-                causesList.add( causes );
+                causesList.add(causes);
                 exc = exc.getCause();
                 causes = new StringBuilder();
-                causes.append( "\tCaused by \n\t" + exc.getClass().getName() + ": " + exc.getMessage() + "\n" );
+                causes.append("\tCaused by \n\t" + exc.getClass().getName() + ": " + exc.getMessage() + "\n");
             }
 
-        } while( true );
+        } while (true);
 
-        return reduceStackTraceLenth( causesList );
+        return reduceStackTraceLenth(causesList);
     }
-    
+
     /**
      * format the exception message
      */
@@ -120,16 +120,16 @@ public class InternalComponentException extends AgentException {
                                          String exceptionMessage ) {
 
         StringBuilder formatedMessage = new StringBuilder();
-        for( String row : exceptionMessage.split( "\n" ) ) {
-            formatedMessage.append( row ).append( "\n" ).append( "\t" );
+        for (String row : exceptionMessage.split("\n")) {
+            formatedMessage.append(row).append("\n").append("\t");
         }
-        
+
         // remove the last '\t'
-        formatedMessage.deleteCharAt( formatedMessage.length() - 1 );
+        formatedMessage.deleteCharAt(formatedMessage.length() - 1);
 
         return formatedMessage.toString();
     }
-    
+
     /**
      * remove the common parts from the exception
      */
@@ -137,41 +137,41 @@ public class InternalComponentException extends AgentException {
                                                  List<StringBuilder> causesList ) {
 
         StringBuilder resizedStackTrace = new StringBuilder();
-        resizedStackTrace.append( causesList.get( 0 ) );
-        for( int i = 0; i < causesList.size() - 1; i++ ) {
-            String[] outerCause = causesList.get( i ).toString().split( "\n" );
-            String[] innerCause = causesList.get( i + 1 ).toString().split( "\n" );
+        resizedStackTrace.append(causesList.get(0));
+        for (int i = 0; i < causesList.size() - 1; i++) {
+            String[] outerCause = causesList.get(i).toString().split("\n");
+            String[] innerCause = causesList.get(i + 1).toString().split("\n");
 
             StringBuilder temp = new StringBuilder();
-            for( int j = 0; j < outerCause.length; j++ ) {
+            for (int j = 0; j < outerCause.length; j++) {
 
-                if( StringUtils.isNullOrEmpty( outerCause[j] ) ) {
+                if (StringUtils.isNullOrEmpty(outerCause[j])) {
                     // one of the lists has no more elements, we stop
                     continue;
                 }
 
-                for( int k = 0; k < innerCause.length; k++ ) {
-                    if( !outerCause[j].equals( innerCause[k] ) ) {
-                        temp.append( innerCause[k] ).append( "\n" );
+                for (int k = 0; k < innerCause.length; k++) {
+                    if (!outerCause[j].equals(innerCause[k])) {
+                        temp.append(innerCause[k]).append("\n");
                     } else {
-                        temp.append( "\t...\n" );
-                        resizedStackTrace.append( temp );
+                        temp.append("\t...\n");
+                        resizedStackTrace.append(temp);
                         temp = new StringBuilder();
                         break;
                     }
                 }
 
-                if( temp.length() > 0 ) {
-                    temp.setLength( 0 );
+                if (temp.length() > 0) {
+                    temp.setLength(0);
                 } else {
                     break;
                 }
             }
         }
-        
+
         return resizedStackTrace.toString();
     }
-    
+
     public String getComponentName() {
 
         return componentName;

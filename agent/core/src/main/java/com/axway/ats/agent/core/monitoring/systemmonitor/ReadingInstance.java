@@ -66,7 +66,7 @@ public abstract class ReadingInstance extends SharedReadingBean {
      *  - IO read/write bytes for local devices
      *  - Network traffic
      */
-    private static final long        OVERFLOW_VALUE                          = 2 * ( long ) Integer.MAX_VALUE; // 4 294 967 294
+    private static final long        OVERFLOW_VALUE                          = 2 * (long) Integer.MAX_VALUE; // 4 294 967 294
     // Sigar overflows after the following value when measuring CPU usage for a system process
     public static final long         CPU_PROCESS_OVERFLOW_VALUE              = OVERFLOW_VALUE / 10000;
     // We guess Sigar overflows after the following value when measuring memory page faults for a system process
@@ -83,7 +83,7 @@ public abstract class ReadingInstance extends SharedReadingBean {
                             String unit,
                             float normalizationFactor ) throws SigarException {
 
-        this( sigarWrapper, null, dbId, 0, monitorClass, name, unit, null, normalizationFactor );
+        this(sigarWrapper, null, dbId, 0, monitorClass, name, unit, null, normalizationFactor);
     }
 
     /**
@@ -99,18 +99,18 @@ public abstract class ReadingInstance extends SharedReadingBean {
                             Map<String, String> parameters,
                             float normalizationFactor ) throws SigarException {
 
-        super( monitorClass, name, unit, normalizationFactor );
+        super(monitorClass, name, unit, normalizationFactor);
 
         this.parentProcess = parentProcess;
-        this.dbId = Integer.parseInt( dbId );
+        this.dbId = Integer.parseInt(dbId);
         this.pid = pid;
         this.sigarWrapper = sigarWrapper;
 
-        setParameters( parameters );
+        setParameters(parameters);
 
-        if( parentProcess != null ) {
-            this.parameters.put( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME,
-                                 parentProcess.getTheNameOfThisParentProcess() );
+        if (parentProcess != null) {
+            this.parameters.put(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME,
+                                parentProcess.getTheNameOfThisParentProcess());
         }
 
         lastPollTime = System.currentTimeMillis();
@@ -143,8 +143,8 @@ public abstract class ReadingInstance extends SharedReadingBean {
     public void addValueToParentProcess(
                                          float newValue ) {
 
-        if( parentProcess != null ) {
-            parentProcess.addValue( newValue );
+        if (parentProcess != null) {
+            parentProcess.addValue(newValue);
         }
     }
 
@@ -171,7 +171,7 @@ public abstract class ReadingInstance extends SharedReadingBean {
                                 String readingName,
                                 long value ) {
 
-        return fixOverflow( readingName, value, OVERFLOW_VALUE );
+        return fixOverflow(readingName, value, OVERFLOW_VALUE);
     }
 
     /**
@@ -191,28 +191,28 @@ public abstract class ReadingInstance extends SharedReadingBean {
         long lastSigarValue = 0L;
         long overflows = 0L;
 
-        if( this.lastSigarValues.containsKey( readingName ) ) {
-            lastSigarValue = this.lastSigarValues.get( readingName )[0].longValue();
-            overflows = this.lastSigarValues.get( readingName )[1].longValue();
+        if (this.lastSigarValues.containsKey(readingName)) {
+            lastSigarValue = this.lastSigarValues.get(readingName)[0].longValue();
+            overflows = this.lastSigarValues.get(readingName)[1].longValue();
         }
 
-        if( value < lastSigarValue && value >= 0 ) {
+        if (value < lastSigarValue && value >= 0) {
             overflows++;
         }
 
-        this.lastSigarValues.put( readingName, new Long[]{ value, overflows } );
+        this.lastSigarValues.put(readingName, new Long[]{ value, overflows });
         return value + overflowBarrier * overflows;
     }
 
     protected float toFloatWith2DecimalDigits(
                                                double doubleValue ) {
 
-        if( doubleValue >= 0 ) {
+        if (doubleValue >= 0) {
             doubleValue = doubleValue * normalizationFactor;
         }
 
         // return a float with 2 digits after the decimal point
-        return new BigDecimal( doubleValue ).setScale( 2, BigDecimal.ROUND_DOWN ).floatValue();
+        return new BigDecimal(doubleValue).setScale(2, BigDecimal.ROUND_DOWN).floatValue();
     }
 
     /**

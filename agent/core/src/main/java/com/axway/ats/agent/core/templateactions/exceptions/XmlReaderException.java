@@ -24,12 +24,12 @@ public class XmlReaderException extends AgentException {
     public XmlReaderException( String filePath,
                                Throwable cause ) {
 
-        super( "Error reading template actions from '" + filePath + "'", cause );
+        super("Error reading template actions from '" + filePath + "'", cause);
     }
 
     public XmlReaderException( String filePath,
                                String message ) {
 
-        super( "Error reading template actions from '" + filePath + "': " + message );
+        super("Error reading template actions from '" + filePath + "': " + message);
     }
 }

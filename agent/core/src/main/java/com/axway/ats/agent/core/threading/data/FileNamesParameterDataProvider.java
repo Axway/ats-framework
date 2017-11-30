@@ -45,7 +45,7 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
                                     boolean returnFullPath,
                                     ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.fileContainers = fileContainers;
         this.recursiveSearch = recursiveSearch;
@@ -55,12 +55,12 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
     @Override
     protected void doInitialize() throws ParameterDataProviderInitalizationException {
 
-        if( fileContainers != null && fileContainers.size() > 0 ) {
+        if (fileContainers != null && fileContainers.size() > 0) {
 
             createFileContainersArray();
         } else {
 
-            throw new ParameterDataProviderInitalizationException( "No folders are specified" );
+            throw new ParameterDataProviderInitalizationException("No folders are specified");
         }
 
         containersCount = containersArray.size();
@@ -69,15 +69,15 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
 
     @Override
     protected ArgumentValue generateNewValuePerInvocation(
-                                              List<ArgumentValue> alreadyResolvedValues ) {
+                                                           List<ArgumentValue> alreadyResolvedValues ) {
 
-        if( currentFileContainerIndex >= containersCount ) {
+        if (currentFileContainerIndex >= containersCount) {
             currentFileContainerIndex = 0;
         }
 
-        return new ArgumentValue( parameterName,
-                                  containersArray.get( currentFileContainerIndex++ )
-                                                 .getFileName( alreadyResolvedValues ) );
+        return new ArgumentValue(parameterName,
+                                 containersArray.get(currentFileContainerIndex++)
+                                                .getFileName(alreadyResolvedValues));
     }
 
     @Override
@@ -85,23 +85,23 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
                                                        long currentThreadId,
                                                        List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
             valueIndexPerThread++;
         } else {
 
             // we have a new thread started
             valueIndexPerThread = currentFileContainerIndex;
         }
-        if( valueIndexPerThread >= containersCount ) {
+        if (valueIndexPerThread >= containersCount) {
             valueIndexPerThread = 0;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName,
-                                  containersArray.get( valueIndexPerThread )
-                                                 .getFileName( currentThreadId,
-                                                               false,
-                                                               alreadyResolvedValues ) );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName,
+                                 containersArray.get(valueIndexPerThread)
+                                                .getFileName(currentThreadId,
+                                                             false,
+                                                             alreadyResolvedValues));
     }
 
     @Override
@@ -109,28 +109,28 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
                                                              long currentThreadId,
                                                              List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
-            return new ArgumentValue( parameterName,
-                                      containersArray.get( valueIndexPerThread )
-                                                     .getFileName( currentThreadId,
-                                                                   true,
-                                                                   alreadyResolvedValues ) );
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
+            return new ArgumentValue(parameterName,
+                                     containersArray.get(valueIndexPerThread)
+                                                    .getFileName(currentThreadId,
+                                                                 true,
+                                                                 alreadyResolvedValues));
         }
         // we have a new thread started
-        if( currentFileContainerIndex >= containersCount ) {
+        if (currentFileContainerIndex >= containersCount) {
             currentFileContainerIndex = 0;
         }
         valueIndexPerThread = currentFileContainerIndex++;
-        if( valueIndexPerThread >= containersCount ) {
+        if (valueIndexPerThread >= containersCount) {
             valueIndexPerThread = 0;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName,
-                                  containersArray.get( valueIndexPerThread )
-                                                 .getFileName( currentThreadId,
-                                                               true,
-                                                               alreadyResolvedValues ) );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName,
+                                 containersArray.get(valueIndexPerThread)
+                                                .getFileName(currentThreadId,
+                                                             true,
+                                                             alreadyResolvedValues));
     }
 
     /**
@@ -147,40 +147,40 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
                                            boolean useFileFilter ) {
 
         FilenameFilter fnf = null;
-        if( useFileFilter ) {
+        if (useFileFilter) {
             fnf = new FilenameFilter() {
 
-                private Pattern pattern = Pattern.compile( reqex );
+                private Pattern pattern = Pattern.compile(reqex);
 
                 @Override
                 public boolean accept(
                                        File dir,
                                        String name ) {
 
-                    return pattern.matcher( name ).matches();
+                    return pattern.matcher(name).matches();
                 }
             };
         }
 
         List<String> fileNames = new ArrayList<String>();
-        File[] attachementFiles = folder.listFiles( fnf );
-        if( attachementFiles != null ) {
-            for( File attachmentFile : attachementFiles ) {
-                if( attachmentFile.isFile() ) {
-                    if( returnFullPath ) {
-                        fileNames.add( attachmentFile.getPath() );
+        File[] attachementFiles = folder.listFiles(fnf);
+        if (attachementFiles != null) {
+            for (File attachmentFile : attachementFiles) {
+                if (attachmentFile.isFile()) {
+                    if (returnFullPath) {
+                        fileNames.add(attachmentFile.getPath());
                     } else {
-                        fileNames.add( attachmentFile.getName() );
+                        fileNames.add(attachmentFile.getName());
                     }
                 } else {
-                    if( recursiveSearch ) {
-                        fileNames.addAll( getFileNamesList( attachmentFile, reqex, useFileFilter ) );
+                    if (recursiveSearch) {
+                        fileNames.addAll(getFileNamesList(attachmentFile, reqex, useFileFilter));
                     }
                 }
             }
         }
         //shuffle the list
-        Collections.shuffle( fileNames );
+        Collections.shuffle(fileNames);
 
         return fileNames;
     }
@@ -199,50 +199,50 @@ public class FileNamesParameterDataProvider extends AbstractParameterDataProvide
      */
     private void createFileContainersArray() throws ParameterDataProviderInitalizationException {
 
-        for( FileContainer container : fileContainers ) {
+        for (FileContainer container : fileContainers) {
 
-            File folder = new File( container.getFolderName() );
-            if( !folder.exists() || !folder.isDirectory() ) {
-                throw new ParameterDataProviderInitalizationException( container.getFolderName()
-                                                                       + " does not exist or is not a directory" );
+            File folder = new File(container.getFolderName());
+            if (!folder.exists() || !folder.isDirectory()) {
+                throw new ParameterDataProviderInitalizationException(container.getFolderName()
+                                                                      + " does not exist or is not a directory");
             }
-            List<String> fileNames = getFileNamesList( folder,
-                                                       container.getPattern(),
-                                                       !container.isPatternContainingParams() );
-            if( fileNames.size() == 0 ) {
-                throw new ParameterDataProviderInitalizationException( "Directory '"
-                                                                       + container.getFolderName()
-                                                                       + "' is empty or doesn't have files matching regex '"
-                                                                       + container.getPattern() + "'" );
+            List<String> fileNames = getFileNamesList(folder,
+                                                      container.getPattern(),
+                                                      !container.isPatternContainingParams());
+            if (fileNames.size() == 0) {
+                throw new ParameterDataProviderInitalizationException("Directory '"
+                                                                      + container.getFolderName()
+                                                                      + "' is empty or doesn't have files matching regex '"
+                                                                      + container.getPattern() + "'");
             }
-            container.setFileList( fileNames );
+            container.setFileList(fileNames);
         }
 
         containersArray = new ArrayList<FileContainer>(); //sorted array according to the percentage
-        if( fileContainers.size() == 1 ) {
-            containersArray.add( fileContainers.get( 0 ) );
+        if (fileContainers.size() == 1) {
+            containersArray.add(fileContainers.get(0));
             return;
         }
 
         boolean cantCalc = true;
-        for( int i = 0; i < 100; i++ ) {
+        for (int i = 0; i < 100; i++) {
             cantCalc = true;
             // Order of dispersion depends on the order of declaration
             // TODO: sort FileContainers by percentages from bigger to lower
-            for( FileContainer container : fileContainers ) {
-                int freq = Collections.frequency( containersArray, container );
+            for (FileContainer container : fileContainers) {
+                int freq = Collections.frequency(containersArray, container);
                 int perc = 0;
-                if( freq != 0 ) {
-                    perc = ( int ) ( ( ( double ) freq / containersArray.size() ) * 100 );
+                if (freq != 0) {
+                    perc = (int) ( ((double) freq / containersArray.size()) * 100);
                 }
-                if( perc < container.getPercentage() ) {
-                    containersArray.add( container );
+                if (perc < container.getPercentage()) {
+                    containersArray.add(container);
                     cantCalc = false;
                     break;
                 }
             }
-            if( cantCalc ) {
-                containersArray.add( fileContainers.get( 0 ) );
+            if (cantCalc) {
+                containersArray.add(fileContainers.get(0));
             }
         }
     }

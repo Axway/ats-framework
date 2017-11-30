@@ -47,7 +47,7 @@ public abstract class UserActionInvoker {
     public UserActionInvoker( String componentName ) throws NoSuchComponentException {
 
         this.componentName = componentName;
-        this.componentActionMap = ComponentRepository.getInstance().getComponentActionMap( componentName );
+        this.componentActionMap = ComponentRepository.getInstance().getComponentActionMap(componentName);
         this.actionMethodsMap = new HashMap<String, Method>();
     }
 
@@ -65,27 +65,27 @@ public abstract class UserActionInvoker {
     protected Method resolveActionMethod(
                                           String actionMethodName,
                                           Object[] parameterValues ) throws NoSuchComponentException,
-                                                                    ActionExecutionException,
-                                                                    NoSuchActionException,
-                                                                    NoCompatibleMethodFoundException {
+                                                                     ActionExecutionException,
+                                                                     NoSuchActionException,
+                                                                     NoCompatibleMethodFoundException {
 
         //get the argument types and construct a key used for caching the found methods 
-        StringBuilder actionMethodReference = new StringBuilder( actionMethodName );
+        StringBuilder actionMethodReference = new StringBuilder(actionMethodName);
         Class<?>[] argTypes = new Class<?>[parameterValues.length];
-        for( int i = 0; i < parameterValues.length; i++ ) {
-            if( parameterValues[i] == null ) {
+        for (int i = 0; i < parameterValues.length; i++) {
+            if (parameterValues[i] == null) {
                 argTypes[i] = Void.TYPE;
             } else {
                 argTypes[i] = parameterValues[i].getClass();
             }
-            actionMethodReference.append( argTypes[i].getSimpleName() );
+            actionMethodReference.append(argTypes[i].getSimpleName());
         }
         final String actionMethodReferenceString = actionMethodReference.toString();
 
-        Method actionMethod = actionMethodsMap.get( actionMethodReferenceString );
-        if( actionMethod == null ) {
-            actionMethod = componentActionMap.getActionMethod( actionMethodName, argTypes ).getMethod();
-            actionMethodsMap.put( actionMethodReferenceString, actionMethod );
+        Method actionMethod = actionMethodsMap.get(actionMethodReferenceString);
+        if (actionMethod == null) {
+            actionMethod = componentActionMap.getActionMethod(actionMethodName, argTypes).getMethod();
+            actionMethodsMap.put(actionMethodReferenceString, actionMethod);
         }
         return actionMethod;
     }
@@ -100,10 +100,10 @@ public abstract class UserActionInvoker {
      */
     protected Object resolveActionObject(
                                           Class<?> actionClass ) throws ActionExecutionException,
-                                                                NoSuchActionException {
+                                                                 NoSuchActionException {
 
-        return componentActionMap.getCachedActionClassInstance( ComponentRepository.DEFAULT_CALLER,
-                                                                actionClass );
+        return componentActionMap.getCachedActionClassInstance(ComponentRepository.DEFAULT_CALLER,
+                                                               actionClass);
     }
 
     /**
@@ -117,10 +117,10 @@ public abstract class UserActionInvoker {
                                         boolean isGenericAction,
                                         Method actionMethod ) {
 
-        if( isGenericAction ) {
-            return actionMethod.getAnnotation( Action.class ).name();
+        if (isGenericAction) {
+            return actionMethod.getAnnotation(Action.class).name();
         } else {
-            return actionMethod.getAnnotation( TemplateAction.class ).name();
+            return actionMethod.getAnnotation(TemplateAction.class).name();
         }
     }
 }

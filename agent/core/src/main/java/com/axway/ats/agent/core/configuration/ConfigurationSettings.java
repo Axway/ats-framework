@@ -37,7 +37,7 @@ public class ConfigurationSettings {
 
     public static synchronized ConfigurationSettings getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new ConfigurationSettings();
         }
         return instance;

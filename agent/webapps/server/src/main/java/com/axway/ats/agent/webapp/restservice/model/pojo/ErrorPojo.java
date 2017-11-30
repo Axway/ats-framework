@@ -26,12 +26,12 @@ public class ErrorPojo {
     }
 
     public ErrorPojo( Throwable throwable ) {
-        this.error = ExceptionUtils.getExceptionMsg( throwable );
+        this.error = ExceptionUtils.getExceptionMsg(throwable);
     }
 
     public ErrorPojo( String errorMessage,
                       Throwable throwable ) {
-        this.error = ExceptionUtils.getExceptionMsg( throwable, errorMessage );
+        this.error = ExceptionUtils.getExceptionMsg(throwable, errorMessage);
     }
 
     public String getError() {

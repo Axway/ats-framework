@@ -43,7 +43,7 @@ public abstract class ActionClient extends AbstractAgentClient {
     public ActionClient( String atsAgent,
                          String component ) {
 
-        super( atsAgent, component );
+        super(atsAgent, component);
     }
 
     /**
@@ -57,9 +57,9 @@ public abstract class ActionClient extends AbstractAgentClient {
     protected Object executeActionWithoutRegister( String actionName,
                                                    Object[] arguments ) throws AgentException {
 
-        return getActionResult( actionName, arguments, new String[]{}, new String[]{}, false );
+        return getActionResult(actionName, arguments, new String[]{}, new String[]{}, false);
     }
-    
+
     /**
      * Execute the given action. The action will not be registered in the database
      *
@@ -75,7 +75,7 @@ public abstract class ActionClient extends AbstractAgentClient {
                                                    String[] metaKeys,
                                                    String[] metaValues ) throws AgentException {
 
-        return getActionResult( actionName, arguments, metaKeys, metaValues, false );
+        return getActionResult(actionName, arguments, metaKeys, metaValues, false);
     }
 
     /**
@@ -90,9 +90,9 @@ public abstract class ActionClient extends AbstractAgentClient {
                                     String actionName,
                                     Object[] arguments ) throws AgentException {
 
-        return getActionResult( actionName, arguments, new String[]{}, new String[]{}, true );
+        return getActionResult(actionName, arguments, new String[]{}, new String[]{}, true);
     }
-    
+
     /**
      * Execute the given action. The action will be registered in the database
      *
@@ -104,26 +104,26 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @throws AgentException if exception occurs during action execution
      */
     protected Object executeAction(
-                                   String actionName,
-                                   Object[] arguments,
-                                   String[] metaKeys,
-                                   String[] metaValues ) throws AgentException {
+                                    String actionName,
+                                    Object[] arguments,
+                                    String[] metaKeys,
+                                    String[] metaValues ) throws AgentException {
 
-        return getActionResult( actionName, arguments, metaKeys, metaValues, true );
-   }
-    
-    private Object getActionResult( 
-                                    String actionName, 
+        return getActionResult(actionName, arguments, metaKeys, metaValues, true);
+    }
+
+    private Object getActionResult(
+                                    String actionName,
                                     Object[] arguments,
                                     String[] metaKeys,
                                     String[] metaValues,
                                     boolean registerAction ) throws AgentException {
 
         // construct an action request
-        ActionRequest actionRequest = new ActionRequest( component, actionName, arguments );
-        actionRequest.setRegisterActionExecution( registerAction );
-        if( metaKeys.length > 0 ) {
-            applyMetaData( actionRequest, metaKeys, metaValues );
+        ActionRequest actionRequest = new ActionRequest(component, actionName, arguments);
+        actionRequest.setRegisterActionExecution(registerAction);
+        if (metaKeys.length > 0) {
+            applyMetaData(actionRequest, metaKeys, metaValues);
         }
 
         // the returned result
@@ -132,17 +132,17 @@ public abstract class ActionClient extends AbstractAgentClient {
         // Check if we are queuing - in this case all actions will be routed to the queue
         // The exception is when we are sending command to the Monitoring Service
         ActionQueue actionQueue = ActionQueue.getCurrentInstance();
-        if( !actionQueue.isInQueueMode()
-            || component.equals( SystemMonitorDefinitions.ATS_SYSTEM_MONITORING_COMPONENT_NAME ) ) {
-            if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (!actionQueue.isInQueueMode()
+            || component.equals(SystemMonitorDefinitions.ATS_SYSTEM_MONITORING_COMPONENT_NAME)) {
+            if (atsAgent.equals(LOCAL_JVM)) {
                 LocalExecutor localExecutor = new LocalExecutor();
-                result = localExecutor.executeAction( actionRequest );
+                result = localExecutor.executeAction(actionRequest);
             } else {
-                RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-                result = remoteExecutor.executeAction( actionRequest );
+                RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+                result = remoteExecutor.executeAction(actionRequest);
             }
         } else {
-            actionQueue.addActionRequest( actionRequest );
+            actionQueue.addActionRequest(actionRequest);
         }
 
         return result;
@@ -158,16 +158,16 @@ public abstract class ActionClient extends AbstractAgentClient {
      */
     private void applyMetaData( ActionRequest actionRequest, String[] metaKeys, String[] metaValues ) {
 
-        for( int i = 0; i < metaKeys.length; i++ ) {
-            switch( metaKeys[i] ){
+        for (int i = 0; i < metaKeys.length; i++) {
+            switch (metaKeys[i]) {
                 case "transferUnit":
-                    actionRequest.setTransferUnit( metaValues[i] + "/sec");
+                    actionRequest.setTransferUnit(metaValues[i] + "/sec");
                     break;
                 default:
-                    log.warn( "Action '" + actionRequest.getActionName() + "' from component '"
-                              + actionRequest.getComponentName() + "' is called with unknown meta key '"
-                              + metaKeys[i] + "' and value '" + metaValues[i]
-                              + "'. This meta key will not be applied on this action." );
+                    log.warn("Action '" + actionRequest.getActionName() + "' from component '"
+                             + actionRequest.getComponentName() + "' is called with unknown meta key '"
+                             + metaKeys[i] + "' and value '" + metaValues[i]
+                             + "'. This meta key will not be applied on this action.");
             }
         }
     }

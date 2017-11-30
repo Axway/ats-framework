@@ -31,19 +31,19 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public abstract class AbstractClientExecutor implements ClientExecutor {
 
-    protected AtsDbLogger         log;
+    protected AtsDbLogger                 log;
 
-    private static final String  LOCAL_MACHINE = "127.0.0.1";
+    private static final String           LOCAL_MACHINE = "127.0.0.1";
 
-    protected String             queueName;
-    protected LoaderDataConfig   loaderDataConfig;
-    protected ThreadingPattern   threadingPattern;
+    protected String                      queueName;
+    protected LoaderDataConfig            loaderDataConfig;
+    protected ThreadingPattern            threadingPattern;
 
     private static SQLServerDbWriteAccess dbAccess;
 
     protected AbstractClientExecutor() {
 
-        log = AtsDbLogger.getLogger( this.getClass().getName() );
+        log = AtsDbLogger.getLogger(this.getClass().getName());
     }
 
     public abstract Object executeAction( ActionRequest actionRequest ) throws AgentException;
@@ -51,7 +51,7 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
     public abstract boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException;
 
     public abstract String getAgentHome() throws AgentException;
-    
+
     public abstract int getNumberPendingLogEvents() throws AgentException;
 
     public abstract void restore( String componentName, String environmentName,
@@ -66,8 +66,8 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
 
     public void executeActions( List<ActionRequest> actionRequests ) throws AgentException {
 
-        for( ActionRequest actionRequest : actionRequests ) {
-            executeAction( actionRequest );
+        for (ActionRequest actionRequest : actionRequests) {
+            executeAction(actionRequest);
         }
     }
 
@@ -83,63 +83,65 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
 
         int queueId;
         try {
-            if( dbAccess == null ) {
+            if (dbAccess == null) {
                 dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
             }
-            queueId = dbAccess.startLoadQueue( queueName, sequence, hostsList,
-                                               threadingPattern.getPatternDescription(),
-                                               threadingPattern.getThreadCount(), LOCAL_MACHINE,
-                                               Calendar.getInstance().getTimeInMillis(),
-                                               ActiveDbAppender.getCurrentInstance().getTestCaseId(), true );
+            queueId = dbAccess.startLoadQueue(queueName, sequence, hostsList,
+                                              threadingPattern.getPatternDescription(),
+                                              threadingPattern.getThreadCount(), LOCAL_MACHINE,
+                                              Calendar.getInstance().getTimeInMillis(),
+                                              ActiveDbAppender.getCurrentInstance().getTestCaseId(), true);
 
-            log.rememberLoadQueueState( queueName, queueId, threadingPattern.getPatternDescription(),
-                                        threadingPattern.getThreadCount() );
-        } catch( DatabaseAccessException e ) {
-            if( ActiveDbAppender.getCurrentInstance() == null ) {
+            log.rememberLoadQueueState(queueName, queueId, threadingPattern.getPatternDescription(),
+                                       threadingPattern.getThreadCount());
+        } catch (DatabaseAccessException e) {
+            if (ActiveDbAppender.getCurrentInstance() == null) {
                 // The log4j DB appender is not attached
                 // We assume the user is running a performance test without DB logging
-                log.warn( "Unable to register a performance queue with name '" + queueName
-                          + "' in the loggging database."
-                          + " This means the results of running this queue will not be registered in the log DB."
-                          + " Check your DB configuration in order to fix this problem." );
+                log.warn("Unable to register a performance queue with name '" + queueName
+                         + "' in the loggging database."
+                         + " This means the results of running this queue will not be registered in the log DB."
+                         + " Check your DB configuration in order to fix this problem.");
 
                 // Return this invalid value will not cause an error on the Test Executor side
                 // We also know there will be no error on agent's side as our DB appender will not be present there
                 queueId = -1;
             } else {
-                throw new AgentException( "Unable to register a performance queue with name '" + queueName
-                                          + "' in the loggging database. This queue will not run at all.",
-                                          e );
+                throw new AgentException("Unable to register a performance queue with name '" + queueName
+                                         + "' in the loggging database. This queue will not run at all.",
+                                         e);
             }
         }
 
         return queueId;
     }
-    
+
     /**
      * Insert checkpoints summaries for each action request
      * @return the checkpoints IDs
      * @throws AgentException
      */
-    public void populateCheckpointsSummary(int loadQueueId, List<ActionRequest> actionRequests ) throws AgentException {
-        
+    public void populateCheckpointsSummary( int loadQueueId,
+                                            List<ActionRequest> actionRequests ) throws AgentException {
+
         try {
-            
-            if( dbAccess == null ) {
+
+            if (dbAccess == null) {
                 dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
             }
-            
-            for(ActionRequest actionRequest : actionRequests) {
-                if(actionRequest.getRegisterActionExecution()){
-                    dbAccess.populateCheckpointSummary( loadQueueId, actionRequest.getActionName(),
-                                                        actionRequest.getTransferUnit(), true );
+
+            for (ActionRequest actionRequest : actionRequests) {
+                if (actionRequest.getRegisterActionExecution()) {
+                    dbAccess.populateCheckpointSummary(loadQueueId, actionRequest.getActionName(),
+                                                       actionRequest.getTransferUnit(), true);
                 }
             }
-            
-            dbAccess.populateCheckpointSummary( loadQueueId, AbstractActionTask.ATS_ACTION__QUEUE_EXECUTION_TIME, "", true );
-        } catch ( DatabaseAccessException e ) {
-            throw new AgentException( "Unable to populate checkpoint summary data for queued actions", e );
+
+            dbAccess.populateCheckpointSummary(loadQueueId, AbstractActionTask.ATS_ACTION__QUEUE_EXECUTION_TIME, "",
+                                               true);
+        } catch (DatabaseAccessException e) {
+            throw new AgentException("Unable to populate checkpoint summary data for queued actions", e);
         }
-        
+
     }
 }

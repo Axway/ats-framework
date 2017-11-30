@@ -67,7 +67,7 @@ public class ActionRequest {
 
         return args;
     }
-    
+
     /**
      * Set whether to register or not the actions
      * 
@@ -77,7 +77,7 @@ public class ActionRequest {
 
         this.registerAction = registerAction;
     }
-    
+
     /**
      * Get whether to register or not the actions
      * 
@@ -92,7 +92,7 @@ public class ActionRequest {
      * @return transfer unit data transfer actions
      */
     public String getTransferUnit() {
-    
+
         return transferUnit;
     }
 
@@ -101,7 +101,7 @@ public class ActionRequest {
      * @param transferUnit
      */
     public void setTransferUnit( String transferUnit ) {
-    
+
         this.transferUnit = transferUnit;
     }
 }

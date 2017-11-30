@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
  * This annotation designates a template Agent action method. Command
  * names should be unique in the scope of the component
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Retention( RetentionPolicy.RUNTIME)
+@Target( ElementType.METHOD)
 public @interface TemplateAction {
 
     /**

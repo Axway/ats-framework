@@ -25,7 +25,7 @@ import com.axway.ats.agent.core.model.EvenLoadDistributingUtils;
  * A class for generating input data based on a given list of values. Consecutive
  * values will be taken from the list
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ListDataConfig extends AbstractParameterDataConfig {
 
     private List<?> values;
@@ -39,7 +39,7 @@ public class ListDataConfig extends AbstractParameterDataConfig {
      */
     public ListDataConfig( String parameterName, List<?> values ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(parameterName, ParameterProviderLevel.PER_THREAD_STATIC);
 
         this.values = values;
     }
@@ -55,7 +55,7 @@ public class ListDataConfig extends AbstractParameterDataConfig {
     public ListDataConfig( String parameterName, List<?> values,
                            ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.values = values;
     }
@@ -68,9 +68,9 @@ public class ListDataConfig extends AbstractParameterDataConfig {
      */
     public ListDataConfig( String parameterName, String[] values ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(parameterName, ParameterProviderLevel.PER_THREAD_STATIC);
 
-        this.values = Arrays.asList( values );
+        this.values = Arrays.asList(values);
     }
 
     /**
@@ -84,9 +84,9 @@ public class ListDataConfig extends AbstractParameterDataConfig {
     public ListDataConfig( String parameterName, String[] values,
                            ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
-        this.values = Arrays.asList( values );
+        this.values = Arrays.asList(values);
     }
 
     /**
@@ -102,23 +102,23 @@ public class ListDataConfig extends AbstractParameterDataConfig {
 
         List<ParameterDataConfig> distributedParameterProviders = new ArrayList<ParameterDataConfig>();
 
-        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad( this.values.size(), agents );
+        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad(this.values.size(), agents);
 
-        if( distributionValues.length == 0 ) {
+        if (distributionValues.length == 0) {
 
-            throw new IllegalArgumentException( "Could not distribute only " + this.values.size()
-                                                + " values of parameter '" + parameterName + "' to " + agents
-                                                + " agents! Decrease number of loaders or increase the possible values." );
+            throw new IllegalArgumentException("Could not distribute only " + this.values.size()
+                                               + " values of parameter '" + parameterName + "' to " + agents
+                                               + " agents! Decrease number of loaders or increase the possible values.");
         } else {
 
-            for( int i = 0; i < agents; i++ ) {
+            for (int i = 0; i < agents; i++) {
                 int startIndex = i * distributionValues[i];
-                    // if we do not create a new instance of ArrayList here,
-                    // the subList method returns a RandomAccessSublist which is not serializable
-                    distributedParameterProviders.add( new ListDataConfig( this.parameterName,
-                                                                           new ArrayList<Object>( values.subList( startIndex,
-                                                                                                                  startIndex + distributionValues[i] ) ),
-                                                                           this.parameterProviderLevel ) );
+                // if we do not create a new instance of ArrayList here,
+                // the subList method returns a RandomAccessSublist which is not serializable
+                distributedParameterProviders.add(new ListDataConfig(this.parameterName,
+                                                                     new ArrayList<Object>(values.subList(startIndex,
+                                                                                                          startIndex + distributionValues[i])),
+                                                                     this.parameterProviderLevel));
             }
         }
         return distributedParameterProviders;

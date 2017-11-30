@@ -101,11 +101,11 @@ public class ScheduleProcessMonitoringPojo extends BasePojo {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "ProcessPattern: " + processPattern + ", " )
-          .append( "ProcessAlias: " + this.processAlias + ", " )
-          .append( "ProcessUsername: " + this.processUsername + ", " )
-          .append( "ParentProcess: " + this.parentProcess + ", " )
-          .append( "ProcessReadingTypes: " + Arrays.toString( this.processReadingTypes ) + "]" );
+        sb.append("ProcessPattern: " + processPattern + ", ")
+          .append("ProcessAlias: " + this.processAlias + ", ")
+          .append("ProcessUsername: " + this.processUsername + ", ")
+          .append("ParentProcess: " + this.parentProcess + ", ")
+          .append("ProcessReadingTypes: " + Arrays.toString(this.processReadingTypes) + "]");
 
         return sb.toString();
     }

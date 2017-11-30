@@ -20,11 +20,11 @@ package com.axway.ats.agent.core.exceptions;
  * which is currently being registered has already been defined.
  * The exception provides information of the component name.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ComponentAlreadyDefinedException extends AgentException {
 
     public ComponentAlreadyDefinedException( String componentName ) {
 
-        super( "Component '" + componentName + "' has already been defined" );
+        super("Component '" + componentName + "' has already been defined");
     }
 }

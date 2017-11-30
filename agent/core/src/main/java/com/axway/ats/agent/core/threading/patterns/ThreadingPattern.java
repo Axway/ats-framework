@@ -56,43 +56,43 @@ public abstract class ThreadingPattern implements StartPattern, Serializable {
                              long minIntervalBetweenIterations, long maxIntervalBetweenIterations,
                              boolean blockUntilCompletion ) {
 
-        if( threadCount <= 0 ) {
-            throw new IllegalArgumentException( threadCount
-                                                + " is non-positive integer and is not accepted as thread count for threading pattern" );
+        if (threadCount <= 0) {
+            throw new IllegalArgumentException(threadCount
+                                               + " is non-positive integer and is not accepted as thread count for threading pattern");
         } else {
             this.threadCount = threadCount;
         }
         this.blockUntilCompletion = blockUntilCompletion;
 
-        if( intervalBetweenIterations < 0 ) {
-            throw new IllegalArgumentException( intervalBetweenIterations
-                                                + " ms is not a valid interval between queue iterations" );
+        if (intervalBetweenIterations < 0) {
+            throw new IllegalArgumentException(intervalBetweenIterations
+                                               + " ms is not a valid interval between queue iterations");
         }
-        if( minIntervalBetweenIterations < 0 && minIntervalBetweenIterations != -1 ) {
-            throw new IllegalArgumentException( minIntervalBetweenIterations
-                                                + " ms is not a valid min interval between queue iterations" );
+        if (minIntervalBetweenIterations < 0 && minIntervalBetweenIterations != -1) {
+            throw new IllegalArgumentException(minIntervalBetweenIterations
+                                               + " ms is not a valid min interval between queue iterations");
         }
-        if( maxIntervalBetweenIterations < 0 && maxIntervalBetweenIterations != -1 ) {
-            throw new IllegalArgumentException( maxIntervalBetweenIterations
-                                                + " ms is not a valid max interval between queue iterations" );
+        if (maxIntervalBetweenIterations < 0 && maxIntervalBetweenIterations != -1) {
+            throw new IllegalArgumentException(maxIntervalBetweenIterations
+                                               + " ms is not a valid max interval between queue iterations");
         }
 
         this.intervalBetweenIterations = intervalBetweenIterations;
 
-        this.log = Logger.getLogger( this.getClass() );
+        this.log = Logger.getLogger(this.getClass());
 
-        if( minIntervalBetweenIterations != -1 ) {
+        if (minIntervalBetweenIterations != -1) {
             // user specified a varying interval
-            if( minIntervalBetweenIterations > maxIntervalBetweenIterations ) {
-                this.log.warn( "We will switch the provided minimum '" + minIntervalBetweenIterations
-                               + " and maximum '" + maxIntervalBetweenIterations
-                               + "' intervals between the iterations" );
+            if (minIntervalBetweenIterations > maxIntervalBetweenIterations) {
+                this.log.warn("We will switch the provided minimum '" + minIntervalBetweenIterations
+                              + " and maximum '" + maxIntervalBetweenIterations
+                              + "' intervals between the iterations");
                 this.minIntervalBetweenIterations = maxIntervalBetweenIterations;
                 this.maxIntervalBetweenIterations = minIntervalBetweenIterations;
-            } else if( minIntervalBetweenIterations == maxIntervalBetweenIterations ) {
+            } else if (minIntervalBetweenIterations == maxIntervalBetweenIterations) {
                 // we will work as if user specified a fixed interval
-                this.log.warn( "You have provided the same minimum and maximum interval between iterations: "
-                               + maxIntervalBetweenIterations );
+                this.log.warn("You have provided the same minimum and maximum interval between iterations: "
+                              + maxIntervalBetweenIterations);
 
                 this.intervalBetweenIterations = minIntervalBetweenIterations;
                 this.minIntervalBetweenIterations = -1;
@@ -195,9 +195,9 @@ public abstract class ThreadingPattern implements StartPattern, Serializable {
      */
     public void setQueuePassRate( float queuePassRateInPercents ) {
 
-        if( queuePassRateInPercents < 0.0 || queuePassRateInPercents > 100.0 ) {
-            throw new IllegalArgumentException( "The provided queue pass rate " + queuePassRateInPercents
-                                                + " is invalid. It must be a number between 0 and 100" );
+        if (queuePassRateInPercents < 0.0 || queuePassRateInPercents > 100.0) {
+            throw new IllegalArgumentException("The provided queue pass rate " + queuePassRateInPercents
+                                               + " is invalid. It must be a number between 0 and 100");
         }
 
         this.queuePassRateInPercents = queuePassRateInPercents;
@@ -218,13 +218,13 @@ public abstract class ThreadingPattern implements StartPattern, Serializable {
     @PublicAtsApi
     public void setExecutionSpeed( long timeFrame, int executionsPerTimeFrame ) {
 
-        if( executionsPerTimeFrame < 1 ) {
-            throw new IllegalArgumentException( "Can't distribute " + executionsPerTimeFrame
-                                                + " iterations per thread." );
+        if (executionsPerTimeFrame < 1) {
+            throw new IllegalArgumentException("Can't distribute " + executionsPerTimeFrame
+                                               + " iterations per thread.");
         }
 
-        if( timeFrame < 1 ) {
-            throw new IllegalArgumentException( timeFrame + " seconds is not a valid time frame." );
+        if (timeFrame < 1) {
+            throw new IllegalArgumentException(timeFrame + " seconds is not a valid time frame.");
         }
 
         this.executionsPerTimeFrame = executionsPerTimeFrame;

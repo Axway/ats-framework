@@ -43,7 +43,7 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
      */
     public UsernameDataConfig( String staticValue, Integer rangeStart, Integer rangeEnd ) {
 
-        super( USERNAME_PARAM, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(USERNAME_PARAM, ParameterProviderLevel.PER_THREAD_STATIC);
 
         this.staticValue = staticValue;
         this.rangeStart = rangeStart;
@@ -58,9 +58,9 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
      */
     public UsernameDataConfig( String[] values ) {
 
-        super( USERNAME_PARAM, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(USERNAME_PARAM, ParameterProviderLevel.PER_THREAD_STATIC);
 
-        this.values = Arrays.asList( values );
+        this.values = Arrays.asList(values);
     }
 
     /**
@@ -70,7 +70,7 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
      */
     private UsernameDataConfig( List<?> values ) {
 
-        super( USERNAME_PARAM, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(USERNAME_PARAM, ParameterProviderLevel.PER_THREAD_STATIC);
 
         this.values = values;
     }
@@ -116,10 +116,10 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
     @Override
     List<ParameterDataConfig> distribute( int agents ) throws IllegalArgumentException {
 
-        if( values != null ) {
-            return distributeListArguments( agents );
+        if (values != null) {
+            return distributeListArguments(agents);
         } else {
-            return distributeRangeArguments( agents );
+            return distributeRangeArguments(agents);
         }
     }
 
@@ -127,21 +127,21 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
 
         List<ParameterDataConfig> distributedParameterProviders = new ArrayList<ParameterDataConfig>();
 
-        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad( this.values.size(), agents );
+        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad(this.values.size(), agents);
 
-        if( distributionValues.length == 0 ) {
+        if (distributionValues.length == 0) {
 
-            throw new IllegalArgumentException( "Could not distribute only " + this.values.size()
-                                                + " values of parameter '" + parameterName + "' to " + agents
-                                                + " agents! Decrease the number of agents or increase the possible values." );
+            throw new IllegalArgumentException("Could not distribute only " + this.values.size()
+                                               + " values of parameter '" + parameterName + "' to " + agents
+                                               + " agents! Decrease the number of agents or increase the possible values.");
         } else {
 
-            for( int i = 0; i < agents; i++ ) {
+            for (int i = 0; i < agents; i++) {
                 int startIndex = i * distributionValues[i];
-                    // if we do not create a new instance of ArrayList here,
-                    // the subList method returns a RandomAccessSublist which is not serializable
-                    distributedParameterProviders.add( new UsernameDataConfig( new ArrayList<Object>( values.subList( startIndex,
-                                                                                                                      startIndex + distributionValues[i] ) ) ) );
+                // if we do not create a new instance of ArrayList here,
+                // the subList method returns a RandomAccessSublist which is not serializable
+                distributedParameterProviders.add(new UsernameDataConfig(new ArrayList<Object>(values.subList(startIndex,
+                                                                                                              startIndex + distributionValues[i]))));
             }
         }
         return distributedParameterProviders;
@@ -151,30 +151,30 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
 
         List<ParameterDataConfig> distributedParameterProviders = new ArrayList<ParameterDataConfig>();
 
-        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad( rangeEnd.intValue()
-                                                                          - rangeStart.intValue() + 1,
-                                                                          agents );
+        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad(rangeEnd.intValue()
+                                                                               - rangeStart.intValue() + 1,
+                                                                               agents);
         int numberValuesPerHost = distributionValues[0];
         int numberValuesLastHost = distributionValues[1];
 
-        if( numberValuesPerHost == 0 || numberValuesLastHost == 0 ) {
-            throw new IllegalArgumentException( "Could not distribute only "
-                                                + ( rangeEnd.intValue() - rangeStart.intValue() + 1 )
-                                                + " values of parameter '" + parameterName + "' to " + agents
-                                                + " agents! Decrease the number of agents or increase the possible values." );
+        if (numberValuesPerHost == 0 || numberValuesLastHost == 0) {
+            throw new IllegalArgumentException("Could not distribute only "
+                                               + (rangeEnd.intValue() - rangeStart.intValue() + 1)
+                                               + " values of parameter '" + parameterName + "' to " + agents
+                                               + " agents! Decrease the number of agents or increase the possible values.");
         } else {
-            for( int i = 0; i < agents; i++ ) {
+            for (int i = 0; i < agents; i++) {
                 int newRangeStart = rangeStart.intValue() + i * numberValuesPerHost;
-                if( i < agents - 1 ) {
-                    distributedParameterProviders.add( new UsernameDataConfig( this.staticValue,
-                                                                               newRangeStart,
-                                                                               newRangeStart + numberValuesPerHost
-                                                                                              - 1 ) );
+                if (i < agents - 1) {
+                    distributedParameterProviders.add(new UsernameDataConfig(this.staticValue,
+                                                                             newRangeStart,
+                                                                             newRangeStart + numberValuesPerHost
+                                                                                            - 1));
                 } else {
-                    distributedParameterProviders.add( new UsernameDataConfig( this.staticValue,
-                                                                               newRangeStart,
-                                                                               newRangeStart + numberValuesLastHost
-                                                                                              - 1 ) );
+                    distributedParameterProviders.add(new UsernameDataConfig(this.staticValue,
+                                                                             newRangeStart,
+                                                                             newRangeStart + numberValuesLastHost
+                                                                                            - 1));
                 }
             }
         }
@@ -191,7 +191,7 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
     public void verifyUsernamesAreWEnough( int threadCount ) {
 
         int paramCount;
-        if( getValues() != null ) {
+        if (getValues() != null) {
             // user names are provided as a static list of values
             paramCount = getValues().size();
         } else {
@@ -199,11 +199,11 @@ public class UsernameDataConfig extends AbstractParameterDataConfig {
             paramCount = rangeEnd.intValue() - rangeStart.intValue() + 1;
         }
 
-        if( paramCount < threadCount ) {
-            throw new IllegalArgumentException( "Username Data Configurator provided only " + paramCount
-                                                + " different user names while your thread pattern requires "
-                                                + threadCount
-                                                + ". You can either provided more user names or do not use a Username Data Configurator" );
+        if (paramCount < threadCount) {
+            throw new IllegalArgumentException("Username Data Configurator provided only " + paramCount
+                                               + " different user names while your thread pattern requires "
+                                               + threadCount
+                                               + ". You can either provided more user names or do not use a Username Data Configurator");
         }
     }
 }

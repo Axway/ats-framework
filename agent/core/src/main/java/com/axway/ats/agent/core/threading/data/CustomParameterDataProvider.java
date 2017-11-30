@@ -33,7 +33,7 @@ public abstract class CustomParameterDataProvider extends AbstractParameterDataP
     public CustomParameterDataProvider( String parameterName,
                                         Map<String, String> controlTokens,
                                         ParameterProviderLevel parameterProviderLevel ) {
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.controlTokens = controlTokens;
     }

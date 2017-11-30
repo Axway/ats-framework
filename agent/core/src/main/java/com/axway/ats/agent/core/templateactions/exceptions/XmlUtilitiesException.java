@@ -23,12 +23,12 @@ public class XmlUtilitiesException extends AgentException {
 
     public XmlUtilitiesException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public XmlUtilitiesException( String message,
                                   Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

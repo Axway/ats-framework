@@ -34,14 +34,14 @@ import com.axway.ats.environment.file.FileEnvironmentUnit;
 
 public class ComponentEnvironment {
 
-    private static final Logger           log                   = Logger.getLogger( ComponentEnvironment.class );
+    private static final Logger           log                   = Logger.getLogger(ComponentEnvironment.class);
 
     private String                        componentName;
     private String                        environmentName;
     private List<EnvironmentUnit>         environmentUnits;
     private String                        backupFolder;
 
-    private static final SimpleDateFormat BACKUP_DATE_FORMATTER = new SimpleDateFormat( "_yyyy.MM.dd_HH.mm.ss" );
+    private static final SimpleDateFormat BACKUP_DATE_FORMATTER = new SimpleDateFormat("_yyyy.MM.dd_HH.mm.ss");
 
     public ComponentEnvironment( String componentName, String environmentName,
                                  List<EnvironmentUnit> environmentUnits, String backupFolder ) {
@@ -67,83 +67,83 @@ public class ComponentEnvironment {
         // Restore all the environment units.
         // All additional actions are implicitly added to the Additional Actions Queue Instance
         try {
-            for( EnvironmentUnit environmentUnit : environmentUnits ) {
-                environmentUnit.setTempBackupDir( folderPath );
+            for (EnvironmentUnit environmentUnit : environmentUnits) {
+                environmentUnit.setTempBackupDir(folderPath);
                 environmentUnit.restore();
             }
-        } catch( EnvironmentCleanupException ece ) {
-            throw new AgentException( "Could not restore environment for component '" + this.componentName
-                                      + "'" + recurseCauses( ece ), ece );
+        } catch (EnvironmentCleanupException ece) {
+            throw new AgentException("Could not restore environment for component '" + this.componentName
+                                     + "'" + recurseCauses(ece), ece);
         }
 
         // Now execute the additional actions and clean the queue
         try {
             AdditionalActionsQueue.getInstance().flushAllActions();
-        } catch( EnvironmentCleanupException ece ) {
-            throw new AgentException( "Could not restore environment for component '" + this.componentName
-                                      + "'" + recurseCauses( ece ), ece );
+        } catch (EnvironmentCleanupException ece) {
+            throw new AgentException("Could not restore environment for component '" + this.componentName
+                                     + "'" + recurseCauses(ece), ece);
         }
     }
 
     public void backup( String folderPath ) throws AgentException {
 
-        log.info( "Backuping environment for component " + componentName );
+        log.info("Backuping environment for component " + componentName);
         try {
 
             String currentBackupFolder = backupFolder;
-            if( folderPath != null ) {
+            if (folderPath != null) {
                 currentBackupFolder = folderPath;
             }
-            
+
             //if the current backup folder already exists and is not empty, we will rename it in order to have
             //a clean backup and to save the previous backup data
-            File backupDir = new File( currentBackupFolder );
-            if( backupDir.isDirectory() && backupDir.list().length > 0) {
+            File backupDir = new File(currentBackupFolder);
+            if (backupDir.isDirectory() && backupDir.list().length > 0) {
 
-                    String backupFolderPath = currentBackupFolder;
-                    if( currentBackupFolder.endsWith( "/" ) || currentBackupFolder.endsWith( "\\" ) ) {
-                        backupFolderPath = currentBackupFolder.substring( 0,
-                                                                          currentBackupFolder.length() - 1 );
-                    }
-                    backupFolderPath = backupFolderPath + BACKUP_DATE_FORMATTER.format( new Date() );
-                    backupFolderPath = IoUtils.normalizeDirPath( backupFolderPath );
-                    log.info( "In order to have a clean backup, we'll rename the current backup folder: "
-                              + backupFolderPath );
-                    backupDir.renameTo( new File( backupFolderPath ) );
+                String backupFolderPath = currentBackupFolder;
+                if (currentBackupFolder.endsWith("/") || currentBackupFolder.endsWith("\\")) {
+                    backupFolderPath = currentBackupFolder.substring(0,
+                                                                     currentBackupFolder.length() - 1);
+                }
+                backupFolderPath = backupFolderPath + BACKUP_DATE_FORMATTER.format(new Date());
+                backupFolderPath = IoUtils.normalizeDirPath(backupFolderPath);
+                log.info("In order to have a clean backup, we'll rename the current backup folder: "
+                         + backupFolderPath);
+                backupDir.renameTo(new File(backupFolderPath));
             }
-            for( EnvironmentUnit environmentUnit : environmentUnits ) {
-                environmentUnit.setTempBackupDir( folderPath );
+            for (EnvironmentUnit environmentUnit : environmentUnits) {
+                environmentUnit.setTempBackupDir(folderPath);
                 environmentUnit.backup();
             }
-        } catch( EnvironmentCleanupException ece ) {
-            throw new AgentException( "Could not backup environment for component " + componentName
-                                      + recurseCauses( ece ), ece );
+        } catch (EnvironmentCleanupException ece) {
+            throw new AgentException("Could not backup environment for component " + componentName
+                                     + recurseCauses(ece), ece);
         }
     }
 
     public void backupOnlyIfNotAlreadyDone() throws AgentException {
 
         try {
-            File backupDir = new File( backupFolder );
+            File backupDir = new File(backupFolder);
             String[] fileList = backupDir.list();
-            if( backupDir.isDirectory() && fileList != null && fileList.length > 0 ) {
+            if (backupDir.isDirectory() && fileList != null && fileList.length > 0) {
 
-                log.info( "Backup directory '" + backupDir.getAbsolutePath()
-                          + "' already exists and the backup will be skipped." );
-            } else if( backupDir.exists() && !backupDir.isDirectory() ) {
+                log.info("Backup directory '" + backupDir.getAbsolutePath()
+                         + "' already exists and the backup will be skipped.");
+            } else if (backupDir.exists() && !backupDir.isDirectory()) {
 
-                throw new AgentException( "Could not create backup directory '" + backupDir.getAbsolutePath()
-                                          + "'. File with this name already exists." );
+                throw new AgentException("Could not create backup directory '" + backupDir.getAbsolutePath()
+                                         + "'. File with this name already exists.");
             } else {
 
-                log.info( "Creating backup for component " + componentName );
-                for( EnvironmentUnit environmentUnit : environmentUnits ) {
+                log.info("Creating backup for component " + componentName);
+                for (EnvironmentUnit environmentUnit : environmentUnits) {
                     environmentUnit.backup();
                 }
             }
-        } catch( EnvironmentCleanupException ece ) {
-            throw new AgentException( "Could not backup environment for component '" + componentName + "'"
-                                      + recurseCauses( ece ), ece );
+        } catch (EnvironmentCleanupException ece) {
+            throw new AgentException("Could not backup environment for component '" + componentName + "'"
+                                     + recurseCauses(ece), ece);
         }
     }
 
@@ -154,9 +154,9 @@ public class ComponentEnvironment {
 
         StringBuilder buffer = new StringBuilder();
 
-        buffer.append( ". CAUSE: " ).append( e.getMessage() );
-        if( e.getCause() != null ) {
-            buffer.append( recurseCauses( e.getCause() ) );
+        buffer.append(". CAUSE: ").append(e.getMessage());
+        if (e.getCause() != null) {
+            buffer.append(recurseCauses(e.getCause()));
         }
 
         return buffer.toString();
@@ -164,23 +164,23 @@ public class ComponentEnvironment {
 
     public ComponentEnvironment getNewCopy() {
 
-        ComponentEnvironment newComponentEnvironment = new ComponentEnvironment( this.componentName,
-                                                                                 this.environmentName, null,
-                                                                                 this.backupFolder );
+        ComponentEnvironment newComponentEnvironment = new ComponentEnvironment(this.componentName,
+                                                                                this.environmentName, null,
+                                                                                this.backupFolder);
 
         List<EnvironmentUnit> newEnvironmentUnits = new ArrayList<EnvironmentUnit>();
-        for( EnvironmentUnit environmentUnit : this.environmentUnits ) {
+        for (EnvironmentUnit environmentUnit : this.environmentUnits) {
             EnvironmentUnit newEnvironmentUnit;
-            if( environmentUnit instanceof DatabaseEnvironmentUnit ) {
-                newEnvironmentUnit = ( ( DatabaseEnvironmentUnit ) environmentUnit ).getNewCopy();
-            } else if( environmentUnit instanceof FileEnvironmentUnit ) {
-                newEnvironmentUnit = ( ( FileEnvironmentUnit ) environmentUnit ).getNewCopy();
+            if (environmentUnit instanceof DatabaseEnvironmentUnit) {
+                newEnvironmentUnit = ((DatabaseEnvironmentUnit) environmentUnit).getNewCopy();
+            } else if (environmentUnit instanceof FileEnvironmentUnit) {
+                newEnvironmentUnit = ((FileEnvironmentUnit) environmentUnit).getNewCopy();
             } else {
                 // it is instance of DirectoryEnvironmentUnit
-                newEnvironmentUnit = ( ( DirectoryEnvironmentUnit ) environmentUnit ).getNewCopy();
+                newEnvironmentUnit = ((DirectoryEnvironmentUnit) environmentUnit).getNewCopy();
             }
 
-            newEnvironmentUnits.add( newEnvironmentUnit );
+            newEnvironmentUnits.add(newEnvironmentUnit);
         }
         newComponentEnvironment.environmentUnits = newEnvironmentUnits;
 

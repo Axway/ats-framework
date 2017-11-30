@@ -32,11 +32,11 @@ public class ActionObject {
     public ActionObject( String actionsXml,
                          String actionRequest,
                          String actionResponse ) throws XmlReaderException, XmlUtilitiesException,
-                                                InvalidMatcherException {
+                                                 InvalidMatcherException {
 
-        request = new ActionRequestObject( actionsXml, new ActionParser( actionRequest, true ) );
+        request = new ActionRequestObject(actionsXml, new ActionParser(actionRequest, true));
 
-        response = new ActionResponseObject( actionsXml, new ActionParser( actionResponse, false ) );
+        response = new ActionResponseObject(actionsXml, new ActionParser(actionResponse, false));
     }
 
     public ActionRequestObject getRequest() {

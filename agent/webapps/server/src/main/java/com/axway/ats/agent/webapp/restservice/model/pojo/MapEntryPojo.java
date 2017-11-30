@@ -20,34 +20,38 @@ package com.axway.ats.agent.webapp.restservice.model.pojo;
  * */
 public class MapEntryPojo {
 
-	String key;
-	String value;
+    String key;
+    String value;
 
-	public MapEntryPojo() {
+    public MapEntryPojo() {
 
-	}
+    }
 
-	public MapEntryPojo(String key, String value) {
+    public MapEntryPojo( String key, String value ) {
 
-		this.key = key;
-		this.value = value;
+        this.key = key;
+        this.value = value;
 
-	}
+    }
 
-	public String getKey() {
-		return key;
-	}
+    public String getKey() {
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+        return key;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public void setKey( String key ) {
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+        this.key = key;
+    }
+
+    public String getValue() {
+
+        return value;
+    }
+
+    public void setValue( String value ) {
+
+        this.value = value;
+    }
 
 }

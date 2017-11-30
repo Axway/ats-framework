@@ -33,23 +33,23 @@ public class TemplateActionsResponseVerificationClient extends AbstractAgentClie
     public TemplateActionsResponseVerificationClient( String atsAgent,
                                                       TemplateActionsResponseVerificationConfigurator verificationConfigurator ) {
 
-        super( atsAgent, "some fake component" );
+        super(atsAgent, "some fake component");
         this.verificationConfigurator = verificationConfigurator;
     }
 
     public void send() throws AgentException {
 
-        pushConfiguration( verificationConfigurator );
+        pushConfiguration(verificationConfigurator);
     }
 
     private void pushConfiguration( Configurator configurator ) throws AgentException {
 
-        if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (atsAgent.equals(LOCAL_JVM)) {
 
             configurator.apply();
         } else {
             // send the Agent configuration
-            new RemoteConfigurationManager().pushConfiguration( atsAgent, configurator );
+            new RemoteConfigurationManager().pushConfiguration(atsAgent, configurator);
         }
     }
 }

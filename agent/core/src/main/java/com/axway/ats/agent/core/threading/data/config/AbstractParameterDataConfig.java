@@ -22,7 +22,7 @@ import com.axway.ats.agent.core.exceptions.AgentException;
 /**
  * Abstract class to be extended by all data provider configurations
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public abstract class AbstractParameterDataConfig implements ParameterDataConfig {
 
     protected String                 parameterName;

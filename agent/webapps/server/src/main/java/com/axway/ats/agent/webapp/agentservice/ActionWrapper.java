@@ -22,7 +22,7 @@ public class ActionWrapper {
 
     private String                componentName;
     private String                actionName;
-    private List<ArgumentWrapper> args    = new ArrayList<ArgumentWrapper>();
+    private List<ArgumentWrapper> args = new ArrayList<ArgumentWrapper>();
 
     public String getComponentName() {
 

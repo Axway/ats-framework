@@ -25,7 +25,7 @@ import com.axway.ats.agent.core.model.EvenLoadDistributingUtils;
  * range. The type of the arguments supported are String and all Integer
  * compatible numeric arguments
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class RangeDataConfig extends AbstractParameterDataConfig {
 
     private String staticValue;
@@ -45,7 +45,7 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
                             Integer rangeStart,
                             Integer rangeEnd ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(parameterName, ParameterProviderLevel.PER_THREAD_STATIC);
 
         this.staticValue = staticValue;
         this.rangeStart = rangeStart;
@@ -64,7 +64,7 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
                             String staticValue,
                             Integer rangeStart ) {
 
-        super( parameterName, ParameterProviderLevel.PER_THREAD_STATIC );
+        super(parameterName, ParameterProviderLevel.PER_THREAD_STATIC);
 
         this.staticValue = staticValue;
         this.rangeStart = rangeStart;
@@ -87,7 +87,7 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
                             Integer rangeEnd,
                             ParameterProviderLevel paramProviderLevel ) {
 
-        super( parameterName, paramProviderLevel );
+        super(parameterName, paramProviderLevel);
 
         this.staticValue = staticValue;
         this.rangeStart = rangeStart;
@@ -105,10 +105,10 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
                             Integer rangeStart,
                             Integer rangeEnd ) {
 
-        this( parameterName,
-              ( Number ) rangeStart,
-              ( Number ) rangeEnd,
-              ParameterProviderLevel.PER_THREAD_STATIC );
+        this(parameterName,
+             (Number) rangeStart,
+             (Number) rangeEnd,
+             ParameterProviderLevel.PER_THREAD_STATIC);
     }
 
     /**
@@ -121,10 +121,10 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
     public RangeDataConfig( String parameterName,
                             Integer rangeStart ) {
 
-        this( parameterName,
-              ( Number ) rangeStart,
-              ( Number ) Integer.MAX_VALUE,
-              ParameterProviderLevel.PER_THREAD_STATIC );
+        this(parameterName,
+             (Number) rangeStart,
+             (Number) Integer.MAX_VALUE,
+             ParameterProviderLevel.PER_THREAD_STATIC);
     }
 
     /**
@@ -140,7 +140,7 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
                             Integer rangeEnd,
                             ParameterProviderLevel paramProviderLevel ) {
 
-        this( parameterName, ( Number ) rangeStart, ( Number ) rangeEnd, paramProviderLevel );
+        this(parameterName, (Number) rangeStart, (Number) rangeEnd, paramProviderLevel);
     }
 
     /**
@@ -155,7 +155,7 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
                              Number rangeEnd,
                              ParameterProviderLevel paramProviderLevel ) {
 
-        super( parameterName, paramProviderLevel );
+        super(parameterName, paramProviderLevel);
 
         this.staticValue = null;
         this.rangeStart = rangeStart;
@@ -198,27 +198,27 @@ public class RangeDataConfig extends AbstractParameterDataConfig {
 
         List<ParameterDataConfig> distributedParameterProviders = new ArrayList<ParameterDataConfig>();
 
-        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad( rangeEnd.intValue()
-                                                                                  - rangeStart.intValue() + 1,
-                                                                          agents );
-        if( distributionValues.length == 0 ) {
+        int[] distributionValues = new EvenLoadDistributingUtils().getEvenLoad(rangeEnd.intValue()
+                                                                               - rangeStart.intValue() + 1,
+                                                                               agents);
+        if (distributionValues.length == 0) {
 
-            throw new IllegalArgumentException( "Could not distribute only "
-                                                + ( rangeEnd.intValue() - rangeStart.intValue() + 1 )
-                                                + " values of parameter '"
-                                                + parameterName
-                                                + "' to "
-                                                + agents
-                                                + " agents! Decrease number ot loaders or increase the possible values." );
+            throw new IllegalArgumentException("Could not distribute only "
+                                               + (rangeEnd.intValue() - rangeStart.intValue() + 1)
+                                               + " values of parameter '"
+                                               + parameterName
+                                               + "' to "
+                                               + agents
+                                               + " agents! Decrease number ot loaders or increase the possible values.");
         } else {
-            for( int i = 0; i < agents; i++ ) {
+            for (int i = 0; i < agents; i++) {
                 int newRangeStart = rangeStart.intValue() + i * distributionValues[i];
-                    distributedParameterProviders.add( new RangeDataConfig( this.parameterName,
-                                                                            this.staticValue,
-                                                                            newRangeStart,
-                                                                            newRangeStart
-                                                                                    + distributionValues[i] - 1,
-                                                                            this.parameterProviderLevel ) );
+                distributedParameterProviders.add(new RangeDataConfig(this.parameterName,
+                                                                      this.staticValue,
+                                                                      newRangeStart,
+                                                                      newRangeStart
+                                                                                     + distributionValues[i] - 1,
+                                                                      this.parameterProviderLevel));
             }
         }
 

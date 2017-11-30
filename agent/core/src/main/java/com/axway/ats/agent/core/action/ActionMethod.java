@@ -42,10 +42,10 @@ import com.axway.ats.core.validation.types.TypeFactory;
  */
 public class ActionMethod {
 
-    private static final Logger log                                         = Logger.getLogger( ActionMethod.class );
+    private static final Logger log                                         = Logger.getLogger(ActionMethod.class);
 
     protected String            componentName;
-    protected String            actionName;                                                                          // as defined by the user in the name attribute of the Action annotation
+    protected String            actionName;                                                                        // as defined by the user in the name attribute of the Action annotation
     private boolean             registerActionExecution                     = true;
     private boolean             registerActionExecutionInQueueExecutionTime = true;
     private String              transferUnit;
@@ -74,11 +74,11 @@ public class ActionMethod {
         this.transferUnit = "";
 
         //get the annotation attributes
-        Action actionAnnotation = method.getAnnotation( Action.class );
-        if( actionAnnotation != null ) {
+        Action actionAnnotation = method.getAnnotation(Action.class);
+        if (actionAnnotation != null) {
             this.transferUnit = actionAnnotation.transferUnit();
             this.registerActionExecution = actionAnnotation.registerActionExecution();
-            if( registerActionExecution ) {
+            if (registerActionExecution) {
                 this.registerActionExecutionInQueueExecutionTime = actionAnnotation.registerActionExecutionInQueueExecutionTime();
             }
         }
@@ -87,24 +87,24 @@ public class ActionMethod {
         //generate a map of the parameters
         this.parameterNames = new ArrayList<String>();
         Annotation[][] methodParameterAnnotations = method.getParameterAnnotations();
-        for( int i = 0; i < methodParameterAnnotations.length; i++ ) {
+        for (int i = 0; i < methodParameterAnnotations.length; i++) {
             Annotation[] paramAnnotations = methodParameterAnnotations[i];
-            for( Annotation paramAnnotation : paramAnnotations ) {
-                if( paramAnnotation instanceof Parameter ) {
-                    parameterNames.add( ( ( Parameter ) paramAnnotation ).name() );
+            for (Annotation paramAnnotation : paramAnnotations) {
+                if (paramAnnotation instanceof Parameter) {
+                    parameterNames.add( ((Parameter) paramAnnotation).name());
                 }
             }
         }
 
         //check if this method is deprecated
-        Annotation deprecatedAnnotation = method.getAnnotation( Deprecated.class );
-        if( deprecatedAnnotation != null ) {
+        Annotation deprecatedAnnotation = method.getAnnotation(Deprecated.class);
+        if (deprecatedAnnotation != null) {
             this.isDeprecated = true;
         }
 
         //check if this method has an Enumeration parameter
-        for( Class<?> paramType : method.getParameterTypes() ) {
-            if( paramType.isEnum() || ( paramType.isArray() && paramType.getComponentType().isEnum() ) ) {
+        for (Class<?> paramType : method.getParameterTypes()) {
+            if (paramType.isEnum() || (paramType.isArray() && paramType.getComponentType().isEnum())) {
                 this.hasEnumParameter = true;
                 break;
             }
@@ -125,29 +125,29 @@ public class ActionMethod {
                                                       InternalComponentException {
 
         try {
-            if( isDeprecated() ) {
-                log.warn( "Method '" + this.toString() + "' is deprecated" );
+            if (isDeprecated()) {
+                log.warn("Method '" + this.toString() + "' is deprecated");
             }
 
             //convert string to Enumerations if necessary
-            if( hasEnumParameter ) {
-                parameterValues = convertToEnums( parameterValues );
+            if (hasEnumParameter) {
+                parameterValues = convertToEnums(parameterValues);
             }
 
             //validate the arguments
-            if( validateArguments ) {
-                validateArguments( parameterValues );
+            if (validateArguments) {
+                validateArguments(parameterValues);
             }
 
             //invoke the action
-            return doInvoke( instance, this.parameterNames, parameterValues );
-        } catch( IllegalArgumentException ae ) {
-            throw new ActionExecutionException( "Illegal arguments passed to action '" + actionName + "'",
-                                                ae );
-        } catch( IllegalAccessException iae ) {
-            throw new ActionExecutionException( "Could not access action '" + actionName + "'", iae );
-        } catch( InvocationTargetException ite ) {
-            throw new InternalComponentException( componentName, actionName, ite.getTargetException() );
+            return doInvoke(instance, this.parameterNames, parameterValues);
+        } catch (IllegalArgumentException ae) {
+            throw new ActionExecutionException("Illegal arguments passed to action '" + actionName + "'",
+                                               ae);
+        } catch (IllegalAccessException iae) {
+            throw new ActionExecutionException("Could not access action '" + actionName + "'", iae);
+        } catch (InvocationTargetException ite) {
+            throw new InternalComponentException(componentName, actionName, ite.getTargetException());
         }
     }
 
@@ -165,20 +165,20 @@ public class ActionMethod {
          * For now we can filter these ATS internal actions by expecting their names match the next regular
          * expression.
          */
-        if( log.isInfoEnabled() ) {
-            if( !actionName.matches( "Internal.*Operations.*" )
-                && !actionName.startsWith( "InternalProcessTalker" ) ) {
-                log.info( "Executing '" + actionName + "' with arguments "
-                          + StringUtils.methodInputArgumentsToString( parameterValues ) );
+        if (log.isInfoEnabled()) {
+            if (!actionName.matches("Internal.*Operations.*")
+                && !actionName.startsWith("InternalProcessTalker")) {
+                log.info("Executing '" + actionName + "' with arguments "
+                         + StringUtils.methodInputArgumentsToString(parameterValues));
             } else {
                 // internal action
-                if( log.isDebugEnabled() )
-                    log.debug( "Executing '" + actionName + "' with arguments "
-                               + StringUtils.methodInputArgumentsToString( parameterValues ) );
+                if (log.isDebugEnabled())
+                    log.debug("Executing '" + actionName + "' with arguments "
+                              + StringUtils.methodInputArgumentsToString(parameterValues));
             }
         }
 
-        return method.invoke( instance, parameterValues );
+        return method.invoke(instance, parameterValues);
     }
 
     /**
@@ -208,7 +208,7 @@ public class ActionMethod {
      */
     public String getTransferUnit() {
 
-        if( transferUnit.length() > 0 ) {
+        if (transferUnit.length() > 0) {
             return transferUnit + "/sec";
         } else {
             return transferUnit; // default value is empty string
@@ -232,7 +232,7 @@ public class ActionMethod {
      */
     public Class<?> getTheActualClass() {
 
-        if( actualClass != null ) {
+        if (actualClass != null) {
             return actualClass;
         } else {
             return method.getDeclaringClass();
@@ -264,16 +264,16 @@ public class ActionMethod {
      * @return arguments with Strings converted to Enums
      * @throws ActionExecutionException if a given String cannot be converted to the proper Enum
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings( { "rawtypes", "unchecked" })
     protected Object[] convertToEnums( Object[] args ) throws ActionExecutionException {
 
         Object[] processedArgs = new Object[args.length];
 
         //try to convert all strings to enums
         Class<?>[] parameterTypes = method.getParameterTypes();
-        for( int i = 0; i < parameterTypes.length; i++ ) {
+        for (int i = 0; i < parameterTypes.length; i++) {
 
-            if( args[i] == null ) {
+            if (args[i] == null) {
                 processedArgs[i] = null;
                 continue;
             }
@@ -281,7 +281,7 @@ public class ActionMethod {
             boolean isParamArray = parameterTypes[i].isArray();
             Class<?> paramType;
             Class<?> argType;
-            if( isParamArray ) {
+            if (isParamArray) {
                 paramType = parameterTypes[i].getComponentType();
                 argType = args[i].getClass().getComponentType();
             } else {
@@ -289,29 +289,29 @@ public class ActionMethod {
                 argType = args[i].getClass();
             }
 
-            if( argType == String.class && paramType.isEnum() ) {
+            if (argType == String.class && paramType.isEnum()) {
                 try {
-                    if( isParamArray ) {
-                        Object convertedEnums = Array.newInstance( paramType, Array.getLength( args[i] ) );
+                    if (isParamArray) {
+                        Object convertedEnums = Array.newInstance(paramType, Array.getLength(args[i]));
 
                         //convert all array elements to enums
-                        for( int j = 0; j < Array.getLength( args[i] ); j++ ) {
-                            String currentValue = ( String ) Array.get( args[i], j );
-                            if( currentValue != null ) {
-                                Array.set( convertedEnums, j,
-                                           Enum.valueOf( ( Class<? extends Enum> ) paramType,
-                                                         currentValue ) );
+                        for (int j = 0; j < Array.getLength(args[i]); j++) {
+                            String currentValue = (String) Array.get(args[i], j);
+                            if (currentValue != null) {
+                                Array.set(convertedEnums, j,
+                                          Enum.valueOf((Class<? extends Enum>) paramType,
+                                                       currentValue));
                             }
                         }
 
                         processedArgs[i] = convertedEnums;
                     } else {
-                        processedArgs[i] = Enum.valueOf( ( Class<? extends Enum> ) paramType,
-                                                         ( String ) args[i] );
+                        processedArgs[i] = Enum.valueOf((Class<? extends Enum>) paramType,
+                                                        (String) args[i]);
                     }
-                } catch( IllegalArgumentException iae ) {
-                    throw new ActionExecutionException( "Could not convert string " + args[i]
-                                                        + " to enumeration of type " + paramType.getName() );
+                } catch (IllegalArgumentException iae) {
+                    throw new ActionExecutionException("Could not convert string " + args[i]
+                                                       + " to enumeration of type " + paramType.getName());
                 }
             } else {
                 processedArgs[i] = args[i];
@@ -332,13 +332,13 @@ public class ActionMethod {
     protected void validateArguments( Object[] args ) throws ActionExecutionException {
 
         Annotation[][] annotations = method.getParameterAnnotations();
-        for( int i = 0; i < annotations.length; i++ ) {
+        for (int i = 0; i < annotations.length; i++) {
 
             Annotation[] paramAnnotations = annotations[i];
 
-            for( Annotation paramAnnotation : paramAnnotations ) {
-                if( paramAnnotation instanceof Parameter ) {
-                    Parameter paramDescriptionAnnotation = ( Parameter ) paramAnnotation;
+            for (Annotation paramAnnotation : paramAnnotations) {
+                if (paramAnnotation instanceof Parameter) {
+                    Parameter paramDescriptionAnnotation = (Parameter) paramAnnotation;
                     ValidationType validationType = paramDescriptionAnnotation.validation();
 
                     String[] validationArgs;
@@ -346,54 +346,54 @@ public class ActionMethod {
                     // if we are checking for valid constants, then the
                     // args array should contain
                     // the name of the array holding the valid constants
-                    if( validationType == ValidationType.STRING_CONSTANT
-                        || validationType == ValidationType.NUMBER_CONSTANT ) {
+                    if (validationType == ValidationType.STRING_CONSTANT
+                        || validationType == ValidationType.NUMBER_CONSTANT) {
                         try {
                             String arrayName = paramDescriptionAnnotation.args()[0];
 
                             // get the field and set access level if
                             // necessary
-                            Field arrayField = method.getDeclaringClass().getDeclaredField( arrayName );
-                            if( !arrayField.isAccessible() ) {
-                                arrayField.setAccessible( true );
+                            Field arrayField = method.getDeclaringClass().getDeclaredField(arrayName);
+                            if (!arrayField.isAccessible()) {
+                                arrayField.setAccessible(true);
                             }
-                            Object arrayValidConstants = arrayField.get( null );
+                            Object arrayValidConstants = arrayField.get(null);
 
                             // convert the object array to string array
-                            String[] arrayValidConstatnsStr = new String[Array.getLength( arrayValidConstants )];
-                            for( int j = 0; j < Array.getLength( arrayValidConstants ); j++ ) {
-                                arrayValidConstatnsStr[j] = Array.get( arrayValidConstants, j ).toString();
+                            String[] arrayValidConstatnsStr = new String[Array.getLength(arrayValidConstants)];
+                            for (int j = 0; j < Array.getLength(arrayValidConstants); j++) {
+                                arrayValidConstatnsStr[j] = Array.get(arrayValidConstants, j).toString();
                             }
 
                             validationArgs = arrayValidConstatnsStr;
 
-                        } catch( IndexOutOfBoundsException iobe ) {
+                        } catch (IndexOutOfBoundsException iobe) {
                             // this is a fatal error
-                            throw new ActionExecutionException( "You need to specify the name of the array with valid constants in the 'args' field of the Parameter annotation" );
-                        } catch( Exception e ) {
+                            throw new ActionExecutionException("You need to specify the name of the array with valid constants in the 'args' field of the Parameter annotation");
+                        } catch (Exception e) {
                             // this is a fatal error
-                            throw new ActionExecutionException( "Could not get array with valid constants - action annotations are incorrect" );
+                            throw new ActionExecutionException("Could not get array with valid constants - action annotations are incorrect");
                         }
                     } else {
                         validationArgs = paramDescriptionAnnotation.args();
                     }
 
-                    List<BaseType> typeValidators = createBaseTypes( paramDescriptionAnnotation.validation(),
-                                                                     paramDescriptionAnnotation.name(),
-                                                                     args[i], validationArgs );
+                    List<BaseType> typeValidators = createBaseTypes(paramDescriptionAnnotation.validation(),
+                                                                    paramDescriptionAnnotation.name(),
+                                                                    args[i], validationArgs);
                     //perform validation
-                    for( BaseType baseType : typeValidators ) {
-                        if( baseType != null ) {
+                    for (BaseType baseType : typeValidators) {
+                        if (baseType != null) {
                             try {
                                 baseType.validate();
-                            } catch( TypeException e ) {
-                                throw new InvalidInputArgumentsException( "Validation failed while validating argument "
-                                                                          + paramDescriptionAnnotation.name()
-                                                                          + e.getMessage() );
+                            } catch (TypeException e) {
+                                throw new InvalidInputArgumentsException("Validation failed while validating argument "
+                                                                         + paramDescriptionAnnotation.name()
+                                                                         + e.getMessage());
                             }
                         } else {
-                            log.warn( "Could not perform validation on argument "
-                                      + paramDescriptionAnnotation.name() );
+                            log.warn("Could not perform validation on argument "
+                                     + paramDescriptionAnnotation.name());
                         }
                     }
                 }
@@ -409,18 +409,18 @@ public class ActionMethod {
 
         // if this is an array of types to be validated, then add each
         // of them separately to the list
-        if( ( values != null ) && values.getClass().isArray() ) {
-            for( int i = 0; i < Array.getLength( values ); i++ ) {
-                Object value = Array.get( values, i );
+        if ( (values != null) && values.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(values); i++) {
+                Object value = Array.get(values, i);
                 TypeFactory factory = TypeFactory.getInstance();
-                BaseType baseType = factory.createValidationType( type, paramName, value, args );
-                typeValidators.add( baseType );
+                BaseType baseType = factory.createValidationType(type, paramName, value, args);
+                typeValidators.add(baseType);
             }
             // otherwise just add the single validation type
         } else {
             TypeFactory factory = TypeFactory.getInstance();
-            BaseType baseType = factory.createValidationType( type, paramName, values, args );
-            typeValidators.add( baseType );
+            BaseType baseType = factory.createValidationType(type, paramName, values, args);
+            typeValidators.add(baseType);
         }
 
         return typeValidators;
@@ -428,7 +428,7 @@ public class ActionMethod {
 
     public ActionMethod getNewCopy() {
 
-        return new ActionMethod( componentName, actionName, method, actualClass );
+        return new ActionMethod(componentName, actionName, method, actualClass);
     }
 
     /**
@@ -443,12 +443,12 @@ public class ActionMethod {
         String methodName = actionMethod.getName();
         StringBuilder actionMethodName = new StringBuilder();
         int charIndex;
-        for( charIndex = 0; charIndex < methodName.length(); charIndex++ ) {
-            char ch = methodName.charAt( charIndex );
-            if( Character.isUpperCase( ch ) ) {
-                actionMethodName.append( ' ' );
+        for (charIndex = 0; charIndex < methodName.length(); charIndex++) {
+            char ch = methodName.charAt(charIndex);
+            if (Character.isUpperCase(ch)) {
+                actionMethodName.append(' ');
             }
-            actionMethodName.append( ch );
+            actionMethodName.append(ch);
         }
 
         return actionMethod.getDeclaringClass().getSimpleName() + " " + actionMethodName.toString().trim();

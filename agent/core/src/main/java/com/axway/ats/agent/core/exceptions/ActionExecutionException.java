@@ -22,17 +22,17 @@ package com.axway.ats.agent.core.exceptions;
  * during its execution - this could be a problem with passing
  * the action arguments or instantiating the action class.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ActionExecutionException extends AgentException {
 
     public ActionExecutionException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public ActionExecutionException( String message,
                                      Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

@@ -44,7 +44,7 @@ public class StringRangeParameterDataProvider extends AbstractParameterDataProvi
                                       int rangeEnd,
                                       ParameterProviderLevel parameterProviderLevel ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.staticValue = staticValue;
         this.rangeStart = rangeStart;
@@ -68,7 +68,7 @@ public class StringRangeParameterDataProvider extends AbstractParameterDataProvi
                                       ParameterProviderLevel parameterProviderLevel,
                                       Class<?> dataConfiguratorClass ) {
 
-        super( parameterName, parameterProviderLevel );
+        super(parameterName, parameterProviderLevel);
 
         this.staticValue = staticValue;
         this.rangeStart = rangeStart;
@@ -85,15 +85,15 @@ public class StringRangeParameterDataProvider extends AbstractParameterDataProvi
 
     @Override
     protected ArgumentValue generateNewValuePerInvocation(
-                                              List<ArgumentValue> alreadyResolvedValues ) {
+                                                           List<ArgumentValue> alreadyResolvedValues ) {
 
-        if( currentValue > rangeEnd ) {
+        if (currentValue > rangeEnd) {
             currentValue = rangeStart;
         }
 
-        return new ArgumentValue( parameterName,
-                                  staticValue.replaceAll( REPLACEMENT_REGEX,
-                                                          Integer.toString( currentValue++ ) ) );
+        return new ArgumentValue(parameterName,
+                                 staticValue.replaceAll(REPLACEMENT_REGEX,
+                                                        Integer.toString(currentValue++)));
     }
 
     @Override
@@ -101,19 +101,19 @@ public class StringRangeParameterDataProvider extends AbstractParameterDataProvi
                                                        long currentThreadId,
                                                        List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
             valueIndexPerThread++;
         } else {
             valueIndexPerThread = currentValue;
         }
-        if( valueIndexPerThread > rangeEnd ) {
+        if (valueIndexPerThread > rangeEnd) {
             valueIndexPerThread = rangeStart;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName,
-                                  staticValue.replaceAll( REPLACEMENT_REGEX,
-                                                          Integer.toString( valueIndexPerThread ) ) );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName,
+                                 staticValue.replaceAll(REPLACEMENT_REGEX,
+                                                        Integer.toString(valueIndexPerThread)));
     }
 
     @Override
@@ -121,22 +121,22 @@ public class StringRangeParameterDataProvider extends AbstractParameterDataProvi
                                                              long currentThreadId,
                                                              List<ArgumentValue> alreadyResolvedValues ) {
 
-        Integer valueIndexPerThread = perThreadIndexes.get( currentThreadId );
-        if( valueIndexPerThread != null ) {
-            return new ArgumentValue( parameterName,
-                                      staticValue.replaceAll( REPLACEMENT_REGEX,
-                                                              Integer.toString( valueIndexPerThread ) ) );
+        Integer valueIndexPerThread = perThreadIndexes.get(currentThreadId);
+        if (valueIndexPerThread != null) {
+            return new ArgumentValue(parameterName,
+                                     staticValue.replaceAll(REPLACEMENT_REGEX,
+                                                            Integer.toString(valueIndexPerThread)));
         }
-        if( currentValue > rangeEnd ) {
+        if (currentValue > rangeEnd) {
             currentValue = rangeStart;
         }
         valueIndexPerThread = currentValue++;
-        if( valueIndexPerThread > rangeEnd ) {
+        if (valueIndexPerThread > rangeEnd) {
             valueIndexPerThread = rangeStart;
         }
-        perThreadIndexes.put( currentThreadId, valueIndexPerThread );
-        return new ArgumentValue( parameterName,
-                                  staticValue.replaceAll( REPLACEMENT_REGEX,
-                                                          Integer.toString( valueIndexPerThread ) ) );
+        perThreadIndexes.put(currentThreadId, valueIndexPerThread);
+        return new ArgumentValue(parameterName,
+                                 staticValue.replaceAll(REPLACEMENT_REGEX,
+                                                        Integer.toString(valueIndexPerThread)));
     }
 }

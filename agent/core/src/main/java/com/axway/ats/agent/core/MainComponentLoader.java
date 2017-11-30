@@ -37,7 +37,7 @@ import com.axway.ats.core.utils.HostUtils;
  */
 public class MainComponentLoader {
 
-    private static Logger               log = Logger.getLogger( MainComponentLoader.class );
+    private static Logger               log = Logger.getLogger(MainComponentLoader.class);
     private static MainComponentLoader  instance;
 
     // hold the future of the scheduled hot deployment monitor
@@ -62,7 +62,7 @@ public class MainComponentLoader {
      */
     public static synchronized MainComponentLoader getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new MainComponentLoader();
         }
 
@@ -79,12 +79,12 @@ public class MainComponentLoader {
     public void initialize( List<Configurator> configurators ) throws AgentException {
 
         // first initialize the configuration
-        log.info( "Configuring Agent system on " + HostUtils.getLocalHostIP() + "..." );
-        ConfigurationManager.getInstance().apply( configurators );
-        log.info( "Done configuring Agent system" );
+        log.info("Configuring Agent system on " + HostUtils.getLocalHostIP() + "...");
+        ConfigurationManager.getInstance().apply(configurators);
+        log.info("Done configuring Agent system");
 
         // now start loading the components
-        log.info( "Start Agent component registration" );
+        log.info("Start Agent component registration");
         startComponentLoader();
     }
 
@@ -96,9 +96,9 @@ public class MainComponentLoader {
      */
     public void destroy() throws AgentException {
 
-        log.info( "Deinitializing Agent ..." );
+        log.info("Deinitializing Agent ...");
         ConfigurationManager.getInstance().revert();
-        log.info( "Done deinitializing Agent" );
+        log.info("Done deinitializing Agent");
 
         // stop the component loader first to prevent new component loading
         stopComponentLoader();
@@ -115,7 +115,7 @@ public class MainComponentLoader {
     public void blockIfLoading() {
 
         // this will block if loading occurs
-        synchronized( loadingMutex ) {}
+        synchronized (loadingMutex) {}
     }
 
     /**
@@ -129,20 +129,20 @@ public class MainComponentLoader {
         ComponentRepository componentRepository = ComponentRepository.getInstance();
         ConfigurationSettings settings = ConfigurationSettings.getInstance();
 
-        log.info( "Loading Agent component libraries from '" + settings.getComponentsFolder() + "'" );
+        log.info("Loading Agent component libraries from '" + settings.getComponentsFolder() + "'");
 
         // the default loader is the dynamic loader for hot deployment
-        DynamicComponentLoader componentLoader = new DynamicComponentLoader( new File( settings.getComponentsFolder() ),
-                                                                             loadingMutex );
+        DynamicComponentLoader componentLoader = new DynamicComponentLoader(new File(settings.getComponentsFolder()),
+                                                                            loadingMutex);
 
-        log.info( "Starting hot deployment thread" );
+        log.info("Starting hot deployment thread");
 
-        componentMonitor = new ScheduledThreadPoolExecutor( 1 );
-        scheduledFuture = componentMonitor.scheduleAtFixedRate( new ComponentHotDeployTask( componentLoader,
-                                                                                            componentRepository ),
-                                                                settings.getMonitorInitialDelay(),
-                                                                settings.getMonitorPollInterval(),
-                                                                TimeUnit.SECONDS );
+        componentMonitor = new ScheduledThreadPoolExecutor(1);
+        scheduledFuture = componentMonitor.scheduleAtFixedRate(new ComponentHotDeployTask(componentLoader,
+                                                                                          componentRepository),
+                                                               settings.getMonitorInitialDelay(),
+                                                               settings.getMonitorPollInterval(),
+                                                               TimeUnit.SECONDS);
     }
 
     /**
@@ -151,8 +151,8 @@ public class MainComponentLoader {
     private void stopComponentLoader() {
 
         // now cancel the hot deployment thread
-        log.info( "Shutting down hot deployment thread" );
-        scheduledFuture.cancel( true );
+        log.info("Shutting down hot deployment thread");
+        scheduledFuture.cancel(true);
         componentMonitor.shutdown();
     }
 }

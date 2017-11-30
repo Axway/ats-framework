@@ -48,10 +48,10 @@ public class CallerRelatedInfoRepository {
     synchronized public static CallerRelatedInfoRepository getInstance(
                                                                         String caller ) {
 
-        CallerRelatedInfoRepository instance = instances.get( caller );
-        if( instance == null ) {
+        CallerRelatedInfoRepository instance = instances.get(caller);
+        if (instance == null) {
             instance = new CallerRelatedInfoRepository();
-            instances.put( caller, instance );
+            instances.put(caller, instance);
         }
         return instance;
     }
@@ -68,7 +68,7 @@ public class CallerRelatedInfoRepository {
     public Object getObject(
                              String uid ) {
 
-        return data.get( uid );
+        return data.get(uid);
     }
 
     /**
@@ -96,12 +96,12 @@ public class CallerRelatedInfoRepository {
          * Performance tests are a reason to synchronize the next code
          */
         String uniqueCounter;
-        synchronized( this ) {
-            uniqueCounter = ( ++idCounter ) + "-" + System.currentTimeMillis();
+        synchronized (this) {
+            uniqueCounter = (++idCounter) + "-" + System.currentTimeMillis();
         }
 
         String uid = keyPrefix + uniqueCounter;
-        data.put( uid, object );
+        data.put(uid, object);
 
         return uniqueCounter;
     }
@@ -114,6 +114,6 @@ public class CallerRelatedInfoRepository {
     public void removeObject(
                               String key ) {
 
-        data.remove( key );
+        data.remove(key);
     }
 }

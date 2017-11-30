@@ -37,10 +37,10 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class DatabaseReadingsRepository {
 
-    private static SQLServerDbWriteAccess        dbAccess          = null;
+    private static SQLServerDbWriteAccess dbAccess          = null;
 
     //this map keeps track of the ReadingBean(s) that already have a dbId assigned
-    private static Map<String, Integer> knownReadingBeans = new HashMap<>();
+    private static Map<String, Integer>   knownReadingBeans = new HashMap<>();
 
     public DatabaseReadingsRepository() {}
 
@@ -56,66 +56,66 @@ public class DatabaseReadingsRepository {
                                           String monitoredHost,
                                           List<ReadingBean> readings ) throws DatabaseAccessException {
 
-        Logger log = Logger.getLogger( DatabaseReadingsRepository.class );
+        Logger log = Logger.getLogger(DatabaseReadingsRepository.class);
 
-        if( dbAccess == null ) {
-            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender( ThreadsPerCaller.getCaller() );
+        if (dbAccess == null) {
+            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender(ThreadsPerCaller.getCaller());
         }
 
-        for( ReadingBean reading : readings ) {
+        for (ReadingBean reading : readings) {
             // check if the current reading already was flagged as known
-            int dbId = getDbIdForReading( reading );
-            reading.setDbId( dbId );
-            if( reading.getDbId() == -1 ) {
+            int dbId = getDbIdForReading(reading);
+            reading.setDbId(dbId);
+            if (reading.getDbId() == -1) {
                 StringBuilder newReadingParameters = new StringBuilder();
                 Map<String, String> readingParameters = reading.getParameters();
-                if( readingParameters != null && readingParameters.size() > 0 ) {
+                if (readingParameters != null && readingParameters.size() > 0) {
 
-                    if( readingParameters.containsKey( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS ) ) {
+                    if (readingParameters.containsKey(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS)) {
 
-                        newReadingParameters.append( "'" );
-                        newReadingParameters.append( readingParameters.get( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS ) );
-                        newReadingParameters.append( "'_user pattern is '" );
-                        newReadingParameters.append( readingParameters.get( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN ) );
-                        newReadingParameters.append( "'_reading=" );
-                        newReadingParameters.append( readingParameters.get( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_READING_ID ) );
-                        newReadingParameters.append( "_started by command '" );
-                        newReadingParameters.append( readingParameters.get( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_START_COMMAND ) );
-                        newReadingParameters.append( "'" );
+                        newReadingParameters.append("'");
+                        newReadingParameters.append(readingParameters.get(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS));
+                        newReadingParameters.append("'_user pattern is '");
+                        newReadingParameters.append(readingParameters.get(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN));
+                        newReadingParameters.append("'_reading=");
+                        newReadingParameters.append(readingParameters.get(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_READING_ID));
+                        newReadingParameters.append("_started by command '");
+                        newReadingParameters.append(readingParameters.get(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_START_COMMAND));
+                        newReadingParameters.append("'");
                     } else {
 
-                        newReadingParameters.append( readingParameters.get( SystemMonitorDefinitions.PARAMETER_NAME__CUSTOM_MESSAGE ) );
+                        newReadingParameters.append(readingParameters.get(SystemMonitorDefinitions.PARAMETER_NAME__CUSTOM_MESSAGE));
                     }
                 }
 
                 int newReadingDatabaseId;
-                if( reading instanceof ParentProcessReadingBean ) {
+                if (reading instanceof ParentProcessReadingBean) {
                     String thisProcessName = "[process] "
-                                             + ( ( ParentProcessReadingBean ) reading ).getTheNameOfThisParentProcess();
+                                             + ((ParentProcessReadingBean) reading).getTheNameOfThisParentProcess();
                     String thisReadingName = thisProcessName + " - " + reading.getName();
-                    newReadingDatabaseId = dbAccess.populateSystemStatisticDefinition( thisReadingName,
-                                                                                       reading.getParameter( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME ),
-                                                                                       thisProcessName,
-                                                                                       reading.getUnit(),
-                                                                                       newReadingParameters.toString() );
-                    log.debug( "DB id " + newReadingDatabaseId + " for parent process reading: "
-                               + thisReadingName );
+                    newReadingDatabaseId = dbAccess.populateSystemStatisticDefinition(thisReadingName,
+                                                                                      reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME),
+                                                                                      thisProcessName,
+                                                                                      reading.getUnit(),
+                                                                                      newReadingParameters.toString());
+                    log.debug("DB id " + newReadingDatabaseId + " for parent process reading: "
+                              + thisReadingName);
                 } else {
-                    String parentName = reading.getParameter( SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME );
-                    if( parentName != null ) {
+                    String parentName = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME);
+                    if (parentName != null) {
                         parentName = "[process] " + parentName;
                     }
-                    newReadingDatabaseId = dbAccess.populateSystemStatisticDefinition( reading.getName(),
-                                                                                       parentName,
-                                                                                       "",
-                                                                                       reading.getUnit(),
-                                                                                       newReadingParameters.toString() );
-                    log.debug( "DB id " + newReadingDatabaseId + " for reading: " + reading.getName() );
+                    newReadingDatabaseId = dbAccess.populateSystemStatisticDefinition(reading.getName(),
+                                                                                      parentName,
+                                                                                      "",
+                                                                                      reading.getUnit(),
+                                                                                      newReadingParameters.toString());
+                    log.debug("DB id " + newReadingDatabaseId + " for reading: " + reading.getName());
                 }
 
                 // remember the DB ID of this reading
-                reading.setDbId( newReadingDatabaseId );
-                knownReadingBeans.put( reading.getDescription(), reading.getDbId() );
+                reading.setDbId(newReadingDatabaseId);
+                knownReadingBeans.put(reading.getDescription(), reading.getDbId());
             }
         }
     }
@@ -124,9 +124,9 @@ public class DatabaseReadingsRepository {
                                    ReadingBean reading ) {
 
         String mapKey = reading.getDescription();
-        Integer dbId = knownReadingBeans.get( mapKey );
-        return ( dbId != null )
-                                ? dbId
-                                : -1;
+        Integer dbId = knownReadingBeans.get(mapKey);
+        return (dbId != null)
+                              ? dbId
+                              : -1;
     }
 }

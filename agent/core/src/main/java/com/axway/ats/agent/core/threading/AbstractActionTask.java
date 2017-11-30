@@ -51,13 +51,13 @@ import com.axway.ats.log.model.CheckpointResult;
  */
 public abstract class AbstractActionTask implements Runnable {
 
-    public static final String            ATS_ACTION__QUEUE_EXECUTION_TIME    = "Queue execution time";
+    public static final String            ATS_ACTION__QUEUE_EXECUTION_TIME = "Queue execution time";
     /**
      * Property to enable fill action time logging in addition to net time
      */
     public static final boolean           REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS;
 
-    protected final AtsDbLogger            log;
+    protected final AtsDbLogger           log;
 
     protected String                      queueName;
 
@@ -94,16 +94,16 @@ public abstract class AbstractActionTask implements Runnable {
     protected IterationTimeoutManager     itManager;
 
     // flags about thread time outs
-    private boolean                       timedOut                            = false;
+    private boolean                       timedOut                         = false;
     private int                           timedOutSeconds;
-    private boolean                       externallyInterrupted               = false;
+    private boolean                       externallyInterrupted            = false;
 
     // used for telling the user how many queue iterations are started
-    private int                           nIterations                         = 0;
+    private int                           nIterations                      = 0;
 
     static {
-        REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS = AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY,
-                                                                                                           false );
+        REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY,
+                                                                                                          false);
     }
 
     // remember the remote caller which initiates this action
@@ -129,10 +129,10 @@ public abstract class AbstractActionTask implements Runnable {
 
         this.caller = caller;
 
-        this.log = AtsDbLogger.getLogger( this.getClass().getName() );
+        this.log = AtsDbLogger.getLogger(this.getClass().getName());
 
-        PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance( ThreadsPerCaller.getCaller() );
-        if( dbAppender != null ) {
+        PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+        if (dbAppender != null) {
             this.isLoggingInBatchMode = dbAppender.isBatchMode();
         }
 
@@ -144,9 +144,9 @@ public abstract class AbstractActionTask implements Runnable {
         //create the invokers based on these requests
         actionInvokers = new ArrayList<ActionInvoker>();
 
-        for( ActionRequest actionRequest : actionRequests ) {
-            ActionInvoker actionInvoker = new ActionInvoker( actionRequest );
-            actionInvokers.add( actionInvoker );
+        for (ActionRequest actionRequest : actionRequests) {
+            ActionInvoker actionInvoker = new ActionInvoker(actionRequest);
+            actionInvokers.add(actionInvoker);
         }
 
         this.dataProviders = dataProviders;
@@ -158,25 +158,25 @@ public abstract class AbstractActionTask implements Runnable {
         HashMap<String, Object> createdInstances = new HashMap<String, Object>();
 
         //cache the instances of the action classes
-        for( ActionInvoker actionInvoker : actionInvokers ) {
+        for (ActionInvoker actionInvoker : actionInvokers) {
             String actionClassName = actionInvoker.getActionClass().getName();
 
             try {
                 Class<?> actionClass = actionInvoker.getActionClass();
-                Object actionClassInstance = createdInstances.get( actionClass.getName() );
+                Object actionClassInstance = createdInstances.get(actionClass.getName());
                 //create a new instance only if necessary
-                if( actionClassInstance == null ) {
+                if (actionClassInstance == null) {
                     actionClassInstance = actionClass.newInstance();
-                    createdInstances.put( actionClass.getName(), actionClassInstance );
+                    createdInstances.put(actionClass.getName(), actionClassInstance);
                 }
 
-                actionClassInstances.add( actionClassInstance );
+                actionClassInstances.add(actionClassInstance);
 
-            } catch( IllegalAccessException iae ) {
-                throw new ActionExecutionException( "Could not access action class " + actionClassName, iae );
-            } catch( InstantiationException ie ) {
-                throw new ActionExecutionException( "Could not instantiate action class " + actionClassName,
-                                                    ie );
+            } catch (IllegalAccessException iae) {
+                throw new ActionExecutionException("Could not access action class " + actionClassName, iae);
+            } catch (InstantiationException ie) {
+                throw new ActionExecutionException("Could not instantiate action class " + actionClassName,
+                                                   ie);
             }
         }
 
@@ -185,7 +185,7 @@ public abstract class AbstractActionTask implements Runnable {
         this.intervalBetweenIterations = intervalBetweenIterations;
         this.minIntervalBetweenIterations = minIntervalBetweenIterations;
         this.maxIntervalBetweenIterations = maxIntervalBetweenIterations;
-        if( minIntervalBetweenIterations != -1 ) {
+        if (minIntervalBetweenIterations != -1) {
             intervalTimeGenerator = new Random();
         }
 
@@ -226,18 +226,18 @@ public abstract class AbstractActionTask implements Runnable {
     public final void run() {
 
         renameThread();
-        ThreadsPerCaller.registerThread( caller );
+        ThreadsPerCaller.registerThread(caller);
 
         try {
             // set TemplateActionsResponseVerificationConfigurator to the ThreadContext (it is per Actions Queue)
-            TemplateActionsResponseVerificationConfigurator templateConfigurator = TemplateActionsResponseVerificationConfigurator.getInstance( this.queueName );
-            if( templateConfigurator != null ) {
-                ThreadContext.setAttribute( ThreadContext.TEMPLATE_ACTION_VERIFICATION_CONFIGURATOR,
-                                            templateConfigurator );
+            TemplateActionsResponseVerificationConfigurator templateConfigurator = TemplateActionsResponseVerificationConfigurator.getInstance(this.queueName);
+            if (templateConfigurator != null) {
+                ThreadContext.setAttribute(ThreadContext.TEMPLATE_ACTION_VERIFICATION_CONFIGURATOR,
+                                           templateConfigurator);
             }
 
             boolean runOnce = true;
-            while( runOnce ) {
+            while (runOnce) {
 
                 //wait until this iteration is started
                 threadsManager.waitForStart();
@@ -247,9 +247,9 @@ public abstract class AbstractActionTask implements Runnable {
 
                 ActionTaskResult executionResult = execute();
 
-                switch( executionResult ){
+                switch (executionResult) {
                     case FINISHED:
-                        onFinish( null );
+                        onFinish(null);
                         runOnce = false;
                         break;
                     case PAUSED:
@@ -258,13 +258,13 @@ public abstract class AbstractActionTask implements Runnable {
                         break;
                     default:
                         // canceled
-                        onFinish( null ); // we have to notify listeners that the Thread is finished(canceled)
+                        onFinish(null); // we have to notify listeners that the Thread is finished(canceled)
                         runOnce = false;
                 }
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
             //notify the listeners
-            onFinish( e );
+            onFinish(e);
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -276,15 +276,15 @@ public abstract class AbstractActionTask implements Runnable {
      */
     private void renameThread() {
 
-        if( dataProviders.size() > 0 ) {
+        if (dataProviders.size() > 0) {
 
-            synchronized( dataProviders ) {
-                for( ParameterDataProvider dataProvider : dataProviders ) {
-                    if( dataProvider.getDataConfiguratorClass() == UsernameDataConfig.class ) {
+            synchronized (dataProviders) {
+                for (ParameterDataProvider dataProvider : dataProviders) {
+                    if (dataProvider.getDataConfiguratorClass() == UsernameDataConfig.class) {
                         Thread.currentThread()
-                              .setName( dataProvider.getValue( new ArrayList<ArgumentValue>() )
-                                                    .getValue()
-                                                    .toString() );
+                              .setName(dataProvider.getValue(new ArrayList<ArgumentValue>())
+                                                   .getValue()
+                                                   .toString());
 
                         break;
                     }
@@ -307,10 +307,10 @@ public abstract class AbstractActionTask implements Runnable {
      */
     protected final void invokeActions() throws InterruptedException {
 
-        UserActionsMonitoringAgent userActionsMonitoringAgent = UserActionsMonitoringAgent.getInstance( caller );
+        UserActionsMonitoringAgent userActionsMonitoringAgent = UserActionsMonitoringAgent.getInstance(caller);
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "Starting '" + queueName + "' queue for " + ( ++nIterations ) + "th time" );
+        if (log.isDebugEnabled()) {
+            log.debug("Starting '" + queueName + "' queue for " + (++nIterations) + "th time");
         }
 
         //generate the input arguments for all action invokers
@@ -320,15 +320,15 @@ public abstract class AbstractActionTask implements Runnable {
         long actionStartTimestamp = 0;
         long actionEndTimestamp = 0;
 
-        if( this.itManager != null ) { // inform a new iteration is starting now
-            this.itManager.setIterationStartTime( this, System.currentTimeMillis() );
+        if (this.itManager != null) { // inform a new iteration is starting now
+            this.itManager.setIterationStartTime(this, System.currentTimeMillis());
         }
 
         try {
-            for( int i = 0; i < actionInvokers.size(); i++ ) { // start cycling all actions in this iteration
+            for (int i = 0; i < actionInvokers.size(); i++) { // start cycling all actions in this iteration
 
-                ActionInvoker actionInvoker = actionInvokers.get( i );
-                Object actionClassInstance = actionClassInstances.get( i );
+                ActionInvoker actionInvoker = actionInvokers.get(i);
+                Object actionClassInstance = actionClassInstances.get(i);
                 ActionMethod actionMethod = actionInvoker.getActionMethod();
 
                 final String actionName = actionInvoker.getActionName();
@@ -344,113 +344,113 @@ public abstract class AbstractActionTask implements Runnable {
                 // checkpoint name. For template actions by default only network time is tracked.
                 // Here "-full" adds total action processing including XML (de)serializations, parameterization
                 String checkpointName;
-                if( !isTemplateActionMethod ) {
+                if (!isTemplateActionMethod) {
                     checkpointName = actionName;
                 } else {
                     checkpointName = actionName + "-full";
                 }
 
                 // start a checkpoint
-                userActionsMonitoringAgent.actionStarted( actionName );
-                if( registerActionExecution ) {
+                userActionsMonitoringAgent.actionStarted(actionName);
+                if (registerActionExecution) {
                     actionStartTimestamp = System.currentTimeMillis();
-                    if( logCheckpoints && !isLoggingInBatchMode ) {
-                        log.startCheckpoint( checkpointName, transferUnit, actionStartTimestamp );
+                    if (logCheckpoints && !isLoggingInBatchMode) {
+                        log.startCheckpoint(checkpointName, transferUnit, actionStartTimestamp);
                     }
                 }
 
                 // invoke the current action
                 Object actionReturnedResult = null;
                 try {
-                    actionReturnedResult = actionInvoker.invoke( actionClassInstance );
-                } catch( Exception e ) {
+                    actionReturnedResult = actionInvoker.invoke(actionClassInstance);
+                } catch (Exception e) {
                     // the action failed - end the checkpoint
-                    if( registerActionExecution ) {
-                        if( logCheckpoints ) {
-                            if( isLoggingInBatchMode ) {
-                                log.insertCheckpoint( checkpointName, actionStartTimestamp, 0, 0,
-                                                      transferUnit, CheckpointResult.FAILED );
+                    if (registerActionExecution) {
+                        if (logCheckpoints) {
+                            if (isLoggingInBatchMode) {
+                                log.insertCheckpoint(checkpointName, actionStartTimestamp, 0, 0,
+                                                     transferUnit, CheckpointResult.FAILED);
                             } else {
-                                log.endCheckpoint( checkpointName, 0, CheckpointResult.FAILED );
+                                log.endCheckpoint(checkpointName, 0, CheckpointResult.FAILED);
                             }
 
                         }
-                        QueueExecutionStatistics.getInstance().registerActionExecutionResult( queueName,
-                                                                                              actionName,
-                                                                                              false );
+                        QueueExecutionStatistics.getInstance().registerActionExecutionResult(queueName,
+                                                                                             actionName,
+                                                                                             false);
                     }
                     // re-throw the exception
                     throw e;
                 } finally {
-                    userActionsMonitoringAgent.actionEnded( actionName );
+                    userActionsMonitoringAgent.actionEnded(actionName);
                 }
 
                 // the action passed
-                if( registerActionExecution ) {
+                if (registerActionExecution) {
                     actionEndTimestamp = System.currentTimeMillis();
                     long responseTimeMs = actionEndTimestamp - actionStartTimestamp;
 
                     long transferSize = 0;
-                    if( transferUnit.length() > 0 ) {
-                        transferSize = ( Long ) actionReturnedResult;
+                    if (transferUnit.length() > 0) {
+                        transferSize = (Long) actionReturnedResult;
                     }
 
-                    if( logCheckpoints ) {
-                        if( isLoggingInBatchMode ) {
-                            log.insertCheckpoint( checkpointName, actionStartTimestamp, responseTimeMs,
-                                                  transferSize, transferUnit, CheckpointResult.PASSED );
+                    if (logCheckpoints) {
+                        if (isLoggingInBatchMode) {
+                            log.insertCheckpoint(checkpointName, actionStartTimestamp, responseTimeMs,
+                                                 transferSize, transferUnit, CheckpointResult.PASSED);
                         } else {
-                            log.endCheckpoint( checkpointName, transferSize, CheckpointResult.PASSED,
-                                               actionEndTimestamp );
+                            log.endCheckpoint(checkpointName, transferSize, CheckpointResult.PASSED,
+                                              actionEndTimestamp);
                         }
                     }
 
-                    if( registerActionExecutionInQueueExecutionTime ) {
-                        if( isTemplateActionMethod ) { // add net time in queue instead of full processing time
-                            if( actionReturnedResult instanceof CompositeResult ) {
-                                CompositeResult res = ( CompositeResult ) actionReturnedResult;
+                    if (registerActionExecutionInQueueExecutionTime) {
+                        if (isTemplateActionMethod) { // add net time in queue instead of full processing time
+                            if (actionReturnedResult instanceof CompositeResult) {
+                                CompositeResult res = (CompositeResult) actionReturnedResult;
                                 responseTimeMs = res.getReqRespNetworkTime();
                             }
                         }
                         queueDuration += responseTimeMs;
                     }
 
-                    QueueExecutionStatistics.getInstance().registerActionExecutionResult( queueName,
-                                                                                          actionName, true );
+                    QueueExecutionStatistics.getInstance().registerActionExecutionResult(queueName,
+                                                                                         actionName, true);
                 }
             } // end cycling all actions in this iteration
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             // We are particularly interested if the thread was interrupted
             Throwable cause = e.getCause();
-            if( cause != null && cause instanceof InterruptedException ) {
+            if (cause != null && cause instanceof InterruptedException) {
                 // the thread was interrupted
-                if( this.timedOut ) {
+                if (this.timedOut) {
                     // the thread was interrupted due to timeout, log the timeout and go to next iteration
-                    log.error( "Iteration timed out in " + this.timedOutSeconds
-                               + " seconds - skipping to next iteration" );
+                    log.error("Iteration timed out in " + this.timedOutSeconds
+                              + " seconds - skipping to next iteration");
 
                     this.timedOut = false; // reset our flag as we will start another iteration
                     this.timedOutSeconds = 0;
                 } else {
                     // the thread interrupted, but not due to timeout, maybe the user cancelled the queue
                     this.externallyInterrupted = true;
-                    throw ( InterruptedException ) cause;
+                    throw(InterruptedException) cause;
                 }
             } else {
                 // some kind of generic exception has occurred
-                log.error( "Exception caught during invocation - skipping to next iteration", e );
+                log.error("Exception caught during invocation - skipping to next iteration", e);
             }
 
             //continue to the next iteration
             return;
         } finally {
-            if( this.itManager != null ) {
+            if (this.itManager != null) {
                 this.itManager.clearIterationStartTime();
             }
         }
 
-        log.insertCheckpoint( ATS_ACTION__QUEUE_EXECUTION_TIME, queueDuration, CheckpointResult.PASSED );
+        log.insertCheckpoint(ATS_ACTION__QUEUE_EXECUTION_TIME, queueDuration, CheckpointResult.PASSED);
     }
 
     /**
@@ -463,24 +463,24 @@ public abstract class AbstractActionTask implements Runnable {
     protected boolean sleepBetweenIterations( long endTimestamp ) throws InterruptedException {
 
         long nextInterval;
-        if( intervalBetweenIterations > 0 ) {
+        if (intervalBetweenIterations > 0) {
             // constant sleep between each iteration
             nextInterval = intervalBetweenIterations;
-        } else if( intervalTimeGenerator != null ) {
+        } else if (intervalTimeGenerator != null) {
             // varying sleep
-            nextInterval = intervalTimeGenerator.nextInt( ( int ) ( maxIntervalBetweenIterations
-                                                                    - minIntervalBetweenIterations ) )
+            nextInterval = intervalTimeGenerator.nextInt((int) (maxIntervalBetweenIterations
+                                                                - minIntervalBetweenIterations))
                            + minIntervalBetweenIterations;
 
         } else {
             nextInterval = 0;
         }
 
-        if( System.currentTimeMillis() + nextInterval < endTimestamp ) {
-            Thread.sleep( nextInterval );
-            if( intervalTimeGenerator != null ) {
-                log.insertCheckpoint( "[Time between queue executions]", nextInterval,
-                                      CheckpointResult.PASSED );
+        if (System.currentTimeMillis() + nextInterval < endTimestamp) {
+            Thread.sleep(nextInterval);
+            if (intervalTimeGenerator != null) {
+                log.insertCheckpoint("[Time between queue executions]", nextInterval,
+                                     CheckpointResult.PASSED);
             }
             return true;
         } else {
@@ -496,21 +496,21 @@ public abstract class AbstractActionTask implements Runnable {
     protected void sleepBetweenIterations() throws InterruptedException {
 
         long nextInterval;
-        if( intervalBetweenIterations > 0 ) {
+        if (intervalBetweenIterations > 0) {
             // constant sleep between each iteration
             nextInterval = intervalBetweenIterations;
-        } else if( intervalTimeGenerator != null ) {
+        } else if (intervalTimeGenerator != null) {
             // varying sleep
-            nextInterval = intervalTimeGenerator.nextInt( ( int ) ( maxIntervalBetweenIterations
-                                                                    - minIntervalBetweenIterations ) )
+            nextInterval = intervalTimeGenerator.nextInt((int) (maxIntervalBetweenIterations
+                                                                - minIntervalBetweenIterations))
                            + minIntervalBetweenIterations;
         } else {
             nextInterval = 0;
         }
 
-        Thread.sleep( nextInterval );
-        if( intervalTimeGenerator != null ) {
-            log.insertCheckpoint( "[Time between queue executions]", nextInterval, CheckpointResult.PASSED );
+        Thread.sleep(nextInterval);
+        if (intervalTimeGenerator != null) {
+            log.insertCheckpoint("[Time between queue executions]", nextInterval, CheckpointResult.PASSED);
         }
     }
 
@@ -527,30 +527,30 @@ public abstract class AbstractActionTask implements Runnable {
 
         currentIterationsInThisTimeFrame++;
         long timeTillTheEndOfTimeFrame = timeFrameLength
-                                         - ( System.currentTimeMillis() - timeFrameStartTimestamp );
-        if( timeTillTheEndOfTimeFrame > 0
-            && currentIterationsInThisTimeFrame >= totalExecutionsPerTimeFrame ) {
+                                         - (System.currentTimeMillis() - timeFrameStartTimestamp);
+        if (timeTillTheEndOfTimeFrame > 0
+            && currentIterationsInThisTimeFrame >= totalExecutionsPerTimeFrame) {
             // we have reached/exceeded the number of iterations per given time frame
 
             // if an end time is specified, check whether we will pass by after sleeping
             // till the end of this time frame
-            if( endTimestamp > 0 && System.currentTimeMillis() + timeTillTheEndOfTimeFrame >= endTimestamp ) {
+            if (endTimestamp > 0 && System.currentTimeMillis() + timeTillTheEndOfTimeFrame >= endTimestamp) {
                 return true;
             }
 
             // we will sleep till the end of this time frame
-            Thread.sleep( timeTillTheEndOfTimeFrame );
+            Thread.sleep(timeTillTheEndOfTimeFrame);
 
             // reseting the time frame start time and the number of iterations in the time frame
             timeFrameStartTimestamp = System.currentTimeMillis();
             currentIterationsInThisTimeFrame = 0;
 
-        } else if( timeTillTheEndOfTimeFrame <= 0 ) {
+        } else if (timeTillTheEndOfTimeFrame <= 0) {
 
-            if( currentIterationsInThisTimeFrame < totalExecutionsPerTimeFrame ) {
-                log.warn( "We were not able to execute the requested " + totalExecutionsPerTimeFrame
-                          + " iterations for " + timeFrameLength / 1000 + " seconds, but only "
-                          + currentIterationsInThisTimeFrame + " iterations" );
+            if (currentIterationsInThisTimeFrame < totalExecutionsPerTimeFrame) {
+                log.warn("We were not able to execute the requested " + totalExecutionsPerTimeFrame
+                         + " iterations for " + timeFrameLength / 1000 + " seconds, but only "
+                         + currentIterationsInThisTimeFrame + " iterations");
             }
 
             // reseting the time frame start time and the number of iterations in the time frame
@@ -567,7 +567,7 @@ public abstract class AbstractActionTask implements Runnable {
      */
     protected final void generateInputArguments() {
 
-        if( dataProviders.size() > 0 ) {
+        if (dataProviders.size() > 0) {
 
             // We will store here only the arguments which are to be replaced by a data provider.
             // We store all values from all data providers.
@@ -575,15 +575,15 @@ public abstract class AbstractActionTask implements Runnable {
 
             // Generate the new input arguments - all arguments should be
             // generated at the same time, so other threads do not interfere.
-            synchronized( dataProviders ) {
-                for( ParameterDataProvider dataProvider : dataProviders ) {
-                    argumentValues.add( dataProvider.getValue( argumentValues ) );
+            synchronized (dataProviders) {
+                for (ParameterDataProvider dataProvider : dataProviders) {
+                    argumentValues.add(dataProvider.getValue(argumentValues));
                 }
             }
 
             // set the arguments as provided
-            for( ActionInvoker actionInvoker : actionInvokers ) {
-                argumentValues = actionInvoker.setArguments( argumentValues );
+            for (ActionInvoker actionInvoker : actionInvokers) {
+                argumentValues = actionInvoker.setArguments(argumentValues);
             }
         }
     }
@@ -593,14 +593,14 @@ public abstract class AbstractActionTask implements Runnable {
      */
     private final void onStart() {
 
-        for( ActionTaskListener listener : listeners ) {
+        for (ActionTaskListener listener : listeners) {
             listener.onStart();
         }
     }
 
     protected final void onPause() {
 
-        for( ActionTaskListener listener : listeners ) {
+        for (ActionTaskListener listener : listeners) {
             listener.onPause();
         }
     }
@@ -611,8 +611,8 @@ public abstract class AbstractActionTask implements Runnable {
      */
     private final void onFinish( Throwable throwable ) {
 
-        for( ActionTaskListener listener : listeners ) {
-            listener.onFinish( throwable );
+        for (ActionTaskListener listener : listeners) {
+            listener.onFinish(throwable);
         }
     }
 
@@ -627,43 +627,43 @@ public abstract class AbstractActionTask implements Runnable {
 
         // get how many providers provide values for each parameter
         Map<String, Integer> paramsInProvidersMap = new HashMap<String, Integer>();
-        for( ParameterDataProvider dataProvider : dataProviders ) {
+        for (ParameterDataProvider dataProvider : dataProviders) {
             String paramName = dataProvider.getParameterName();
-            if( paramsInProvidersMap.get( paramName ) != null ) {
-                paramsInProvidersMap.put( paramName, paramsInProvidersMap.get( paramName ) + 1 );
+            if (paramsInProvidersMap.get(paramName) != null) {
+                paramsInProvidersMap.put(paramName, paramsInProvidersMap.get(paramName) + 1);
             } else {
-                paramsInProvidersMap.put( paramName, 1 );
+                paramsInProvidersMap.put(paramName, 1);
             }
         }
 
         // get how many times each parameter is used in all actions
         Map<String, Integer> paramsInActionsMap = new HashMap<String, Integer>();
-        for( ActionInvoker actionInvoker : actionInvokers ) {
-            for( String paramName : actionInvoker.getActionMethodParameterNames() ) {
-                if( paramsInActionsMap.get( paramName ) != null ) {
-                    paramsInActionsMap.put( paramName, paramsInActionsMap.get( paramName ) + 1 );
+        for (ActionInvoker actionInvoker : actionInvokers) {
+            for (String paramName : actionInvoker.getActionMethodParameterNames()) {
+                if (paramsInActionsMap.get(paramName) != null) {
+                    paramsInActionsMap.put(paramName, paramsInActionsMap.get(paramName) + 1);
                 } else {
-                    paramsInActionsMap.put( paramName, 1 );
+                    paramsInActionsMap.put(paramName, 1);
                 }
             }
         }
 
         // warn for unused provided parameters
-        for( Entry<String, Integer> paramEntry : paramsInProvidersMap.entrySet() ) {
+        for (Entry<String, Integer> paramEntry : paramsInProvidersMap.entrySet()) {
             int timesInProviders = paramEntry.getValue();
 
             //we iterate on the paramsInProviders map, so we need to make
             //sure that a parameter with this name is present in the actions at all
             int timesInActions = 0;
-            if( paramsInActionsMap.containsKey( paramEntry.getKey() ) ) {
-                timesInActions = paramsInActionsMap.get( paramEntry.getKey() );
+            if (paramsInActionsMap.containsKey(paramEntry.getKey())) {
+                timesInActions = paramsInActionsMap.get(paramEntry.getKey());
             }
 
             //just log a warning if a parameter data provider is not used,
             //as this is not a fatal error and can be ignored
-            if( timesInProviders > timesInActions ) {
-                log.warn( "'" + paramEntry.getKey() + "' parameter is provided by " + timesInProviders
-                          + " data providers while it is used in only " + timesInActions + " actions" );
+            if (timesInProviders > timesInActions) {
+                log.warn("'" + paramEntry.getKey() + "' parameter is provided by " + timesInProviders
+                         + " data providers while it is used in only " + timesInActions + " actions");
             }
             // (timesInProviders < timesInActions) is OK for example when you want
             // to use constant in one of the action invocations.

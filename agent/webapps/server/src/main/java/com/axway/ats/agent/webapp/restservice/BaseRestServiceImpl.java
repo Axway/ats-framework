@@ -34,9 +34,9 @@ public class BaseRestServiceImpl {
      * and is discarded again when initializing DB connection if it has expired.
     */
 
-    private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger( BaseRestServiceImpl.class.getName() );
+    private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName());
 
-    protected static Map<String, SessionData> sessions = Collections.synchronizedMap( new HashMap<String, SessionData>() );
+    protected static Map<String, SessionData> sessions = Collections.synchronizedMap(new HashMap<String, SessionData>());
 
     protected String getCaller(
                                 HttpServletRequest request,
@@ -46,9 +46,9 @@ public class BaseRestServiceImpl {
         String uid = null;
 
         try {
-            uid = getUid( request, basePojo, generateNewIUD );
-        } catch( Exception e ) {
-            dbLog.error( "Could not get ATS UID for call from " + request.getRemoteAddr() + ".", e );
+            uid = getUid(request, basePojo, generateNewIUD);
+        } catch (Exception e) {
+            dbLog.error("Could not get ATS UID for call from " + request.getRemoteAddr() + ".", e);
         }
 
         return "<Caller: " + request.getRemoteAddr() + "; ATS UID: " + uid + ">";
@@ -61,16 +61,16 @@ public class BaseRestServiceImpl {
         String uid = null;
         SessionData sd = null;
 
-        uid = getUid( request, basePojo, false );
-        sd = sessions.get( uid );
-        if( sd == null ) {
-            if( request.getRequestURI().contains( "initializeDbConnection" ) ) {
+        uid = getUid(request, basePojo, false);
+        sd = sessions.get(uid);
+        if (sd == null) {
+            if (request.getRequestURI().contains("initializeDbConnection")) {
                 // create new session
                 sd = new SessionData();
-                sessions.put( uid, sd );
+                sessions.put(uid, sd);
             } else {
-                throw new SessionNotFoundException( "Could not obtain session with uid '" + uid
-                                                    + "'. Please consult the documentation." );
+                throw new SessionNotFoundException("Could not obtain session with uid '" + uid
+                                                   + "'. Please consult the documentation.");
             }
         }
         sd.updateLastUsedFlag();
@@ -83,28 +83,28 @@ public class BaseRestServiceImpl {
                            boolean generateNewIUD ) throws Exception {
 
         // get ATS_UID from request header
-        String uid = request.getHeader( ApplicationContext.ATS_UID_SESSION_TOKEN );
-        if( uid == null ) {
+        String uid = request.getHeader(ApplicationContext.ATS_UID_SESSION_TOKEN);
+        if (uid == null) {
             // get ATS_UID from request body
             uid = basePojo.getUid();
-            if( uid == null ) {
+            if (uid == null) {
                 /*
                 * we create new uid only in initializeDbConnection REST method.
                 */
-                if( request.getRequestURI().contains( "initializeDbConnection" ) ) {
+                if (request.getRequestURI().contains("initializeDbConnection")) {
                     // because we use this method in each REST call,
                     // true is passed as a generateNewIUD argument only in
                     // initializeDbConnection REST method
-                    if( generateNewIUD ) {
+                    if (generateNewIUD) {
                         uid = UUID.randomUUID().toString();
                     }
                 } else {
-                    throw new SessionNotFoundException( ApplicationContext.ATS_UID_SESSION_TOKEN
-                                                        + " not found in neither request headers, nor request body." );
+                    throw new SessionNotFoundException(ApplicationContext.ATS_UID_SESSION_TOKEN
+                                                       + " not found in neither request headers, nor request body.");
                 }
             }
         }
-        basePojo.setUid( uid );
+        basePojo.setUid(uid);
 
         return uid;
     }

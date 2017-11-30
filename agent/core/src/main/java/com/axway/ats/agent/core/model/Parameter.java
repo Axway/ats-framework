@@ -32,8 +32,8 @@ import com.axway.ats.core.validation.ValidationType;
  * can query the server and get the parameter types and
  * names for a specific action 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Retention( RetentionPolicy.RUNTIME)
+@Target( ElementType.PARAMETER)
 public @interface Parameter {
 
     /**

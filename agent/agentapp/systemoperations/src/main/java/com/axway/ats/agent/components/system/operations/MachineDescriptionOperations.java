@@ -29,33 +29,33 @@ import com.axway.ats.agent.core.model.Action;
 public class MachineDescriptionOperations {
 
     private static final String[] OS_KEYS     = new String[]{ "os.name",
-            "os.version",
-            "sun.os.patch.level",
-            "os.arch",
-            "sun.arch.data.model"            };
+                                                              "os.version",
+                                                              "sun.os.patch.level",
+                                                              "os.arch",
+                                                              "sun.arch.data.model" };
     private static final String[] OS_VALUES   = new String[]{ "name",
-            "version",
-            "patch",
-            "architecture",
-            "architecture model"             };
+                                                              "version",
+                                                              "patch",
+                                                              "architecture",
+                                                              "architecture model" };
 
     private static final String[] USER_KEYS   = new String[]{ "user.name",
-            "user.home",
-            "java.io.tmpdir",
-            "user.language",
-            "user.timezone"                  };
+                                                              "user.home",
+                                                              "java.io.tmpdir",
+                                                              "user.language",
+                                                              "user.timezone" };
     private static final String[] USER_VALUES = new String[]{ "name",
-            "home folder",
-            "temp folder",
-            "language",
-            "time zone"                      };
+                                                              "home folder",
+                                                              "temp folder",
+                                                              "language",
+                                                              "time zone" };
 
-    @Action(name = "Machine Description Operations Get Description")
+    @Action( name = "Machine Description Operations Get Description")
     public String getDescription() throws Exception {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( getInfoFromSigar() );
-        sb.append( getInfoFromJavaRuntime() );
+        sb.append(getInfoFromSigar());
+        sb.append(getInfoFromJavaRuntime());
 
         return sb.toString();
     }
@@ -65,53 +65,53 @@ public class MachineDescriptionOperations {
         StringBuilder sb = new StringBuilder();
         Sigar sigar = new Sigar();
 
-        sb.append( "Fully Qualified Domain Name:\n\t" + sigar.getFQDN().toString() );
-        sb.append( "\nSystem uptime:\n\t" + new Double( sigar.getUptime().getUptime() ).intValue()
-                   + " seconds" );
-        sb.append( "\nDate:\n\t" + new Date() );
-        sb.append( "\nNetwork settings:" + format( sigar.getNetInfo().toString(), 1 ) );
+        sb.append("Fully Qualified Domain Name:\n\t" + sigar.getFQDN().toString());
+        sb.append("\nSystem uptime:\n\t" + new Double(sigar.getUptime().getUptime()).intValue()
+                  + " seconds");
+        sb.append("\nDate:\n\t" + new Date());
+        sb.append("\nNetwork settings:" + format(sigar.getNetInfo().toString(), 1));
 
-        sb.append( "\nCPU info:" );
+        sb.append("\nCPU info:");
         CpuInfo[] cpuInfoList = sigar.getCpuInfoList();
-        for( int i = 0; i < cpuInfoList.length; i++ ) {
+        for (int i = 0; i < cpuInfoList.length; i++) {
             CpuInfo cpuInfo = cpuInfoList[i];
-            sb.append( "\n\tCPU " + i + ": " );
-            sb.append( format( cpuInfo.toString(), 2 ) );
+            sb.append("\n\tCPU " + i + ": ");
+            sb.append(format(cpuInfo.toString(), 2));
         }
 
-        double totalMemory = ( new Long( sigar.getMem().getTotal() ).doubleValue() / 1024 / 1024 / 1024 );
-        sb.append( "\nTotal memory:\n\t"
-                   + new BigDecimal( totalMemory ).setScale( 2, BigDecimal.ROUND_DOWN ).floatValue() + " GB" );
+        double totalMemory = (new Long(sigar.getMem().getTotal()).doubleValue() / 1024 / 1024 / 1024);
+        sb.append("\nTotal memory:\n\t"
+                  + new BigDecimal(totalMemory).setScale(2, BigDecimal.ROUND_DOWN).floatValue() + " GB");
 
         String[] nicList = sigar.getNetInterfaceList();
-        sb.append( "\nNIC info: " );
-        for( int i = 0; i < nicList.length; i++ ) {
-            NetInterfaceConfig nic = sigar.getNetInterfaceConfig( nicList[i] );
-            sb.append( "\n\tNIC " + i + ": " );
-            sb.append( format( nic.toString(), 2 ) );
+        sb.append("\nNIC info: ");
+        for (int i = 0; i < nicList.length; i++) {
+            NetInterfaceConfig nic = sigar.getNetInterfaceConfig(nicList[i]);
+            sb.append("\n\tNIC " + i + ": ");
+            sb.append(format(nic.toString(), 2));
         }
 
         FileSystem[] fileSystemList = sigar.getFileSystemList();
-        sb.append( "\nFile system info: " );
-        for( int i = 0; i < fileSystemList.length; i++ ) {
+        sb.append("\nFile system info: ");
+        for (int i = 0; i < fileSystemList.length; i++) {
             FileSystem fileSystem = fileSystemList[i];
 
-            sb.append( "\n\t" + fileSystem.getDevName() + " is a" );
-            if( fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK ) {
-                sb.append( " local" );
-            } else if( fileSystem.getType() == FileSystem.TYPE_NETWORK ) {
-                sb.append( " network" );
-            } else if( fileSystem.getType() == FileSystem.TYPE_RAM_DISK ) {
-                sb.append( " ram disk" );
-            } else if( fileSystem.getType() == FileSystem.TYPE_SWAP ) {
-                sb.append( " swap" );
+            sb.append("\n\t" + fileSystem.getDevName() + " is a");
+            if (fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
+                sb.append(" local");
+            } else if (fileSystem.getType() == FileSystem.TYPE_NETWORK) {
+                sb.append(" network");
+            } else if (fileSystem.getType() == FileSystem.TYPE_RAM_DISK) {
+                sb.append(" ram disk");
+            } else if (fileSystem.getType() == FileSystem.TYPE_SWAP) {
+                sb.append(" swap");
             }
 
-            sb.append( " " + fileSystem.getSysTypeName() + ", dir name '" + fileSystem.getDirName()
-                       + "', options '" + fileSystem.getOptions() + "'" );
+            sb.append(" " + fileSystem.getSysTypeName() + ", dir name '" + fileSystem.getDirName()
+                      + "', options '" + fileSystem.getOptions() + "'");
         }
 
-        sb.append( "\nResource limits:" + format( sigar.getResourceLimit().toString(), "max", 1 ) );
+        sb.append("\nResource limits:" + format(sigar.getResourceLimit().toString(), "max", 1));
         return sb;
     }
 
@@ -120,18 +120,18 @@ public class MachineDescriptionOperations {
         StringBuilder sb = new StringBuilder();
         Properties props = System.getProperties();
 
-        sb.append( "\nOS info:" );
-        for( int i = 0; i < OS_KEYS.length; i++ ) {
+        sb.append("\nOS info:");
+        for (int i = 0; i < OS_KEYS.length; i++) {
             String key = OS_KEYS[i];
-            if( props.containsKey( key ) ) {
-                sb.append( "\n\t" + OS_VALUES[i] + " = " + props.getProperty( key ) );
+            if (props.containsKey(key)) {
+                sb.append("\n\t" + OS_VALUES[i] + " = " + props.getProperty(key));
             }
         }
-        sb.append( "\nUser info:" );
-        for( int i = 0; i < USER_KEYS.length; i++ ) {
+        sb.append("\nUser info:");
+        for (int i = 0; i < USER_KEYS.length; i++) {
             String key = USER_KEYS[i];
-            if( props.containsKey( key ) ) {
-                sb.append( "\n\t" + USER_VALUES[i] + " = " + props.getProperty( key ) );
+            if (props.containsKey(key)) {
+                sb.append("\n\t" + USER_VALUES[i] + " = " + props.getProperty(key));
             }
         }
         return sb;
@@ -141,7 +141,7 @@ public class MachineDescriptionOperations {
                                   String tokensString,
                                   int indentation ) {
 
-        return format( tokensString, null, indentation );
+        return format(tokensString, null, indentation);
     }
 
     private StringBuilder format(
@@ -150,20 +150,20 @@ public class MachineDescriptionOperations {
                                   int indentation ) {
 
         String indentationString = "\n";
-        for( int i = 0; i < indentation; i++ ) {
+        for (int i = 0; i < indentation; i++) {
             indentationString = indentationString + "\t";
         }
 
         StringBuilder sb = new StringBuilder();
-        if( tokensString.startsWith( "{" ) ) {
-            tokensString = tokensString.substring( 1 );
+        if (tokensString.startsWith("{")) {
+            tokensString = tokensString.substring(1);
         }
-        if( tokensString.endsWith( "}" ) ) {
-            tokensString = tokensString.substring( 0, tokensString.length() - 1 );
+        if (tokensString.endsWith("}")) {
+            tokensString = tokensString.substring(0, tokensString.length() - 1);
         }
-        for( String token : tokensString.split( "," ) ) {
-            if( searchedToken == null || token.toLowerCase().contains( searchedToken.toLowerCase() ) ) {
-                sb.append( indentationString + token.trim() );
+        for (String token : tokensString.split(",")) {
+            if (searchedToken == null || token.toLowerCase().contains(searchedToken.toLowerCase())) {
+                sb.append(indentationString + token.trim());
             }
         }
         return sb;
