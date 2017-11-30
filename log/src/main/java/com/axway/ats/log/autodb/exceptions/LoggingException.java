@@ -15,22 +15,22 @@
  */
 package com.axway.ats.log.autodb.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class LoggingException extends Exception {
 
     public LoggingException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public LoggingException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public LoggingException( String message,
                              Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

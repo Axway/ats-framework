@@ -18,10 +18,10 @@ package com.axway.ats.log.autodb.entities;
 public class ScenarioMetaInfo extends DbEntity {
 
     private static final long serialVersionUID = 1L;
-    
-    public int metaInfoId;
-    public int scenarioId;
-    public String name;
-    public String value;
+
+    public int                metaInfoId;
+    public int                scenarioId;
+    public String             name;
+    public String             value;
 
 }

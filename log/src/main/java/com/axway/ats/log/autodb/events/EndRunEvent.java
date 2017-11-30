@@ -21,13 +21,13 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EndRunEvent extends AbstractLoggingEvent {
 
     public EndRunEvent( String loggerFQCN,
                         Logger logger ) {
 
-        super( loggerFQCN, logger, "End run", LoggingEventType.END_RUN );
+        super(loggerFQCN, logger, "End run", LoggingEventType.END_RUN);
     }
 
     @Override

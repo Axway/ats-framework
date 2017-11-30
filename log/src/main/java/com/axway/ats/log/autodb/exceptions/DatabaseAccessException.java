@@ -19,28 +19,28 @@ import java.sql.SQLException;
 
 import com.axway.ats.core.utils.TimeUtils;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DatabaseAccessException extends LoggingException {
 
     public DatabaseAccessException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public DatabaseAccessException( String message, Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
 
-        if( cause instanceof java.sql.SQLException ) {
+        if (cause instanceof java.sql.SQLException) {
 
-            System.err.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                + ": Got SQL exception while trying to work with ATS logging DB: "
-                                + message );
-            System.err.println( "Printing exception chain: " );
+            System.err.println(TimeUtils.getFormattedDateTillMilliseconds()
+                               + ": Got SQL exception while trying to work with ATS logging DB: "
+                               + message);
+            System.err.println("Printing exception chain: ");
 
-            SQLException next = ( SQLException ) cause;
-            while( next != null ) {
-                next = printStackTrace( next );
+            SQLException next = (SQLException) cause;
+            while (next != null) {
+                next = printStackTrace(next);
 
             }
         }
@@ -48,10 +48,10 @@ public class DatabaseAccessException extends LoggingException {
 
     private SQLException printStackTrace( SQLException sqle ) {
 
-        System.err.println( "SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
-                            + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode() );
+        System.err.println("SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
+                           + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode());
         sqle.printStackTrace();
-        System.err.println( "------------------------------------------------" );
+        System.err.println("------------------------------------------------");
 
         return sqle.getNextException();
     }

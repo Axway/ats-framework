@@ -51,7 +51,7 @@ public class Statistic extends DbEntity {
     public int                 testcaseId;
 
     public int                 result;
-    
+
     public void setDate( String date ) {
 
         this.date = date;
@@ -60,10 +60,10 @@ public class Statistic extends DbEntity {
     public String getDate() {
 
         try {
-            long utcMillis = AbstractDbAccess.DATE_FORMAT.parse( this.date ).getTime();
-            Date localDate = new Date( utcMillis - timeOffset );
-            return AbstractDbAccess.DATE_FORMAT.format( localDate );
-        } catch( ParseException e ) {
+            long utcMillis = AbstractDbAccess.DATE_FORMAT.parse(this.date).getTime();
+            Date localDate = new Date(utcMillis - timeOffset);
+            return AbstractDbAccess.DATE_FORMAT.format(localDate);
+        } catch (ParseException e) {
             return "";
         }
 
@@ -72,16 +72,16 @@ public class Statistic extends DbEntity {
     @Override
     public String toString() {
 
-        StringBuilder msg = new StringBuilder( "Statistic description: " );
-        msg.append( "name=" + name );
-        if( parentName != null ) {
-            msg.append( ", parentName=" + parentName );
+        StringBuilder msg = new StringBuilder("Statistic description: ");
+        msg.append("name=" + name);
+        if (parentName != null) {
+            msg.append(", parentName=" + parentName);
         }
-        msg.append( ", value=" + value );
-        msg.append( ", transferSize=" + transferSize );
-        msg.append( ", statisticTypeId=" + statisticTypeId );
-        msg.append( ", timestamp=" + getStartTimestamp() );
-        msg.append( ", date=" + getDate() );
+        msg.append(", value=" + value);
+        msg.append(", transferSize=" + transferSize);
+        msg.append(", statisticTypeId=" + statisticTypeId);
+        msg.append(", timestamp=" + getStartTimestamp());
+        msg.append(", date=" + getDate());
 
         return msg.toString();
     }

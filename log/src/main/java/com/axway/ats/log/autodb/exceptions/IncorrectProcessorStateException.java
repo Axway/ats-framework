@@ -17,18 +17,18 @@ package com.axway.ats.log.autodb.exceptions;
 
 import com.axway.ats.log.autodb.LifeCycleState;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class IncorrectProcessorStateException extends LoggingException {
 
     public IncorrectProcessorStateException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public IncorrectProcessorStateException( String message,
                                              LifeCycleState expectedState,
                                              LifeCycleState actualState ) {
 
-        super( message + " expected state " + expectedState + ", actual state " + actualState );
+        super(message + " expected state " + expectedState + ", actual state " + actualState);
     }
 }

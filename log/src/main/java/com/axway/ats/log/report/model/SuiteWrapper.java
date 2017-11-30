@@ -29,7 +29,7 @@ import com.axway.ats.log.model.ScenarioResult;
 /**
  * This wrapper keeps the testcases of the suite.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class SuiteWrapper extends Suite {
 
     private Map<String, List<Testcase>> testcasesMap = new HashMap<>();
@@ -72,40 +72,40 @@ public class SuiteWrapper extends Suite {
     public void addTestcase(
                              Testcase testcase ) {
 
-        List<Testcase> testcasesPerScenario = testcasesMap.get( testcase.scenarioName );
-        if( testcasesPerScenario == null ) {
+        List<Testcase> testcasesPerScenario = testcasesMap.get(testcase.scenarioName);
+        if (testcasesPerScenario == null) {
             testcasesPerScenario = new ArrayList<>();
         }
-        testcasesPerScenario.add( testcase );
+        testcasesPerScenario.add(testcase);
 
-        this.testcasesMap.put( testcase.scenarioName, testcasesPerScenario );
+        this.testcasesMap.put(testcase.scenarioName, testcasesPerScenario);
 
         this.lastTestcase = testcase;
     }
 
     public void calculateFinalStatistics() {
 
-        if( dataLoadedFromDb ) {
+        if (dataLoadedFromDb) {
             // all statistics came calculated
             return;
         }
 
-        for( Entry<String, List<Testcase>> scenarioEntry : testcasesMap.entrySet() ) {
+        for (Entry<String, List<Testcase>> scenarioEntry : testcasesMap.entrySet()) {
             ++scenariosTotal;
 
             ScenarioResult scenarioResult = ScenarioResult.PASSED;
 
             Collection<Testcase> testcasesPerScenario = scenarioEntry.getValue();
-            for( Testcase testcase : testcasesPerScenario ) {
+            for (Testcase testcase : testcasesPerScenario) {
                 ++testcasesTotal;
-                switch( testcase.result ){
+                switch (testcase.result) {
                     case 0: // FAILED
                         ++testcasesFailed;
                         scenarioResult = ScenarioResult.FAILED;
                         break;
                     case 2: // SKIPPED
                         ++testcasesSkipped;
-                        if( scenarioResult == ScenarioResult.PASSED ) {
+                        if (scenarioResult == ScenarioResult.PASSED) {
                             scenarioResult = ScenarioResult.SKIPPED;
                         }
                         break;
@@ -114,9 +114,9 @@ public class SuiteWrapper extends Suite {
                 }
             }
 
-            if( scenarioResult == ScenarioResult.FAILED ) {
+            if (scenarioResult == ScenarioResult.FAILED) {
                 ++scenariosFailed;
-            } else if( scenarioResult == ScenarioResult.SKIPPED ) {
+            } else if (scenarioResult == ScenarioResult.SKIPPED) {
                 ++scenariosSkipped;
             }
         }

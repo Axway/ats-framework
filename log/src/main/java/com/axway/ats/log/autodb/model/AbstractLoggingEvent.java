@@ -28,7 +28,7 @@ import com.axway.ats.log.model.SystemLogLevel;
 /**
  * This is the base class for all database-related logging events
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public abstract class AbstractLoggingEvent extends LoggingEvent {
 
     /**
@@ -54,7 +54,7 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                  String message,
                                  LoggingEventType eventType ) {
 
-        super( loggerFQCN, logger, SystemLogLevel.SYSTEM, message, null );
+        super(loggerFQCN, logger, SystemLogLevel.SYSTEM, message, null);
 
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
@@ -77,7 +77,7 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                  Throwable trowable,
                                  LoggingEventType eventType ) {
 
-        super( loggerFQCN, logger, level, message, trowable );
+        super(loggerFQCN, logger, level, message, trowable);
 
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
@@ -105,41 +105,41 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                        EventProcessorState state ) throws IncorrectProcessorStateException,
                                                                    IncorrectScenarioTypeException {
 
-        LifeCycleState expectedState = getExpectedLifeCycleState( state.getLifeCycleState() );
+        LifeCycleState expectedState = getExpectedLifeCycleState(state.getLifeCycleState());
         LifeCycleState actualState = state.getLifeCycleState();
-        if( ( expectedState != null ) ) {
-            if( expectedState == LifeCycleState.ATLEAST_RUN_STARTED ) {
-                if( actualState == LifeCycleState.INITIALIZED ) {
-                    throw new IncorrectProcessorStateException( "Cannot execute event "
-                                                                + this.getClass().getSimpleName()
-                                                                + " at this time as run is not yet started",
-                                                                expectedState,
-                                                                actualState );
+        if ( (expectedState != null)) {
+            if (expectedState == LifeCycleState.ATLEAST_RUN_STARTED) {
+                if (actualState == LifeCycleState.INITIALIZED) {
+                    throw new IncorrectProcessorStateException("Cannot execute event "
+                                                               + this.getClass().getSimpleName()
+                                                               + " at this time as run is not yet started",
+                                                               expectedState,
+                                                               actualState);
                 }
-            } else if( expectedState == LifeCycleState.ATLEAST_TESTCASE_STARTED ) {
-                if( actualState != LifeCycleState.ATLEAST_TESTCASE_STARTED
-                    && actualState != LifeCycleState.TEST_CASE_STARTED ) {
-                    throw new IncorrectProcessorStateException( "Cannot execute event "
-                                                                + this.getClass().getSimpleName()
-                                                                + " at this time as testcase is not yet started",
-                                                                expectedState,
-                                                                actualState );
+            } else if (expectedState == LifeCycleState.ATLEAST_TESTCASE_STARTED) {
+                if (actualState != LifeCycleState.ATLEAST_TESTCASE_STARTED
+                    && actualState != LifeCycleState.TEST_CASE_STARTED) {
+                    throw new IncorrectProcessorStateException("Cannot execute event "
+                                                               + this.getClass().getSimpleName()
+                                                               + " at this time as testcase is not yet started",
+                                                               expectedState,
+                                                               actualState);
                 }
-            } else if( expectedState == LifeCycleState.ATLEAST_SUITE_STARTED ) {
-                if( actualState == LifeCycleState.INITIALIZED
+            } else if (expectedState == LifeCycleState.ATLEAST_SUITE_STARTED) {
+                if (actualState == LifeCycleState.INITIALIZED
                     || actualState == LifeCycleState.ATLEAST_RUN_STARTED
-                    || actualState == LifeCycleState.RUN_STARTED ) {
-                    throw new IncorrectProcessorStateException( "Cannot execute event "
-                                                                + this.getClass().getSimpleName()
-                                                                + " at this time as suite is not yet started",
-                                                                expectedState, actualState );
+                    || actualState == LifeCycleState.RUN_STARTED) {
+                    throw new IncorrectProcessorStateException("Cannot execute event "
+                                                               + this.getClass().getSimpleName()
+                                                               + " at this time as suite is not yet started",
+                                                               expectedState, actualState);
                 }
             }
             // strict expectations about the state
-            else if( expectedState != actualState ) {
-                throw new IncorrectProcessorStateException( "Cannot execute event "
-                                                            + this.getClass().getSimpleName()
-                                                            + " at this time", expectedState, actualState );
+            else if (expectedState != actualState) {
+                throw new IncorrectProcessorStateException("Cannot execute event "
+                                                           + this.getClass().getSimpleName()
+                                                           + " at this time", expectedState, actualState);
             }
         }
     }

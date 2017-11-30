@@ -26,7 +26,7 @@ import com.axway.ats.log.model.CheckpointResult;
 /**
  * An event for ending an already started checkpoint
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EndCheckpointEvent extends TestCaseLoggingEvent {
 
     private long             endTimestamp;
@@ -41,7 +41,7 @@ public class EndCheckpointEvent extends TestCaseLoggingEvent {
                                String threadName,
                                CheckpointResult result ) {
 
-        this( fqnOfCategoryClass, logger, name, threadName, result, Calendar.getInstance().getTimeInMillis() );
+        this(fqnOfCategoryClass, logger, name, threadName, result, Calendar.getInstance().getTimeInMillis());
     }
 
     public EndCheckpointEvent( String fqnOfCategoryClass,
@@ -51,7 +51,7 @@ public class EndCheckpointEvent extends TestCaseLoggingEvent {
                                CheckpointResult result,
                                long endTimestamp ) {
 
-        super( fqnOfCategoryClass, logger, "End checkpoint '" + name + "'", LoggingEventType.END_CHECKPOINT );
+        super(fqnOfCategoryClass, logger, "End checkpoint '" + name + "'", LoggingEventType.END_CHECKPOINT);
 
         this.endTimestamp = endTimestamp;
         this.name = name;
@@ -66,8 +66,8 @@ public class EndCheckpointEvent extends TestCaseLoggingEvent {
                                long transferSize,
                                CheckpointResult result ) {
 
-        this( fqnOfCategoryClass, logger, name, threadName, transferSize, result, Calendar.getInstance()
-                                                                                          .getTimeInMillis() );
+        this(fqnOfCategoryClass, logger, name, threadName, transferSize, result, Calendar.getInstance()
+                                                                                         .getTimeInMillis());
     }
 
     public EndCheckpointEvent( String fqnOfCategoryClass,
@@ -78,7 +78,7 @@ public class EndCheckpointEvent extends TestCaseLoggingEvent {
                                CheckpointResult result,
                                long endTimestamp ) {
 
-        super( fqnOfCategoryClass, logger, "End checkpoint '" + name + "'", LoggingEventType.END_CHECKPOINT );
+        super(fqnOfCategoryClass, logger, "End checkpoint '" + name + "'", LoggingEventType.END_CHECKPOINT);
 
         this.endTimestamp = endTimestamp;
         this.name = name;

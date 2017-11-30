@@ -21,13 +21,13 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class StartTestCaseEvent extends AbstractLoggingEvent {
 
-    private String suiteSimpleName;
-    private String suiteFullName;
-    private String scenarioName;
-    private String scenarioDescription;
+    private String   suiteSimpleName;
+    private String   suiteFullName;
+    private String   scenarioName;
+    private String   scenarioDescription;
 
     protected String testcaseName;
 
@@ -38,7 +38,7 @@ public class StartTestCaseEvent extends AbstractLoggingEvent {
                                String scenarioName,
                                String inputArguments,
                                String scenarioDescription ) {
-        
+
         this(loggerFQCN,
              logger,
              "Start test case '" + scenarioName + inputArguments + "' for suite " + suiteSimpleName,
@@ -49,7 +49,7 @@ public class StartTestCaseEvent extends AbstractLoggingEvent {
              scenarioDescription,
              LoggingEventType.START_TEST_CASE);
     }
-    
+
     public StartTestCaseEvent( String loggerFQCN,
                                Logger logger,
                                String message,
@@ -58,12 +58,12 @@ public class StartTestCaseEvent extends AbstractLoggingEvent {
                                String scenarioName,
                                String inputArguments,
                                String scenarioDescription,
-                               LoggingEventType loggingEventType) {
+                               LoggingEventType loggingEventType ) {
 
-        super( loggerFQCN,
-               logger,
-               message,
-               loggingEventType );
+        super(loggerFQCN,
+              logger,
+              message,
+              loggingEventType);
 
         this.suiteFullName = suiteFullName;
         this.suiteSimpleName = suiteSimpleName;
@@ -77,7 +77,7 @@ public class StartTestCaseEvent extends AbstractLoggingEvent {
 
         return this.suiteFullName;
     }
-    
+
     public String getSuiteSimpleName() {
 
         return this.suiteSimpleName;

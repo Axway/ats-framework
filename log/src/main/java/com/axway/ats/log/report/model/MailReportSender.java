@@ -38,7 +38,7 @@ import com.axway.ats.log.report.model.ReportConfigurator;
  */
 public class MailReportSender {
 
-    private static final Logger log = Logger.getLogger( MailReportSender.class );
+    private static final Logger log = Logger.getLogger(MailReportSender.class);
 
     private String              subject;
     private String              body;
@@ -61,7 +61,7 @@ public class MailReportSender {
      */
     public void send() {
 
-        log.info( "Sending log mail report" );
+        log.info("Sending log mail report");
 
         // get the info needed for sending a mail
         ReportConfigurator reportConfigurator = ReportConfigurator.getInstance();
@@ -74,43 +74,43 @@ public class MailReportSender {
 
         // Attaching to default Session
         Properties mailProperties = new Properties();
-        mailProperties.put( "mail.smtp.host", smtpServerName );
-        mailProperties.put( "mail.smtp.port", smtpServerPort );
-        Session session = Session.getDefaultInstance( mailProperties );
-        Message msg = new MimeMessage( session );
+        mailProperties.put("mail.smtp.host", smtpServerName);
+        mailProperties.put("mail.smtp.port", smtpServerPort);
+        Session session = Session.getDefaultInstance(mailProperties);
+        Message msg = new MimeMessage(session);
 
         String errMsg = "Error creating mail object";
         try {
             // mail addresses
-            msg.setFrom( new InternetAddress( addressFrom ) );
+            msg.setFrom(new InternetAddress(addressFrom));
 
-            msg.setRecipients( Message.RecipientType.TO, transformAdresses( addressesTo ) );
-            msg.setRecipients( Message.RecipientType.CC, transformAdresses( addressesCc ) );
-            msg.setRecipients( Message.RecipientType.BCC, transformAdresses( addressesBcc ) );
+            msg.setRecipients(Message.RecipientType.TO, transformAdresses(addressesTo));
+            msg.setRecipients(Message.RecipientType.CC, transformAdresses(addressesCc));
+            msg.setRecipients(Message.RecipientType.BCC, transformAdresses(addressesBcc));
 
             // mail subject
-            msg.setSubject( subject );
+            msg.setSubject(subject);
 
             // mail content
-            msg.setContent( body, "text/html" );
+            msg.setContent(body, "text/html");
 
             // other header information
-            msg.setSentDate( new Date() );
-        } catch( AddressException e ) {
-            throw new MailReportSendException( errMsg, e );
-        } catch( MessagingException e ) {
-            throw new MailReportSendException( errMsg, e );
+            msg.setSentDate(new Date());
+        } catch (AddressException e) {
+            throw new MailReportSendException(errMsg, e);
+        } catch (MessagingException e) {
+            throw new MailReportSendException(errMsg, e);
         }
 
         // send the message
         errMsg = "Error sending mail";
         try {
-            Transport.send( msg );
-        } catch( MessagingException e ) {
-            throw new MailReportSendException( errMsg, e );
+            Transport.send(msg);
+        } catch (MessagingException e) {
+            throw new MailReportSendException(errMsg, e);
         }
 
-        log.info( "Log mail report sent ok" );
+        log.info("Log mail report sent ok");
     }
 
     /**
@@ -124,10 +124,10 @@ public class MailReportSender {
                                                  String[] stringAddresses ) throws AddressException {
 
         List<InternetAddress> mailAddresses = new ArrayList<InternetAddress>();
-        for( String stringAddress : stringAddresses ) {
-            mailAddresses.add( new InternetAddress( stringAddress ) );
+        for (String stringAddress : stringAddresses) {
+            mailAddresses.add(new InternetAddress(stringAddress));
         }
 
-        return mailAddresses.toArray( new InternetAddress[mailAddresses.size()] );
+        return mailAddresses.toArray(new InternetAddress[mailAddresses.size()]);
     }
 }

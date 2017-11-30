@@ -21,7 +21,7 @@ package com.axway.ats.log.report.exceptions;
 /**
  * This exception indicates an error while formatting the report 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ReportFormatterException extends RuntimeException {
 
     /**
@@ -29,6 +29,6 @@ public class ReportFormatterException extends RuntimeException {
      */
     public ReportFormatterException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 }

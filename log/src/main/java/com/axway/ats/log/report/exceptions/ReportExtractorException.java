@@ -22,7 +22,7 @@ package com.axway.ats.log.report.exceptions;
  * This exception indicates an error extracting Run or Suite info
  * from the log database
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ReportExtractorException extends RuntimeException {
 
     /**
@@ -30,7 +30,7 @@ public class ReportExtractorException extends RuntimeException {
      */
     public ReportExtractorException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     /**
@@ -40,6 +40,6 @@ public class ReportExtractorException extends RuntimeException {
     public ReportExtractorException( String arg0,
                                      Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

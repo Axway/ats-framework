@@ -26,7 +26,7 @@ public class NoSystemLevelEventsFilter extends Filter {
     public int decide(
                        LoggingEvent loggingEvent ) {
 
-        if( loggingEvent.getLevel().toInt() == SystemLogLevel.SYSTEM_INT ) {
+        if (loggingEvent.getLevel().toInt() == SystemLogLevel.SYSTEM_INT) {
             return DENY;
         }
 

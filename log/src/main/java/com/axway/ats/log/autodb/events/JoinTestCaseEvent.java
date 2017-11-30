@@ -22,7 +22,7 @@ import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class JoinTestCaseEvent extends AbstractLoggingEvent {
 
     private TestCaseState testCaseState;
@@ -31,10 +31,10 @@ public class JoinTestCaseEvent extends AbstractLoggingEvent {
                               Logger logger,
                               TestCaseState testCaseState ) {
 
-        super( loggerFQCN,
-               logger,
-               "Joining test case with id " + testCaseState.getTestcaseId(),
-               LoggingEventType.JOIN_TEST_CASE );
+        super(loggerFQCN,
+              logger,
+              "Joining test case with id " + testCaseState.getTestcaseId(),
+              LoggingEventType.JOIN_TEST_CASE);
 
         this.testCaseState = testCaseState;
     }

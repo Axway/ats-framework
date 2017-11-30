@@ -20,19 +20,19 @@ import org.apache.log4j.Logger;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class CleanupLoadQueueStateEvent extends TestCaseLoggingEvent {
 
     private String name;
 
     public CleanupLoadQueueStateEvent( String loggerFQCN,
-                                        Logger logger,
-                                        String name ) {
+                                       Logger logger,
+                                       String name ) {
 
-        super( loggerFQCN,
-               logger,
-               "Cleanup load queue '" + name + "' state",
-               LoggingEventType.CLEANUP_LOADQUEUE_STATE );
+        super(loggerFQCN,
+              logger,
+              "Cleanup load queue '" + name + "' state",
+              LoggingEventType.CLEANUP_LOADQUEUE_STATE);
 
         this.name = name;
     }

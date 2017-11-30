@@ -18,17 +18,17 @@ package com.axway.ats.log.autodb.exceptions;
 /**
  * Runtime exception throws by the automation DB appender
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DbAppenederException extends RuntimeException {
 
     public DbAppenederException( String message,
-                                            Throwable cause ) {
+                                 Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     public DbAppenederException( LoggingException le ) {
 
-        super( "Fatal exception during logging", le );
+        super("Fatal exception during logging", le);
     }
 }

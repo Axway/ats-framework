@@ -22,7 +22,7 @@ import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.model.TestCaseResult;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EndTestCaseEvent extends AbstractLoggingEvent {
 
     private final TestCaseResult testCaseResult;
@@ -31,7 +31,7 @@ public class EndTestCaseEvent extends AbstractLoggingEvent {
                              Logger logger,
                              TestCaseResult testCaseResult ) {
 
-        super( loggerFQCN, logger, "End test case", LoggingEventType.END_TEST_CASE );
+        super(loggerFQCN, logger, "End test case", LoggingEventType.END_TEST_CASE);
 
         this.testCaseResult = testCaseResult;
     }

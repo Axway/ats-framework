@@ -24,7 +24,7 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class StartRunEvent extends AbstractLoggingEvent {
 
     private final String runName;
@@ -43,7 +43,7 @@ public class StartRunEvent extends AbstractLoggingEvent {
                           String buildName,
                           String hostName ) {
 
-        super( loggerFQCN, logger, "Start run '" + runName + "'", LoggingEventType.START_RUN );
+        super(loggerFQCN, logger, "Start run '" + runName + "'", LoggingEventType.START_RUN);
 
         this.runName = runName;
         this.osName = osName;
@@ -64,7 +64,7 @@ public class StartRunEvent extends AbstractLoggingEvent {
                           String hostName,
                           LoggingEventType eventType ) {
 
-        super( loggerFQCN, logger, message, eventType );
+        super(loggerFQCN, logger, message, eventType);
 
         this.runName = runName;
         this.osName = osName;
@@ -98,7 +98,7 @@ public class StartRunEvent extends AbstractLoggingEvent {
 
         return buildName;
     }
-    
+
     public String getHostName() {
 
         return hostName;

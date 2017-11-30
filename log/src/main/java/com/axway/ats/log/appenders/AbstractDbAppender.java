@@ -73,7 +73,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     private boolean                               isMonitoringEventsQueue;
     private long                                  lastQueueCapacityTick;
-    
+
     /**
      * Keeps track what was the minimum value of the remaining queue capacity;
      * */
@@ -90,7 +90,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      * probably different then zero on the Agent side (where PassiveDbAppender is used)
     
      */
-    private long                                   timeOffset = 0;
+    private long                                  timeOffset                = 0;
 
     /**
      * Constructor
@@ -105,8 +105,8 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         testCaseState = new TestCaseState();
 
-        isMonitoringEventsQueue = AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
-                                                                            false );
+        isMonitoringEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
+                                                                           false);
     }
 
     /*
@@ -120,40 +120,40 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // check whether the configuration is valid first
         try {
             appenderConfig.validate();
-        } catch( InvalidAppenderConfigurationException iace ) {
-            throw new DbAppenederException( iace );
+        } catch (InvalidAppenderConfigurationException iace) {
+            throw new DbAppenederException(iace);
         }
 
         // set the threshold if there is such
-        appenderConfig.setLoggingThreshold( getThreshold() );
+        appenderConfig.setLoggingThreshold(getThreshold());
 
         // the logging queue
-        queue = new ArrayBlockingQueue<LogEventRequest>( getMaxNumberLogEvents() );
+        queue = new ArrayBlockingQueue<LogEventRequest>(getMaxNumberLogEvents());
 
     }
-    
+
     protected void initializeDbLogging() {
 
         // enable batch mode at ATS Agent side only
         boolean isWorkingAtAgentSide = this instanceof PassiveDbAppender;
         boolean isBatchMode = false;
-        if( isWorkingAtAgentSide ) {
+        if (isWorkingAtAgentSide) {
             isBatchMode = isBatchMode();
         }
 
         // create new event processor
         try {
-            eventProcessor = new DbEventRequestProcessor( appenderConfig,
-                                                          layout,
-                                                          getEventRequestProcessorListener(),
-                                                          isBatchMode );
-        } catch( DatabaseAccessException e ) {
-            throw new RuntimeException( "Unable to create DB event processor", e );
+            eventProcessor = new DbEventRequestProcessor(appenderConfig,
+                                                         layout,
+                                                         getEventRequestProcessorListener(),
+                                                         isBatchMode);
+        } catch (DatabaseAccessException e) {
+            throw new RuntimeException("Unable to create DB event processor", e);
         }
 
         // start the logging thread
-        queueLogger = new QueueLoggerThread( queue, eventProcessor, isBatchMode );
-        queueLogger.setDaemon( true );
+        queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode);
+        queueLogger.setDaemon(true);
         queueLogger.start();
     }
 
@@ -163,24 +163,24 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // Events on both Test Executor and Agent sides are processed here.
 
         // Events on Agent get their timestamps aligned with Test Executor time.
-        if( timeOffset != 0 ) {
-            packedEvent.applyTimeOffset( timeOffset );
+        if (timeOffset != 0) {
+            packedEvent.applyTimeOffset(timeOffset);
         }
 
-        if( isMonitoringEventsQueue ) {
+        if (isMonitoringEventsQueue) {
             // Tell the user how many new events can be placed in the queue.
             // Do this every second.
             long newTick = System.currentTimeMillis();
-            if( newTick - lastQueueCapacityTick > 1000 ) {
-                if ( minRemainingQueueCapacity == -1) {
+            if (newTick - lastQueueCapacityTick > 1000) {
+                if (minRemainingQueueCapacity == -1) {
                     minRemainingQueueCapacity = queue.remainingCapacity();
                 } else {
-                    minRemainingQueueCapacity = Math.min( minRemainingQueueCapacity, queue.remainingCapacity() );
+                    minRemainingQueueCapacity = Math.min(minRemainingQueueCapacity, queue.remainingCapacity());
                 }
-                System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                    + " Remaining queue capacity is " + queue.remainingCapacity() 
-                                    + " out of " + ( queue.remainingCapacity() + queue.size() ) 
-                                    + ". Bottom remaining capacity is " + minRemainingQueueCapacity );
+                System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                   + " Remaining queue capacity is " + queue.remainingCapacity()
+                                   + " out of " + (queue.remainingCapacity() + queue.size())
+                                   + ". Bottom remaining capacity is " + minRemainingQueueCapacity);
                 lastQueueCapacityTick = newTick;
             }
         }
@@ -188,13 +188,13 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // this thread passes the events to the queue,
         // while another thread is reading them on the other side
         try {
-            queue.add( packedEvent );
-        } catch( IllegalStateException ex ) {
-            if( queue.remainingCapacity() < 1 ) {
-                throw new IllegalStateException( "There are too many messages queued"
-                                                 + " for TestExplorer DB logging. Decrease messages count"
-                                                 + " by lowering effective log4j severity or check whether"
-                                                 + " connection to DB is too slow", ex );
+            queue.add(packedEvent);
+        } catch (IllegalStateException ex) {
+            if (queue.remainingCapacity() < 1) {
+                throw new IllegalStateException("There are too many messages queued"
+                                                + " for TestExplorer DB logging. Decrease messages count"
+                                                + " by lowering effective log4j severity or check whether"
+                                                + " connection to DB is too slow", ex);
             } else {
                 throw ex;
             }
@@ -214,7 +214,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void close() {
 
         // When the appender is unloaded, terminate the logging thread
-        if( queueLogger != null ) {
+        if (queueLogger != null) {
             queueLogger.interrupt();
         }
     }
@@ -238,11 +238,11 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setLayout(
                            Layout layout ) {
 
-        super.setLayout( layout );
+        super.setLayout(layout);
 
         // set the layout to the event processor as well
-        if( eventProcessor != null ) {
-            eventProcessor.setLayout( layout );
+        if (eventProcessor != null) {
+            eventProcessor.setLayout(layout);
         }
     }
 
@@ -255,7 +255,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setEvents(
                            String maxNumberLogEvents ) {
 
-        this.appenderConfig.setMaxNumberLogEvents( maxNumberLogEvents );
+        this.appenderConfig.setMaxNumberLogEvents(maxNumberLogEvents);
     }
 
     /**
@@ -293,7 +293,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setMode(
                          String mode ) {
 
-        this.appenderConfig.setMode( mode );
+        this.appenderConfig.setMode(mode);
     }
 
     /**
@@ -353,7 +353,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setEnableCheckpoints(
                                       boolean enableCheckpoints ) {
 
-        appenderConfig.setEnableCheckpoints( enableCheckpoints );
+        appenderConfig.setEnableCheckpoints(enableCheckpoints);
     }
 
     public DbAppenderConfiguration getAppenderConfig() {
@@ -371,6 +371,6 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void calculateTimeOffset(
                                      long executorTimestamp ) {
 
-        this.timeOffset = ( System.currentTimeMillis() - executorTimestamp );
+        this.timeOffset = (System.currentTimeMillis() - executorTimestamp);
     }
 }

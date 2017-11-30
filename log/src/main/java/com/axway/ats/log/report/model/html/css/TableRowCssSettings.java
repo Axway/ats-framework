@@ -143,35 +143,35 @@ public class TableRowCssSettings {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "." );
-        sb.append( this.className );
-        sb.append( " {" );
+        sb.append(".");
+        sb.append(this.className);
+        sb.append(" {");
 
-        sb.append( getFontFamily() );
-        sb.append( "; " );
+        sb.append(getFontFamily());
+        sb.append("; ");
 
-        sb.append( getFontSize() );
-        sb.append( "; " );
+        sb.append(getFontSize());
+        sb.append("; ");
 
-        sb.append( getFontStyle() );
-        sb.append( "; " );
+        sb.append(getFontStyle());
+        sb.append("; ");
 
-        sb.append( getFontWeight() );
-        sb.append( "; " );
+        sb.append(getFontWeight());
+        sb.append("; ");
 
-        sb.append( getTextColor() );
-        sb.append( "; " );
+        sb.append(getTextColor());
+        sb.append("; ");
 
-        sb.append( getBackgroundColor() );
-        sb.append( "; " );
+        sb.append(getBackgroundColor());
+        sb.append("; ");
 
-        sb.append( getTextHorizontalAlign() );
-        sb.append( "; " );
+        sb.append(getTextHorizontalAlign());
+        sb.append("; ");
 
-        sb.append( getTextVerticalAlign() );
-        sb.append( "; " );
+        sb.append(getTextVerticalAlign());
+        sb.append("; ");
 
-        sb.append( " }" );
+        sb.append(" }");
 
         return sb.toString();
     }

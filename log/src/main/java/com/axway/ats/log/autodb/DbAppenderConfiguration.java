@@ -56,7 +56,7 @@ public class DbAppenderConfiguration implements Serializable {
     public void setHost(
                          String host ) {
 
-        if( host != null ) {
+        if (host != null) {
             this.host = host;
         }
     }
@@ -69,7 +69,7 @@ public class DbAppenderConfiguration implements Serializable {
     public void setDatabase(
                              String database ) {
 
-        if( database != null ) {
+        if (database != null) {
             this.database = database;
         }
     }
@@ -82,7 +82,7 @@ public class DbAppenderConfiguration implements Serializable {
     public void setUser(
                          String user ) {
 
-        if( user != null ) {
+        if (user != null) {
             this.user = user;
         }
     }
@@ -95,7 +95,7 @@ public class DbAppenderConfiguration implements Serializable {
     public void setPassword(
                              String password ) {
 
-        if( password != null ) {
+        if (password != null) {
             this.password = password;
         }
     }
@@ -112,13 +112,13 @@ public class DbAppenderConfiguration implements Serializable {
         int newMaxNumberLogEvents;
 
         try {
-            newMaxNumberLogEvents = Integer.parseInt( maxNumberLogEvents );
-        } catch( NumberFormatException nfe ) {
+            newMaxNumberLogEvents = Integer.parseInt(maxNumberLogEvents);
+        } catch (NumberFormatException nfe) {
             // bad number
             newMaxNumberLogEvents = DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS;
         }
 
-        if( newMaxNumberLogEvents < DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS ) {
+        if (newMaxNumberLogEvents < DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS) {
             // default value cannot be decreased
             newMaxNumberLogEvents = DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS;
         }
@@ -129,20 +129,20 @@ public class DbAppenderConfiguration implements Serializable {
     public void setMaxNumberLogEvents(
                                        String maxNumberLogEvents ) {
 
-        if( maxNumberLogEvents != null ) {
+        if (maxNumberLogEvents != null) {
             this.maxNumberLogEvents = maxNumberLogEvents;
         }
     }
 
     public boolean isBatchMode() {
 
-        return "batch".equalsIgnoreCase( mode.trim() );
+        return "batch".equalsIgnoreCase(mode.trim());
     }
 
     public void setMode(
                          String mode ) {
 
-        if( mode != null ) {
+        if (mode != null) {
             this.mode = mode;
         }
     }
@@ -176,20 +176,20 @@ public class DbAppenderConfiguration implements Serializable {
      */
     public void validate() throws InvalidAppenderConfigurationException {
 
-        if( host == null ) {
-            throw new InvalidAppenderConfigurationException( "host" );
+        if (host == null) {
+            throw new InvalidAppenderConfigurationException("host");
         }
 
-        if( database == null ) {
-            throw new InvalidAppenderConfigurationException( "database" );
+        if (database == null) {
+            throw new InvalidAppenderConfigurationException("database");
         }
 
-        if( user == null ) {
-            throw new InvalidAppenderConfigurationException( "user" );
+        if (user == null) {
+            throw new InvalidAppenderConfigurationException("user");
         }
 
-        if( password == null ) {
-            throw new InvalidAppenderConfigurationException( "password" );
+        if (password == null) {
+            throw new InvalidAppenderConfigurationException("password");
         }
     }
 
@@ -200,40 +200,40 @@ public class DbAppenderConfiguration implements Serializable {
     public boolean equals(
                            Object obj ) {
 
-        if( obj == null || obj.getClass() != this.getClass() ) {
+        if (obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
 
-        DbAppenderConfiguration otherConfig = ( DbAppenderConfiguration ) obj;
-        if( host != null && !host.equals( otherConfig.host ) ) {
+        DbAppenderConfiguration otherConfig = (DbAppenderConfiguration) obj;
+        if (host != null && !host.equals(otherConfig.host)) {
             return false;
         }
 
-        if( database != null && !database.equals( otherConfig.database ) ) {
+        if (database != null && !database.equals(otherConfig.database)) {
             return false;
         }
 
-        if( user != null && !user.equals( otherConfig.user ) ) {
+        if (user != null && !user.equals(otherConfig.user)) {
             return false;
         }
 
-        if( password != null && !password.equals( otherConfig.password ) ) {
+        if (password != null && !password.equals(otherConfig.password)) {
             return false;
         }
 
-        if( maxNumberLogEvents != null && !maxNumberLogEvents.equals( otherConfig.maxNumberLogEvents ) ) {
+        if (maxNumberLogEvents != null && !maxNumberLogEvents.equals(otherConfig.maxNumberLogEvents)) {
             return false;
         }
 
-        if( mode != null && !mode.equals( otherConfig.mode ) ) {
+        if (mode != null && !mode.equals(otherConfig.mode)) {
             return false;
         }
 
-        if( enableCheckpoints != otherConfig.enableCheckpoints ) {
+        if (enableCheckpoints != otherConfig.enableCheckpoints) {
             return false;
         }
 
-        if( !loggingThreshold.equals( otherConfig.loggingThreshold ) ) {
+        if (!loggingThreshold.equals(otherConfig.loggingThreshold)) {
             return false;
         }
 
@@ -251,7 +251,7 @@ public class DbAppenderConfiguration implements Serializable {
 
         s.defaultReadObject();
         int levelInt = s.readInt();
-        loggingThreshold = Level.toLevel( levelInt );
+        loggingThreshold = Level.toLevel(levelInt);
     }
 
     /**
@@ -263,11 +263,11 @@ public class DbAppenderConfiguration implements Serializable {
                               final ObjectOutputStream s ) throws IOException {
 
         s.defaultWriteObject();
-        if( loggingThreshold == null ) {
+        if (loggingThreshold == null) {
             // should be set in RemoteLoggingConfiguration
-            throw new IllegalStateException( "Logging level should not be null" );
+            throw new IllegalStateException("Logging level should not be null");
         }
-        s.writeInt( loggingThreshold.toInt() );
+        s.writeInt(loggingThreshold.toInt());
     }
-    
+
 }

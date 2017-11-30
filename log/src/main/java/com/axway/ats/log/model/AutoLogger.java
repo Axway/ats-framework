@@ -58,7 +58,7 @@ public class AutoLogger {
 
     public final static String AUTO_LOGGER_CLASS_NAME = AutoLogger.class.getName();
 
-    private Logger              logger;
+    private Logger             logger;
 
     private AutoLogger( Logger logger ) {
 
@@ -67,12 +67,12 @@ public class AutoLogger {
 
     public static synchronized AutoLogger getLogger( String name ) {
 
-        return new AutoLogger( Logger.getLogger( name ) );
+        return new AutoLogger(Logger.getLogger(name));
     }
 
     public static synchronized AutoLogger getLogger( Logger logger ) {
 
-        return new AutoLogger( logger );
+        return new AutoLogger(logger);
     }
 
     public Logger getInternalLogger() {
@@ -88,8 +88,8 @@ public class AutoLogger {
      */
     public void debug( Object message, Throwable t ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.DEBUG,
-                                           message.toString(), t, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.DEBUG,
+                                         message.toString(), t, false, false));
     }
 
     /**
@@ -99,8 +99,8 @@ public class AutoLogger {
      */
     public void debug( Object message ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.DEBUG,
-                                           message.toString(), null, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.DEBUG,
+                                         message.toString(), null, false, false));
     }
 
     /**
@@ -111,8 +111,8 @@ public class AutoLogger {
      */
     public void error( Object message, Throwable t ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.ERROR,
-                                           message.toString(), t, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.ERROR,
+                                         message.toString(), t, false, false));
     }
 
     /**
@@ -122,8 +122,8 @@ public class AutoLogger {
      */
     public void error( Object message ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.ERROR,
-                                           message.toString(), null, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.ERROR,
+                                         message.toString(), null, false, false));
     }
 
     /**
@@ -134,8 +134,8 @@ public class AutoLogger {
      */
     public void fatal( Object message, Throwable t ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.FATAL,
-                                           message.toString(), t, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.FATAL,
+                                         message.toString(), t, false, false));
     }
 
     /**
@@ -145,8 +145,8 @@ public class AutoLogger {
      */
     public void fatal( Object message ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.FATAL,
-                                           message.toString(), null, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.FATAL,
+                                         message.toString(), null, false, false));
     }
 
     /**
@@ -157,14 +157,14 @@ public class AutoLogger {
      */
     public void info( Object message, Throwable t ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
-                                           t, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
+                                         t, false, false));
     }
 
     public void info( Object message, boolean sendRunMessage ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
-                                           null, false, sendRunMessage ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
+                                         null, false, sendRunMessage));
     }
 
     /**
@@ -174,8 +174,8 @@ public class AutoLogger {
      */
     public void info( Object message ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
-                                           null, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.INFO, message.toString(),
+                                         null, false, false));
     }
 
     /**
@@ -186,8 +186,8 @@ public class AutoLogger {
      */
     public void trace( Object message, Throwable t ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.TRACE,
-                                           message.toString(), t, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.TRACE,
+                                         message.toString(), t, false, false));
     }
 
     /**
@@ -197,8 +197,8 @@ public class AutoLogger {
      */
     public void trace( Object message ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.TRACE,
-                                           message.toString(), null, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.TRACE,
+                                         message.toString(), null, false, false));
     }
 
     /**
@@ -209,8 +209,8 @@ public class AutoLogger {
      */
     public void warn( Object message, Throwable t ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.WARN, message.toString(),
-                                           t, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.WARN, message.toString(),
+                                         t, false, false));
     }
 
     /**
@@ -220,8 +220,8 @@ public class AutoLogger {
      */
     public void warn( Object message ) {
 
-        sendEvent( new InsertMessageEvent( AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.WARN, message.toString(),
-                                           null, false, false ) );
+        sendEvent(new InsertMessageEvent(AUTO_LOGGER_CLASS_NAME, logger, AutoLevel.WARN, message.toString(),
+                                         null, false, false));
     }
 
     /**
@@ -237,8 +237,8 @@ public class AutoLogger {
     public void startRun( String runName, String osName, String productName, String versionName,
                           String buildName, String hostName ) {
 
-        sendEvent( new StartRunEvent( AUTO_LOGGER_CLASS_NAME, logger, runName, osName, productName,
-                                      versionName, buildName, hostName ) );
+        sendEvent(new StartRunEvent(AUTO_LOGGER_CLASS_NAME, logger, runName, osName, productName,
+                                    versionName, buildName, hostName));
     }
 
     /**
@@ -246,7 +246,7 @@ public class AutoLogger {
      */
     public void endRun() {
 
-        sendEvent( new EndRunEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+        sendEvent(new EndRunEvent(AUTO_LOGGER_CLASS_NAME, logger));
     }
 
     /**
@@ -258,7 +258,7 @@ public class AutoLogger {
      */
     public void addRunMetainfo( String metaKey, String metaValue ) {
 
-        sendEvent( new AddRunMetainfoEvent( AUTO_LOGGER_CLASS_NAME, logger, metaKey, metaValue ) );
+        sendEvent(new AddRunMetainfoEvent(AUTO_LOGGER_CLASS_NAME, logger, metaKey, metaValue));
     }
 
     /**
@@ -278,8 +278,8 @@ public class AutoLogger {
     public void updateRun( String runName, String osName, String productName, String versionName,
                            String buildName, String userNote, String hostName ) {
 
-        sendEvent( new UpdateRunEvent( AUTO_LOGGER_CLASS_NAME, logger, runName, osName, productName,
-                                       versionName, buildName, userNote, hostName ) );
+        sendEvent(new UpdateRunEvent(AUTO_LOGGER_CLASS_NAME, logger, runName, osName, productName,
+                                     versionName, buildName, userNote, hostName));
     }
 
     /**
@@ -289,7 +289,7 @@ public class AutoLogger {
      */
     public void startSuite( String packageName, String suiteName ) {
 
-        sendEvent( new StartSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger, suiteName, packageName ) );
+        sendEvent(new StartSuiteEvent(AUTO_LOGGER_CLASS_NAME, logger, suiteName, packageName));
     }
 
     /**
@@ -297,9 +297,9 @@ public class AutoLogger {
      */
     public void endSuite() {
 
-        sendEvent( new EndSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+        sendEvent(new EndSuiteEvent(AUTO_LOGGER_CLASS_NAME, logger));
     }
-    
+
     /**
      * Update the static information about the current suite.
      * <br><b>NOTE</b>: This method can be called at any time after a suite is started.
@@ -313,7 +313,7 @@ public class AutoLogger {
                              String suiteName,
                              String userNote ) {
 
-        sendEvent( new UpdateSuiteEvent( AUTO_LOGGER_CLASS_NAME, logger, suiteName, userNote ) );
+        sendEvent(new UpdateSuiteEvent(AUTO_LOGGER_CLASS_NAME, logger, suiteName, userNote));
 
     }
 
@@ -322,7 +322,7 @@ public class AutoLogger {
      */
     public void clearScenarioMetainfo() {
 
-        sendEvent( new ClearScenarioMetainfoEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+        sendEvent(new ClearScenarioMetainfoEvent(AUTO_LOGGER_CLASS_NAME, logger));
     }
 
     /**
@@ -334,7 +334,7 @@ public class AutoLogger {
      */
     public void addScenarioMetainfo( String metaKey, String metaValue ) {
 
-        sendEvent( new AddScenarioMetainfoEvent( AUTO_LOGGER_CLASS_NAME, logger, metaKey, metaValue ) );
+        sendEvent(new AddScenarioMetainfoEvent(AUTO_LOGGER_CLASS_NAME, logger, metaKey, metaValue));
     }
 
     /**
@@ -346,8 +346,8 @@ public class AutoLogger {
     public void startTestcase( String suiteFullName, String suiteSimpleName, String name,
                                String inputArguments, String testDescription ) {
 
-        sendEvent( new StartTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, suiteFullName, suiteSimpleName,
-                                           name, inputArguments, testDescription ) );
+        sendEvent(new StartTestCaseEvent(AUTO_LOGGER_CLASS_NAME, logger, suiteFullName, suiteSimpleName,
+                                         name, inputArguments, testDescription));
     }
 
     /**
@@ -357,7 +357,7 @@ public class AutoLogger {
      */
     public void endTestcase( TestCaseResult testCaseResult ) {
 
-        sendEvent( new EndTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, testCaseResult ) );
+        sendEvent(new EndTestCaseEvent(AUTO_LOGGER_CLASS_NAME, logger, testCaseResult));
     }
 
     /**
@@ -367,7 +367,7 @@ public class AutoLogger {
      */
     public void deleteTestcase( int testCaseId ) {
 
-        sendEvent( new DeleteTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, testCaseId ) );
+        sendEvent(new DeleteTestCaseEvent(AUTO_LOGGER_CLASS_NAME, logger, testCaseId));
     }
 
     /**
@@ -377,8 +377,8 @@ public class AutoLogger {
      */
     public void registerThreadWithLoadQueue( String loadQueueName ) {
 
-        sendEvent( new RegisterThreadWithLoadQueueEvent( AUTO_LOGGER_CLASS_NAME, logger,
-                                                         Thread.currentThread().getName(), loadQueueName ) );
+        sendEvent(new RegisterThreadWithLoadQueueEvent(AUTO_LOGGER_CLASS_NAME, logger,
+                                                       Thread.currentThread().getName(), loadQueueName));
     }
 
     /**
@@ -392,8 +392,8 @@ public class AutoLogger {
     public void rememberLoadQueueState( String name, int loadQueueId, String threadingPattern,
                                         int numberThreads ) {
 
-        sendEvent( new RememberLoadQueueStateEvent( AUTO_LOGGER_CLASS_NAME, logger, name, loadQueueId,
-                                                    threadingPattern, numberThreads ) );
+        sendEvent(new RememberLoadQueueStateEvent(AUTO_LOGGER_CLASS_NAME, logger, name, loadQueueId,
+                                                  threadingPattern, numberThreads));
     }
 
     /**
@@ -403,7 +403,7 @@ public class AutoLogger {
      */
     public void cleanupLoadQueueState( String name ) {
 
-        sendEvent( new CleanupLoadQueueStateEvent( AUTO_LOGGER_CLASS_NAME, logger, name ) );
+        sendEvent(new CleanupLoadQueueStateEvent(AUTO_LOGGER_CLASS_NAME, logger, name));
     }
 
     /**
@@ -414,7 +414,7 @@ public class AutoLogger {
      */
     public void endLoadQueue( String name, LoadQueueResult result ) {
 
-        sendEvent( new EndLoadQueueEvent( AUTO_LOGGER_CLASS_NAME, logger, name, result ) );
+        sendEvent(new EndLoadQueueEvent(AUTO_LOGGER_CLASS_NAME, logger, name, result));
     }
 
     /**
@@ -424,8 +424,8 @@ public class AutoLogger {
      */
     public void startCheckpoint( String name ) {
 
-        sendEvent( new StartCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, "",
-                                             Thread.currentThread().getName() ) );
+        sendEvent(new StartCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name, "",
+                                           Thread.currentThread().getName()));
     }
 
     /**
@@ -436,8 +436,8 @@ public class AutoLogger {
      */
     public void startCheckpoint( String name, String transferUnit ) {
 
-        sendEvent( new StartCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, transferUnit,
-                                             Thread.currentThread().getName() ) );
+        sendEvent(new StartCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name, transferUnit,
+                                           Thread.currentThread().getName()));
     }
 
     /**
@@ -449,8 +449,8 @@ public class AutoLogger {
      */
     public void startCheckpoint( String name, String transferUnit, long startTimestamp ) {
 
-        sendEvent( new StartCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, transferUnit,
-                                             Thread.currentThread().getName(), startTimestamp ) );
+        sendEvent(new StartCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name, transferUnit,
+                                           Thread.currentThread().getName(), startTimestamp));
     }
 
     /**
@@ -462,8 +462,8 @@ public class AutoLogger {
      */
     public void endCheckpoint( String name, long transferSize, CheckpointResult result ) {
 
-        sendEvent( new EndCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name,
-                                           Thread.currentThread().getName(), transferSize, result ) );
+        sendEvent(new EndCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name,
+                                         Thread.currentThread().getName(), transferSize, result));
     }
 
     /**
@@ -476,9 +476,9 @@ public class AutoLogger {
      */
     public void endCheckpoint( String name, long transferSize, CheckpointResult result, long endTimestamp ) {
 
-        sendEvent( new EndCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name,
-                                           Thread.currentThread().getName(), transferSize, result,
-                                           endTimestamp ) );
+        sendEvent(new EndCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name,
+                                         Thread.currentThread().getName(), transferSize, result,
+                                         endTimestamp));
     }
 
     /**
@@ -488,16 +488,16 @@ public class AutoLogger {
      */
     public void insertCheckpoint( String name, long responseTime, CheckpointResult result ) {
 
-        sendEvent( new InsertCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, -1, responseTime, 0, "",
-                                              Thread.currentThread().getName(), result ) );
+        sendEvent(new InsertCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name, -1, responseTime, 0, "",
+                                            Thread.currentThread().getName(), result));
     }
 
     public void insertCheckpoint( String name, long startTimestamp, long responseTime, long transferSize,
                                   String transferUnit, CheckpointResult result ) {
 
-        sendEvent( new InsertCheckpointEvent( AUTO_LOGGER_CLASS_NAME, logger, name, startTimestamp,
-                                              responseTime, transferSize, transferUnit,
-                                              Thread.currentThread().getName(), result ) );
+        sendEvent(new InsertCheckpointEvent(AUTO_LOGGER_CLASS_NAME, logger, name, startTimestamp,
+                                            responseTime, transferSize, transferUnit,
+                                            Thread.currentThread().getName(), result));
     }
 
     /**
@@ -511,8 +511,8 @@ public class AutoLogger {
     public void insertSystemStatistcs( String monitoredMachine, String statisticIds, String statisticValues,
                                        long timestamp ) {
 
-        sendEvent( new InsertSystemStatisticEvent( AUTO_LOGGER_CLASS_NAME, logger, monitoredMachine,
-                                                   statisticIds, statisticValues, timestamp ) );
+        sendEvent(new InsertSystemStatisticEvent(AUTO_LOGGER_CLASS_NAME, logger, monitoredMachine,
+                                                 statisticIds, statisticValues, timestamp));
     }
 
     /**
@@ -522,7 +522,7 @@ public class AutoLogger {
      */
     public void joinTestCase( TestCaseState testCaseState ) {
 
-        sendEvent( new JoinTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger, testCaseState ) );
+        sendEvent(new JoinTestCaseEvent(AUTO_LOGGER_CLASS_NAME, logger, testCaseState));
     }
 
     /**
@@ -530,7 +530,7 @@ public class AutoLogger {
      */
     public void leaveTestCase() {
 
-        sendEvent( new LeaveTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger ) );
+        sendEvent(new LeaveTestCaseEvent(AUTO_LOGGER_CLASS_NAME, logger));
     }
 
     /**
@@ -538,25 +538,25 @@ public class AutoLogger {
      * The reason is that we have to evaluate the result after the work of each passive appender and stop
      * calling these appenders when the first one(the only one serving this caller) has processed the event. 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public TestCaseState getCurrentTestCaseState() {
 
-        GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent( AUTO_LOGGER_CLASS_NAME, logger );
+        GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent(AUTO_LOGGER_CLASS_NAME, logger);
 
         Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        while( appenders.hasMoreElements() ) {
+        while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
 
-            if( appender instanceof ActiveDbAppender ) {
+            if (appender instanceof ActiveDbAppender) {
                 // Comes here on Test Executor side. There is just 1 Active appender
-                return ( ( ActiveDbAppender ) appender ).getCurrentTestCaseState( event ).getTestCaseState();
-            } else if( appender instanceof PassiveDbAppender ) {
+                return ((ActiveDbAppender) appender).getCurrentTestCaseState(event).getTestCaseState();
+            } else if (appender instanceof PassiveDbAppender) {
                 // Comes here on Agent side. There will be 1 Passive appender per caller
 
                 // Pass the event to any existing appender.
                 // The correct one will return result, wrong appenders will return null.
-                GetCurrentTestCaseEvent resultEvent = ( ( PassiveDbAppender ) appender ).getCurrentTestCaseState( event );
-                if( resultEvent != null ) {
+                GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
+                if (resultEvent != null) {
                     // we found the right Passive appender
                     return resultEvent.getTestCaseState();
                 }
@@ -580,13 +580,13 @@ public class AutoLogger {
     private void sendEvent( LoggingEvent event ) {
 
         // check if this level is allowed for the repository at all
-        if( LogManager.getLoggerRepository().isDisabled( event.getLevel().toInt() ) ) {
+        if (LogManager.getLoggerRepository().isDisabled(event.getLevel().toInt())) {
             return;
         }
 
         // check if the event level is allowed for this logger
-        if( event.getLevel().isGreaterOrEqual( logger.getEffectiveLevel() ) ) {
-            logger.callAppenders( event );
+        if (event.getLevel().isGreaterOrEqual(logger.getEffectiveLevel())) {
+            logger.callAppenders(event);
         }
     }
 

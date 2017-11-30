@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class StartCheckpointEvent extends TestCaseLoggingEvent {
 
     private long   startTimestamp;
@@ -36,8 +36,8 @@ public class StartCheckpointEvent extends TestCaseLoggingEvent {
                                  String transferUnit,
                                  String threadName ) {
 
-        this( fqnOfCategoryClass, logger, name, transferUnit, threadName, Calendar.getInstance()
-                                                                                  .getTimeInMillis() );
+        this(fqnOfCategoryClass, logger, name, transferUnit, threadName, Calendar.getInstance()
+                                                                                 .getTimeInMillis());
     }
 
     public StartCheckpointEvent( String fqnOfCategoryClass,
@@ -47,10 +47,10 @@ public class StartCheckpointEvent extends TestCaseLoggingEvent {
                                  String threadName,
                                  long startTimestamp ) {
 
-        super( fqnOfCategoryClass,
-               logger,
-               "Start checkpoint '" + name + "'",
-               LoggingEventType.START_CHECKPOINT );
+        super(fqnOfCategoryClass,
+              logger,
+              "Start checkpoint '" + name + "'",
+              LoggingEventType.START_CHECKPOINT);
 
         this.startTimestamp = startTimestamp;
         this.name = name;

@@ -15,11 +15,11 @@
  */
 package com.axway.ats.log.autodb.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ThreadAlreadyRegisteredWithLoadQueueException extends LoggingException {
 
     public ThreadAlreadyRegisteredWithLoadQueueException( String threadName ) {
 
-        super( "Thread '" + threadName + "' has already been registered with a load queue" );
+        super("Thread '" + threadName + "' has already been registered with a load queue");
     }
 }

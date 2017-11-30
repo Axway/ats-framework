@@ -15,12 +15,12 @@
  */
 package com.axway.ats.log.autodb.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class CheckpointNotStartedException extends LoggingException {
 
     public CheckpointNotStartedException( String checkpointName,
                                           String threadName ) {
 
-        super( "Checkpoint '" + checkpointName + "' has not been started in thread " + threadName );
+        super("Checkpoint '" + checkpointName + "' has not been started in thread " + threadName);
     }
 }

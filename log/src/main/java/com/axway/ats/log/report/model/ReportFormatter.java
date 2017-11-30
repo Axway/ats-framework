@@ -66,7 +66,7 @@ public class ReportFormatter {
     public ReportFormatter( RunWrapper run ) {
 
         this.runs = new ArrayList<RunWrapper>();
-        this.runs.add( run );
+        this.runs.add(run);
 
         this.description = "Report for automated run '" + run.runName + "', product '" + run.productName
                            + "', version '" + run.versionName + "', build '" + run.buildName + "'";
@@ -112,22 +112,22 @@ public class ReportFormatter {
      */
     public String toHtml() {
 
-        if( runs.size() == 0 ) {
+        if (runs.size() == 0) {
             final String errMsg = "No runs provided";
-            throw new ReportFormatterException( errMsg );
+            throw new ReportFormatterException(errMsg);
         }
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( START_PAGE );
-        sb.append( START_HEAD );
-        sb.append( CssSettings.getCssStyle() );
-        sb.append( END_HEAD );
+        sb.append(START_PAGE);
+        sb.append(START_HEAD);
+        sb.append(CssSettings.getCssStyle());
+        sb.append(END_HEAD);
 
-        sb.append( START_BODY );
-        sb.append( getContentAsHTMLTable() );
-        sb.append( END_BODY );
-        sb.append( END_PAGE );
+        sb.append(START_BODY);
+        sb.append(getContentAsHTMLTable());
+        sb.append(END_BODY);
+        sb.append(END_PAGE);
 
         return sb.toString();
     }
@@ -138,48 +138,48 @@ public class ReportFormatter {
     public String getContentAsHTMLTable() {
 
         StringBuilder tableBody = new StringBuilder();
-        tableBody.append( "<table width=100% border=0 cellspacing=1 cellpadding=5>" );
-        for( RunWrapper run : runs ) {
+        tableBody.append("<table width=100% border=0 cellspacing=1 cellpadding=5>");
+        for (RunWrapper run : runs) {
 
             // START - Run header
-            tableBody.append( START_TBL_HEADERROW );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Run" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Product" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Version" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Build" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "OS" + END_TBL_CELL );
-            tableBody.append( "<td colspan=4 align=center>" + "Scenarios" + END_TBL_CELL );
-            tableBody.append( "<td colspan=3 align=center>" + "Test cases" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Start" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "End" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Duration" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "User note" + END_TBL_CELL );
-            tableBody.append( END_TBL_ROW );
+            tableBody.append(START_TBL_HEADERROW);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Run" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Product" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Version" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Build" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "OS" + END_TBL_CELL);
+            tableBody.append("<td colspan=4 align=center>" + "Scenarios" + END_TBL_CELL);
+            tableBody.append("<td colspan=3 align=center>" + "Test cases" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Start" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "End" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Duration" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "User note" + END_TBL_CELL);
+            tableBody.append(END_TBL_ROW);
 
-            tableBody.append( START_TBL_HEADERROW );
+            tableBody.append(START_TBL_HEADERROW);
 
-            tableBody.append( START_TBL_CELL + "total" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "failed" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "skipped" + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + "total" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "failed" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "skipped" + END_TBL_CELL);
 
-            tableBody.append( START_TBL_CELL + "total" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "failed" + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + "total" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "failed" + END_TBL_CELL);
 
-            tableBody.append( END_TBL_ROW );
+            tableBody.append(END_TBL_ROW);
             // END - Run header
 
             // START - Run data
-            if( run.scenariosFailed + run.scenariosSkipped + run.testcasesFailed > 0 ) {
-                tableBody.append( START_TBL_ROW_FAILED_RUN );
+            if (run.scenariosFailed + run.scenariosSkipped + run.testcasesFailed > 0) {
+                tableBody.append(START_TBL_ROW_FAILED_RUN);
             } else {
-                tableBody.append( START_TBL_ROW_PASSED_RUN );
+                tableBody.append(START_TBL_ROW_PASSED_RUN);
             }
 
-            if( this.dbHost != null ) {
+            if (this.dbHost != null) {
 
-                if( testExplorerWebPort > 0 ) {
+                if (testExplorerWebPort > 0) {
                     testExplorerURL = "http://" + dbHost + ":" + testExplorerWebPort;
                 } else {
                     testExplorerURL = "http://" + dbHost;
@@ -191,9 +191,9 @@ public class ReportFormatter {
 
                 ActiveDbAppender dbAppender = ActiveDbAppender.getCurrentInstance();
                 ReportConfigurator reportConfigurator = ReportConfigurator.getInstance();
-                if( dbAppender != null && reportConfigurator.getTestExplorerWebPath() != null ) {
+                if (dbAppender != null && reportConfigurator.getTestExplorerWebPath() != null) {
 
-                    if( reportConfigurator.getTestExplorerWebPort() != null ) {
+                    if (reportConfigurator.getTestExplorerWebPort() != null) {
 
                         testExplorerURL = "http://" + dbAppender.getHost() + ":"
                                           + reportConfigurator.getTestExplorerWebPort();
@@ -206,123 +206,123 @@ public class ReportFormatter {
                 }
             }
 
-            if( testExplorerURL != null ) {
-                tableBody.append( START_TBL_CELL + "<a href =\"" + testExplorerURL + "\">" + run.runName
-                                  + "</a>" + END_TBL_CELL );
+            if (testExplorerURL != null) {
+                tableBody.append(START_TBL_CELL + "<a href =\"" + testExplorerURL + "\">" + run.runName
+                                 + "</a>" + END_TBL_CELL);
             } else {
-                tableBody.append( START_TBL_CELL + run.runName + END_TBL_CELL );
+                tableBody.append(START_TBL_CELL + run.runName + END_TBL_CELL);
             }
 
-            tableBody.append( START_TBL_CELL + run.productName + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.versionName + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.buildName + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.os + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + run.productName + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.versionName + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.buildName + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.os + END_TBL_CELL);
 
-            tableBody.append( START_TBL_CELL + run.scenariosTotal + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL
-                              + ( run.scenariosTotal - run.scenariosFailed - run.scenariosSkipped ) * 100
-                                / run.scenariosTotal
-                              + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.scenariosFailed + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.scenariosSkipped + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + run.scenariosTotal + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL
+                             + (run.scenariosTotal - run.scenariosFailed - run.scenariosSkipped) * 100
+                               / run.scenariosTotal
+                             + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.scenariosFailed + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.scenariosSkipped + END_TBL_CELL);
 
-            tableBody.append( START_TBL_CELL + run.testcasesTotal + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.testcasesPassedPercent + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.testcasesFailed + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + run.testcasesTotal + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.testcasesPassedPercent + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.testcasesFailed + END_TBL_CELL);
 
-            tableBody.append( START_TBL_CELL + run.getDateStart() + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.getDateEnd() + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + run.getDuration(0) + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + run.getDateStart() + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.getDateEnd() + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + run.getDuration(0) + END_TBL_CELL);
 
-            tableBody.append( START_TBL_CELL + ( run.userNote == null
-                                                              ? ""
-                                                                      : run.userNote )
-                              + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + (run.userNote == null
+                                                                    ? ""
+                                                                    : run.userNote)
+                             + END_TBL_CELL);
 
-            tableBody.append( END_TBL_ROW );
+            tableBody.append(END_TBL_ROW);
             // END - Run data
 
             // put some space between run and its suites
-            tableBody.append( EMPTY_TBL_ROW );
+            tableBody.append(EMPTY_TBL_ROW);
 
             // START - Suites header
-            tableBody.append( START_TBL_HEADERROW );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Suites" + END_TBL_CELL );
-            tableBody.append( "<td colspan=4 rowspan=2 align=center>" + END_TBL_CELL );
-            tableBody.append( "<td colspan=4 align=center>" + "Scenarios" + END_TBL_CELL );
-            tableBody.append( "<td colspan=3 align=center>" + "Test cases" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Start" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "End" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "Duration" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL_TWO_ROWS + "User note" + END_TBL_CELL );
-            tableBody.append( END_TBL_ROW );
+            tableBody.append(START_TBL_HEADERROW);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Suites" + END_TBL_CELL);
+            tableBody.append("<td colspan=4 rowspan=2 align=center>" + END_TBL_CELL);
+            tableBody.append("<td colspan=4 align=center>" + "Scenarios" + END_TBL_CELL);
+            tableBody.append("<td colspan=3 align=center>" + "Test cases" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Start" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "End" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "Duration" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL_TWO_ROWS + "User note" + END_TBL_CELL);
+            tableBody.append(END_TBL_ROW);
 
-            tableBody.append( START_TBL_HEADERROW );
+            tableBody.append(START_TBL_HEADERROW);
 
-            tableBody.append( START_TBL_CELL + "total" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "failed" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "skipped" + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + "total" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "failed" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "skipped" + END_TBL_CELL);
 
-            tableBody.append( START_TBL_CELL + "total" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL );
-            tableBody.append( START_TBL_CELL + "failed" + END_TBL_CELL );
+            tableBody.append(START_TBL_CELL + "total" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "%&nbsp;passed" + END_TBL_CELL);
+            tableBody.append(START_TBL_CELL + "failed" + END_TBL_CELL);
 
-            tableBody.append( END_TBL_ROW );
+            tableBody.append(END_TBL_ROW);
             // END - Suites header
 
             // insert some space between run and its suites
-            tableBody.append( LINE_BREAK );
+            tableBody.append(LINE_BREAK);
 
             // START - Suites data
             boolean evenRow = false;
-            for( Suite suite : run.getSuites() ) {
+            for (Suite suite : run.getSuites()) {
 
-                if( suite.scenariosFailed + suite.scenariosSkipped + suite.testcasesFailed > 0 ) {
+                if (suite.scenariosFailed + suite.scenariosSkipped + suite.testcasesFailed > 0) {
                     // the run has failed if contains a failed or skipped
                     // scenario
-                    tableBody.append( START_TBL_ROW_FAILED_SUITE );
+                    tableBody.append(START_TBL_ROW_FAILED_SUITE);
                 } else {
-                    if( evenRow ) {
-                        tableBody.append( START_TBL_EVENROW );
+                    if (evenRow) {
+                        tableBody.append(START_TBL_EVENROW);
                     } else {
-                        tableBody.append( START_TBL_ODDROW );
+                        tableBody.append(START_TBL_ODDROW);
                     }
                 }
 
-                tableBody.append( START_TBL_CELL + suite.name + END_TBL_CELL );
-                tableBody.append( "<td colspan=4 align=center>" + END_TBL_CELL );
+                tableBody.append(START_TBL_CELL + suite.name + END_TBL_CELL);
+                tableBody.append("<td colspan=4 align=center>" + END_TBL_CELL);
 
-                tableBody.append( START_TBL_CELL + suite.scenariosTotal + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL
-                                  + ( suite.scenariosTotal - suite.scenariosFailed - suite.scenariosSkipped )
-                                    * 100 / suite.scenariosTotal
-                                  + END_TBL_CELL );
+                tableBody.append(START_TBL_CELL + suite.scenariosTotal + END_TBL_CELL);
+                tableBody.append(START_TBL_CELL
+                                 + (suite.scenariosTotal - suite.scenariosFailed - suite.scenariosSkipped)
+                                   * 100 / suite.scenariosTotal
+                                 + END_TBL_CELL);
 
-                tableBody.append( START_TBL_CELL + suite.scenariosFailed + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.scenariosSkipped + END_TBL_CELL );
+                tableBody.append(START_TBL_CELL + suite.scenariosFailed + END_TBL_CELL);
+                tableBody.append(START_TBL_CELL + suite.scenariosSkipped + END_TBL_CELL);
 
-                tableBody.append( START_TBL_CELL + suite.testcasesTotal + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.testcasesPassedPercent + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.testcasesFailed + END_TBL_CELL );
+                tableBody.append(START_TBL_CELL + suite.testcasesTotal + END_TBL_CELL);
+                tableBody.append(START_TBL_CELL + suite.testcasesPassedPercent + END_TBL_CELL);
+                tableBody.append(START_TBL_CELL + suite.testcasesFailed + END_TBL_CELL);
 
-                tableBody.append( START_TBL_CELL + suite.getDateStart() + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.getDateEnd() + END_TBL_CELL );
-                tableBody.append( START_TBL_CELL + suite.getDuration( 0 ) + END_TBL_CELL );
+                tableBody.append(START_TBL_CELL + suite.getDateStart() + END_TBL_CELL);
+                tableBody.append(START_TBL_CELL + suite.getDateEnd() + END_TBL_CELL);
+                tableBody.append(START_TBL_CELL + suite.getDuration(0) + END_TBL_CELL);
 
-                tableBody.append( "<td align=center>" + ( suite.userNote == null
-                                                                         ? ""
-                                                                                 : suite.userNote )
-                                  + END_TBL_CELL );
+                tableBody.append("<td align=center>" + (suite.userNote == null
+                                                                               ? ""
+                                                                               : suite.userNote)
+                                 + END_TBL_CELL);
 
                 evenRow = !evenRow;
             }
             // END - Suites data
 
             // insert some space before the next run
-            tableBody.append( "<tr><td colspan=16 style=\"height: 40px;\"></td></tr>" );
+            tableBody.append("<tr><td colspan=16 style=\"height: 40px;\"></td></tr>");
         }
-        tableBody.append( END_TBL );
+        tableBody.append(END_TBL);
 
         return tableBody.toString();
     }
@@ -337,9 +337,9 @@ public class ReportFormatter {
     public String getRunsState() {
 
         String allRunsPassed = "PASSED";
-        for( Run run : runs ) {
+        for (Run run : runs) {
 
-            if( run.scenariosFailed + run.scenariosSkipped + run.testcasesFailed > 0 ) {
+            if (run.scenariosFailed + run.scenariosSkipped + run.testcasesFailed > 0) {
                 allRunsPassed = "FAILED";
                 break;
             }

@@ -68,12 +68,12 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
         return caller;
     }
-    
 
     @Override
     public void activateOptions() {
+
         super.activateOptions();
-        
+
         // create the queue logging thread and the DbEventRequestProcessor
         initializeDbLogging();
     }
@@ -85,18 +85,18 @@ public class PassiveDbAppender extends AbstractDbAppender {
     protected void append(
                            LoggingEvent event ) {
 
-        if( !doWeServiceThisCaller() ) {
+        if (!doWeServiceThisCaller()) {
             return;
         }
 
-        if( event instanceof AbstractLoggingEvent ) {
-            AbstractLoggingEvent dbLoggingEvent = ( AbstractLoggingEvent ) event;
-            switch( dbLoggingEvent.getEventType() ){
+        if (event instanceof AbstractLoggingEvent) {
+            AbstractLoggingEvent dbLoggingEvent = (AbstractLoggingEvent) event;
+            switch (dbLoggingEvent.getEventType()) {
 
                 case JOIN_TEST_CASE: {
                     // remember test case id
-                    testCaseState.setTestcaseId( ( ( JoinTestCaseEvent ) event ).getTestCaseState()
-                                                                                .getTestcaseId() );
+                    testCaseState.setTestcaseId( ((JoinTestCaseEvent) event).getTestCaseState()
+                                                                            .getTestcaseId());
                     break;
                 }
                 case LEAVE_TEST_CASE: {
@@ -112,25 +112,25 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
         // All events from all threads come into here
         long eventTimestamp;
-        if( event instanceof AbstractLoggingEvent ) {
-            eventTimestamp = ( ( AbstractLoggingEvent ) event ).getTimestamp();
+        if (event instanceof AbstractLoggingEvent) {
+            eventTimestamp = ((AbstractLoggingEvent) event).getTimestamp();
         } else {
             eventTimestamp = System.currentTimeMillis();
         }
-        LogEventRequest packedEvent = new LogEventRequest( Thread.currentThread().getName(), // Remember which thread this event belongs to
-                                                           event,
-                                                           eventTimestamp ); // Remember the event time
+        LogEventRequest packedEvent = new LogEventRequest(Thread.currentThread().getName(), // Remember which thread this event belongs to
+                                                          event,
+                                                          eventTimestamp); // Remember the event time
 
-        passEventToLoggerQueue( packedEvent );
+        passEventToLoggerQueue(packedEvent);
     }
 
     public GetCurrentTestCaseEvent getCurrentTestCaseState(
                                                             GetCurrentTestCaseEvent event ) {
 
-        if( !doWeServiceThisCaller() ) {
+        if (!doWeServiceThisCaller()) {
             return null;
         } else {
-            event.setTestCaseState( testCaseState );
+            event.setTestCaseState(testCaseState);
             return event;
         }
     }
@@ -138,12 +138,12 @@ public class PassiveDbAppender extends AbstractDbAppender {
     private boolean doWeServiceThisCaller() {
 
         final String caller = ThreadsPerCaller.getCaller();
-        if( caller == null ) {
+        if (caller == null) {
             // unknown caller, skip this event
             return false;
         }
 
-        if( !this.caller.equals( caller ) ) {
+        if (!this.caller.equals(caller)) {
             // this appender is not serving this caller, skip this event
             return false;
         }
@@ -157,17 +157,17 @@ public class PassiveDbAppender extends AbstractDbAppender {
      *
      * @return the current DB appender instance
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public static PassiveDbAppender getCurrentInstance(
                                                         String caller ) {
 
         Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        while( appenders.hasMoreElements() ) {
+        while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
 
-            if( appender instanceof PassiveDbAppender ) {
-                PassiveDbAppender passiveAppender = ( PassiveDbAppender ) appender;
-                if( passiveAppender.getCaller().equals( caller ) ) {
+            if (appender instanceof PassiveDbAppender) {
+                PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
+                if (passiveAppender.getCaller().equals(caller)) {
                     return passiveAppender;
                 }
             }

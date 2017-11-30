@@ -20,10 +20,10 @@ package com.axway.ats.log.autodb;
  */
 public class CheckpointInfo {
 
-    private String name;               // checkpoint name
+    private String name;                // checkpoint name
     private int    checkpointSummaryId; // id from the checkpoint summary table
-    private int    checkpointId;       // id from the checkpoint details table
-    private long   startTimestamp;     // the checkpoint start time
+    private int    checkpointId;        // id from the checkpoint details table
+    private long   startTimestamp;      // the checkpoint start time
 
     public CheckpointInfo() {
 
@@ -72,9 +72,9 @@ public class CheckpointInfo {
     @Override
     public int hashCode() {
 
-        return ( name == null )
-                               ? 0
-                               : name.hashCode();
+        return (name == null)
+                              ? 0
+                              : name.hashCode();
     }
 
     /**
@@ -85,18 +85,18 @@ public class CheckpointInfo {
     public boolean equals(
                            Object obj ) {
 
-        if( this == obj )
+        if (this == obj)
             return true;
-        if( obj == null )
+        if (obj == null)
             return false;
-        if( getClass() != obj.getClass() )
+        if (getClass() != obj.getClass())
             return false;
-        CheckpointInfo other = ( CheckpointInfo ) obj;
-        if( name == null ) {
-            if( other.name != null ) {
+        CheckpointInfo other = (CheckpointInfo) obj;
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if( !name.equals( other.name ) ) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;

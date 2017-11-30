@@ -42,8 +42,8 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
 
 @PublicAtsApi
 public class AtsDbLoggerUtilities {
-    
-    private static final Logger logger            = Logger.getLogger( AtsDbLoggerUtilities.class );
+
+    private static final Logger logger         = Logger.getLogger(AtsDbLoggerUtilities.class);
 
     private final long          MAX_FILE_SIZE  = 10 * 1024 * 1024;                                             // 10MB
 
@@ -63,7 +63,7 @@ public class AtsDbLoggerUtilities {
                                             String fileLocation,
                                             String testExplorerContextName ) {
 
-        return attachFileToCurrentTest( fileLocation, testExplorerContextName, 80 );
+        return attachFileToCurrentTest(fileLocation, testExplorerContextName, 80);
     }
 
     /**
@@ -81,19 +81,19 @@ public class AtsDbLoggerUtilities {
                                             String testExplorerContextName,
                                             int testExplorerPort ) {
 
-        fileLocation = fileLocation.replace( "\\", "/" );
-        ERR_MSG_PREFIX = ERR_MSG_PREFIX.replace( "{FILE}", fileLocation );
+        fileLocation = fileLocation.replace("\\", "/");
+        ERR_MSG_PREFIX = ERR_MSG_PREFIX.replace("{FILE}", fileLocation);
 
-        if( !checkFileExist( fileLocation ) ) {
+        if (!checkFileExist(fileLocation)) {
             return false;
         }
-        if( !checkFileSizeIsNotTooLarge( fileLocation ) ) {
+        if (!checkFileSizeIsNotTooLarge(fileLocation)) {
             return false;
         }
 
         ActiveDbAppender dbAppender = ActiveDbAppender.getCurrentInstance();
-        if( dbAppender == null ) {
-            logger.warn( ERR_MSG_PREFIX + "Perhaps the database logging is turned off" );
+        if (dbAppender == null) {
+            logger.warn(ERR_MSG_PREFIX + "Perhaps the database logging is turned off");
             return false;
         }
 
@@ -101,9 +101,9 @@ public class AtsDbLoggerUtilities {
         final int suiteId = dbAppender.getSuiteId();
         final int testcaseId = dbAppender.getTestCaseId();
 
-        if( runId < 1 || suiteId < 1 || testcaseId < 1 ) {
-            logger.warn( ERR_MSG_PREFIX
-                         + "Perhaps the database logging is turned off or you are trying to log while a testcase is not yet started" );
+        if (runId < 1 || suiteId < 1 || testcaseId < 1) {
+            logger.warn(ERR_MSG_PREFIX
+                        + "Perhaps the database logging is turned off or you are trying to log while a testcase is not yet started");
             return false;
         }
 
@@ -115,38 +115,38 @@ public class AtsDbLoggerUtilities {
         URL url = null;
         try {
             CloseableHttpClient client = HttpClients.createDefault();
-            HttpPost post = new HttpPost( URL );
+            HttpPost post = new HttpPost(URL);
             url = post.getURI().toURL();
 
-            if( !isURLConnetionAvailable( url ) ) {
+            if (!isURLConnetionAvailable(url)) {
                 return false;
             }
-            logger.debug( "POSTing " + fileLocation + " on " + URL );
+            logger.debug("POSTing " + fileLocation + " on " + URL);
 
-            File file = new File( fileLocation );
+            File file = new File(fileLocation);
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-            builder.setMode( HttpMultipartMode.BROWSER_COMPATIBLE );
-            builder.addBinaryBody( "upfile", file, ContentType.DEFAULT_BINARY, fileLocation );
-            builder.addTextBody( "dbName", database );
-            builder.addTextBody( "runId", Integer.toString( runId ) );
-            builder.addTextBody( "suiteId", Integer.toString( suiteId ) );
-            builder.addTextBody( "testcaseId", Integer.toString( testcaseId ) );
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            builder.addBinaryBody("upfile", file, ContentType.DEFAULT_BINARY, fileLocation);
+            builder.addTextBody("dbName", database);
+            builder.addTextBody("runId", Integer.toString(runId));
+            builder.addTextBody("suiteId", Integer.toString(suiteId));
+            builder.addTextBody("testcaseId", Integer.toString(testcaseId));
 
             HttpEntity entity = builder.build();
-            post.setEntity( entity );
-            return checkPostExecutedSuccessfully( client.execute( post ), fileLocation );
-        } catch( FileNotFoundException fnfe ) {
-            logger.warn( ERR_MSG_PREFIX + "it does not exist on the local file system", fnfe );
+            post.setEntity(entity);
+            return checkPostExecutedSuccessfully(client.execute(post), fileLocation);
+        } catch (FileNotFoundException fnfe) {
+            logger.warn(ERR_MSG_PREFIX + "it does not exist on the local file system", fnfe);
             return false;
-        } catch( ClientProtocolException cpe ) {
-            logger.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", cpe );
+        } catch (ClientProtocolException cpe) {
+            logger.warn(ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", cpe);
             return false;
-        } catch( ConnectException ce ) {
-            logger.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ce );
+        } catch (ConnectException ce) {
+            logger.warn(ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ce);
             return false;
-        } catch( IOException ioe ) {
-            logger.warn( ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ioe );
+        } catch (IOException ioe) {
+            logger.warn(ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ioe);
             return false;
         }
     }
@@ -154,10 +154,10 @@ public class AtsDbLoggerUtilities {
     private boolean checkFileExist(
                                     String fileLocation ) {
 
-        boolean exists = new LocalFileSystemOperations().doesFileExist( fileLocation );
+        boolean exists = new LocalFileSystemOperations().doesFileExist(fileLocation);
 
-        if( !exists ) {
-            logger.warn( ERR_MSG_PREFIX + "it does not exist on the local file system" );
+        if (!exists) {
+            logger.warn(ERR_MSG_PREFIX + "it does not exist on the local file system");
         }
         return exists;
     }
@@ -165,58 +165,59 @@ public class AtsDbLoggerUtilities {
     private boolean checkFileSizeIsNotTooLarge(
                                                 String fileLocation ) {
 
-        long fileSize = new LocalFileSystemOperations().getFileSize( fileLocation );
+        long fileSize = new LocalFileSystemOperations().getFileSize(fileLocation);
         boolean goodSize = fileSize <= MAX_FILE_SIZE;
 
-        if( !goodSize ) {
-            logger.warn( ERR_MSG_PREFIX + "as its size of \"" + fileSize
-                         + "\" bytes is larger than the allowed 10MB" );
+        if (!goodSize) {
+            logger.warn(ERR_MSG_PREFIX + "as its size of \"" + fileSize
+                        + "\" bytes is larger than the allowed 10MB");
         }
 
         return goodSize;
     }
 
     private boolean checkPostExecutedSuccessfully(
-                                                HttpResponse response,
-                                                String fileLocation ) {
+                                                   HttpResponse response,
+                                                   String fileLocation ) {
 
-        if( response.getStatusLine().getStatusCode() != 200 ) {
+        if (response.getStatusLine().getStatusCode() != 200) {
             try {
-                IOUtils.readLines( response.getEntity().getContent() ).forEach( new Consumer<String>() {
+                IOUtils.readLines(response.getEntity().getContent()).forEach(new Consumer<String>() {
                     @Override
                     public void accept( String t ) {
-                       logger.info( t );
+
+                        logger.info(t);
                     }
-                } );
-            } catch( Exception e ) {
-                logger.error( "unable to read response entity", e );
+                });
+            } catch (Exception e) {
+                logger.error("unable to read response entity", e);
             }
-            logger.warn( "File \"" + fileLocation
-                         + "\" will not be attached to the current test, due to error in saving the file. " );
+            logger.warn("File \"" + fileLocation
+                        + "\" will not be attached to the current test, due to error in saving the file. ");
             return false;
         } else {
-            logger.info( "Successfully attached \"" + fileLocation + "\" to the current Test Explorer testcase" );
+            logger.info("Successfully attached \"" + fileLocation + "\" to the current Test Explorer testcase");
             return true;
         }
-        
+
     }
 
     private boolean isURLConnetionAvailable(
                                              URL url ) {
 
         try {
-            HttpURLConnection cc = ( HttpURLConnection ) url.openConnection();
-            cc.setRequestMethod( "HEAD" );
+            HttpURLConnection cc = (HttpURLConnection) url.openConnection();
+            cc.setRequestMethod("HEAD");
 
-            if( cc.getResponseCode() != 200 ) {
-                logger.warn( ERR_MSG_PREFIX + "Upload URL \"" + url + "\" is not defined right" );
+            if (cc.getResponseCode() != 200) {
+                logger.warn(ERR_MSG_PREFIX + "Upload URL \"" + url + "\" is not defined right");
                 return false;
             }
-        } catch( MalformedURLException mue ) {
-            logger.warn( ERR_MSG_PREFIX + "Upload URL \"" + url + "\" is malformed", mue );
+        } catch (MalformedURLException mue) {
+            logger.warn(ERR_MSG_PREFIX + "Upload URL \"" + url + "\" is malformed", mue);
             return false;
-        } catch( IOException ioe ) {
-            logger.warn( ERR_MSG_PREFIX + "POST failed to URL \"" + url + "\"", ioe );
+        } catch (IOException ioe) {
+            logger.warn(ERR_MSG_PREFIX + "POST failed to URL \"" + url + "\"", ioe);
             return false;
         }
         return true;

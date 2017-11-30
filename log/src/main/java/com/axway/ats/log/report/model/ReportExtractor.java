@@ -30,7 +30,7 @@ import com.axway.ats.log.report.exceptions.ReportExtractorException;
  */
 public class ReportExtractor {
 
-    private SQLServerDbReadAccess        dbReadAccess;
+    private SQLServerDbReadAccess dbReadAccess;
 
     /**
      * @param dbHost the database host to get runs from
@@ -39,12 +39,12 @@ public class ReportExtractor {
      * @param dbPassword the user password used for authentication to the database
      */
     public ReportExtractor( String dbHost,
-                           String dbName,
-                           String dbUser,
-                           String dbPassword) {
+                            String dbName,
+                            String dbUser,
+                            String dbPassword ) {
 
-        DbConnSQLServer dbConnection = new DbConnSQLServer( dbHost, dbName, dbUser, dbPassword );
-        dbReadAccess = new SQLServerDbReadAccess( dbConnection );
+        DbConnSQLServer dbConnection = new DbConnSQLServer(dbHost, dbName, dbUser, dbPassword);
+        dbReadAccess = new SQLServerDbReadAccess(dbConnection);
     }
 
     /**
@@ -56,12 +56,12 @@ public class ReportExtractor {
     public List<RunWrapper> extract(
                                      int[] runIds ) {
 
-        if( runIds.length == 0 ) {
+        if (runIds.length == 0) {
             final String errMsg = "You need to specify at least one run id!";
-            throw new ReportExtractorException( errMsg );
+            throw new ReportExtractorException(errMsg);
         }
 
-        return extractRunEntities( runIds );
+        return extractRunEntities(runIds);
     }
 
     /**
@@ -74,38 +74,38 @@ public class ReportExtractor {
                                                  int[] runIds ) {
 
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append( " WHERE runId IN (");
-        for( int runId : runIds ) {
-            whereClause.append( runId ).append( ", " );
+        whereClause.append(" WHERE runId IN (");
+        for (int runId : runIds) {
+            whereClause.append(runId).append(", ");
         }
-        whereClause.setLength( whereClause.lastIndexOf( "," ) );
-        whereClause.append( ")" );
+        whereClause.setLength(whereClause.lastIndexOf(","));
+        whereClause.append(")");
 
         List<Run> dbRuns;
         try {
-            dbRuns = dbReadAccess.getRuns( 0, 10000, whereClause.toString(), "runId", true, 0 );
-        } catch( DatabaseAccessException e ) {
-            throw new ReportExtractorException( "Error loading runs " + whereClause, e );
+            dbRuns = dbReadAccess.getRuns(0, 10000, whereClause.toString(), "runId", true, 0);
+        } catch (DatabaseAccessException e) {
+            throw new ReportExtractorException("Error loading runs " + whereClause, e);
         }
 
         List<RunWrapper> runs = new ArrayList<RunWrapper>();
-        for( Run dbRun : dbRuns ) {
+        for (Run dbRun : dbRuns) {
 
             // load this run's suites
             List<Suite> suites;
             try {
-                suites = dbReadAccess.getSuites( 0,
-                                                 10000,
-                                                 "WHERE runId=" + dbRun.runId,
-                                                 "suiteId",
-                                                 true, 0 );
-            } catch( DatabaseAccessException e ) {
-                throw new ReportExtractorException( "Error loading suites for run with id " + dbRun.runId,
-                                                    e );
+                suites = dbReadAccess.getSuites(0,
+                                                10000,
+                                                "WHERE runId=" + dbRun.runId,
+                                                "suiteId",
+                                                true, 0);
+            } catch (DatabaseAccessException e) {
+                throw new ReportExtractorException("Error loading suites for run with id " + dbRun.runId,
+                                                   e);
             }
 
-            RunWrapper run = new RunWrapper( dbRun, suites );
-            runs.add( run );
+            RunWrapper run = new RunWrapper(dbRun, suites);
+            runs.add(run);
         }
 
         return runs;

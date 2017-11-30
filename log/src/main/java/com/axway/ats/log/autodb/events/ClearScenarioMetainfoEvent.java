@@ -21,13 +21,13 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ClearScenarioMetainfoEvent extends AbstractLoggingEvent {
 
     public ClearScenarioMetainfoEvent( String loggerFQCN,
                                        Logger logger ) {
 
-        super( loggerFQCN, logger, "Clear scenario meta info", LoggingEventType.CLEAR_SCENARIO_METAINFO );
+        super(loggerFQCN, logger, "Clear scenario meta info", LoggingEventType.CLEAR_SCENARIO_METAINFO);
     }
 
     @Override

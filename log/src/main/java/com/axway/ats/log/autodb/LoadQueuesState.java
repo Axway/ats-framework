@@ -80,12 +80,12 @@ public class LoadQueuesState {
      */
     public synchronized void addLoadQueue( String name, int dbId ) throws LoadQueueAlreadyStartedException {
 
-        if( queueNamesToDbIds.containsKey( name ) ) {
-            throw new LoadQueueAlreadyStartedException( name );
+        if (queueNamesToDbIds.containsKey(name)) {
+            throw new LoadQueueAlreadyStartedException(name);
         }
 
-        queueNamesToDbIds.put( name, dbId );
-        threadsPerQueue.put( dbId, new ArrayList<String>() );
+        queueNamesToDbIds.put(name, dbId);
+        threadsPerQueue.put(dbId, new ArrayList<String>());
     }
 
     /**
@@ -97,12 +97,12 @@ public class LoadQueuesState {
      */
     public synchronized void removeLoadQueue( String name, int id ) throws NoSuchLoadQueueException {
 
-        if( !queueNamesToDbIds.containsKey( name ) ) {
-            throw new NoSuchLoadQueueException( name );
+        if (!queueNamesToDbIds.containsKey(name)) {
+            throw new NoSuchLoadQueueException(name);
         }
 
-        queueNamesToDbIds.remove( name );
-        threadsPerQueue.remove( id );
+        queueNamesToDbIds.remove(name);
+        threadsPerQueue.remove(id);
     }
 
     /**
@@ -113,7 +113,7 @@ public class LoadQueuesState {
      */
     public synchronized boolean isLoadQueueRunning( String name ) {
 
-        return queueNamesToDbIds.containsKey( name );
+        return queueNamesToDbIds.containsKey(name);
     }
 
     /**
@@ -129,17 +129,17 @@ public class LoadQueuesState {
                                                           int loadQueueId ) throws NoSuchLoadQueueException,
                                                                             ThreadAlreadyRegisteredWithLoadQueueException {
 
-        List<String> threadNames = threadsPerQueue.get( loadQueueId );
-        if( threadNames == null ) {
-            throw new NoSuchLoadQueueException( loadQueueId );
+        List<String> threadNames = threadsPerQueue.get(loadQueueId);
+        if (threadNames == null) {
+            throw new NoSuchLoadQueueException(loadQueueId);
         }
 
-        if( threadNames.contains( threadName ) ) {
-            throw new ThreadAlreadyRegisteredWithLoadQueueException( threadName );
+        if (threadNames.contains(threadName)) {
+            throw new ThreadAlreadyRegisteredWithLoadQueueException(threadName);
         }
 
-        threadNames.add( threadName );
-        clearThreadAllCheckpoints( threadName );
+        threadNames.add(threadName);
+        clearThreadAllCheckpoints(threadName);
     }
 
     /**
@@ -151,11 +151,11 @@ public class LoadQueuesState {
      */
     public synchronized int getLoadQueueId( String loadQueueName ) throws NoSuchLoadQueueException {
 
-        if( !queueNamesToDbIds.containsKey( loadQueueName ) ) {
-            throw new NoSuchLoadQueueException( loadQueueName );
+        if (!queueNamesToDbIds.containsKey(loadQueueName)) {
+            throw new NoSuchLoadQueueException(loadQueueName);
         }
 
-        return queueNamesToDbIds.get( loadQueueName );
+        return queueNamesToDbIds.get(loadQueueName);
     }
 
     /**
@@ -166,16 +166,16 @@ public class LoadQueuesState {
      */
     public synchronized int getLoadQueueIdForThread( String threadName ) throws ThreadNotRegisteredWithLoadQueue {
 
-        for( Entry<Integer, List<String>> loadQueueEntry : threadsPerQueue.entrySet() ) {
+        for (Entry<Integer, List<String>> loadQueueEntry : threadsPerQueue.entrySet()) {
             List<String> threads = loadQueueEntry.getValue();
-            for( String thread : threads ) {
-                if( thread.equals( threadName ) ) {
+            for (String thread : threads) {
+                if (thread.equals(threadName)) {
                     return loadQueueEntry.getKey();
                 }
             }
         }
 
-        throw new ThreadNotRegisteredWithLoadQueue( threadName );
+        throw new ThreadNotRegisteredWithLoadQueue(threadName);
     }
 
     /**
@@ -192,23 +192,23 @@ public class LoadQueuesState {
                                               String threadName ) throws ThreadNotRegisteredWithLoadQueue,
                                                                   CheckpointAlreadyStartedException {
 
-        Set<CheckpointInfo> currentCheckpointInfoSet = checkpointsPerThread.get( threadName );
-        if( currentCheckpointInfoSet == null ) {
-            throw new ThreadNotRegisteredWithLoadQueue( threadName );
+        Set<CheckpointInfo> currentCheckpointInfoSet = checkpointsPerThread.get(threadName);
+        if (currentCheckpointInfoSet == null) {
+            throw new ThreadNotRegisteredWithLoadQueue(threadName);
         }
         CheckpointInfo checkpointInfoWithThisName = null;
-        for( CheckpointInfo checkpointInfo : currentCheckpointInfoSet ) {
-            if( checkpointInfo.getName().equals( startedCheckpointInfo.getName() ) ) {
+        for (CheckpointInfo checkpointInfo : currentCheckpointInfoSet) {
+            if (checkpointInfo.getName().equals(startedCheckpointInfo.getName())) {
                 checkpointInfoWithThisName = checkpointInfo;
                 break;
             }
         }
 
-        if( checkpointInfoWithThisName != null && checkpointInfoWithThisName.isRunning() ) {
-            throw new CheckpointAlreadyStartedException( startedCheckpointInfo.getName(), threadName );
+        if (checkpointInfoWithThisName != null && checkpointInfoWithThisName.isRunning()) {
+            throw new CheckpointAlreadyStartedException(startedCheckpointInfo.getName(), threadName);
         }
 
-        registerCheckpointWithThread( threadName, startedCheckpointInfo );
+        registerCheckpointWithThread(threadName, startedCheckpointInfo);
     }
 
     /**
@@ -225,27 +225,27 @@ public class LoadQueuesState {
                                                       long endTime ) throws ThreadNotRegisteredWithLoadQueue,
                                                                      CheckpointNotStartedException {
 
-        Set<CheckpointInfo> currentCheckpointInfoSet = checkpointsPerThread.get( threadName );
-        if( currentCheckpointInfoSet == null ) {
-            throw new ThreadNotRegisteredWithLoadQueue( threadName );
+        Set<CheckpointInfo> currentCheckpointInfoSet = checkpointsPerThread.get(threadName);
+        if (currentCheckpointInfoSet == null) {
+            throw new ThreadNotRegisteredWithLoadQueue(threadName);
         }
 
         Iterator<CheckpointInfo> iterator = currentCheckpointInfoSet.iterator();
         CheckpointInfo currentCheckpointInfo = null, tempCheckpoint = null;
-        while( iterator.hasNext() && currentCheckpointInfo == null ) {
-            tempCheckpoint = ( CheckpointInfo ) iterator.next();
-            if( checkpointName.equals( tempCheckpoint.getName() ) ) {
+        while (iterator.hasNext() && currentCheckpointInfo == null) {
+            tempCheckpoint = (CheckpointInfo) iterator.next();
+            if (checkpointName.equals(tempCheckpoint.getName())) {
                 currentCheckpointInfo = tempCheckpoint;
             }
         }
 
-        if( currentCheckpointInfo == null || !currentCheckpointInfo.isRunning() ) {
-            throw new CheckpointNotStartedException( checkpointName, threadName );
+        if (currentCheckpointInfo == null || !currentCheckpointInfo.isRunning()) {
+            throw new CheckpointNotStartedException(checkpointName, threadName);
         }
 
         // clean current checkpoint from the set associated to this thread,
         // but return this checkpoint as we need it when ending the checkpoint in the DB
-        clearThreadCheckpoint( threadName, currentCheckpointInfo );
+        clearThreadCheckpoint(threadName, currentCheckpointInfo);
 
         return currentCheckpointInfo;
     }
@@ -263,31 +263,31 @@ public class LoadQueuesState {
     private void registerCheckpointWithThread( String threadName,
                                                CheckpointInfo checkpointInfo ) throws CheckpointAlreadyStartedException {
 
-        Set<CheckpointInfo> set = checkpointsPerThread.get( threadName );
-        if( set == null ) {
+        Set<CheckpointInfo> set = checkpointsPerThread.get(threadName);
+        if (set == null) {
             set = new HashSet<CheckpointInfo>();
-            checkpointsPerThread.put( threadName, set );
+            checkpointsPerThread.put(threadName, set);
         }
-        boolean newlyAdded = set.add( checkpointInfo );
-        if( !newlyAdded ) {
-            throw new CheckpointAlreadyStartedException( checkpointInfo.getName(), threadName );
+        boolean newlyAdded = set.add(checkpointInfo);
+        if (!newlyAdded) {
+            throw new CheckpointAlreadyStartedException(checkpointInfo.getName(), threadName);
         }
     }
 
     private void clearThreadCheckpoint( String threadName, CheckpointInfo checkpointInfoForRemove ) {
 
-        Set<CheckpointInfo> set = checkpointsPerThread.get( threadName );
-        set.remove( checkpointInfoForRemove );
+        Set<CheckpointInfo> set = checkpointsPerThread.get(threadName);
+        set.remove(checkpointInfoForRemove);
     }
 
     private void clearThreadAllCheckpoints( String threadName ) {
 
-        Set<CheckpointInfo> set = checkpointsPerThread.get( threadName );
-        if( set != null ) {
+        Set<CheckpointInfo> set = checkpointsPerThread.get(threadName);
+        if (set != null) {
             set.clear();
         } else { // initialize - put empty set
             set = new HashSet<CheckpointInfo>();
-            checkpointsPerThread.put( threadName, set );
+            checkpointsPerThread.put(threadName, set);
         }
     }
 

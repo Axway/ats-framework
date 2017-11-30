@@ -47,7 +47,6 @@ import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
-
 public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAccess {
 
     /*  Some methods has an argument 'dayLightSavingOn'.
@@ -57,7 +56,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
      *  Since all time stamps are send to the Database in UTC format, via this argument,
      *  all received time stamps will be with proper time localization.
      * */
-    
+
     /*
      *  Test Explorer needs some statistic id in order to quickly distinguish between different statistics.
      *  Some statistics do not have a type ID from the DB, like:
@@ -68,13 +67,13 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
      *  Regular statistics have DB IDs starting from 0. For the rest we calculate the IDs
      *  starting from MAX_INTEGER and going down
      */
-    private static final int   START_FAKE_ID_VALUE_FOR_CHECKPOINTS                  = Integer.MAX_VALUE;
+    private static final int   START_FAKE_ID_VALUE_FOR_CHECKPOINTS = Integer.MAX_VALUE;
 
-    public static final String MACHINE_NAME_FOR_ATS_AGENTS                          = "ATS Agents";
+    public static final String MACHINE_NAME_FOR_ATS_AGENTS         = "ATS Agents";
 
     public SQLServerDbReadAccess( DbConnection dbConnection ) {
 
-        super( dbConnection );
+        super(dbConnection);
     }
 
     @BackwardCompatibility
@@ -85,86 +84,86 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         Connection connection = getConnection();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
 
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_runs(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_runs(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Run run = new Run();
-                run.runId = rs.getString( "runId" );
-                run.productName = rs.getString( "productName" );
-                run.versionName = rs.getString( "versionName" );
-                run.buildName = rs.getString( "buildName" );
-                run.runName = rs.getString( "runName" );
-                run.os = rs.getString( "OS" );
+                run.runId = rs.getString("runId");
+                run.productName = rs.getString("productName");
+                run.versionName = rs.getString("versionName");
+                run.buildName = rs.getString("buildName");
+                run.runName = rs.getString("runName");
+                run.os = rs.getString("OS");
 
                 run.hostName = "";
                 try {
                     @BackwardCompatibility
                     int dbInternalVersion = getDatabaseInternalVersion(); // run.hostName introduced in 3.10.0 (internalVersion = 1)
 
-                    if( dbInternalVersion >= 1 ) {
-                        run.hostName = rs.getString( "hostName" );
+                    if (dbInternalVersion >= 1) {
+                        run.hostName = rs.getString("hostName");
                     }
 
-                } catch( NumberFormatException nfe ) {
+                } catch (NumberFormatException nfe) {
                     run.hostName = "";
-                    log.warn( "Error parsing dbInternalVersion. ", nfe );
+                    log.warn("Error parsing dbInternalVersion. ", nfe);
                 }
 
-                if ( rs.getTimestamp( "dateStart" ) != null ) {
-                    run.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
+                if (rs.getTimestamp("dateStart") != null) {
+                    run.setStartTimestamp(rs.getTimestamp("dateStart").getTime());
                 }
-                if ( rs.getTimestamp( "dateEnd" ) != null ) {
-                    run.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );   
+                if (rs.getTimestamp("dateEnd") != null) {
+                    run.setEndTimestamp(rs.getTimestamp("dateEnd").getTime());
                 }
-                run.setTimeOffset( utcTimeOffset );
+                run.setTimeOffset(utcTimeOffset);
 
-                run.scenariosTotal = rs.getInt( "scenariosTotal" );
-                run.scenariosFailed = rs.getInt( "scenariosFailed" );
-                run.scenariosSkipped = rs.getInt( "scenariosSkipped" );
+                run.scenariosTotal = rs.getInt("scenariosTotal");
+                run.scenariosFailed = rs.getInt("scenariosFailed");
+                run.scenariosSkipped = rs.getInt("scenariosSkipped");
 
-                run.testcasesTotal = rs.getInt( "testcasesTotal" );
-                run.testcasesFailed = rs.getInt( "testcasesFailed" );
-                run.testcasesPassedPercent = String.valueOf( rs.getInt( "testcasesPassedPercent" ) ) + "%";
-                run.testcaseIsRunning = rs.getBoolean( "testcaseIsRunning" );
+                run.testcasesTotal = rs.getInt("testcasesTotal");
+                run.testcasesFailed = rs.getInt("testcasesFailed");
+                run.testcasesPassedPercent = String.valueOf(rs.getInt("testcasesPassedPercent")) + "%";
+                run.testcaseIsRunning = rs.getBoolean("testcaseIsRunning");
 
                 run.total = run.scenariosTotal + "/" + run.testcasesTotal;
                 run.failed = run.scenariosFailed + "/" + run.testcasesFailed;
 
-                run.userNote = rs.getString( "userNote" );
-                if( run.userNote == null ) {
+                run.userNote = rs.getString("userNote");
+                if (run.userNote == null) {
                     run.userNote = "";
                 }
-                runs.add( run );
+                runs.add(run);
 
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "runs", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "runs", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return runs;
@@ -174,28 +173,28 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         Connection connection = getConnection();
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_runs_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_runs_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int runsCount = 0;
-            while( rs.next() ) {
-                runsCount = rs.getInt( "runsCount" );
-                logQuerySuccess( sqlLog, "runs", runsCount );
+            while (rs.next()) {
+                runsCount = rs.getInt("runsCount");
+                logQuerySuccess(sqlLog, "runs", runsCount);
                 break;
             }
 
             return runsCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
@@ -208,65 +207,65 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         Connection connection = getConnection();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_suites(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_suites(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Suite suite = new Suite();
-                suite.suiteId = rs.getString( "suiteId" );
+                suite.suiteId = rs.getString("suiteId");
                 try {
                     @BackwardCompatibility
                     // suite.runId introduced 3.11.0 (internalVersion=3)
                     int dbInternalVersion = getDatabaseInternalVersion();
 
-                    if( dbInternalVersion >= 3 ) {
-                        suite.runId = rs.getString( "runId" );
+                    if (dbInternalVersion >= 3) {
+                        suite.runId = rs.getString("runId");
                     }
 
-                } catch( NumberFormatException nfe ) {
+                } catch (NumberFormatException nfe) {
                     suite.runId = "";
-                    log.warn( "Error parsing dbInternalVersion. ", nfe );
+                    log.warn("Error parsing dbInternalVersion. ", nfe);
                 }
-                suite.name = rs.getString( "name" );
-                
-                if ( rs.getTimestamp( "dateStart" ) != null ) {
-                    suite.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
-                }
-                if ( rs.getTimestamp( "dateEnd" ) != null ) {
-                    suite.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
-                }
-                suite.setTimeOffset( utcTimeOffset );
+                suite.name = rs.getString("name");
 
-                suite.scenariosTotal = rs.getInt( "scenariosTotal" );
-                suite.scenariosFailed = rs.getInt( "scenariosFailed" );
-                suite.scenariosSkipped = rs.getInt( "scenariosSkipped" );
+                if (rs.getTimestamp("dateStart") != null) {
+                    suite.setStartTimestamp(rs.getTimestamp("dateStart").getTime());
+                }
+                if (rs.getTimestamp("dateEnd") != null) {
+                    suite.setEndTimestamp(rs.getTimestamp("dateEnd").getTime());
+                }
+                suite.setTimeOffset(utcTimeOffset);
 
-                suite.testcasesTotal = rs.getInt( "testcasesTotal" );
-                suite.testcasesFailed = rs.getInt( "testcasesFailed" );
-                suite.testcasesPassedPercent = String.valueOf( rs.getInt( "testcasesPassedPercent" ) ) + "%";
-                suite.testcaseIsRunning = rs.getBoolean( "testcaseIsRunning" );
+                suite.scenariosTotal = rs.getInt("scenariosTotal");
+                suite.scenariosFailed = rs.getInt("scenariosFailed");
+                suite.scenariosSkipped = rs.getInt("scenariosSkipped");
+
+                suite.testcasesTotal = rs.getInt("testcasesTotal");
+                suite.testcasesFailed = rs.getInt("testcasesFailed");
+                suite.testcasesPassedPercent = String.valueOf(rs.getInt("testcasesPassedPercent")) + "%";
+                suite.testcaseIsRunning = rs.getBoolean("testcaseIsRunning");
 
                 suite.total = suite.scenariosTotal + "/" + suite.testcasesTotal;
                 suite.failed = suite.scenariosFailed + "/" + suite.testcasesFailed;
 
-                suite.userNote = rs.getString( "userNote" );
+                suite.userNote = rs.getString("userNote");
 
                 suite.packageName = "";
                 try {
@@ -274,25 +273,25 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                     // suite.packageName introduced 3.5.0 and internalVersion=1 (in 3.10.0)
                     int dbInternalVersion = getDatabaseInternalVersion();
 
-                    if( dbInternalVersion >= 1 ) {
-                        suite.packageName = rs.getString( "package" );
+                    if (dbInternalVersion >= 1) {
+                        suite.packageName = rs.getString("package");
                     }
 
-                } catch( NumberFormatException nfe ) {
+                } catch (NumberFormatException nfe) {
                     suite.packageName = "";
-                    log.warn( "Error parsing dbInternalVersion. ", nfe );
+                    log.warn("Error parsing dbInternalVersion. ", nfe);
                 }
 
-                suites.add( suite );
+                suites.add(suite);
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "suites", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "suites", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
         return suites;
     }
@@ -301,28 +300,28 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         Connection connection = getConnection();
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_suites_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_suites_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int suitesCount = 0;
-            while( rs.next() ) {
-                suitesCount = rs.getInt( "suitesCount" );
-                logQuerySuccess( sqlLog, "suites", suitesCount );
+            while (rs.next()) {
+                suitesCount = rs.getInt("suitesCount");
+                logQuerySuccess(sqlLog, "suites", suitesCount);
                 break;
             }
 
             return suitesCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
@@ -332,58 +331,58 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<Scenario> scenarios = new ArrayList<Scenario>();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_scenarios(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_scenarios(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Scenario scenario = new Scenario();
-                scenario.scenarioId = rs.getString( "scenarioId" );
-                scenario.suiteId = rs.getString( "suiteId" );
-                scenario.name = rs.getString( "name" );
-                scenario.description = rs.getString( "description" );
+                scenario.scenarioId = rs.getString("scenarioId");
+                scenario.suiteId = rs.getString("suiteId");
+                scenario.name = rs.getString("name");
+                scenario.description = rs.getString("description");
 
-                scenario.testcasesTotal = rs.getInt( "testcasesTotal" );
-                scenario.testcasesFailed = rs.getInt( "testcasesFailed" );
-                scenario.testcasesPassedPercent = String.valueOf( rs.getInt( "testcasesPassedPercent" ) )
+                scenario.testcasesTotal = rs.getInt("testcasesTotal");
+                scenario.testcasesFailed = rs.getInt("testcasesFailed");
+                scenario.testcasesPassedPercent = String.valueOf(rs.getInt("testcasesPassedPercent"))
                                                   + "%";
-                scenario.testcaseIsRunning = rs.getBoolean( "testcaseIsRunning" );
+                scenario.testcaseIsRunning = rs.getBoolean("testcaseIsRunning");
 
-                if ( rs.getTimestamp( "dateStart" ) != null ) {
-                    scenario.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
+                if (rs.getTimestamp("dateStart") != null) {
+                    scenario.setStartTimestamp(rs.getTimestamp("dateStart").getTime());
                 }
-                if ( rs.getTimestamp( "dateEnd" ) != null ) {
-                    scenario.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
+                if (rs.getTimestamp("dateEnd") != null) {
+                    scenario.setEndTimestamp(rs.getTimestamp("dateEnd").getTime());
                 }
-                
-                scenario.setTimeOffset( utcTimeOffset );
 
-                scenario.result = rs.getInt( "result" );
+                scenario.setTimeOffset(utcTimeOffset);
+
+                scenario.result = rs.getInt("result");
                 /*
                  *   -- 0 FAILED
                  *   -- 1 PASSED
                  *   -- 2 SKIPPED
                  *   -- 4 RUNNING
                  */
-                switch( scenario.result ){
+                switch (scenario.result) {
                     case 0:
                         scenario.state = "FAILED";
                         break;
@@ -401,18 +400,18 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                         scenario.state = "unknown";
                 }
 
-                scenario.userNote = rs.getString( "userNote" );
-                scenarios.add( scenario );
+                scenario.userNote = rs.getString("userNote");
+                scenarios.add(scenario);
 
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "scenarios", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "scenarios", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return scenarios;
@@ -420,30 +419,30 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
     public int getScenariosCount( String whereClause ) throws DatabaseAccessException {
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
 
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_scenarios_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_scenarios_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int scenariosCount = 0;
-            while( rs.next() ) {
-                scenariosCount = rs.getInt( "scenariosCount" );
-                logQuerySuccess( sqlLog, "scenarios", scenariosCount );
+            while (rs.next()) {
+                scenariosCount = rs.getInt("scenariosCount");
+                logQuerySuccess(sqlLog, "scenarios", scenariosCount);
                 break;
             }
 
             return scenariosCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
@@ -453,53 +452,52 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<Testcase> testcases = new ArrayList<Testcase>();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_testcases(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_testcases(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Testcase testcase = new Testcase();
-                testcase.testcaseId = rs.getString( "testcaseId" );
-                testcase.scenarioId = rs.getString( "scenarioId" );
-                testcase.suiteId = rs.getString( "suiteId" );
+                testcase.testcaseId = rs.getString("testcaseId");
+                testcase.scenarioId = rs.getString("scenarioId");
+                testcase.suiteId = rs.getString("suiteId");
 
-                testcase.name = rs.getString( "name" );
+                testcase.name = rs.getString("name");
 
-                if ( rs.getTimestamp( "dateStart" ) != null ) {
-                    testcase.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
+                if (rs.getTimestamp("dateStart") != null) {
+                    testcase.setStartTimestamp(rs.getTimestamp("dateStart").getTime());
                 }
-                if ( rs.getTimestamp( "dateEnd" ) != null ) {
-                    testcase.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
+                if (rs.getTimestamp("dateEnd") != null) {
+                    testcase.setEndTimestamp(rs.getTimestamp("dateEnd").getTime());
                 }
-                testcase.setTimeOffset( utcTimeOffset );
-                
+                testcase.setTimeOffset(utcTimeOffset);
 
-                testcase.result = rs.getInt( "result" );
+                testcase.result = rs.getInt("result");
                 /*
                  *   -- 0 FAILED
                  *   -- 1 PASSED
                  *   -- 2 SKIPPED
                  *   -- 4 RUNNING
                  */
-                switch( testcase.result ){
+                switch (testcase.result) {
                     case 0:
                         testcase.state = "FAILED";
                         break;
@@ -517,18 +515,18 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                         testcase.state = "unknown";
                 }
 
-                testcase.userNote = rs.getString( "userNote" );
-                testcases.add( testcase );
+                testcase.userNote = rs.getString("userNote");
+                testcases.add(testcase);
 
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "test cases", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "test cases", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return testcases;
@@ -536,29 +534,29 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
     public int getTestcasesCount( String whereClause ) throws DatabaseAccessException {
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_testcases_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_testcases_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int testcasesCount = 0;
-            while( rs.next() ) {
-                testcasesCount = rs.getInt( "testcasesCount" );
-                logQuerySuccess( sqlLog, "test cases", testcasesCount );
+            while (rs.next()) {
+                testcasesCount = rs.getInt("testcasesCount");
+                logQuerySuccess(sqlLog, "test cases", testcasesCount);
                 break;
             }
 
             return testcasesCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
@@ -570,20 +568,20 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT * FROM tMachines ORDER BY machineName" );
+            statement = connection.prepareStatement("SELECT * FROM tMachines ORDER BY machineName");
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Machine machine = new Machine();
-                machine.machineId = rs.getInt( "machineId" );
-                machine.name = rs.getString( "machineName" );
-                machine.alias = rs.getString( "machineAlias" );
-                machines.add( machine );
+                machine.machineId = rs.getInt("machineId");
+                machine.name = rs.getString("machineName");
+                machine.alias = rs.getString("machineAlias");
+                machines.add(machine);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error retrieving machines", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving machines", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return machines;
@@ -591,55 +589,55 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
     public List<Message> getMessages( int startRecord, int recordsCount, String whereClause,
                                       String sortColumn, boolean ascending,
-                                      int utcTimeOffset) throws DatabaseAccessException {
+                                      int utcTimeOffset ) throws DatabaseAccessException {
 
         List<Message> messages = new ArrayList<Message>();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_messages(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_messages(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
             Map<Integer, Message> splitMessages = new HashMap<Integer, Message>(); // <parentMessageId, Message>
-            while( rs.next() ) {
+            while (rs.next()) {
                 Message message = new Message();
-                message.messageId = rs.getInt( "messageId" );
-                message.messageContent = rs.getString( "message" );
-                message.messageType = rs.getString( "typeName" );
-                
-                if ( rs.getTimestamp( "timestamp" ) != null ){
-                    message.setStartTimestamp( rs.getTimestamp( "timestamp" ).getTime() );
+                message.messageId = rs.getInt("messageId");
+                message.messageContent = rs.getString("message");
+                message.messageType = rs.getString("typeName");
+
+                if (rs.getTimestamp("timestamp") != null) {
+                    message.setStartTimestamp(rs.getTimestamp("timestamp").getTime());
                 }
-                
-                message.setTimeOffset( utcTimeOffset );
 
-                message.machineName = rs.getString( "machineName" );
-                message.threadName = rs.getString( "threadName" );
-                message.parentMessageId = rs.getInt( "parentMessageId" );
+                message.setTimeOffset(utcTimeOffset);
 
-                if( message.parentMessageId != 0 ) {
+                message.machineName = rs.getString("machineName");
+                message.threadName = rs.getString("threadName");
+                message.parentMessageId = rs.getInt("parentMessageId");
+
+                if (message.parentMessageId != 0) {
                     // split message
-                    if( splitMessages.containsKey( message.parentMessageId ) ) {
+                    if (splitMessages.containsKey(message.parentMessageId)) {
                         // append to the message - result set is ordered by message ID
-                        Message splitMessage = splitMessages.get( message.parentMessageId );
-                        if( splitMessage.messageId < message.messageId ) {
+                        Message splitMessage = splitMessages.get(message.parentMessageId);
+                        if (splitMessage.messageId < message.messageId) {
                             // append at the end
                             splitMessage.messageContent = splitMessage.messageContent
                                                           + message.messageContent;
@@ -650,22 +648,22 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                         }
                     } else {
                         // first part of the split message
-                        splitMessages.put( message.parentMessageId, message );
-                        messages.add( message );
+                        splitMessages.put(message.parentMessageId, message);
+                        messages.add(message);
                     }
                 } else {
                     // single message
-                    messages.add( message );
+                    messages.add(message);
                 }
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "messages", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "messages", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
         return messages;
     }
@@ -677,52 +675,52 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<Message> runMessages = new ArrayList<Message>();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_run_messages(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_run_messages(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Message runMessage = new Message();
-                runMessage.messageId = rs.getInt( "runMessageId" );
-                runMessage.messageContent = rs.getString( "message" );
-                runMessage.messageType = rs.getString( "typeName" );
+                runMessage.messageId = rs.getInt("runMessageId");
+                runMessage.messageContent = rs.getString("message");
+                runMessage.messageType = rs.getString("typeName");
 
-                if ( rs.getTimestamp( "timestamp" ) != null ) {
-                    runMessage.setStartTimestamp( rs.getTimestamp( "timestamp" ).getTime() );   
+                if (rs.getTimestamp("timestamp") != null) {
+                    runMessage.setStartTimestamp(rs.getTimestamp("timestamp").getTime());
                 }
-                runMessage.setTimeOffset( utcTimeOffset );
+                runMessage.setTimeOffset(utcTimeOffset);
 
-                runMessage.machineName = rs.getString( "machineName" );
-                runMessage.threadName = rs.getString( "threadName" );
-                runMessages.add( runMessage );
+                runMessage.machineName = rs.getString("machineName");
+                runMessage.threadName = rs.getString("threadName");
+                runMessages.add(runMessage);
 
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "run messages", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "run messages", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return runMessages;
@@ -735,53 +733,53 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<Message> suiteMessages = new ArrayList<Message>();
 
-        String sqlLog = new SqlRequestFormatter().add( "start record", startRecord )
-                                                 .add( "records", recordsCount )
-                                                 .add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("start record", startRecord)
+                                                 .add("records", recordsCount)
+                                                 .add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_suite_messages(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, String.valueOf( startRecord ) );
-            callableStatement.setString( 2, String.valueOf( recordsCount ) );
-            callableStatement.setString( 3, whereClause );
-            callableStatement.setString( 4, sortColumn );
-            callableStatement.setString( 5, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_suite_messages(?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, String.valueOf(startRecord));
+            callableStatement.setString(2, String.valueOf(recordsCount));
+            callableStatement.setString(3, whereClause);
+            callableStatement.setString(4, sortColumn);
+            callableStatement.setString(5, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Message suiteMessage = new Message();
-                suiteMessage.messageId = rs.getInt( "suiteMessageId" );
-                suiteMessage.messageContent = rs.getString( "message" );
-                suiteMessage.messageType = rs.getString( "typeName" );
-                
-                if ( rs.getTimestamp( "timestamp" ) != null ) {
-                    suiteMessage.setStartTimestamp( rs.getTimestamp( "timestamp" ).getTime() );
-                }
-                
-                suiteMessage.setTimeOffset( utcTimeOffset );
+                suiteMessage.messageId = rs.getInt("suiteMessageId");
+                suiteMessage.messageContent = rs.getString("message");
+                suiteMessage.messageType = rs.getString("typeName");
 
-                suiteMessage.machineName = rs.getString( "machineName" );
-                suiteMessage.threadName = rs.getString( "threadName" );
-                suiteMessages.add( suiteMessage );
+                if (rs.getTimestamp("timestamp") != null) {
+                    suiteMessage.setStartTimestamp(rs.getTimestamp("timestamp").getTime());
+                }
+
+                suiteMessage.setTimeOffset(utcTimeOffset);
+
+                suiteMessage.machineName = rs.getString("machineName");
+                suiteMessage.threadName = rs.getString("threadName");
+                suiteMessages.add(suiteMessage);
 
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "suite messages", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "suite messages", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return suiteMessages;
@@ -789,87 +787,87 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
     public int getMessagesCount( String whereClause ) throws DatabaseAccessException {
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_messages_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_messages_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int messagesCount = 0;
-            if( rs.next() ) {
-                messagesCount = rs.getInt( "messagesCount" );
+            if (rs.next()) {
+                messagesCount = rs.getInt("messagesCount");
             }
-            logQuerySuccess( sqlLog, "messages", messagesCount );
+            logQuerySuccess(sqlLog, "messages", messagesCount);
 
             return messagesCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
     public int getRunMessagesCount( String whereClause ) throws DatabaseAccessException {
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_run_messages_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_run_messages_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int messagesCount = 0;
-            if( rs.next() ) {
-                messagesCount = rs.getInt( "messagesCount" );
+            if (rs.next()) {
+                messagesCount = rs.getInt("messagesCount");
             }
-            logQuerySuccess( sqlLog, "run messages count", messagesCount );
+            logQuerySuccess(sqlLog, "run messages count", messagesCount);
 
             return messagesCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
     public int getSuiteMessagesCount( String whereClause ) throws DatabaseAccessException {
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause ).format();
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_suite_messages_count(?) }" );
-            callableStatement.setString( 1, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_suite_messages_count(?) }");
+            callableStatement.setString(1, whereClause);
 
             rs = callableStatement.executeQuery();
             int messagesCount = 0;
-            if( rs.next() ) {
-                messagesCount = rs.getInt( "messagesCount" );
+            if (rs.next()) {
+                messagesCount = rs.getInt("messagesCount");
             }
-            logQuerySuccess( sqlLog, "suite messages count", messagesCount );
+            logQuerySuccess(sqlLog, "suite messages count", messagesCount);
 
             return messagesCount;
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
     }
 
-    public List<StatisticDescription> getSystemStatisticDescriptions( 
-                                                                     float timeOffset, 
+    public List<StatisticDescription> getSystemStatisticDescriptions(
+                                                                      float timeOffset,
                                                                       String whereClause,
                                                                       Map<String, String> testcaseAliases,
                                                                       int utcTimeOffset,
@@ -877,67 +875,67 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<StatisticDescription> statisticDescriptions = new ArrayList<StatisticDescription>();
 
-        String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "whereClause", whereClause )
+        String sqlLog = new SqlRequestFormatter().add("fdate", formatDateFromEpoch(timeOffset))
+                                                 .add("whereClause", whereClause)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_system_statistic_descriptions(?, ?) }" );
-            callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_system_statistic_descriptions(?, ?) }");
+            callableStatement.setString(1, formatDateFromEpoch(timeOffset));
+            callableStatement.setString(2, whereClause);
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
-            while( rs.next() ) {
+            while (rs.next()) {
                 StatisticDescription statisticDescription = new StatisticDescription();
 
-                statisticDescription.testcaseId = rs.getInt( "testcaseId" );
+                statisticDescription.testcaseId = rs.getInt("testcaseId");
 
                 // if user has provided testcase alias - use it instead the original testcase name
-                if( testcaseAliases != null ) {
-                    statisticDescription.testcaseName = testcaseAliases.get( String.valueOf( statisticDescription.testcaseId ) );
+                if (testcaseAliases != null) {
+                    statisticDescription.testcaseName = testcaseAliases.get(String.valueOf(statisticDescription.testcaseId));
                 }
-                if( statisticDescription.testcaseName == null ) {
-                    statisticDescription.testcaseName = rs.getString( "testcaseName" );
+                if (statisticDescription.testcaseName == null) {
+                    statisticDescription.testcaseName = rs.getString("testcaseName");
                 }
-                
-                long startTimestamp = rs.getInt( "testcaseStarttime" );
-                if(dayLightSavingOn){
+
+                long startTimestamp = rs.getInt("testcaseStarttime");
+                if (dayLightSavingOn) {
                     startTimestamp += 3600; // add 1h to time stamp
                 }
-                statisticDescription.setStartTimestamp( startTimestamp );
-                statisticDescription.setTimeOffset( utcTimeOffset );
+                statisticDescription.setStartTimestamp(startTimestamp);
+                statisticDescription.setTimeOffset(utcTimeOffset);
 
-                statisticDescription.machineId = rs.getInt( "machineId" );
-                statisticDescription.machineName = rs.getString( "machineName" );
+                statisticDescription.machineId = rs.getInt("machineId");
+                statisticDescription.machineName = rs.getString("machineName");
 
-                statisticDescription.statisticTypeId = rs.getInt( "statsTypeId" );
-                statisticDescription.statisticName = rs.getString( "name" );
+                statisticDescription.statisticTypeId = rs.getInt("statsTypeId");
+                statisticDescription.statisticName = rs.getString("name");
 
-                statisticDescription.unit = rs.getString( "units" );
-                statisticDescription.params = rs.getString( "params" );
-                statisticDescription.parent = rs.getString( "parentName" );
-                statisticDescription.internalName = rs.getString( "internalName" );
+                statisticDescription.unit = rs.getString("units");
+                statisticDescription.params = rs.getString("params");
+                statisticDescription.parent = rs.getString("parentName");
+                statisticDescription.internalName = rs.getString("internalName");
 
-                statisticDescription.numberMeasurements = rs.getInt( "statsNumberMeasurements" );
-                statisticDescription.minValue = rs.getFloat( "statsMinValue" );
-                statisticDescription.maxValue = rs.getFloat( "statsMaxValue" );
-                statisticDescription.avgValue = rs.getFloat( "statsAvgValue" );
+                statisticDescription.numberMeasurements = rs.getInt("statsNumberMeasurements");
+                statisticDescription.minValue = rs.getFloat("statsMinValue");
+                statisticDescription.maxValue = rs.getFloat("statsMaxValue");
+                statisticDescription.avgValue = rs.getFloat("statsAvgValue");
 
-                statisticDescriptions.add( statisticDescription );
+                statisticDescriptions.add(statisticDescription);
 
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "system statistic descriptions", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "system statistic descriptions", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return statisticDescriptions;
@@ -945,125 +943,125 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
     public List<StatisticDescription> getCheckpointStatisticDescriptions( float timeOffset,
                                                                           String whereClause,
-                                                                          Set<String> expectedSingleActionUIDs, 
+                                                                          Set<String> expectedSingleActionUIDs,
                                                                           int utcTimeOffset,
                                                                           boolean dayLightSavingOn ) throws DatabaseAccessException {
 
         List<StatisticDescription> statisticDescriptions = new ArrayList<StatisticDescription>();
 
-        String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "where clause", whereClause )
+        String sqlLog = new SqlRequestFormatter().add("fdate", formatDateFromEpoch(timeOffset))
+                                                 .add("where clause", whereClause)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_checkpoint_statistic_descriptions(?, ?) }" );
-            callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, whereClause );
+            callableStatement = connection.prepareCall("{ call sp_get_checkpoint_statistic_descriptions(?, ?) }");
+            callableStatement.setString(1, formatDateFromEpoch(timeOffset));
+            callableStatement.setString(2, whereClause);
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
-            while( rs.next() ) {
+            while (rs.next()) {
                 StatisticDescription statisticDescription = new StatisticDescription();
 
-                statisticDescription.testcaseId = rs.getInt( "testcaseId" );
+                statisticDescription.testcaseId = rs.getInt("testcaseId");
 
-                if( statisticDescription.testcaseName == null ) {
-                    statisticDescription.testcaseName = rs.getString( "testcaseName" );
+                if (statisticDescription.testcaseName == null) {
+                    statisticDescription.testcaseName = rs.getString("testcaseName");
                 }
-                
-                long startTimestamp = rs.getInt( "testcaseStarttime" );
-                if(dayLightSavingOn){
+
+                long startTimestamp = rs.getInt("testcaseStarttime");
+                if (dayLightSavingOn) {
                     startTimestamp += 3600; // add 1h to time stamp
                 }
-                statisticDescription.setStartTimestamp( startTimestamp );
-                statisticDescription.setTimeOffset( utcTimeOffset );
+                statisticDescription.setStartTimestamp(startTimestamp);
+                statisticDescription.setTimeOffset(utcTimeOffset);
 
                 statisticDescription.machineId = 0; // Checkpoints will be collected and displayed for testcase
                 statisticDescription.machineName = MACHINE_NAME_FOR_ATS_AGENTS;
 
-                statisticDescription.queueName = rs.getString( "queueName" );
+                statisticDescription.queueName = rs.getString("queueName");
 
-                statisticDescription.numberMeasurements = rs.getInt( "statsNumberMeasurements" );
-                
-                statisticDescription.minValue = rs.getInt( "statsMinValue" );
-                statisticDescription.avgValue = rs.getInt( "statsAvgValue" );
-                statisticDescription.maxValue = rs.getInt( "statsMaxValue" );
+                statisticDescription.numberMeasurements = rs.getInt("statsNumberMeasurements");
 
-                statisticDescription.statisticName = rs.getString( "name" );
+                statisticDescription.minValue = rs.getInt("statsMinValue");
+                statisticDescription.avgValue = rs.getInt("statsAvgValue");
+                statisticDescription.maxValue = rs.getInt("statsMaxValue");
+
+                statisticDescription.statisticName = rs.getString("name");
                 statisticDescription.unit = "ms"; // "statsUnit" field is null for checkpoint statistics, because the action response times are always measured in "ms"
 
                 String actionUid = statisticDescription.testcaseId + "->" + statisticDescription.machineId
                                    + "->" + statisticDescription.queueName + "->"
                                    + statisticDescription.statisticName;
                 // add to single statistics
-                if( expectedSingleActionUIDs.isEmpty() || expectedSingleActionUIDs.contains( actionUid ) ) {
-                    statisticDescriptions.add( statisticDescription );
+                if (expectedSingleActionUIDs.isEmpty() || expectedSingleActionUIDs.contains(actionUid)) {
+                    statisticDescriptions.add(statisticDescription);
                     numberRecords++;
                 }
             }
 
-            logQuerySuccess( sqlLog, "system statistic descriptions", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "system statistic descriptions", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return statisticDescriptions;
     }
-    
+
     public Map<String, Integer>
             getNumberOfCheckpointsPerQueue( String testcaseIds ) throws DatabaseAccessException {
 
         Map<String, Integer> allStatistics = new HashMap<String, Integer>();
 
-        String sqlLog = new SqlRequestFormatter().add( "testcase ids", testcaseIds ).format();
+        String sqlLog = new SqlRequestFormatter().add("testcase ids", testcaseIds).format();
 
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_number_of_checkpoints_per_queue(?) }" );
-            callableStatement.setString( 1, testcaseIds );
+            callableStatement = connection.prepareCall("{ call sp_get_number_of_checkpoints_per_queue(?) }");
+            callableStatement.setString(1, testcaseIds);
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
-            while( rs.next() ) {
-                String name = rs.getString( "name" );
-                int queueNumbers = rs.getInt( "numberOfQueue" );
-                allStatistics.put( name, queueNumbers );
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int queueNumbers = rs.getInt("numberOfQueue");
+                allStatistics.put(name, queueNumbers);
             }
 
-            logQuerySuccess( sqlLog, "system statistics", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "system statistics", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return allStatistics;
     }
-        
-	public List<Statistic> getSystemStatistics( float timeOffset, 
-												String testcaseIds,
-												String machineIds,
-												String statsTypeIds, 
-												int utcTimeOffset,
+
+    public List<Statistic> getSystemStatistics( float timeOffset,
+                                                String testcaseIds,
+                                                String machineIds,
+                                                String statsTypeIds,
+                                                int utcTimeOffset,
                                                 boolean dayLightSavingOn )
-														throws DatabaseAccessException {
+                                                                           throws DatabaseAccessException {
 
         List<Statistic> allStatistics = new ArrayList<Statistic>();
 
-        String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "testcase ids", testcaseIds )
-                                                 .add( "machine ids", machineIds )
-                                                 .add( "stats type ids", statsTypeIds )
+        String sqlLog = new SqlRequestFormatter().add("fdate", formatDateFromEpoch(timeOffset))
+                                                 .add("testcase ids", testcaseIds)
+                                                 .add("machine ids", machineIds)
+                                                 .add("stats type ids", statsTypeIds)
                                                  .format();
 
         Connection connection = getConnection();
@@ -1071,45 +1069,45 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_system_statistics(?, ?, ?, ?) }" );
+            callableStatement = connection.prepareCall("{ call sp_get_system_statistics(?, ?, ?, ?) }");
 
-            callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, testcaseIds );
-            callableStatement.setString( 3, machineIds );
-            callableStatement.setString( 4, statsTypeIds );
+            callableStatement.setString(1, formatDateFromEpoch(timeOffset));
+            callableStatement.setString(2, testcaseIds);
+            callableStatement.setString(3, machineIds);
+            callableStatement.setString(4, statsTypeIds);
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
-            while( rs.next() ) {
+            while (rs.next()) {
                 Statistic statistic = new Statistic();
-                statistic.statisticTypeId = rs.getInt( "statsTypeId" );
-                statistic.name = rs.getString( "statsName" );
-                statistic.parentName = rs.getString( "statsParent" );
-                statistic.unit = rs.getString( "statsUnit" );
-                statistic.value = rs.getFloat( "value" );
-                statistic.setDate ( rs.getString( "statsAxis" ) );
-                
-                long startTimestamp = rs.getInt( "statsAxisTimestamp" );
-                if(dayLightSavingOn){
+                statistic.statisticTypeId = rs.getInt("statsTypeId");
+                statistic.name = rs.getString("statsName");
+                statistic.parentName = rs.getString("statsParent");
+                statistic.unit = rs.getString("statsUnit");
+                statistic.value = rs.getFloat("value");
+                statistic.setDate(rs.getString("statsAxis"));
+
+                long startTimestamp = rs.getInt("statsAxisTimestamp");
+                if (dayLightSavingOn) {
                     startTimestamp += 3600; // add 1h to time stamp
                 }
-                statistic.setStartTimestamp( startTimestamp );
-                statistic.setTimeOffset( utcTimeOffset );
+                statistic.setStartTimestamp(startTimestamp);
+                statistic.setTimeOffset(utcTimeOffset);
 
-                statistic.machineId = rs.getInt( "machineId" );
-                statistic.testcaseId = rs.getInt( "testcaseId" );
+                statistic.machineId = rs.getInt("machineId");
+                statistic.testcaseId = rs.getInt("testcaseId");
 
                 numberRecords++;
                 // add the combined statistics to the others
-                allStatistics.add( statistic );
+                allStatistics.add(statistic);
             }
 
-            logQuerySuccess( sqlLog, "system statistics", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "system statistics", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return allStatistics;
@@ -1124,10 +1122,10 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<Statistic> allStatistics = new ArrayList<Statistic>();
 
-        String sqlLog = new SqlRequestFormatter().add( "fdate", formatDateFromEpoch( timeOffset ) )
-                                                 .add( "testcase ids", testcaseIds )
-                                                 .add( "checkpoint names", actionNames )
-                                                 .add( "checkpoint parents", actionParents )
+        String sqlLog = new SqlRequestFormatter().add("fdate", formatDateFromEpoch(timeOffset))
+                                                 .add("testcase ids", testcaseIds)
+                                                 .add("checkpoint names", actionNames)
+                                                 .add("checkpoint parents", actionParents)
                                                  .format();
 
         Map<String, Integer> fakeStatisticIds = new HashMap<String, Integer>();
@@ -1147,60 +1145,59 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_checkpoint_statistics(?, ?, ?, ?) }" );
+            callableStatement = connection.prepareCall("{ call sp_get_checkpoint_statistics(?, ?, ?, ?) }");
 
-            callableStatement.setString( 1, formatDateFromEpoch( timeOffset ) );
-            callableStatement.setString( 2, testcaseIds );
-            callableStatement.setString( 3, actionNames );
-            callableStatement.setString( 4, actionParents );
+            callableStatement.setString(1, formatDateFromEpoch(timeOffset));
+            callableStatement.setString(2, testcaseIds);
+            callableStatement.setString(3, actionNames);
+            callableStatement.setString(4, actionParents);
 
             int numberRecords = 0;
             rs = callableStatement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
 
                 // add new statistic
                 Statistic statistic = new Statistic();
-                statistic.name = rs.getString( "statsName" );
-                statistic.parentName = rs.getString( "queueName" );
+                statistic.name = rs.getString("statsName");
+                statistic.parentName = rs.getString("queueName");
                 statistic.unit = "ms";
-                statistic.value = rs.getFloat( "value" );
-                if(dayLightSavingOn){
-                    statistic.setStartTimestamp( rs.getLong( "statsAxisTimestamp" ) + 3600 ); // add 1h to time stamp
+                statistic.value = rs.getFloat("value");
+                if (dayLightSavingOn) {
+                    statistic.setStartTimestamp(rs.getLong("statsAxisTimestamp") + 3600); // add 1h to time stamp
+                } else {
+                    statistic.setStartTimestamp(rs.getLong("statsAxisTimestamp"));
                 }
-                else{
-                    statistic.setStartTimestamp( rs.getLong( "statsAxisTimestamp" ) );
-                }
-                
-                statistic.setTimeOffset( utcTimeOffset );
-                
-                statistic.machineId = 0; // Checkpoints will be collected and displayed for testcase
-                statistic.testcaseId = rs.getInt( "testcaseId" );
 
-                statistic.statisticTypeId = getStatisticFakeId( START_FAKE_ID_VALUE_FOR_CHECKPOINTS,
-                                                                fakeStatisticIds, statistic );
+                statistic.setTimeOffset(utcTimeOffset);
+
+                statistic.machineId = 0; // Checkpoints will be collected and displayed for testcase
+                statistic.testcaseId = rs.getInt("testcaseId");
+
+                statistic.statisticTypeId = getStatisticFakeId(START_FAKE_ID_VALUE_FOR_CHECKPOINTS,
+                                                               fakeStatisticIds, statistic);
 
                 // add to single statistics
-                if( expectedSingleActionUIDs.contains( statistic.getUid() ) ) {
-                    allStatistics.add( statistic );
+                if (expectedSingleActionUIDs.contains(statistic.getUid())) {
+                    allStatistics.add(statistic);
                 }
 
                 // add to combined statistics
-                if( expectedCombinedActionUIDs.contains( statistic.getCombinedStatisticUid() ) ) {
+                if (expectedCombinedActionUIDs.contains(statistic.getCombinedStatisticUid())) {
 
                     String statisticKey = statistic.getStartTimestamp() + "->" + statistic.name;
-                    Integer timesHaveThisStatisticAtThisTimestamp = combinedStatisticHitsAtSameTimestamp.get( statisticKey );
+                    Integer timesHaveThisStatisticAtThisTimestamp = combinedStatisticHitsAtSameTimestamp.get(statisticKey);
 
                     Statistic combinedStatistic;
-                    if( timesHaveThisStatisticAtThisTimestamp == null ) {
+                    if (timesHaveThisStatisticAtThisTimestamp == null) {
                         // create a new combined statistic
                         combinedStatistic = new Statistic();
                         combinedStatistic.name = statistic.name;
                         combinedStatistic.parentName = Statistic.COMBINED_STATISTICS_CONTAINER;
                         combinedStatistic.unit = statistic.unit;
-                        
-                        combinedStatistic.setStartTimestamp( statistic.getStartTimestamp() );
-                        combinedStatistic.setTimeOffset( statistic.getTimeOffset() );
-                        
+
+                        combinedStatistic.setStartTimestamp(statistic.getStartTimestamp());
+                        combinedStatistic.setTimeOffset(statistic.getTimeOffset());
+
                         combinedStatistic.machineId = statistic.machineId;
                         combinedStatistic.testcaseId = statistic.testcaseId;
 
@@ -1208,8 +1205,8 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                         timesHaveThisStatisticAtThisTimestamp = 1;
                     } else {
                         // create another copy of this statistic
-                        combinedStatistic = combinedStatistics.get( statisticKey + "->"
-                                                                    + timesHaveThisStatisticAtThisTimestamp )
+                        combinedStatistic = combinedStatistics.get(statisticKey + "->"
+                                                                   + timesHaveThisStatisticAtThisTimestamp)
                                                               .newInstance();
 
                         // we already had such statistic at this timestamp
@@ -1217,44 +1214,44 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                     }
 
                     combinedStatistic.value = statistic.value;
-                    combinedStatistic.statisticTypeId = getStatisticFakeId( START_FAKE_ID_VALUE_FOR_CHECKPOINTS,
-                                                                            fakeStatisticIds,
-                                                                            combinedStatistic );
+                    combinedStatistic.statisticTypeId = getStatisticFakeId(START_FAKE_ID_VALUE_FOR_CHECKPOINTS,
+                                                                           fakeStatisticIds,
+                                                                           combinedStatistic);
 
                     // remember how many times we got same statistic at same timestamp
-                    combinedStatisticHitsAtSameTimestamp.put( statisticKey,
-                                                              timesHaveThisStatisticAtThisTimestamp );
+                    combinedStatisticHitsAtSameTimestamp.put(statisticKey,
+                                                             timesHaveThisStatisticAtThisTimestamp);
                     // Remember this statistic in the list
                     // The way we create the map key assures the proper time ordering
-                    combinedStatistics.put( statisticKey + "->" + timesHaveThisStatisticAtThisTimestamp,
-                                            combinedStatistic );
+                    combinedStatistics.put(statisticKey + "->" + timesHaveThisStatisticAtThisTimestamp,
+                                           combinedStatistic);
                 }
 
                 numberRecords++;
             }
 
-            if( combinedStatistics.size() > 0 ) {
+            if (combinedStatistics.size() > 0) {
                 // sort the combined statistics by their timestamps
-                List<Statistic> sortedStatistics = new ArrayList<Statistic>( combinedStatistics.values() );
-                Collections.sort( sortedStatistics, new Comparator<Statistic>() {
+                List<Statistic> sortedStatistics = new ArrayList<Statistic>(combinedStatistics.values());
+                Collections.sort(sortedStatistics, new Comparator<Statistic>() {
 
                     @Override
                     public int compare( Statistic stat1, Statistic stat2 ) {
 
-                        return ( int ) ( stat1.getStartTimestamp() - stat2.getStartTimestamp() );
+                        return (int) (stat1.getStartTimestamp() - stat2.getStartTimestamp());
                     }
-                } );
+                });
 
                 // add the combined statistics to the others
-                allStatistics.addAll( sortedStatistics );
+                allStatistics.addAll(sortedStatistics);
             }
 
-            logQuerySuccess( sqlLog, "action response statistics", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "action response statistics", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return allStatistics;
@@ -1272,10 +1269,10 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         final String statisticUID = statistic.parentName + "->" + statistic.name;
 
-        Integer statisticId = statisticFakeIds.get( statisticUID );
-        if( statisticId == null ) {
+        Integer statisticId = statisticFakeIds.get(statisticUID);
+        if (statisticId == null) {
             statisticId = startValue - statisticFakeIds.size();
-            statisticFakeIds.put( statisticUID, statisticId );
+            statisticFakeIds.put(statisticUID, statisticId);
         }
 
         return statisticId;
@@ -1286,53 +1283,53 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<LoadQueue> loadQueues = new ArrayList<LoadQueue>();
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_loadqueues(?, ?, ?) }" );
-            callableStatement.setString( 1, "where " + whereClause );
-            callableStatement.setString( 2, sortColumn );
-            callableStatement.setString( 3, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_loadqueues(?, ?, ?) }");
+            callableStatement.setString(1, "where " + whereClause);
+            callableStatement.setString(2, sortColumn);
+            callableStatement.setString(3, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
-            while( rs.next() ) {
+            while (rs.next()) {
                 LoadQueue loadQueue = new LoadQueue();
-                loadQueue.loadQueueId = rs.getInt( "loadQueueId" );
-                loadQueue.name = rs.getString( "name" );
-                loadQueue.sequence = rs.getInt( "sequence" );
-                loadQueue.hostsList = rs.getString( "hostsList" );
-                loadQueue.threadingPattern = rs.getString( "threadingPattern" );
-                loadQueue.numberThreads = rs.getInt( "numberThreads" );
-                if( loadQueue.threadingPattern != null ) {
-                    loadQueue.threadingPattern = loadQueue.threadingPattern.replace( "<number_threads>",
-                                                                                     String.valueOf( loadQueue.numberThreads ) );
+                loadQueue.loadQueueId = rs.getInt("loadQueueId");
+                loadQueue.name = rs.getString("name");
+                loadQueue.sequence = rs.getInt("sequence");
+                loadQueue.hostsList = rs.getString("hostsList");
+                loadQueue.threadingPattern = rs.getString("threadingPattern");
+                loadQueue.numberThreads = rs.getInt("numberThreads");
+                if (loadQueue.threadingPattern != null) {
+                    loadQueue.threadingPattern = loadQueue.threadingPattern.replace("<number_threads>",
+                                                                                    String.valueOf(loadQueue.numberThreads));
                 }
-                
-                if ( rs.getTimestamp( "dateStart" ) != null ) {
-                    loadQueue.setStartTimestamp( rs.getTimestamp( "dateStart" ).getTime() );
-                }
-                if ( rs.getTimestamp( "dateEnd" ) != null ) {
-                    loadQueue.setEndTimestamp( rs.getTimestamp( "dateEnd" ).getTime() );
-                }
-                loadQueue.setTimeOffset( utcTimeOffset );
 
-                loadQueue.result = rs.getInt( "result" );
+                if (rs.getTimestamp("dateStart") != null) {
+                    loadQueue.setStartTimestamp(rs.getTimestamp("dateStart").getTime());
+                }
+                if (rs.getTimestamp("dateEnd") != null) {
+                    loadQueue.setEndTimestamp(rs.getTimestamp("dateEnd").getTime());
+                }
+                loadQueue.setTimeOffset(utcTimeOffset);
+
+                loadQueue.result = rs.getInt("result");
                 /*
                  *   -- 0 FAILED
                  *   -- 1 PASSED
                  *   -- 2 SKIPPED
                  *   -- 4 RUNNING
                  */
-                switch( loadQueue.result ){
+                switch (loadQueue.result) {
                     case 0:
                         loadQueue.state = "FAILED";
                         break;
@@ -1350,16 +1347,16 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                         loadQueue.state = "unknown";
                 }
 
-                loadQueues.add( loadQueue );
+                loadQueues.add(loadQueue);
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "loadqueues", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "loadqueues", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return loadQueues;
@@ -1370,60 +1367,60 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<CheckpointSummary> checkpoints = new ArrayList<CheckpointSummary>();
 
-        String sqlLog = new SqlRequestFormatter().add( "where", whereClause )
-                                                 .add( "sort by", sortColumn )
-                                                 .add( "asc", ascending )
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause)
+                                                 .add("sort by", sortColumn)
+                                                 .add("asc", ascending)
                                                  .format();
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall( "{ call sp_get_checkpoints_summary(?, ?, ?) }" );
-            callableStatement.setString( 1, "where " + whereClause );
-            callableStatement.setString( 2, sortColumn );
-            callableStatement.setString( 3, ( ascending
-                                                        ? "ASC"
-                                                        : "DESC" ) );
+            callableStatement = connection.prepareCall("{ call sp_get_checkpoints_summary(?, ?, ?) }");
+            callableStatement.setString(1, "where " + whereClause);
+            callableStatement.setString(2, sortColumn);
+            callableStatement.setString(3, (ascending
+                                                      ? "ASC"
+                                                      : "DESC"));
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
-            while( rs.next() ) {
+            while (rs.next()) {
                 CheckpointSummary checkpointSummary = new CheckpointSummary();
-                checkpointSummary.checkpointSummaryId = rs.getInt( "checkpointSummaryId" );
-                checkpointSummary.name = rs.getString( "name" );
+                checkpointSummary.checkpointSummaryId = rs.getInt("checkpointSummaryId");
+                checkpointSummary.name = rs.getString("name");
 
-                checkpointSummary.numRunning = rs.getInt( "numRunning" );
-                checkpointSummary.numPassed = rs.getInt( "numPassed" );
-                checkpointSummary.numFailed = rs.getInt( "numFailed" );
+                checkpointSummary.numRunning = rs.getInt("numRunning");
+                checkpointSummary.numPassed = rs.getInt("numPassed");
+                checkpointSummary.numFailed = rs.getInt("numFailed");
                 checkpointSummary.numTotal = checkpointSummary.numRunning + checkpointSummary.numPassed
                                              + checkpointSummary.numFailed;
 
-                checkpointSummary.minResponseTime = rs.getInt( "minResponseTime" );
-                if( checkpointSummary.minResponseTime == Integer.MAX_VALUE ) {
+                checkpointSummary.minResponseTime = rs.getInt("minResponseTime");
+                if (checkpointSummary.minResponseTime == Integer.MAX_VALUE) {
                     checkpointSummary.minResponseTime = 0;
                 }
-                checkpointSummary.avgResponseTime = rs.getFloat( "avgResponseTime" );
-                checkpointSummary.maxResponseTime = rs.getInt( "maxResponseTime" );
+                checkpointSummary.avgResponseTime = rs.getFloat("avgResponseTime");
+                checkpointSummary.maxResponseTime = rs.getInt("maxResponseTime");
 
-                checkpointSummary.minTransferRate = rs.getFloat( "minTransferRate" );
-                if( checkpointSummary.minTransferRate == Integer.MAX_VALUE ) {
+                checkpointSummary.minTransferRate = rs.getFloat("minTransferRate");
+                if (checkpointSummary.minTransferRate == Integer.MAX_VALUE) {
                     checkpointSummary.minTransferRate = 0.0F;
                 }
-                checkpointSummary.avgTransferRate = rs.getFloat( "avgTransferRate" );
-                checkpointSummary.maxTransferRate = rs.getFloat( "maxTransferRate" );
-                checkpointSummary.transferRateUnit = rs.getString( "transferRateUnit" );
+                checkpointSummary.avgTransferRate = rs.getFloat("avgTransferRate");
+                checkpointSummary.maxTransferRate = rs.getFloat("maxTransferRate");
+                checkpointSummary.transferRateUnit = rs.getString("transferRateUnit");
 
-                checkpoints.add( checkpointSummary );
+                checkpoints.add(checkpointSummary);
                 numberRecords++;
             }
 
-            logQuerySuccess( sqlLog, "checkpoints summary", numberRecords );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "checkpoints summary", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, callableStatement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, callableStatement);
         }
 
         return checkpoints;
@@ -1437,56 +1434,56 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         List<Checkpoint> checkpoints = new ArrayList<Checkpoint>();
 
-        String sqlLog = new SqlRequestFormatter().add( "testcase id", testcaseId )
-                                                 .add( "loadQueue id", loadQueueId )
-                                                 .add( "checkpoint name", checkpointName )
+        String sqlLog = new SqlRequestFormatter().add("testcase id", testcaseId)
+                                                 .add("loadQueue id", loadQueueId)
+                                                 .add("checkpoint name", checkpointName)
                                                  .format();
         Connection connection = getConnection();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
 
-            statement = connection.prepareStatement( "SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
-                                                     + " DATEDIFF(second, CONVERT( datetime, '1970-01-01 00:00:00', 20), ch.endTime) as endTime,"
-                                                     + " ch.endtime AS copyEndTime"
-                                                     + " FROM tCheckpoints ch"
-                                                     + " INNER JOIN tCheckpointsSummary chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
-                                                     + " INNER JOIN tLoadQueues c on (c.loadQueueId = chs.loadQueueId)"
-                                                     + " INNER JOIN tTestcases tt on (tt.testcaseId = c.testcaseId) "
-                                                     + "WHERE tt.testcaseId = ? AND c.loadQueueId = ? AND ch.name = ?" );
+            statement = connection.prepareStatement("SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
+                                                    + " DATEDIFF(second, CONVERT( datetime, '1970-01-01 00:00:00', 20), ch.endTime) as endTime,"
+                                                    + " ch.endtime AS copyEndTime"
+                                                    + " FROM tCheckpoints ch"
+                                                    + " INNER JOIN tCheckpointsSummary chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
+                                                    + " INNER JOIN tLoadQueues c on (c.loadQueueId = chs.loadQueueId)"
+                                                    + " INNER JOIN tTestcases tt on (tt.testcaseId = c.testcaseId) "
+                                                    + "WHERE tt.testcaseId = ? AND c.loadQueueId = ? AND ch.name = ?");
 
-            statement.setString( 1, testcaseId );
-            statement.setInt( 2, loadQueueId );
-            statement.setString( 3, checkpointName );
+            statement.setString(1, testcaseId);
+            statement.setInt(2, loadQueueId);
+            statement.setString(3, checkpointName);
 
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
 
                 Checkpoint checkpoint = new Checkpoint();
-                checkpoint.checkpointId = rs.getInt( "checkpointId" );
+                checkpoint.checkpointId = rs.getInt("checkpointId");
                 checkpoint.name = checkpointName;
-                checkpoint.responseTime = rs.getInt( "responseTime" );
-                checkpoint.transferRate = rs.getFloat( "transferRate" );
-                checkpoint.transferRateUnit = rs.getString( "transferRateUnit" );
-                checkpoint.result = rs.getInt( "result" );
-                
-                if( dayLightSavingOn ){
-                    checkpoint.setEndTimestamp( rs.getLong( "endTime" ) + 3600 ); // add 1h
-                }else{
-                    checkpoint.setEndTimestamp( rs.getLong( "endTime" ) );
-                }
-                checkpoint.setTimeOffset( utcTimeOffset );
-                checkpoint.copyEndTimestamp = rs.getTimestamp("copyEndTime" ).getTime();
+                checkpoint.responseTime = rs.getInt("responseTime");
+                checkpoint.transferRate = rs.getFloat("transferRate");
+                checkpoint.transferRateUnit = rs.getString("transferRateUnit");
+                checkpoint.result = rs.getInt("result");
 
-                checkpoints.add( checkpoint );
+                if (dayLightSavingOn) {
+                    checkpoint.setEndTimestamp(rs.getLong("endTime") + 3600); // add 1h
+                } else {
+                    checkpoint.setEndTimestamp(rs.getLong("endTime"));
+                }
+                checkpoint.setTimeOffset(utcTimeOffset);
+                checkpoint.copyEndTimestamp = rs.getTimestamp("copyEndTime").getTime();
+
+                checkpoints.add(checkpoint);
             }
 
-            logQuerySuccess( sqlLog, "checkpoints", checkpoints.size() );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "checkpoints", checkpoints.size());
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return checkpoints;
@@ -1496,8 +1493,8 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         Connection connection = super.getConnection();
         try {
-            connection.setTransactionIsolation( Connection.TRANSACTION_READ_UNCOMMITTED );
-        } catch( SQLException e ) {
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+        } catch (SQLException e) {
             // Not a big deal, we will not read the entities which are in the process
             // of being inserted, but the transaction is still not completed
         }
@@ -1512,21 +1509,21 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT * FROM tRunMetainfo WHERE runId = " + runId );
+            statement = connection.prepareStatement("SELECT * FROM tRunMetainfo WHERE runId = " + runId);
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 RunMetaInfo runMetainfo = new RunMetaInfo();
-                runMetainfo.metaInfoId = rs.getInt( "metaInfoId" );
-                runMetainfo.runId = rs.getInt( "runId" );
-                runMetainfo.name = rs.getString( "name" );
-                runMetainfo.value = rs.getString( "value" );
-                runMetaInfoList.add( runMetainfo );
+                runMetainfo.metaInfoId = rs.getInt("metaInfoId");
+                runMetainfo.runId = rs.getInt("runId");
+                runMetainfo.name = rs.getString("name");
+                runMetainfo.value = rs.getString("value");
+                runMetaInfoList.add(runMetainfo);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error retrieving run metainfo for run with id '" + runId +"'", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving run metainfo for run with id '" + runId + "'", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return runMetaInfoList;
@@ -1540,21 +1537,22 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT * FROM tScenarioMetainfo WHERE scenarioId = " + scenarioId );
+            statement = connection.prepareStatement("SELECT * FROM tScenarioMetainfo WHERE scenarioId = " + scenarioId);
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 ScenarioMetaInfo runMetainfo = new ScenarioMetaInfo();
-                runMetainfo.metaInfoId = rs.getInt( "metaInfoId" );
-                runMetainfo.scenarioId = rs.getInt( "scenarioId" );
-                runMetainfo.name = rs.getString( "name" );
-                runMetainfo.value = rs.getString( "value" );
-                scenarioMetaInfoList.add( runMetainfo );
+                runMetainfo.metaInfoId = rs.getInt("metaInfoId");
+                runMetainfo.scenarioId = rs.getInt("scenarioId");
+                runMetainfo.name = rs.getString("name");
+                runMetainfo.value = rs.getString("value");
+                scenarioMetaInfoList.add(runMetainfo);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error retrieving scenario metainfo for scenario with id '" + scenarioId +"'", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving scenario metainfo for scenario with id '" + scenarioId
+                                              + "'", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return scenarioMetaInfoList;

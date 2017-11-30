@@ -21,7 +21,7 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AddScenarioMetainfoEvent extends AbstractLoggingEvent {
 
     private String metaKey;
@@ -32,10 +32,10 @@ public class AddScenarioMetainfoEvent extends AbstractLoggingEvent {
                                      String metaKey,
                                      String metaValue ) {
 
-        super( loggerFQCN,
-               logger,
-               "Add scenario meta info '" + metaKey + "=" + metaValue + "'",
-               LoggingEventType.ADD_SCENARIO_METAINFO );
+        super(loggerFQCN,
+              logger,
+              "Add scenario meta info '" + metaKey + "=" + metaValue + "'",
+              LoggingEventType.ADD_SCENARIO_METAINFO);
 
         this.metaKey = metaKey;
         this.metaValue = metaValue;

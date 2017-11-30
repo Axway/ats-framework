@@ -53,7 +53,7 @@ import com.axway.ats.log.autodb.TestCaseState;
  */
 public class SystemMonitor {
 
-    private static final Logger log = Logger.getLogger( SystemMonitor.class );
+    private static final Logger log = Logger.getLogger(SystemMonitor.class);
 
     /** All CPU related statistics */
     @PublicAtsApi
@@ -298,18 +298,18 @@ public class SystemMonitor {
     public void scheduleSystemMonitoring(
                                           String monitoredHost,
                                           String[] systemReadingTypes ) {
-        
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
+
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, systemReadingTypes };
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_SYSTEM_MONITORING_RELATIVE_URI,
-                                    "There were errors while scheduling system monitoring",
-                                    values );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_SYSTEM_MONITORING_RELATIVE_URI,
+                                                     "There were errors while scheduling system monitoring",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -327,17 +327,17 @@ public class SystemMonitor {
                                     String readingType,
                                     Map<String, String> readingParameters ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, readingType, readingParameters };
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_MONITORING_RELATIVE_URI,
-                                    "There were errors while scheduling monitoring",
-                                    values );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_MONITORING_RELATIVE_URI,
+                                                     "There were errors while scheduling monitoring",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -360,15 +360,15 @@ public class SystemMonitor {
                                            String processAlias,
                                            String[] processReadingTypes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
-        scheduleProcessMonitoring( monitoredHost,
-                                   null,
-                                   processPattern,
-                                   processAlias,
-                                   null,
-                                   processReadingTypes );
-        
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
+        scheduleProcessMonitoring(monitoredHost,
+                                  null,
+                                  processPattern,
+                                  processAlias,
+                                  null,
+                                  processReadingTypes);
+
     }
 
     /**
@@ -392,14 +392,14 @@ public class SystemMonitor {
                                            String processUsername,
                                            String[] processReadingTypes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
-        scheduleProcessMonitoring( monitoredHost,
-                                   null,
-                                   processPattern,
-                                   processAlias,
-                                   processUsername,
-                                   processReadingTypes );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
+        scheduleProcessMonitoring(monitoredHost,
+                                  null,
+                                  processPattern,
+                                  processAlias,
+                                  processUsername,
+                                  processReadingTypes);
     }
 
     /**
@@ -424,14 +424,14 @@ public class SystemMonitor {
                                                 String processAlias,
                                                 String[] processReadingTypes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
-        scheduleParentProcessMonitoring( monitoredHost,
-                                         parentProcess,
-                                         processPattern,
-                                         processAlias,
-                                         null,
-                                         processReadingTypes );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
+        scheduleParentProcessMonitoring(monitoredHost,
+                                        parentProcess,
+                                        processPattern,
+                                        processAlias,
+                                        null,
+                                        processReadingTypes);
     }
 
     /**
@@ -458,14 +458,14 @@ public class SystemMonitor {
                                                 String processUsername,
                                                 String[] processReadingTypes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
-        scheduleParentProcessMonitoring( monitoredHost,
-                                         parentProcess,
-                                         processPattern,
-                                         processAlias,
-                                         processUsername,
-                                         processReadingTypes );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
+        scheduleParentProcessMonitoring(monitoredHost,
+                                        parentProcess,
+                                        processPattern,
+                                        processAlias,
+                                        processUsername,
+                                        processReadingTypes);
     }
 
     /**
@@ -484,8 +484,8 @@ public class SystemMonitor {
                                        String jvmPort,
                                        String[] jvmReadingTypes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        scheduleJvmMonitoring( monitoredHost, jvmPort, "", jvmReadingTypes );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        scheduleJvmMonitoring(monitoredHost, jvmPort, "", jvmReadingTypes);
     }
 
     /**
@@ -506,17 +506,17 @@ public class SystemMonitor {
                                        String alias,
                                        String[] jvmReadingTypes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, jvmPort, alias, jvmReadingTypes };
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_JVM_MONITORING_RELATIVE_URI,
-                                    "There were errors while scheduling jvm monitoring",
-                                    values );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_JVM_MONITORING_RELATIVE_URI,
+                                                     "There were errors while scheduling jvm monitoring",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -546,17 +546,17 @@ public class SystemMonitor {
                                              String unit,
                                              String... mbeanAttributes ) {
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        performSetup( monitoredHost );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        performSetup(monitoredHost);
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null, jmxPort, alias, mbeanName, unit, mbeanAttributes };
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_CUSTOM_JVM_MONITORING_RELATIVE_URI,
-                                    "There were errors while scheduling custom jvm monitoring",
-                                    values );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_CUSTOM_JVM_MONITORING_RELATIVE_URI,
+                                                     "There were errors while scheduling custom jvm monitoring",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -570,11 +570,11 @@ public class SystemMonitor {
     public void scheduleUserActivityMonitoring(
                                                 String atsAgent ) {
 
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        monitoredAgents.add( atsAgent );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        monitoredAgents.add(atsAgent);
 
-        performSetup( atsAgent );
-        scheduleUserActivity( atsAgent );
+        performSetup(atsAgent);
+        scheduleUserActivity(atsAgent);
     }
 
     /**
@@ -588,27 +588,27 @@ public class SystemMonitor {
 
         Iterator<String> it = this.monitoredHosts.iterator();
         List<String> errorsMessages = new ArrayList<>();
-        while( it.hasNext() ) {
+        while (it.hasNext()) {
             String monitoredHost = it.next();
-            String errorMessage = performMonitoringOperation( monitoredHost,
-                                                              RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                                              RestHelper.START_MONITORING_RELATIVE_URI,
-                                                              "There were errors while starting monitoring",
-                                                              new Object[]{ null,
-                                                                            pollingInterval,
-                                                                            System.currentTimeMillis() } );
-            if( errorMessage != null ) {
-                errorsMessages.add( errorMessage );
+            String errorMessage = performMonitoringOperation(monitoredHost,
+                                                             RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                             RestHelper.START_MONITORING_RELATIVE_URI,
+                                                             "There were errors while starting monitoring",
+                                                             new Object[]{ null,
+                                                                           pollingInterval,
+                                                                           System.currentTimeMillis() });
+            if (errorMessage != null) {
+                errorsMessages.add(errorMessage);
             }
         }
         // any monitoring operations on the agents is already cancelled,
         // so here, we just log the errors from each agent
-        if( errorsMessages.size() > 0 ) {
-            for( String errorMessage : errorsMessages ) {
-                log.error( "The following error occured while stating the system monitoring process: "
-                           + errorMessage );
+        if (errorsMessages.size() > 0) {
+            for (String errorMessage : errorsMessages) {
+                log.error("The following error occured while stating the system monitoring process: "
+                          + errorMessage);
             }
-            throw new MonitoringException( "There were error starting the system monitoring process" );
+            throw new MonitoringException("There were error starting the system monitoring process");
         }
 
         isStarted = true;
@@ -622,17 +622,17 @@ public class SystemMonitor {
     public void stopMonitoring() {
 
         Iterator<String> it = this.monitoredHosts.iterator();
-        while( it.hasNext() ) {
+        while (it.hasNext()) {
             String monitoredHost = it.next();
-            String errorMsg = performMonitoringOperation( monitoredHost,
-                                        RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                        RestHelper.STOP_MONITORING_RELATIVE_URI,
-                                        "There were errors while stopping monitoring",
-                                        new Object[]{ null } );
-            if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-            	throw new MonitoringException(errorMsg);
+            String errorMsg = performMonitoringOperation(monitoredHost,
+                                                         RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                         RestHelper.STOP_MONITORING_RELATIVE_URI,
+                                                         "There were errors while stopping monitoring",
+                                                         new Object[]{ null });
+            if (!StringUtils.isNullOrEmpty(errorMsg)) {
+                throw new MonitoringException(errorMsg);
             }
-            performCleanup( monitoredHost );
+            performCleanup(monitoredHost);
         }
 
         isStarted = false;
@@ -656,12 +656,12 @@ public class SystemMonitor {
     private void performSetup(
                                String monitoredHost ) {
 
-        if( !this.configuredAgents.contains( monitoredHost ) ) {
+        if (!this.configuredAgents.contains(monitoredHost)) {
             // the agent was not configured, so configure it
-            this.configuredAgents.add( monitoredHost );
-            initializeDbConnection( monitoredHost );
-            joinTestcase( monitoredHost );
-            initializeMonitoring( monitoredHost );
+            this.configuredAgents.add(monitoredHost);
+            initializeDbConnection(monitoredHost);
+            joinTestcase(monitoredHost);
+            initializeMonitoring(monitoredHost);
         }
     }
 
@@ -672,9 +672,9 @@ public class SystemMonitor {
     private void performCleanup(
                                  String monitoredHost ) {
 
-        leaveTestcase( monitoredHost );
+        leaveTestcase(monitoredHost);
         // we don't want to explicitly remove any appender, attached on the agent from this caller 
-        deinitializeDbConenction( monitoredHost );
+        deinitializeDbConenction(monitoredHost);
     }
 
     private void initializeDbConnection(
@@ -683,76 +683,80 @@ public class SystemMonitor {
         DbAppenderConfiguration appenderConfiguration = ActiveDbAppender.getCurrentInstance()
                                                                         .getAppenderConfig();
 
-        monitoredHost = HostUtils.getAtsAgentIpAndPort( monitoredHost );
-        this.monitoredHosts.add( monitoredHost );
+        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
+        this.monitoredHosts.add(monitoredHost);
 
         /* see if log level was already set for this monitored host */
-        LogLevel lvlFromRlc = RemoteLoggingConfigurator.getAtsLogLevelForAgent( monitoredHost );
-        int logLevel = ( lvlFromRlc == null ) ? Logger.getRootLogger().getEffectiveLevel().toInt() : lvlFromRlc.toInt();
+        LogLevel lvlFromRlc = RemoteLoggingConfigurator.getAtsLogLevelForAgent(monitoredHost);
+        int logLevel = (lvlFromRlc == null)
+                                            ? Logger.getRootLogger().getEffectiveLevel().toInt()
+                                            : lvlFromRlc.toInt();
 
         /*
          * create RestHelper instance, ready to connect with the specified
          * monitoredHost
          */
         RestHelper helper = new RestHelper();
-        helper.post( monitoredHost,
-                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                     RestHelper.INITIALIZE_DB_CONNECTION_RELATIVE_URI,
-                     new Object[]{ null,
-                                   appenderConfiguration.getHost(),
-                                   appenderConfiguration.getDatabase(),
-                                   appenderConfiguration.getUser(),
-                                   appenderConfiguration.getPassword(),
-                                   ( appenderConfiguration.isBatchMode() ) ? "batch" : "",
-                                   logLevel,
-                                   appenderConfiguration.getMaxNumberLogEvents(),
-                                   System.currentTimeMillis() } );
+        helper.post(monitoredHost,
+                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                    RestHelper.INITIALIZE_DB_CONNECTION_RELATIVE_URI,
+                    new Object[]{ null,
+                                  appenderConfiguration.getHost(),
+                                  appenderConfiguration.getDatabase(),
+                                  appenderConfiguration.getUser(),
+                                  appenderConfiguration.getPassword(),
+                                  (appenderConfiguration.isBatchMode())
+                                                                        ? "batch"
+                                                                        : "",
+                                  logLevel,
+                                  appenderConfiguration.getMaxNumberLogEvents(),
+                                  System.currentTimeMillis() });
 
-        this.restHelpers.put( monitoredHost, helper );
+        this.restHelpers.put(monitoredHost, helper);
 
     }
 
     private void initializeMonitoring(
                                        String monitoredHost ) {
 
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.INITIALIZE_MONITORING_RELATIVE_URI,
-                                    "There were errors while initializing monitoring",
-                                    new Object[]{ null } );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.INITIALIZE_MONITORING_RELATIVE_URI,
+                                                     "There were errors while initializing monitoring",
+                                                     new Object[]{ null });
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
     private void joinTestcase(
                                String monitoredHost ) {
 
-        TestCaseState testCaseState = AtsDbLogger.getLogger( SystemMonitor.class.getName() )
+        TestCaseState testCaseState = AtsDbLogger.getLogger(SystemMonitor.class.getName())
                                                  .getCurrentTestCaseState();
 
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                                    RestHelper.JOIN_TESTCASE_RELATIVE_URI,
-                                    "There were errors while joining testcase",
-                                    new Object[]{ null,
-                                                  testCaseState.getRunId(),
-                                                  testCaseState.getTestcaseId() } );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                                                     RestHelper.JOIN_TESTCASE_RELATIVE_URI,
+                                                     "There were errors while joining testcase",
+                                                     new Object[]{ null,
+                                                                   testCaseState.getRunId(),
+                                                                   testCaseState.getTestcaseId() });
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
     private void leaveTestcase(
                                 String monitoredHost ) {
 
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                                    RestHelper.LEAVE_TESTCASE_RELATIVE_URI,
-                                    "There were errors while leaving testcase",
-                                    new Object[]{ null } );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                                                     RestHelper.LEAVE_TESTCASE_RELATIVE_URI,
+                                                     "There were errors while leaving testcase",
+                                                     new Object[]{ null });
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -766,39 +770,14 @@ public class SystemMonitor {
         //                                    "There were errors while deinitializing db connection",
         //                                    new Object[]{ null } );
     }
-    
+
     private void scheduleProcessMonitoring(
-                                             String monitoredHost,
-                                             String parentProcess,
-                                             String processPattern,
-                                             String processAlias,
-                                             String processUsername,
-                                             String[] processReadingTypes ) {
-
-       // create JsonMonitoringUtils.constructXYZ() values
-       Object[] values = new Object[]{ null,
-                                       processPattern,
-                                       processAlias,
-                                       processUsername,
-                                       parentProcess,
-                                       processReadingTypes };
-       String errorMsg = performMonitoringOperation( monitoredHost,
-                                   RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                   RestHelper.SCHEDULE_PROCESS_MONITORING_RELATIVE_URI,
-                                   "There were errors while scheduling process monitoring",
-                                   values );
-       if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-           throw new MonitoringException(errorMsg);
-       }
-   }
-
-    private void scheduleParentProcessMonitoring(
-                                                String monitoredHost,
-                                                String parentProcess,
-                                                String processPattern,
-                                                String processAlias,
-                                                String processUsername,
-                                                String[] processReadingTypes ) {
+                                            String monitoredHost,
+                                            String parentProcess,
+                                            String processPattern,
+                                            String processAlias,
+                                            String processUsername,
+                                            String[] processReadingTypes ) {
 
         // create JsonMonitoringUtils.constructXYZ() values
         Object[] values = new Object[]{ null,
@@ -807,13 +786,38 @@ public class SystemMonitor {
                                         processUsername,
                                         parentProcess,
                                         processReadingTypes };
-        String errorMsg = performMonitoringOperation( monitoredHost,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_CHILD_PROCESS_MONITORING_RELATIVE_URI,
-                                    "There were errors while scheduling child process monitoring",
-                                    values );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_PROCESS_MONITORING_RELATIVE_URI,
+                                                     "There were errors while scheduling process monitoring",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
+        }
+    }
+
+    private void scheduleParentProcessMonitoring(
+                                                  String monitoredHost,
+                                                  String parentProcess,
+                                                  String processPattern,
+                                                  String processAlias,
+                                                  String processUsername,
+                                                  String[] processReadingTypes ) {
+
+        // create JsonMonitoringUtils.constructXYZ() values
+        Object[] values = new Object[]{ null,
+                                        processPattern,
+                                        processAlias,
+                                        processUsername,
+                                        parentProcess,
+                                        processReadingTypes };
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_CHILD_PROCESS_MONITORING_RELATIVE_URI,
+                                                     "There were errors while scheduling child process monitoring",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -822,13 +826,13 @@ public class SystemMonitor {
 
         Object[] values = new Object[]{ null };
         // create JsonMonitoringUtils.constructXYZ() values
-        String errorMsg = performMonitoringOperation( monitoredAgent,
-                                    RestHelper.BASE_MONITORING_REST_SERVICE_URI,
-                                    RestHelper.SCHEDULE_USER_ACTIVITY_RELATIVE_URI,
-                                    "There were errors while scheduling user activity",
-                                    values );
-        if ( !StringUtils.isNullOrEmpty(errorMsg) ) {
-        	throw new MonitoringException(errorMsg);
+        String errorMsg = performMonitoringOperation(monitoredAgent,
+                                                     RestHelper.BASE_MONITORING_REST_SERVICE_URI,
+                                                     RestHelper.SCHEDULE_USER_ACTIVITY_RELATIVE_URI,
+                                                     "There were errors while scheduling user activity",
+                                                     values);
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
         }
     }
 
@@ -844,20 +848,20 @@ public class SystemMonitor {
                                                String errorMessage,
                                                Object[] values ) {
 
-    	RestHelper helper = null;
-    	RestResponse response = null;
-    	try {
-    		helper = this.restHelpers.get( monitoredHost );
-            response = helper.post( monitoredHost, baseUri, relativeUri, values );
+        RestHelper helper = null;
+        RestResponse response = null;
+        try {
+            helper = this.restHelpers.get(monitoredHost);
+            response = helper.post(monitoredHost, baseUri, relativeUri, values);
 
-            if( response.getStatusCode() >= 400 ) {
-                log.error( errorMessage + " on '" + monitoredHost + "'" );
-                return response.getBodyAsJson().getString( "error" );
+            if (response.getStatusCode() >= 400) {
+                log.error(errorMessage + " on '" + monitoredHost + "'");
+                return response.getBodyAsJson().getString("error");
             }
-            return null;	
-    	} finally {
-    		helper.disconnect();
-		}
+            return null;
+        } finally {
+            helper.disconnect();
+        }
     }
 
 }

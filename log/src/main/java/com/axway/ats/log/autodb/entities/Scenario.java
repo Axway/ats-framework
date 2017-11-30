@@ -28,10 +28,10 @@ public class Scenario extends DbEntity {
     public int                testcasesFailed;
     public String             testcasesPassedPercent;
     public boolean            testcaseIsRunning;
-    
+
     public int                result;
     public String             state;
 
     public String             userNote;
-    
+
 }

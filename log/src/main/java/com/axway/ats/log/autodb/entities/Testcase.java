@@ -22,7 +22,7 @@ public class Testcase extends DbEntity {
     public String             testcaseId;
     public String             scenarioId;
     public String             suiteId;
-    
+
     public String             name;
     private String            alias;
 
@@ -38,7 +38,7 @@ public class Testcase extends DbEntity {
 
     public String getAlias() {
 
-        if( alias == null ) {
+        if (alias == null) {
             alias = name;
         }
         return alias;
@@ -60,11 +60,11 @@ public class Testcase extends DbEntity {
     public boolean equals(
                            Object obj ) {
 
-        if( obj == null || ! ( obj instanceof Testcase ) ) {
+        if (obj == null || ! (obj instanceof Testcase)) {
             return false;
         }
-        Testcase testcase = ( Testcase ) obj;
-        return this.testcaseId.equals( testcase.testcaseId );
+        Testcase testcase = (Testcase) obj;
+        return this.testcaseId.equals(testcase.testcaseId);
     }
 
     @Override
@@ -76,14 +76,14 @@ public class Testcase extends DbEntity {
     public void setPath(
                          String path ) {
 
-        if( path != null ) {
-            String[] parts = path.split( "[\\/]+" );
-            for( int i = 0; i < parts.length; i++ ) {
-                if( i == 0 ) {
+        if (path != null) {
+            String[] parts = path.split("[\\/]+");
+            for (int i = 0; i < parts.length; i++) {
+                if (i == 0) {
                     runName = parts[0];
-                } else if( i == 1 ) {
+                } else if (i == 1) {
                     suiteName = parts[1];
-                } else if( i == 2 ) {
+                } else if (i == 2) {
                     scenarioName = parts[2];
                 }
             }

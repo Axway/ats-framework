@@ -23,7 +23,7 @@ import com.axway.ats.log.autodb.LifeCycleState;
  * This is the base class for all events which expect a test
  * case to be already open
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public abstract class TestCaseLoggingEvent extends AbstractLoggingEvent {
 
     /**
@@ -37,7 +37,7 @@ public abstract class TestCaseLoggingEvent extends AbstractLoggingEvent {
                                  String message,
                                  LoggingEventType eventType ) {
 
-        super( loggerFQCN, logger, message, eventType );
+        super(loggerFQCN, logger, message, eventType);
     }
 
     @Override

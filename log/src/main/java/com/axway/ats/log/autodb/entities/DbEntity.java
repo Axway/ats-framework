@@ -35,7 +35,7 @@ public class DbEntity implements Serializable {
 
     public long getStartTimestamp() {
 
-         return startTimestamp + timeOffset;
+        return startTimestamp + timeOffset;
     }
 
     public void setStartTimestamp( long startTimestamp ) {
@@ -49,20 +49,20 @@ public class DbEntity implements Serializable {
     }
 
     public void setEndTimestamp( long endTimestamp ) {
-        
+
         this.endTimestamp = endTimestamp;
     }
 
     public long getDuration( long currentTimestamp ) {
 
-        if( endTimestamp != -1 ) {
+        if (endTimestamp != -1) {
 
             // both start and end timestamp are received from the DB,
             // so they are both in UTC locale and timeOffset is not needed
             return endTimestamp - startTimestamp;
 
         } else {
-            
+
             long duration = currentTimestamp - getStartTimestamp();
 
             return duration;
@@ -83,8 +83,8 @@ public class DbEntity implements Serializable {
 
     public String getDateStart() {
 
-        if( startTimestamp != -1 ) {
-            return AbstractDbAccess.DATE_FORMAT_NO_YEAR.format( new Date( getStartTimestamp() ) );
+        if (startTimestamp != -1) {
+            return AbstractDbAccess.DATE_FORMAT_NO_YEAR.format(new Date(getStartTimestamp()));
         } else {
             return "";
         }
@@ -93,8 +93,8 @@ public class DbEntity implements Serializable {
 
     public String getDateStartLong() {
 
-        if( startTimestamp != -1 ) {
-            return AbstractDbAccess.DATE_FORMAT.format( new Date( getStartTimestamp() ) );
+        if (startTimestamp != -1) {
+            return AbstractDbAccess.DATE_FORMAT.format(new Date(getStartTimestamp()));
         } else {
             return "";
         }
@@ -103,8 +103,8 @@ public class DbEntity implements Serializable {
 
     public String getDateEnd() {
 
-        if( endTimestamp != -1 ) {
-            return AbstractDbAccess.DATE_FORMAT_NO_YEAR.format( new Date( getEndTimestamp() ) );
+        if (endTimestamp != -1) {
+            return AbstractDbAccess.DATE_FORMAT_NO_YEAR.format(new Date(getEndTimestamp()));
         } else {
             return "";
         }
@@ -113,8 +113,8 @@ public class DbEntity implements Serializable {
 
     public String getDateEndLong() {
 
-        if( endTimestamp != -1 ) {
-            return AbstractDbAccess.DATE_FORMAT.format( new Date( getEndTimestamp() ) );
+        if (endTimestamp != -1) {
+            return AbstractDbAccess.DATE_FORMAT.format(new Date(getEndTimestamp()));
         } else {
             return "";
         }
@@ -123,14 +123,14 @@ public class DbEntity implements Serializable {
 
     public String getDurationAsString( long currentTimestamp ) {
 
-        long durationSeconds = getDuration( currentTimestamp ) / 1000;
-        
+        long durationSeconds = getDuration(currentTimestamp) / 1000;
+
         // any duration, less than one second is assumed to be one second
-        if( durationSeconds <= 0 ) {
+        if (durationSeconds <= 0) {
             durationSeconds = 1;
         }
 
-        return AbstractDbAccess.formatTimeDiffereceFromSecondsToString( ( int ) durationSeconds );
+        return AbstractDbAccess.formatTimeDiffereceFromSecondsToString((int) durationSeconds);
 
     }
 

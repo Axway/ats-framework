@@ -47,11 +47,11 @@ import com.axway.ats.log.report.model.SuiteWrapper;
  */
 public class ReportAppender extends AppenderSkeleton {
 
-    private static final SimpleDateFormat TIME_FORMAT   = new SimpleDateFormat( "HH:mm:ss" );
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
     static {
         // we must 'zero' the this formatter, or unexpected time differences appear
-        TIME_FORMAT.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     private RunWrapper                run;
@@ -105,7 +105,7 @@ public class ReportAppender extends AppenderSkeleton {
     public void setLayout(
                            Layout layout ) {
 
-        super.setLayout( layout );
+        super.setLayout(layout);
     }
 
     public String getMailSubjectFormat() {
@@ -135,49 +135,49 @@ public class ReportAppender extends AppenderSkeleton {
                            LoggingEvent event ) {
 
         // All events from all threads come into here.
-        if( event instanceof AbstractLoggingEvent ) {
-            AbstractLoggingEvent dbLoggingEvent = ( AbstractLoggingEvent ) event;
+        if (event instanceof AbstractLoggingEvent) {
+            AbstractLoggingEvent dbLoggingEvent = (AbstractLoggingEvent) event;
 
-            switch( dbLoggingEvent.getEventType() ){
+            switch (dbLoggingEvent.getEventType()) {
 
                 case START_RUN:
                     run = new RunWrapper();
                     suitesMap = new HashMap<String, SuiteWrapper>();
 
-                    StartRunEvent startRunEvent = ( StartRunEvent ) event;
+                    StartRunEvent startRunEvent = (StartRunEvent) event;
 
                     run.productName = startRunEvent.getProductName();
                     run.versionName = startRunEvent.getVersionName();
                     run.buildName = startRunEvent.getBuildName();
                     run.os = startRunEvent.getOsName();
                     run.runName = startRunEvent.getRunName();
-                    run.setStartTimestamp( startRunEvent.getTimeStamp() );
+                    run.setStartTimestamp(startRunEvent.getTimeStamp());
                     break;
 
                 case START_SUITE:
-                    StartSuiteEvent startSuiteEvent = ( StartSuiteEvent ) event;
+                    StartSuiteEvent startSuiteEvent = (StartSuiteEvent) event;
 
                     lastPlayedSuite = startSuiteEvent.getSuiteName();
-                    if( !suitesMap.containsKey( lastPlayedSuite ) ) {
+                    if (!suitesMap.containsKey(lastPlayedSuite)) {
                         SuiteWrapper newSuite = new SuiteWrapper();
                         newSuite.name = startSuiteEvent.getSuiteName();
                         newSuite.packageName = startSuiteEvent.getPackage();
-                        newSuite.setStartTimestamp( startSuiteEvent.getTimeStamp() );
-                        suitesMap.put( newSuite.packageName + "." + newSuite.name, newSuite );
+                        newSuite.setStartTimestamp(startSuiteEvent.getTimeStamp());
+                        suitesMap.put(newSuite.packageName + "." + newSuite.name, newSuite);
 
-                        run.addSuite( newSuite );
+                        run.addSuite(newSuite);
                     }
                     break;
 
                 case START_TEST_CASE:
 
-                    StartTestCaseEvent startTestcaseEvent = ( StartTestCaseEvent ) dbLoggingEvent;
+                    StartTestCaseEvent startTestcaseEvent = (StartTestCaseEvent) dbLoggingEvent;
                     startTestcaseEvent.getSuiteFullName();
 
                     Testcase newTestcase = new Testcase();
                     newTestcase.scenarioName = startTestcaseEvent.getScenarioName();
                     newTestcase.name = startTestcaseEvent.getTestcaseName();
-                    suitesMap.get( startTestcaseEvent.getSuiteFullName() ).addTestcase( newTestcase );
+                    suitesMap.get(startTestcaseEvent.getSuiteFullName()).addTestcase(newTestcase);
 
                     /*
                      * There are very rare cases when the test harness system does not execute all tests from
@@ -190,28 +190,28 @@ public class ReportAppender extends AppenderSkeleton {
                     break;
 
                 case END_TEST_CASE:
-                    EndTestCaseEvent endTestCaseEvent = ( EndTestCaseEvent ) event;
+                    EndTestCaseEvent endTestCaseEvent = (EndTestCaseEvent) event;
 
                     // update the result of the current testcase
-                    suitesMap.get( lastPlayedSuite ).getLastTestcase().result = endTestCaseEvent
-                                                                                                .getTestCaseResult()
-                                                                                                .toInt();
+                    suitesMap.get(lastPlayedSuite).getLastTestcase().result = endTestCaseEvent
+                                                                                              .getTestCaseResult()
+                                                                                              .toInt();
                     break;
 
                 case END_SUITE:
-                    EndSuiteEvent endSuiteEvent = ( EndSuiteEvent ) event;
+                    EndSuiteEvent endSuiteEvent = (EndSuiteEvent) event;
 
                     SuiteWrapper currentSuite = getCurrentSuite();
-                    if( currentSuite != null ) {
+                    if (currentSuite != null) {
                         currentSuite.calculateFinalStatistics();
-                        currentSuite.setEndTimestamp( endSuiteEvent.getTimeStamp() );
+                        currentSuite.setEndTimestamp(endSuiteEvent.getTimeStamp());
                         currentSuite.testcasesPassedPercent = "0";
-                        if( currentSuite.testcasesTotal > 0 ) {
-                            currentSuite.testcasesPassedPercent = String.valueOf( ( currentSuite.testcasesTotal
-                                                                                    - currentSuite.testcasesFailed
-                                                                                    - currentSuite.testcasesSkipped )
+                        if (currentSuite.testcasesTotal > 0) {
+                            currentSuite.testcasesPassedPercent = String.valueOf( (currentSuite.testcasesTotal
+                                                                                   - currentSuite.testcasesFailed
+                                                                                   - currentSuite.testcasesSkipped)
                                                                                   * 100
-                                                                                  / currentSuite.testcasesTotal );
+                                                                                  / currentSuite.testcasesTotal);
                         }
                     }
 
@@ -223,36 +223,36 @@ public class ReportAppender extends AppenderSkeleton {
                 case END_RUN:
                     // The run is over, we want to mail a report about this run
 
-                    EndRunEvent endRunEvent = ( EndRunEvent ) event;
+                    EndRunEvent endRunEvent = (EndRunEvent) event;
 
                     run.calculateFinalStatistics();
-                    run.setEndTimestamp( endRunEvent.getTimeStamp() );
+                    run.setEndTimestamp(endRunEvent.getTimeStamp());
                     run.testcasesPassedPercent = "0";
-                    if( run.testcasesTotal > 0 ) {
-                        run.testcasesPassedPercent = String.valueOf( ( run.testcasesTotal
-                                                                       - run.testcasesFailed
-                                                                       - run.testcasesSkipped )
-                                                                     * 100 / run.testcasesTotal );
+                    if (run.testcasesTotal > 0) {
+                        run.testcasesPassedPercent = String.valueOf( (run.testcasesTotal
+                                                                      - run.testcasesFailed
+                                                                      - run.testcasesSkipped)
+                                                                     * 100 / run.testcasesTotal);
 
                         try {
                             // format the report
-                            ReportFormatter reportFormatter = new ReportFormatter( run );
+                            ReportFormatter reportFormatter = new ReportFormatter(run);
                             // check if the AtsReportListener is initialized and if
                             // so, just add the test data to the map
-                            if( !combinedHtmlMailReport ) {
+                            if (!combinedHtmlMailReport) {
                                 // send report by mail
-                                MailReportSender mailReportSender = new MailReportSender( generateMailSubject( run,
-                                                                                                               reportFormatter.getRunsState() ),
-                                                                                          reportFormatter.toHtml() );
+                                MailReportSender mailReportSender = new MailReportSender(generateMailSubject(run,
+                                                                                                             reportFormatter.getRunsState()),
+                                                                                         reportFormatter.toHtml());
                                 mailReportSender.send();
                             } else {
                                 // delay report to collect data for all runs
-                                htmlReportsList.add( run );
+                                htmlReportsList.add(run);
                             }
-                        } catch( Exception e ) {
-                            errorHandler.error( "Error processing/mailing log report",
-                                                e,
-                                                ErrorCode.GENERIC_FAILURE );
+                        } catch (Exception e) {
+                            errorHandler.error("Error processing/mailing log report",
+                                               e,
+                                               ErrorCode.GENERIC_FAILURE);
                         }
                     }
                     break;
@@ -279,10 +279,10 @@ public class ReportAppender extends AppenderSkeleton {
 
     private SuiteWrapper getCurrentSuite() {
 
-        if( "".equals( lastPlayedSuite ) ) {
+        if ("".equals(lastPlayedSuite)) {
             return null;
         } else {
-            return suitesMap.get( lastPlayedSuite );
+            return suitesMap.get(lastPlayedSuite);
         }
     }
 
@@ -290,11 +290,11 @@ public class ReportAppender extends AppenderSkeleton {
                                         RunWrapper run,
                                         String runState ) {
 
-        return mailSubjectPrefix.replaceAll( "\\{RUN\\}", run.runName )
-                                .replaceAll( "\\{PRODUCT\\}", run.productName )
-                                .replaceAll( "\\{VERSION\\}", run.versionName )
-                                .replaceAll( "\\{BUILD\\}", run.buildName )
-                                .replaceAll( "\\{OS\\}", run.os )
-                                .replaceAll( "\\{STATE\\}", runState );
+        return mailSubjectPrefix.replaceAll("\\{RUN\\}", run.runName)
+                                .replaceAll("\\{PRODUCT\\}", run.productName)
+                                .replaceAll("\\{VERSION\\}", run.versionName)
+                                .replaceAll("\\{BUILD\\}", run.buildName)
+                                .replaceAll("\\{OS\\}", run.os)
+                                .replaceAll("\\{STATE\\}", runState);
     }
 }

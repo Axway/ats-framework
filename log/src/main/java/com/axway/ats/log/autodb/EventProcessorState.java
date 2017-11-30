@@ -18,16 +18,16 @@ package com.axway.ats.log.autodb;
 public class EventProcessorState {
 
     //the appender state
-    private LifeCycleState   lifeCycleState;
+    private LifeCycleState  lifeCycleState;
 
     //DB table ids - we need to hold the current ids here
-    private int              runId;
-    private int              previousRunId;
-    private String           runName;
-    private String           runDescription;
-    private String           runUserNote;
-    private int              suiteId;
-    private TestCaseState    testCaseState;
+    private int             runId;
+    private int             previousRunId;
+    private String          runName;
+    private String          runDescription;
+    private String          runUserNote;
+    private int             suiteId;
+    private TestCaseState   testCaseState;
     private LoadQueuesState loadQueuesState;
 
     /**

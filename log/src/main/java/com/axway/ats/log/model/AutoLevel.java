@@ -23,17 +23,17 @@ import org.apache.log4j.Level;
  * for starting runs, groups, test cases, etc.
  * This level is higher than the FATAL level, so it is always enabled
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AutoLevel extends Level {
 
     public final static int       SYSTEM_INT = Level.FATAL_INT + 10000;
-    public final static AutoLevel SYSTEM     = new AutoLevel( SYSTEM_INT, "SYSTEM", 6 );
+    public final static AutoLevel SYSTEM     = new AutoLevel(SYSTEM_INT, "SYSTEM", 6);
 
     AutoLevel( int level,
                String levelStr,
                int syslogEquivalent ) {
 
-        super( level, levelStr, syslogEquivalent );
+        super(level, levelStr, syslogEquivalent);
     }
 
     /**
@@ -43,18 +43,18 @@ public class AutoLevel extends Level {
     public static Level toLevel(
                                  String sArg ) {
 
-        return toLevel( sArg, Level.DEBUG );
+        return toLevel(sArg, Level.DEBUG);
     }
 
     /**
       Convert an integer passed as argument to a level. If the
       conversion fails, then this method returns {@link #DEBUG}.
-
+    
     */
     public static Level toLevel(
                                  int val ) {
 
-        return toLevel( val, Level.DEBUG );
+        return toLevel(val, Level.DEBUG);
     }
 
     /**
@@ -65,11 +65,11 @@ public class AutoLevel extends Level {
                                  int val,
                                  Level defaultLevel ) {
 
-        switch( val ){
+        switch (val) {
             case SYSTEM_INT:
                 return AutoLevel.SYSTEM;
             default:
-                return Level.toLevel( val, defaultLevel );
+                return Level.toLevel(val, defaultLevel);
         }
     }
 
@@ -82,15 +82,15 @@ public class AutoLevel extends Level {
                                  String sArg,
                                  Level defaultLevel ) {
 
-        if( sArg == null )
+        if (sArg == null)
             return defaultLevel;
 
         String s = sArg.toUpperCase();
 
-        if( "SYSTEM".equals( s ) ) {
+        if ("SYSTEM".equals(s)) {
             return AutoLevel.SYSTEM;
         } else {
-            return Level.toLevel( sArg, defaultLevel );
+            return Level.toLevel(sArg, defaultLevel);
         }
     }
 }

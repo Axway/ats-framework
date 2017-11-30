@@ -17,19 +17,19 @@ package com.axway.ats.log.autodb.exceptions;
 
 import com.axway.ats.log.autodb.model.ScenarioType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class IncorrectScenarioTypeException extends LoggingException {
 
     public IncorrectScenarioTypeException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public IncorrectScenarioTypeException( String message,
                                            ScenarioType expectedScenarioType,
                                            ScenarioType actualScenarioType ) {
 
-        super( message + " expected scenario type " + expectedScenarioType + ", actual scenario type "
-               + actualScenarioType );
+        super(message + " expected scenario type " + expectedScenarioType + ", actual scenario type "
+              + actualScenarioType);
     }
 }

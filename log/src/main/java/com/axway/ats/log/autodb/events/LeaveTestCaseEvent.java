@@ -21,13 +21,13 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class LeaveTestCaseEvent extends AbstractLoggingEvent {
 
     public LeaveTestCaseEvent( String loggerFQCN,
                                Logger logger ) {
 
-        super( loggerFQCN, logger, "Leaving current test case", LoggingEventType.LEAVE_TEST_CASE );
+        super(loggerFQCN, logger, "Leaving current test case", LoggingEventType.LEAVE_TEST_CASE);
     }
 
     @Override

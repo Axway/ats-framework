@@ -21,7 +21,7 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class StartSuiteEvent extends AbstractLoggingEvent {
 
     private final String suiteName;
@@ -32,12 +32,12 @@ public class StartSuiteEvent extends AbstractLoggingEvent {
                             String suiteName,
                             String packageName ) {
 
-        super( loggerFQCN, logger, "Start suite '" + suiteName + "'", LoggingEventType.START_SUITE );
+        super(loggerFQCN, logger, "Start suite '" + suiteName + "'", LoggingEventType.START_SUITE);
 
         this.suiteName = suiteName;
         this.packageName = packageName;
     }
-    
+
     public StartSuiteEvent( String loggerFQCN,
                             Logger logger,
                             String message,
@@ -45,7 +45,7 @@ public class StartSuiteEvent extends AbstractLoggingEvent {
                             String packageName,
                             LoggingEventType loggingEventType ) {
 
-        super( loggerFQCN, logger, message, loggingEventType );
+        super(loggerFQCN, logger, message, loggingEventType);
 
         this.suiteName = suiteName;
         this.packageName = packageName;

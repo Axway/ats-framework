@@ -29,6 +29,5 @@ public class Checkpoint extends DbEntity {
     public int                result;
     // used when checkpoint is copied from one db to another
     public long               copyEndTimestamp;
-    
-    
+
 }

@@ -22,8 +22,8 @@ public class Message extends DbEntity {
 
     private static final long       serialVersionUID = 1L;
 
-    private static SimpleDateFormat dateFormat       = new SimpleDateFormat( "MMM dd" );
-    private static SimpleDateFormat timeFormat       = new SimpleDateFormat( "HH:mm:ss:S" );
+    private static SimpleDateFormat dateFormat       = new SimpleDateFormat("MMM dd");
+    private static SimpleDateFormat timeFormat       = new SimpleDateFormat("HH:mm:ss:S");
 
     public int                      messageId;
     public int                      parentMessageId;
@@ -37,12 +37,12 @@ public class Message extends DbEntity {
 
     public String getDate() {
 
-        return dateFormat.format( new Date( getStartTimestamp() ) );
+        return dateFormat.format(new Date(getStartTimestamp()));
     }
 
     public String getTime() {
 
-        return timeFormat.format( new Date( getStartTimestamp() ) );
+        return timeFormat.format(new Date(getStartTimestamp()));
     }
 
 }

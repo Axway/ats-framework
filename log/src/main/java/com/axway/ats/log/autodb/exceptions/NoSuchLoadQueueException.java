@@ -15,16 +15,16 @@
  */
 package com.axway.ats.log.autodb.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchLoadQueueException extends LoggingException {
 
     public NoSuchLoadQueueException( String name ) {
 
-        super( "Load queue '" + name + "' does not exist" );
+        super("Load queue '" + name + "' does not exist");
     }
 
     public NoSuchLoadQueueException( int id ) {
 
-        super( "Load queue with id '" + id + "' does not exist" );
+        super("Load queue with id '" + id + "' does not exist");
     }
 }

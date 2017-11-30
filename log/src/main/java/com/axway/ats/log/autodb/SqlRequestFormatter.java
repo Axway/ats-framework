@@ -24,19 +24,19 @@ public class SqlRequestFormatter {
         StackTraceElement callingMethod = Thread.currentThread().getStackTrace()[2];
         String methodName = callingMethod.getMethodName();
 
-        msg = new StringBuilder( "\ncalled " + methodName );
+        msg = new StringBuilder("\ncalled " + methodName);
     }
 
     public SqlRequestFormatter add(
                                     String paramName,
                                     Object paramValue ) {
 
-        msg.append( "\n\t" + paramName );
+        msg.append("\n\t" + paramName);
 
-        if( paramName.length() < 6 ) {
-            msg.append( ":\t\t" + paramValue );
+        if (paramName.length() < 6) {
+            msg.append(":\t\t" + paramValue);
         } else {
-            msg.append( ":\t" + paramValue );
+            msg.append(":\t" + paramValue);
         }
 
         return this;

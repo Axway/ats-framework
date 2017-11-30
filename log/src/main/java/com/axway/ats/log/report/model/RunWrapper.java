@@ -25,7 +25,7 @@ import com.axway.ats.log.autodb.entities.Suite;
 /**
  * This wrapper keeps the suites of the run.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class RunWrapper extends Run {
 
     private Collection<SuiteWrapper> suites = new ArrayList<SuiteWrapper>();
@@ -69,8 +69,8 @@ public class RunWrapper extends Run {
         this.userNote = run.userNote;
 
         // remember the suites
-        for( Suite suite : suites ) {
-            this.suites.add( new SuiteWrapper( suite ) );
+        for (Suite suite : suites) {
+            this.suites.add(new SuiteWrapper(suite));
         }
     }
 
@@ -82,14 +82,14 @@ public class RunWrapper extends Run {
     public void addSuite(
                           SuiteWrapper suite ) {
 
-        suites.add( suite );
+        suites.add(suite);
     }
 
     // After suites' statistics calculation,
     // we can now caculate the run statistics 
     public void calculateFinalStatistics() {
 
-        for( SuiteWrapper suite : suites ) {
+        for (SuiteWrapper suite : suites) {
 
             this.scenariosTotal += suite.scenariosTotal;
             this.scenariosFailed += suite.scenariosFailed;

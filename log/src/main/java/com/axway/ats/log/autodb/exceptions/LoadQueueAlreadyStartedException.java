@@ -15,11 +15,11 @@
  */
 package com.axway.ats.log.autodb.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class LoadQueueAlreadyStartedException extends LoggingException {
 
     public LoadQueueAlreadyStartedException( String name ) {
 
-        super( "Load queue '" + name + "' has already been started" );
+        super("Load queue '" + name + "' has already been started");
     }
 }

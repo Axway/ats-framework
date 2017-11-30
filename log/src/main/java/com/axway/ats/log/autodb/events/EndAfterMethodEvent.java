@@ -21,11 +21,11 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EndAfterMethodEvent extends AbstractLoggingEvent {
 
     public EndAfterMethodEvent( String loggerFQCN, Logger logger ) {
-        super( loggerFQCN, logger, "End after method execution", LoggingEventType.END_AFTER_METHOD );
+        super(loggerFQCN, logger, "End after method execution", LoggingEventType.END_AFTER_METHOD);
     }
 
     @Override

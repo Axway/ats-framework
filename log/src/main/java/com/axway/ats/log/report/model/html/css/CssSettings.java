@@ -45,102 +45,102 @@ public class CssSettings {
 
     static {
         // header row
-        headerRow = new TableRowCssSettings( "header_row" );
-        headerRow.setFontFamily( "Verdana, Arial" );
-        headerRow.setFontSize( 13 );
-        headerRow.setFontStyle( FontStyle.NORMAL );
-        headerRow.setFontWeight( FontWeight.BOLD );
+        headerRow = new TableRowCssSettings("header_row");
+        headerRow.setFontFamily("Verdana, Arial");
+        headerRow.setFontSize(13);
+        headerRow.setFontStyle(FontStyle.NORMAL);
+        headerRow.setFontWeight(FontWeight.BOLD);
 
-        headerRow.setTextColor( "#000000" );
-        headerRow.setBackgroundColor( "#DBDEC7" );
+        headerRow.setTextColor("#000000");
+        headerRow.setBackgroundColor("#DBDEC7");
 
-        headerRow.setTextHorizontalAlign( TextHorizontalAlign.CENTER );
-        headerRow.setTextVerticalAlign( TextVerticalAlign.MIDDLE );
-        rows.add( headerRow );
+        headerRow.setTextHorizontalAlign(TextHorizontalAlign.CENTER);
+        headerRow.setTextVerticalAlign(TextVerticalAlign.MIDDLE);
+        rows.add(headerRow);
 
         // odd row
-        oddRow = new TableRowCssSettings( "odd_row" );
-        oddRow.setFontFamily( "Verdana, Arial" );
-        oddRow.setFontSize( 11 );
-        oddRow.setFontStyle( FontStyle.NORMAL );
-        oddRow.setFontWeight( FontWeight.NORMAL );
+        oddRow = new TableRowCssSettings("odd_row");
+        oddRow.setFontFamily("Verdana, Arial");
+        oddRow.setFontSize(11);
+        oddRow.setFontStyle(FontStyle.NORMAL);
+        oddRow.setFontWeight(FontWeight.NORMAL);
 
-        oddRow.setTextColor( "#000000" );
-        oddRow.setBackgroundColor( "#F7F9EE" );
+        oddRow.setTextColor("#000000");
+        oddRow.setBackgroundColor("#F7F9EE");
 
-        oddRow.setTextHorizontalAlign( TextHorizontalAlign.LEFT );
-        oddRow.setTextVerticalAlign( TextVerticalAlign.TOP );
-        rows.add( oddRow );
+        oddRow.setTextHorizontalAlign(TextHorizontalAlign.LEFT);
+        oddRow.setTextVerticalAlign(TextVerticalAlign.TOP);
+        rows.add(oddRow);
 
         // even row
-        evenRow = new TableRowCssSettings( "even_row" );
-        evenRow.setFontFamily( "Verdana, Arial" );
-        evenRow.setFontSize( 11 );
-        evenRow.setFontStyle( FontStyle.NORMAL );
-        evenRow.setFontWeight( FontWeight.NORMAL );
+        evenRow = new TableRowCssSettings("even_row");
+        evenRow.setFontFamily("Verdana, Arial");
+        evenRow.setFontSize(11);
+        evenRow.setFontStyle(FontStyle.NORMAL);
+        evenRow.setFontWeight(FontWeight.NORMAL);
 
-        evenRow.setTextColor( "#000000" );
-        evenRow.setBackgroundColor( "#ECEDE1" );
+        evenRow.setTextColor("#000000");
+        evenRow.setBackgroundColor("#ECEDE1");
 
-        evenRow.setTextHorizontalAlign( TextHorizontalAlign.LEFT );
-        evenRow.setTextVerticalAlign( TextVerticalAlign.TOP );
-        rows.add( evenRow );
+        evenRow.setTextHorizontalAlign(TextHorizontalAlign.LEFT);
+        evenRow.setTextVerticalAlign(TextVerticalAlign.TOP);
+        rows.add(evenRow);
 
         // failed row
-        failedRow = new TableRowCssSettings( "failed_row" );
-        failedRow.setFontFamily( "Verdana, Arial" );
-        failedRow.setFontSize( 11 );
-        failedRow.setFontStyle( FontStyle.NORMAL );
-        failedRow.setFontWeight( FontWeight.NORMAL );
+        failedRow = new TableRowCssSettings("failed_row");
+        failedRow.setFontFamily("Verdana, Arial");
+        failedRow.setFontSize(11);
+        failedRow.setFontStyle(FontStyle.NORMAL);
+        failedRow.setFontWeight(FontWeight.NORMAL);
 
-        failedRow.setTextColor( "#000000" );
-        failedRow.setBackgroundColor( "#FFAAAA" );
+        failedRow.setTextColor("#000000");
+        failedRow.setBackgroundColor("#FFAAAA");
 
-        failedRow.setTextHorizontalAlign( TextHorizontalAlign.LEFT );
-        failedRow.setTextVerticalAlign( TextVerticalAlign.TOP );
-        rows.add( failedRow );
+        failedRow.setTextHorizontalAlign(TextHorizontalAlign.LEFT);
+        failedRow.setTextVerticalAlign(TextVerticalAlign.TOP);
+        rows.add(failedRow);
 
         // run row
-        runRow = new TableRowCssSettings( "run_row" );
-        runRow.setFontFamily( "Verdana, Arial" );
-        runRow.setFontSize( 13 );
-        runRow.setFontStyle( FontStyle.NORMAL );
-        runRow.setFontWeight( FontWeight.NORMAL );
+        runRow = new TableRowCssSettings("run_row");
+        runRow.setFontFamily("Verdana, Arial");
+        runRow.setFontSize(13);
+        runRow.setFontStyle(FontStyle.NORMAL);
+        runRow.setFontWeight(FontWeight.NORMAL);
 
-        runRow.setTextColor( "#000000" );
-        runRow.setBackgroundColor( "#CCFFCC" );
+        runRow.setTextColor("#000000");
+        runRow.setBackgroundColor("#CCFFCC");
 
-        runRow.setTextHorizontalAlign( TextHorizontalAlign.LEFT );
-        runRow.setTextVerticalAlign( TextVerticalAlign.TOP );
-        rows.add( runRow );
+        runRow.setTextHorizontalAlign(TextHorizontalAlign.LEFT);
+        runRow.setTextVerticalAlign(TextVerticalAlign.TOP);
+        rows.add(runRow);
 
         // failed run row
-        failedRunRow = new TableRowCssSettings( "failed_run_row" );
-        failedRunRow.setFontFamily( "Verdana, Arial" );
-        failedRunRow.setFontSize( 13 );
-        failedRunRow.setFontStyle( FontStyle.NORMAL );
-        failedRunRow.setFontWeight( FontWeight.NORMAL );
+        failedRunRow = new TableRowCssSettings("failed_run_row");
+        failedRunRow.setFontFamily("Verdana, Arial");
+        failedRunRow.setFontSize(13);
+        failedRunRow.setFontStyle(FontStyle.NORMAL);
+        failedRunRow.setFontWeight(FontWeight.NORMAL);
 
-        failedRunRow.setTextColor( "#000000" );
-        failedRunRow.setBackgroundColor( "#FFAAAA" );
+        failedRunRow.setTextColor("#000000");
+        failedRunRow.setBackgroundColor("#FFAAAA");
 
-        failedRunRow.setTextHorizontalAlign( TextHorizontalAlign.LEFT );
-        failedRunRow.setTextVerticalAlign( TextVerticalAlign.TOP );
-        rows.add( failedRunRow );
+        failedRunRow.setTextHorizontalAlign(TextHorizontalAlign.LEFT);
+        failedRunRow.setTextVerticalAlign(TextVerticalAlign.TOP);
+        rows.add(failedRunRow);
 
         // empty row
-        emptyRow = new TableRowCssSettings( "empty_row" );
-        emptyRow.setFontFamily( "Verdana, Arial" );
-        emptyRow.setFontSize( 13 );
-        emptyRow.setFontStyle( FontStyle.NORMAL );
-        emptyRow.setFontWeight( FontWeight.NORMAL );
+        emptyRow = new TableRowCssSettings("empty_row");
+        emptyRow.setFontFamily("Verdana, Arial");
+        emptyRow.setFontSize(13);
+        emptyRow.setFontStyle(FontStyle.NORMAL);
+        emptyRow.setFontWeight(FontWeight.NORMAL);
 
-        emptyRow.setTextColor( "#000000" );
-        emptyRow.setBackgroundColor( "#FFFFFF" );
+        emptyRow.setTextColor("#000000");
+        emptyRow.setBackgroundColor("#FFFFFF");
 
-        emptyRow.setTextHorizontalAlign( TextHorizontalAlign.LEFT );
-        emptyRow.setTextVerticalAlign( TextVerticalAlign.TOP );
-        rows.add( emptyRow );
+        emptyRow.setTextHorizontalAlign(TextHorizontalAlign.LEFT);
+        emptyRow.setTextVerticalAlign(TextVerticalAlign.TOP);
+        rows.add(emptyRow);
     }
 
     /**
@@ -151,12 +151,12 @@ public class CssSettings {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "<style type=\"text/css\">" + NEW_LINE );
-        sb.append( "<!--" + NEW_LINE );
-        for( TableRowCssSettings row : rows ) {
-            sb.append( row.toHtml() + NEW_LINE );
+        sb.append("<style type=\"text/css\">" + NEW_LINE);
+        sb.append("<!--" + NEW_LINE);
+        for (TableRowCssSettings row : rows) {
+            sb.append(row.toHtml() + NEW_LINE);
         }
-        sb.append( "--></style>" + NEW_LINE );
+        sb.append("--></style>" + NEW_LINE);
 
         return sb.toString();
     }

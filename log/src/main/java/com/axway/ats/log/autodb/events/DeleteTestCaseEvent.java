@@ -21,7 +21,7 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DeleteTestCaseEvent extends AbstractLoggingEvent {
 
     private final int testcaseId;
@@ -30,7 +30,7 @@ public class DeleteTestCaseEvent extends AbstractLoggingEvent {
                                 Logger logger,
                                 int testcaseId ) {
 
-        super( loggerFQCN, logger, "Delete test case", LoggingEventType.DELETE_TEST_CASE );
+        super(loggerFQCN, logger, "Delete test case", LoggingEventType.DELETE_TEST_CASE);
 
         this.testcaseId = testcaseId;
     }

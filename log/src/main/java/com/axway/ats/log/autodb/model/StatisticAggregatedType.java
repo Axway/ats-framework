@@ -34,47 +34,47 @@ public class StatisticAggregatedType {
     public static boolean isAverage(
                                      int mode ) {
 
-        return ( mode & AVERAGE ) > 0;
+        return (mode & AVERAGE) > 0;
     }
 
     public static boolean isSum(
                                  int mode ) {
 
-        return ( mode & SUM ) > 0;
+        return (mode & SUM) > 0;
     }
 
     public static boolean isTotals(
                                     int mode ) {
 
-        return ( mode & TOTALS ) > 0;
+        return (mode & TOTALS) > 0;
     }
 
     public static boolean isCount(
                                    int mode ) {
 
-        return ( mode & COUNT ) > 0;
+        return (mode & COUNT) > 0;
     }
 
     public static Integer[] getAllTypes(
                                          int mode ) {
 
         List<Integer> types = new ArrayList<Integer>();
-        if( mode == REGULAR ) {
-            types.add( REGULAR );
+        if (mode == REGULAR) {
+            types.add(REGULAR);
         } else {
-            if( isAverage( mode ) ) {
-                types.add( AVERAGE );
+            if (isAverage(mode)) {
+                types.add(AVERAGE);
             }
-            if( isSum( mode ) ) {
-                types.add( SUM );
+            if (isSum(mode)) {
+                types.add(SUM);
             }
-            if( isTotals( mode ) ) {
-                types.add( TOTALS );
+            if (isTotals(mode)) {
+                types.add(TOTALS);
             }
-            if( isCount( mode ) ) {
-                types.add( COUNT );
+            if (isCount(mode)) {
+                types.add(COUNT);
             }
         }
-        return types.toArray( new Integer[0] );
+        return types.toArray(new Integer[0]);
     }
 }

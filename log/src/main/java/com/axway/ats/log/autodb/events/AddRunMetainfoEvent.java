@@ -21,7 +21,7 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AddRunMetainfoEvent extends AbstractLoggingEvent {
 
     private String metaKey;
@@ -32,10 +32,10 @@ public class AddRunMetainfoEvent extends AbstractLoggingEvent {
                                 String metaKey,
                                 String metaValue ) {
 
-        super( loggerFQCN,
-               logger,
-               "Add run meta info '" + metaKey + "=" + metaValue + "'",
-               LoggingEventType.ADD_RUN_METAINFO );
+        super(loggerFQCN,
+              logger,
+              "Add run meta info '" + metaKey + "=" + metaValue + "'",
+              LoggingEventType.ADD_RUN_METAINFO);
 
         this.metaKey = metaKey;
         this.metaValue = metaValue;

@@ -56,9 +56,9 @@ public class LogReportMailer {
                             int[] runIds,
                             String mailSubject ) {
 
-       this(dbHost, dbName, dbUser, dbPassword, -1, null, runIds, mailSubject);
+        this(dbHost, dbName, dbUser, dbPassword, -1, null, runIds, mailSubject);
     }
-    
+
     /**
      * @param dbHost the database host to get runs from
      * @param dbName the database name to get runs from
@@ -96,20 +96,20 @@ public class LogReportMailer {
     public void send() {
 
         // get runs from log database
-        ReportExtractor reportExtactor = new ReportExtractor( dbHost, dbName, dbUser, dbPassword );
-        List<RunWrapper> runs = reportExtactor.extract( runIds );
+        ReportExtractor reportExtactor = new ReportExtractor(dbHost, dbName, dbUser, dbPassword);
+        List<RunWrapper> runs = reportExtactor.extract(runIds);
 
         // format the report
-        ReportFormatter reportFormatter = new ReportFormatter( runs,
-                                                               mailSubject,
-                                                               dbHost,
-                                                               dbName,
-                                                               testExplorerWebPort,
-                                                               testExplorerInstanceName );
+        ReportFormatter reportFormatter = new ReportFormatter(runs,
+                                                              mailSubject,
+                                                              dbHost,
+                                                              dbName,
+                                                              testExplorerWebPort,
+                                                              testExplorerInstanceName);
 
         // send report by mail
-        MailReportSender mailReportSender = new MailReportSender( reportFormatter.getDescription(),
-                                                                  reportFormatter.toHtml() );
+        MailReportSender mailReportSender = new MailReportSender(reportFormatter.getDescription(),
+                                                                 reportFormatter.toHtml());
         mailReportSender.send();
     }
 }

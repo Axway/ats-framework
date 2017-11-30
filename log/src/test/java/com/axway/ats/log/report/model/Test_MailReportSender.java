@@ -37,8 +37,8 @@ import com.axway.ats.log.report.exceptions.MailReportSendException;
 import com.axway.ats.log.report.model.MailReportSender;
 import com.axway.ats.log.report.model.ReportConfigurator;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Transport.class, ReportConfigurator.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { Transport.class, ReportConfigurator.class })
 public class Test_MailReportSender {
 
     private ReportConfigurator mockReportConfigurator;
@@ -46,24 +46,24 @@ public class Test_MailReportSender {
     @Before
     public void setUp() {
 
-        mockStatic( ReportConfigurator.class );
-        mockReportConfigurator = createMock( ReportConfigurator.class );
+        mockStatic(ReportConfigurator.class);
+        mockReportConfigurator = createMock(ReportConfigurator.class);
     }
 
     @Test
     public void sendReport() throws MessagingException {
 
-        mockStatic( Transport.class );
+        mockStatic(Transport.class);
 
-        expect( ReportConfigurator.getInstance() ).andReturn( mockReportConfigurator );
-        expect( mockReportConfigurator.getSmtpServerName() ).andReturn( "localhost" );
-        expect( mockReportConfigurator.getSmtpServerPort() ).andReturn( "25" );
-        expect( mockReportConfigurator.getAddressesTo() ).andReturn( new String[]{ "userTo" } );
-        expect( mockReportConfigurator.getAddressesCc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesBcc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressFrom() ).andReturn( "userFrom" );
+        expect(ReportConfigurator.getInstance()).andReturn(mockReportConfigurator);
+        expect(mockReportConfigurator.getSmtpServerName()).andReturn("localhost");
+        expect(mockReportConfigurator.getSmtpServerPort()).andReturn("25");
+        expect(mockReportConfigurator.getAddressesTo()).andReturn(new String[]{ "userTo" });
+        expect(mockReportConfigurator.getAddressesCc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesBcc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressFrom()).andReturn("userFrom");
 
-        Transport.send( isA( Message.class ) );
+        Transport.send(isA(Message.class));
 
         replayAll();
 
@@ -72,21 +72,21 @@ public class Test_MailReportSender {
         verifyAll();
     }
 
-    @Test(expected = MailReportSendException.class)
+    @Test( expected = MailReportSendException.class)
     public void errorOnSend() throws MessagingException {
 
-        mockStatic( Transport.class );
+        mockStatic(Transport.class);
 
-        expect( ReportConfigurator.getInstance() ).andReturn( mockReportConfigurator );
-        expect( mockReportConfigurator.getSmtpServerName() ).andReturn( "localhost" );
-        expect( mockReportConfigurator.getSmtpServerPort() ).andReturn( "25" );
-        expect( mockReportConfigurator.getAddressesTo() ).andReturn( new String[]{ "userTo" } );
-        expect( mockReportConfigurator.getAddressesCc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesBcc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressFrom() ).andReturn( "userFrom" );
+        expect(ReportConfigurator.getInstance()).andReturn(mockReportConfigurator);
+        expect(mockReportConfigurator.getSmtpServerName()).andReturn("localhost");
+        expect(mockReportConfigurator.getSmtpServerPort()).andReturn("25");
+        expect(mockReportConfigurator.getAddressesTo()).andReturn(new String[]{ "userTo" });
+        expect(mockReportConfigurator.getAddressesCc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesBcc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressFrom()).andReturn("userFrom");
 
-        Transport.send( isA( Message.class ) );
-        expectLastCall().andThrow( new MessagingException() );
+        Transport.send(isA(Message.class));
+        expectLastCall().andThrow(new MessagingException());
 
         replayAll();
 
@@ -95,16 +95,16 @@ public class Test_MailReportSender {
         verifyAll();
     }
 
-    @Test(expected = MailReportSendException.class)
+    @Test( expected = MailReportSendException.class)
     public void emptyAddressTo() throws MessagingException {
 
-        expect( ReportConfigurator.getInstance() ).andReturn( mockReportConfigurator );
-        expect( mockReportConfigurator.getSmtpServerName() ).andReturn( "localhost" );
-        expect( mockReportConfigurator.getSmtpServerPort() ).andReturn( "25" );
-        expect( mockReportConfigurator.getAddressesTo() ).andReturn( new String[]{ "" } );
-        expect( mockReportConfigurator.getAddressesCc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesBcc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressFrom() ).andReturn( "userFrom" );
+        expect(ReportConfigurator.getInstance()).andReturn(mockReportConfigurator);
+        expect(mockReportConfigurator.getSmtpServerName()).andReturn("localhost");
+        expect(mockReportConfigurator.getSmtpServerPort()).andReturn("25");
+        expect(mockReportConfigurator.getAddressesTo()).andReturn(new String[]{ "" });
+        expect(mockReportConfigurator.getAddressesCc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesBcc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressFrom()).andReturn("userFrom");
 
         replayAll();
 
@@ -113,16 +113,16 @@ public class Test_MailReportSender {
         verifyAll();
     }
 
-    @Test(expected = MailReportSendException.class)
+    @Test( expected = MailReportSendException.class)
     public void emptyAddressCc() throws MessagingException {
 
-        expect( ReportConfigurator.getInstance() ).andReturn( mockReportConfigurator );
-        expect( mockReportConfigurator.getSmtpServerName() ).andReturn( "localhost" );
-        expect( mockReportConfigurator.getSmtpServerPort() ).andReturn( "25" );
-        expect( mockReportConfigurator.getAddressesTo() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesCc() ).andReturn( new String[]{ "" } );
-        expect( mockReportConfigurator.getAddressesBcc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressFrom() ).andReturn( "userFrom" );
+        expect(ReportConfigurator.getInstance()).andReturn(mockReportConfigurator);
+        expect(mockReportConfigurator.getSmtpServerName()).andReturn("localhost");
+        expect(mockReportConfigurator.getSmtpServerPort()).andReturn("25");
+        expect(mockReportConfigurator.getAddressesTo()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesCc()).andReturn(new String[]{ "" });
+        expect(mockReportConfigurator.getAddressesBcc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressFrom()).andReturn("userFrom");
 
         replayAll();
 
@@ -131,16 +131,16 @@ public class Test_MailReportSender {
         verifyAll();
     }
 
-    @Test(expected = MailReportSendException.class)
+    @Test( expected = MailReportSendException.class)
     public void emptyAddressBcc() throws MessagingException {
 
-        expect( ReportConfigurator.getInstance() ).andReturn( mockReportConfigurator );
-        expect( mockReportConfigurator.getSmtpServerName() ).andReturn( "localhost" );
-        expect( mockReportConfigurator.getSmtpServerPort() ).andReturn( "25" );
-        expect( mockReportConfigurator.getAddressesTo() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesCc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesBcc() ).andReturn( new String[]{ "" } );
-        expect( mockReportConfigurator.getAddressFrom() ).andReturn( "userFrom" );
+        expect(ReportConfigurator.getInstance()).andReturn(mockReportConfigurator);
+        expect(mockReportConfigurator.getSmtpServerName()).andReturn("localhost");
+        expect(mockReportConfigurator.getSmtpServerPort()).andReturn("25");
+        expect(mockReportConfigurator.getAddressesTo()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesCc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesBcc()).andReturn(new String[]{ "" });
+        expect(mockReportConfigurator.getAddressFrom()).andReturn("userFrom");
 
         replayAll();
 
@@ -149,16 +149,16 @@ public class Test_MailReportSender {
         verifyAll();
     }
 
-    @Test(expected = MailReportSendException.class)
+    @Test( expected = MailReportSendException.class)
     public void emptyAddressFrom() throws MessagingException {
 
-        expect( ReportConfigurator.getInstance() ).andReturn( mockReportConfigurator );
-        expect( mockReportConfigurator.getSmtpServerName() ).andReturn( "localhost" );
-        expect( mockReportConfigurator.getSmtpServerPort() ).andReturn( "25" );
-        expect( mockReportConfigurator.getAddressesTo() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesCc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressesBcc() ).andReturn( new String[0] );
-        expect( mockReportConfigurator.getAddressFrom() ).andReturn( "" );
+        expect(ReportConfigurator.getInstance()).andReturn(mockReportConfigurator);
+        expect(mockReportConfigurator.getSmtpServerName()).andReturn("localhost");
+        expect(mockReportConfigurator.getSmtpServerPort()).andReturn("25");
+        expect(mockReportConfigurator.getAddressesTo()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesCc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressesBcc()).andReturn(new String[0]);
+        expect(mockReportConfigurator.getAddressFrom()).andReturn("");
 
         replayAll();
 
@@ -169,7 +169,7 @@ public class Test_MailReportSender {
 
     private void triggerRun() {
 
-        MailReportSender mailReportSender = new MailReportSender( "mail subject", "mail content" );
+        MailReportSender mailReportSender = new MailReportSender("mail subject", "mail content");
         mailReportSender.send();
     }
 }

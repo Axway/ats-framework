@@ -21,7 +21,7 @@ package com.axway.ats.log.report.exceptions;
 /**
  * This exception indicates an error mailing a report
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MailReportSendException extends RuntimeException {
 
     /**
@@ -31,6 +31,6 @@ public class MailReportSendException extends RuntimeException {
     public MailReportSendException( String arg0,
                                     Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

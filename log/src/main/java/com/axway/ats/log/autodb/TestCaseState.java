@@ -31,7 +31,7 @@ public class TestCaseState {
 
         return runId;
     }
-    
+
     public void setRunId( int runId ) {
 
         this.runId = runId;
@@ -62,8 +62,8 @@ public class TestCaseState {
     public boolean equals(
                            Object that ) {
 
-        if( that != null && that instanceof TestCaseState ) {
-            return this.testcaseId == ( ( TestCaseState ) that ).testcaseId;
+        if (that != null && that instanceof TestCaseState) {
+            return this.testcaseId == ((TestCaseState) that).testcaseId;
         }
         return false;
     }

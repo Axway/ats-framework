@@ -29,20 +29,20 @@ public class Test_DbAppenderConfiguration {
 
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
 
-        appenderConfig.setHost( "host1" );
-        assertEquals( "host1", appenderConfig.getHost() );
+        appenderConfig.setHost("host1");
+        assertEquals("host1", appenderConfig.getHost());
 
-        appenderConfig.setDatabase( "db1" );
-        assertEquals( "db1", appenderConfig.getDatabase() );
+        appenderConfig.setDatabase("db1");
+        assertEquals("db1", appenderConfig.getDatabase());
 
-        appenderConfig.setUser( "user1" );
-        assertEquals( "user1", appenderConfig.getUser() );
+        appenderConfig.setUser("user1");
+        assertEquals("user1", appenderConfig.getUser());
 
-        appenderConfig.setPassword( "pass1" );
-        assertEquals( "pass1", appenderConfig.getPassword() );
+        appenderConfig.setPassword("pass1");
+        assertEquals("pass1", appenderConfig.getPassword());
 
-        appenderConfig.setEnableCheckpoints( true );
-        assertEquals( true, appenderConfig.getEnableCheckpoints() );
+        appenderConfig.setEnableCheckpoints(true);
+        assertEquals(true, appenderConfig.getEnableCheckpoints());
     }
 
     @Test
@@ -50,16 +50,16 @@ public class Test_DbAppenderConfiguration {
 
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
 
-        appenderConfig.setHost( "host1" );
-        appenderConfig.setDatabase( "db1" );
-        appenderConfig.setUser( "user1" );
-        appenderConfig.setPassword( "pass1" );
-        appenderConfig.setEnableCheckpoints( true );
+        appenderConfig.setHost("host1");
+        appenderConfig.setDatabase("db1");
+        appenderConfig.setUser("user1");
+        appenderConfig.setPassword("pass1");
+        appenderConfig.setEnableCheckpoints(true);
 
         appenderConfig.validate();
     }
 
-    @Test(expected = InvalidAppenderConfigurationException.class)
+    @Test( expected = InvalidAppenderConfigurationException.class)
     public void validateNegativeNoHost() throws InvalidAppenderConfigurationException {
 
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
@@ -67,35 +67,35 @@ public class Test_DbAppenderConfiguration {
         appenderConfig.validate();
     }
 
-    @Test(expected = InvalidAppenderConfigurationException.class)
+    @Test( expected = InvalidAppenderConfigurationException.class)
     public void validateNegativeNoDatabase() throws InvalidAppenderConfigurationException {
 
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
 
-        appenderConfig.setHost( "host1" );
+        appenderConfig.setHost("host1");
 
         appenderConfig.validate();
     }
 
-    @Test(expected = InvalidAppenderConfigurationException.class)
+    @Test( expected = InvalidAppenderConfigurationException.class)
     public void validateNegativeNoUser() throws InvalidAppenderConfigurationException {
 
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
 
-        appenderConfig.setHost( "host1" );
-        appenderConfig.setDatabase( "db1" );
+        appenderConfig.setHost("host1");
+        appenderConfig.setDatabase("db1");
 
         appenderConfig.validate();
     }
 
-    @Test(expected = InvalidAppenderConfigurationException.class)
+    @Test( expected = InvalidAppenderConfigurationException.class)
     public void validateNegativeNoPassword() throws InvalidAppenderConfigurationException {
 
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
 
-        appenderConfig.setHost( "host1" );
-        appenderConfig.setDatabase( "db1" );
-        appenderConfig.setUser( "user1" );
+        appenderConfig.setHost("host1");
+        appenderConfig.setDatabase("db1");
+        appenderConfig.setUser("user1");
 
         appenderConfig.validate();
     }

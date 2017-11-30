@@ -22,7 +22,7 @@ package com.axway.ats.log.report.exceptions;
  * This exception indicates an error while loading the 
  * configuration properties used for mailing a report
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MailReportPropertyException extends RuntimeException {
 
     /**
@@ -32,6 +32,6 @@ public class MailReportPropertyException extends RuntimeException {
     public MailReportPropertyException( String arg0,
                                         Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

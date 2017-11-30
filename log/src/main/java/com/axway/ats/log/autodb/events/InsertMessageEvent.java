@@ -23,7 +23,7 @@ import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.CacheableEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class InsertMessageEvent extends AbstractLoggingEvent implements CacheableEvent {
 
     private final boolean escapeHtml;
@@ -35,9 +35,9 @@ public class InsertMessageEvent extends AbstractLoggingEvent implements Cacheabl
                                String message,
                                Throwable throwable,
                                boolean escapeHtml,
-                               boolean sendRunMessage) {
+                               boolean sendRunMessage ) {
 
-        super( loggerFQCN, logger, level, message, throwable, LoggingEventType.INSERT_MESSAGE );
+        super(loggerFQCN, logger, level, message, throwable, LoggingEventType.INSERT_MESSAGE);
 
         this.escapeHtml = escapeHtml;
         this.isRunMessage = sendRunMessage;
@@ -47,7 +47,7 @@ public class InsertMessageEvent extends AbstractLoggingEvent implements Cacheabl
 
         return escapeHtml;
     }
-    
+
     public boolean isRunMessage() {
 
         return isRunMessage;
@@ -56,8 +56,8 @@ public class InsertMessageEvent extends AbstractLoggingEvent implements Cacheabl
     @Override
     protected LifeCycleState getExpectedLifeCycleState(
                                                         LifeCycleState state ) {
-        
-        switch( state ){
+
+        switch (state) {
             case RUN_STARTED:
             case SUITE_STARTED:
                 return state;

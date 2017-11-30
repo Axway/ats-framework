@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class RememberLoadQueueStateEvent extends TestCaseLoggingEvent {
 
     private String name;
@@ -31,8 +31,8 @@ public class RememberLoadQueueStateEvent extends TestCaseLoggingEvent {
     public RememberLoadQueueStateEvent( String loggerFQCN, Logger logger, String name, int loadQueueId,
                                         String threadingPattern, int numberThreads ) {
 
-        super( loggerFQCN, logger, "Remember load queue '" + name + "' state",
-               LoggingEventType.REMEMBER_LOADQUEUE_STATE );
+        super(loggerFQCN, logger, "Remember load queue '" + name + "' state",
+              LoggingEventType.REMEMBER_LOADQUEUE_STATE);
 
         this.name = name;
         this.loadQueueId = loadQueueId;

@@ -42,7 +42,7 @@ import com.axway.ats.log.model.LoadQueueResult;
 public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
     // the checkpoint log level
-    protected static CheckpointLogLevel    checkpointLogLevel = CheckpointLogLevel.SHORT;
+    protected static CheckpointLogLevel  checkpointLogLevel = CheckpointLogLevel.SHORT;
 
     // when we start we do a quick sanity check
     boolean                              sanityRun          = false;
@@ -62,27 +62,27 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      * enough.
      */
     private boolean                      isMonitorEventsQueue;
-    
+
     /**
      * When copying runs/suites/etc, the timestamps are already in UTC.
      * Due to that any further conversion to UTC, will just strip additional hours from the already processed timestamp,
      * leading to incorrect time stamp
      * */
-    protected boolean skipUTCConversion = false;
+    protected boolean                    skipUTCConversion  = false;
 
     public SQLServerDbWriteAccess( DbConnection dbConnection,
-                          boolean isBatchMode ) throws DatabaseAccessException {
+                                   boolean isBatchMode ) throws DatabaseAccessException {
 
-        super( dbConnection );
+        super(dbConnection);
         this.isBatchMode = isBatchMode;
-        this.insertFactory = new InsertEventStatementsFactory( isBatchMode );
+        this.insertFactory = new InsertEventStatementsFactory(isBatchMode);
 
-        if( isBatchMode ) {
+        if (isBatchMode) {
             // some events are sent to the DB in batch mode, we cache them here
-            dbEventsCache = new DbEventsCache( this );
+            dbEventsCache = new DbEventsCache(this);
 
-            isMonitorEventsQueue = AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
-                                                                             false );
+            isMonitorEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
+                                                                            false);
         }
     }
 
@@ -115,7 +115,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                          boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to insert run with name " + runName;
-        
+
         timestamp = inUTC(timestamp);
 
         // then start the run
@@ -126,38 +126,38 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_start_run(?, ?, ?, ?, ?, ?, ?, ? ,?) }" );
-            callableStatement.setString( 1, productName );
-            callableStatement.setString( 2, versionName );
-            callableStatement.setString( 3, buildName );
-            callableStatement.setString( 4, runName );
-            callableStatement.setString( 5, osName );
-            callableStatement.setTimestamp( 6, new Timestamp( timestamp ) );
-            callableStatement.setString( 7, hostName );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
-            callableStatement.registerOutParameter( indexRunId, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_start_run(?, ?, ?, ?, ?, ?, ?, ? ,?) }");
+            callableStatement.setString(1, productName);
+            callableStatement.setString(2, versionName);
+            callableStatement.setString(3, buildName);
+            callableStatement.setString(4, runName);
+            callableStatement.setString(5, osName);
+            callableStatement.setTimestamp(6, new Timestamp(timestamp));
+            callableStatement.setString(7, hostName);
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
+            callableStatement.registerOutParameter(indexRunId, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) == 1 ) {
+            if (callableStatement.getInt(indexRowsInserted) == 1) {
 
                 // check if the run ID is correct
-                if( callableStatement.getInt( indexRunId ) == 0 ) {
-                    throw new DatabaseAccessException( errMsg + " - run ID returned was 0" );
+                if (callableStatement.getInt(indexRunId) == 0) {
+                    throw new DatabaseAccessException(errMsg + " - run ID returned was 0");
                 }
             } else {
-                throw new DatabaseAccessException( errMsg );
+                throw new DatabaseAccessException(errMsg);
             }
 
             // get the result
-            return callableStatement.getInt( indexRunId );
+            return callableStatement.getInt(indexRunId);
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -176,30 +176,30 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         final String errMsg = "Unable to end run with id " + runId;
 
         final int indexRowsInserted = 3;
-        
+
         timestamp = inUTC(timestamp);
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_end_run(?, ?, ?) }" );
-            callableStatement.setInt( 1, runId );
-            callableStatement.setTimestamp( 2, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_end_run(?, ?, ?) }");
+            callableStatement.setInt(1, runId);
+            callableStatement.setTimestamp(2, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -238,28 +238,28 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_update_run(?, ?, ?, ?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, runId );
-            callableStatement.setString( 2, productName );
-            callableStatement.setString( 3, versionName );
-            callableStatement.setString( 4, buildName );
-            callableStatement.setString( 5, runName );
-            callableStatement.setString( 6, osName );
-            callableStatement.setString( 7, userNote );
-            callableStatement.setString( 8, hostName );
-            callableStatement.registerOutParameter( indexRowsUpdate, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_update_run(?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, runId);
+            callableStatement.setString(2, productName);
+            callableStatement.setString(3, versionName);
+            callableStatement.setString(4, buildName);
+            callableStatement.setString(5, runName);
+            callableStatement.setString(6, osName);
+            callableStatement.setString(7, userNote);
+            callableStatement.setString(8, hostName);
+            callableStatement.registerOutParameter(indexRowsUpdate, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsUpdate ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsUpdate) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -288,24 +288,24 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_add_run_metainfo(?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, runId );
-            callableStatement.setString( 2, metaKey );
-            callableStatement.setString( 3, metaValue );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_add_run_metainfo(?, ?, ?, ?) }");
+            callableStatement.setInt(1, runId);
+            callableStatement.setString(2, metaKey);
+            callableStatement.setString(3, metaValue);
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -321,50 +321,50 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         // create a new suite
 
         timestamp = inUTC(timestamp);
-        
+
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
             // TODO : remove me after 3.6.0
             String dbVersionString = getDatabaseVersion();
-            int dbVersion = Integer.parseInt( dbVersionString.replace( ".", "" ) );
+            int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
 
-            if( dbVersion >= 350 ) {
-                callableStatement = connection.prepareCall( "{ call sp_start_suite(?, ?, ?, ?, ?, ?) }" );
+            if (dbVersion >= 350) {
+                callableStatement = connection.prepareCall("{ call sp_start_suite(?, ?, ?, ?, ?, ?) }");
 
-                if( packageName == null ) {
+                if (packageName == null) {
                     packageName = "";
                 }
-                callableStatement.setString( "@package", packageName );
+                callableStatement.setString("@package", packageName);
             } else {
-                callableStatement = connection.prepareCall( "{ call sp_start_suite(?, ?, ?, ?, ?) }" );
+                callableStatement = connection.prepareCall("{ call sp_start_suite(?, ?, ?, ?, ?) }");
             }
-            callableStatement.setString( "@suiteName", suiteName );
-            callableStatement.setInt( "@runId", runId );
-            callableStatement.setTimestamp( "@dateStart", new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( "@RowsInserted", Types.INTEGER );
-            callableStatement.registerOutParameter( "@suiteId", Types.INTEGER );
+            callableStatement.setString("@suiteName", suiteName);
+            callableStatement.setInt("@runId", runId);
+            callableStatement.setTimestamp("@dateStart", new Timestamp(timestamp));
+            callableStatement.registerOutParameter("@RowsInserted", Types.INTEGER);
+            callableStatement.registerOutParameter("@suiteId", Types.INTEGER);
 
             callableStatement.execute();
 
-            if( callableStatement.getInt( "@RowsInserted" ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt("@RowsInserted") != 1) {
+                throw new DatabaseAccessException(errMsg);
             } else {
-                if( callableStatement.getInt( "@suiteId" ) == 0 ) {
-                    throw new DatabaseAccessException( errMsg + " - suite ID returned was 0" );
+                if (callableStatement.getInt("@suiteId") == 0) {
+                    throw new DatabaseAccessException(errMsg + " - suite ID returned was 0");
                 }
             }
             // get the result
-            return callableStatement.getInt( "@suiteId" );
+            return callableStatement.getInt("@suiteId");
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -377,34 +377,34 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         final String errMsg = "Unable to end suite with id " + suiteId;
 
         timestamp = inUTC(timestamp);
-        
+
         final int indexRowsInserted = 3;
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_end_suite(?, ?, ?) }" );
-            callableStatement.setInt( 1, suiteId );
-            callableStatement.setTimestamp( 2, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_end_suite(?, ?, ?) }");
+            callableStatement.setInt(1, suiteId);
+            callableStatement.setTimestamp(2, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
-    
+
     /**
      * Update the static information about an existing suite
      *
@@ -429,26 +429,26 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_update_suite(?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, suiteId );
-            callableStatement.setString( 2, suiteName );
-            callableStatement.setString( 3, userNote );
-            callableStatement.registerOutParameter( indexRowsUpdate, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_update_suite(?, ?, ?, ?) }");
+            callableStatement.setInt(1, suiteId);
+            callableStatement.setString(2, suiteName);
+            callableStatement.setString(3, userNote);
+            callableStatement.registerOutParameter(indexRowsUpdate, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsUpdate ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsUpdate) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
-        
+
     }
 
     /**
@@ -471,18 +471,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_clear_scenario_metainfo(?, ?) }" );
-            callableStatement.setInt( 1, scenarioId );
-            callableStatement.registerOutParameter( indexRowsDeleted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_clear_scenario_metainfo(?, ?) }");
+            callableStatement.setInt(1, scenarioId);
+            callableStatement.registerOutParameter(indexRowsDeleted, Types.INTEGER);
 
             callableStatement.execute();
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -512,24 +512,24 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_add_scenario_metainfo(?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, testcaseId );
-            callableStatement.setString( 2, metaKey );
-            callableStatement.setString( 3, metaValue );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_add_scenario_metainfo(?, ?, ?, ?) }");
+            callableStatement.setInt(1, testcaseId);
+            callableStatement.setString(2, metaKey);
+            callableStatement.setString(3, metaValue);
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -544,7 +544,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to start testcase with name " + testcaseName;
-        
+
         timestamp = inUTC(timestamp);
 
         // start a new test case
@@ -555,36 +555,36 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_start_testcase(?, ?, ?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, suiteId );
-            callableStatement.setString( 2, suiteName );
-            callableStatement.setString( 3, scenarioName );
-            callableStatement.setString( 4, scenarioDescription );
-            callableStatement.setString( 5, testcaseName );
-            callableStatement.setTimestamp( 6, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
-            callableStatement.registerOutParameter( indexTestcaseId, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_start_testcase(?, ?, ?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, suiteId);
+            callableStatement.setString(2, suiteName);
+            callableStatement.setString(3, scenarioName);
+            callableStatement.setString(4, scenarioDescription);
+            callableStatement.setString(5, testcaseName);
+            callableStatement.setTimestamp(6, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
+            callableStatement.registerOutParameter(indexTestcaseId, Types.INTEGER);
 
             callableStatement.execute();
 
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             } else {
-                if( callableStatement.getInt( indexTestcaseId ) == 0 ) {
-                    throw new DatabaseAccessException( errMsg + " - testcase id returned was 0" );
+                if (callableStatement.getInt(indexTestcaseId) == 0) {
+                    throw new DatabaseAccessException(errMsg + " - testcase id returned was 0");
                 }
             }
 
             // get the result
-            return callableStatement.getInt( indexTestcaseId );
+            return callableStatement.getInt(indexTestcaseId);
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -596,7 +596,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                              boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end testcase with id " + testcaseId;
-        
+
         timestamp = inUTC(timestamp);
 
         final int indexRowsInserted = 4;
@@ -604,28 +604,28 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_end_testcase(?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, testcaseId );
-            callableStatement.setInt( 2, testcaseResult );
-            callableStatement.setTimestamp( 3, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_end_testcase(?, ?, ?, ?) }");
+            callableStatement.setInt(1, testcaseId);
+            callableStatement.setInt(2, testcaseResult);
+            callableStatement.setTimestamp(3, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
-    
+
     public void updateTestcase(
                                 String suiteFullName,
                                 String scenarioName,
@@ -636,66 +636,66 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                 int testcaseId,
                                 long timestamp,
                                 boolean closeConnection ) throws DatabaseAccessException {
-        
+
         final String errMsg = "Unable to update testcase with name '" + testcaseName + "' and id " + testcaseId;
 
         timestamp = inUTC(timestamp);
-        
+
         final int indexRowsUpdate = 9;
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_update_testcase(?, ?, ?, ?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, testcaseId );
-            callableStatement.setString( 2, suiteFullName );
-            callableStatement.setString( 3, scenarioName );
-            callableStatement.setString( 4, scenarioDescription );
-            callableStatement.setString( 5, testcaseName );
-            callableStatement.setString( 6, userNote );
-            callableStatement.setInt( 7, testcaseResult );
-            callableStatement.setTimestamp( 8, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsUpdate, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_update_testcase(?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, testcaseId);
+            callableStatement.setString(2, suiteFullName);
+            callableStatement.setString(3, scenarioName);
+            callableStatement.setString(4, scenarioDescription);
+            callableStatement.setString(5, testcaseName);
+            callableStatement.setString(6, userNote);
+            callableStatement.setInt(7, testcaseResult);
+            callableStatement.setTimestamp(8, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsUpdate, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsUpdate ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsUpdate) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
-        
+
     }
 
     public void deleteTestcase(
                                 List<Object> objectsToDelete ) throws DatabaseAccessException {
 
         StringBuilder testcaseIds = new StringBuilder();
-        for( Object obj : objectsToDelete ) {
-            testcaseIds.append( ( ( Testcase ) obj ).testcaseId );
-            testcaseIds.append( "," );
+        for (Object obj : objectsToDelete) {
+            testcaseIds.append( ((Testcase) obj).testcaseId);
+            testcaseIds.append(",");
         }
-        testcaseIds.delete( testcaseIds.length() - 1, testcaseIds.length() );
+        testcaseIds.delete(testcaseIds.length() - 1, testcaseIds.length());
 
         final String errMsg = "Unable to delete testcase(s) with id " + testcaseIds;
 
         Connection connection = getConnection();
         CallableStatement callableStatement = null;
         try {
-            callableStatement = connection.prepareCall( "{ call sp_delete_testcase(?) }" );
-            callableStatement.setString( 1, testcaseIds.toString() );
+            callableStatement = connection.prepareCall("{ call sp_delete_testcase(?) }");
+            callableStatement.setString(1, testcaseIds.toString());
             callableStatement.execute();
-        } catch( SQLException e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (SQLException e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            DbUtils.close( connection, callableStatement );
+            DbUtils.close(connection, callableStatement);
         }
     }
 
@@ -710,12 +710,12 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                int testcaseId,
                                boolean closeConnection ) throws DatabaseAccessException {
 
-        if( testcaseId < 1 ) {
-            log.warn( "Load queue '" + name
-                      + "' will not be registered because there is no database connection!" );
+        if (testcaseId < 1) {
+            log.warn("Load queue '" + name
+                     + "' will not be registered because there is no database connection!");
             return -1;
         }
-        
+
         timestamp = inUTC(timestamp);
 
         final String errMsg = "Unable to start load queue with name " + name;
@@ -728,38 +728,38 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_start_loadqueue(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, testcaseId );
-            callableStatement.setString( 2, name );
-            callableStatement.setInt( 3, sequence );
-            callableStatement.setString( 4, hostsList );
-            callableStatement.setString( 5, threadingPattern );
-            callableStatement.setInt( 6, numberThreads );
-            callableStatement.setString( 7, machine );
-            callableStatement.setTimestamp( 8, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
-            callableStatement.registerOutParameter( indexLoadQueueId, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_start_loadqueue(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, testcaseId);
+            callableStatement.setString(2, name);
+            callableStatement.setInt(3, sequence);
+            callableStatement.setString(4, hostsList);
+            callableStatement.setString(5, threadingPattern);
+            callableStatement.setInt(6, numberThreads);
+            callableStatement.setString(7, machine);
+            callableStatement.setTimestamp(8, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
+            callableStatement.registerOutParameter(indexLoadQueueId, Types.INTEGER);
 
             callableStatement.execute();
 
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             } else {
-                if( callableStatement.getInt( indexLoadQueueId ) == 0 ) {
-                    throw new DatabaseAccessException( errMsg + " - load queue id returned was 0" );
+                if (callableStatement.getInt(indexLoadQueueId) == 0) {
+                    throw new DatabaseAccessException(errMsg + " - load queue id returned was 0");
                 }
             }
 
             // get the result
-            return callableStatement.getInt( indexLoadQueueId );
+            return callableStatement.getInt(indexLoadQueueId);
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -771,7 +771,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                               boolean closeConnection ) throws DatabaseAccessException {
 
         final String errMsg = "Unable to end load queue with id " + loadQueueId;
-        
+
         timestamp = inUTC(timestamp);
 
         final int indexRowsInserted = 4;
@@ -780,24 +780,24 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_end_loadqueue(?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, loadQueueId );
-            callableStatement.setInt( 2, result );
-            callableStatement.setTimestamp( 3, new Timestamp( timestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_end_loadqueue(?, ?, ?, ?) }");
+            callableStatement.setInt(1, loadQueueId);
+            callableStatement.setInt(2, result);
+            callableStatement.setTimestamp(3, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -811,28 +811,28 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                   long timestamp,
                                   int testCaseId,
                                   boolean closeConnection ) throws DatabaseAccessException {
-        
+
         timestamp = inUTC(timestamp);
 
         Connection currentConnection;
-        if( !isBatchMode ) {
+        if (!isBatchMode) {
             currentConnection = refreshInternalConnection();
         } else {
             currentConnection = dbEventsCache.connection;
         }
 
-        CallableStatement insertMessageStatement = insertFactory.getInsertTestcaseMessageStatement( currentConnection,
-                                                                                                    message,
-                                                                                                    level,
-                                                                                                    escapeHtml,
-                                                                                                    machineName,
-                                                                                                    threadName,
-                                                                                                    timestamp,
-                                                                                                    testCaseId );
+        CallableStatement insertMessageStatement = insertFactory.getInsertTestcaseMessageStatement(currentConnection,
+                                                                                                   message,
+                                                                                                   level,
+                                                                                                   escapeHtml,
+                                                                                                   machineName,
+                                                                                                   threadName,
+                                                                                                   timestamp,
+                                                                                                   testCaseId);
 
-        if( isBatchMode ) {
+        if (isBatchMode) {
             // schedule this event for batch execution
-            return dbEventsCache.addInsertTestcaseMessageEventToBatch( insertMessageStatement );
+            return dbEventsCache.addInsertTestcaseMessageEventToBatch(insertMessageStatement);
         } else {
             // execute this event now
             final String errMsg = "Unable to insert testcase message '" + message + "'";
@@ -840,16 +840,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             try {
                 insertMessageStatement.execute();
-                if( insertMessageStatement.getInt( indexRowsInserted ) < 1 ) {
-                    throw new DatabaseAccessException( errMsg );
+                if (insertMessageStatement.getInt(indexRowsInserted) < 1) {
+                    throw new DatabaseAccessException(errMsg);
                 }
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( errMsg, e );
+            } catch (SQLException e) {
+                throw new DatabaseAccessException(errMsg, e);
             } finally {
-                if( closeConnection ) {
-                    DbUtils.close( connection, insertMessageStatement );
+                if (closeConnection) {
+                    DbUtils.close(connection, insertMessageStatement);
                 } else {
-                    DbUtils.closeStatement( insertMessageStatement );
+                    DbUtils.closeStatement(insertMessageStatement);
                 }
             }
 
@@ -868,34 +868,34 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                      boolean closeConnection ) throws DatabaseAccessException {
 
         String dbVersionString = getDatabaseVersion();
-        int dbVersion = Integer.parseInt( dbVersionString.replace( ".", "" ) );
+        int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
 
-        if( dbVersion < 350 ) {
+        if (dbVersion < 350) {
 
             return false;
         } else {
-            
+
             timestamp = inUTC(timestamp);
 
             Connection currentConnection;
-            if( !isBatchMode ) {
+            if (!isBatchMode) {
                 currentConnection = refreshInternalConnection();
             } else {
                 currentConnection = dbEventsCache.connection;
             }
 
-            CallableStatement insertMessageStatement = insertFactory.getInsertRunMessageStatement( currentConnection,
-                                                                                                   message,
-                                                                                                   level,
-                                                                                                   escapeHtml,
-                                                                                                   machineName,
-                                                                                                   threadName,
-                                                                                                   timestamp,
-                                                                                                   runId );
+            CallableStatement insertMessageStatement = insertFactory.getInsertRunMessageStatement(currentConnection,
+                                                                                                  message,
+                                                                                                  level,
+                                                                                                  escapeHtml,
+                                                                                                  machineName,
+                                                                                                  threadName,
+                                                                                                  timestamp,
+                                                                                                  runId);
 
-            if( isBatchMode ) {
+            if (isBatchMode) {
                 // schedule this event for batch execution
-                return dbEventsCache.addInsertRunMessageEventToBatch( insertMessageStatement );
+                return dbEventsCache.addInsertRunMessageEventToBatch(insertMessageStatement);
             } else {
                 // execute this event now
                 final String errMsg = "Unable to insert run message '" + message + "'";
@@ -903,16 +903,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 try {
                     insertMessageStatement.execute();
-                    if( insertMessageStatement.getInt( indexRowsInserted ) < 1 ) {
-                        throw new DatabaseAccessException( errMsg );
+                    if (insertMessageStatement.getInt(indexRowsInserted) < 1) {
+                        throw new DatabaseAccessException(errMsg);
                     }
-                } catch( SQLException e ) {
-                    throw new DatabaseAccessException( errMsg, e );
+                } catch (SQLException e) {
+                    throw new DatabaseAccessException(errMsg, e);
                 } finally {
-                    if( closeConnection ) {
-                        DbUtils.close( connection, insertMessageStatement );
+                    if (closeConnection) {
+                        DbUtils.close(connection, insertMessageStatement);
                     } else {
-                        DbUtils.closeStatement( insertMessageStatement );
+                        DbUtils.closeStatement(insertMessageStatement);
                     }
                 }
 
@@ -932,34 +932,34 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                        boolean closeConnection ) throws DatabaseAccessException {
 
         String dbVersionString = getDatabaseVersion();
-        int dbVersion = Integer.parseInt( dbVersionString.replace( ".", "" ) );
+        int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
 
-        if( dbVersion < 350 ) {
+        if (dbVersion < 350) {
 
             return false;
         } else {
-            
+
             timestamp = inUTC(timestamp);
 
             Connection currentConnection;
-            if( !isBatchMode ) {
+            if (!isBatchMode) {
                 currentConnection = refreshInternalConnection();
             } else {
                 currentConnection = dbEventsCache.connection;
             }
 
-            CallableStatement insertMessageStatement = insertFactory.getInsertSuiteMessageStatement( currentConnection,
-                                                                                                     message,
-                                                                                                     level,
-                                                                                                     escapeHtml,
-                                                                                                     machineName,
-                                                                                                     threadName,
-                                                                                                     timestamp,
-                                                                                                     suiteId );
+            CallableStatement insertMessageStatement = insertFactory.getInsertSuiteMessageStatement(currentConnection,
+                                                                                                    message,
+                                                                                                    level,
+                                                                                                    escapeHtml,
+                                                                                                    machineName,
+                                                                                                    threadName,
+                                                                                                    timestamp,
+                                                                                                    suiteId);
 
-            if( isBatchMode ) {
+            if (isBatchMode) {
                 // schedule this event for batch execution
-                return dbEventsCache.addInsertSuiteMessageEventToBatch( insertMessageStatement );
+                return dbEventsCache.addInsertSuiteMessageEventToBatch(insertMessageStatement);
             } else {
                 // execute this event now
                 final String errMsg = "Unable to insert suite message '" + message + "'";
@@ -967,16 +967,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 try {
                     insertMessageStatement.execute();
-                    if( insertMessageStatement.getInt( indexRowsInserted ) < 1 ) {
-                        throw new DatabaseAccessException( errMsg );
+                    if (insertMessageStatement.getInt(indexRowsInserted) < 1) {
+                        throw new DatabaseAccessException(errMsg);
                     }
-                } catch( SQLException e ) {
-                    throw new DatabaseAccessException( errMsg, e );
+                } catch (SQLException e) {
+                    throw new DatabaseAccessException(errMsg, e);
                 } finally {
-                    if( closeConnection ) {
-                        DbUtils.close( connection, insertMessageStatement );
+                    if (closeConnection) {
+                        DbUtils.close(connection, insertMessageStatement);
                     } else {
-                        DbUtils.closeStatement( insertMessageStatement );
+                        DbUtils.closeStatement(insertMessageStatement);
                     }
                 }
 
@@ -996,27 +996,27 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                      boolean closeConnection ) throws DatabaseAccessException {
 
         startTimestamp = inUTC(startTimestamp);
-        
+
         Connection currentConnection;
-        if( !isBatchMode ) {
+        if (!isBatchMode) {
             currentConnection = refreshInternalConnection();
         } else {
             currentConnection = dbEventsCache.connection;
         }
 
-        CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement( currentConnection,
-                                                                                                  name,
-                                                                                                  responseTime,
-                                                                                                  startTimestamp + responseTime,
-                                                                                                  transferSize,
-                                                                                                  transferUnit,
-                                                                                                  result,
-                                                                                                  checkpointLogLevel,
-                                                                                                  loadQueueId );
+        CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement(currentConnection,
+                                                                                                 name,
+                                                                                                 responseTime,
+                                                                                                 startTimestamp + responseTime,
+                                                                                                 transferSize,
+                                                                                                 transferUnit,
+                                                                                                 result,
+                                                                                                 checkpointLogLevel,
+                                                                                                 loadQueueId);
 
-        if( isBatchMode ) {
+        if (isBatchMode) {
             // schedule this event for batch execution
-            return dbEventsCache.addInsertCheckpointEventToBatch( insertCheckpointStatement );
+            return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
         } else {
             // execute this event now
             final String errMsg = "Unable to insert checkpoint '" + name + "'";
@@ -1028,13 +1028,13 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 // ) {
                 // throw new DatabaseAccessException( errMsg );
                 // }
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( errMsg, e );
+            } catch (SQLException e) {
+                throw new DatabaseAccessException(errMsg, e);
             } finally {
-                if( closeConnection ) {
-                    DbUtils.close( connection, insertCheckpointStatement );
+                if (closeConnection) {
+                    DbUtils.close(connection, insertCheckpointStatement);
                 } else {
-                    DbUtils.closeStatement( insertCheckpointStatement );
+                    DbUtils.closeStatement(insertCheckpointStatement);
                 }
             }
 
@@ -1071,7 +1071,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
         final String errMsg = "Unable to start checkpoint '" + name + "' in load queue " + loadQueueId;
 
-        startTimestamp = inUTC( startTimestamp );
+        startTimestamp = inUTC(startTimestamp);
 
         final int indexCheckpointSummaryId = 5;
         final int indexCheckpointId = 6;
@@ -1080,39 +1080,39 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_start_checkpoint(?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, loadQueueId );
-            callableStatement.setString( 2, name );
-            callableStatement.setInt( 3, checkpointLogLevel.toInt() );
-            callableStatement.setString( 4, transferUnit );
-            callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
-            callableStatement.registerOutParameter( indexCheckpointId, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_start_checkpoint(?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, loadQueueId);
+            callableStatement.setString(2, name);
+            callableStatement.setInt(3, checkpointLogLevel.toInt());
+            callableStatement.setString(4, transferUnit);
+            callableStatement.registerOutParameter(indexCheckpointSummaryId, Types.INTEGER);
+            callableStatement.registerOutParameter(indexCheckpointId, Types.INTEGER);
 
             callableStatement.execute();
 
             // we always update the checkpoint summary table
-            if( callableStatement.getInt( indexCheckpointSummaryId ) == 0 ) {
-                throw new DatabaseAccessException( errMsg + " - checkpoint summary ID returned was 0" );
+            if (callableStatement.getInt(indexCheckpointSummaryId) == 0) {
+                throw new DatabaseAccessException(errMsg + " - checkpoint summary ID returned was 0");
             }
 
             // we update the checkpoint table only in FULL mode
-            if( checkpointLogLevel == CheckpointLogLevel.FULL
-                && callableStatement.getInt( indexCheckpointId ) == 0 ) {
-                throw new DatabaseAccessException( errMsg + " - checkpoint ID returned was 0" );
+            if (checkpointLogLevel == CheckpointLogLevel.FULL
+                && callableStatement.getInt(indexCheckpointId) == 0) {
+                throw new DatabaseAccessException(errMsg + " - checkpoint ID returned was 0");
             }
 
-            int checkpointSummaryId = callableStatement.getInt( indexCheckpointSummaryId );
-            int checkpointId = callableStatement.getInt( indexCheckpointId );
+            int checkpointSummaryId = callableStatement.getInt(indexCheckpointSummaryId);
+            int checkpointId = callableStatement.getInt(indexCheckpointId);
 
-            return new CheckpointInfo( name, checkpointSummaryId, checkpointId, startTimestamp );
+            return new CheckpointInfo(name, checkpointSummaryId, checkpointId, startTimestamp);
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -1127,7 +1127,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         final String errMsg = "Unable to end checkpoint with name '" + runningCheckpointInfo.getName()
                               + "', checkpoint summary id " + runningCheckpointInfo.getCheckpointSummaryId()
                               + ", id " + runningCheckpointInfo.getCheckpointId();
-        
+
         endTimestamp = inUTC(endTimestamp);
 
         final int indexRowsInserted = 8;
@@ -1136,28 +1136,28 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_end_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, runningCheckpointInfo.getCheckpointSummaryId() );
-            callableStatement.setInt( 2, runningCheckpointInfo.getCheckpointId() );
-            callableStatement.setInt( 3,
-                                      ( int ) ( endTimestamp - runningCheckpointInfo.getStartTimestamp() ) );
-            callableStatement.setLong( 4, transferSize );
-            callableStatement.setInt( 5, result );
-            callableStatement.setInt( 6, checkpointLogLevel.toInt() );
-            callableStatement.setTimestamp( 7, new Timestamp( endTimestamp ) );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_end_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, runningCheckpointInfo.getCheckpointSummaryId());
+            callableStatement.setInt(2, runningCheckpointInfo.getCheckpointId());
+            callableStatement.setInt(3,
+                                     (int) (endTimestamp - runningCheckpointInfo.getStartTimestamp()));
+            callableStatement.setLong(4, transferSize);
+            callableStatement.setInt(5, result);
+            callableStatement.setInt(6, checkpointLogLevel.toInt());
+            callableStatement.setTimestamp(7, new Timestamp(endTimestamp));
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -1187,38 +1187,38 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            perparedStatement = connection.prepareStatement( "INSERT INTO tCheckpointsSummary"
-                                                             + " (name,numRunning,numPassed,numFailed,minResponseTime,avgResponseTime,maxResponseTime,minTransferRate,avgTransferRate,maxTransferRate,transferRateUnit,loadQueueId) "
-                                                             + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)" );
-            perparedStatement.setString( 1, name );
+            perparedStatement = connection.prepareStatement("INSERT INTO tCheckpointsSummary"
+                                                            + " (name,numRunning,numPassed,numFailed,minResponseTime,avgResponseTime,maxResponseTime,minTransferRate,avgTransferRate,maxTransferRate,transferRateUnit,loadQueueId) "
+                                                            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+            perparedStatement.setString(1, name);
 
-            perparedStatement.setInt( 2, numRunning );
-            perparedStatement.setInt( 3, numPassed );
-            perparedStatement.setInt( 4, numFailed );
+            perparedStatement.setInt(2, numRunning);
+            perparedStatement.setInt(3, numPassed);
+            perparedStatement.setInt(4, numFailed);
 
-            perparedStatement.setInt( 5, minResponseTime );
-            perparedStatement.setFloat( 6, avgResponseTime );
-            perparedStatement.setInt( 7, maxResponseTime );
+            perparedStatement.setInt(5, minResponseTime);
+            perparedStatement.setFloat(6, avgResponseTime);
+            perparedStatement.setInt(7, maxResponseTime);
 
-            perparedStatement.setFloat( 8, minTransferRate );
-            perparedStatement.setFloat( 9, avgTransferRate );
-            perparedStatement.setFloat( 10, maxTransferRate );
+            perparedStatement.setFloat(8, minTransferRate);
+            perparedStatement.setFloat(9, avgTransferRate);
+            perparedStatement.setFloat(10, maxTransferRate);
 
-            perparedStatement.setString( 11, transferRateUnit );
+            perparedStatement.setString(11, transferRateUnit);
 
-            perparedStatement.setInt( 12, loadQueueId );
+            perparedStatement.setInt(12, loadQueueId);
 
             int updatedRecords = perparedStatement.executeUpdate();
-            if( updatedRecords != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (updatedRecords != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
-        } catch( SQLException e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (SQLException e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, perparedStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, perparedStatement);
             } else {
-                DbUtils.closeStatement( perparedStatement );
+                DbUtils.closeStatement(perparedStatement);
             }
         }
     }
@@ -1232,29 +1232,29 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                         boolean closeConnection ) throws DatabaseAccessException {
 
         timestamp = inUTC(timestamp);
-        
+
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_insert_system_statistic_by_ids(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 3, statisticIds );
-            callableStatement.setInt( 1, testCaseId );
-            callableStatement.setString( 2, machine );
-            callableStatement.setString( 4, statisticValues );
-            callableStatement.setTimestamp( 5, new Timestamp( timestamp ) );
+            callableStatement = connection.prepareCall("{ call sp_insert_system_statistic_by_ids(?, ?, ?, ?, ?) }");
+            callableStatement.setString(3, statisticIds);
+            callableStatement.setInt(1, testCaseId);
+            callableStatement.setString(2, machine);
+            callableStatement.setString(4, statisticValues);
+            callableStatement.setTimestamp(5, new Timestamp(timestamp));
 
             callableStatement.execute();
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errMsg = "Unable to insert system statistics, statistic IDs '" + statisticIds
                             + "', statistic values '" + statisticValues + "', timestamp " + timestamp;
-            throw new DatabaseAccessException( errMsg, e );
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -1266,31 +1266,31 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                               String statisticValues,
                                               long timestamp,
                                               boolean closeConnection ) throws DatabaseAccessException {
-        
+
         timestamp = inUTC(timestamp);
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_insert_user_activity_statistic_by_ids(?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 3, statisticIds );
-            callableStatement.setInt( 1, testCaseId );
-            callableStatement.setString( 2, machine );
-            callableStatement.setString( 4, statisticValues );
-            callableStatement.setTimestamp( 5, new Timestamp( timestamp ) );
+            callableStatement = connection.prepareCall("{ call sp_insert_user_activity_statistic_by_ids(?, ?, ?, ?, ?) }");
+            callableStatement.setString(3, statisticIds);
+            callableStatement.setInt(1, testCaseId);
+            callableStatement.setString(2, machine);
+            callableStatement.setString(4, statisticValues);
+            callableStatement.setTimestamp(5, new Timestamp(timestamp));
 
             callableStatement.execute();
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errMsg = "Unable to insert user activity statistics, statistic IDs '" + statisticIds
                             + "', statistic values '" + statisticValues + "', timestamp " + timestamp;
-            throw new DatabaseAccessException( errMsg, e );
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -1306,31 +1306,31 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_populate_checkpoint_summary(?, ?, ?, ?) }" );
-            callableStatement.setInt( 1, loadQueueId );
-            callableStatement.setString( 2, name );
-            callableStatement.setString( 3, transferRateUnit );
-            callableStatement.registerOutParameter( indexCheckpointSummaryId, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_populate_checkpoint_summary(?, ?, ?, ?) }");
+            callableStatement.setInt(1, loadQueueId);
+            callableStatement.setString(2, name);
+            callableStatement.setString(3, transferRateUnit);
+            callableStatement.registerOutParameter(indexCheckpointSummaryId, Types.INTEGER);
 
             callableStatement.execute();
 
-           if( callableStatement.getInt( indexCheckpointSummaryId ) == 0 ) {
-               throw new DatabaseAccessException( errMsg + " - checkpoint summary ID returned was 0" );
-           }
+            if (callableStatement.getInt(indexCheckpointSummaryId) == 0) {
+                throw new DatabaseAccessException(errMsg + " - checkpoint summary ID returned was 0");
+            }
 
-           return callableStatement.getInt( indexCheckpointSummaryId );
+            return callableStatement.getInt(indexCheckpointSummaryId);
 
-       } catch( Exception e ) {
-           throw new DatabaseAccessException( errMsg, e );
-       } finally {
-           if( closeConnection ) {
-               DbUtils.close( connection, callableStatement );
-           } else {
-               DbUtils.closeStatement( callableStatement );
-           }
-       }
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
+            } else {
+                DbUtils.closeStatement(callableStatement);
+            }
+        }
     }
-    
+
     public int populateSystemStatisticDefinition(
                                                   String name,
                                                   String parentName,
@@ -1338,10 +1338,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                                   String unit,
                                                   String params ) throws DatabaseAccessException {
 
-        if( parentName == null ) {
+        if (parentName == null) {
             parentName = "";
         }
-        if( internalName == null ) {
+        if (internalName == null) {
             internalName = "";
         }
 
@@ -1349,7 +1349,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         Connection con = null;
         boolean useLocalConnection = false;
         try {
-            if( connection == null || connection.isClosed() ) {
+            if (connection == null || connection.isClosed()) {
                 // connection not set externally so use new connection only for
                 // this method invocation
                 useLocalConnection = true;
@@ -1359,26 +1359,26 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 con = connection;
             }
             final int statisticId = 6;
-            callableStatement = con.prepareCall( "{ call sp_populate_system_statistic_definition(?, ?, ?, ?, ?, ?) }" );
-            callableStatement.setString( 1, parentName );
-            callableStatement.setString( 2, internalName );
-            callableStatement.setString( 3, name );
-            callableStatement.setString( 4, unit );
-            callableStatement.setString( 5, params );
-            callableStatement.registerOutParameter( statisticId, Types.INTEGER );
+            callableStatement = con.prepareCall("{ call sp_populate_system_statistic_definition(?, ?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, parentName);
+            callableStatement.setString(2, internalName);
+            callableStatement.setString(3, name);
+            callableStatement.setString(4, unit);
+            callableStatement.setString(5, params);
+            callableStatement.registerOutParameter(statisticId, Types.INTEGER);
 
             callableStatement.execute();
 
-            return callableStatement.getInt( statisticId );
+            return callableStatement.getInt(statisticId);
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errMsg = "Unable to populate statistic '" + name + "' with unit '" + unit
                             + "' and params '" + params + "'";
-            throw new DatabaseAccessException( errMsg, e );
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            DbUtils.closeStatement( callableStatement );
-            if( useLocalConnection ) {
-                DbUtils.closeConnection( con );
+            DbUtils.closeStatement(callableStatement);
+            if (useLocalConnection) {
+                DbUtils.closeConnection(con);
             }
         }
     }
@@ -1397,23 +1397,23 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         try {
             refreshInternalConnection();
 
-            callableStatement = connection.prepareCall( "{ call sp_update_machine_info(?, ?, ?) }" );
-            callableStatement.setString( 1, machineName );
-            callableStatement.setString( 2, machineInfo );
-            callableStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+            callableStatement = connection.prepareCall("{ call sp_update_machine_info(?, ?, ?) }");
+            callableStatement.setString(1, machineName);
+            callableStatement.setString(2, machineInfo);
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
             callableStatement.execute();
-            if( callableStatement.getInt( indexRowsInserted ) != 1 ) {
-                throw new DatabaseAccessException( errMsg );
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
             }
 
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( errMsg, e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
         } finally {
-            if( closeConnection ) {
-                DbUtils.close( connection, callableStatement );
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
             } else {
-                DbUtils.closeStatement( callableStatement );
+                DbUtils.closeStatement(callableStatement);
             }
         }
     }
@@ -1425,16 +1425,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT COUNT(*) FROM tRuns WHERE runId = " + runId );
+            statement = connection.prepareStatement("SELECT COUNT(*) FROM tRuns WHERE runId = " + runId);
             rs = statement.executeQuery();
-            if( rs.next() ) {
-                return 1 == rs.getInt( 1 );
+            if (rs.next()) {
+                return 1 == rs.getInt(1);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error checking whether run with id " + runId + " exists", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error checking whether run with id " + runId + " exists", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return false;
@@ -1447,18 +1447,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT COUNT(*) FROM tSuites WHERE suiteId = "
-                                                     + suiteId );
+            statement = connection.prepareStatement("SELECT COUNT(*) FROM tSuites WHERE suiteId = "
+                                                    + suiteId);
             rs = statement.executeQuery();
-            if( rs.next() ) {
-                return 1 == rs.getInt( 1 );
+            if (rs.next()) {
+                return 1 == rs.getInt(1);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error checking whether suite with id " + suiteId + " exists",
-                                               e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error checking whether suite with id " + suiteId + " exists",
+                                              e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return false;
@@ -1471,18 +1471,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT COUNT(*) FROM tTestcases WHERE testcaseId = "
-                                                     + testcaseId );
+            statement = connection.prepareStatement("SELECT COUNT(*) FROM tTestcases WHERE testcaseId = "
+                                                    + testcaseId);
             rs = statement.executeQuery();
-            if( rs.next() ) {
-                return 1 == rs.getInt( 1 );
+            if (rs.next()) {
+                return 1 == rs.getInt(1);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error checking whether testcase with id " + testcaseId
-                                               + " exists", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error checking whether testcase with id " + testcaseId
+                                              + " exists", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return false;
@@ -1534,106 +1534,106 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             sanityRun = true;
 
             String javaFrameworkVersion = AtsVersion.getAtsVersion();
-            System.out.println( "*** ATS *** ATS framework version is '" + javaFrameworkVersion + "'" );
+            System.out.println("*** ATS *** ATS framework version is '" + javaFrameworkVersion + "'");
 
-            System.out.println( "*** ATS *** Checking for ATS log database connection with the following parameters: "
-                                + connection.toString() );
+            System.out.println("*** ATS *** Checking for ATS log database connection with the following parameters: "
+                               + connection.toString());
 
             String databaseVersion = getDatabaseVersion();
-            System.out.println( "*** ATS *** ATS Log database version is '" + databaseVersion + "'" );
+            System.out.println("*** ATS *** ATS Log database version is '" + databaseVersion + "'");
 
-            if( !javaFrameworkVersion.equalsIgnoreCase( databaseVersion ) ) {
-                System.out.println( "*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion
-                                    + " with Log database version " + databaseVersion
-                                    + ". This might cause incompatibility problems!" );
+            if (!javaFrameworkVersion.equalsIgnoreCase(databaseVersion)) {
+                System.out.println("*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion
+                                   + " with Log database version " + databaseVersion
+                                   + ". This might cause incompatibility problems!");
             }
 
             originalAutoCommitState = connection.getAutoCommit();
             // disable auto commit
-            connection.setAutoCommit( false );
+            connection.setAutoCommit(false);
 
             long timestamp = Calendar.getInstance().getTimeInMillis();
 
             // start everything
-            int runId = startRun( SANITY_RUN,
-                                  SANITY_OS,
-                                  SANITY_PRODUCT,
-                                  SANITY_VERSION,
-                                  SANITY_BUILD,
-                                  timestamp,
-                                  SANITY_HOSTNAME,
-                                  false );
-            int suiteId = startSuite( "SANITY_PACKAGE", SANITY_SUITE, timestamp, runId, false );
-            int testcaseId = startTestCase( SANITY_SUITE,
-                                            SANITY_SCENARIO,
-                                            SANITY_DESCRIPTION,
-                                            SANITY_TESTCASE,
-                                            timestamp,
-                                            suiteId,
-                                            false );
+            int runId = startRun(SANITY_RUN,
+                                 SANITY_OS,
+                                 SANITY_PRODUCT,
+                                 SANITY_VERSION,
+                                 SANITY_BUILD,
+                                 timestamp,
+                                 SANITY_HOSTNAME,
+                                 false);
+            int suiteId = startSuite("SANITY_PACKAGE", SANITY_SUITE, timestamp, runId, false);
+            int testcaseId = startTestCase(SANITY_SUITE,
+                                           SANITY_SCENARIO,
+                                           SANITY_DESCRIPTION,
+                                           SANITY_TESTCASE,
+                                           timestamp,
+                                           suiteId,
+                                           false);
 
             // insert a test message
-            insertMessage( SANITY_MESSAGE,
-                           5,
-                           false,
-                           "machine0",
-                           "group1-thread2",
-                           timestamp,
-                           testcaseId,
-                           false );
+            insertMessage(SANITY_MESSAGE,
+                          5,
+                          false,
+                          "machine0",
+                          "group1-thread2",
+                          timestamp,
+                          testcaseId,
+                          false);
 
             // insert a checkpoint
-            int loadQueueId = startLoadQueue( SANITY_LOADQUEUE,
-                                              0,
-                                              "127.0.0.1:8080",
-                                              "AllAtOnce",
-                                              10,
-                                              "localhost",
-                                              timestamp,
-                                              testcaseId,
-                                              false );
-            
-            populateCheckpointSummary( loadQueueId, SANITY_CHECKPOINT, "KB", false );
-            
-            CheckpointInfo startedCheckpointInfo = startCheckpoint( SANITY_CHECKPOINT,
-                                                                    "thread1",
-                                                                    1000,
-                                                                    "KB",
-                                                                    loadQueueId,
-                                                                    false );
-            endCheckpoint( startedCheckpointInfo, 2000, 100, CheckpointResult.PASSED.toInt(), false );
+            int loadQueueId = startLoadQueue(SANITY_LOADQUEUE,
+                                             0,
+                                             "127.0.0.1:8080",
+                                             "AllAtOnce",
+                                             10,
+                                             "localhost",
+                                             timestamp,
+                                             testcaseId,
+                                             false);
 
-            int statisticId1 = populateSystemStatisticDefinition( "running users",
-                                                                  "",
-                                                                  "",
-                                                                  "count",
-                                                                  "param1_1" );
-            int statisticId2 = populateSystemStatisticDefinition( "standby users",
-                                                                  "",
-                                                                  "",
-                                                                  "count",
-                                                                  "param2_1" );
-            insertSystemStatistics( testcaseId,
-                                    "localhost",
-                                    statisticId1 + "_" + statisticId2,
-                                    "30_1",
-                                    System.currentTimeMillis(),
-                                    false );
+            populateCheckpointSummary(loadQueueId, SANITY_CHECKPOINT, "KB", false);
 
-            endLoadQueue( LoadQueueResult.PASSED.toInt(), timestamp, loadQueueId, false );
+            CheckpointInfo startedCheckpointInfo = startCheckpoint(SANITY_CHECKPOINT,
+                                                                   "thread1",
+                                                                   1000,
+                                                                   "KB",
+                                                                   loadQueueId,
+                                                                   false);
+            endCheckpoint(startedCheckpointInfo, 2000, 100, CheckpointResult.PASSED.toInt(), false);
+
+            int statisticId1 = populateSystemStatisticDefinition("running users",
+                                                                 "",
+                                                                 "",
+                                                                 "count",
+                                                                 "param1_1");
+            int statisticId2 = populateSystemStatisticDefinition("standby users",
+                                                                 "",
+                                                                 "",
+                                                                 "count",
+                                                                 "param2_1");
+            insertSystemStatistics(testcaseId,
+                                   "localhost",
+                                   statisticId1 + "_" + statisticId2,
+                                   "30_1",
+                                   System.currentTimeMillis(),
+                                   false);
+
+            endLoadQueue(LoadQueueResult.PASSED.toInt(), timestamp, loadQueueId, false);
 
             // end everything
-            endTestCase( 1, timestamp, testcaseId, false );
-            endSuite( timestamp, suiteId, false );
-            endRun( timestamp, runId, false );
+            endTestCase(1, timestamp, testcaseId, false);
+            endSuite(timestamp, suiteId, false);
+            endRun(timestamp, runId, false);
 
-        } catch( SQLException sqle ) {
+        } catch (SQLException sqle) {
             String errorMessage = "Unable to insert sanity check sample data";
-            System.err.println( DbUtils.getFullSqlException( errorMessage, sqle ) );
-            dbae = new DatabaseAccessException( errorMessage, sqle );
+            System.err.println(DbUtils.getFullSqlException(errorMessage, sqle));
+            dbae = new DatabaseAccessException(errorMessage, sqle);
         } finally {
 
-            if( dbEventsCache != null ) {
+            if (dbEventsCache != null) {
                 // it is in batch mode, we want to cleanup the events cached
                 // while running the sanity check
                 dbEventsCache.resetCache();
@@ -1642,35 +1642,35 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             sanityRun = false;
             try {
                 // rollback the connection
-                if( connection != null ) {
+                if (connection != null) {
                     connection.rollback();
                 }
-            } catch( SQLException sqle ) {
+            } catch (SQLException sqle) {
                 String errorMessage = "Unable to revert sanity check data";
-                System.err.println( DbUtils.getFullSqlException( errorMessage, sqle ) );
-                if( dbae == null ) {
-                    dbae = new DatabaseAccessException( errorMessage, sqle );
+                System.err.println(DbUtils.getFullSqlException(errorMessage, sqle));
+                if (dbae == null) {
+                    dbae = new DatabaseAccessException(errorMessage, sqle);
                 } else {
-                    log.error( "The transaction could not be rolled back, possible cause '"
-                               + dbae.getMessage() + "'" );
+                    log.error("The transaction could not be rolled back, possible cause '"
+                              + dbae.getMessage() + "'");
                 }
             } finally {
                 try {
-                    if( connection != null ) {
-                        connection.setAutoCommit( originalAutoCommitState );
+                    if (connection != null) {
+                        connection.setAutoCommit(originalAutoCommitState);
                     }
-                } catch( SQLException e ) { // do not hide the possible exception
-                                                // in the rollback() catch block
-                    System.err.println( DbUtils.getFullSqlException( "Could not restore connection's autocommit state",
-                                                                     e ) );
+                } catch (SQLException e) { // do not hide the possible exception
+                                           // in the rollback() catch block
+                    System.err.println(DbUtils.getFullSqlException("Could not restore connection's autocommit state",
+                                                                   e));
                 } finally {
-                    DbUtils.closeConnection( connection );
+                    DbUtils.closeConnection(connection);
                 }
             }
         }
         // we check if there is thrown exception, the first thrown exception is
         // with priority
-        if( dbae != null ) {
+        if (dbae != null) {
             throw dbae;
         }
     }
@@ -1681,7 +1681,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected Connection refreshInternalConnection() throws DatabaseAccessException {
 
-        if( !sanityRun ) {
+        if (!sanityRun) {
             this.connection = getConnection();
         }
 
@@ -1697,27 +1697,27 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                           Connection connection ) throws IllegalStateException,
                                                                   IllegalArgumentException {
 
-        if( connection == null ) {
-            throw new IllegalArgumentException( "Connection to set could not be null. For clearing connection use clearInternalConnection() method" );
+        if (connection == null) {
+            throw new IllegalArgumentException("Connection to set could not be null. For clearing connection use clearInternalConnection() method");
         }
-        if( this.connection != null ) {
-            throw new IllegalStateException( "Trying to set new connection when previous is not cleared. Check if connection is cleared immediately after db access work is completed." );
+        if (this.connection != null) {
+            throw new IllegalStateException("Trying to set new connection when previous is not cleared. Check if connection is cleared immediately after db access work is completed.");
         }
         this.connection = connection;
     }
-    
+
     protected long inUTC( long timestamp ) {
-        
-        if ( !skipUTCConversion ) {
-            
-            return timestamp - TimeZone.getDefault().getOffset( timestamp );
+
+        if (!skipUTCConversion) {
+
+            return timestamp - TimeZone.getDefault().getOffset(timestamp);
         }
-        
+
         return timestamp;
     }
-    
+
     public void setSkipUTCConversion( boolean skip ) {
-        
+
         this.skipUTCConversion = skip;
     }
 
@@ -1726,41 +1726,41 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private static final int  MAX_EVENTS                     = 2000;
-        private static final long MAX_CACHE_AGE                  = 10 * 1000; // 10 seconds
+        private static final int       MAX_EVENTS                     = 2000;
+        private static final long      MAX_CACHE_AGE                  = 10 * 1000; // 10 seconds
 
-        private long              cacheBirthTime;
+        private long                   cacheBirthTime;
 
-        protected Connection      connection;
+        protected Connection           connection;
 
-        private CallableStatement insertRunMessageStatement      = null;
-        private int               numberCachedRunMessages;
+        private CallableStatement      insertRunMessageStatement      = null;
+        private int                    numberCachedRunMessages;
 
-        private CallableStatement insertSuiteMessageStatement    = null;
-        private int               numberCachedSuiteMessages;
+        private CallableStatement      insertSuiteMessageStatement    = null;
+        private int                    numberCachedSuiteMessages;
 
-        private CallableStatement insertTestcaseMessageStatement = null;
-        private int               numberCachedTestcaseMessages;
+        private CallableStatement      insertTestcaseMessageStatement = null;
+        private int                    numberCachedTestcaseMessages;
 
-        private CallableStatement insertCheckpointStatement      = null;
-        private int               numberCachedCheckpoints;
+        private CallableStatement      insertCheckpointStatement      = null;
+        private int                    numberCachedCheckpoints;
 
-        private SQLServerDbWriteAccess     parent;
+        private SQLServerDbWriteAccess parent;
 
         // temporary variables used for telling the user how long it takes to
         // commit the cached events
-        private long              batchStartTime;
-        private int               batchCheckpoints;
-        private int               batchMessages;
+        private long                   batchStartTime;
+        private int                    batchCheckpoints;
+        private int                    batchMessages;
 
         public DbEventsCache( SQLServerDbWriteAccess parent ) throws DatabaseAccessException {
 
             this.parent = parent;
             this.connection = this.parent.getConnection();
             try {
-                this.connection.setAutoCommit( false );
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( "Unable to set batch mode on DB connection", e );
+                this.connection.setAutoCommit(false);
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to set batch mode on DB connection", e);
             }
 
             numberCachedRunMessages = 0;
@@ -1768,22 +1768,23 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             numberCachedTestcaseMessages = 0;
             numberCachedCheckpoints = 0;
         }
-        
-        public Connection getConnection(){
+
+        public Connection getConnection() {
+
             return this.connection;
         }
 
         public boolean addInsertRunMessageEventToBatch(
-                                                         CallableStatement insertMessageStatement ) throws DatabaseAccessException {
+                                                        CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
-            if( this.insertRunMessageStatement == null ) {
+            if (this.insertRunMessageStatement == null) {
                 this.insertRunMessageStatement = insertMessageStatement;
             }
             try {
                 this.insertRunMessageStatement.addBatch();
                 ++numberCachedRunMessages;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to schedule run message for batch execution", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to schedule run message for batch execution", e);
             }
 
             updateCacheBirthtime();
@@ -1792,17 +1793,17 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
 
         public boolean addInsertSuiteMessageEventToBatch(
-                                                           CallableStatement insertMessageStatement ) throws DatabaseAccessException {
+                                                          CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
-            if( this.insertSuiteMessageStatement == null ) {
+            if (this.insertSuiteMessageStatement == null) {
                 this.insertSuiteMessageStatement = insertMessageStatement;
             }
             try {
                 this.insertSuiteMessageStatement.addBatch();
                 ++numberCachedSuiteMessages;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to schedule suite message for batch execution",
-                                                   e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to schedule suite message for batch execution",
+                                                  e);
             }
 
             updateCacheBirthtime();
@@ -1811,17 +1812,17 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
 
         public boolean addInsertTestcaseMessageEventToBatch(
-                                                              CallableStatement insertMessageStatement ) throws DatabaseAccessException {
+                                                             CallableStatement insertMessageStatement ) throws DatabaseAccessException {
 
-            if( this.insertTestcaseMessageStatement == null ) {
+            if (this.insertTestcaseMessageStatement == null) {
                 this.insertTestcaseMessageStatement = insertMessageStatement;
             }
             try {
                 this.insertTestcaseMessageStatement.addBatch();
                 ++numberCachedTestcaseMessages;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to schedule testcase message for batch execution",
-                                                   e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to schedule testcase message for batch execution",
+                                                  e);
             }
 
             updateCacheBirthtime();
@@ -1830,16 +1831,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
 
         protected boolean addInsertCheckpointEventToBatch(
-                                                         CallableStatement insertCheckpointStatement ) throws DatabaseAccessException {
+                                                           CallableStatement insertCheckpointStatement ) throws DatabaseAccessException {
 
-            if( this.insertCheckpointStatement == null ) {
+            if (this.insertCheckpointStatement == null) {
                 this.insertCheckpointStatement = insertCheckpointStatement;
             }
             try {
                 this.insertCheckpointStatement.addBatch();
                 ++numberCachedCheckpoints;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to schedule a checkpoint for batch execution", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to schedule a checkpoint for batch execution", e);
             }
 
             updateCacheBirthtime();
@@ -1851,21 +1852,21 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             // if this is the first event, we have to remember the cache birth
             // time
-            if( numberCachedRunMessages + numberCachedSuiteMessages + numberCachedTestcaseMessages
-                + numberCachedCheckpoints == 1 ) {
+            if (numberCachedRunMessages + numberCachedSuiteMessages + numberCachedTestcaseMessages
+                + numberCachedCheckpoints == 1) {
                 cacheBirthTime = System.currentTimeMillis();
             }
         }
 
         public void flushCache() throws DatabaseAccessException {
 
-            if( numberCachedRunMessages + numberCachedSuiteMessages + numberCachedTestcaseMessages
-                + numberCachedCheckpoints == 0 ) {
+            if (numberCachedRunMessages + numberCachedSuiteMessages + numberCachedTestcaseMessages
+                + numberCachedCheckpoints == 0) {
                 // no events in the cache
                 return;
             }
 
-            if( isMonitorEventsQueue ) {
+            if (isMonitorEventsQueue) {
                 batchStartTime = System.currentTimeMillis();
                 batchCheckpoints = numberCachedCheckpoints;
                 batchMessages = numberCachedRunMessages + numberCachedSuiteMessages
@@ -1879,10 +1880,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             cacheBirthTime = 0;
 
-            if( isMonitorEventsQueue ) {
-                System.out.println( TimeUtils.getFormattedDateTillMilliseconds() + " Flushed "
-                                    + batchCheckpoints + " checkpoints and " + batchMessages + " messages in "
-                                    + ( System.currentTimeMillis() - batchStartTime ) + " ms" );
+            if (isMonitorEventsQueue) {
+                System.out.println(TimeUtils.getFormattedDateTillMilliseconds() + " Flushed "
+                                   + batchCheckpoints + " checkpoints and " + batchMessages + " messages in "
+                                   + (System.currentTimeMillis() - batchStartTime) + " ms");
             }
         }
 
@@ -1892,15 +1893,15 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             int numberEvents = numberCachedRunMessages + numberCachedSuiteMessages
                                + numberCachedTestcaseMessages + numberCachedCheckpoints;
-            if( numberEvents > 0 ) {
-                if( numberEvents >= MAX_EVENTS ) {
+            if (numberEvents > 0) {
+                if (numberEvents >= MAX_EVENTS) {
                     isTimeToFlush = true;
-                } else if( System.currentTimeMillis() - cacheBirthTime >= MAX_CACHE_AGE ) {
+                } else if (System.currentTimeMillis() - cacheBirthTime >= MAX_CACHE_AGE) {
                     isTimeToFlush = true;
                 }
             }
 
-            if( isTimeToFlush ) {
+            if (isTimeToFlush) {
                 flushCache();
             }
 
@@ -1909,7 +1910,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
         private void flushInsertRunMessageEvents() throws DatabaseAccessException {
 
-            if( numberCachedRunMessages == 0 ) {
+            if (numberCachedRunMessages == 0) {
                 return;
             }
 
@@ -1919,7 +1920,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 // data sent to the DB, commit the transaction
                 connection.commit();
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
                 /*
                  * The next code is not used for now if( e instanceof
@@ -1931,32 +1932,32 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( e,
-                                                                        "Commit failed while inserting "
-                                                                           + numberCachedRunMessages
-                                                                           + " run messages in one transaction" ) );
-                } catch( Exception rollbackException ) {
+                    System.err.println(ExceptionUtils.getExceptionMsg(e,
+                                                                      "Commit failed while inserting "
+                                                                         + numberCachedRunMessages
+                                                                         + " run messages in one transaction"));
+                } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( rollbackException,
-                                                                        "Commit and rollback both failed while inserting "
-                                                                                           + numberCachedRunMessages
-                                                                                           + " run messages in one transaction."
-                                                                                           + " Following is the rollback exception ..." ) );
+                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                      "Commit and rollback both failed while inserting "
+                                                                                         + numberCachedRunMessages
+                                                                                         + " run messages in one transaction."
+                                                                                         + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
                 resetRunMessagesCache();
             }
 
-            if( gotError ) {
+            if (gotError) {
                 connection = parent.refreshInternalConnection();
             }
         }
 
         private void flushInsertSuiteMessageEvents() throws DatabaseAccessException {
 
-            if( numberCachedSuiteMessages == 0 ) {
+            if (numberCachedSuiteMessages == 0) {
                 return;
             }
 
@@ -1966,7 +1967,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 // data sent to the DB, commit the transaction
                 connection.commit();
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
                 /*
                  * The next code is not used for now if( e instanceof
@@ -1978,32 +1979,32 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( e,
-                                                                        "Commit failed while inserting "
-                                                                           + numberCachedSuiteMessages
-                                                                           + " suite messages in one transaction" ) );
-                } catch( Exception rollbackException ) {
+                    System.err.println(ExceptionUtils.getExceptionMsg(e,
+                                                                      "Commit failed while inserting "
+                                                                         + numberCachedSuiteMessages
+                                                                         + " suite messages in one transaction"));
+                } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( rollbackException,
-                                                                        "Commit and rollback both failed while inserting "
-                                                                                           + numberCachedSuiteMessages
-                                                                                           + " suite messages in one transaction."
-                                                                                           + " Following is the rollback exception ..." ) );
+                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                      "Commit and rollback both failed while inserting "
+                                                                                         + numberCachedSuiteMessages
+                                                                                         + " suite messages in one transaction."
+                                                                                         + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
                 resetSuiteMessagesCache();
             }
 
-            if( gotError ) {
+            if (gotError) {
                 connection = parent.refreshInternalConnection();
             }
         }
 
         private void flushInsertTestcaseMessageEvents() throws DatabaseAccessException {
 
-            if( numberCachedTestcaseMessages == 0 ) {
+            if (numberCachedTestcaseMessages == 0) {
                 return;
             }
 
@@ -2013,7 +2014,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 // data sent to the DB, commit the transaction
                 connection.commit();
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
                 /*
                  * The next code is not used for now if( e instanceof
@@ -2025,32 +2026,32 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( e,
-                                                                        "Commit failed while inserting "
-                                                                           + numberCachedTestcaseMessages
-                                                                           + " testcase messages in one transaction" ) );
-                } catch( Exception rollbackException ) {
+                    System.err.println(ExceptionUtils.getExceptionMsg(e,
+                                                                      "Commit failed while inserting "
+                                                                         + numberCachedTestcaseMessages
+                                                                         + " testcase messages in one transaction"));
+                } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( rollbackException,
-                                                                        "Commit and rollback both failed while inserting "
-                                                                                           + numberCachedTestcaseMessages
-                                                                                           + " testcase messages in one transaction."
-                                                                                           + " Following is the rollback exception ..." ) );
+                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                      "Commit and rollback both failed while inserting "
+                                                                                         + numberCachedTestcaseMessages
+                                                                                         + " testcase messages in one transaction."
+                                                                                         + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
                 resetTestcaseMessagesCache();
             }
 
-            if( gotError ) {
+            if (gotError) {
                 connection = parent.refreshInternalConnection();
             }
         }
 
         private void flushInsertCheckpointEvents() throws DatabaseAccessException {
 
-            if( numberCachedCheckpoints == 0 ) {
+            if (numberCachedCheckpoints == 0) {
                 return;
             }
 
@@ -2060,7 +2061,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 // data sent to the DB, commit the transaction
                 connection.commit();
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
                 /*
                  * The next code is not used for now if( e instanceof
@@ -2072,25 +2073,25 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( e,
-                                                                        "Commit failed while inserting "
-                                                                           + numberCachedCheckpoints
-                                                                           + " checkpoints in one transaction" ) );
-                } catch( Exception rollbackException ) {
+                    System.err.println(ExceptionUtils.getExceptionMsg(e,
+                                                                      "Commit failed while inserting "
+                                                                         + numberCachedCheckpoints
+                                                                         + " checkpoints in one transaction"));
+                } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println( ExceptionUtils.getExceptionMsg( rollbackException,
-                                                                        "Commit and rollback both failed while inserting "
-                                                                                           + numberCachedCheckpoints
-                                                                                           + " checkpoints in one transaction."
-                                                                                           + " Following is the rollback exception ..." ) );
+                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                      "Commit and rollback both failed while inserting "
+                                                                                         + numberCachedCheckpoints
+                                                                                         + " checkpoints in one transaction."
+                                                                                         + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
                 resetCheckpointsCache();
             }
 
-            if( gotError ) {
+            if (gotError) {
                 connection = parent.refreshInternalConnection();
             }
         }
@@ -2105,44 +2106,44 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
         private void resetRunMessagesCache() {
 
-            if( numberCachedRunMessages > 0 ) {
+            if (numberCachedRunMessages > 0) {
                 numberCachedRunMessages = 0;
                 try {
                     insertRunMessageStatement.clearBatch();
-                } catch( SQLException e ) {}
+                } catch (SQLException e) {}
                 insertRunMessageStatement = null;
             }
         }
 
         private void resetSuiteMessagesCache() {
 
-            if( numberCachedSuiteMessages > 0 ) {
+            if (numberCachedSuiteMessages > 0) {
                 numberCachedSuiteMessages = 0;
                 try {
                     insertSuiteMessageStatement.clearBatch();
-                } catch( SQLException e ) {}
+                } catch (SQLException e) {}
                 insertSuiteMessageStatement = null;
             }
         }
 
         private void resetTestcaseMessagesCache() {
 
-            if( numberCachedTestcaseMessages > 0 ) {
+            if (numberCachedTestcaseMessages > 0) {
                 numberCachedTestcaseMessages = 0;
                 try {
                     insertTestcaseMessageStatement.clearBatch();
-                } catch( SQLException e ) {}
+                } catch (SQLException e) {}
                 insertTestcaseMessageStatement = null;
             }
         }
 
         private void resetCheckpointsCache() {
 
-            if( numberCachedCheckpoints > 0 ) {
+            if (numberCachedCheckpoints > 0) {
                 numberCachedCheckpoints = 0;
                 try {
                     insertCheckpointStatement.clearBatch();
-                } catch( SQLException e ) {}
+                } catch (SQLException e) {}
                 insertCheckpointStatement = null;
             }
         }
@@ -2190,140 +2191,140 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
 
         public CallableStatement getInsertTestcaseMessageStatement(
-                                                             Connection connection,
-                                                             String message,
-                                                             int level,
-                                                             boolean escapeHtml,
-                                                             String machineName,
-                                                             String threadName,
-                                                             long timestamp,
-                                                             int testCaseId ) throws DatabaseAccessException {
+                                                                    Connection connection,
+                                                                    String message,
+                                                                    int level,
+                                                                    boolean escapeHtml,
+                                                                    String machineName,
+                                                                    String threadName,
+                                                                    long timestamp,
+                                                                    int testCaseId ) throws DatabaseAccessException {
 
             // get the statement
             CallableStatement theStatement;
             try {
-                if( isBatchMode ) {
-                    if( insertTestcaseMessageStatement == null ) {
-                        insertTestcaseMessageStatement = connection.prepareCall( SP_INSERT_TESTCASE_MESSAGE );
+                if (isBatchMode) {
+                    if (insertTestcaseMessageStatement == null) {
+                        insertTestcaseMessageStatement = connection.prepareCall(SP_INSERT_TESTCASE_MESSAGE);
                     }
                     theStatement = insertTestcaseMessageStatement;
                 } else {
-                    theStatement = connection.prepareCall( SP_INSERT_TESTCASE_MESSAGE );
+                    theStatement = connection.prepareCall(SP_INSERT_TESTCASE_MESSAGE);
                 }
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( "Unable to create SQL statement for inserting a message",
-                                                   e );
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting a message",
+                                                  e);
             }
 
             // apply statement parameters
             final int indexRowsInserted = 8;
 
             try {
-                theStatement.setInt( 1, testCaseId );
-                theStatement.setInt( 2, level );
-                theStatement.setString( 3, message );
-                theStatement.setBoolean( 4, escapeHtml );
-                theStatement.setString( 5, machineName );
-                theStatement.setString( 6, threadName );
-                theStatement.setTimestamp( 7, new Timestamp( timestamp ) );
-                theStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+                theStatement.setInt(1, testCaseId);
+                theStatement.setInt(2, level);
+                theStatement.setString(3, message);
+                theStatement.setBoolean(4, escapeHtml);
+                theStatement.setString(5, machineName);
+                theStatement.setString(6, threadName);
+                theStatement.setTimestamp(7, new Timestamp(timestamp));
+                theStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
                 return theStatement;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to set parameters for inserting a message '"
-                                                   + message + "'", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to set parameters for inserting a message '"
+                                                  + message + "'", e);
             }
         }
 
         public CallableStatement getInsertRunMessageStatement(
-                                                        Connection connection,
-                                                        String message,
-                                                        int level,
-                                                        boolean escapeHtml,
-                                                        String machineName,
-                                                        String threadName,
-                                                        long timestamp,
-                                                        int runId ) throws DatabaseAccessException {
+                                                               Connection connection,
+                                                               String message,
+                                                               int level,
+                                                               boolean escapeHtml,
+                                                               String machineName,
+                                                               String threadName,
+                                                               long timestamp,
+                                                               int runId ) throws DatabaseAccessException {
 
             // get the statement
             CallableStatement theStatement;
             try {
-                if( isBatchMode ) {
-                    if( insertRunMessageStatement == null ) {
-                        insertRunMessageStatement = connection.prepareCall( SP_INSERT_RUN_MESSAGE );
+                if (isBatchMode) {
+                    if (insertRunMessageStatement == null) {
+                        insertRunMessageStatement = connection.prepareCall(SP_INSERT_RUN_MESSAGE);
                     }
                     theStatement = insertRunMessageStatement;
                 } else {
-                    theStatement = connection.prepareCall( SP_INSERT_RUN_MESSAGE );
+                    theStatement = connection.prepareCall(SP_INSERT_RUN_MESSAGE);
                 }
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( "Unable to create SQL statement for inserting a run message",
-                                                   e );
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting a run message",
+                                                  e);
             }
 
             // apply statement parameters
             final int indexRowsInserted = 8;
 
             try {
-                theStatement.setInt( 1, runId );
-                theStatement.setInt( 2, level );
-                theStatement.setString( 3, message );
-                theStatement.setBoolean( 4, escapeHtml );
-                theStatement.setString( 5, machineName );
-                theStatement.setString( 6, threadName );
-                theStatement.setTimestamp( 7, new Timestamp( timestamp ) );
-                theStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+                theStatement.setInt(1, runId);
+                theStatement.setInt(2, level);
+                theStatement.setString(3, message);
+                theStatement.setBoolean(4, escapeHtml);
+                theStatement.setString(5, machineName);
+                theStatement.setString(6, threadName);
+                theStatement.setTimestamp(7, new Timestamp(timestamp));
+                theStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
                 return theStatement;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to set parameters for inserting a run message '"
-                                                   + message + "'", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to set parameters for inserting a run message '"
+                                                  + message + "'", e);
             }
         }
 
         public CallableStatement getInsertSuiteMessageStatement(
-                                                          Connection connection,
-                                                          String message,
-                                                          int level,
-                                                          boolean escapeHtml,
-                                                          String machineName,
-                                                          String threadName,
-                                                          long timestamp,
-                                                          int suiteId ) throws DatabaseAccessException {
+                                                                 Connection connection,
+                                                                 String message,
+                                                                 int level,
+                                                                 boolean escapeHtml,
+                                                                 String machineName,
+                                                                 String threadName,
+                                                                 long timestamp,
+                                                                 int suiteId ) throws DatabaseAccessException {
 
             // get the statement
             CallableStatement theStatement;
             try {
-                if( isBatchMode ) {
-                    if( insertSuiteMessageStatement == null ) {
-                        insertSuiteMessageStatement = connection.prepareCall( SP_INSERT_SUITE_MESSAGE );
+                if (isBatchMode) {
+                    if (insertSuiteMessageStatement == null) {
+                        insertSuiteMessageStatement = connection.prepareCall(SP_INSERT_SUITE_MESSAGE);
                     }
                     theStatement = insertSuiteMessageStatement;
                 } else {
-                    theStatement = connection.prepareCall( SP_INSERT_SUITE_MESSAGE );
+                    theStatement = connection.prepareCall(SP_INSERT_SUITE_MESSAGE);
                 }
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( "Unable to create SQL statement for inserting a suite message",
-                                                   e );
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting a suite message",
+                                                  e);
             }
 
             // apply statement parameters
             final int indexRowsInserted = 8;
 
             try {
-                theStatement.setInt( 1, suiteId );
-                theStatement.setInt( 2, level );
-                theStatement.setString( 3, message );
-                theStatement.setBoolean( 4, escapeHtml );
-                theStatement.setString( 5, machineName );
-                theStatement.setString( 6, threadName );
-                theStatement.setTimestamp( 7, new Timestamp( timestamp ) );
-                theStatement.registerOutParameter( indexRowsInserted, Types.INTEGER );
+                theStatement.setInt(1, suiteId);
+                theStatement.setInt(2, level);
+                theStatement.setString(3, message);
+                theStatement.setBoolean(4, escapeHtml);
+                theStatement.setString(5, machineName);
+                theStatement.setString(6, threadName);
+                theStatement.setTimestamp(7, new Timestamp(timestamp));
+                theStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
                 return theStatement;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to set parameters for inserting a suite message '"
-                                                   + message + "'", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to set parameters for inserting a suite message '"
+                                                  + message + "'", e);
             }
         }
 
@@ -2341,34 +2342,34 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             // get the statement
             CallableStatement theStatement;
             try {
-                if( isBatchMode ) {
-                    if( insertCheckpointStatement == null ) {
-                        insertCheckpointStatement = connection.prepareCall( SP_INSERT_CHECKPOINT );
+                if (isBatchMode) {
+                    if (insertCheckpointStatement == null) {
+                        insertCheckpointStatement = connection.prepareCall(SP_INSERT_CHECKPOINT);
                     }
                     theStatement = insertCheckpointStatement;
                 } else {
-                    theStatement = connection.prepareCall( SP_INSERT_CHECKPOINT );
+                    theStatement = connection.prepareCall(SP_INSERT_CHECKPOINT);
                 }
-            } catch( SQLException e ) {
-                throw new DatabaseAccessException( "Unable to create SQL statement for inserting checkpoints",
-                                                   e );
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting checkpoints",
+                                                  e);
             }
 
             // apply statement parameters
             try {
-                theStatement.setInt( 1, loadQueueId );
-                theStatement.setString( 2, name );
-                theStatement.setLong( 3, responseTime );
-                theStatement.setTimestamp( 4, new Timestamp( endTimestamp ) );
-                theStatement.setLong( 5, transferSize );
-                theStatement.setString( 6, transferUnit );
-                theStatement.setInt( 7, result );
-                theStatement.setInt( 8, checkpointLogLevel.toInt() );
+                theStatement.setInt(1, loadQueueId);
+                theStatement.setString(2, name);
+                theStatement.setLong(3, responseTime);
+                theStatement.setTimestamp(4, new Timestamp(endTimestamp));
+                theStatement.setLong(5, transferSize);
+                theStatement.setString(6, transferUnit);
+                theStatement.setInt(7, result);
+                theStatement.setInt(8, checkpointLogLevel.toInt());
 
                 return theStatement;
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Unable to set parameters for inserting a checkpoint '"
-                                                   + name + "'", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to set parameters for inserting a checkpoint '"
+                                                  + name + "'", e);
             }
         }
     }

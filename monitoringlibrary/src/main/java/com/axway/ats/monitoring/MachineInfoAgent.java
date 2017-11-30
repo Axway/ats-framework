@@ -32,7 +32,7 @@ import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 @PublicAtsApi
 public class MachineInfoAgent {
 
-    private static final Logger log = Logger.getLogger( MachineInfoAgent.class );
+    private static final Logger log = Logger.getLogger(MachineInfoAgent.class);
 
     /**
      * Retrieves static info about a machine and stores this info into the
@@ -44,22 +44,22 @@ public class MachineInfoAgent {
      */
     @PublicAtsApi
     public void updateMachineInfo(
-                                   @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                                   @Validate(name = "dbMachineName", type = ValidationType.STRING_NOT_EMPTY) String dbMachineName ) throws Exception {
+                                   @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
+                                   @Validate( name = "dbMachineName", type = ValidationType.STRING_NOT_EMPTY) String dbMachineName ) throws Exception {
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, dbMachineName } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, dbMachineName });
 
-        log.info( "Retrieving info about " + dbMachineName + " from " + atsAgent );
+        log.info("Retrieving info about " + dbMachineName + " from " + atsAgent);
 
-        MachineDescriptionOperations mm = new MachineDescriptionOperations( atsAgent );
+        MachineDescriptionOperations mm = new MachineDescriptionOperations(atsAgent);
         String machineDescriptionString = mm.getDescription();
 
-        log.info( "Saving retrieved info about " + dbMachineName + " into the Test Explorer database" );
+        log.info("Saving retrieved info about " + dbMachineName + " into the Test Explorer database");
         SQLServerDbWriteAccess dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
-        dbAccess.updateMachineInfo( dbMachineName, machineDescriptionString, true );
+        dbAccess.updateMachineInfo(dbMachineName, machineDescriptionString, true);
 
-        log.info( "Successfully updated the info about " + dbMachineName );
+        log.info("Successfully updated the info about " + dbMachineName);
     }
 }

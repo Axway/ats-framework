@@ -27,28 +27,28 @@ public class Test_SystemLogLevel {
     @Test
     public void testSystemLevel() {
 
-        assertTrue( SystemLogLevel.SYSTEM_INT > Level.FATAL_INT );
+        assertTrue(SystemLogLevel.SYSTEM_INT > Level.FATAL_INT);
     }
 
     @Test
     public void toLevelString() {
 
-        assertTrue( SystemLogLevel.toLevel( "SYSTEM" ) == SystemLogLevel.SYSTEM );
-        assertTrue( SystemLogLevel.toLevel( "SYSTEM", Level.DEBUG ) == SystemLogLevel.SYSTEM );
+        assertTrue(SystemLogLevel.toLevel("SYSTEM") == SystemLogLevel.SYSTEM);
+        assertTrue(SystemLogLevel.toLevel("SYSTEM", Level.DEBUG) == SystemLogLevel.SYSTEM);
     }
 
     @Test
     public void toLevelInt() {
 
-        assertTrue( SystemLogLevel.toLevel( SystemLogLevel.SYSTEM_INT ) == SystemLogLevel.SYSTEM );
-        assertTrue( SystemLogLevel.toLevel( SystemLogLevel.SYSTEM_INT, Level.DEBUG ) == SystemLogLevel.SYSTEM );
+        assertTrue(SystemLogLevel.toLevel(SystemLogLevel.SYSTEM_INT) == SystemLogLevel.SYSTEM);
+        assertTrue(SystemLogLevel.toLevel(SystemLogLevel.SYSTEM_INT, Level.DEBUG) == SystemLogLevel.SYSTEM);
     }
 
     @Test
     public void toLevelDefaultLevel() {
 
-        assertTrue( SystemLogLevel.toLevel( "dasdasd", SystemLogLevel.SYSTEM ) == SystemLogLevel.SYSTEM );
-        assertTrue( SystemLogLevel.toLevel( null, SystemLogLevel.SYSTEM ) == SystemLogLevel.SYSTEM );
-        assertTrue( SystemLogLevel.toLevel( 111111, SystemLogLevel.SYSTEM ) == SystemLogLevel.SYSTEM );
+        assertTrue(SystemLogLevel.toLevel("dasdasd", SystemLogLevel.SYSTEM) == SystemLogLevel.SYSTEM);
+        assertTrue(SystemLogLevel.toLevel(null, SystemLogLevel.SYSTEM) == SystemLogLevel.SYSTEM);
+        assertTrue(SystemLogLevel.toLevel(111111, SystemLogLevel.SYSTEM) == SystemLogLevel.SYSTEM);
     }
 }

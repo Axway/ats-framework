@@ -50,42 +50,42 @@ public class JavaLoggingAdapter extends Handler {
 
         Level level = record.getLevel();
         String message = record.getMessage();
-        if( level.intValue() == Level.ALL.intValue() ) {
-            throw new RuntimeException( "ALL" );
+        if (level.intValue() == Level.ALL.intValue()) {
+            throw new RuntimeException("ALL");
         }
 
-        if( level.intValue() <= Level.FINEST.intValue() ) {
-            logger.debug( message );
+        if (level.intValue() <= Level.FINEST.intValue()) {
+            logger.debug(message);
             return;//300
         }
 
-        if( level.intValue() <= Level.FINE.intValue() ) {
-            logger.debug( message );
+        if (level.intValue() <= Level.FINE.intValue()) {
+            logger.debug(message);
             return;//500
         }
 
-        if( level.intValue() <= Level.CONFIG.intValue() ) {
-            logger.debug( message );
+        if (level.intValue() <= Level.CONFIG.intValue()) {
+            logger.debug(message);
             return;//700
         }
 
-        if( level.intValue() <= Level.INFO.intValue() ) {
-            logger.info( message );
+        if (level.intValue() <= Level.INFO.intValue()) {
+            logger.info(message);
             return;//800
         }
 
-        if( level.intValue() <= Level.WARNING.intValue() ) {
-            logger.warn( message );
+        if (level.intValue() <= Level.WARNING.intValue()) {
+            logger.warn(message);
             return;//900
         }
 
-        if( level.intValue() <= Level.SEVERE.intValue() ) {
-            logger.error( message );
+        if (level.intValue() <= Level.SEVERE.intValue()) {
+            logger.error(message);
             return;//1000
         }
 
-        if( level.intValue() <= Level.OFF.intValue() ) {
-            throw new RuntimeException( "OFF" );
+        if (level.intValue() <= Level.OFF.intValue()) {
+            throw new RuntimeException("OFF");
         }
 
     }

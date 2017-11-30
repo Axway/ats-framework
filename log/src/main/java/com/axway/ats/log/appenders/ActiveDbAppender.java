@@ -40,12 +40,12 @@ public class ActiveDbAppender extends AbstractDbAppender {
      * We must wait for some event to be processed by the logging thread.
      * This is the time we wait for event processing.
      */
-    private static long    EVENT_WAIT_TIMEOUT       = 60 * 1000;
-    private static long    EVENT_WAIT_LONG_TIMEOUT  = 15 * 60 * 1000;
-    private static ActiveDbAppender instance        = null;
-    
+    private static long             EVENT_WAIT_TIMEOUT                       = 60 * 1000;
+    private static long             EVENT_WAIT_LONG_TIMEOUT                  = 15 * 60 * 1000;
+    private static ActiveDbAppender instance                                 = null;
+
     /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
-    public static boolean isBeforeAndAfterMessagesLoggingSupported = false;
+    public static boolean           isBeforeAndAfterMessagesLoggingSupported = false;
 
     /**
      * Constructor
@@ -53,7 +53,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public ActiveDbAppender() {
 
         super();
-        
+
     }
 
     @Override
@@ -70,37 +70,37 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         // All events from all threads come into here
         long eventTimestamp;
-        if( event instanceof AbstractLoggingEvent ) {
-            eventTimestamp = ( ( AbstractLoggingEvent ) event ).getTimestamp();
+        if (event instanceof AbstractLoggingEvent) {
+            eventTimestamp = ((AbstractLoggingEvent) event).getTimestamp();
         } else {
             eventTimestamp = System.currentTimeMillis();
         }
-        LogEventRequest packedEvent = new LogEventRequest( Thread.currentThread().getName(), // Remember which thread this event belongs to
-                                                           event, eventTimestamp ); // Remember the event time
+        LogEventRequest packedEvent = new LogEventRequest(Thread.currentThread().getName(), // Remember which thread this event belongs to
+                                                          event, eventTimestamp); // Remember the event time
 
-        if( event instanceof AbstractLoggingEvent ) {
-            AbstractLoggingEvent dbLoggingEvent = ( AbstractLoggingEvent ) event;
-            switch( dbLoggingEvent.getEventType() ){
+        if (event instanceof AbstractLoggingEvent) {
+            AbstractLoggingEvent dbLoggingEvent = (AbstractLoggingEvent) event;
+            switch (dbLoggingEvent.getEventType()) {
 
                 case START_TEST_CASE: {
                     // on Test Executor side we block until the test case start is committed in the DB
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, true );
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     // remember the test case id, which we will later pass to ATS agent
-                    testCaseState.setTestcaseId( eventProcessor.getTestCaseId() );
+                    testCaseState.setTestcaseId(eventProcessor.getTestCaseId());
 
                     //this event has already been through the queue
                     return;
                 }
                 case END_TEST_CASE: {
-                	// clear test case id
+                    // clear test case id
                     testCaseState.clearTestcaseId();
                     // now pass the event to the queue
                     break;
                 }
                 case GET_CURRENT_TEST_CASE_STATE: {
                     // get current test case id which will be passed to ATS agent
-                    ( ( GetCurrentTestCaseEvent ) event ).setTestCaseState( testCaseState );
+                    ((GetCurrentTestCaseEvent) event).setTestCaseState(testCaseState);
 
                     //this event should not go through the queue
                     return;
@@ -111,16 +111,16 @@ public class ActiveDbAppender extends AbstractDbAppender {
                      *      We also check the integrity of the DB schema.
                      * If we fail here, it does not make sense to run tests at all
                      */
-                    System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                        + "*** ATS *** Waiting for " + event.getClass().getSimpleName()
-                                        + " event completion" );
-                    
+                    System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + "*** ATS *** Waiting for " + event.getClass().getSimpleName()
+                                       + " event completion");
+
                     // create the queue logging thread and the DbEventRequestProcessor
-                    if ( queueLogger == null ) {
+                    if (queueLogger == null) {
                         initializeDbLogging();
                     }
-                    
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, false );
+
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, false);
                     //this event has already been through the queue
                     return;
                 case END_RUN: {
@@ -129,11 +129,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
                      * the JVM will not be shutdown prior to committing all events in the DB, as
                      * the END_RUN event is the last one in the queue
                      */
-                    System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                        + "*** ATS *** Waiting for " + event.getClass().getSimpleName()
-                                        + " event completion" );
+                    System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + "*** ATS *** Waiting for " + event.getClass().getSimpleName()
+                                       + " event completion");
 
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, true );
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     //this event has already been through the queue
                     return;
@@ -141,7 +141,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 case DELETE_TEST_CASE: {
                     // tell the thread on the other side of the queue, that this test case is to be deleted
                     // on first chance
-                    eventProcessor.requestTestcaseDeletion( ( ( DeleteTestCaseEvent ) dbLoggingEvent ).getTestCaseId() );
+                    eventProcessor.requestTestcaseDeletion( ((DeleteTestCaseEvent) dbLoggingEvent).getTestCaseId());
                     // this event is not going through the queue
                     return;
                 }
@@ -151,15 +151,15 @@ public class ActiveDbAppender extends AbstractDbAppender {
             }
         }
 
-        passEventToLoggerQueue( packedEvent );
+        passEventToLoggerQueue(packedEvent);
     }
 
     @Override
     public GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event ) {
 
-        testCaseState.setRunId( eventProcessor.getRunId() );
+        testCaseState.setRunId(eventProcessor.getRunId());
         // get current test case id which will be passed to ATS agent
-        event.setTestCaseState( testCaseState );
+        event.setTestCaseState(testCaseState);
         return event;
     }
 
@@ -173,10 +173,10 @@ public class ActiveDbAppender extends AbstractDbAppender {
     private void waitForEventToBeExecuted( LogEventRequest packedEvent, LoggingEvent event,
                                            boolean waitMoreTime ) {
 
-        synchronized( this ) {
+        synchronized (this) {
 
             //we need to wait for the event to be handled
-            queue.add( packedEvent );
+            queue.add(packedEvent);
 
             try {
 
@@ -184,19 +184,19 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 // handled or if an exception occurs. In case handling the event hangs - we put some timeout
                 long startTime = System.currentTimeMillis();
                 long timeout = EVENT_WAIT_TIMEOUT;
-                if( waitMoreTime ) {
+                if (waitMoreTime) {
                     timeout = EVENT_WAIT_LONG_TIMEOUT;
                 }
-                wait( timeout );
-                if( System.currentTimeMillis() - startTime > timeout - 100 ) {
-                    System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                        + "*** ATS *** The expected " + event.getClass().getSimpleName()
-                                        + " logging event did not complete in " + timeout + " ms" );
+                wait(timeout);
+                if (System.currentTimeMillis() - startTime > timeout - 100) {
+                    System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + "*** ATS *** The expected " + event.getClass().getSimpleName()
+                                       + " logging event did not complete in " + timeout + " ms");
                 }
-            } catch( InterruptedException ie ) {
-                throw new DbAppenederException( TimeUtils.getFormattedDateTillMilliseconds()
-                                                + "*** ATS *** Main thread interrupted while waiting for event "
-                                                + event.getClass().getSimpleName(), ie );
+            } catch (InterruptedException ie) {
+                throw new DbAppenederException(TimeUtils.getFormattedDateTillMilliseconds()
+                                               + "*** ATS *** Main thread interrupted while waiting for event "
+                                               + event.getClass().getSimpleName(), ie);
             }
         }
 
@@ -214,7 +214,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     public void setHost( String host ) {
 
-        appenderConfig.setHost( host );
+        appenderConfig.setHost(host);
     }
 
     public String getDatabase() {
@@ -224,7 +224,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     public void setDatabase( String database ) {
 
-        appenderConfig.setDatabase( database );
+        appenderConfig.setDatabase(database);
     }
 
     public String getUser() {
@@ -234,7 +234,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     public void setUser( String user ) {
 
-        appenderConfig.setUser( user );
+        appenderConfig.setUser(user);
     }
 
     public String getPassword() {
@@ -244,7 +244,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     public void setPassword( String password ) {
 
-        appenderConfig.setPassword( password );
+        appenderConfig.setPassword(password);
     }
 
     /**
@@ -253,33 +253,33 @@ public class ActiveDbAppender extends AbstractDbAppender {
      *
      * @return the current DB appender instance
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public static ActiveDbAppender getCurrentInstance() {
 
         if (instance == null) {
             Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-            while( appenders.hasMoreElements() ) {
+            while (appenders.hasMoreElements()) {
                 Appender appender = appenders.nextElement();
 
-                if( appender instanceof ActiveDbAppender ) {
-                    instance = ( ActiveDbAppender ) appender;
+                if (appender instanceof ActiveDbAppender) {
+                    instance = (ActiveDbAppender) appender;
                 }
             }
         }
-        
+
         return instance;
     }
 
     private synchronized void checkForExceptions() {
 
         Throwable loggingExceptionWrraper = queueLogger.readLoggingException();
-        if( loggingExceptionWrraper != null ) {
+        if (loggingExceptionWrraper != null) {
             Throwable loggingException = loggingExceptionWrraper.getCause();
             //re-throw the exception in the main thread
-            if( loggingException instanceof RuntimeException ) {
-                throw ( RuntimeException ) loggingException;
+            if (loggingException instanceof RuntimeException) {
+                throw(RuntimeException) loggingException;
             } else {
-                throw new RuntimeException( loggingException.getMessage(), loggingException );
+                throw new RuntimeException(loggingException.getMessage(), loggingException);
             }
         }
     }
@@ -291,21 +291,21 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         public void onRunStarted() {
 
-            synchronized( ActiveDbAppender.this ) {
+            synchronized (ActiveDbAppender.this) {
                 ActiveDbAppender.this.notifyAll();
             }
         }
 
         public void onRunFinished() {
 
-            synchronized( ActiveDbAppender.this ) {
+            synchronized (ActiveDbAppender.this) {
                 ActiveDbAppender.this.notifyAll();
             }
         }
 
         public void onTestcaseStarted() {
 
-            synchronized( ActiveDbAppender.this ) {
+            synchronized (ActiveDbAppender.this) {
                 ActiveDbAppender.this.notifyAll();
             }
         }

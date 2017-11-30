@@ -35,135 +35,135 @@ public class Test_AutoLogger {
     @Test
     public void constructAutoLogger() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        assertNotNull( autoLogger.getInternalLogger() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        assertNotNull(autoLogger.getInternalLogger());
     }
 
     @Test
     public void debugMessage() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.debug( "debug" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.debug("debug");
     }
 
     @Test
     public void debugMessageWithException() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.debug( "debug with exception", new Exception() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.debug("debug with exception", new Exception());
     }
 
     @Test
     public void errorMessage() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.error( "error" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.error("error");
     }
 
     @Test
     public void errorMessageWithException() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.error( "error with exception", new Exception() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.error("error with exception", new Exception());
     }
 
     @Test
     public void fatalMessage() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.fatal( "fatal" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.fatal("fatal");
     }
 
     @Test
     public void fatalMessageWithException() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.fatal( "fatal with exception", new Exception() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.fatal("fatal with exception", new Exception());
     }
 
     @Test
     public void infoMessage() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.info( "info" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.info("info");
     }
 
     @Test
     public void infoMessageWithException() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.info( "info with exception", new Exception() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.info("info with exception", new Exception());
     }
 
     @Test
     public void traceMessage() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.trace( "trace" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.trace("trace");
     }
 
     @Test
     public void traceMessageWithException() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.trace( "trace with exception", new Exception() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.trace("trace with exception", new Exception());
     }
 
     @Test
     public void warnMessage() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.warn( "warn" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.warn("warn");
     }
 
     @Test
     public void warnMessageWithException() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.warn( "warn with exception", new Exception() );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.warn("warn with exception", new Exception());
     }
 
     @Test
     public void insertRun() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.startRun( "runName", "osName", "productName", "versionName", "buildName", "hostName" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.startRun("runName", "osName", "productName", "versionName", "buildName", "hostName");
     }
 
     @Test
     public void insertGroup() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.startSuite( "package", "groupName" );
-        autoLogger.startSuite( "package", "groupName" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.startSuite("package", "groupName");
+        autoLogger.startSuite("package", "groupName");
     }
 
     @Test
     public void insertTestcase() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.startTestcase( "groupName", "groupName", "name", "", "description" );
-        autoLogger.startTestcase( "groupName", "groupName", "name", "", "description" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.startTestcase("groupName", "groupName", "name", "", "description");
+        autoLogger.startTestcase("groupName", "groupName", "name", "", "description");
     }
 
     @Test
     public void endRun() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
         autoLogger.endRun();
     }
 
     @Test
     public void endGroup() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
         autoLogger.endSuite();
     }
 
     @Test
     public void endTestcase() {
 
-        AtsDbLogger autoLogger = AtsDbLogger.getLogger( "test.123" );
-        autoLogger.endTestcase( TestCaseResult.PASSED );
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123");
+        autoLogger.endTestcase(TestCaseResult.PASSED);
     }
 }

@@ -32,7 +32,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 public class PGDbReadAccess extends SQLServerDbReadAccess {
 
     public PGDbReadAccess( DbConnection dbConnection ) {
-        super( dbConnection );
+        super(dbConnection);
     }
 
     @Override
@@ -44,20 +44,20 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT * FROM \"tMachines\" ORDER BY machineName" );
+            statement = connection.prepareStatement("SELECT * FROM \"tMachines\" ORDER BY machineName");
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 Machine machine = new Machine();
-                machine.machineId = rs.getInt( "machineId" );
-                machine.name = rs.getString( "machineName" );
-                machine.alias = rs.getString( "machineAlias" );
-                machines.add( machine );
+                machine.machineId = rs.getInt("machineId");
+                machine.name = rs.getString("machineName");
+                machine.alias = rs.getString("machineAlias");
+                machines.add(machine);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error retrieving machines", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving machines", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return machines;
@@ -68,53 +68,53 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
 
         List<Checkpoint> checkpoints = new ArrayList<Checkpoint>();
 
-        String sqlLog = new SqlRequestFormatter().add( "testcase id", testcaseId )
-                                                 .add( "checkpoint name", checkpointName )
+        String sqlLog = new SqlRequestFormatter().add("testcase id", testcaseId)
+                                                 .add("checkpoint name", checkpointName)
                                                  .format();
         Connection connection = getConnection();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
 
-            statement = connection.prepareStatement( "SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
-                                                     + " CAST(EXTRACT(EPOCH FROM ch.endTime - CAST( '1970-01-01 00:00:00' AS TIMESTAMP)) AS INTEGER) as endTime, "
-                                                     + " ch.endtime AS copyEndTime "
-                                                     + "FROM \"tCheckpoints\" ch"
-                                                     + " INNER JOIN \"tCheckpointsSummary\" chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
-                                                     + " INNER JOIN \"tLoadQueues\" c on (c.loadQueueId = chs.loadQueueId)"
-                                                     + " INNER JOIN \"tTestcases\" tt on (tt.testcaseId = c.testcaseId) "
-                                                     + "WHERE tt.testcaseId = CAST(? AS INTEGER) AND ch.name = ?" );
-            statement.setInt( 1, Integer.parseInt( testcaseId ) );
-            statement.setString( 2, checkpointName );
+            statement = connection.prepareStatement("SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
+                                                    + " CAST(EXTRACT(EPOCH FROM ch.endTime - CAST( '1970-01-01 00:00:00' AS TIMESTAMP)) AS INTEGER) as endTime, "
+                                                    + " ch.endtime AS copyEndTime "
+                                                    + "FROM \"tCheckpoints\" ch"
+                                                    + " INNER JOIN \"tCheckpointsSummary\" chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
+                                                    + " INNER JOIN \"tLoadQueues\" c on (c.loadQueueId = chs.loadQueueId)"
+                                                    + " INNER JOIN \"tTestcases\" tt on (tt.testcaseId = c.testcaseId) "
+                                                    + "WHERE tt.testcaseId = CAST(? AS INTEGER) AND ch.name = ?");
+            statement.setInt(1, Integer.parseInt(testcaseId));
+            statement.setString(2, checkpointName);
 
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
 
                 Checkpoint checkpoint = new Checkpoint();
-                checkpoint.checkpointId = rs.getInt( "checkpointId" );
+                checkpoint.checkpointId = rs.getInt("checkpointId");
                 checkpoint.name = checkpointName;
-                checkpoint.responseTime = rs.getInt( "responseTime" );
-                checkpoint.transferRate = rs.getFloat( "transferRate" );
-                checkpoint.transferRateUnit = rs.getString( "transferRateUnit" );
-                checkpoint.result = rs.getInt( "result" );
+                checkpoint.responseTime = rs.getInt("responseTime");
+                checkpoint.transferRate = rs.getFloat("transferRate");
+                checkpoint.transferRateUnit = rs.getString("transferRateUnit");
+                checkpoint.result = rs.getInt("result");
 
-                if( dayLightSavingOn ) {
-                    checkpoint.setEndTimestamp( rs.getLong( "endTime" ) + 3600 ); // add 1h
+                if (dayLightSavingOn) {
+                    checkpoint.setEndTimestamp(rs.getLong("endTime") + 3600); // add 1h
                 } else {
-                    checkpoint.setEndTimestamp( rs.getLong( "endTime" ) );
+                    checkpoint.setEndTimestamp(rs.getLong("endTime"));
                 }
-                checkpoint.setTimeOffset( utcTimeOffset );
-                checkpoint.copyEndTimestamp = rs.getTimestamp("copyEndTime" ).getTime();
+                checkpoint.setTimeOffset(utcTimeOffset);
+                checkpoint.copyEndTimestamp = rs.getTimestamp("copyEndTime").getTime();
 
-                checkpoints.add( checkpoint );
+                checkpoints.add(checkpoint);
             }
 
-            logQuerySuccess( sqlLog, "checkpoints", checkpoints.size() );
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error when " + sqlLog, e );
+            logQuerySuccess(sqlLog, "checkpoints", checkpoints.size());
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return checkpoints;
@@ -128,23 +128,23 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT * FROM \"tRunMetainfo\" WHERE runId = "
-                                                     + runId );
+            statement = connection.prepareStatement("SELECT * FROM \"tRunMetainfo\" WHERE runId = "
+                                                    + runId);
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 RunMetaInfo runMetainfo = new RunMetaInfo();
-                runMetainfo.metaInfoId = rs.getInt( "metaInfoId" );
-                runMetainfo.runId = rs.getInt( "runId" );
-                runMetainfo.name = rs.getString( "name" );
-                runMetainfo.value = rs.getString( "value" );
-                runMetaInfoList.add( runMetainfo );
+                runMetainfo.metaInfoId = rs.getInt("metaInfoId");
+                runMetainfo.runId = rs.getInt("runId");
+                runMetainfo.name = rs.getString("name");
+                runMetainfo.value = rs.getString("value");
+                runMetaInfoList.add(runMetainfo);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error retrieving run metainfo for run with id '" + runId
-                                               + "'", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving run metainfo for run with id '" + runId
+                                              + "'", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return runMetaInfoList;
@@ -158,23 +158,23 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement( "SELECT * FROM \"tScenarioMetainfo\" WHERE scenarioId = "
-                                                     + scenarioId );
+            statement = connection.prepareStatement("SELECT * FROM \"tScenarioMetainfo\" WHERE scenarioId = "
+                                                    + scenarioId);
             rs = statement.executeQuery();
-            while( rs.next() ) {
+            while (rs.next()) {
                 ScenarioMetaInfo runMetainfo = new ScenarioMetaInfo();
-                runMetainfo.metaInfoId = rs.getInt( "metaInfoId" );
-                runMetainfo.scenarioId = rs.getInt( "scenarioId" );
-                runMetainfo.name = rs.getString( "name" );
-                runMetainfo.value = rs.getString( "value" );
-                scenarioMetaInfoList.add( runMetainfo );
+                runMetainfo.metaInfoId = rs.getInt("metaInfoId");
+                runMetainfo.scenarioId = rs.getInt("scenarioId");
+                runMetainfo.name = rs.getString("name");
+                runMetainfo.value = rs.getString("value");
+                scenarioMetaInfoList.add(runMetainfo);
             }
-        } catch( Exception e ) {
-            throw new DatabaseAccessException( "Error retrieving scenario metainfo for scenario with id '"
-                                               + scenarioId + "'", e );
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving scenario metainfo for scenario with id '"
+                                              + scenarioId + "'", e);
         } finally {
-            DbUtils.closeResultSet( rs );
-            DbUtils.close( connection, statement );
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
         }
 
         return scenarioMetaInfoList;

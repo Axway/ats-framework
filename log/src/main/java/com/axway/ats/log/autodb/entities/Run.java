@@ -58,11 +58,11 @@ public class Run extends DbEntity {
     public boolean equals(
                            Object obj ) {
 
-        if( obj == null || ! ( obj instanceof Run ) ) {
+        if (obj == null || ! (obj instanceof Run)) {
             return false;
         }
-        Run run = ( Run ) obj;
-        return this.runId.equals( run.runId );
+        Run run = (Run) obj;
+        return this.runId.equals(run.runId);
     }
 
 }

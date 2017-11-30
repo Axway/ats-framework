@@ -39,17 +39,17 @@ public enum LoggingEventType {
      * Add run meta info
      */
     ADD_RUN_METAINFO,
-    
+
     /**
      * Start an AfterSuite invocation
      * */
     START_AFTER_SUITE,
-    
+
     /**
      * End an AfterSuite invocation
      * */
     END_AFTER_SUITE,
-    
+
     /**
      * Start a suite
      */
@@ -59,32 +59,32 @@ public enum LoggingEventType {
      * End a suite
      */
     END_SUITE,
-    
+
     /**
      * Update a suite
      */
     UPDATE_SUITE,
-    
+
     /**
      * Start an AfterClass invocation
      * */
     START_AFTER_CLASS,
-    
+
     /**
      * End an AfterClass invocation
      * */
     END_AFTER_CLASS,
-    
+
     /**
      * Start an AfterMethod invocation
      * */
     START_AFTER_METHOD,
-    
+
     /**
      * End an AfterMethod invocation
      * */
     END_AFTER_METHOD,
-    
+
     /**
      * Clear scenario meta info
      */

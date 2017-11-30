@@ -23,7 +23,7 @@ import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 /**
  * Event for inserting an user activity statistic in the log DB
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class InsertUserActivityStatisticEvent extends TestCaseLoggingEvent {
 
     private String monitoredMachine;
@@ -48,7 +48,7 @@ public class InsertUserActivityStatisticEvent extends TestCaseLoggingEvent {
                                              String statisticValues,
                                              long timestamp ) {
 
-        super( loggerFQCN, logger, "Insert system statistic", LoggingEventType.INSERT_USER_ACTIVITY_STAT );
+        super(loggerFQCN, logger, "Insert system statistic", LoggingEventType.INSERT_USER_ACTIVITY_STAT);
 
         this.monitoredMachine = monitoredMachine;
         this.statisticIds = statisticIds;

@@ -15,11 +15,11 @@
  */
 package com.axway.ats.log.autodb.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class InvalidAppenderConfigurationException extends LoggingException {
 
     public InvalidAppenderConfigurationException( String configEntry ) {
 
-        super( "Invalid configuration - " + configEntry + " not set" );
+        super("Invalid configuration - " + configEntry + " not set");
     }
 }

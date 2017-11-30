@@ -27,28 +27,28 @@ public class Test_AutoLevel {
     @Test
     public void testSystemLevel() {
 
-        assertTrue( AutoLevel.SYSTEM_INT > Level.FATAL_INT );
+        assertTrue(AutoLevel.SYSTEM_INT > Level.FATAL_INT);
     }
 
     @Test
     public void toLevelString() {
 
-        assertTrue( AutoLevel.toLevel( "SYSTEM" ) == AutoLevel.SYSTEM );
-        assertTrue( AutoLevel.toLevel( "SYSTEM", Level.DEBUG ) == AutoLevel.SYSTEM );
+        assertTrue(AutoLevel.toLevel("SYSTEM") == AutoLevel.SYSTEM);
+        assertTrue(AutoLevel.toLevel("SYSTEM", Level.DEBUG) == AutoLevel.SYSTEM);
     }
 
     @Test
     public void toLevelInt() {
 
-        assertTrue( AutoLevel.toLevel( AutoLevel.SYSTEM_INT ) == AutoLevel.SYSTEM );
-        assertTrue( AutoLevel.toLevel( AutoLevel.SYSTEM_INT, Level.DEBUG ) == AutoLevel.SYSTEM );
+        assertTrue(AutoLevel.toLevel(AutoLevel.SYSTEM_INT) == AutoLevel.SYSTEM);
+        assertTrue(AutoLevel.toLevel(AutoLevel.SYSTEM_INT, Level.DEBUG) == AutoLevel.SYSTEM);
     }
 
     @Test
     public void toLevelDefaultLevel() {
 
-        assertTrue( AutoLevel.toLevel( "dasdasd", AutoLevel.SYSTEM ) == AutoLevel.SYSTEM );
-        assertTrue( AutoLevel.toLevel( null, AutoLevel.SYSTEM ) == AutoLevel.SYSTEM );
-        assertTrue( AutoLevel.toLevel( 111111, AutoLevel.SYSTEM ) == AutoLevel.SYSTEM );
+        assertTrue(AutoLevel.toLevel("dasdasd", AutoLevel.SYSTEM) == AutoLevel.SYSTEM);
+        assertTrue(AutoLevel.toLevel(null, AutoLevel.SYSTEM) == AutoLevel.SYSTEM);
+        assertTrue(AutoLevel.toLevel(111111, AutoLevel.SYSTEM) == AutoLevel.SYSTEM);
     }
 }

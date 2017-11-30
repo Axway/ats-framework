@@ -22,7 +22,7 @@ import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class GetCurrentTestCaseEvent extends AbstractLoggingEvent {
 
     private TestCaseState testCaseState = new TestCaseState();
@@ -30,10 +30,10 @@ public class GetCurrentTestCaseEvent extends AbstractLoggingEvent {
     public GetCurrentTestCaseEvent( String loggerFQCN,
                                     Logger logger ) {
 
-        super( loggerFQCN,
-               logger,
-               "Get the current test case state",
-               LoggingEventType.GET_CURRENT_TEST_CASE_STATE );
+        super(loggerFQCN,
+              logger,
+              "Get the current test case state",
+              LoggingEventType.GET_CURRENT_TEST_CASE_STATE);
     }
 
     public TestCaseState getTestCaseState() {

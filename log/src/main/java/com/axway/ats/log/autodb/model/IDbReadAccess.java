@@ -115,11 +115,11 @@ public interface IDbReadAccess {
     public int getSuiteMessagesCount(
                                       String whereClause ) throws DatabaseAccessException;
 
-	public List<StatisticDescription> getSystemStatisticDescriptions( 
-																	  float timeOffset, 
-																	  String whereClause,
-																	  Map<String, String> testcaseAliases,
-																	  int utcTimeOffset,
+    public List<StatisticDescription> getSystemStatisticDescriptions(
+                                                                      float timeOffset,
+                                                                      String whereClause,
+                                                                      Map<String, String> testcaseAliases,
+                                                                      int utcTimeOffset,
                                                                       boolean dayLightSavingOn ) throws DatabaseAccessException;
 
     public List<StatisticDescription> getCheckpointStatisticDescriptions(
@@ -139,7 +139,7 @@ public interface IDbReadAccess {
                                                 String statsTypeIds,
                                                 int utcTimeOffset,
                                                 boolean dayLightSavingOn ) throws DatabaseAccessException;
-    
+
     public List<Checkpoint> getCheckpoints( String testcaseId,
                                             int loadQueueId,
                                             String checkpointName,
@@ -156,21 +156,19 @@ public interface IDbReadAccess {
                                                     int utcTimeOffset,
                                                     boolean dayLightSavingOn ) throws DatabaseAccessException;
 
-
     public List<LoadQueue> getLoadQueues(
-                                            String whereClause,
-                                            String sortColumn,
-                                            boolean ascending,
-                                            int utcTimeOffset ) throws DatabaseAccessException;
+                                          String whereClause,
+                                          String sortColumn,
+                                          boolean ascending,
+                                          int utcTimeOffset ) throws DatabaseAccessException;
 
     public List<CheckpointSummary> getCheckpointsSummary(
                                                           String whereClause,
                                                           String sortColumn,
                                                           boolean ascending ) throws DatabaseAccessException;
-    
+
     public List<RunMetaInfo> getRunMetaInfo( int runId ) throws DatabaseAccessException;
-    
+
     public List<ScenarioMetaInfo> getScenarioMetaInfo( int scenarioId ) throws DatabaseAccessException;
-    
-    
+
 }

@@ -25,26 +25,26 @@ import com.axway.ats.log.report.exceptions.MailReportPropertyException;
  */
 public class ReportConfigurator extends AbstractConfigurator {
 
-    private static final String SMTP_SERVER_NAME = "log.mailreport.smtpserver.name";
-    private static final String SMTP_SERVER_PORT = "log.mailreport.smtpserver.port";
-    private static final String ADDRESSES_TO     = "log.mailreport.addresses.to";
-    private static final String ADDRESSES_CC     = "log.mailreport.addresses.cc";
-    private static final String ADDRESSES_BCC    = "log.mailreport.addresses.bcc";
-    private static final String ADDRESSES_FROM   = "log.mailreport.addresses.from";
+    private static final String       SMTP_SERVER_NAME        = "log.mailreport.smtpserver.name";
+    private static final String       SMTP_SERVER_PORT        = "log.mailreport.smtpserver.port";
+    private static final String       ADDRESSES_TO            = "log.mailreport.addresses.to";
+    private static final String       ADDRESSES_CC            = "log.mailreport.addresses.cc";
+    private static final String       ADDRESSES_BCC           = "log.mailreport.addresses.bcc";
+    private static final String       ADDRESSES_FROM          = "log.mailreport.addresses.from";
 
-    private static final String TEST_EXPLORER_WEB_PATH = "log.mailreport.testexplorer.webpath";
-    private static final String TEST_EXPLORER_WEB_PORT = "log.mailreport.testexplorer.webport";
+    private static final String       TEST_EXPLORER_WEB_PATH  = "log.mailreport.testexplorer.webpath";
+    private static final String       TEST_EXPLORER_WEB_PORT  = "log.mailreport.testexplorer.webport";
 
-    private static final String CONFIGURATION_FILE_PATH = "/ats.report.properties";
+    private static final String       CONFIGURATION_FILE_PATH = "/ats.report.properties";
 
-    private String   smtpServerName = "";
-    private String   smtpServerPort = "";
-    private String[] addressesTo    = new String[0];
-    private String[] addressesCc    = new String[0];
-    private String[] addressesBcc   = new String[0];
-    private String   addressFrom    = "";
-    private String   testExplorerWebPath;
-    private String   testExplorerWebPort;
+    private String                    smtpServerName          = "";
+    private String                    smtpServerPort          = "";
+    private String[]                  addressesTo             = new String[0];
+    private String[]                  addressesCc             = new String[0];
+    private String[]                  addressesBcc            = new String[0];
+    private String                    addressFrom             = "";
+    private String                    testExplorerWebPath;
+    private String                    testExplorerWebPort;
 
     /**
      * The singleton instance for this configurator
@@ -61,12 +61,12 @@ public class ReportConfigurator extends AbstractConfigurator {
      */
     public static ReportConfigurator getInstance() {
 
-        if( instance == null ) { // synchronize multithreaded access in the case of running parallel tests
-            synchronized( ReportConfigurator.class ) {
-                if( instance == null ) {
+        if (instance == null) { // synchronize multithreaded access in the case of running parallel tests
+            synchronized (ReportConfigurator.class) {
+                if (instance == null) {
                     instance = new ReportConfigurator();
 
-                    instance.addConfigFileFromClassPath( CONFIGURATION_FILE_PATH, true , false);
+                    instance.addConfigFileFromClassPath(CONFIGURATION_FILE_PATH, true, false);
                 }
             }
         }
@@ -79,31 +79,31 @@ public class ReportConfigurator extends AbstractConfigurator {
 
         // load mandatory properties
         try {
-            smtpServerName = getProperty( SMTP_SERVER_NAME );
-            smtpServerPort = getProperty( SMTP_SERVER_PORT );
+            smtpServerName = getProperty(SMTP_SERVER_NAME);
+            smtpServerPort = getProperty(SMTP_SERVER_PORT);
 
-            addressFrom = getProperty( ADDRESSES_FROM );
-            addressesTo = getProperty( ADDRESSES_TO ).split( "," );
-        } catch( NoSuchPropertyException e ) {
+            addressFrom = getProperty(ADDRESSES_FROM);
+            addressesTo = getProperty(ADDRESSES_TO).split(",");
+        } catch (NoSuchPropertyException e) {
             final String errMsg = "At least one property needed for mailing a log report is missing:\n"
                                   + SMTP_SERVER_NAME + "\n" + SMTP_SERVER_PORT + "\n" + ADDRESSES_FROM + "\n"
                                   + ADDRESSES_TO;
-            throw new MailReportPropertyException( errMsg, e );
+            throw new MailReportPropertyException(errMsg, e);
         }
 
         // load optional properties
-        testExplorerWebPath = getOptionalPropertyValue( TEST_EXPLORER_WEB_PATH );
-        testExplorerWebPort = getOptionalPropertyValue( TEST_EXPLORER_WEB_PORT );
-        addressesCc = getOptionalPropertyValues( ADDRESSES_CC );
-        addressesBcc = getOptionalPropertyValues( ADDRESSES_BCC );
+        testExplorerWebPath = getOptionalPropertyValue(TEST_EXPLORER_WEB_PATH);
+        testExplorerWebPort = getOptionalPropertyValue(TEST_EXPLORER_WEB_PORT);
+        addressesCc = getOptionalPropertyValues(ADDRESSES_CC);
+        addressesBcc = getOptionalPropertyValues(ADDRESSES_BCC);
     }
 
     public String getOptionalPropertyValue(
                                             String propertyName ) {
 
         try {
-            return getProperty( propertyName );
-        } catch( NoSuchPropertyException nspe ) {
+            return getProperty(propertyName);
+        } catch (NoSuchPropertyException nspe) {
             return null;
         }
 
@@ -113,8 +113,8 @@ public class ReportConfigurator extends AbstractConfigurator {
                                                String propertyName ) {
 
         try {
-            return getProperty( propertyName ).split( "," );
-        } catch( NoSuchPropertyException e ) {
+            return getProperty(propertyName).split(",");
+        } catch (NoSuchPropertyException e) {
             return new String[0];
         }
     }

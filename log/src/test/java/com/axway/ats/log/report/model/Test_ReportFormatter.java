@@ -32,7 +32,7 @@ import com.axway.ats.log.report.model.ReportFormatter;
 import com.axway.ats.log.report.model.RunWrapper;
 import com.axway.ats.log.report.model.SuiteWrapper;
 
-@RunWith(PowerMockRunner.class)
+@RunWith( PowerMockRunner.class)
 public class Test_ReportFormatter {
 
     @Test
@@ -40,9 +40,9 @@ public class Test_ReportFormatter {
 
         RunWrapper run = createRun();
 
-        ReportFormatter formatter = new ReportFormatter( run );
-        assertTrue( formatter.getDescription().length() > 0 );
-        assertTrue( formatter.toHtml().length() > 0 );
+        ReportFormatter formatter = new ReportFormatter(run);
+        assertTrue(formatter.getDescription().length() > 0);
+        assertTrue(formatter.toHtml().length() > 0);
     }
 
     @Test
@@ -53,27 +53,27 @@ public class Test_ReportFormatter {
 
         Suite passedSuite1 = new Suite();
         passedSuite1.scenariosTotal = 1;
-        run.addSuite( new SuiteWrapper( passedSuite1 ) );
+        run.addSuite(new SuiteWrapper(passedSuite1));
 
         Suite passedSuite2 = new Suite();
         passedSuite2.scenariosTotal = 1;
-        run.addSuite( new SuiteWrapper( passedSuite2 ) );
+        run.addSuite(new SuiteWrapper(passedSuite2));
 
         Suite passedSuite3 = new Suite();
         passedSuite3.scenariosTotal = 1;
-        run.addSuite( new SuiteWrapper( passedSuite3 ) );
+        run.addSuite(new SuiteWrapper(passedSuite3));
 
         Suite failedSuite = new Suite();
         failedSuite.scenariosFailed = 1;
         failedSuite.scenariosTotal = 1;
-        run.addSuite( new SuiteWrapper( failedSuite ) );
+        run.addSuite(new SuiteWrapper(failedSuite));
 
-        ReportFormatter formatter = new ReportFormatter( run );
-        assertTrue( formatter.getDescription().length() > 0 );
-        assertTrue( formatter.toHtml().length() > 0 );
+        ReportFormatter formatter = new ReportFormatter(run);
+        assertTrue(formatter.getDescription().length() > 0);
+        assertTrue(formatter.toHtml().length() > 0);
     }
 
-    @Test(expected = ReportFormatterException.class)
+    @Test( expected = ReportFormatterException.class)
     public void noRuns() throws MessagingException {
 
         List<RunWrapper> runs = new ArrayList<RunWrapper>();
@@ -82,12 +82,12 @@ public class Test_ReportFormatter {
         int port = 0;
         String testExplorerPath = "";
 
-        ReportFormatter formatter = new ReportFormatter( runs,
-                                                         "descirption",
-                                                         dbHost,
-                                                         dbName,
-                                                         port,
-                                                         testExplorerPath );
+        ReportFormatter formatter = new ReportFormatter(runs,
+                                                        "descirption",
+                                                        dbHost,
+                                                        dbName,
+                                                        port,
+                                                        testExplorerPath);
         formatter.toHtml();
     }
 
@@ -102,7 +102,7 @@ public class Test_ReportFormatter {
 
         Suite suite = new Suite();
         suite.scenariosTotal = 1;
-        run.addSuite( new SuiteWrapper( suite ) );
+        run.addSuite(new SuiteWrapper(suite));
 
         return run;
     }

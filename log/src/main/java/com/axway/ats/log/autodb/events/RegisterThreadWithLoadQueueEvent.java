@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class RegisterThreadWithLoadQueueEvent extends TestCaseLoggingEvent {
 
     private String threadName;
@@ -29,9 +29,9 @@ public class RegisterThreadWithLoadQueueEvent extends TestCaseLoggingEvent {
     public RegisterThreadWithLoadQueueEvent( String loggerFQCN, Logger logger, String threadName,
                                              String loadQueueName ) {
 
-        super( loggerFQCN, logger,
-               "Registering thread '" + threadName + "' with load queue '" + loadQueueName + "'",
-               LoggingEventType.REGISTER_THREAD_WITH_LOADQUEUE );
+        super(loggerFQCN, logger,
+              "Registering thread '" + threadName + "' with load queue '" + loadQueueName + "'",
+              LoggingEventType.REGISTER_THREAD_WITH_LOADQUEUE);
 
         this.threadName = threadName;
         this.loadQueueName = loadQueueName;

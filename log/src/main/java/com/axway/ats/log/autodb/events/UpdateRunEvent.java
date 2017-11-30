@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class UpdateRunEvent extends StartRunEvent {
 
     private final String userNote;
@@ -38,16 +38,16 @@ public class UpdateRunEvent extends StartRunEvent {
                            String userNote,
                            String hostName ) {
 
-        super( loggerFQCN,
-               logger,
-               "Update run '" + runName + "'",
-               runName,
-               osName,
-               productName,
-               versionName,
-               buildName,
-               hostName,
-               LoggingEventType.UPDATE_RUN );
+        super(loggerFQCN,
+              logger,
+              "Update run '" + runName + "'",
+              runName,
+              osName,
+              productName,
+              versionName,
+              buildName,
+              hostName,
+              LoggingEventType.UPDATE_RUN);
 
         this.userNote = userNote;
     }

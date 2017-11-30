@@ -21,7 +21,7 @@ import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 import com.axway.ats.log.model.LoadQueueResult;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EndLoadQueueEvent extends TestCaseLoggingEvent {
 
     private String          name;
@@ -29,7 +29,7 @@ public class EndLoadQueueEvent extends TestCaseLoggingEvent {
 
     public EndLoadQueueEvent( String loggerFQCN, Logger logger, String name, LoadQueueResult result ) {
 
-        super( loggerFQCN, logger, "End load queue '" + name + "'", LoggingEventType.END_LOADQUEUE );
+        super(loggerFQCN, logger, "End load queue '" + name + "'", LoggingEventType.END_LOADQUEUE);
 
         this.name = name;
         this.result = result;

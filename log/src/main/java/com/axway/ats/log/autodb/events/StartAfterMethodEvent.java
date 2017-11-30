@@ -21,11 +21,11 @@ import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class StartAfterMethodEvent extends AbstractLoggingEvent {
 
     public StartAfterMethodEvent( String loggerFQCN, Logger logger ) {
-        super( loggerFQCN, logger, "Start after method execution", LoggingEventType.START_AFTER_METHOD );
+        super(loggerFQCN, logger, "Start after method execution", LoggingEventType.START_AFTER_METHOD);
     }
 
     @Override

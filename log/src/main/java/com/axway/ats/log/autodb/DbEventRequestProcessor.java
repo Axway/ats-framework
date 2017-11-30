@@ -151,38 +151,37 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * The actual UpdateRunEvent that will be processed and executed
      * */
     private UpdateRunEvent                actualUpdateRunEvent       = null;
-    
-    
+
     /*
      * While these flag is true, all messages are logged as run messages
      * */
     private boolean                       afterSuiteMode             = false;
-    
+
     /*
      * While these flag is true, all messages are logged as suite messages
      * */
-    private boolean                       afterClassMode            = false;
-    
+    private boolean                       afterClassMode             = false;
+
     /*
      * While these flag is true, all messages, statistics and checkpoints
      * are logged as they have been logged from the testcase, that was ended most recently
      * */
     private boolean                       afterMethodMode            = false;
-    
+
     /*
      * Keeps the ID of the last ended testcase, regardless of the testcase result (e.g. PASSED,FAILED,SKIPPED) 
      * */
     private int                           lastEndedTestcaseId        = -1;
-    
+
     /*
      * Keeps the ID of the last ended suite
      * */
-    private int                           lastEndedSuiteId        = -1;
+    private int                           lastEndedSuiteId           = -1;
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     boolean isBatchMode ) throws DatabaseAccessException {
 
-        this( appenderConfig, layout, null, isBatchMode );
+        this(appenderConfig, layout, null, isBatchMode);
     }
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
@@ -191,33 +190,33 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         this.appenderConfig = appenderConfig;
         this.isBatchMode = isBatchMode;
-        
-        if( DbUtils.isMSSQLDatabaseAvailable( appenderConfig.getHost(), 
-                                              appenderConfig.getDatabase(), 
-                                              appenderConfig.getUser(),
-                                              appenderConfig.getPassword() ) ) {
-            
-            this.dbConnection = new DbConnSQLServer( appenderConfig.getHost(), appenderConfig.getDatabase(),
-                                                     appenderConfig.getUser(), appenderConfig.getPassword() );
-            
+
+        if (DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
+                                             appenderConfig.getDatabase(),
+                                             appenderConfig.getUser(),
+                                             appenderConfig.getPassword())) {
+
+            this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(), appenderConfig.getDatabase(),
+                                                    appenderConfig.getUser(), appenderConfig.getPassword());
+
             //create the db access layer
-            this.dbAccess = new SQLServerDbWriteAccess( ( DbConnSQLServer ) dbConnection, isBatchMode );
-            
-        } else if ( DbUtils.isPostgreSQLDatabaseAvailable( appenderConfig.getHost(), 
-                                                           appenderConfig.getDatabase(), 
-                                                           appenderConfig.getUser(),
-                                                           appenderConfig.getPassword() ) ) {
-            
-            this.dbConnection = new DbConnPostgreSQL( appenderConfig.getHost(), appenderConfig.getDatabase(),
-                                                      appenderConfig.getUser(), appenderConfig.getPassword() );
-            
+            this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
+
+        } else if (DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+                                                         appenderConfig.getDatabase(),
+                                                         appenderConfig.getUser(),
+                                                         appenderConfig.getPassword())) {
+
+            this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(), appenderConfig.getDatabase(),
+                                                     appenderConfig.getUser(), appenderConfig.getPassword());
+
             //create the db access layer
-            this.dbAccess = new PGDbWriteAccess( ( DbConnPostgreSQL ) dbConnection, isBatchMode );
-            
+            this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
+
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() 
-                             + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
-            throw new DatabaseAccessException( errMsg );
+            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost()
+                            + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
+            throw new DatabaseAccessException(errMsg);
         }
 
         this.eventProcessorState = new EventProcessorState();
@@ -228,7 +227,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         try {
             InetAddress addr = InetAddress.getLocalHost();
             this.machineName = addr.getHostName();
-        } catch( UnknownHostException uhe ) {
+        } catch (UnknownHostException uhe) {
             this.machineName = "unknown host";
         }
     }
@@ -270,7 +269,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     public void processEventRequest( LogEventRequest eventRequest ) throws LoggingException {
 
-        if( testcaseToDelete > 0 ) {
+        if (testcaseToDelete > 0) {
             /* Pause for a moment processing the current event.
              * This is (delete testcase)event is not coming from the FIFO queue, as we want to process it as
              * soon as possible, so any events related to this testcase are directly skipped.
@@ -280,35 +279,35 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             // now resume the processing of the current event that came from the queue
         }
 
-        if( isBatchMode && eventRequest == null ) {
+        if (isBatchMode && eventRequest == null) {
             // timeout waiting for next event - flush the current cache
             dbAccess.flushCache();
             return;
         }
 
         LoggingEvent event = eventRequest.getEvent();
-        if( event instanceof AbstractLoggingEvent ) {
-            AbstractLoggingEvent dbAppenderEvent = ( AbstractLoggingEvent ) event;
+        if (event instanceof AbstractLoggingEvent) {
+            AbstractLoggingEvent dbAppenderEvent = (AbstractLoggingEvent) event;
 
-            if( dbAppenderEvent instanceof UpdateSuiteEvent ) {
+            if (dbAppenderEvent instanceof UpdateSuiteEvent) {
                 try {
-                    dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
-                } catch( IncorrectProcessorStateException e ) {
+                    dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
+                } catch (IncorrectProcessorStateException e) {
                     /* Suite not started yet, 
                      * so save the current event as pending 
                      * and fired it right after StartSuiteEvent is received
                     */
-                    pendingUpdateSuiteEvent = ( UpdateSuiteEvent ) dbAppenderEvent;
+                    pendingUpdateSuiteEvent = (UpdateSuiteEvent) dbAppenderEvent;
                     return;
                 }
-            } else if( dbAppenderEvent instanceof UpdateRunEvent ) {
+            } else if (dbAppenderEvent instanceof UpdateRunEvent) {
                 try {
                     /* Run not started yet.
                      * We will fire the event after StartRunEvent is received
                     */
-                    userProvidedUpdateRunEvent = ( UpdateRunEvent ) dbAppenderEvent;
-                    dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
-                } catch( IncorrectProcessorStateException e ) {
+                    userProvidedUpdateRunEvent = (UpdateRunEvent) dbAppenderEvent;
+                    dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
+                } catch (IncorrectProcessorStateException e) {
                     /*
                      * If we get an exception, do no process the event any further.
                      * We will fire it after StartRunEvent is received.
@@ -317,25 +316,25 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 }
             } else {
                 //first check if we can process the event at all
-                dbAppenderEvent.checkIfCanBeProcessed( eventProcessorState );
+                dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
             }
 
-            if( isBatchMode && ! ( event instanceof CacheableEvent )
-                && eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED ) {
+            if (isBatchMode && ! (event instanceof CacheableEvent)
+                && eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED) {
                 // this event can not be cached - flush the current cache
                 dbAccess.flushCache();
             }
 
-            switch( dbAppenderEvent.getEventType() ){
+            switch (dbAppenderEvent.getEventType()) {
                 case START_RUN:
-                    startRun( ( StartRunEvent ) event, eventRequest.getTimestamp() );
-                    if( userProvidedUpdateRunEvent != null ) {
+                    startRun((StartRunEvent) event, eventRequest.getTimestamp());
+                    if (userProvidedUpdateRunEvent != null) {
                         constructUpdateRunEvent();
-                        updateRun( actualUpdateRunEvent );
+                        updateRun(actualUpdateRunEvent);
                     }
                     break;
                 case END_RUN:
-                    endRun( eventRequest.getTimestamp() );
+                    endRun(eventRequest.getTimestamp());
                     break;
                 case UPDATE_RUN:
                     /*
@@ -343,7 +342,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                      * construct a pending UpdateRunEvent
                      * */
                     constructUpdateRunEvent();
-                    updateRun( actualUpdateRunEvent );
+                    updateRun(actualUpdateRunEvent);
                     break;
                 case START_AFTER_SUITE:
                     afterSuiteMode = true;
@@ -352,20 +351,20 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     afterSuiteMode = false;
                     break;
                 case ADD_RUN_METAINFO:
-                    addRunMetainfo( ( AddRunMetainfoEvent ) event );
+                    addRunMetainfo((AddRunMetainfoEvent) event);
                     break;
                 case START_SUITE:
-                    startSuite( ( StartSuiteEvent ) event, eventRequest.getTimestamp() );
-                    if( pendingUpdateSuiteEvent != null ) {
-                        updateSuite( pendingUpdateSuiteEvent );
+                    startSuite((StartSuiteEvent) event, eventRequest.getTimestamp());
+                    if (pendingUpdateSuiteEvent != null) {
+                        updateSuite(pendingUpdateSuiteEvent);
                         pendingUpdateSuiteEvent = null;
                     }
                     break;
                 case END_SUITE:
-                    endSuite( eventRequest.getTimestamp() );
+                    endSuite(eventRequest.getTimestamp());
                     break;
                 case UPDATE_SUITE:
-                    updateSuite( ( UpdateSuiteEvent ) event );
+                    updateSuite((UpdateSuiteEvent) event);
                     break;
                 case START_AFTER_CLASS:
                     afterClassMode = true;
@@ -377,19 +376,19 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     clearScenarioMetainfo();
                     break;
                 case ADD_SCENARIO_METAINFO:
-                    addScenarioMetainfo( ( AddScenarioMetainfoEvent ) event );
+                    addScenarioMetainfo((AddScenarioMetainfoEvent) event);
                     break;
                 case UPDATE_TEST_CASE:
-                    updateTestcase( ( UpdateTestcaseEvent ) event, eventRequest.getTimestamp() );
+                    updateTestcase((UpdateTestcaseEvent) event, eventRequest.getTimestamp());
                     break;
                 case END_TEST_CASE:
-                    endTestCase( ( EndTestCaseEvent ) event, eventRequest.getTimestamp() );
+                    endTestCase((EndTestCaseEvent) event, eventRequest.getTimestamp());
                     break;
                 case START_TEST_CASE:
-                    startTestCase( ( StartTestCaseEvent ) event, eventRequest.getTimestamp() );
+                    startTestCase((StartTestCaseEvent) event, eventRequest.getTimestamp());
                     break;
                 case JOIN_TEST_CASE:
-                    joinTestCase( ( JoinTestCaseEvent ) event );
+                    joinTestCase((JoinTestCaseEvent) event);
                     break;
                 case LEAVE_TEST_CASE:
                     leaveTestCase();
@@ -401,43 +400,43 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     afterMethodMode = false;
                     break;
                 case REMEMBER_LOADQUEUE_STATE:
-                    rememberLoadQueueState( ( RememberLoadQueueStateEvent ) event );
+                    rememberLoadQueueState((RememberLoadQueueStateEvent) event);
                     break;
                 case CLEANUP_LOADQUEUE_STATE:
-                    cleanupLoadQueueState( ( CleanupLoadQueueStateEvent ) event );
+                    cleanupLoadQueueState((CleanupLoadQueueStateEvent) event);
                     break;
                 case END_LOADQUEUE:
-                    endLoadQueue( ( EndLoadQueueEvent ) event, eventRequest.getTimestamp() );
+                    endLoadQueue((EndLoadQueueEvent) event, eventRequest.getTimestamp());
                     break;
                 case REGISTER_THREAD_WITH_LOADQUEUE:
-                    registerThreadWithLoadQueue( ( RegisterThreadWithLoadQueueEvent ) event );
+                    registerThreadWithLoadQueue((RegisterThreadWithLoadQueueEvent) event);
                     break;
                 case START_CHECKPOINT:
-                    startCheckpoint( ( StartCheckpointEvent ) event );
+                    startCheckpoint((StartCheckpointEvent) event);
                     break;
                 case END_CHECKPOINT:
-                    endCheckpoint( ( EndCheckpointEvent ) event );
+                    endCheckpoint((EndCheckpointEvent) event);
                     break;
                 case INSERT_CHECKPOINT:
-                    insertCheckpoint( ( InsertCheckpointEvent ) event );
+                    insertCheckpoint((InsertCheckpointEvent) event);
                     break;
                 case INSERT_SYSTEM_STAT:
-                    insertSystemStatistics( ( InsertSystemStatisticEvent ) event );
+                    insertSystemStatistics((InsertSystemStatisticEvent) event);
                     break;
                 case INSERT_USER_ACTIVITY_STAT:
-                    insertUserActivityStatistics( ( InsertUserActivityStatisticEvent ) event );
+                    insertUserActivityStatistics((InsertUserActivityStatisticEvent) event);
                     break;
                 case INSERT_MESSAGE:
-                    InsertMessageEvent insertMessageEvent = ( InsertMessageEvent ) event;
-                    insertMessage( eventRequest, insertMessageEvent.isEscapeHtml(),
-                                   insertMessageEvent.isRunMessage() );
+                    InsertMessageEvent insertMessageEvent = (InsertMessageEvent) event;
+                    insertMessage(eventRequest, insertMessageEvent.isEscapeHtml(),
+                                  insertMessageEvent.isRunMessage());
                     break;
                 default:
-                    throw new LoggingException( "Unsupported logging event of type: "
-                                                + dbAppenderEvent.getEventType() );
+                    throw new LoggingException("Unsupported logging event of type: "
+                                               + dbAppenderEvent.getEventType());
             }
         } else {
-            insertMessage( eventRequest, false, false );
+            insertMessage(eventRequest, false, false);
         }
     }
 
@@ -449,40 +448,40 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         int previousRunId = eventProcessorState.getPreviousRunId();
 
         int newRunId;
-        if( previousRunId == 0 ) {
+        if (previousRunId == 0) {
             // run sanity check first
             dbAccess.runDbSanityCheck();
 
             // now create a new run for first time in this JVM execution
-            newRunId = dbAccess.startRun( startRunEvent.getRunName(), startRunEvent.getOsName(),
-                                          startRunEvent.getProductName(), startRunEvent.getVersionName(),
-                                          startRunEvent.getBuildName(), timeStamp,
-                                          startRunEvent.getHostName(), true );
+            newRunId = dbAccess.startRun(startRunEvent.getRunName(), startRunEvent.getOsName(),
+                                         startRunEvent.getProductName(), startRunEvent.getVersionName(),
+                                         startRunEvent.getBuildName(), timeStamp,
+                                         startRunEvent.getHostName(), true);
 
             //output the run id in the console, so it can be used for results
-            System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                + "*** ATS *** Started a new RUN in Test Explorer's database with id: "
-                                + newRunId );
+            System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                               + "*** ATS *** Started a new RUN in Test Explorer's database with id: "
+                               + newRunId);
         } else {
             // we already had a run, now we will join to the previous run
             // we will update the name of the run only
-            dbAccess.updateRun( previousRunId, startRunEvent.getRunName(), null, null, null, null, null, null,
-                                true );
+            dbAccess.updateRun(previousRunId, startRunEvent.getRunName(), null, null, null, null, null, null,
+                               true);
             newRunId = previousRunId;
 
             //output the run id in the console, so it can be used for results
-            System.out.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                + "*** ATS *** Joined an existing RUN in Test Explorer's database with id: "
-                                + newRunId );
+            System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                               + "*** ATS *** Joined an existing RUN in Test Explorer's database with id: "
+                               + newRunId);
         }
 
-        eventProcessorState.setRunId( newRunId );
-        eventProcessorState.setRunName( startRunEvent.getRunName() );
-        eventProcessorState.setRunUserNote( null );
-        eventProcessorState.setLifeCycleState( LifeCycleState.RUN_STARTED );
+        eventProcessorState.setRunId(newRunId);
+        eventProcessorState.setRunName(startRunEvent.getRunName());
+        eventProcessorState.setRunUserNote(null);
+        eventProcessorState.setLifeCycleState(LifeCycleState.RUN_STARTED);
 
         //notify the listener that the run started successfully
-        if( listener != null ) {
+        if (listener != null) {
             listener.onRunStarted();
         }
     }
@@ -491,36 +490,36 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         int currentRunId = eventProcessorState.getRunId();
 
-        dbAccess.endRun( timeStamp, currentRunId, true );
+        dbAccess.endRun(timeStamp, currentRunId, true);
 
         //set the current appender state
-        eventProcessorState.setPreviousRunId( currentRunId );
-        eventProcessorState.setRunId( 0 );
-        eventProcessorState.setLifeCycleState( LifeCycleState.INITIALIZED );
+        eventProcessorState.setPreviousRunId(currentRunId);
+        eventProcessorState.setRunId(0);
+        eventProcessorState.setLifeCycleState(LifeCycleState.INITIALIZED);
 
-        if( listener != null ) {
+        if (listener != null) {
             listener.onRunFinished();
         }
     }
 
     private void updateRun( UpdateRunEvent updateRunEvent ) throws DatabaseAccessException {
 
-        dbAccess.updateRun( eventProcessorState.getRunId(), updateRunEvent.getRunName(),
-                            updateRunEvent.getOsName(), updateRunEvent.getProductName(),
-                            updateRunEvent.getVersionName(), updateRunEvent.getBuildName(),
-                            updateRunEvent.getUserNote(), updateRunEvent.getHostName(), true );
-        if( updateRunEvent.getRunName() != null ) {
-            eventProcessorState.setRunName( updateRunEvent.getRunName() );
+        dbAccess.updateRun(eventProcessorState.getRunId(), updateRunEvent.getRunName(),
+                           updateRunEvent.getOsName(), updateRunEvent.getProductName(),
+                           updateRunEvent.getVersionName(), updateRunEvent.getBuildName(),
+                           updateRunEvent.getUserNote(), updateRunEvent.getHostName(), true);
+        if (updateRunEvent.getRunName() != null) {
+            eventProcessorState.setRunName(updateRunEvent.getRunName());
         }
-        if( updateRunEvent.getUserNote() != null ) {
-            eventProcessorState.setRunUserNote( updateRunEvent.getUserNote() );
+        if (updateRunEvent.getUserNote() != null) {
+            eventProcessorState.setRunUserNote(updateRunEvent.getUserNote());
         }
     }
 
     private void addRunMetainfo( AddRunMetainfoEvent addRunMetainfoEvent ) throws DatabaseAccessException {
 
-        dbAccess.addRunMetainfo( eventProcessorState.getRunId(), addRunMetainfoEvent.getMetaKey(),
-                                 addRunMetainfoEvent.getMetaValue(), true );
+        dbAccess.addRunMetainfo(eventProcessorState.getRunId(), addRunMetainfoEvent.getMetaKey(),
+                                addRunMetainfoEvent.getMetaValue(), true);
     }
 
     private void startSuite( StartSuiteEvent startSuiteEvent,
@@ -533,49 +532,49 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         // If there is already a suite with same name in the same run don't open a new one, but
         // use the existing suite.
-        if( suiteIdsCache.containsKey( eventProcessorState.getRunId() + suiteName ) ) {
-            eventProcessorState.setSuiteId( suiteIdsCache.get( eventProcessorState.getRunId() + suiteName ) );
+        if (suiteIdsCache.containsKey(eventProcessorState.getRunId() + suiteName)) {
+            eventProcessorState.setSuiteId(suiteIdsCache.get(eventProcessorState.getRunId() + suiteName));
         } else {
-            int suiteId = dbAccess.startSuite( packageName, suiteName, timeStamp, runId, true );
+            int suiteId = dbAccess.startSuite(packageName, suiteName, timeStamp, runId, true);
 
             //set the current suite id
-            eventProcessorState.setSuiteId( suiteId );
+            eventProcessorState.setSuiteId(suiteId);
 
             //put the id in the cache
-            suiteIdsCache.put( runId + suiteName, suiteId );
+            suiteIdsCache.put(runId + suiteName, suiteId);
         }
 
         //set the current appender state
-        eventProcessorState.setLifeCycleState( LifeCycleState.SUITE_STARTED );
+        eventProcessorState.setLifeCycleState(LifeCycleState.SUITE_STARTED);
     }
 
     private void endSuite( long timeStamp ) throws DatabaseAccessException {
 
         try {
-            dbAccess.endSuite( timeStamp, eventProcessorState.getSuiteId(), true );
-            
+            dbAccess.endSuite(timeStamp, eventProcessorState.getSuiteId(), true);
+
             lastEndedSuiteId = eventProcessorState.getSuiteId();
         } finally {
             // even when this DB entity could not finish due to error,
             // we want to clear the internal state,
             // so next sub-entities do not go into this one
-            eventProcessorState.setLifeCycleState( LifeCycleState.RUN_STARTED );
+            eventProcessorState.setLifeCycleState(LifeCycleState.RUN_STARTED);
 
-            eventProcessorState.setSuiteId( 0 );
+            eventProcessorState.setSuiteId(0);
         }
     }
 
     private void updateSuite( UpdateSuiteEvent event ) throws DatabaseAccessException {
 
         try {
-            dbAccess.updateSuite( eventProcessorState.getSuiteId(), event.getSuiteName(), event.getUserNote(),
-                                  true );
+            dbAccess.updateSuite(eventProcessorState.getSuiteId(), event.getSuiteName(), event.getUserNote(),
+                                 true);
         } finally {
             // Due to change in the suite name, update suiteIdCache, 
             // only if suite name is not null and is not an empty string
-            if( !StringUtils.isNullOrEmpty( event.getSuiteName() ) ) {
-                suiteIdsCache.put( eventProcessorState.getRunId() + event.getSuiteName(),
-                                   eventProcessorState.getSuiteId() );
+            if (!StringUtils.isNullOrEmpty(event.getSuiteName())) {
+                suiteIdsCache.put(eventProcessorState.getRunId() + event.getSuiteName(),
+                                  eventProcessorState.getSuiteId());
             }
         }
 
@@ -583,15 +582,15 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void clearScenarioMetainfo() throws DatabaseAccessException {
 
-        dbAccess.clearScenarioMetainfo( eventProcessorState.getTestCaseId(), true );
+        dbAccess.clearScenarioMetainfo(eventProcessorState.getTestCaseId(), true);
     }
 
     private void
             addScenarioMetainfo( AddScenarioMetainfoEvent addScenarioMetainfoEvent ) throws DatabaseAccessException {
 
-        dbAccess.addScenarioMetainfo( eventProcessorState.getTestCaseId(),
-                                      addScenarioMetainfoEvent.getMetaKey(),
-                                      addScenarioMetainfoEvent.getMetaValue(), true );
+        dbAccess.addScenarioMetainfo(eventProcessorState.getTestCaseId(),
+                                     addScenarioMetainfoEvent.getMetaKey(),
+                                     addScenarioMetainfoEvent.getMetaValue(), true);
     }
 
     private void startTestCase( StartTestCaseEvent startTestCaseEvent,
@@ -600,7 +599,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         int currentSuiteId = eventProcessorState.getSuiteId();
 
         String newSuiteName = startTestCaseEvent.getSuiteSimpleName();
-        if( !StringUtils.isNullOrEmpty( newSuiteName ) ) {
+        if (!StringUtils.isNullOrEmpty(newSuiteName)) {
             // Due to implementation specifics, it is not possible that a suite with
             // the needed name is not in the list of remembered suites (else clause).
             // This is guaranteed when we start the suite(which is before we start a testcase)
@@ -608,27 +607,27 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             // we want to make sure we are starting this testcase in a suite with this name
             String newSuiteIdentifier = eventProcessorState.getRunId() + newSuiteName;
 
-            currentSuiteId = suiteIdsCache.get( newSuiteIdentifier );
+            currentSuiteId = suiteIdsCache.get(newSuiteIdentifier);
         }
 
         /*
          * This event happens on the Test Executor side.
          */
 
-        int testCaseId = dbAccess.startTestCase( startTestCaseEvent.getSuiteFullName(),
-                                                 startTestCaseEvent.getScenarioName(),
-                                                 startTestCaseEvent.getScenarioDescription(),
-                                                 startTestCaseEvent.getTestcaseName(), timeStamp,
-                                                 currentSuiteId, true );
+        int testCaseId = dbAccess.startTestCase(startTestCaseEvent.getSuiteFullName(),
+                                                startTestCaseEvent.getScenarioName(),
+                                                startTestCaseEvent.getScenarioDescription(),
+                                                startTestCaseEvent.getTestcaseName(), timeStamp,
+                                                currentSuiteId, true);
 
         //set the current appender state
         TestCaseState testCaseState = new TestCaseState();
-        testCaseState.setTestcaseId( testCaseId );
-        eventProcessorState.setTestCaseState( testCaseState );
-        eventProcessorState.setLifeCycleState( LifeCycleState.TEST_CASE_STARTED );
+        testCaseState.setTestcaseId(testCaseId);
+        eventProcessorState.setTestCaseState(testCaseState);
+        eventProcessorState.setLifeCycleState(LifeCycleState.TEST_CASE_STARTED);
 
         //unblock the main thread which is waiting for the completion of this event
-        if( listener != null ) {
+        if (listener != null) {
             listener.onTestcaseStarted();
         }
     }
@@ -636,35 +635,37 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void endTestCase( EndTestCaseEvent endTestCaseEvent, long timeStamp ) throws LoggingException {
 
         try {
-            if( !this.deletedTestcases.contains( eventProcessorState.getTestCaseId() ) ) {
-                dbAccess.endTestCase( endTestCaseEvent.getTestCaseResult().toInt(), timeStamp,
-                                      eventProcessorState.getTestCaseId(), true );
+            if (!this.deletedTestcases.contains(eventProcessorState.getTestCaseId())) {
+                dbAccess.endTestCase(endTestCaseEvent.getTestCaseResult().toInt(), timeStamp,
+                                     eventProcessorState.getTestCaseId(), true);
                 lastEndedTestcaseId = eventProcessorState.getTestCaseId();
             }
         } finally {
             // even when this DB entity could not finish due to error,
             // we want to clear the internal state,
             // so next sub-entities do not go into this one
-            eventProcessorState.setLifeCycleState( LifeCycleState.SUITE_STARTED );
+            eventProcessorState.setLifeCycleState(LifeCycleState.SUITE_STARTED);
 
             eventProcessorState.getTestCaseState().clearTestcaseId();
             eventProcessorState.getLoadQueuesState().clearAll();
         }
     }
-    
+
     private void updateTestcase( UpdateTestcaseEvent updateTestcaseEvent, long timestamp ) throws LoggingException {
-        
+
         String suiteFullName = updateTestcaseEvent.getSuiteFullName();
         String scenarioName = updateTestcaseEvent.getScenarioName();
         String scenarioDescription = updateTestcaseEvent.getScenarioDescription();
         String testcaseName = updateTestcaseEvent.getTestcaseName();
         String userNote = updateTestcaseEvent.getUserNote();
         int testcaseResult = updateTestcaseEvent.getTestcaseResult();
-        int testcaseId = ( getTestCaseId() == -1 ) ? lastEndedTestcaseId : getTestCaseId();
-        
-        dbAccess.updateTestcase( suiteFullName, scenarioName, scenarioDescription, 
-                                 testcaseName, userNote, testcaseResult, testcaseId, timestamp, true );
-        
+        int testcaseId = (getTestCaseId() == -1)
+                                                 ? lastEndedTestcaseId
+                                                 : getTestCaseId();
+
+        dbAccess.updateTestcase(suiteFullName, scenarioName, scenarioDescription,
+                                testcaseName, userNote, testcaseResult, testcaseId, timestamp, true);
+
     }
 
     /**
@@ -690,16 +691,16 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         // delete this testcase
         List<Object> testcasesToDelete = new ArrayList<Object>();
         Testcase tc = new Testcase();
-        tc.testcaseId = String.valueOf( testcaseToDelete );
-        testcasesToDelete.add( tc );
+        tc.testcaseId = String.valueOf(testcaseToDelete);
+        testcasesToDelete.add(tc);
 
-        dbAccess.deleteTestcase( testcasesToDelete );
+        dbAccess.deleteTestcase(testcasesToDelete);
 
         /*
          * Remember this testcase was deleted.
          * From now on all events related to this testcase will be simply skipped without going to the DB
          */
-        deletedTestcases.add( testcaseToDelete );
+        deletedTestcases.add(testcaseToDelete);
 
         testcaseToDelete = -1;
     }
@@ -711,10 +712,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
          */
 
         //set test case id
-        eventProcessorState.setTestCaseState( joinTestCaseEvent.getTestCaseState() );
+        eventProcessorState.setTestCaseState(joinTestCaseEvent.getTestCaseState());
 
         //set the current appender state
-        eventProcessorState.setLifeCycleState( LifeCycleState.TEST_CASE_STARTED );
+        eventProcessorState.setLifeCycleState(LifeCycleState.TEST_CASE_STARTED);
 
         /*
          * Now the Agent can log into the DB
@@ -730,7 +731,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         eventProcessorState.getTestCaseState().clearTestcaseId();
 
         //set the current appender state
-        eventProcessorState.setLifeCycleState( LifeCycleState.INITIALIZED );
+        eventProcessorState.setLifeCycleState(LifeCycleState.INITIALIZED);
 
         /*
          * The Agent can no longer log into the DB
@@ -744,12 +745,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         LoadQueuesState loadQueuesState = eventProcessorState.getLoadQueuesState();
 
         String loadQueueName = startLoadQueueEvent.getName();
-        if( loadQueuesState.isLoadQueueRunning( loadQueueName ) ) {
-            throw new LoadQueueAlreadyStartedException( loadQueueName );
+        if (loadQueuesState.isLoadQueueRunning(loadQueueName)) {
+            throw new LoadQueueAlreadyStartedException(loadQueueName);
         }
 
         //cache the load queue id
-        loadQueuesState.addLoadQueue( loadQueueName, startLoadQueueEvent.getLoadQueueId() );
+        loadQueuesState.addLoadQueue(loadQueueName, startLoadQueueEvent.getLoadQueueId());
     }
 
     private void
@@ -758,8 +759,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         //first check if this load queue is started at all
         LoadQueuesState loadQueuesState = eventProcessorState.getLoadQueuesState();
         String loadQueueName = loadQueueStateEvent.getName();
-        int loadQueueId = loadQueuesState.getLoadQueueId( loadQueueName );
-        loadQueuesState.removeLoadQueue( loadQueueName, loadQueueId );
+        int loadQueueId = loadQueuesState.getLoadQueueId(loadQueueName);
+        loadQueuesState.removeLoadQueue(loadQueueName, loadQueueId);
     }
 
     private void endLoadQueue( EndLoadQueueEvent endLoadQueueEvent,
@@ -769,17 +770,17 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         LoadQueuesState loadQueuesState = eventProcessorState.getLoadQueuesState();
         String loadQueueName = endLoadQueueEvent.getName();
 
-        int loadQueueId = loadQueuesState.getLoadQueueId( loadQueueName );
+        int loadQueueId = loadQueuesState.getLoadQueueId(loadQueueName);
 
-        if( loadQueueId > 0 ) {
+        if (loadQueueId > 0) {
             try {
 
-                dbAccess.endLoadQueue( endLoadQueueEvent.getResult().toInt(), timestamp, loadQueueId, true );
+                dbAccess.endLoadQueue(endLoadQueueEvent.getResult().toInt(), timestamp, loadQueueId, true);
             } finally {
                 // even when this DB entity could not finish due to error,
                 // we want to clear the internal state,
                 // so next sub-entities do not go into this one
-                loadQueuesState.removeLoadQueue( loadQueueName, loadQueueId );
+                loadQueuesState.removeLoadQueue(loadQueueName, loadQueueId);
             }
         }
     }
@@ -794,32 +795,32 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         //register the thread with the load queue - this way when a checkpoint comes in, we will
         //now which load queue it belongs to
-        loadQueuesState.registerThreadWithLoadQueue( registerThreadWithLoadQueueEvent.getThreadName(),
-                                                     loadQueuesState.getLoadQueueId( loadQueueName ) );
+        loadQueuesState.registerThreadWithLoadQueue(registerThreadWithLoadQueueEvent.getThreadName(),
+                                                    loadQueuesState.getLoadQueueId(loadQueueName));
     }
 
     private void startCheckpoint( StartCheckpointEvent startCheckpointEvent ) throws LoggingException {
 
         //check if checkpoints are enabled at all
-        if( appenderConfig.getEnableCheckpoints() ) {
+        if (appenderConfig.getEnableCheckpoints()) {
 
             LoadQueuesState loadQueuesState = eventProcessorState.getLoadQueuesState();
-            int loadQueueId = loadQueuesState.getLoadQueueIdForThread( startCheckpointEvent.getThread() );
+            int loadQueueId = loadQueuesState.getLoadQueueIdForThread(startCheckpointEvent.getThread());
 
-            if( loadQueueId > 0 ) {
+            if (loadQueueId > 0) {
                 final int testcaseId = eventProcessorState.getTestCaseId();
-                if( !deletedTestcases.contains( testcaseId ) ) {
+                if (!deletedTestcases.contains(testcaseId)) {
                     try {
-                        CheckpointInfo startedCheckpointInfo = dbAccess.startCheckpoint( startCheckpointEvent.getName(),
-                                                                                         startCheckpointEvent.getThread(),
-                                                                                         startCheckpointEvent.getStartTimestamp(),
-                                                                                         startCheckpointEvent.getTransferUnit(),
-                                                                                         loadQueueId, true );
-                        loadQueuesState.startCheckpoint( startedCheckpointInfo,
-                                                         startCheckpointEvent.getThread() );
+                        CheckpointInfo startedCheckpointInfo = dbAccess.startCheckpoint(startCheckpointEvent.getName(),
+                                                                                        startCheckpointEvent.getThread(),
+                                                                                        startCheckpointEvent.getStartTimestamp(),
+                                                                                        startCheckpointEvent.getTransferUnit(),
+                                                                                        loadQueueId, true);
+                        loadQueuesState.startCheckpoint(startedCheckpointInfo,
+                                                        startCheckpointEvent.getThread());
 
-                    } catch( LoggingException e ) {
-                        handleDeletedTestcase( e, testcaseId );
+                    } catch (LoggingException e) {
+                        handleDeletedTestcase(e, testcaseId);
                     }
                 }
             }
@@ -829,21 +830,21 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void endCheckpoint( EndCheckpointEvent endCheckpointEvent ) throws LoggingException {
 
         //check if checkpoints are enabled at all
-        if( appenderConfig.getEnableCheckpoints() ) {
+        if (appenderConfig.getEnableCheckpoints()) {
 
             LoadQueuesState loadQueuesState = eventProcessorState.getLoadQueuesState();
-            CheckpointInfo runningCheckpointInfo = loadQueuesState.endCheckpoint( endCheckpointEvent.getThread(),
-                                                                                  endCheckpointEvent.getName(),
-                                                                                  endCheckpointEvent.getEndTimestamp() );
+            CheckpointInfo runningCheckpointInfo = loadQueuesState.endCheckpoint(endCheckpointEvent.getThread(),
+                                                                                 endCheckpointEvent.getName(),
+                                                                                 endCheckpointEvent.getEndTimestamp());
 
             final int testcaseId = eventProcessorState.getTestCaseId();
-            if( !deletedTestcases.contains( testcaseId ) ) {
+            if (!deletedTestcases.contains(testcaseId)) {
                 try {
-                    dbAccess.endCheckpoint( runningCheckpointInfo, endCheckpointEvent.getEndTimestamp(),
-                                            endCheckpointEvent.getTransferSize(),
-                                            endCheckpointEvent.getResult().toInt(), true );
-                } catch( LoggingException e ) {
-                    handleDeletedTestcase( e, testcaseId );
+                    dbAccess.endCheckpoint(runningCheckpointInfo, endCheckpointEvent.getEndTimestamp(),
+                                           endCheckpointEvent.getTransferSize(),
+                                           endCheckpointEvent.getResult().toInt(), true);
+                } catch (LoggingException e) {
+                    handleDeletedTestcase(e, testcaseId);
                 }
             }
         }
@@ -852,22 +853,22 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void insertCheckpoint( InsertCheckpointEvent insertCheckpointEvent ) throws LoggingException {
 
         //check if checkpoints are enabled at all
-        if( appenderConfig.getEnableCheckpoints() ) {
+        if (appenderConfig.getEnableCheckpoints()) {
 
             LoadQueuesState loadQueuesState = eventProcessorState.getLoadQueuesState();
-            int loadQueueId = loadQueuesState.getLoadQueueIdForThread( insertCheckpointEvent.getThread() );
+            int loadQueueId = loadQueuesState.getLoadQueueIdForThread(insertCheckpointEvent.getThread());
 
             final int testcaseId = eventProcessorState.getTestCaseId();
-            if( !deletedTestcases.contains( testcaseId ) ) {
+            if (!deletedTestcases.contains(testcaseId)) {
                 try {
-                    dbAccess.insertCheckpoint( insertCheckpointEvent.getName(),
-                                               insertCheckpointEvent.getStartTimestamp(),
-                                               insertCheckpointEvent.getResponseTime(),
-                                               insertCheckpointEvent.getTransferSize(),
-                                               insertCheckpointEvent.getTransferUnit(),
-                                               insertCheckpointEvent.getResult().toInt(), loadQueueId, true );
-                } catch( LoggingException e ) {
-                    handleDeletedTestcase( e, testcaseId );
+                    dbAccess.insertCheckpoint(insertCheckpointEvent.getName(),
+                                              insertCheckpointEvent.getStartTimestamp(),
+                                              insertCheckpointEvent.getResponseTime(),
+                                              insertCheckpointEvent.getTransferSize(),
+                                              insertCheckpointEvent.getTransferUnit(),
+                                              insertCheckpointEvent.getResult().toInt(), loadQueueId, true);
+                } catch (LoggingException e) {
+                    handleDeletedTestcase(e, testcaseId);
                 }
             }
         }
@@ -877,15 +878,15 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             insertSystemStatistics( InsertSystemStatisticEvent insertSystemStatEvent ) throws LoggingException {
 
         final int testcaseId = eventProcessorState.getTestCaseId();
-        if( !deletedTestcases.contains( testcaseId ) ) {
+        if (!deletedTestcases.contains(testcaseId)) {
             try {
-                dbAccess.insertSystemStatistics( eventProcessorState.getTestCaseId(),
-                                                 insertSystemStatEvent.getMonitoredMachine(),
-                                                 insertSystemStatEvent.getStatisticIds(),
-                                                 insertSystemStatEvent.getStatisticValues(),
-                                                 insertSystemStatEvent.getTimestamp(), true );
-            } catch( LoggingException e ) {
-                handleDeletedTestcase( e, testcaseId );
+                dbAccess.insertSystemStatistics(eventProcessorState.getTestCaseId(),
+                                                insertSystemStatEvent.getMonitoredMachine(),
+                                                insertSystemStatEvent.getStatisticIds(),
+                                                insertSystemStatEvent.getStatisticValues(),
+                                                insertSystemStatEvent.getTimestamp(), true);
+            } catch (LoggingException e) {
+                handleDeletedTestcase(e, testcaseId);
             }
         }
     }
@@ -894,15 +895,15 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             insertUserActivityStatistics( InsertUserActivityStatisticEvent insertUserActivityStatEvent ) throws LoggingException {
 
         final int testcaseId = eventProcessorState.getTestCaseId();
-        if( !deletedTestcases.contains( testcaseId ) ) {
+        if (!deletedTestcases.contains(testcaseId)) {
             try {
-                dbAccess.insertUserActivityStatistics( eventProcessorState.getTestCaseId(),
-                                                       insertUserActivityStatEvent.getMonitoredMachine(),
-                                                       insertUserActivityStatEvent.getStatisticIds(),
-                                                       insertUserActivityStatEvent.getStatisticValues(),
-                                                       insertUserActivityStatEvent.getTimestamp(), true );
-            } catch( LoggingException e ) {
-                handleDeletedTestcase( e, testcaseId );
+                dbAccess.insertUserActivityStatistics(eventProcessorState.getTestCaseId(),
+                                                      insertUserActivityStatEvent.getMonitoredMachine(),
+                                                      insertUserActivityStatEvent.getStatisticIds(),
+                                                      insertUserActivityStatEvent.getStatisticValues(),
+                                                      insertUserActivityStatEvent.getTimestamp(), true);
+            } catch (LoggingException e) {
+                handleDeletedTestcase(e, testcaseId);
             }
         }
     }
@@ -914,48 +915,52 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         // If test case is not open, just return - this is necessary because components which are not aware of this
         // appender may try to log before the client has a chance of opening a test case.
-        if( ( eventProcessorState.getLifeCycleState() == LifeCycleState.RUN_STARTED && !afterClassMode ) || 
-                isRunMessage || afterSuiteMode ) {
-            if( !ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported ) {
+        if ( (eventProcessorState.getLifeCycleState() == LifeCycleState.RUN_STARTED && !afterClassMode) ||
+             isRunMessage || afterSuiteMode) {
+            if (!ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported) {
                 return;
             }
             int runId = eventProcessorState.getRunId();
-            if( isRunMessage && eventProcessorState.getTestCaseState().getRunId() != 0 ) {
+            if (isRunMessage && eventProcessorState.getTestCaseState().getRunId() != 0) {
                 runId = eventProcessorState.getTestCaseState().getRunId();
             }
             Level level = event.getLevel();
             try {
-                dbAccess.insertRunMessage( getLoggingMesage( event ), convertMsgLevel( level ), escapeHtml,
-                                           machineName, eventRequest.getThreadName(),
-                                           eventRequest.getTimestamp(), runId, true );
-            } catch( LoggingException e ) {
-                handleDeletedRun( e, runId );
+                dbAccess.insertRunMessage(getLoggingMesage(event), convertMsgLevel(level), escapeHtml,
+                                          machineName, eventRequest.getThreadName(),
+                                          eventRequest.getTimestamp(), runId, true);
+            } catch (LoggingException e) {
+                handleDeletedRun(e, runId);
             }
-        } else if( eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED || afterMethodMode ) {
+        } else if (eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED || afterMethodMode) {
 
-            final int testcaseId = (afterMethodMode) ? lastEndedTestcaseId :eventProcessorState.getTestCaseId();
-            if( !deletedTestcases.contains( testcaseId ) ) {
+            final int testcaseId = (afterMethodMode)
+                                                     ? lastEndedTestcaseId
+                                                     : eventProcessorState.getTestCaseId();
+            if (!deletedTestcases.contains(testcaseId)) {
                 Level level = event.getLevel();
                 try {
-                    dbAccess.insertMessage( getLoggingMesage( event ), convertMsgLevel( level ), escapeHtml,
-                                            machineName, eventRequest.getThreadName(),
-                                            eventRequest.getTimestamp(), testcaseId, true );
-                } catch( LoggingException e ) {
-                    handleDeletedTestcase( e, testcaseId );
+                    dbAccess.insertMessage(getLoggingMesage(event), convertMsgLevel(level), escapeHtml,
+                                           machineName, eventRequest.getThreadName(),
+                                           eventRequest.getTimestamp(), testcaseId, true);
+                } catch (LoggingException e) {
+                    handleDeletedTestcase(e, testcaseId);
                 }
             }
-        } else if( eventProcessorState.getLifeCycleState() == LifeCycleState.SUITE_STARTED || afterClassMode ) {
-            if( !ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported ) {
+        } else if (eventProcessorState.getLifeCycleState() == LifeCycleState.SUITE_STARTED || afterClassMode) {
+            if (!ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported) {
                 return;
             }
-            final int suiteId = (afterClassMode) ? lastEndedSuiteId : eventProcessorState.getSuiteId();
+            final int suiteId = (afterClassMode)
+                                                 ? lastEndedSuiteId
+                                                 : eventProcessorState.getSuiteId();
             Level level = event.getLevel();
             try {
-                dbAccess.insertSuiteMessage( getLoggingMesage( event ), convertMsgLevel( level ), escapeHtml,
-                                             machineName, eventRequest.getThreadName(),
-                                             eventRequest.getTimestamp(), suiteId, true );
-            } catch( LoggingException e ) {
-                handleDeletedSuite( e, suiteId );
+                dbAccess.insertSuiteMessage(getLoggingMesage(event), convertMsgLevel(level), escapeHtml,
+                                            machineName, eventRequest.getThreadName(),
+                                            eventRequest.getTimestamp(), suiteId, true);
+            } catch (LoggingException e) {
+                handleDeletedSuite(e, suiteId);
             }
 
         }
@@ -965,19 +970,19 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         Throwable throwable = null;
         ThrowableInformation throwableInfo = event.getThrowableInformation();
-        if( throwableInfo != null && throwableInfo.getThrowable() != null ) {
+        if (throwableInfo != null && throwableInfo.getThrowable() != null) {
             // logging through methods like error(new Exception);
             throwable = throwableInfo.getThrowable();
-        } else if( event.getMessage() instanceof Throwable ) {
+        } else if (event.getMessage() instanceof Throwable) {
             // logging through methods like error("some message", new Exception);
-            throwable = ( Throwable ) event.getMessage();
+            throwable = (Throwable) event.getMessage();
         }
 
         // first format the message using the layout
-        String message = layout.format( event );
+        String message = layout.format(event);
         // then append the exception stack trace
-        if( throwable != null ) {
-            message = getExceptionMsg( throwable, message );
+        if (throwable != null) {
+            message = getExceptionMsg(throwable, message);
         }
 
         return message;
@@ -987,12 +992,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void handleDeletedRun( LoggingException e, int runId ) throws LoggingException {
 
         Throwable cause = e.getCause();
-        if( cause != null && cause instanceof SQLException
+        if (cause != null && cause instanceof SQLException
             && cause.getMessage()
-                    .contains( "The INSERT statement conflicted with the FOREIGN KEY constraint" ) ) {
+                    .contains("The INSERT statement conflicted with the FOREIGN KEY constraint")) {
 
             // Check if this error is caused due to deleted run
-            if( !dbAccess.isRunPresent( runId ) ) {
+            if (!dbAccess.isRunPresent(runId)) {
                 // This run seems to be deleted
             }
         } else {
@@ -1003,12 +1008,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void handleDeletedSuite( LoggingException e, int suiteId ) throws LoggingException {
 
         Throwable cause = e.getCause();
-        if( cause != null && cause instanceof SQLException
+        if (cause != null && cause instanceof SQLException
             && cause.getMessage()
-                    .contains( "The INSERT statement conflicted with the FOREIGN KEY constraint" ) ) {
+                    .contains("The INSERT statement conflicted with the FOREIGN KEY constraint")) {
 
             // Check if this error is caused due to deleted suite
-            if( !dbAccess.isSuitePresent( suiteId ) ) {
+            if (!dbAccess.isSuitePresent(suiteId)) {
                 // This suite seems to be deleted
             }
         } else {
@@ -1019,15 +1024,15 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void handleDeletedTestcase( LoggingException e, int testcaseId ) throws LoggingException {
 
         Throwable cause = e.getCause();
-        if( cause != null && cause instanceof SQLException
+        if (cause != null && cause instanceof SQLException
             && cause.getMessage()
-                    .contains( "The INSERT statement conflicted with the FOREIGN KEY constraint" ) ) {
+                    .contains("The INSERT statement conflicted with the FOREIGN KEY constraint")) {
 
             // Check if this error is caused due to deleted testcase
-            if( !dbAccess.isTestcasePresent( testcaseId ) ) {
+            if (!dbAccess.isTestcasePresent(testcaseId)) {
                 // This testcase seems to be deleted, mark it as deleted.
                 // On the Agent side, this is the normal way to understand a testcase was deleted.
-                deletedTestcases.add( testcaseId );
+                deletedTestcases.add(testcaseId);
             }
         } else {
             throw e;
@@ -1036,7 +1041,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private int convertMsgLevel( org.apache.log4j.Level level ) {
 
-        switch( level.toInt() ){
+        switch (level.toInt()) {
             case Level.FATAL_INT:
                 return 1;
             case Level.ERROR_INT:
@@ -1059,17 +1064,17 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private String getExceptionMsg( Throwable throwable, String usrMsg ) {
 
         StringBuffer msg = new StringBuffer();
-        if( throwable != null ) {
-            msg.append( "EXCEPTION\n" );
+        if (throwable != null) {
+            msg.append("EXCEPTION\n");
 
-            if( usrMsg != null && usrMsg.length() > 0 ) {
-                msg.append( "USER message:\n\t" );
-                msg.append( usrMsg );
-                msg.append( "\n" );
+            if (usrMsg != null && usrMsg.length() > 0) {
+                msg.append("USER message:\n\t");
+                msg.append(usrMsg);
+                msg.append("\n");
             }
 
-            msg.append( "\nCALL STACK:" );
-            msg.append( getStackTraceInfo( throwable ) );
+            msg.append("\nCALL STACK:");
+            msg.append(getStackTraceInfo(throwable));
         }
 
         return msg.toString();
@@ -1078,8 +1083,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private String getStackTraceInfo( Throwable throwable ) {
 
         final Writer writer = new StringWriter();
-        final PrintWriter printWriter = new PrintWriter( writer );
-        throwable.printStackTrace( printWriter );
+        final PrintWriter printWriter = new PrintWriter(writer);
+        throwable.printStackTrace(printWriter);
 
         return writer.toString();
     }
@@ -1093,43 +1098,43 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         try {
 
-            if( userProvidedUpdateRunEvent != null ) {
+            if (userProvidedUpdateRunEvent != null) {
 
                 // get current run info from database
                 Run run = getLatestRun();
 
                 // replace the missing fields, received by the latest UpdateRunEvent with the one from the DB
-                String runName = ( userProvidedUpdateRunEvent.getRunName() != null )
-                                                                                     ? userProvidedUpdateRunEvent.getRunName()
-                                                                                     : run.runName;
-                String osName = ( userProvidedUpdateRunEvent.getOsName() != null )
-                                                                                   ? userProvidedUpdateRunEvent.getOsName()
-                                                                                   : run.os;
-                String productName = ( userProvidedUpdateRunEvent.getProductName() != null )
-                                                                                             ? userProvidedUpdateRunEvent.getProductName()
-                                                                                             : run.productName;
-                String versionName = ( userProvidedUpdateRunEvent.getVersionName() != null )
-                                                                                             ? userProvidedUpdateRunEvent.getVersionName()
-                                                                                             : run.versionName;
-                String buildName = ( userProvidedUpdateRunEvent.getBuildName() != null )
-                                                                                         ? userProvidedUpdateRunEvent.getBuildName()
-                                                                                         : run.buildName;
-                String userNote = ( userProvidedUpdateRunEvent.getUserNote() != null )
-                                                                                       ? userProvidedUpdateRunEvent.getUserNote()
-                                                                                       : run.userNote;
-                String hostName = ( userProvidedUpdateRunEvent.getHostName() != null )
-                                                                                       ? userProvidedUpdateRunEvent.getHostName()
-                                                                                       : run.hostName;
+                String runName = (userProvidedUpdateRunEvent.getRunName() != null)
+                                                                                   ? userProvidedUpdateRunEvent.getRunName()
+                                                                                   : run.runName;
+                String osName = (userProvidedUpdateRunEvent.getOsName() != null)
+                                                                                 ? userProvidedUpdateRunEvent.getOsName()
+                                                                                 : run.os;
+                String productName = (userProvidedUpdateRunEvent.getProductName() != null)
+                                                                                           ? userProvidedUpdateRunEvent.getProductName()
+                                                                                           : run.productName;
+                String versionName = (userProvidedUpdateRunEvent.getVersionName() != null)
+                                                                                           ? userProvidedUpdateRunEvent.getVersionName()
+                                                                                           : run.versionName;
+                String buildName = (userProvidedUpdateRunEvent.getBuildName() != null)
+                                                                                       ? userProvidedUpdateRunEvent.getBuildName()
+                                                                                       : run.buildName;
+                String userNote = (userProvidedUpdateRunEvent.getUserNote() != null)
+                                                                                     ? userProvidedUpdateRunEvent.getUserNote()
+                                                                                     : run.userNote;
+                String hostName = (userProvidedUpdateRunEvent.getHostName() != null)
+                                                                                     ? userProvidedUpdateRunEvent.getHostName()
+                                                                                     : run.hostName;
 
                 // construct the new pending UpdateRunEvent
-                actualUpdateRunEvent = new UpdateRunEvent( userProvidedUpdateRunEvent.getFQNOfLoggerClass(),
-                                                           ( Logger ) userProvidedUpdateRunEvent.getLogger(),
-                                                           runName, osName, productName, versionName,
-                                                           buildName, userNote, hostName );
+                actualUpdateRunEvent = new UpdateRunEvent(userProvidedUpdateRunEvent.getFQNOfLoggerClass(),
+                                                          (Logger) userProvidedUpdateRunEvent.getLogger(),
+                                                          runName, osName, productName, versionName,
+                                                          buildName, userNote, hostName);
 
             }
 
-        } catch( SQLException e ) {
+        } catch (SQLException e) {
             /*  
              * Could not obtain run info from database.
              * No exception will be logged, because the event processor is busy handling the UpdateRunEvent
@@ -1147,29 +1152,29 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         try {
 
-            Connection tmpConn = ConnectionPool.getConnection( dbConnection );
+            Connection tmpConn = ConnectionPool.getConnection(dbConnection);
 
-            stmt = tmpConn.prepareStatement( "SELECT * FROM tRuns WHERE runId="
-                                             + eventProcessorState.getRunId() );
+            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId="
+                                            + eventProcessorState.getRunId());
             ResultSet rs = stmt.executeQuery();
             rs.next();
-            run.runId = rs.getString( "runId" );
-            run.productName = rs.getString( "productName" );
-            run.versionName = rs.getString( "versionName" );
-            run.buildName = rs.getString( "buildName" );
-            run.runName = rs.getString( "runName" );
-            run.os = rs.getString( "OS" );
-            run.hostName = rs.getString( "hostName" );
-            if( run.hostName == null ) {
+            run.runId = rs.getString("runId");
+            run.productName = rs.getString("productName");
+            run.versionName = rs.getString("versionName");
+            run.buildName = rs.getString("buildName");
+            run.runName = rs.getString("runName");
+            run.os = rs.getString("OS");
+            run.hostName = rs.getString("hostName");
+            if (run.hostName == null) {
                 run.hostName = "";
             }
-            run.userNote = rs.getString( "userNote" );
-            if( run.userNote == null ) {
+            run.userNote = rs.getString("userNote");
+            if (run.userNote == null) {
                 run.userNote = "";
             }
 
         } finally {
-            DbUtils.closeStatement( stmt );
+            DbUtils.closeStatement(stmt);
         }
 
         return run;

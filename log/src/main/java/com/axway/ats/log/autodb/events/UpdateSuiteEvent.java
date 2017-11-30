@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class UpdateSuiteEvent extends StartSuiteEvent {
 
     private final String userNote;
@@ -30,12 +30,12 @@ public class UpdateSuiteEvent extends StartSuiteEvent {
                              String suiteName,
                              String userNote ) {
 
-        super( loggerFQCN,
-               logger,
-               "Update suite '" + suiteName + "'",
-               suiteName,
-               null,
-               LoggingEventType.UPDATE_SUITE );
+        super(loggerFQCN,
+              logger,
+              "Update suite '" + suiteName + "'",
+              suiteName,
+              null,
+              LoggingEventType.UPDATE_SUITE);
 
         this.userNote = userNote;
     }

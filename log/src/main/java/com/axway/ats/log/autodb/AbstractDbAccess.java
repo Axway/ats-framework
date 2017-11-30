@@ -47,14 +47,14 @@ public abstract class AbstractDbAccess {
     public static final String           UNABLE_TO_CONNECT_ERRROR = "Unable to connect to log DB";
 
     // full date formats
-    public final static SimpleDateFormat DATE_FORMAT              = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-    public final static SimpleDateFormat DATE_FORMAT_IN_UTC       = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+    public final static SimpleDateFormat DATE_FORMAT              = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat DATE_FORMAT_IN_UTC       = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // date formats without the year component
-    public final static SimpleDateFormat DATE_FORMAT_NO_YEAR      = new SimpleDateFormat( "MMM dd HH:mm:ss" );
+    public final static SimpleDateFormat DATE_FORMAT_NO_YEAR      = new SimpleDateFormat("MMM dd HH:mm:ss");
 
     // time format
-    public static final SimpleDateFormat TIME_FORMAT              = new SimpleDateFormat( "HH:mm:ss:SSS" );
+    public static final SimpleDateFormat TIME_FORMAT              = new SimpleDateFormat("HH:mm:ss:SSS");
 
     private static final int             MIN_IN_SECONDS           = 60;
     private static final int             HOUR_IN_SECONDS          = MIN_IN_SECONDS * 60;
@@ -74,7 +74,7 @@ public abstract class AbstractDbAccess {
     private int                          dbInitialVersion         = -1;
 
     static {
-        DATE_FORMAT_IN_UTC.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        DATE_FORMAT_IN_UTC.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class AbstractDbAccess {
 
     public AbstractDbAccess( DbConnection dbConnection ) {
 
-        this.log = Logger.getLogger( this.getClass() );
+        this.log = Logger.getLogger(this.getClass());
 
         this.dbConnectionFactory = dbConnection;
     }
@@ -108,64 +108,67 @@ public abstract class AbstractDbAccess {
      * @throws DatabaseAccessException
      */
     protected Connection getConnection() throws DatabaseAccessException {
+
         try {
-            return ConnectionPool.getConnection( dbConnectionFactory );
-        } catch( DbException dbe ) {
-            throw new DatabaseAccessException( UNABLE_TO_CONNECT_ERRROR, dbe );
+            return ConnectionPool.getConnection(dbConnectionFactory);
+        } catch (DbException dbe) {
+            throw new DatabaseAccessException(UNABLE_TO_CONNECT_ERRROR, dbe);
         }
     }
 
     protected void closeConnection( Connection connection ) {
 
-        DbUtils.closeConnection( connection );
+        DbUtils.closeConnection(connection);
     }
 
     public void checkConnection() throws DatabaseAccessException {
 
-        closeConnection( getConnection() );
+        closeConnection(getConnection());
     }
 
     public String getDatabaseVersion() throws DatabaseAccessException {
 
-        if( dbVersion == null ) {
+        if (dbVersion == null) {
 
             Connection connection = getConnection();
             PreparedStatement statement = null;
             ResultSet rs = null;
             String sql = createGetDatabaseVersionStatementQuery();
             try {
-                statement = connection.prepareStatement( sql );
+                statement = connection.prepareStatement(sql);
                 rs = statement.executeQuery();
 
                 // we expect only one record
-                if( rs.next() ) {
-                    dbVersion = rs.getString( 1 );
+                if (rs.next()) {
+                    dbVersion = rs.getString(1);
                 } else {
-                    throw new DatabaseAccessException( "Could not fetch the DB version" );
+                    throw new DatabaseAccessException("Could not fetch the DB version");
                 }
-            } catch( Exception e ) {
-                throw new DatabaseAccessException( "Error fetching DB version", e );
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Error fetching DB version", e);
             } finally {
-                DbUtils.closeResultSet( rs );
-                DbUtils.close( connection, statement );
+                DbUtils.closeResultSet(rs);
+                DbUtils.close(connection, statement);
             }
         }
         return dbVersion;
     }
 
     private String createGetDatabaseVersionStatementQuery() {
-        if ( this.dbConnectionFactory instanceof DbConnSQLServer ) {
+
+        if (this.dbConnectionFactory instanceof DbConnSQLServer) {
             return "SELECT value from tInternal where [key] = 'version'";
-        } else if ( this.dbConnectionFactory instanceof DbConnPostgreSQL ) {
+        } else if (this.dbConnectionFactory instanceof DbConnPostgreSQL) {
             return "SELECT value from \"tInternal\" where key = 'version'";
-        } else { 
-           throw new UnsupportedOperationException("Could not construct statement query for getting database version for connection of class '" + this.connection.getClass().getName() + "'");   
+        } else {
+            throw new UnsupportedOperationException("Could not construct statement query for getting database version for connection of class '"
+                                                    + this.connection.getClass().getName() + "'");
         }
     }
 
     public int getDatabaseInternalVersion() throws NumberFormatException {
 
-        if( dbInternalVersion == -1 ) { // not yet tried to be extracted from DB
+        if (dbInternalVersion == -1) { // not yet tried to be extracted from DB
 
             Connection connection = null;
             PreparedStatement statement = null;
@@ -173,31 +176,31 @@ public abstract class AbstractDbAccess {
             String sql = createGetInternalVersionStatementQuery();
             try {
                 connection = getConnection();
-                statement = connection.prepareStatement( sql );
+                statement = connection.prepareStatement(sql);
                 rs = statement.executeQuery();
 
                 // we expect only one record
-                if( rs.next() ) {
-                    String value = rs.getString( 1 );
-                    if( StringUtils.isNullOrEmpty( value ) ) {
+                if (rs.next()) {
+                    String value = rs.getString(1);
+                    if (StringUtils.isNullOrEmpty(value)) {
                         dbInternalVersion = 0;
                     } else {
-                        dbInternalVersion = Integer.parseInt( value.trim() );
+                        dbInternalVersion = Integer.parseInt(value.trim());
                     }
                 } else {
                     dbInternalVersion = 0;
                 }
-                if( dbInternalVersion == 0 ) {
-                    log.debug( "DB internalVersion not found." );
+                if (dbInternalVersion == 0) {
+                    log.debug("DB internalVersion not found.");
                 }
-            } catch( NumberFormatException nfe ) {
-                throw new NumberFormatException( "Error parsing DB internalVersion" );
-            } catch( Exception e ) {
-                log.debug( "Error fetching DB internalVersion", e );
+            } catch (NumberFormatException nfe) {
+                throw new NumberFormatException("Error parsing DB internalVersion");
+            } catch (Exception e) {
+                log.debug("Error fetching DB internalVersion", e);
                 dbInternalVersion = 0;
             } finally {
-                DbUtils.close( connection, statement );
-                DbUtils.closeResultSet( rs );
+                DbUtils.close(connection, statement);
+                DbUtils.closeResultSet(rs);
             }
 
         }
@@ -205,18 +208,20 @@ public abstract class AbstractDbAccess {
     }
 
     private String createGetInternalVersionStatementQuery() {
-        if ( this.dbConnectionFactory instanceof DbConnSQLServer ) {
+
+        if (this.dbConnectionFactory instanceof DbConnSQLServer) {
             return "SELECT value FROM tInternal WHERE [key] = 'internalVersion'";
-        } else if ( this.dbConnectionFactory instanceof DbConnPostgreSQL ) {
+        } else if (this.dbConnectionFactory instanceof DbConnPostgreSQL) {
             return "SELECT value FROM \"tInternal\" WHERE key = 'internalVersion'";
-        } else { 
-           throw new UnsupportedOperationException("Could not construct statement query for getting internal database version for connection of class '" + this.connection.getClass().getName() + "'");   
-        }   
+        } else {
+            throw new UnsupportedOperationException("Could not construct statement query for getting internal database version for connection of class '"
+                                                    + this.connection.getClass().getName() + "'");
+        }
     }
 
     public int getDatabaseInitialVersion() throws NumberFormatException {
 
-        if( dbInitialVersion == -1 ) { // not yet tried to be extracted from DB
+        if (dbInitialVersion == -1) { // not yet tried to be extracted from DB
 
             Connection connection = null;
             PreparedStatement statement = null;
@@ -224,31 +229,31 @@ public abstract class AbstractDbAccess {
             String sql = createGetInitialVersionStatementQuery();
             try {
                 connection = getConnection();
-                statement = connection.prepareStatement( sql );
+                statement = connection.prepareStatement(sql);
                 rs = statement.executeQuery();
 
                 // we expect only one record
-                if( rs.next() ) {
-                    String value = rs.getString( 1 );
-                    if( StringUtils.isNullOrEmpty( value ) ) {
+                if (rs.next()) {
+                    String value = rs.getString(1);
+                    if (StringUtils.isNullOrEmpty(value)) {
                         dbInitialVersion = 0;
                     } else {
-                        dbInitialVersion = Integer.parseInt( value.trim() );
+                        dbInitialVersion = Integer.parseInt(value.trim());
                     }
                 } else {
                     dbInitialVersion = 0;
                 }
-                if( dbInitialVersion == 0 ) {
-                    log.debug( "DB initialVersion not found." );
+                if (dbInitialVersion == 0) {
+                    log.debug("DB initialVersion not found.");
                 }
-            } catch( NumberFormatException nfe ) {
-                throw new NumberFormatException( "Error parsing DB initialVersion" );
-            } catch( Exception e ) {
-                log.debug( "Error fetching DB initialVersion", e );
+            } catch (NumberFormatException nfe) {
+                throw new NumberFormatException("Error parsing DB initialVersion");
+            } catch (Exception e) {
+                log.debug("Error fetching DB initialVersion", e);
                 dbInitialVersion = 0;
             } finally {
-                DbUtils.closeResultSet( rs );
-                DbUtils.close( connection, statement );
+                DbUtils.closeResultSet(rs);
+                DbUtils.close(connection, statement);
             }
 
         }
@@ -256,19 +261,21 @@ public abstract class AbstractDbAccess {
     }
 
     private String createGetInitialVersionStatementQuery() {
-        if ( this.dbConnectionFactory instanceof DbConnSQLServer ) {
+
+        if (this.dbConnectionFactory instanceof DbConnSQLServer) {
             return "SELECT value from tInternal where [key] = 'initialVersion'";
-        } else if ( this.dbConnectionFactory instanceof DbConnPostgreSQL ) {
+        } else if (this.dbConnectionFactory instanceof DbConnPostgreSQL) {
             return "SELECT value from \"tInternal\" where key = 'initialVersion'";
-        } else { 
-           throw new UnsupportedOperationException("Could not construct statement query for getting initial database version for connection of class '" + this.connection.getClass().getName() + "'");   
-        }   
+        } else {
+            throw new UnsupportedOperationException("Could not construct statement query for getting initial database version for connection of class '"
+                                                    + this.connection.getClass().getName() + "'");
+        }
     }
 
     protected String formatDate( Timestamp timestamp ) {
 
-        if( timestamp != null ) {
-            return DATE_FORMAT.format( timestamp );
+        if (timestamp != null) {
+            return DATE_FORMAT.format(timestamp);
         } else {
             return "";
         }
@@ -276,8 +283,8 @@ public abstract class AbstractDbAccess {
 
     protected String formatDateNoYear( Timestamp timestamp ) {
 
-        if( timestamp != null ) {
-            return DATE_FORMAT_NO_YEAR.format( timestamp );
+        if (timestamp != null) {
+            return DATE_FORMAT_NO_YEAR.format(timestamp);
         } else {
             return "";
         }
@@ -291,8 +298,8 @@ public abstract class AbstractDbAccess {
     protected String formatDateFromEpoch( float timeOffset ) {
 
         Calendar fdate = Calendar.getInstance();
-        fdate.setTimeInMillis( ( int ) ( timeOffset * 3600000 ) );
-        return DATE_FORMAT_IN_UTC.format( fdate.getTime() );
+        fdate.setTimeInMillis((int) (timeOffset * 3600000));
+        return DATE_FORMAT_IN_UTC.format(fdate.getTime());
     }
 
     /**
@@ -314,36 +321,36 @@ public abstract class AbstractDbAccess {
         int seconds = time;
 
         NumberFormat nf = NumberFormat.getIntegerInstance();
-        nf.setMinimumIntegerDigits( 2 );
+        nf.setMinimumIntegerDigits(2);
 
         StringBuilder duration = new StringBuilder();
-        if( days > 0 ) {
-            duration.append( days );
-            duration.append( " days, " );
+        if (days > 0) {
+            duration.append(days);
+            duration.append(" days, ");
         }
-        duration.append( nf.format( hours ) );
-        duration.append( ":" );
-        duration.append( nf.format( minutes ) );
-        duration.append( ":" );
-        duration.append( nf.format( seconds ) );
+        duration.append(nf.format(hours));
+        duration.append(":");
+        duration.append(nf.format(minutes));
+        duration.append(":");
+        duration.append(nf.format(seconds));
         return duration.toString();
     }
 
     public static int formatTimeDiffereceFromStringToSeconds( String duration ) {
 
         int daysInt = 0;
-        if( duration.contains( "days" ) ) {
-            String daysString = duration.substring( 0, duration.indexOf( ' ' ) );
-            daysInt = Integer.parseInt( daysString );
+        if (duration.contains("days")) {
+            String daysString = duration.substring(0, duration.indexOf(' '));
+            daysInt = Integer.parseInt(daysString);
 
             // remove the days from the duration string
-            duration = duration.substring( duration.indexOf( ',' ) + 1 ).trim();
+            duration = duration.substring(duration.indexOf(',') + 1).trim();
         }
 
-        String[] durationTokens = duration.split( ":" );
-        int hoursInt = calculateTimeValue( durationTokens[0].toCharArray() );
-        int minutesInt = calculateTimeValue( durationTokens[1].toCharArray() );
-        int secondsInt = calculateTimeValue( durationTokens[2].toCharArray() );
+        String[] durationTokens = duration.split(":");
+        int hoursInt = calculateTimeValue(durationTokens[0].toCharArray());
+        int minutesInt = calculateTimeValue(durationTokens[1].toCharArray());
+        int secondsInt = calculateTimeValue(durationTokens[2].toCharArray());
 
         return daysInt * DAY_IN_SECONDS + hoursInt * HOUR_IN_SECONDS + minutesInt * MIN_IN_SECONDS
                + secondsInt;
@@ -352,18 +359,18 @@ public abstract class AbstractDbAccess {
     private static int calculateTimeValue( char[] timeChars ) {
 
         int timeValue = 0;
-        if( timeChars[0] != '0' ) {
-            timeValue += ( Integer.valueOf( timeChars[0] ) - '0' ) * 10;
+        if (timeChars[0] != '0') {
+            timeValue += (Integer.valueOf(timeChars[0]) - '0') * 10;
         }
-        timeValue += Integer.valueOf( timeChars[1] ) - '0';
+        timeValue += Integer.valueOf(timeChars[1]) - '0';
 
         return timeValue;
     }
 
     protected void logQuerySuccess( String query, String entities, int records ) {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( query + "\nFetched " + records + " " + entities );
+        if (log.isDebugEnabled()) {
+            log.debug(query + "\nFetched " + records + " " + entities);
         }
     }
 }

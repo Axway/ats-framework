@@ -22,7 +22,7 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class UpdateTestcaseEvent extends StartTestCaseEvent {
 
     private int    testcaseId;
@@ -33,8 +33,8 @@ public class UpdateTestcaseEvent extends StartTestCaseEvent {
                                 String suiteSimpleName, String scenarioName, String inputArguments,
                                 String scenarioDescription, int testcaseResult, long timestamp ) {
 
-        this( loggerFQCN, logger, testcaseId, suiteFullName, suiteSimpleName, scenarioName, inputArguments,
-              scenarioDescription, null, testcaseResult, timestamp );
+        this(loggerFQCN, logger, testcaseId, suiteFullName, suiteSimpleName, scenarioName, inputArguments,
+             scenarioDescription, null, testcaseResult, timestamp);
 
     }
 
@@ -43,16 +43,16 @@ public class UpdateTestcaseEvent extends StartTestCaseEvent {
                                 String scenarioDescription, String userNote, int testcaseResult,
                                 long timestamp ) {
 
-        super( loggerFQCN, logger,
-               "Update testcase with id '" + ActiveDbAppender.getCurrentInstance().getTestCaseId() + "'",
-               suiteFullName, suiteSimpleName, scenarioName, inputArguments, scenarioDescription,
-               LoggingEventType.UPDATE_TEST_CASE );
+        super(loggerFQCN, logger,
+              "Update testcase with id '" + ActiveDbAppender.getCurrentInstance().getTestCaseId() + "'",
+              suiteFullName, suiteSimpleName, scenarioName, inputArguments, scenarioDescription,
+              LoggingEventType.UPDATE_TEST_CASE);
 
         this.testcaseId = testcaseId;
         this.testcaseResult = testcaseResult;
         this.userNote = userNote;
 
-        if( StringUtils.isNullOrEmpty( scenarioName ) || StringUtils.isNullOrEmpty( inputArguments ) ) {
+        if (StringUtils.isNullOrEmpty(scenarioName) || StringUtils.isNullOrEmpty(inputArguments)) {
 
             this.testcaseName = null;
         }

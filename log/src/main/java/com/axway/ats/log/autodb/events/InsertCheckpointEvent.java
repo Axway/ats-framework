@@ -22,7 +22,7 @@ import com.axway.ats.log.autodb.model.LoggingEventType;
 import com.axway.ats.log.autodb.model.TestCaseLoggingEvent;
 import com.axway.ats.log.model.CheckpointResult;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class InsertCheckpointEvent extends TestCaseLoggingEvent implements CacheableEvent {
 
     private String           name;
@@ -43,12 +43,12 @@ public class InsertCheckpointEvent extends TestCaseLoggingEvent implements Cache
                                   String threadName,
                                   CheckpointResult result ) {
 
-        super( fqnOfCategoryClass,
-               logger,
-               "Insert checkpoint '" + name + "'",
-               LoggingEventType.INSERT_CHECKPOINT );
+        super(fqnOfCategoryClass,
+              logger,
+              "Insert checkpoint '" + name + "'",
+              LoggingEventType.INSERT_CHECKPOINT);
 
-        if( startTimestamp > 0 ) {
+        if (startTimestamp > 0) {
             this.startTimestamp = startTimestamp;
         } else {
             this.startTimestamp = System.currentTimeMillis();
