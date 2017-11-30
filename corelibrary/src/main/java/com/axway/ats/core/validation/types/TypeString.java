@@ -38,7 +38,7 @@ public class TypeString extends TypeObject {
                           Object val,
                           Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -51,19 +51,19 @@ public class TypeString extends TypeObject {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_STRING + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_STRING + e.getMessage(), e.getParameterName(), e);
         }
 
         // check both if the string is empty and if this
         // is a string at all
         try {
-            this.validatedValue = ( String ) this.value;
-            if( ! ( this.validatedValue.length() > 0 ) ) {
-                throw new TypeException( ERROR_MESSAGE_EMPTY, this.parameterName );
+            this.validatedValue = (String) this.value;
+            if (! (this.validatedValue.length() > 0)) {
+                throw new TypeException(ERROR_MESSAGE_EMPTY, this.parameterName);
             }
-        } catch( ClassCastException e ) {
-            throw new TypeException( ERROR_MESSAGE_CAST_EXCPTION, this.parameterName );
+        } catch (ClassCastException e) {
+            throw new TypeException(ERROR_MESSAGE_CAST_EXCPTION, this.parameterName);
         }
     }
 }

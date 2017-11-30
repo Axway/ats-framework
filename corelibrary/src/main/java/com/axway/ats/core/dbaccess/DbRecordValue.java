@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  */
 public class DbRecordValue {
 
-    private static final Logger log                         = Logger.getLogger( DbRecordValue.class );
+    private static final Logger log                         = Logger.getLogger(DbRecordValue.class);
 
     private DbColumn            dbColumn;
     private Object              value;
@@ -35,13 +35,13 @@ public class DbRecordValue {
 
     static {
         try {
-            Class<?> clazz = Class.forName( oracle.jdbc.OracleDriver.class.getName() );
-            if( clazz != null ) {
+            Class<?> clazz = Class.forName(oracle.jdbc.OracleDriver.class.getName());
+            if (clazz != null) {
                 oracleJdbcDriverInClassPath = true;
             } else {
                 oracleJdbcDriverInClassPath = false;
             }
-        } catch( ClassNotFoundException | NoClassDefFoundError e ) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             oracleJdbcDriverInClassPath = false;
         }
     }
@@ -55,7 +55,7 @@ public class DbRecordValue {
                           String columnName,
                           Object value ) {
 
-        this.dbColumn = new DbColumn( tableName, columnName );
+        this.dbColumn = new DbColumn(tableName, columnName);
         this.value = value;
     }
 
@@ -84,39 +84,39 @@ public class DbRecordValue {
     public String getValueAsString() {
 
         // handle null value
-        if( value == null ) {
+        if (value == null) {
             return null;
         }
 
         // handle array
-        if( value.getClass().isArray() ) {
+        if (value.getClass().isArray()) {
             StringBuilder valueAsString = new StringBuilder();
 
-            valueAsString.append( "[ " );
-            for( int i = 0; i < Array.getLength( value ); i++ ) {
-                valueAsString.append( Array.get( value, i ) );
-                valueAsString.append( ", " );
+            valueAsString.append("[ ");
+            for (int i = 0; i < Array.getLength(value); i++) {
+                valueAsString.append(Array.get(value, i));
+                valueAsString.append(", ");
             }
 
-            if( valueAsString.toString().endsWith( ", " ) ) {
-                valueAsString.delete( valueAsString.length() - 2, valueAsString.length() );
+            if (valueAsString.toString().endsWith(", ")) {
+                valueAsString.delete(valueAsString.length() - 2, valueAsString.length());
             }
 
-            valueAsString.append( " ]" );
+            valueAsString.append(" ]");
 
             return valueAsString.toString();
         }
 
-        if( oracleJdbcDriverInClassPath ) {
+        if (oracleJdbcDriverInClassPath) {
             // handle oracle time stamp
-            if( value instanceof oracle.sql.TIMESTAMP ) {
+            if (value instanceof oracle.sql.TIMESTAMP) {
                 try {
-                    return ( ( oracle.sql.TIMESTAMP ) value ).toJdbc().toString();
-                } catch( SQLException e ) {
+                    return ((oracle.sql.TIMESTAMP) value).toJdbc().toString();
+                } catch (SQLException e) {
                     // If get here, it is likely to break some functionality like Database Snapshots.
                     // Then we will have to revise this logic.
-                    log.warn( "There was error while parsing value as oracle.sql.TIMESTAMP."
-                              + "We will instead return the value as " + value.toString() + " .", e );
+                    log.warn("There was error while parsing value as oracle.sql.TIMESTAMP."
+                             + "We will instead return the value as " + value.toString() + " .", e);
                     return value.toString();
                 }
             }

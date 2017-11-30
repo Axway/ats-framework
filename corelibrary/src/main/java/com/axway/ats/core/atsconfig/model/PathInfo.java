@@ -41,30 +41,30 @@ public class PathInfo {
 
     public PathInfo( Element pathNode, boolean isFile, String homeFolder ) throws AtsConfigurationException {
 
-        this( pathNode, isFile, homeFolder, null, true );
+        this(pathNode, isFile, homeFolder, null, true);
     }
 
     public PathInfo( Element pathNode, boolean isFile, String homeFolder, String sftpHome,
                      boolean isUnix ) throws AtsConfigurationException {
 
         this.isFile = isFile;
-        this.path = XmlUtils.getMandatoryAttribute( pathNode, AtsProjectConfiguration.NODE_ATTRIBUTE_PATH );
-        boolean isAbsolutePath = XmlUtils.getBooleanAttribute( pathNode, "absolute", false );
-        if( !isFile ) {
-            this.isRecursive = XmlUtils.getBooleanAttribute( pathNode, "recursive", false );
+        this.path = XmlUtils.getMandatoryAttribute(pathNode, AtsProjectConfiguration.NODE_ATTRIBUTE_PATH);
+        boolean isAbsolutePath = XmlUtils.getBooleanAttribute(pathNode, "absolute", false);
+        if (!isFile) {
+            this.isRecursive = XmlUtils.getBooleanAttribute(pathNode, "recursive", false);
         }
 
-        char endChar = homeFolder.charAt( homeFolder.length() - 1 );
-        if( endChar != '/' && endChar != '\\' ) {
+        char endChar = homeFolder.charAt(homeFolder.length() - 1);
+        if (endChar != '/' && endChar != '\\') {
             homeFolder = homeFolder + '/';
         }
 
-        if( sftpHome != null ) {
+        if (sftpHome != null) {
 
-            if( isAbsolutePath ) {
-                if( !isUnix ) {
+            if (isAbsolutePath) {
+                if (!isUnix) {
                     // remove drive letter and assume that the STFP home folder is the drive root folder
-                    this.sftpPath = this.path.substring( this.path.indexOf( ':' ) + 1 );
+                    this.sftpPath = this.path.substring(this.path.indexOf(':') + 1);
                 } else {
                     this.sftpPath = this.path;
                 }
@@ -72,19 +72,19 @@ public class PathInfo {
                 this.sftpPath = sftpHome + this.path;
             }
 
-            if( isFile ) {
-                this.sftpPath = IoUtils.normalizeUnixFile( this.sftpPath );
+            if (isFile) {
+                this.sftpPath = IoUtils.normalizeUnixFile(this.sftpPath);
             } else {
-                this.sftpPath = IoUtils.normalizeUnixDir( this.sftpPath );
+                this.sftpPath = IoUtils.normalizeUnixDir(this.sftpPath);
             }
-            this.sftpPath = this.sftpPath.replace( "//", "/" ).replace( "\\\\", "\\" );
+            this.sftpPath = this.sftpPath.replace("//", "/").replace("\\\\", "\\");
         }
 
-        if( !isAbsolutePath ) {
+        if (!isAbsolutePath) {
             this.path = homeFolder + this.path;
         }
 
-        this.upgrade = XmlUtils.getBooleanAttribute( pathNode, "upgrade", true );
+        this.upgrade = XmlUtils.getBooleanAttribute(pathNode, "upgrade", true);
     }
 
     public String getPath() {
@@ -119,31 +119,31 @@ public class PathInfo {
 
     public void loadInternalFilesMap() throws AtsConfigurationException {
 
-        if( !isFile ) {
+        if (!isFile) {
 
-            File folder = new File( this.path );
-            if( !folder.exists() || !folder.isDirectory() ) {
-                throw new AtsConfigurationException( "Directory '" + this.path
-                                                     + "' doesn't exist or is not a directory" );
+            File folder = new File(this.path);
+            if (!folder.exists() || !folder.isDirectory()) {
+                throw new AtsConfigurationException("Directory '" + this.path
+                                                    + "' doesn't exist or is not a directory");
             }
-            collectFiles( folder, isRecursive );
+            collectFiles(folder, isRecursive);
         }
     }
 
     private void collectFiles( File folder, boolean recursive ) throws AtsConfigurationException {
 
         File[] files = folder.listFiles();
-        if( files != null ) {
+        if (files != null) {
 
-            for( File file : files ) {
-                if( file.isFile() ) {
+            for (File file : files) {
+                if (file.isFile()) {
                     try {
-                        internalFiles.put( file.getName(), file.getCanonicalPath() );
-                    } catch( IOException ioe ) {
-                        throw new AtsConfigurationException( "Could not get file path", ioe );
+                        internalFiles.put(file.getName(), file.getCanonicalPath());
+                    } catch (IOException ioe) {
+                        throw new AtsConfigurationException("Could not get file path", ioe);
                     }
-                } else if( recursive ) {
-                    collectFiles( file, recursive );
+                } else if (recursive) {
+                    collectFiles(file, recursive);
                 }
             }
         }
@@ -152,13 +152,13 @@ public class PathInfo {
     @Override
     public boolean equals( Object obj ) {
 
-        if( this == obj ) {
+        if (this == obj) {
             return true;
         }
-        if( obj == null || ! ( obj instanceof PathInfo ) ) {
+        if (obj == null || ! (obj instanceof PathInfo)) {
             return false;
         }
-        return ( ( PathInfo ) obj ).path.equals( this.path );
+        return ((PathInfo) obj).path.equals(this.path);
     }
 
     public boolean isChecked() {
@@ -175,15 +175,15 @@ public class PathInfo {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( isFile
-                          ? "file"
-                          : "folder" );
-        sb.append( " path=" + path );
-        if( sftpPath != null ) {
-            sb.append( ", sftpPath=" + sftpPath );
+        sb.append(isFile
+                         ? "file"
+                         : "folder");
+        sb.append(" path=" + path);
+        if (sftpPath != null) {
+            sb.append(", sftpPath=" + sftpPath);
         }
-        sb.append( ", recursive=" + isRecursive );
-        sb.append( ", upgrade=" + upgrade );
+        sb.append(", recursive=" + isRecursive);
+        sb.append(", upgrade=" + upgrade);
 
         return sb.toString();
     }

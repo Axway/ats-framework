@@ -21,17 +21,17 @@ public class ArrayEmptyException extends ValidationException {
 
     public ArrayEmptyException( String errorMessage ) {
 
-        super( errorMessage );
+        super(errorMessage);
     }
 
     public ArrayEmptyException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public ArrayEmptyException( String errorMessage,
                                 Throwable cause ) {
 
-        super( errorMessage, cause );
+        super(errorMessage, cause);
     }
 }

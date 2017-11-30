@@ -61,11 +61,11 @@ import com.axway.ats.core.filesystem.model.FileAttributes;
 /**
  * Unit tests for the {@link LocalFileSystemOperations} class
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ LocalFileSystemOperations.class, OperatingSystemType.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { LocalFileSystemOperations.class, OperatingSystemType.class })
 public class Test_LocalFileSystemOperations extends BaseTest {
-    
-    private static Logger             log                        = Logger.getLogger( Test_LocalFileSystemOperations.class );
+
+    private static Logger             log                        = Logger.getLogger(Test_LocalFileSystemOperations.class);
 
     private static final String       NEW_FILE_NAME              = "new.file";
     private static final String       NEW_FILE_NAME_INVALID      = "!@#$%/^&*()";
@@ -77,7 +77,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     private LocalFileSystemOperations testObject                 = null;
 
     private OperatingSystemType       realOsType;
-    
+
     private File                      mockFile;
     private Runtime                   mockRuntime;
     private Process                   mockProcess;
@@ -93,25 +93,25 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void setUp() throws IOException {
 
         realOsType = OperatingSystemType.getCurrentOsType();
-        mockStatic( Runtime.class );
+        mockStatic(Runtime.class);
         testObject = new LocalFileSystemOperations();
-        mockFile = createMock( File.class );
-        mockProcess = createMock( Process.class );
-        mockRuntime = createMock( Runtime.class );
-        mockStatic( OperatingSystemType.class );
+        mockFile = createMock(File.class);
+        mockProcess = createMock(Process.class);
+        mockRuntime = createMock(Runtime.class);
+        mockStatic(OperatingSystemType.class);
 
-        file = File.createTempFile( "temporary", ".tmp", 
-        							new File( AtsSystemProperties.SYSTEM_USER_TEMP_DIR));
-        STD_OUT = new ByteArrayInputStream( new String( "-r-x--x--x 2 123 150 80 May 20 14:56 "
-                                                        + file.getPath() ).getBytes() );
-        STD_ERR = new ByteArrayInputStream( new String( "-r-x--x--x 2 123 150 80 May 20 14:56 "
-                                                        + file.getPath() ).getBytes() );
+        file = File.createTempFile("temporary", ".tmp",
+                                   new File(AtsSystemProperties.SYSTEM_USER_TEMP_DIR));
+        STD_OUT = new ByteArrayInputStream(new String("-r-x--x--x 2 123 150 80 May 20 14:56 "
+                                                      + file.getPath()).getBytes());
+        STD_ERR = new ByteArrayInputStream(new String("-r-x--x--x 2 123 150 80 May 20 14:56 "
+                                                      + file.getPath()).getBytes());
     }
 
     @After
     public void tearDown() {
 
-        if( file.exists() ) {
+        if (file.exists()) {
             file.delete();
         }
     }
@@ -120,15 +120,15 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testCreateFilePositiveNormalContent() throws IOException {
 
-        testObject.createFile( file.getPath(), 25, false );
+        testObject.createFile(file.getPath(), 25, false);
 
-        assertTrue( file.exists() );
-        assertEquals( 25L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(25L, file.length());
 
-        BufferedReader bufferedReader = new BufferedReader( new FileReader( file ) );
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
-        assertEquals( "0", bufferedReader.readLine() );
-        assertTrue( bufferedReader.readLine().startsWith( "123456789:;<=>?@ABCDEF" ) );
+        assertEquals("0", bufferedReader.readLine());
+        assertTrue(bufferedReader.readLine().startsWith("123456789:;<=>?@ABCDEF"));
 
         bufferedReader.close();
     }
@@ -136,15 +136,15 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testCreateFilePositiveRandomContent() throws IOException {
 
-        testObject.createFile( file.getPath(), 25, true );
+        testObject.createFile(file.getPath(), 25, true);
 
-        assertTrue( file.exists() );
-        assertEquals( 25L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(25L, file.length());
 
-        BufferedReader bufferedReader = new BufferedReader( new FileReader( file ) );
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
-        assertEquals( 1, bufferedReader.readLine().length() );
-        assertFalse( bufferedReader.readLine().startsWith( "123456789:;<=>?@ABCDEF" ) );
+        assertEquals(1, bufferedReader.readLine().length());
+        assertFalse(bufferedReader.readLine().startsWith("123456789:;<=>?@ABCDEF"));
 
         bufferedReader.close();
     }
@@ -152,35 +152,35 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testCreateFilePositiveEmptyFile() throws IOException {
 
-        testObject.createFile( file.getPath(), 0, true );
+        testObject.createFile(file.getPath(), 0, true);
 
-        assertTrue( file.exists() );
-        assertEquals( 0L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(0L, file.length());
     }
 
     @Test
     public void testCreateFilePositiveBigFile() throws IOException {
 
-        testObject.createFile( file.getPath(), 12567, false );
+        testObject.createFile(file.getPath(), 12567, false);
 
-        assertTrue( file.exists() );
-        assertEquals( 12567L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(12567L, file.length());
     }
 
     @Test
     public void testCreateFilePositiveEOLWindows() throws IOException {
 
-        testObject.createFile( file.getPath(), 25L, false, EndOfLineStyle.WINDOWS );
+        testObject.createFile(file.getPath(), 25L, false, EndOfLineStyle.WINDOWS);
 
-        assertTrue( file.exists() );
-        assertEquals( 25L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(25L, file.length());
 
-        BufferedReader bufferedReader = new BufferedReader( new FileReader( file ) );
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
         int currentChar, previousChar = -1;
-        while( ( currentChar = bufferedReader.read() ) > -1 ) {
-            if( currentChar == '\n' ) {
-                assertTrue( '\r' == previousChar );
+        while ( (currentChar = bufferedReader.read()) > -1) {
+            if (currentChar == '\n') {
+                assertTrue('\r' == previousChar);
                 break;
             }
             previousChar = currentChar;
@@ -192,17 +192,17 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testCreateFilePositiveEOLUnix() throws IOException {
 
-        testObject.createFile( file.getPath(), 25L, false, EndOfLineStyle.UNIX );
+        testObject.createFile(file.getPath(), 25L, false, EndOfLineStyle.UNIX);
 
-        assertTrue( file.exists() );
-        assertEquals( 25L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(25L, file.length());
 
-        BufferedReader bufferedReader = new BufferedReader( new FileReader( file ) );
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
         int currentChar, previousChar = -1;
-        while( ( currentChar = bufferedReader.read() ) > -1 ) {
-            if( currentChar == '\n' ) {
-                assertFalse( '\r' == previousChar );
+        while ( (currentChar = bufferedReader.read()) > -1) {
+            if (currentChar == '\n') {
+                assertFalse('\r' == previousChar);
                 break;
             }
             previousChar = currentChar;
@@ -214,13 +214,13 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testCreateFilePositiveWithUidAndGid() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+        expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+        expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+        expect(mockProcess.waitFor()).andReturn(0);
 
         //FIXME:
         //        expect( mockProcess.getInputStream() ).andReturn( new ByteArrayInputStream( new String( "drwxr-xrw- 2 120 230 80 May 20 14:56 "
@@ -228,18 +228,18 @@ public class Test_LocalFileSystemOperations extends BaseTest {
 
         replayAll();
 
-        testObject.createFile( file.getPath(), 25, 120, 230, false );
+        testObject.createFile(file.getPath(), 25, 120, 230, false);
 
         // verify results
         verifyAll();
 
-        assertTrue( file.exists() );
-        assertEquals( 25L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(25L, file.length());
 
-        BufferedReader bufferedReader = new BufferedReader( new FileReader( file ) );
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
-        assertEquals( "0", bufferedReader.readLine() );
-        assertTrue( bufferedReader.readLine().startsWith( "123456789:;<=>?@ABCDEF" ) );
+        assertEquals("0", bufferedReader.readLine());
+        assertTrue(bufferedReader.readLine().startsWith("123456789:;<=>?@ABCDEF"));
 
         bufferedReader.close();
     }
@@ -247,37 +247,37 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testCreateFilePositiveWithUidAndGidOnWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
-        testObject.createFile( file.getPath(), 25, 120, 230, false );
+        testObject.createFile(file.getPath(), 25, 120, 230, false);
 
         // verify results
         verifyAll();
 
-        assertTrue( file.exists() );
-        assertEquals( 25L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(25L, file.length());
 
-        BufferedReader bufferedReader = new BufferedReader( new FileReader( file ) );
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 
-        assertEquals( "0", bufferedReader.readLine() );
-        assertTrue( bufferedReader.readLine().startsWith( "123456789:;<=>?@ABCDEF" ) );
+        assertEquals("0", bufferedReader.readLine());
+        assertTrue(bufferedReader.readLine().startsWith("123456789:;<=>?@ABCDEF"));
 
         bufferedReader.close();
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testCreateFileWithUidAndGidNegative() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
-        testObject.createFile( file.getPath(), 25, 120, 230, false );
+        testObject.createFile(file.getPath(), 25, 120, 230, false);
 
         // verify results
         verifyAll();
@@ -287,20 +287,20 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void createBinaryFilePositiveNormalContent() throws IOException {
 
-        testObject.createBinaryFile( file.getPath(), 10, false );
+        testObject.createBinaryFile(file.getPath(), 10, false);
 
-        assertTrue( file.exists() );
-        assertEquals( 10L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(10L, file.length());
 
         byte[] actualBytes = new byte[10];
         byte[] expectedBytes = new byte[10];
         byte nextByte = Byte.MIN_VALUE;
-        for( int i = 0; i < expectedBytes.length; i++ ) {
+        for (int i = 0; i < expectedBytes.length; i++) {
             expectedBytes[i] = nextByte++;
         }
-        BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) );
-        bis.read( actualBytes );
-        assertTrue( Arrays.equals( expectedBytes, actualBytes ) );
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        bis.read(actualBytes);
+        assertTrue(Arrays.equals(expectedBytes, actualBytes));
         bis.close();
     }
 
@@ -308,24 +308,24 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void createBinaryFilePositiveRandomContent() throws IOException {
 
         //Replace the randomGenerator with cutsom one.
-        Random random = new Random( 1 );
-        Random originalRandom = ( Random ) Whitebox.getInternalState( testObject.getClass(),
-                                                                      "randomGenerator" );
-        Whitebox.setInternalState( testObject.getClass(), "randomGenerator", random );
+        Random random = new Random(1);
+        Random originalRandom = (Random) Whitebox.getInternalState(testObject.getClass(),
+                                                                   "randomGenerator");
+        Whitebox.setInternalState(testObject.getClass(), "randomGenerator", random);
 
-        testObject.createBinaryFile( file.getPath(), 10, true );
+        testObject.createBinaryFile(file.getPath(), 10, true);
 
         //Restore original random generator
-        Whitebox.setInternalState( testObject.getClass(), "randomGenerator", originalRandom );
+        Whitebox.setInternalState(testObject.getClass(), "randomGenerator", originalRandom);
 
-        assertTrue( file.exists() );
-        assertEquals( 10L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(10L, file.length());
 
         byte[] expectedBytes = new byte[]{ 115, -40, 111, -110, -4, -16, -27, -35, -43, 104 };
         byte[] actualBytes = new byte[10];
-        BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) );
-        bis.read( actualBytes );
-        assertTrue( Arrays.equals( expectedBytes, actualBytes ) );
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        bis.read(actualBytes);
+        assertTrue(Arrays.equals(expectedBytes, actualBytes));
         bis.close();
 
     }
@@ -333,105 +333,105 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void createBinaryFilePositiveEmptyFile() throws IOException {
 
-        if( file.exists() ) {
+        if (file.exists()) {
             file.delete();
         }
 
-        testObject.createBinaryFile( file.getPath(), 0, true );
+        testObject.createBinaryFile(file.getPath(), 0, true);
 
-        assertTrue( file.exists() );
-        assertEquals( 0L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(0L, file.length());
     }
 
     @Test
     public void createBinaryFilePositiveBigFile() throws IOException {
 
-        testObject.createBinaryFile( file.getPath(), 12567, false );
+        testObject.createBinaryFile(file.getPath(), 12567, false);
 
-        assertTrue( file.exists() );
-        assertEquals( 12567L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(12567L, file.length());
     }
 
     @Test
     public void createBinaryFilePositiveWithUidAndGid() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+        expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+        expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+        expect(mockProcess.waitFor()).andReturn(0);
 
         replayAll();
 
-        testObject.createBinaryFile( file.getPath(), 18, 120, 230, false );
+        testObject.createBinaryFile(file.getPath(), 18, 120, 230, false);
 
         // verify results
         verifyAll();
 
-        assertTrue( file.exists() );
-        assertEquals( 18L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(18L, file.length());
 
         byte[] actualBytes = new byte[18];
         byte[] expectedBytes = new byte[18];
         byte nextByte = Byte.MIN_VALUE;
-        for( int i = 0; i < expectedBytes.length; i++ ) {
+        for (int i = 0; i < expectedBytes.length; i++) {
             expectedBytes[i] = nextByte++;
         }
-        BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) );
-        bis.read( actualBytes );
-        assertTrue( Arrays.equals( expectedBytes, actualBytes ) );
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        bis.read(actualBytes);
+        assertTrue(Arrays.equals(expectedBytes, actualBytes));
         bis.close();
     }
 
     @Test
     public void createBinaryFilePositiveWithUidAndGidOnWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
-        testObject.createBinaryFile( file.getPath(), 18, 120, 230, false );
+        testObject.createBinaryFile(file.getPath(), 18, 120, 230, false);
 
         // verify results
         verifyAll();
 
-        assertTrue( file.exists() );
-        assertEquals( 18L, file.length() );
+        assertTrue(file.exists());
+        assertEquals(18L, file.length());
 
         byte[] actualBytes = new byte[18];
         byte[] expectedBytes = new byte[18];
         byte nextByte = Byte.MIN_VALUE;
-        for( int i = 0; i < expectedBytes.length; i++ ) {
+        for (int i = 0; i < expectedBytes.length; i++) {
             expectedBytes[i] = nextByte++;
         }
-        BufferedInputStream bis = new BufferedInputStream( new FileInputStream( file ) );
-        bis.read( actualBytes );
-        assertTrue( Arrays.equals( expectedBytes, actualBytes ) );
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        bis.read(actualBytes);
+        assertTrue(Arrays.equals(expectedBytes, actualBytes));
         bis.close();
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void createBinaryFileWithUidAndGidNegative() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
         String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chown 120:230 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
-        testObject.createBinaryFile( file.getPath(), 25, 120, 230, false );
+        testObject.createBinaryFile(file.getPath(), 25, 120, 230, false);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void createBinaryFileNegativeInvalidFile() throws IOException {
 
-        testObject.createBinaryFile( NEW_FILE_NAME_INVALID, 10, false );
+        testObject.createBinaryFile(NEW_FILE_NAME_INVALID, 10, false);
     }
 
     // --------------------------- TEST COPY FILE ---------------------------
@@ -445,13 +445,13 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCopyFile() throws Exception {
 
         String newFileName = file.getParent() + File.separator + NEW_FILE_NAME;
-        File newFile = new File( newFileName );
+        File newFile = new File(newFileName);
 
         try {
-            testObject.copyFile( file.getAbsolutePath(), newFileName, true );
+            testObject.copyFile(file.getAbsolutePath(), newFileName, true);
 
-            Assert.assertTrue( newFile.exists() );
-            Assert.assertTrue( newFile.isFile() );
+            Assert.assertTrue(newFile.exists());
+            Assert.assertTrue(newFile.isFile());
         } finally {
             newFile.delete();
         }
@@ -461,23 +461,23 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testCopyFileNegativeWrongFileName() throws Exception {
 
         String newFileName = file.getParent() + File.separator + NEW_FILE_NAME_INVALID;
 
-        testObject.copyFile( file.getAbsolutePath(), newFileName, true );
+        testObject.copyFile(file.getAbsolutePath(), newFileName, true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void testCopyFileNegativeNoSuchFile() throws Exception {
 
         String newFileName = file.getPath() + NEW_FILE_NAME_INVALID;
-        testObject.copyFile( newFileName, newFileName, true );
+        testObject.copyFile(newFileName, newFileName, true);
 
     }
 
@@ -491,13 +491,13 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCreateDirectory() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
-        File newFile = new File( newDirectoryPath );
+        File newFile = new File(newDirectoryPath);
 
         try {
-            testObject.createDirectory( newDirectoryPath );
+            testObject.createDirectory(newDirectoryPath);
 
-            Assert.assertTrue( newFile.exists() );
-            Assert.assertTrue( newFile.isDirectory() );
+            Assert.assertTrue(newFile.exists());
+            Assert.assertTrue(newFile.isDirectory());
         } finally {
             newFile.delete();
         }
@@ -507,12 +507,12 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testCreateDirectoryNegativeWrongName() throws Exception {
 
         String newDirectoryPath = file.getPath() + File.separator + NEW_DIRECTORY_NAME_INVALID;
 
-        testObject.createDirectory( newDirectoryPath );
+        testObject.createDirectory(newDirectoryPath);
     }
 
     /**
@@ -523,11 +523,11 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCreateDirectoryAlreadyExists() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
-        File newFile = new File( newDirectoryPath );
+        File newFile = new File(newDirectoryPath);
 
         try {
-            testObject.createDirectory( newDirectoryPath );
-            testObject.createDirectory( newDirectoryPath );
+            testObject.createDirectory(newDirectoryPath);
+            testObject.createDirectory(newDirectoryPath);
         } finally {
             newFile.delete();
         }
@@ -537,27 +537,27 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCreateDirectoryPositiveWithUidAndGid() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
-        File newDirectory = new File( newDirectoryPath );
+        File newDirectory = new File(newDirectoryPath);
 
         try {
-            expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-            expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
             String[] cmdCommand = new String[]{ "/bin/sh", "-c",
                                                 "chown 120:230 '" + newDirectory.getPath() + "'" };
-            expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-            expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-            expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-            expect( mockProcess.waitFor() ).andReturn( 0 );
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
             replayAll();
 
-            testObject.createDirectory( newDirectory.getPath(), 120, 230 );
+            testObject.createDirectory(newDirectory.getPath(), 120, 230);
 
             // verify results
             verifyAll();
 
-            assertTrue( newDirectory.exists() );
-            assertTrue( newDirectory.isDirectory() );
+            assertTrue(newDirectory.exists());
+            assertTrue(newDirectory.isDirectory());
         } finally {
             newDirectory.delete();
         }
@@ -567,41 +567,41 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testCreateDirectoryPositiveWithUidAndGidOnWindows() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
-        File newDirectory = new File( newDirectoryPath );
+        File newDirectory = new File(newDirectoryPath);
 
         try {
-            expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
             replayAll();
 
-            testObject.createDirectory( newDirectory.getPath(), 120, 230 );
+            testObject.createDirectory(newDirectory.getPath(), 120, 230);
 
             // verify results
             verifyAll();
 
-            assertTrue( newDirectory.exists() );
-            assertTrue( newDirectory.isDirectory() );
+            assertTrue(newDirectory.exists());
+            assertTrue(newDirectory.isDirectory());
         } finally {
             newDirectory.delete();
         }
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testCreateDirectoryWithUidAndGidNegative() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
-        File newDirectory = new File( newDirectoryPath );
+        File newDirectory = new File(newDirectoryPath);
 
         try {
-            expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-            expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
             String[] cmdCommand = new String[]{ "/bin/sh", "-c",
                                                 "chown 120:230 '" + newDirectory.getPath() + "'" };
-            expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
             replayAll();
 
-            testObject.createDirectory( newDirectory.getPath(), 120, 230 );
+            testObject.createDirectory(newDirectory.getPath(), 120, 230);
 
             // verify results
             verifyAll();
@@ -620,13 +620,13 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testDeleteDirectory() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME_2;
-        File newFile = new File( newDirectoryPath );
+        File newFile = new File(newDirectoryPath);
 
         try {
-            testObject.createDirectory( newDirectoryPath );
-            testObject.deleteDirectory( newDirectoryPath, false );
+            testObject.createDirectory(newDirectoryPath);
+            testObject.deleteDirectory(newDirectoryPath, false);
 
-            Assert.assertFalse( newFile.exists() );
+            Assert.assertFalse(newFile.exists());
         } finally {
             newFile.delete();
         }
@@ -643,17 +643,17 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         String newSubDirectoryPath = newDirectoryPath + File.separator + NEW_DIRECTORY_NAME_3;
         String newFileName = newSubDirectoryPath + File.separator + NEW_DIRECTORY_NAME_3;
 
-        File newFile = new File( newDirectoryPath );
+        File newFile = new File(newDirectoryPath);
 
         try {
             // creates a directory with one subdirectory and a file inside the subdirectory
-            testObject.createDirectory( newDirectoryPath );
-            testObject.createDirectory( newSubDirectoryPath );
-            testObject.createFile( newFileName, 10, false );
+            testObject.createDirectory(newDirectoryPath);
+            testObject.createDirectory(newSubDirectoryPath);
+            testObject.createFile(newFileName, 10, false);
 
-            testObject.deleteDirectory( newDirectoryPath, true );
+            testObject.deleteDirectory(newDirectoryPath, true);
 
-            Assert.assertFalse( newFile.exists() );
+            Assert.assertFalse(newFile.exists());
         } finally {
             newFile.delete();
         }
@@ -667,7 +667,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
 
         String newDirectoryPath = file.getPath() + File.separator + NEW_DIRECTORY_NAME_INVALID;
 
-        testObject.deleteDirectory( newDirectoryPath, false );
+        testObject.deleteDirectory(newDirectoryPath, false);
     }
 
     /**
@@ -679,7 +679,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
 
         String newDirectoryPath = file.getPath() + File.separator + NEW_DIRECTORY_NAME;
 
-        testObject.deleteDirectory( newDirectoryPath, false );
+        testObject.deleteDirectory(newDirectoryPath, false);
     }
 
     /**
@@ -691,13 +691,13 @@ public class Test_LocalFileSystemOperations extends BaseTest {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
 
-        expectNew( File.class, newDirectoryPath ).andReturn( mockFile );
-        expect( mockFile.exists() ).andReturn( false );
-        expect( mockFile.isDirectory() ).andReturn( true );
+        expectNew(File.class, newDirectoryPath).andReturn(mockFile);
+        expect(mockFile.exists()).andReturn(false);
+        expect(mockFile.isDirectory()).andReturn(true);
 
         replayAll();
 
-        testObject.purgeDirectoryContents( newDirectoryPath );
+        testObject.purgeDirectoryContents(newDirectoryPath);
 
         verifyAll();
     }
@@ -706,18 +706,18 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testPurgeDirectoryNotADirectory() throws Exception {
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
 
-        expectNew( File.class, newDirectoryPath ).andReturn( mockFile );
-        expect( mockFile.exists() ).andReturn( true );
-        expect( mockFile.isDirectory() ).andReturn( false );
+        expectNew(File.class, newDirectoryPath).andReturn(mockFile);
+        expect(mockFile.exists()).andReturn(true);
+        expect(mockFile.isDirectory()).andReturn(false);
 
         replayAll();
 
-        testObject.purgeDirectoryContents( newDirectoryPath );
+        testObject.purgeDirectoryContents(newDirectoryPath);
 
         verifyAll();
     }
@@ -726,22 +726,22 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testPurgeDirectoryIOException() throws Exception {
 
-        File innnerFile = createMock( File.class );
+        File innnerFile = createMock(File.class);
 
         String newDirectoryPath = file.getParent() + File.separator + NEW_DIRECTORY_NAME;
 
-        expectNew( File.class, newDirectoryPath ).andReturn( mockFile );
-        expect( mockFile.exists() ).andReturn( true );
-        expect( mockFile.isDirectory() ).andReturn( true );
-        expect( mockFile.listFiles() ).andReturn( new File[]{ innnerFile } );
-        expect( innnerFile.isDirectory() ).andReturn( false );
-        expect( innnerFile.delete() ).andReturn( false );
+        expectNew(File.class, newDirectoryPath).andReturn(mockFile);
+        expect(mockFile.exists()).andReturn(true);
+        expect(mockFile.isDirectory()).andReturn(true);
+        expect(mockFile.listFiles()).andReturn(new File[]{ innnerFile });
+        expect(innnerFile.isDirectory()).andReturn(false);
+        expect(innnerFile.delete()).andReturn(false);
         replayAll();
 
-        testObject.purgeDirectoryContents( newDirectoryPath );
+        testObject.purgeDirectoryContents(newDirectoryPath);
 
         verifyAll();
     }
@@ -755,12 +755,12 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testDeleteFile() throws Exception {
 
-        File newFile = new File( file.getAbsolutePath() );
+        File newFile = new File(file.getAbsolutePath());
 
         try {
-            testObject.deleteFile( file.getAbsolutePath() );
+            testObject.deleteFile(file.getAbsolutePath());
 
-            Assert.assertFalse( newFile.exists() );
+            Assert.assertFalse(newFile.exists());
         } finally {
             newFile.delete();
         }
@@ -773,7 +773,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testDeleteFileNoSuch() throws Exception {
 
-        testObject.deleteFile( file.getPath() + NEW_FILE_NAME );
+        testObject.deleteFile(file.getPath() + NEW_FILE_NAME);
 
     }
 
@@ -784,7 +784,7 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     @Test
     public void testDeleteFileInvalidName() throws Exception {
 
-        testObject.deleteFile( file.getPath() + NEW_FILE_NAME_INVALID );
+        testObject.deleteFile(file.getPath() + NEW_FILE_NAME_INVALID);
 
     }
 
@@ -798,14 +798,14 @@ public class Test_LocalFileSystemOperations extends BaseTest {
     public void testRenameFile() throws Exception {
 
         String newFileName = file.getParent() + File.separator + NEW_FILE_NAME;
-        File newFile = new File( newFileName );
+        File newFile = new File(newFileName);
 
         try {
-            testObject.renameFile( file.getAbsolutePath(), newFileName, true );
+            testObject.renameFile(file.getAbsolutePath(), newFileName, true);
 
-            Assert.assertFalse( file.exists() );
-            Assert.assertTrue( newFile.exists() );
-            Assert.assertTrue( newFile.isFile() );
+            Assert.assertFalse(file.exists());
+            Assert.assertTrue(newFile.exists());
+            Assert.assertTrue(newFile.isFile());
         } finally {
             newFile.delete();
         }
@@ -815,10 +815,10 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void testRenameFileNegativeNoSuch() throws Exception {
 
-        testObject.renameFile( file.getPath() + NEW_FILE_NAME, file.getPath(), true );
+        testObject.renameFile(file.getPath() + NEW_FILE_NAME, file.getPath(), true);
 
     }
 
@@ -826,550 +826,556 @@ public class Test_LocalFileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testRenameFileNegativeInvalidName() throws Exception {
 
-        testObject.renameFile( file.getPath(), file.getPath() + NEW_FILE_NAME_INVALID, true );
+        testObject.renameFile(file.getPath(), file.getPath() + NEW_FILE_NAME_INVALID, true);
 
     }
 
-    @Test()
+    @Test( )
     public void doesFileExistPositive() throws Exception {
 
-        URL testFile = Test_LocalFileSystemOperations.class.getResource( "TestFile1.txt" );
-        assertTrue( testObject.doesFileExist( testFile.getFile() ) );
+        URL testFile = Test_LocalFileSystemOperations.class.getResource("TestFile1.txt");
+        assertTrue(testObject.doesFileExist(testFile.getFile()));
 
-        assertFalse( testObject.doesFileExist( "dasdasd" ) );
+        assertFalse(testObject.doesFileExist("dasdasd"));
     }
 
     @Ignore
-	@Test()
-	public void getFilePermissionsPositive() throws Exception {
+    @Test( )
+    public void getFilePermissionsPositive() throws Exception {
 
-		if (realOsType.isUnix()) {
-			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
-			expect(Runtime.getRuntime()).andReturn(mockRuntime);
-			String[] cmdCommand = new String[] { "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
-			expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
-			expect(mockProcess.getInputStream()).andReturn(STD_OUT);
-			expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
-			expect(mockProcess.waitFor()).andReturn(0);
+        if (realOsType.isUnix()) {
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
+            String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-			replayAll();
+            replayAll();
 
-			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-			assertEquals("644", localFileSystemOperations.getFilePermissions(file.getPath()));
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            assertEquals("644", localFileSystemOperations.getFilePermissions(file.getPath()));
 
-			// verify results
-			verifyAll();
-		} else {
-			log.warn("Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!");
-		}
-	}
+            // verify results
+            verifyAll();
+        } else {
+            log.warn("Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!");
+        }
+    }
 
-    @Test(expected = AttributeNotSupportedException.class)
+    @Test( expected = AttributeNotSupportedException.class)
     public void getFilePermissionsNegativeWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFilePermissions( file.getPath() );
+        localFileSystemOperations.getFilePermissions(file.getPath());
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void getFilePermissionsNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFilePermissions( "dasdasd" );
+        localFileSystemOperations.getFilePermissions("dasdasd");
     }
 
     @Ignore // TODO: temporarily ignore
-	@Test()
-	public void setFilePermissionsPositive() throws Exception {
+    @Test( )
+    public void setFilePermissionsPositive() throws Exception {
 
-			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
-			expect(Runtime.getRuntime()).andReturn(mockRuntime);
-			String[] cmdCommand = new String[] { "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
-			expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
-
-			replayAll();
-
-			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-			localFileSystemOperations.setFilePermissions(file.getPath(), "511");
-
-			// verify results
-			verifyAll();
-	}
-
-    @Ignore // TODO: temporarily ignore
-	@Test(expected = FileSystemOperationException.class)
-	public void setFilePermissionsNegativeCannotSet() throws Exception {
-
-			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
-			expect(Runtime.getRuntime()).andReturn(mockRuntime);
-
-			String[] cmdCommand = new String[] { "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
-			expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
-
-			replayAll();
-
-			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-			localFileSystemOperations.setFilePermissions(file.getPath(), "511");
-
-			// verify results
-			verifyAll();
-	}
-
-    @Test(expected = AttributeNotSupportedException.class)
-    public void setFilePermissionsNegativeWindows() throws Exception {
-
-        if( realOsType.isWindows() ) {
-            expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFilePermissions( file.getPath(), "777" );
+        localFileSystemOperations.setFilePermissions(file.getPath(), "511");
 
         // verify results
         verifyAll();
+    }
+
+    @Ignore // TODO: temporarily ignore
+    @Test( expected = FileSystemOperationException.class)
+    public void setFilePermissionsNegativeCannotSet() throws Exception {
+
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "chmod 511 '" + file.getPath() + "'" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
+
+        replayAll();
+
+        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+        localFileSystemOperations.setFilePermissions(file.getPath(), "511");
+
+        // verify results
+        verifyAll();
+    }
+
+    @Test( expected = AttributeNotSupportedException.class)
+    public void setFilePermissionsNegativeWindows() throws Exception {
+
+        if (realOsType.isWindows()) {
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
+
+            replayAll();
+
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            localFileSystemOperations.setFilePermissions(file.getPath(), "777");
+
+            // verify results
+            verifyAll();
         } else {
-            log.warn( "Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!" );
-            throw new AttributeNotSupportedException( FileAttributes.PERMISSIONS, realOsType );
+            log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
+            throw new AttributeNotSupportedException(FileAttributes.PERMISSIONS, realOsType);
         }
     }
 
     @Ignore // TODO: this test throws NPE, because of the PowerMock
-	@Test(expected = FileDoesNotExistException.class)
-	public void setFilePermissionsNegativeNoSuchFile() throws Exception {
+    @Test( expected = FileDoesNotExistException.class)
+    public void setFilePermissionsNegativeNoSuchFile() throws Exception {
 
+        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+        localFileSystemOperations.setFilePermissions("dasdasd", "777");
+    }
 
-			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-			localFileSystemOperations.setFilePermissions("dasdasd", "777");
-	}
+    @Test( )
+    public void getFileUidPositive() throws Exception {
 
-	@Test()
-	public void getFileUidPositive() throws Exception {
+        if (realOsType.isUnix()) {
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
+            String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-		if (realOsType.isUnix()) {
-			expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
-			expect(Runtime.getRuntime()).andReturn(mockRuntime);
-			String[] cmdCommand = new String[] { "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
-			expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
-			expect(mockProcess.getInputStream()).andReturn(STD_OUT);
-			expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
-			expect(mockProcess.waitFor()).andReturn(0);
+            replayAll();
 
-			replayAll();
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            assertEquals(123L, localFileSystemOperations.getFileUID(file.getPath()));
 
-			LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-			assertEquals(123L, localFileSystemOperations.getFileUID(file.getPath()));
+            // verify results
+            verifyAll();
+        } else {
+            log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
+        }
+    }
 
-			// verify results
-			verifyAll();
-		} else {
-			log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
-		}
-	}
-
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void getFileUidNegativeException() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\","/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                            "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileUID( file.getPath() );
+        localFileSystemOperations.getFileUID(file.getPath());
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = AttributeNotSupportedException.class)
+    @Test( expected = AttributeNotSupportedException.class)
     public void getFileUidNegativeWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileUID( file.getPath() );
+        localFileSystemOperations.getFileUID(file.getPath());
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void getFileUidNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileUID( "dasdasd" );
+        localFileSystemOperations.getFileUID("dasdasd");
     }
 
-    @Test()
+    @Test( )
     public void setFileUidPositive() throws Exception {
 
-        if( realOsType.isUnix() ) {
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
+        if (realOsType.isUnix()) {
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
             String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
+            cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-        replayAll();
+            replayAll();
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileUID( file.getPath(), 123 );
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            localFileSystemOperations.setFileUID(file.getPath(), 123);
 
-        // verify results
-        verifyAll();
+            // verify results
+            verifyAll();
         } else {
-            log.warn( "Test 'setFileUidPositive' is unable to pass on Windows, so it will be skipped!" );
+            log.warn("Test 'setFileUidPositive' is unable to pass on Windows, so it will be skipped!");
         }
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void setFileUidNegativeCannotSet() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\", "/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
-        
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath().replace( "\\", "/" ) + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                            "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+        expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+        expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+        expect(mockProcess.waitFor()).andReturn(0);
+
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath().replace("\\", "/") + "'" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileUID( file.getPath(), 123 );
+        localFileSystemOperations.setFileUID(file.getPath(), 123);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void setFileUidNegativeException() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\","/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                            "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileUID( file.getPath(), 123 );
+        localFileSystemOperations.setFileUID(file.getPath(), 123);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void setFileUidNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileUID( "dasdasd", 123 );
+        localFileSystemOperations.setFileUID("dasdasd", 123);
     }
 
-    @Test(expected = AttributeNotSupportedException.class)
+    @Test( expected = AttributeNotSupportedException.class)
     public void setFileUidNegativeWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileUID( file.getPath(), 134 );
+        localFileSystemOperations.setFileUID(file.getPath(), 134);
 
         // verify results
         verifyAll();
     }
 
-    @Test()
+    @Test( )
     public void getFileGidPositive() throws Exception {
 
-        if( realOsType.isUnix() ) {
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\","/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
+        if (realOsType.isUnix()) {
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
+            String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                                "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-        replayAll();
+            replayAll();
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( 150L, localFileSystemOperations.getFileGID( file.getPath() ) );
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            assertEquals(150L, localFileSystemOperations.getFileGID(file.getPath()));
 
-        // verify results
-        verifyAll();
+            // verify results
+            verifyAll();
         } else {
-            log.warn( "Test 'getFileGidPositive' is unable to pass on Windows, so it will be skipped!" );
+            log.warn("Test 'getFileGidPositive' is unable to pass on Windows, so it will be skipped!");
         }
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void getFileGidNegativeException() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\","/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                            "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( 123L, localFileSystemOperations.getFileGID( file.getPath() ) );
+        assertEquals(123L, localFileSystemOperations.getFileGID(file.getPath()));
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = AttributeNotSupportedException.class)
+    @Test( expected = AttributeNotSupportedException.class)
     public void getFileGidNegativeWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileGID( file.getPath() );
+        localFileSystemOperations.getFileGID(file.getPath());
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void getFileGidNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileGID( "dasdasd" );
+        localFileSystemOperations.getFileGID("dasdasd");
     }
 
-    @Test()
+    @Test( )
     public void setFileGidPositive() throws Exception {
 
-        if( realOsType.isUnix() ) {
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
-        
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
-        
-        replayAll();
+        if (realOsType.isUnix()) {
+            expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
+            String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath() + "' 2>&1" };
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-        LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileGID( file.getPath(), 150 );
+            expect(Runtime.getRuntime()).andReturn(mockRuntime);
+            cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath() + "'" };
+            expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+            expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+            expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+            expect(mockProcess.waitFor()).andReturn(0);
 
-        // verify results
-        verifyAll();
+            replayAll();
+
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            localFileSystemOperations.setFileGID(file.getPath(), 150);
+
+            // verify results
+            verifyAll();
         } else {
-            log.warn( "Test 'setFileGidPositive' is unable to pass on Windows, so it will be skipped!" );
+            log.warn("Test 'setFileGidPositive' is unable to pass on Windows, so it will be skipped!");
         }
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void setFileGidNegativeCannotSet() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\", "/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andReturn( mockProcess );
-        expect( mockProcess.getInputStream() ).andReturn( STD_OUT );
-        expect( mockProcess.getErrorStream() ).andReturn( STD_ERR );
-        expect( mockProcess.waitFor() ).andReturn( 0 );
-        
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath().replace( "\\", "/" ) + "'" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                            "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andReturn(mockProcess);
+        expect(mockProcess.getInputStream()).andReturn(STD_OUT);
+        expect(mockProcess.getErrorStream()).andReturn(STD_ERR);
+        expect(mockProcess.waitFor()).andReturn(0);
+
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        cmdCommand = new String[]{ "/bin/sh", "-c", "chown 123:150 '" + file.getPath().replace("\\", "/") + "'" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileGID( file.getPath(), 150 );
+        localFileSystemOperations.setFileGID(file.getPath(), 150);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void setFileGidNegativeException() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expect( Runtime.getRuntime() ).andReturn( mockRuntime );
-        String[] cmdCommand = new String[]{ "/bin/sh", "-c", "ls -lan '" + file.getPath().replace( "\\","/" ) + "' 2>&1" };
-        expect( mockRuntime.exec( aryEq( cmdCommand ) ) ).andThrow( new IOException() );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expect(Runtime.getRuntime()).andReturn(mockRuntime);
+        String[] cmdCommand = new String[]{ "/bin/sh", "-c",
+                                            "ls -lan '" + file.getPath().replace("\\", "/") + "' 2>&1" };
+        expect(mockRuntime.exec(aryEq(cmdCommand))).andThrow(new IOException());
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileGID( file.getPath(), 123 );
+        localFileSystemOperations.setFileGID(file.getPath(), 123);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = AttributeNotSupportedException.class)
+    @Test( expected = AttributeNotSupportedException.class)
     public void setFileGidNegativeWindows() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.WINDOWS );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.WINDOWS);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileGID( file.getPath(), 134 );
+        localFileSystemOperations.setFileGID(file.getPath(), 134);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void setFileGidNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileGID( "dasdasd", 123 );
+        localFileSystemOperations.setFileGID("dasdasd", 123);
     }
 
-    @Test()
+    @Test( )
     public void getFileModificationTimePositive() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expectNew( File.class, file.getPath() ).andReturn( mockFile );
-        expect( mockFile.exists() ).andReturn( true );
-        expect( mockFile.lastModified() ).andReturn( 123L );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expectNew(File.class, file.getPath()).andReturn(mockFile);
+        expect(mockFile.exists()).andReturn(true);
+        expect(mockFile.lastModified()).andReturn(123L);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( 123L, localFileSystemOperations.getFileModificationTime( file.getPath() ) );
+        assertEquals(123L, localFileSystemOperations.getFileModificationTime(file.getPath()));
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void getFileModificationTimeNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileModificationTime( "dasdasd" );
+        localFileSystemOperations.getFileModificationTime("dasdasd");
     }
 
-    @Test()
+    @Test( )
     public void setFileModificationTimePositive() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expectNew( File.class, file.getPath() ).andReturn( mockFile );
-        expect( mockFile.exists() ).andReturn( true );
-        expect( mockFile.setLastModified( 123L ) ).andReturn( true );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expectNew(File.class, file.getPath()).andReturn(mockFile);
+        expect(mockFile.exists()).andReturn(true);
+        expect(mockFile.setLastModified(123L)).andReturn(true);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileModificationTime( file.getPath(), 123L );
+        localFileSystemOperations.setFileModificationTime(file.getPath(), 123L);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void setFileModificationTimeNegative() throws Exception {
 
-        expect( OperatingSystemType.getCurrentOsType() ).andReturn( OperatingSystemType.LINUX );
-        expectNew( File.class, file.getPath() ).andReturn( mockFile );
-        expect( mockFile.exists() ).andReturn( true );
-        expect( mockFile.setLastModified( 123L ) ).andReturn( false );
+        expect(OperatingSystemType.getCurrentOsType()).andReturn(OperatingSystemType.LINUX);
+        expectNew(File.class, file.getPath()).andReturn(mockFile);
+        expect(mockFile.exists()).andReturn(true);
+        expect(mockFile.setLastModified(123L)).andReturn(false);
 
         replayAll();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileModificationTime( file.getPath(), 123L );
+        localFileSystemOperations.setFileModificationTime(file.getPath(), 123L);
 
         // verify results
         verifyAll();
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void setFileModificationTimeNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.setFileModificationTime( "dasdasd", 123 );
+        localFileSystemOperations.setFileModificationTime("dasdasd", 123);
     }
 
-    @Test()
+    @Test( )
     public void getFileSizePositive() throws Exception {
 
-        String testFile = Test_LocalFileSystemOperations.class.getResource( "TestFile1.txt" ).getFile();
+        String testFile = Test_LocalFileSystemOperations.class.getResource("TestFile1.txt").getFile();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( 38L, localFileSystemOperations.getFileSize( testFile ) );
+        assertEquals(38L, localFileSystemOperations.getFileSize(testFile));
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test( expected = FileDoesNotExistException.class)
     public void getFileSizeNegativeNoSuchFile() throws Exception {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.getFileSize( "dasdasd" );
+        localFileSystemOperations.getFileSize("dasdasd");
     }
 
-    @Test()
+    @Test( )
     public void computeMd5SumBinaryPositive() {
 
-        String testFile = Test_LocalFileSystemOperations.class.getResource( "TestFile1.txt" ).getFile();
+        String testFile = Test_LocalFileSystemOperations.class.getResource("TestFile1.txt").getFile();
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( "0566bd3b54cbc776d08329006520ad8b",
-                      localFileSystemOperations.computeMd5Sum( testFile, Md5SumMode.BINARY ) );
+        assertEquals("0566bd3b54cbc776d08329006520ad8b",
+                     localFileSystemOperations.computeMd5Sum(testFile, Md5SumMode.BINARY));
     }
 
-    @Test()
+    @Test( )
     public void computeMd5SumAsciiPositive() {
 
-        String testFile = Test_LocalFileSystemOperations.class.getResource( "TestFile1Unix.txt" ).getFile();
+        String testFile = Test_LocalFileSystemOperations.class.getResource("TestFile1Unix.txt").getFile();
 
         //if ASCII mode is used the file with unix style line endings should have the same
         //md5 as the file with windows style line endings
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        assertEquals( "0566bd3b54cbc776d08329006520ad8b",
-                      localFileSystemOperations.computeMd5Sum( testFile, Md5SumMode.ASCII ) );
+        assertEquals("0566bd3b54cbc776d08329006520ad8b",
+                     localFileSystemOperations.computeMd5Sum(testFile, Md5SumMode.ASCII));
     }
 
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void computeMd5SumNegativeNoSuchFile() {
 
         LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-        localFileSystemOperations.computeMd5Sum( "dasdasd", Md5SumMode.ASCII );
+        localFileSystemOperations.computeMd5Sum("dasdasd", Md5SumMode.ASCII);
     }
 }

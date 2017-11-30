@@ -41,7 +41,7 @@ public class TypeTimestamp extends TypeNumber {
                              Object val,
                              Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /** Specific Constructor */
@@ -50,7 +50,7 @@ public class TypeTimestamp extends TypeNumber {
                              Object[] args,
                              boolean day ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
         this.isDay = day;
     }
 
@@ -64,16 +64,16 @@ public class TypeTimestamp extends TypeNumber {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_TIMESTAMP + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_TIMESTAMP + e.getMessage(), e.getParameterName(), e);
         }
 
-        if( this.validatedValue % SECONDS_IN_ONE_HOUR != 0 ) {
-            throw new TypeException( SPECIFIC_ERROR_MESSAGE_HOUR, this.parameterName );
+        if (this.validatedValue % SECONDS_IN_ONE_HOUR != 0) {
+            throw new TypeException(SPECIFIC_ERROR_MESSAGE_HOUR, this.parameterName);
         }
 
-        if( this.isDay && this.validatedValue % SECONDS_IN_ONE_DAY != 0 ) {
-            throw new TypeException( SPECIFIC_ERROR_MESSAGE_DAY, this.parameterName );
+        if (this.isDay && this.validatedValue % SECONDS_IN_ONE_DAY != 0) {
+            throw new TypeException(SPECIFIC_ERROR_MESSAGE_DAY, this.parameterName);
         }
     }
 }

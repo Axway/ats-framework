@@ -26,7 +26,7 @@ public class TimeUtils {
     /**
      * Date formatter with date and time till milliseconds 
      */
-    private static final SimpleDateFormat DATE_FORMATTER_TILL_MILLIS = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS" );
+    private static final SimpleDateFormat DATE_FORMATTER_TILL_MILLIS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * Get the current date formatted in this way
@@ -36,7 +36,7 @@ public class TimeUtils {
      */
     public static String getFormattedDateTillMilliseconds() {
 
-        return getFormattedDateTillMilliseconds( new Date() );
+        return getFormattedDateTillMilliseconds(new Date());
     }
 
     /**
@@ -47,6 +47,6 @@ public class TimeUtils {
      */
     public static String getFormattedDateTillMilliseconds( Date date ) {
 
-        return DATE_FORMATTER_TILL_MILLIS.format( date );
+        return DATE_FORMATTER_TILL_MILLIS.format(date);
     }
 }

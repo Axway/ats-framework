@@ -27,7 +27,7 @@ import com.jcraft.jsch.SftpProgressMonitor;
  */
 public class SynchronizationSftpTransferListener implements SftpProgressMonitor, TransferListener {
 
-    private static final Logger       log                 = Logger.getLogger( SynchronizationSftpTransferListener.class );
+    private static final Logger       log                 = Logger.getLogger(SynchronizationSftpTransferListener.class);
 
     /**
      * The consequent progress event on which the transfer will pause
@@ -53,13 +53,13 @@ public class SynchronizationSftpTransferListener implements SftpProgressMonitor,
         this.owner = owner;
         // If the transferred file is empty and the current thread has
         // the owner's monitor prevent a deadlock by waiting for the resume.
-        if( progressEventNumber < 0 && Thread.holdsLock( owner ) ) {
+        if (progressEventNumber < 0 && Thread.holdsLock(owner)) {
             try {
-                log.warn( "Empty transferred file. Waiting in listener constructor for the transfer to be resumed..." );
+                log.warn("Empty transferred file. Waiting in listener constructor for the transfer to be resumed...");
                 // Release the monitor and wait to be notified to continue the transfer.
                 owner.wait();
-            } catch( InterruptedException e ) {
-                log.error( "Transfer thread interrupted while paused in constructor.", e );
+            } catch (InterruptedException e) {
+                log.error("Transfer thread interrupted while paused in constructor.", e);
             }
         }
     }
@@ -73,14 +73,14 @@ public class SynchronizationSftpTransferListener implements SftpProgressMonitor,
 
         // Check only progress events so the transfer be paused when the 
         // transfer is taking place not before or after it.
-        log.debug( "Progress event #" + ( currentProgessEvent ) );
-        if( currentProgessEvent++ == progressEventNumber && Thread.holdsLock( owner ) ) {
+        log.debug("Progress event #" + (currentProgessEvent));
+        if (currentProgessEvent++ == progressEventNumber && Thread.holdsLock(owner)) {
             try {
-                log.debug( "Waiting for the transfer to be resumed..." );
+                log.debug("Waiting for the transfer to be resumed...");
                 // Release the monitor and wait to be notified to continue the transfer.
                 owner.wait();
-            } catch( InterruptedException e ) {
-                log.error( "Transfer thread interrupted while paused. Continue transfer.", e );
+            } catch (InterruptedException e) {
+                log.error("Transfer thread interrupted while paused. Continue transfer.", e);
             }
         }
 

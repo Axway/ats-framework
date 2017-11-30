@@ -44,7 +44,7 @@ public class TypeNumber extends TypeObject {
                           Object val,
                           Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -59,14 +59,14 @@ public class TypeNumber extends TypeObject {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_NUMBER, this.parameterName, e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_NUMBER, this.parameterName, e);
         }
 
         // check if this is a number
-        Double number = extractNumber( this.value );
-        if( number == null ) {
-            throw new TypeException( ERROR_MESSAGE_CAST_EXCEPTION, this.parameterName );
+        Double number = extractNumber(this.value);
+        if (number == null) {
+            throw new TypeException(ERROR_MESSAGE_CAST_EXCEPTION, this.parameterName);
         }
 
         this.validatedValue = number.doubleValue();
@@ -84,29 +84,29 @@ public class TypeNumber extends TypeObject {
         double result = 0;
 
         try {
-            result = Integer.parseInt( val.toString() );
-        } catch( NumberFormatException ex ) {
+            result = Integer.parseInt(val.toString());
+        } catch (NumberFormatException ex) {
             // Do not handle - still could be some other
             // sort of a number
         }
         try {
-            result = Float.parseFloat( val.toString() );
-        } catch( NumberFormatException ex ) {
+            result = Float.parseFloat(val.toString());
+        } catch (NumberFormatException ex) {
             // Do not handle - still could be some other
             // sort of a number
         }
         try {
-            result = Long.parseLong( val.toString() );
-        } catch( NumberFormatException ex ) {
+            result = Long.parseLong(val.toString());
+        } catch (NumberFormatException ex) {
             // Do not handle - still could be some other
             // sort of a number
         }
         try {
-            result = Double.parseDouble( val.toString() );
-        } catch( NumberFormatException ex ) {
+            result = Double.parseDouble(val.toString());
+        } catch (NumberFormatException ex) {
             return null;
         }
 
-        return new Double( result );
+        return new Double(result);
     }
 }

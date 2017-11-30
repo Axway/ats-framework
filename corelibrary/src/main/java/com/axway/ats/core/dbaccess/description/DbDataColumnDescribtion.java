@@ -37,32 +37,32 @@ public class DbDataColumnDescribtion {
                                     String defaultValue,
                                     String extra ) {
 
-        setFieldName( fieldName );
-        setType( type );
-        setIsNull( isNull );
-        setKey( key );
-        setDefaultValue( defaultValue );
-        setExtra( extra );
+        setFieldName(fieldName);
+        setType(type);
+        setIsNull(isNull);
+        setKey(key);
+        setDefaultValue(defaultValue);
+        setExtra(extra);
     }
 
     public DbDataColumnDescribtion() {
 
-        setFieldName( "" );
-        setType( "" );
-        setIsNull( "" );
-        setKey( "" );
-        setDefaultValue( "" );
-        setExtra( "" );
+        setFieldName("");
+        setType("");
+        setIsNull("");
+        setKey("");
+        setDefaultValue("");
+        setExtra("");
     }
 
     public boolean equals(
                            DbDataColumnDescribtion column ) {
 
         boolean result = true;
-        if( !column.getFieldName().equals( getFieldName() ) || !column.getType().equals( getType() )
-            || !column.getIsNull().equals( getIsNull() ) || !column.getKey().equals( getKey() )
-            || !column.getDefaultValue().equals( getDefaultValue() )
-            || !column.getExtra().equals( getExtra() ) ) {
+        if (!column.getFieldName().equals(getFieldName()) || !column.getType().equals(getType())
+            || !column.getIsNull().equals(getIsNull()) || !column.getKey().equals(getKey())
+            || !column.getDefaultValue().equals(getDefaultValue())
+            || !column.getExtra().equals(getExtra())) {
             result = false;
         }
         return result;
@@ -72,39 +72,39 @@ public class DbDataColumnDescribtion {
                                                DbDataColumnDescribtion column ) {
 
         ArrayList<String[]> differenFields = new ArrayList<String[]>();
-        if( !column.getFieldName().equals( getFieldName() ) ) {
-            differenFields.add( new String[]{ "Field", getFieldName(), column.getFieldName() } );
+        if (!column.getFieldName().equals(getFieldName())) {
+            differenFields.add(new String[]{ "Field", getFieldName(), column.getFieldName() });
         }
-        if( !column.getType().equals( getType() ) ) {
-            differenFields.add( new String[]{ "Type", getType(), column.getType() } );
+        if (!column.getType().equals(getType())) {
+            differenFields.add(new String[]{ "Type", getType(), column.getType() });
         }
-        if( !column.getIsNull().equals( getIsNull() ) ) {
-            differenFields.add( new String[]{ "Null", getIsNull(), column.getIsNull() } );
+        if (!column.getIsNull().equals(getIsNull())) {
+            differenFields.add(new String[]{ "Null", getIsNull(), column.getIsNull() });
         }
-        if( !column.getKey().equals( getKey() ) ) {
-            differenFields.add( new String[]{ "Key", getKey(), column.getKey() } );
+        if (!column.getKey().equals(getKey())) {
+            differenFields.add(new String[]{ "Key", getKey(), column.getKey() });
         }
-        if( !column.getDefaultValue().equals( getDefaultValue() ) ) {
-            differenFields.add( new String[]{ "Default", getDefaultValue(), column.getDefaultValue() } );
+        if (!column.getDefaultValue().equals(getDefaultValue())) {
+            differenFields.add(new String[]{ "Default", getDefaultValue(), column.getDefaultValue() });
         }
-        if( !column.getExtra().equals( getExtra() ) ) {
-            differenFields.add( new String[]{ "Extra", getExtra(), column.getExtra() } );
+        if (!column.getExtra().equals(getExtra())) {
+            differenFields.add(new String[]{ "Extra", getExtra(), column.getExtra() });
         }
         return differenFields;
     }
 
     public String getDataAsString() {
 
-        StringBuilder builder = new StringBuilder( "" );
-        builder.append( "Field: " + getFieldName() );
-        builder.append( " | " );
-        builder.append( "Type: " + getType() );
-        builder.append( " | " );
-        builder.append( "Null: " + getIsNull() );
-        builder.append( " | " );
-        builder.append( "Key: " + getKey() );
-        builder.append( " | " );
-        builder.append( "Extra: " + getExtra() );
+        StringBuilder builder = new StringBuilder("");
+        builder.append("Field: " + getFieldName());
+        builder.append(" | ");
+        builder.append("Type: " + getType());
+        builder.append(" | ");
+        builder.append("Null: " + getIsNull());
+        builder.append(" | ");
+        builder.append("Key: " + getKey());
+        builder.append(" | ");
+        builder.append("Extra: " + getExtra());
 
         return builder.toString();
     }

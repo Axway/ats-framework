@@ -34,7 +34,7 @@ public class DbColumn {
     public DbColumn( String tableName,
                      String columnName ) {
 
-        this( tableName, columnName, 0 );
+        this(tableName, columnName, 0);
     }
 
     /**
@@ -46,7 +46,7 @@ public class DbColumn {
     public DbColumn( String columnName,
                      int index ) {
 
-        this( "", columnName, index );
+        this("", columnName, index);
     }
 
     /**

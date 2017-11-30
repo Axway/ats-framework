@@ -37,7 +37,7 @@ public class TypeStringCIDR extends TypeString {
                               Object val,
                               Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -50,53 +50,53 @@ public class TypeStringCIDR extends TypeString {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_CIDR + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_CIDR + e.getMessage(), e.getParameterName(), e);
         }
 
         //get the individual parts
-        String[] parts = this.validatedValue.split( "/" );
-        if( parts.length != 2 ) {
-            throw new TypeException( ERROR_MESSAGE_INVALID, this.parameterName );
+        String[] parts = this.validatedValue.split("/");
+        if (parts.length != 2) {
+            throw new TypeException(ERROR_MESSAGE_INVALID, this.parameterName);
         }
 
-        TypeRegex typeRegex = new TypeRegex( null, parts[0], null, TypeRegex.RegexType.IPv4_ADDRESS );
+        TypeRegex typeRegex = new TypeRegex(null, parts[0], null, TypeRegex.RegexType.IPv4_ADDRESS);
 
         try {
             typeRegex.validate();
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_CIDR + e.getMessage(), e.getParameterName() );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_CIDR + e.getMessage(), e.getParameterName());
         }
 
         int cidrRange;
         try {
-            cidrRange = Integer.parseInt( parts[1] );
-        } catch( NumberFormatException nfe ) {
-            throw new TypeException( ERROR_MESSAGE_NON_INTEGER, this.parameterName, nfe );
+            cidrRange = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException nfe) {
+            throw new TypeException(ERROR_MESSAGE_NON_INTEGER, this.parameterName, nfe);
         }
 
-        if( cidrRange < 1 || cidrRange > 32 ) {
-            throw new TypeException( ERROR_MESSAGE_INVALID_RANGE, this.parameterName );
+        if (cidrRange < 1 || cidrRange > 32) {
+            throw new TypeException(ERROR_MESSAGE_INVALID_RANGE, this.parameterName);
         }
 
-        String[] ipParts = parts[0].split( "\\." );
+        String[] ipParts = parts[0].split("\\.");
         int currentIpPart;
 
-        for( String ipPart : ipParts ) {
+        for (String ipPart : ipParts) {
 
             //we should be safe, as this has been confirmed as valid IP address
-            currentIpPart = Integer.parseInt( ipPart );
+            currentIpPart = Integer.parseInt(ipPart);
 
-            if( cidrRange >= 8 ) {
+            if (cidrRange >= 8) {
                 cidrRange -= 8;
-            } else if( ( cidrRange > 0 ) && ( cidrRange < 8 ) ) {
-                if( ( ( ( 1 << ( 8 - cidrRange ) ) - 1 ) & currentIpPart ) != 0 ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_PART, this.parameterName );
+            } else if ( (cidrRange > 0) && (cidrRange < 8)) {
+                if ( ( ( (1 << (8 - cidrRange)) - 1) & currentIpPart) != 0) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_PART, this.parameterName);
                 }
                 cidrRange = 0;
             } else {
-                if( currentIpPart != 0 ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_PART, this.parameterName );
+                if (currentIpPart != 0) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_PART, this.parameterName);
                 }
             }
         }

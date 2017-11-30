@@ -18,7 +18,7 @@ package com.axway.ats.core.monitoring;
 /**
  * Thrown whenever there is a request for an unsupported reading type
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MonitorConfigurationException extends RuntimeException {
 
     /**
@@ -30,7 +30,7 @@ public class MonitorConfigurationException extends RuntimeException {
     public MonitorConfigurationException( String message,
                                           Throwable cause ) {
 
-        super( message + "', \n Cause " + cause.getMessage(), cause );
+        super(message + "', \n Cause " + cause.getMessage(), cause);
     }
 
     /**
@@ -40,6 +40,6 @@ public class MonitorConfigurationException extends RuntimeException {
      */
     public MonitorConfigurationException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

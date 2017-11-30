@@ -31,7 +31,7 @@ public abstract class AbstractApplicationController {
 
     public AbstractApplicationController( AbstractApplicationInfo anyApplicationInfo ) {
 
-        this.log = AbstractAtsLogger.getDefaultInstance( getClass() );
+        this.log = AbstractAtsLogger.getDefaultInstance(getClass());
 
         this.anyApplicationInfo = anyApplicationInfo;
     }
@@ -52,15 +52,15 @@ public abstract class AbstractApplicationController {
 
     public JschSshClient executeShellCommand( AbstractApplicationInfo info, String command ) {
 
-        if( !info.isUnix() ) {
+        if (!info.isUnix()) {
             command = "cmd.exe /c \"" + command + "\"";
         }
 
         JschSshClient sshClient = new JschSshClient();
 
-        log.info( "Run '" + command + "' on " + info.alias );
-        sshClient.connect( info.systemUser, info.systemPassword, info.host, info.sshPort );
-        sshClient.execute( command, false );
+        log.info("Run '" + command + "' on " + info.alias);
+        sshClient.connect(info.systemUser, info.systemPassword, info.host, info.sshPort);
+        sshClient.execute(command, false);
 
         return sshClient;
     }
@@ -74,28 +74,28 @@ public abstract class AbstractApplicationController {
     protected void executePostActionShellCommand( AbstractApplicationInfo applicationInfo, String actionName,
                                                   String shellCommand ) throws AtsManagerException {
 
-        if( !StringUtils.isNullOrEmpty( shellCommand ) ) {
+        if (!StringUtils.isNullOrEmpty(shellCommand)) {
 
-            log.info( "Executing post '" + actionName + "' shell command: " + shellCommand );
+            log.info("Executing post '" + actionName + "' shell command: " + shellCommand);
             JschSshClient sshClient = new JschSshClient();
             try {
-                sshClient.connect( applicationInfo.systemUser, applicationInfo.systemPassword,
-                                   applicationInfo.host, applicationInfo.sshPort );
-                int exitCode = sshClient.execute( shellCommand, true );
-                if( exitCode != 0 ) {
-                    throw new AtsManagerException( "Unable to execute the post '" + actionName
-                                                   + "' shell command '" + shellCommand + "' on application '"
-                                                   + applicationInfo.getAlias() + "'. The error output is"
-                                                   + ( StringUtils.isNullOrEmpty( sshClient.getErrorOutput() )
-                                                                                                               ? " empty."
-                                                                                                               : ":\n"
-                                                                                                                 + sshClient.getErrorOutput() ) );
+                sshClient.connect(applicationInfo.systemUser, applicationInfo.systemPassword,
+                                  applicationInfo.host, applicationInfo.sshPort);
+                int exitCode = sshClient.execute(shellCommand, true);
+                if (exitCode != 0) {
+                    throw new AtsManagerException("Unable to execute the post '" + actionName
+                                                  + "' shell command '" + shellCommand + "' on application '"
+                                                  + applicationInfo.getAlias() + "'. The error output is"
+                                                  + (StringUtils.isNullOrEmpty(sshClient.getErrorOutput())
+                                                                                                           ? " empty."
+                                                                                                           : ":\n"
+                                                                                                             + sshClient.getErrorOutput()));
                 }
-                log.info( "The output of shell command \"" + shellCommand + "\" is"
-                          + ( StringUtils.isNullOrEmpty( sshClient.getStandardOutput() )
-                                                                                         ? " empty."
-                                                                                         : ":\n"
-                                                                                           + sshClient.getStandardOutput() ) );
+                log.info("The output of shell command \"" + shellCommand + "\" is"
+                         + (StringUtils.isNullOrEmpty(sshClient.getStandardOutput())
+                                                                                     ? " empty."
+                                                                                     : ":\n"
+                                                                                       + sshClient.getStandardOutput()));
             } finally {
                 sshClient.disconnect();
             }

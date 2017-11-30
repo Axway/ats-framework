@@ -36,7 +36,7 @@ public class TypeStringFilename extends TypeString {
                                   Object val,
                                   Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -50,19 +50,19 @@ public class TypeStringFilename extends TypeString {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_FILENAME + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_FILENAME + e.getMessage(), e.getParameterName(), e);
         }
 
         // --- proper file name validation
-        String filename = ( String ) this.value;
-        File file = new File( filename );
-        BaseType typeFile = new TypeFile( file );
+        String filename = (String) this.value;
+        File file = new File(filename);
+        BaseType typeFile = new TypeFile(file);
 
         try {
             typeFile.validate();
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_FILENAME + e.getMessage(), e.getParameterName() );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_FILENAME + e.getMessage(), e.getParameterName());
         }
     }
 }

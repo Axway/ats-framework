@@ -37,7 +37,7 @@ import com.axway.ats.core.filesystem.snapshot.matchers.SkipIniMatcher;
  */
 public class IniFileSnapshot extends ContentFileSnapshot {
 
-    private static final Logger  log              = Logger.getLogger( IniFileSnapshot.class );
+    private static final Logger  log              = Logger.getLogger(IniFileSnapshot.class);
 
     private static final long    serialVersionUID = 1L;
 
@@ -49,19 +49,19 @@ public class IniFileSnapshot extends ContentFileSnapshot {
 
     public IniFileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule,
                             List<SkipIniMatcher> fileMatchers ) {
-        super( configuration, path, fileRule );
+        super(configuration, path, fileRule);
 
-        if( fileMatchers == null ) {
+        if (fileMatchers == null) {
             fileMatchers = new ArrayList<SkipIniMatcher>();
         }
 
-        for( SkipIniMatcher matcher : fileMatchers ) {
-            this.matchers.add( matcher );
+        for (SkipIniMatcher matcher : fileMatchers) {
+            this.matchers.add(matcher);
         }
     }
 
     IniFileSnapshot( String path, long size, long timeModified, String md5, String permissions ) {
-        super( path, size, timeModified, md5, permissions );
+        super(path, size, timeModified, md5, permissions);
     }
 
     /**
@@ -73,9 +73,9 @@ public class IniFileSnapshot extends ContentFileSnapshot {
      */
     public IniFileSnapshot getNewInstance( FileSnapshot fileSnapshot ) {
 
-        IniFileSnapshot instance = new IniFileSnapshot( fileSnapshot.path, fileSnapshot.size,
-                                                        fileSnapshot.timeModified, fileSnapshot.md5,
-                                                        fileSnapshot.permissions );
+        IniFileSnapshot instance = new IniFileSnapshot(fileSnapshot.path, fileSnapshot.size,
+                                                       fileSnapshot.timeModified, fileSnapshot.md5,
+                                                       fileSnapshot.permissions);
         instance.matchers = this.matchers;
 
         return instance;
@@ -85,52 +85,52 @@ public class IniFileSnapshot extends ContentFileSnapshot {
     public void compare( FileSnapshot that, FileSystemEqualityState equality, FileTrace fileTrace ) {
 
         // first compare the regular file attributes
-        fileTrace = super.compareFileAttributes( that, fileTrace, true );
+        fileTrace = super.compareFileAttributes(that, fileTrace, true);
 
         // now compare the files content
 
         // load the files
-        Map<String, Map<String, String>> thisPropertiesMap = loadIniFile( equality.getFirstAtsAgent(),
-                                                                          this.getPath() );
-        Map<String, Map<String, String>> thatPropertiesMap = loadIniFile( equality.getSecondAtsAgent(),
-                                                                          that.getPath() );
+        Map<String, Map<String, String>> thisPropertiesMap = loadIniFile(equality.getFirstAtsAgent(),
+                                                                         this.getPath());
+        Map<String, Map<String, String>> thatPropertiesMap = loadIniFile(equality.getSecondAtsAgent(),
+                                                                         that.getPath());
 
         // remove matched properties
         // we currently call all matchers on both files,
         // so it does not matter if a matcher is provided for first or second snapshot
-        for( SkipIniMatcher matcher : this.matchers ) {
-            matcher.process( fileTrace.getFirstSnapshot(), fileTrace.getSecondSnapshot(), thisPropertiesMap,
-                             thatPropertiesMap, fileTrace );
+        for (SkipIniMatcher matcher : this.matchers) {
+            matcher.process(fileTrace.getFirstSnapshot(), fileTrace.getSecondSnapshot(), thisPropertiesMap,
+                            thatPropertiesMap, fileTrace);
         }
-        for( SkipIniMatcher matcher : ( ( IniFileSnapshot ) that ).matchers ) {
-            matcher.process( fileTrace.getFirstSnapshot(), fileTrace.getSecondSnapshot(), thisPropertiesMap,
-                             thatPropertiesMap, fileTrace );
+        for (SkipIniMatcher matcher : ((IniFileSnapshot) that).matchers) {
+            matcher.process(fileTrace.getFirstSnapshot(), fileTrace.getSecondSnapshot(), thisPropertiesMap,
+                            thatPropertiesMap, fileTrace);
         }
 
         // now compare rest of the properties
         Set<String> sections = new HashSet<>();
-        sections.addAll( thisPropertiesMap.keySet() );
-        sections.addAll( thatPropertiesMap.keySet() );
-        for( String section : sections ) {
-            if( !thisPropertiesMap.containsKey( section ) ) {
+        sections.addAll(thisPropertiesMap.keySet());
+        sections.addAll(thatPropertiesMap.keySet());
+        for (String section : sections) {
+            if (!thisPropertiesMap.containsKey(section)) {
                 // section not present in THIS list
-                fileTrace.addDifference( "Presence of section " + section, "NO", "YES" );
-            } else if( !thatPropertiesMap.containsKey( section ) ) {
+                fileTrace.addDifference("Presence of section " + section, "NO", "YES");
+            } else if (!thatPropertiesMap.containsKey(section)) {
                 // section not present in THAT list
-                fileTrace.addDifference( "Presence of section " + section, "YES", "NO" );
+                fileTrace.addDifference("Presence of section " + section, "YES", "NO");
             } else {
                 // section present in both lists
                 // compare its content
-                compareSection( section, thisPropertiesMap.get( section ), thatPropertiesMap.get( section ),
-                                equality, fileTrace );
+                compareSection(section, thisPropertiesMap.get(section), thatPropertiesMap.get(section),
+                               equality, fileTrace);
             }
         }
 
-        if( fileTrace.hasDifferencies() ) {
+        if (fileTrace.hasDifferencies()) {
             // files are different
-            equality.addDifference( fileTrace );
+            equality.addDifference(fileTrace);
         } else {
-            log.debug( "Same files: " + this.getPath() + " and " + that.getPath() );
+            log.debug("Same files: " + this.getPath() + " and " + that.getPath());
         }
     }
 
@@ -139,26 +139,26 @@ public class IniFileSnapshot extends ContentFileSnapshot {
                                  FileTrace fileTrace ) {
 
         Set<String> keys = new HashSet<>();
-        keys.addAll( thisProperties.keySet() );
-        keys.addAll( thatProperties.keySet() );
+        keys.addAll(thisProperties.keySet());
+        keys.addAll(thatProperties.keySet());
 
-        for( String key : keys ) {
-            if( !thisProperties.containsKey( key ) ) {
+        for (String key : keys) {
+            if (!thisProperties.containsKey(key)) {
                 // key not present in THIS list
-                fileTrace.addDifference( "Section " + section + ", presence of key '" + key + "'", "NO",
-                                         "YES" );
-            } else if( !thatProperties.containsKey( key ) ) {
+                fileTrace.addDifference("Section " + section + ", presence of key '" + key + "'", "NO",
+                                        "YES");
+            } else if (!thatProperties.containsKey(key)) {
                 // key not present in THAT list
-                fileTrace.addDifference( "Section " + section + ", presence of key '" + key + "'", "YES",
-                                         "NO" );
+                fileTrace.addDifference("Section " + section + ", presence of key '" + key + "'", "YES",
+                                        "NO");
             } else {
                 // key present in both lists
-                String thisValue = thisProperties.get( key ).trim();
-                String thatValue = thatProperties.get( key ).trim();
+                String thisValue = thisProperties.get(key).trim();
+                String thatValue = thatProperties.get(key).trim();
 
-                if( !thisValue.equalsIgnoreCase( thatValue ) ) {
-                    fileTrace.addDifference( "Section " + section + ", key '" + key + "'",
-                                             "'" + thisValue + "'", "'" + thatValue + "'" );
+                if (!thisValue.equalsIgnoreCase(thatValue)) {
+                    fileTrace.addDifference("Section " + section + ", key '" + key + "'",
+                                            "'" + thisValue + "'", "'" + thatValue + "'");
                 }
             }
         }
@@ -174,51 +174,51 @@ public class IniFileSnapshot extends ContentFileSnapshot {
     private Map<String, Map<String, String>> loadIniFile( String agent, String filePath ) {
 
         // load the file as a String
-        String fileContent = loadFileContent( agent, filePath );
+        String fileContent = loadFileContent(agent, filePath);
 
         // parse the file content into a map structure
         Map<String, Map<String, String>> propertiesMap = new HashMap<>();
         String section = null;
-        for( String line : fileContent.split( "\\r?\\n" ) ) {
+        for (String line : fileContent.split("\\r?\\n")) {
             line = line.trim();
 
-            if( line.length() == 0 ) {
+            if (line.length() == 0) {
                 // empty line
                 continue;
             }
 
-            switch( getStartCharMeaning( line.charAt( 0 ) ) ){
+            switch (getStartCharMeaning(line.charAt(0))) {
                 case SECTION:
                     // new section
                     section = line;
-                    propertiesMap.put( section, new HashMap<String, String>() );
+                    propertiesMap.put(section, new HashMap<String, String>());
                     break;
 
                 case PROPERTY:
                     // property line for current section
 
-                    Map<String, String> propertiesForThisSection = propertiesMap.get( section );
-                    if( propertiesForThisSection == null ) {
+                    Map<String, String> propertiesForThisSection = propertiesMap.get(section);
+                    if (propertiesForThisSection == null) {
                         section = "[ATS_DEFAULT_INI_FILE_SECTION]";
-                        log.warn( "Currently no INI section is defined."
-                                  + "\nEither the file is missing its first section or non default characters are used for beginning of section, property or comment."
-                                  + "\nFile: " + filePath + "\nFollowing line will go into a section called "
-                                  + section + ": '" + line + "'" );
-                        propertiesForThisSection = propertiesMap.get( section ); // check if already used the default section name
-                        if( propertiesForThisSection == null ) {
+                        log.warn("Currently no INI section is defined."
+                                 + "\nEither the file is missing its first section or non default characters are used for beginning of section, property or comment."
+                                 + "\nFile: " + filePath + "\nFollowing line will go into a section called "
+                                 + section + ": '" + line + "'");
+                        propertiesForThisSection = propertiesMap.get(section); // check if already used the default section name
+                        if (propertiesForThisSection == null) {
                             propertiesForThisSection = new HashMap<String, String>();
                         }
-                        propertiesMap.put( section, propertiesForThisSection );
+                        propertiesMap.put(section, propertiesForThisSection);
                     }
 
-                    int separatorIndex = line.indexOf( configuration.getIniFileDelimiterCharacter() );
-                    if( separatorIndex < 1 ) {
+                    int separatorIndex = line.indexOf(configuration.getIniFileDelimiterCharacter());
+                    if (separatorIndex < 1) {
                         // no separator, we treat the whole line as a key, the value will be empty
-                        propertiesForThisSection.put( line.trim(), "" );
+                        propertiesForThisSection.put(line.trim(), "");
                     } else {
                         // add key and value
-                        propertiesForThisSection.put( line.substring( 0, separatorIndex ).trim(),
-                                                      line.substring( separatorIndex + 1 ).trim() );
+                        propertiesForThisSection.put(line.substring(0, separatorIndex).trim(),
+                                                     line.substring(separatorIndex + 1).trim());
                     }
 
                     break;
@@ -234,11 +234,11 @@ public class IniFileSnapshot extends ContentFileSnapshot {
 
     private StartCharType getStartCharMeaning( char startChar ) {
 
-        if( startChar == configuration.getIniFileStartSectionCharacter() ) {
+        if (startChar == configuration.getIniFileStartSectionCharacter()) {
             return StartCharType.SECTION;
         }
 
-        if( startChar == configuration.getIniFileStartCommentCharacter() ) {
+        if (startChar == configuration.getIniFileStartCommentCharacter()) {
             return StartCharType.COMMENT;
         }
 
@@ -255,34 +255,34 @@ public class IniFileSnapshot extends ContentFileSnapshot {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "ini " );
-        sb.append( super.toString() );
-        for( SkipIniMatcher matcher : matchers ) {
-            for( Entry<String, MATCH_TYPE> sectionsMap : matcher.getSectionsMap().entrySet() ) {
-                sb.append( "\n\tsection " + sectionsMap.getKey() + " matched by "
-                           + sectionsMap.getValue().toString() );
+        sb.append("ini ");
+        sb.append(super.toString());
+        for (SkipIniMatcher matcher : matchers) {
+            for (Entry<String, MATCH_TYPE> sectionsMap : matcher.getSectionsMap().entrySet()) {
+                sb.append("\n\tsection " + sectionsMap.getKey() + " matched by "
+                          + sectionsMap.getValue().toString());
             }
 
             Map<String, Map<String, MATCH_TYPE>> keysMap = matcher.getKeysMap();
             Map<String, Map<String, MATCH_TYPE>> valuesMap = matcher.getValuesMap();
-            if( keysMap.size() + valuesMap.size() > 0 ) {
-                sb.append( "\n\tproperties:" );
+            if (keysMap.size() + valuesMap.size() > 0) {
+                sb.append("\n\tproperties:");
             }
 
-            if( keysMap.size() > 0 ) {
-                for( Entry<String, Map<String, MATCH_TYPE>> sectionEntity : keysMap.entrySet() ) {
-                    for( Entry<String, MATCH_TYPE> propertyEntity : sectionEntity.getValue().entrySet() ) {
-                        sb.append( "\n\t\t" + sectionEntity.getKey() + " key '" + propertyEntity.getKey()
-                                   + "' matched by " + propertyEntity.getValue().toString() );
+            if (keysMap.size() > 0) {
+                for (Entry<String, Map<String, MATCH_TYPE>> sectionEntity : keysMap.entrySet()) {
+                    for (Entry<String, MATCH_TYPE> propertyEntity : sectionEntity.getValue().entrySet()) {
+                        sb.append("\n\t\t" + sectionEntity.getKey() + " key '" + propertyEntity.getKey()
+                                  + "' matched by " + propertyEntity.getValue().toString());
                     }
                 }
             }
 
-            if( valuesMap.size() > 0 ) {
-                for( Entry<String, Map<String, MATCH_TYPE>> sectionEntity : valuesMap.entrySet() ) {
-                    for( Entry<String, MATCH_TYPE> propertyEntity : sectionEntity.getValue().entrySet() ) {
-                        sb.append( "\n\t\t" + sectionEntity.getKey() + " value '" + propertyEntity.getKey()
-                                   + "' matched by " + propertyEntity.getValue().toString() );
+            if (valuesMap.size() > 0) {
+                for (Entry<String, Map<String, MATCH_TYPE>> sectionEntity : valuesMap.entrySet()) {
+                    for (Entry<String, MATCH_TYPE> propertyEntity : sectionEntity.getValue().entrySet()) {
+                        sb.append("\n\t\t" + sectionEntity.getKey() + " value '" + propertyEntity.getKey()
+                                  + "' matched by " + propertyEntity.getValue().toString());
                     }
                 }
             }

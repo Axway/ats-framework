@@ -25,7 +25,7 @@ public class AtsConfigurationException extends RuntimeException {
      */
     public AtsConfigurationException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -34,7 +34,7 @@ public class AtsConfigurationException extends RuntimeException {
      */
     public AtsConfigurationException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     /**
@@ -45,7 +45,7 @@ public class AtsConfigurationException extends RuntimeException {
     public AtsConfigurationException( String message,
                                       Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

@@ -27,25 +27,25 @@ public class Test_DbConnSQLServer extends BaseTest {
     @Test
     public void accessors() {
 
-        DbConnSQLServer dbConnection = new DbConnSQLServer( "host", "db", "user", "pass" );
+        DbConnSQLServer dbConnection = new DbConnSQLServer("host", "db", "user", "pass");
 
-        assertEquals( DbConnSQLServer.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL() );
-        assertTrue( dbConnection.getConnHash().startsWith( "host_1433_db" ) );
-        assertEquals( "MSSQL connection to host:1433/db", dbConnection.getDescription() );
-        assertEquals( net.sourceforge.jtds.jdbc.Driver.class, dbConnection.getDriverClass() );
+        assertEquals(DbConnSQLServer.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL());
+        assertTrue(dbConnection.getConnHash().startsWith("host_1433_db"));
+        assertEquals("MSSQL connection to host:1433/db", dbConnection.getDescription());
+        assertEquals(net.sourceforge.jtds.jdbc.Driver.class, dbConnection.getDriverClass());
     }
 
     @Test
     public void getDataSource() {
 
-        DbConnSQLServer dbConnection = new DbConnSQLServer( "host", "db", "user", "pass" );
+        DbConnSQLServer dbConnection = new DbConnSQLServer("host", "db", "user", "pass");
 
-        assertEquals( org.apache.commons.dbcp.BasicDataSource.class, dbConnection.getDataSource().getClass() );
+        assertEquals(org.apache.commons.dbcp.BasicDataSource.class, dbConnection.getDataSource().getClass());
     }
 
 }

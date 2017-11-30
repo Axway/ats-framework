@@ -46,12 +46,11 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  */
 public class IoUtils {
 
-    private static final Logger log                  = Logger.getLogger( IoUtils.class );
+    private static final Logger log                  = Logger.getLogger(IoUtils.class);
 
-    public static final String FORWARD_SLASH = "/";
-    
-    private static final int    INTERNAL_BUFFER_SIZE = 4 * 1024;                         // 4KB
+    public static final String  FORWARD_SLASH        = "/";
 
+    private static final int    INTERNAL_BUFFER_SIZE = 4 * 1024;                       // 4KB
 
     /**
      * Return the name of a file by truncating the file path from the full file name
@@ -61,17 +60,17 @@ public class IoUtils {
      */
     public static String getFileName( String source ) {
 
-        if( StringUtils.isNullOrEmpty( source ) ) {
+        if (StringUtils.isNullOrEmpty(source)) {
             // this is not a valid file
             return source;
         } else {
-            source = normalizeUnixFile( source );
-            int index = source.lastIndexOf( '/' );
-            if( index < 0 ) {
+            source = normalizeUnixFile(source);
+            int index = source.lastIndexOf('/');
+            if (index < 0) {
                 // this is just a file name, not a full file name
                 return source;
             } else {
-                return source.substring( index + 1 );
+                return source.substring(index + 1);
             }
         }
     }
@@ -85,17 +84,17 @@ public class IoUtils {
      */
     public static String getFilePath( String source ) {
 
-        if( StringUtils.isNullOrEmpty( source ) ) {
+        if (StringUtils.isNullOrEmpty(source)) {
             // this is not a valid file
             return null;
         } else {
-            source = normalizeUnixFile( source );
-            int index = source.lastIndexOf( '/' );
-            if( index < 0 ) {
+            source = normalizeUnixFile(source);
+            int index = source.lastIndexOf('/');
+            if (index < 0) {
                 // this is just a file name, not a full file name
                 return null;
             } else {
-                return source.substring( 0, index + 1 );
+                return source.substring(0, index + 1);
             }
         }
     }
@@ -108,7 +107,7 @@ public class IoUtils {
      */
     public static String normalizeFilePath( String source ) {
 
-        return normalizeFilePath( source, OperatingSystemType.getCurrentOsType() );
+        return normalizeFilePath(source, OperatingSystemType.getCurrentOsType());
     }
 
     /**
@@ -120,18 +119,18 @@ public class IoUtils {
      */
     public static String normalizeFilePath( String source, OperatingSystemType osType ) {
 
-        if( source == null ) {
+        if (source == null) {
             return null;
         }
 
         String fileSeparator = osType.isWindows()
                                                   ? "\\"
                                                   : "/";
-        String opositeFileSeparator = fileSeparator.equals( "/" )
-                                                                  ? "\\"
-                                                                  : FORWARD_SLASH;
+        String opositeFileSeparator = fileSeparator.equals("/")
+                                                                ? "\\"
+                                                                : FORWARD_SLASH;
 
-        return source.replace( opositeFileSeparator, fileSeparator );
+        return source.replace(opositeFileSeparator, fileSeparator);
     }
 
     /**
@@ -144,7 +143,7 @@ public class IoUtils {
      */
     public static String normalizeDirPath( String source ) {
 
-        return normalizeDirPath( source, OperatingSystemType.getCurrentOsType() );
+        return normalizeDirPath(source, OperatingSystemType.getCurrentOsType());
     }
 
     /**
@@ -162,8 +161,8 @@ public class IoUtils {
                                                   ? "\\"
                                                   : "/";
 
-        source = normalizeFilePath( source, osType );
-        if( source != null && !source.endsWith( fileSeparator ) ) {
+        source = normalizeFilePath(source, osType);
+        if (source != null && !source.endsWith(fileSeparator)) {
             source = source + fileSeparator;
         }
         return source;
@@ -178,12 +177,12 @@ public class IoUtils {
      */
     public static String normalizeUnixDir( String source ) {
 
-        if( StringUtils.isNullOrEmpty( source ) ) {
+        if (StringUtils.isNullOrEmpty(source)) {
             // this is not a valid directory - do not touch it
             return source;
         } else {
-            source = source.replace( '\\', '/' );
-            if( source.endsWith( FORWARD_SLASH ) ) {
+            source = source.replace('\\', '/');
+            if (source.endsWith(FORWARD_SLASH)) {
                 return source;
             } else {
                 return source + FORWARD_SLASH;
@@ -201,15 +200,15 @@ public class IoUtils {
      */
     public static String normalizeDoubleQuotedUnixDir( String source ) {
 
-        if( StringUtils.isNullOrEmpty( source ) ) {
+        if (StringUtils.isNullOrEmpty(source)) {
             // this is not a valid directory - do not touch it
             return source;
         } else {
-            source = source.replace( '\\', '/' );
-            if( source.endsWith( FORWARD_SLASH ) ) {
-                return String.format( "\"%1$s\"", source );
+            source = source.replace('\\', '/');
+            if (source.endsWith(FORWARD_SLASH)) {
+                return String.format("\"%1$s\"", source);
             } else {
-                return String.format( "\"%1$s\"", source + FORWARD_SLASH );
+                return String.format("\"%1$s\"", source + FORWARD_SLASH);
             }
         }
     }
@@ -222,11 +221,11 @@ public class IoUtils {
      */
     public static String normalizeUnixFile( String source ) {
 
-        if( StringUtils.isNullOrEmpty( source ) ) {
+        if (StringUtils.isNullOrEmpty(source)) {
             // this is not a valid file - do not touch it
             return source;
         } else {
-            return source.replace( '\\', '/' );
+            return source.replace('\\', '/');
         }
     }
 
@@ -239,14 +238,14 @@ public class IoUtils {
      */
     public static String normalizeDoubleQuotedUnixFile( String source ) {
 
-        if( StringUtils.isNullOrEmpty( source ) ) {
+        if (StringUtils.isNullOrEmpty(source)) {
             // this is not a valid file - do not touch it
             return source;
         } else {
-            return String.format( "\"%1$s\"", source.replace( '\\', '/' ) );
+            return String.format("\"%1$s\"", source.replace('\\', '/'));
         }
     }
-    
+
     /**
      * Utility to silently close a {@link Closeable} item (in/out stream, writer, etc.) if not null.
      * Does not throw IO exception that might arise. It is just logged.
@@ -256,7 +255,7 @@ public class IoUtils {
     public static boolean closeStream(
                                        Closeable closeable ) {
 
-        return closeStream( closeable, null );
+        return closeStream(closeable, null);
     }
 
     /**
@@ -270,18 +269,18 @@ public class IoUtils {
                                        Closeable closeable,
                                        String message ) {
 
-        if( closeable == null ) { // nothing to do
+        if (closeable == null) { // nothing to do
             return true;
         } else {
             boolean closed = false;
             try {
                 closeable.close();
                 closed = true;
-            } catch( IOException e ) {
-                log.warn( ( message == null
-                                            ? "Could not close a stream"
-                                            : message ),
-                          e );
+            } catch (IOException e) {
+                log.warn( (message == null
+                                           ? "Could not close a stream"
+                                           : message),
+                          e);
             }
             return closed;
         }
@@ -308,37 +307,37 @@ public class IoUtils {
         long count = 0;
         int n = 0;
         try {
-            while( ( n = input.read( buffer ) ) != -1 ) {
-                output.write( buffer, 0, n );
+            while ( (n = input.read(buffer)) != -1) {
+                output.write(buffer, 0, n);
                 count += n;
-                if ( maxSize > 0 && count > maxSize ) {
-                    throw new IOException( "Unable to copy input stream. Max size of " + maxSize + " bytes reached." );
+                if (maxSize > 0 && count > maxSize) {
+                    throw new IOException("Unable to copy input stream. Max size of " + maxSize + " bytes reached.");
                 }
             }
         } finally {
-            if( closeInputStream ) {
-                closeStream( input );
+            if (closeInputStream) {
+                closeStream(input);
             }
-            if( closeOutputStream ) {
-                closeStream( output );
+            if (closeOutputStream) {
+                closeStream(output);
             }
         }
         return count;
     }
-    
+
     public static long copyStream( InputStream input,
                                    OutputStream output,
                                    boolean closeInputStream,
                                    boolean closeOutputStream ) throws IOException {
-        
-        return copyStream( input, output, closeInputStream, closeOutputStream, -1 );
+
+        return copyStream(input, output, closeInputStream, closeOutputStream, -1);
     }
 
     public static long copyStream(
                                    InputStream input,
                                    OutputStream output ) throws IOException {
 
-        return copyStream( input, output, true, true, -1 );
+        return copyStream(input, output, true, true, -1);
     }
 
     /**
@@ -354,24 +353,24 @@ public class IoUtils {
                               String outputDirPath,
                               boolean isTempDirectory ) throws IOException {
 
-        File outputDir = new File( outputDirPath );
+        File outputDir = new File(outputDirPath);
         outputDir.mkdirs();
-        if( isTempDirectory ) {
+        if (isTempDirectory) {
             outputDir.deleteOnExit();
         }
 
-        try (ZipFile zipFile = new ZipFile( zipFilePath )) {
+        try (ZipFile zipFile = new ZipFile(zipFilePath)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-            while( entries.hasMoreElements() ) {
+            while (entries.hasMoreElements()) {
 
                 ZipEntry zipEntry = entries.nextElement();
-                File entryDestination = new File( outputDirPath, zipEntry.getName() );
-                if( isTempDirectory ) {
+                File entryDestination = new File(outputDirPath, zipEntry.getName());
+                if (isTempDirectory) {
                     entryDestination.deleteOnExit();
                 }
 
-                if( zipEntry.isDirectory() ) {
+                if (zipEntry.isDirectory()) {
                     entryDestination.mkdirs();
                 } else {
                     entryDestination.getParentFile().mkdirs();
@@ -379,13 +378,13 @@ public class IoUtils {
                     InputStream in = null;
                     OutputStream out = null;
                     try {
-                        in = zipFile.getInputStream( zipEntry );
-                        out = new FileOutputStream( entryDestination );
+                        in = zipFile.getInputStream(zipEntry);
+                        out = new FileOutputStream(entryDestination);
 
-                        copyStream( in, out );
+                        copyStream(in, out);
                     } finally {
-                        closeStream( out );
-                        closeStream( in );
+                        closeStream(out);
+                        closeStream(in);
                     }
                 }
             }
@@ -406,18 +405,18 @@ public class IoUtils {
                                         String filePath ) throws IOException {
 
         // fix the encoded characters
-        filePath = URLDecoder.decode( filePath, "UTF-8" );
+        filePath = URLDecoder.decode(filePath, "UTF-8");
 
-        File file = new File( filePath );
+        File file = new File(filePath);
         InputStream fis = null;
 
         try {
-            fis = new FileInputStream( file );
-            byte[] readBytes = new byte[( int ) file.length()];
-            fis.read( readBytes );
-            return new ByteArrayInputStream( readBytes );
+            fis = new FileInputStream(file);
+            byte[] readBytes = new byte[(int) file.length()];
+            fis.read(readBytes);
+            return new ByteArrayInputStream(readBytes);
         } finally {
-            closeStream( fis );
+            closeStream(fis);
         }
     }
 
@@ -441,49 +440,49 @@ public class IoUtils {
                                                String fileToLoad ) throws IOException {
 
         // fix the encoded characters
-        jarContainingTheFileToRead = URLDecoder.decode( jarContainingTheFileToRead, "UTF-8" );
-        if( jarContainingTheFileToRead.startsWith( "file:" ) ) {
+        jarContainingTheFileToRead = URLDecoder.decode(jarContainingTheFileToRead, "UTF-8");
+        if (jarContainingTheFileToRead.startsWith("file:")) {
             // cut the file prefix
-            jarContainingTheFileToRead = jarContainingTheFileToRead.substring( "file:".length() );
+            jarContainingTheFileToRead = jarContainingTheFileToRead.substring("file:".length());
         }
         // we are opening a jar file, cut any info after the jar filename
-        if( jarContainingTheFileToRead.indexOf( '!' ) != -1 ) {
-            jarContainingTheFileToRead = jarContainingTheFileToRead.substring( 0,
-                                                                               jarContainingTheFileToRead.indexOf( '!' ) );
+        if (jarContainingTheFileToRead.indexOf('!') != -1) {
+            jarContainingTheFileToRead = jarContainingTheFileToRead.substring(0,
+                                                                              jarContainingTheFileToRead.indexOf('!'));
         }
 
         // remove the root prefix "/" if there is such
-        if( fileToLoad.startsWith( "/" ) ) {
-            fileToLoad = fileToLoad.substring( 1 );
+        if (fileToLoad.startsWith("/")) {
+            fileToLoad = fileToLoad.substring(1);
         }
 
         // normalize the separator of internal java packages - this is not dependent to the local OS
-        fileToLoad = fileToLoad.replace( "\\", "/" );
+        fileToLoad = fileToLoad.replace("\\", "/");
 
-        log.debug( "Searching for '" + fileToLoad + "' into '" + jarContainingTheFileToRead + "'" );
+        log.debug("Searching for '" + fileToLoad + "' into '" + jarContainingTheFileToRead + "'");
 
-        JarFile jarFile = new JarFile( jarContainingTheFileToRead );
-        ZipEntry jarEntry = jarFile.getEntry( fileToLoad );
-        if( jarEntry != null ) {
-            log.debug( "Reading file '" + jarEntry.getName() + "'" );
+        JarFile jarFile = new JarFile(jarContainingTheFileToRead);
+        ZipEntry jarEntry = jarFile.getEntry(fileToLoad);
+        if (jarEntry != null) {
+            log.debug("Reading file '" + jarEntry.getName() + "'");
             try {
                 // Note: jarEntry.getSize() is not used in order to load the file at once as it does not guarantee that
                 // will return always the extracted(normal) byte size
-                byte[] byteArr = loadInputStreamToMemory( jarFile.getInputStream( jarEntry ) );
-                return new ByteArrayInputStream( byteArr );
+                byte[] byteArr = loadInputStreamToMemory(jarFile.getInputStream(jarEntry));
+                return new ByteArrayInputStream(byteArr);
             } finally {
                 try {
                     jarFile.close(); // closes also all streams opened from this JAR file
-                } catch( IOException e ) {
-                    log.debug( "Problem while trying to close open streams from ZIP file '"
-                               + jarContainingTheFileToRead + "'", e );
+                } catch (IOException e) {
+                    log.debug("Problem while trying to close open streams from ZIP file '"
+                              + jarContainingTheFileToRead + "'", e);
                 }
             }
         } else {
-            closeStream( jarFile,
-                         "Error ocurred while trying to close handle to file " + jarContainingTheFileToRead );
-            throw new FileNotFoundException( "'" + fileToLoad + "' not found in '"
-                                             + jarContainingTheFileToRead + "'" );
+            closeStream(jarFile,
+                        "Error ocurred while trying to close handle to file " + jarContainingTheFileToRead);
+            throw new FileNotFoundException("'" + fileToLoad + "' not found in '"
+                                            + jarContainingTheFileToRead + "'");
         }
     }
 
@@ -497,15 +496,15 @@ public class IoUtils {
     private static byte[] loadInputStreamToMemory(
                                                    InputStream inputStream ) throws IOException {
 
-        if( inputStream == null ) {
-            throw new IllegalArgumentException( "Null parameter passed" );
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Null parameter passed");
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buff = new byte[INTERNAL_BUFFER_SIZE];
-        int bytesRead = inputStream.read( buff );
-        while( bytesRead > -1 ) {
-            baos.write( buff, 0, bytesRead );
-            bytesRead = inputStream.read( buff );
+        int bytesRead = inputStream.read(buff);
+        while (bytesRead > -1) {
+            baos.write(buff, 0, bytesRead);
+            bytesRead = inputStream.read(buff);
         }
         return baos.toByteArray();
     }
@@ -521,9 +520,9 @@ public class IoUtils {
                                          InputStream inputStream ) throws IOException {
 
         try {
-            return new String( loadInputStreamToMemory( inputStream ) );
+            return new String(loadInputStreamToMemory(inputStream));
         } finally {
-            IoUtils.closeStream( inputStream );
+            IoUtils.closeStream(inputStream);
         }
     }
 
@@ -540,7 +539,7 @@ public class IoUtils {
                                        int fromLine,
                                        int toLine ) {
 
-        return getFileChunk( fileName, fromLine, toLine, 10 );
+        return getFileChunk(fileName, fromLine, toLine, 10);
     }
 
     /**
@@ -558,28 +557,28 @@ public class IoUtils {
                                        int toLine,
                                        int averageLineLength ) {
 
-        StringBuilder sb = new StringBuilder( ( toLine - fromLine ) * averageLineLength );
+        StringBuilder sb = new StringBuilder( (toLine - fromLine) * averageLineLength);
         BufferedReader br = null;
         try {
-            br = new BufferedReader( new InputStreamReader( new FileInputStream( fileName ) ) );
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
 
             int lineNumber = 1;
             String line;
-            while( ( line = br.readLine() ) != null ) {
+            while ( (line = br.readLine()) != null) {
 
-                if( lineNumber >= fromLine ) {
+                if (lineNumber >= fromLine) {
 
-                    sb.append( line + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                    sb.append(line + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
-                if( lineNumber >= toLine ) {
+                if (lineNumber >= toLine) {
                     break;
                 }
                 lineNumber++;
             }
-        } catch( Exception e ) {
-            throw new RuntimeException( "Unable to get a chunk of data from file: " + fileName, e );
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to get a chunk of data from file: " + fileName, e);
         } finally {
-            IoUtils.closeStream( br );
+            IoUtils.closeStream(br);
         }
         return sb.toString();
     }
@@ -590,31 +589,31 @@ public class IoUtils {
         StringBuilder line = new StringBuilder();
         int c = -1;
         boolean eol = false;
-        while( !eol ) {
-            switch( c = raf.read() ){
+        while (!eol) {
+            switch (c = raf.read()) {
                 case -1:
                     eol = true;
                     break;
                 case '\n':
                     eol = true;
-                    line.append( '\n' );
+                    line.append('\n');
                     break;
                 case '\r':
                     eol = true;
-                    line.append( '\r' );
+                    line.append('\r');
                     long cur = raf.getFilePointer();
-                    if( ( raf.read() ) != '\n' ) {
-                        raf.seek( cur );
+                    if ( (raf.read()) != '\n') {
+                        raf.seek(cur);
                     } else {
-                        line.append( '\n' );
+                        line.append('\n');
                     }
                     break;
                 default:
-                    line.append( ( char ) c );
+                    line.append((char) c);
                     break;
             }
         }
-        if( c == -1 && line.length() == 0 ) {
+        if (c == -1 && line.length() == 0) {
             return null;
         }
         return line.toString();

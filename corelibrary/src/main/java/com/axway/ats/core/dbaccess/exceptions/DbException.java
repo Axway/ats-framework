@@ -15,23 +15,23 @@
  */
 package com.axway.ats.core.dbaccess.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DbException extends RuntimeException {
 
     public DbException( String errorMessage ) {
 
-        super( errorMessage );
+        super(errorMessage);
     }
 
     public DbException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public DbException( String errorMessage,
                         Throwable cause ) {
 
-        super( errorMessage, cause );
+        super(errorMessage, cause);
     }
 
 }

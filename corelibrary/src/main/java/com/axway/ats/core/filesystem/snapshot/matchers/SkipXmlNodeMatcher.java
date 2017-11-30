@@ -30,14 +30,14 @@ import com.axway.ats.core.filesystem.snapshot.XmlNode;
  */
 public class SkipXmlNodeMatcher extends SkipContentMatcher {
 
-    private static final Logger        log = Logger.getLogger( SkipXmlNodeMatcher.class );
+    private static final Logger        log = Logger.getLogger(SkipXmlNodeMatcher.class);
 
     // list of node matchers
     private List<NodeValueMatcher>     nodeValueMatchers;
     private List<NodeAttributeMatcher> nodeAttributeMatchers;
 
     public SkipXmlNodeMatcher( String directoryAlias, String filePath ) {
-        super( directoryAlias, filePath );
+        super(directoryAlias, filePath);
 
         this.nodeAttributeMatchers = new ArrayList<>();
         this.nodeValueMatchers = new ArrayList<>();
@@ -51,17 +51,17 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
     public void addNodeAttributeMatcher( String xpath, String attributeKey, String attributeValue,
                                          MATCH_TYPE type ) {
 
-        NodeAttributeMatcher newMatcher = new NodeAttributeMatcher( xpath, attributeKey, attributeValue,
-                                                                    type );
+        NodeAttributeMatcher newMatcher = new NodeAttributeMatcher(xpath, attributeKey, attributeValue,
+                                                                   type);
 
         // check if there is already such matcher, we do not want to repeat
-        for( NodeAttributeMatcher matcher : nodeAttributeMatchers ) {
-            if( matcher.getDescription().equalsIgnoreCase( newMatcher.getDescription() ) ) {
+        for (NodeAttributeMatcher matcher : nodeAttributeMatchers) {
+            if (matcher.getDescription().equalsIgnoreCase(newMatcher.getDescription())) {
                 return; // do nothing
             }
         }
 
-        nodeAttributeMatchers.add( newMatcher );
+        nodeAttributeMatchers.add(newMatcher);
     }
 
     public List<NodeValueMatcher> getNodeValueMatchers() {
@@ -71,21 +71,21 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
 
     public void addNodeValueMatcher( String xpath, String value, MATCH_TYPE type ) {
 
-        NodeValueMatcher newMatcher = new NodeValueMatcher( xpath, value, type );
+        NodeValueMatcher newMatcher = new NodeValueMatcher(xpath, value, type);
 
         // check if there is already such matcher, we do not want to repeat
-        for( NodeValueMatcher matcher : nodeValueMatchers ) {
-            if( matcher.getDescription().equalsIgnoreCase( newMatcher.getDescription() ) ) {
+        for (NodeValueMatcher matcher : nodeValueMatchers) {
+            if (matcher.getDescription().equalsIgnoreCase(newMatcher.getDescription())) {
                 return; // do nothing
             }
         }
 
-        nodeValueMatchers.add( newMatcher );
+        nodeValueMatchers.add(newMatcher);
     }
 
     public void addNodeValueMatchers( List<NodeValueMatcher> nodeMatchers ) {
 
-        this.nodeValueMatchers.addAll( nodeMatchers );
+        this.nodeValueMatchers.addAll(nodeMatchers);
     }
 
     public void process( String snapshot, XmlNode xmlNode ) {
@@ -93,17 +93,17 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
         List<Element> matchedNodes = new ArrayList<>();
 
         // cycle all node attribute matchers
-        for( NodeAttributeMatcher matcher : nodeAttributeMatchers ) {
-            matchedNodes.addAll( matcher.getMatchingNodes( snapshot, xmlNode ) );
+        for (NodeAttributeMatcher matcher : nodeAttributeMatchers) {
+            matchedNodes.addAll(matcher.getMatchingNodes(snapshot, xmlNode));
         }
 
         // cycle all node value matchers
-        for( NodeValueMatcher matcher : nodeValueMatchers ) {
-            matchedNodes.addAll( matcher.getMatchingNodes( snapshot, xmlNode ) );
+        for (NodeValueMatcher matcher : nodeValueMatchers) {
+            matchedNodes.addAll(matcher.getMatchingNodes(snapshot, xmlNode));
         }
 
-        for( Element matchedNode : matchedNodes ) {
-            xmlNode.removeChild( matchedNode );
+        for (Element matchedNode : matchedNodes) {
+            xmlNode.removeChild(matchedNode);
         }
     }
 
@@ -116,14 +116,14 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "SkipXmlNodeMatcher" );
-        sb.append( "\n\tDir alias: " + directoryAlias );
-        sb.append( "\n\tFile path: " + filePath );
-        for( NodeAttributeMatcher matcher : nodeAttributeMatchers ) {
-            sb.append( matcher.toString() );
+        sb.append("SkipXmlNodeMatcher");
+        sb.append("\n\tDir alias: " + directoryAlias);
+        sb.append("\n\tFile path: " + filePath);
+        for (NodeAttributeMatcher matcher : nodeAttributeMatchers) {
+            sb.append(matcher.toString());
         }
-        for( NodeValueMatcher matcher : nodeValueMatchers ) {
-            sb.append( matcher.toString() );
+        for (NodeValueMatcher matcher : nodeValueMatchers) {
+            sb.append(matcher.toString());
         }
         return sb.toString();
     }
@@ -152,38 +152,38 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
             // cycle all nodes that come for this XPath
             List<Element> matchedNodes = new ArrayList<>();
 
-            List foundNodeObjects = xmlNode.getnode().selectNodes( this.xpath );
-            if( foundNodeObjects != null ) {
-                for( Object foundNodeObject : foundNodeObjects ) {
-                    Element node = ( Element ) foundNodeObject;
+            List foundNodeObjects = xmlNode.getnode().selectNodes(this.xpath);
+            if (foundNodeObjects != null) {
+                for (Object foundNodeObject : foundNodeObjects) {
+                    Element node = (Element) foundNodeObject;
 
                     String message = null;
-                    Attribute attribute = node.attribute( attributeKey );
-                    if( attribute != null ) {
+                    Attribute attribute = node.attribute(attributeKey);
+                    if (attribute != null) {
                         String attributeValue = attribute.getValue();
-                        if( matchType == MATCH_TYPE.TEXT
-                            && attributeValue.equalsIgnoreCase( this.attributeValue ) ) {
+                        if (matchType == MATCH_TYPE.TEXT
+                            && attributeValue.equalsIgnoreCase(this.attributeValue)) {
                             // equals text
                             message = "equals ignoring case '" + attributeValue + "'";
-                        } else if( matchType == MATCH_TYPE.CONTAINS_TEXT
+                        } else if (matchType == MATCH_TYPE.CONTAINS_TEXT
                                    && attributeValue.toLowerCase()
-                                                    .contains( this.attributeValue.toLowerCase() ) ) {
+                                                    .contains(this.attributeValue.toLowerCase())) {
                             // contains text
                             message = "contains ignoring case '" + attributeValue + "'";
-                        } else if( attributeValue.matches( this.attributeValue ) ) {
+                        } else if (attributeValue.matches(this.attributeValue)) {
                             // matches regex
                             message = "matches the '" + attributeValue + "' regular expression";
                         }
 
-                        if( message != null ) {
-                            if( log.isDebugEnabled() ) {
+                        if (message != null) {
+                            if (log.isDebugEnabled()) {
 
-                                log.debug( "[" + snapshot + "] File " + filePath + ": Removing XML node "
-                                           + new XmlNode( xmlNode, node ).getSignature( "" )
-                                           + " as its attribute '" + this.attributeKey + "="
-                                           + this.attributeValue + "' has a value that " + message );
+                                log.debug("[" + snapshot + "] File " + filePath + ": Removing XML node "
+                                          + new XmlNode(xmlNode, node).getSignature("")
+                                          + " as its attribute '" + this.attributeKey + "="
+                                          + this.attributeValue + "' has a value that " + message);
                             }
-                            matchedNodes.add( node );
+                            matchedNodes.add(node);
                         }
                     }
                 }
@@ -207,12 +207,12 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
         public String toString() {
 
             StringBuilder sb = new StringBuilder();
-            sb.append( "\n\tNode Attribute Matcher" );
-            sb.append( "\n\t\txpath: " + xpath );
-            sb.append( "\n\t\tattributeKey: " + attributeKey );
-            sb.append( "\n\t\tattributeValue: " + attributeValue );
-            if( matchType != null ) {
-                sb.append( "\n\t\tmatchType: " + matchType.toString() );
+            sb.append("\n\tNode Attribute Matcher");
+            sb.append("\n\t\txpath: " + xpath);
+            sb.append("\n\t\tattributeKey: " + attributeKey);
+            sb.append("\n\t\tattributeValue: " + attributeValue);
+            if (matchType != null) {
+                sb.append("\n\t\tmatchType: " + matchType.toString());
             }
 
             return sb.toString();
@@ -239,32 +239,32 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
             // cycle all nodes that come for this XPath
             List<Element> matchedNodes = new ArrayList<>();
 
-            List foundNodeObjects = xmlNode.getnode().selectNodes( this.xpath );
-            if( foundNodeObjects != null ) {
-                for( Object foundNodeObject : foundNodeObjects ) {
-                    Element node = ( Element ) foundNodeObject;
+            List foundNodeObjects = xmlNode.getnode().selectNodes(this.xpath);
+            if (foundNodeObjects != null) {
+                for (Object foundNodeObject : foundNodeObjects) {
+                    Element node = (Element) foundNodeObject;
 
                     String message = null;
                     String nodeValue = node.getStringValue();
-                    if( matchType == MATCH_TYPE.TEXT && nodeValue.equalsIgnoreCase( value ) ) {
+                    if (matchType == MATCH_TYPE.TEXT && nodeValue.equalsIgnoreCase(value)) {
                         // equals text
                         message = "equals ignoring case '" + value + "'";
-                    } else if( matchType == MATCH_TYPE.CONTAINS_TEXT
-                               && nodeValue.toLowerCase().contains( this.value.toLowerCase() ) ) {
+                    } else if (matchType == MATCH_TYPE.CONTAINS_TEXT
+                               && nodeValue.toLowerCase().contains(this.value.toLowerCase())) {
                         // contains text
                         message = "contains ignoring case '" + value + "'";
-                    } else if( nodeValue.matches( value ) ) {
+                    } else if (nodeValue.matches(value)) {
                         // matches regex
                         message = "matches the '" + value + "' regular expression";
                     }
 
-                    if( message != null ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing XML node "
-                                       + new XmlNode( xmlNode, node ).getSignature( "" ) + " as its value '"
-                                       + nodeValue + "' " + message );
+                    if (message != null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing XML node "
+                                      + new XmlNode(xmlNode, node).getSignature("") + " as its value '"
+                                      + nodeValue + "' " + message);
                         }
-                        matchedNodes.add( node );
+                        matchedNodes.add(node);
                     }
                 }
             }
@@ -297,11 +297,11 @@ public class SkipXmlNodeMatcher extends SkipContentMatcher {
         public String toString() {
 
             StringBuilder sb = new StringBuilder();
-            sb.append( "\n\tNode Value Matcher" );
-            sb.append( "\n\t\txpath: " + xpath );
-            sb.append( "\n\t\tvalue: " + value );
-            if( matchType != null ) {
-                sb.append( "\n\t\tmatchType: " + matchType.toString() );
+            sb.append("\n\tNode Value Matcher");
+            sb.append("\n\t\txpath: " + xpath);
+            sb.append("\n\t\tvalue: " + value);
+            if (matchType != null) {
+                sb.append("\n\t\tmatchType: " + matchType.toString());
             }
 
             return sb.toString();

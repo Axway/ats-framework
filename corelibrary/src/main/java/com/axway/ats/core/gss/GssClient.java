@@ -46,12 +46,12 @@ public class GssClient {
     // and all service tickets in its private credentials cache.    
     protected Subject           subject;
 
-    private static final Logger log = Logger.getLogger( GssClient.class );
+    private static final Logger log = Logger.getLogger(GssClient.class);
 
     public GssClient( String clientPrincipalName, String clientPrincipalPassword, File keytab,
                       File krb5ConfFile ) {
 
-        System.setProperty( "java.security.krb5.conf", krb5ConfFile.toString() );
+        System.setProperty("java.security.krb5.conf", krb5ConfFile.toString());
         this.clientPrincipalName = clientPrincipalName;
         this.clientPrincipalPassword = clientPrincipalPassword;
         this.clientKeytab = keytab;
@@ -71,19 +71,19 @@ public class GssClient {
 
         try {
             JaasKerberosConfiguration config = createGssKerberosConfiguration();
-            if( clientPrincipalPassword != null ) {
-                config.setPassword( clientPrincipalPassword.toCharArray() );
+            if (clientPrincipalPassword != null) {
+                config.setPassword(clientPrincipalPassword.toCharArray());
             }
-            if( clientKeytab != null ) {
-                config.setKeytab( clientKeytab.toString() );
+            if (clientKeytab != null) {
+                config.setKeytab(clientKeytab.toString());
             }
             config.initialize();
 
             LoginContext loginContext = null;
-            if( config.getCallbackHandler() != null ) {
-                loginContext = new LoginContext( "other", config.getCallbackHandler() );
+            if (config.getCallbackHandler() != null) {
+                loginContext = new LoginContext("other", config.getCallbackHandler());
             } else {
-                loginContext = new LoginContext( "other" );
+                loginContext = new LoginContext("other");
             }
 
             loginContext.login();
@@ -94,21 +94,21 @@ public class GssClient {
             // set of a Subject             
             subject = loginContext.getSubject();
 
-            log.debug( "Logged in successfully as subject=\n" + subject.toString() );
+            log.debug("Logged in successfully as subject=\n" + subject.toString());
 
-        } catch( LoginException e ) {
-            log.error( e );
-            throw new GSSException( GSSException.DEFECTIVE_CREDENTIAL,
-                                    GSSException.BAD_STATUS,
-                                    "Kerberos client '" + clientPrincipalName
-                                                             + "' failed to login to KDC. Error: "
-                                                             + e.getMessage() );
+        } catch (LoginException e) {
+            log.error(e);
+            throw new GSSException(GSSException.DEFECTIVE_CREDENTIAL,
+                                   GSSException.BAD_STATUS,
+                                   "Kerberos client '" + clientPrincipalName
+                                                            + "' failed to login to KDC. Error: "
+                                                            + e.getMessage());
         }
     }
 
     public JaasKerberosConfiguration createGssKerberosConfiguration() {
 
-        return new JaasKerberosConfiguration( clientPrincipalName );
+        return new JaasKerberosConfiguration(clientPrincipalName);
     }
 
     /**
@@ -121,17 +121,17 @@ public class GssClient {
      */
     public byte[] negotiate( GSSContext context, byte[] negotiationToken ) throws GSSException {
 
-        if( subject == null ) {
+        if (subject == null) {
             loginViaJAAS(); // throw GSSException if fail to login
         }
         // If we do not have the service ticket it will be retrieved
         // from the TGS on a call to initSecContext().
-        NegotiateContextAction negotiationAction = new NegotiateContextAction( context, negotiationToken );
+        NegotiateContextAction negotiationAction = new NegotiateContextAction(context, negotiationToken);
         // Run the negotiation as the initiator
         // The service ticket will then be cached in the Subject's
         // private credentials, as the subject.
-        negotiationToken = ( byte[] ) Subject.doAs( subject, negotiationAction );
-        if( negotiationAction.getGSSException() != null ) {
+        negotiationToken = (byte[]) Subject.doAs(subject, negotiationAction);
+        if (negotiationAction.getGSSException() != null) {
             throw negotiationAction.getGSSException();
         }
 
@@ -165,14 +165,14 @@ public class GssClient {
                 // to be retrieved next time the client wishes to talk to the
                 // server (acceptor).
 
-                Subject subject = Subject.getSubject( AccessController.getContext() );
+                Subject subject = Subject.getSubject(AccessController.getContext());
                 int beforeNumSubjectCreds = traceBeforeNegotiate();
 
-                negotiationToken = context.initSecContext( negotiationToken, 0, negotiationToken.length );
+                negotiationToken = context.initSecContext(negotiationToken, 0, negotiationToken.length);
 
-                traceAfterNegotiate( beforeNumSubjectCreds );
+                traceAfterNegotiate(beforeNumSubjectCreds);
 
-            } catch( GSSException e ) {
+            } catch (GSSException e) {
                 // Trace out some info
                 traceServiceTickets();
                 exception = e;
@@ -190,18 +190,18 @@ public class GssClient {
 
             int beforeNumSubjectCreds = 0;
             // Traces all credentials too.
-            if( subject != null ) {
-                log.debug( "[" + getName() + "] AUTH_NEGOTIATE as subject " + subject.toString() );
+            if (subject != null) {
+                log.debug("[" + getName() + "] AUTH_NEGOTIATE as subject " + subject.toString());
                 beforeNumSubjectCreds = subject.getPrivateCredentials().size();
             }
 
-            if( negotiationToken != null && negotiationToken.length > 0 ) {
+            if (negotiationToken != null && negotiationToken.length > 0) {
                 try {
                     OutputStream os = new ByteArrayOutputStream();
-                    HexDump.dump( negotiationToken, 0, os, 0 );
-                    log.debug( "[" + getName() + "] AUTH_NEGOTIATE Process token from acceptor==>\n"
-                               + os.toString() );
-                } catch( IOException e ) {}
+                    HexDump.dump(negotiationToken, 0, os, 0);
+                    log.debug("[" + getName() + "] AUTH_NEGOTIATE Process token from acceptor==>\n"
+                              + os.toString());
+                } catch (IOException e) {}
             }
 
             return beforeNumSubjectCreds;
@@ -209,44 +209,44 @@ public class GssClient {
 
         private void traceAfterNegotiate( int beforeNumSubjectCreds ) {
 
-            if( subject != null ) {
+            if (subject != null) {
                 int afterNumSubjectCreds = subject.getPrivateCredentials().size();
-                if( afterNumSubjectCreds > beforeNumSubjectCreds ) {
-                    log.debug( "[" + getName() + "] AUTH_NEGOTIATE have extra credentials." );
+                if (afterNumSubjectCreds > beforeNumSubjectCreds) {
+                    log.debug("[" + getName() + "] AUTH_NEGOTIATE have extra credentials.");
                     // Traces all credentials too.
-                    log.debug( "[" + getName() + "] AUTH_NEGOTIATE updated subject=" + subject.toString() );
+                    log.debug("[" + getName() + "] AUTH_NEGOTIATE updated subject=" + subject.toString());
                 }
             }
 
-            if( negotiationToken != null && negotiationToken.length > 0 ) {
+            if (negotiationToken != null && negotiationToken.length > 0) {
                 try {
                     OutputStream os = new ByteArrayOutputStream();
-                    HexDump.dump( negotiationToken, 0, os, 0 );
-                    log.debug( "[" + getName() + "] AUTH_NEGOTIATE Send token to acceptor==>\n"
-                               + os.toString() );
-                } catch( IOException e ) {}
+                    HexDump.dump(negotiationToken, 0, os, 0);
+                    log.debug("[" + getName() + "] AUTH_NEGOTIATE Send token to acceptor==>\n"
+                              + os.toString());
+                } catch (IOException e) {}
             }
         }
 
         public void traceServiceTickets() {
 
-            if( subject == null )
+            if (subject == null)
                 return;
             Set<Object> creds = subject.getPrivateCredentials();
-            if( creds.size() == 0 ) {
-                log.debug( "[" + getName() + "] No service tickets" );
+            if (creds.size() == 0) {
+                log.debug("[" + getName() + "] No service tickets");
             }
 
-            synchronized( creds ) {
+            synchronized (creds) {
                 // The Subject's private credentials is a synchronizedSet
                 // We must manually synchronize when iterating through the set.
-                for( Object cred : creds ) {
-                    if( cred instanceof KerberosTicket ) {
-                        KerberosTicket ticket = ( KerberosTicket ) cred;
-                        log.debug( "[" + getName() + "] Service ticket " + "belonging to client principal ["
-                                   + ticket.getClient().getName() + "] for server principal ["
-                                   + ticket.getServer().getName() + "] End time=[" + ticket.getEndTime()
-                                   + "] isCurrent=" + ticket.isCurrent() );
+                for (Object cred : creds) {
+                    if (cred instanceof KerberosTicket) {
+                        KerberosTicket ticket = (KerberosTicket) cred;
+                        log.debug("[" + getName() + "] Service ticket " + "belonging to client principal ["
+                                  + ticket.getClient().getName() + "] for server principal ["
+                                  + ticket.getServer().getName() + "] End time=[" + ticket.getEndTime()
+                                  + "] isCurrent=" + ticket.isCurrent());
                     }
                 }
             }

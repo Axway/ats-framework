@@ -83,141 +83,141 @@ public abstract class AbstractApplicationInfo {
         try {
             // basic application info
             this.alias = alias;
-            this.host = XmlUtils.getMandatoryAttribute( applicationNode,
-                                                        AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_HOST );
-            this.isLocalHost = HostUtils.isLocalHost( host );
+            this.host = XmlUtils.getMandatoryAttribute(applicationNode,
+                                                       AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_HOST);
+            this.isLocalHost = HostUtils.isLocalHost(host);
 
             // application port
-            this.port = XmlUtils.getAttribute( applicationNode,
-                                               AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_PORT ); // application port
-            if( port == null ) {
-                port = defaultValues.get( AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_PORT ); // global applications port
-                if( port == null ) {
-                    port = String.valueOf( AtsSystemProperties.DEFAULT_AGENT_PORT_VALUE ); // default port
+            this.port = XmlUtils.getAttribute(applicationNode,
+                                              AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_PORT); // application port
+            if (port == null) {
+                port = defaultValues.get(AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_PORT); // global applications port
+                if (port == null) {
+                    port = String.valueOf(AtsSystemProperties.DEFAULT_AGENT_PORT_VALUE); // default port
                 }
             }
 
             // set description - often used in messages displayed to user
             address = host;
-            if( port.length() > 0 ) {
+            if (port.length() > 0) {
                 address = address + ":" + port;
             }
-            description = ( this instanceof AgentInfo
-                                                      ? "ATS agent"
-                                                      : "Application" );
+            description = (this instanceof AgentInfo
+                                                     ? "ATS agent"
+                                                     : "Application");
 
-            this.home = XmlUtils.getMandatoryAttribute( applicationNode,
-                                                        AtsProjectConfiguration.NODE_ATTRIBUTE_HOME );
-            this.isUnix = this.home.charAt( 0 ) == '/';
-            if( this.isUnix ) {
-                sftpHome = IoUtils.normalizeUnixDir( home );
+            this.home = XmlUtils.getMandatoryAttribute(applicationNode,
+                                                       AtsProjectConfiguration.NODE_ATTRIBUTE_HOME);
+            this.isUnix = this.home.charAt(0) == '/';
+            if (this.isUnix) {
+                sftpHome = IoUtils.normalizeUnixDir(home);
             } else {
-                sftpHome = IoUtils.normalizeUnixDir( home.substring( home.indexOf( ':' ) + 1 ) );
+                sftpHome = IoUtils.normalizeUnixDir(home.substring(home.indexOf(':') + 1));
             }
 
-            String sshPortString = XmlUtils.getAttribute( applicationNode,
-                                                          AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PORT );
-            if( sshPortString != null ) {
+            String sshPortString = XmlUtils.getAttribute(applicationNode,
+                                                         AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PORT);
+            if (sshPortString != null) {
                 try {
-                    this.sshPort = Integer.parseInt( sshPortString );
-                } catch( NumberFormatException nfe ) {
-                    throw new AtsConfigurationException( "Invalid SSH Port number '" + sshPortString + "'" );
+                    this.sshPort = Integer.parseInt(sshPortString);
+                } catch (NumberFormatException nfe) {
+                    throw new AtsConfigurationException("Invalid SSH Port number '" + sshPortString + "'");
                 }
             }
-            this.systemUser = XmlUtils.getMandatoryAttribute( applicationNode,
-                                                              AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_USER );
-            this.systemPassword = XmlUtils.getAttribute( applicationNode,
-                                                         AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_PASSWORD );
-            this.sshPrivateKey = XmlUtils.getAttribute( applicationNode,
-                                                        AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY );
-            this.sshPrivateKeyPassword = XmlUtils.getAttribute( applicationNode,
-                                                                AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY_PASSWORD );
+            this.systemUser = XmlUtils.getMandatoryAttribute(applicationNode,
+                                                             AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_USER);
+            this.systemPassword = XmlUtils.getAttribute(applicationNode,
+                                                        AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_PASSWORD);
+            this.sshPrivateKey = XmlUtils.getAttribute(applicationNode,
+                                                       AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY);
+            this.sshPrivateKeyPassword = XmlUtils.getAttribute(applicationNode,
+                                                               AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY_PASSWORD);
 
             // java executable
-            this.javaExecutable = XmlUtils.getAttribute( applicationNode,
-                                                         AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_JAVA_EXEC ); // application java executable
-            if( javaExecutable == null ) {
+            this.javaExecutable = XmlUtils.getAttribute(applicationNode,
+                                                        AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_JAVA_EXEC); // application java executable
+            if (javaExecutable == null) {
                 // global java executable
-                if( this.isUnix ) {
-                    javaExecutable = defaultValues.get( AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC );
+                if (this.isUnix) {
+                    javaExecutable = defaultValues.get(AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC);
                 } else {
-                    javaExecutable = defaultValues.get( AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC );
+                    javaExecutable = defaultValues.get(AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC);
                 }
-                if( javaExecutable == null ) {
+                if (javaExecutable == null) {
                     javaExecutable = ""; // default value
                 }
             }
 
             // agent memory
-            this.memory = XmlUtils.getAttribute( applicationNode,
-                                                 AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_MEMORY );
+            this.memory = XmlUtils.getAttribute(applicationNode,
+                                                AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_MEMORY);
 
             // post 'Install' shell command
-            List<Element> postInstallCommandElements = XmlUtils.getChildrenByTagName( applicationNode,
-                                                                                      AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_POST_INSTALL_COMMAND );
-            if( postInstallCommandElements.size() > 0 ) {
+            List<Element> postInstallCommandElements = XmlUtils.getChildrenByTagName(applicationNode,
+                                                                                     AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_POST_INSTALL_COMMAND);
+            if (postInstallCommandElements.size() > 0) {
 
-                this.postInstallShellCommand = postInstallCommandElements.get( 0 ).getTextContent();
-                if( this.postInstallShellCommand != null && this.postInstallShellCommand.trim().isEmpty() ) {
+                this.postInstallShellCommand = postInstallCommandElements.get(0).getTextContent();
+                if (this.postInstallShellCommand != null && this.postInstallShellCommand.trim().isEmpty()) {
                     this.postInstallShellCommand = null;
                 }
             }
 
             // post 'Start' shell command
-            List<Element> postStartCommandElements = XmlUtils.getChildrenByTagName( applicationNode,
-                                                                                    AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_POST_START_COMMAND );
-            if( postStartCommandElements.size() > 0 ) {
+            List<Element> postStartCommandElements = XmlUtils.getChildrenByTagName(applicationNode,
+                                                                                   AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_POST_START_COMMAND);
+            if (postStartCommandElements.size() > 0) {
 
-                this.postStartShellCommand = postStartCommandElements.get( 0 ).getTextContent();
-                if( this.postStartShellCommand != null && this.postStartShellCommand.trim().isEmpty() ) {
+                this.postStartShellCommand = postStartCommandElements.get(0).getTextContent();
+                if (this.postStartShellCommand != null && this.postStartShellCommand.trim().isEmpty()) {
                     this.postStartShellCommand = null;
                 }
             }
 
             // post 'Stop' shell command
-            List<Element> postStopCommandElements = XmlUtils.getChildrenByTagName( applicationNode,
-                                                                                   AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_POST_STOP_COMMAND );
-            if( postStopCommandElements.size() > 0 ) {
+            List<Element> postStopCommandElements = XmlUtils.getChildrenByTagName(applicationNode,
+                                                                                  AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_POST_STOP_COMMAND);
+            if (postStopCommandElements.size() > 0) {
 
-                this.postStopShellCommand = postStopCommandElements.get( 0 ).getTextContent();
-                if( this.postStopShellCommand != null && this.postStopShellCommand.trim().isEmpty() ) {
+                this.postStopShellCommand = postStopCommandElements.get(0).getTextContent();
+                if (this.postStopShellCommand != null && this.postStopShellCommand.trim().isEmpty()) {
                     this.postStopShellCommand = null;
                 }
             }
 
             // startup latency
-            String startupLatencyString = XmlUtils.getAttribute( applicationNode,
-                                                                 AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_STARTUP_LATENCY );
-            if( startupLatencyString == null ) {
+            String startupLatencyString = XmlUtils.getAttribute(applicationNode,
+                                                                AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_STARTUP_LATENCY);
+            if (startupLatencyString == null) {
                 // global startup latency
-                if( !this.isUnix ) {
-                    startupLatencyString = defaultValues.get( AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY );
+                if (!this.isUnix) {
+                    startupLatencyString = defaultValues.get(AtsProjectConfiguration.NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY);
                 }
-                if( startupLatencyString == null ) {
+                if (startupLatencyString == null) {
                     startupLatencyString = "0"; // default value
                 }
             }
             try {
-                startupLatency = Integer.parseInt( startupLatencyString );
-            } catch( NumberFormatException nfe ) {
+                startupLatency = Integer.parseInt(startupLatencyString);
+            } catch (NumberFormatException nfe) {
                 startupLatency = 0;
             }
 
             // specific folder destinations
-            for( Element folderPathNode : XmlUtils.getChildrenByTagName( applicationNode,
-                                                                         AtsProjectConfiguration.NODE_ATTRIBUTE_FOLDER ) ) {
-                this.paths.add( new PathInfo( folderPathNode, false, this.home, sftpHome, isUnix ) );
+            for (Element folderPathNode : XmlUtils.getChildrenByTagName(applicationNode,
+                                                                        AtsProjectConfiguration.NODE_ATTRIBUTE_FOLDER)) {
+                this.paths.add(new PathInfo(folderPathNode, false, this.home, sftpHome, isUnix));
             }
             // specific file destinations
-            for( Element filePathNode : XmlUtils.getChildrenByTagName( applicationNode,
-                                                                       AtsProjectConfiguration.NODE_ATTRIBUTE_FILE ) ) {
-                this.paths.add( new PathInfo( filePathNode, true, this.home, sftpHome, isUnix ) );
+            for (Element filePathNode : XmlUtils.getChildrenByTagName(applicationNode,
+                                                                      AtsProjectConfiguration.NODE_ATTRIBUTE_FILE)) {
+                this.paths.add(new PathInfo(filePathNode, true, this.home, sftpHome, isUnix));
             }
 
-            loadMoreInfo( applicationNode );
-        } catch( AtsConfigurationException e ) {
-            throw new AtsConfigurationException( "Error instantiating " + getClass().getSimpleName()
-                                                 + " with alias '" + alias + "' from XML", e );
+            loadMoreInfo(applicationNode);
+        } catch (AtsConfigurationException e) {
+            throw new AtsConfigurationException("Error instantiating " + getClass().getSimpleName()
+                                                + " with alias '" + alias + "' from XML", e);
         }
     }
 
@@ -245,9 +245,9 @@ public abstract class AbstractApplicationInfo {
     public void setHost( String host ) {
 
         this.host = host;
-        XmlUtils.setAttribute( applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_HOST,
-                               this.host );
-        this.isLocalHost = HostUtils.isLocalHost( host );
+        XmlUtils.setAttribute(applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_HOST,
+                              this.host);
+        this.isLocalHost = HostUtils.isLocalHost(host);
     }
 
     public String getPort() {
@@ -258,7 +258,7 @@ public abstract class AbstractApplicationInfo {
     public String getPortToken() {
 
         String portToken = "";
-        if( !StringUtils.isNullOrEmpty( port ) ) {
+        if (!StringUtils.isNullOrEmpty(port)) {
             portToken = " -port " + port;
         }
 
@@ -268,8 +268,8 @@ public abstract class AbstractApplicationInfo {
     public void setPort( String port ) {
 
         this.port = port;
-        XmlUtils.setAttribute( applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_PORT,
-                               this.port );
+        XmlUtils.setAttribute(applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_PORT,
+                              this.port);
     }
 
     public String getHome() {
@@ -285,13 +285,13 @@ public abstract class AbstractApplicationInfo {
     public void setHome( String home ) {
 
         this.home = home;
-        XmlUtils.setAttribute( applicationNode, AtsProjectConfiguration.NODE_ATTRIBUTE_HOME, this.home );
+        XmlUtils.setAttribute(applicationNode, AtsProjectConfiguration.NODE_ATTRIBUTE_HOME, this.home);
     }
 
     public String getJavaExecutableToken() {
 
         String javaExeToken = "";
-        if( !StringUtils.isNullOrEmpty( javaExecutable ) ) {
+        if (!StringUtils.isNullOrEmpty(javaExecutable)) {
             javaExeToken = " -java_exec \"" + javaExecutable + "\"";
         }
 
@@ -301,7 +301,7 @@ public abstract class AbstractApplicationInfo {
     public String getMemoryToken() {
 
         String memoryToken = "";
-        if( !StringUtils.isNullOrEmpty( memory ) ) {
+        if (!StringUtils.isNullOrEmpty(memory)) {
             memoryToken = " -memory " + memory;
         }
 
@@ -346,12 +346,12 @@ public abstract class AbstractApplicationInfo {
     public void setSSHPort( String port ) {
 
         try {
-            this.sshPort = Integer.parseInt( port );
-        } catch( NumberFormatException nfe ) {
-            throw new AtsConfigurationException( "Invalid SSH Port number '" + port + "'" );
+            this.sshPort = Integer.parseInt(port);
+        } catch (NumberFormatException nfe) {
+            throw new AtsConfigurationException("Invalid SSH Port number '" + port + "'");
         }
-        XmlUtils.setAttribute( applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PORT,
-                               port );
+        XmlUtils.setAttribute(applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PORT,
+                              port);
     }
 
     public String getSystemUser() {
@@ -362,8 +362,8 @@ public abstract class AbstractApplicationInfo {
     public void setSystemUser( String systemUser ) {
 
         this.systemUser = systemUser;
-        XmlUtils.setAttribute( applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_USER,
-                               this.systemUser );
+        XmlUtils.setAttribute(applicationNode, AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_USER,
+                              this.systemUser);
     }
 
     public String getSystemPassword() {
@@ -374,9 +374,9 @@ public abstract class AbstractApplicationInfo {
     public void setSystemPassword( String systemPassword ) {
 
         this.systemPassword = systemPassword;
-        XmlUtils.setAttribute( applicationNode,
-                               AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_PASSWORD,
-                               this.systemPassword );
+        XmlUtils.setAttribute(applicationNode,
+                              AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SYSTEM_PASSWORD,
+                              this.systemPassword);
     }
 
     public String getSSHPrivateKey() {
@@ -387,9 +387,9 @@ public abstract class AbstractApplicationInfo {
     public void setSSHPrivateKey( String sshPrivateKey ) {
 
         this.sshPrivateKey = sshPrivateKey;
-        XmlUtils.setAttribute( applicationNode,
-                               AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY,
-                               this.sshPrivateKey );
+        XmlUtils.setAttribute(applicationNode,
+                              AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY,
+                              this.sshPrivateKey);
     }
 
     public String getSSHPrivateKeyPassword() {
@@ -400,9 +400,9 @@ public abstract class AbstractApplicationInfo {
     public void setSSHPrivateKeyPassword( String sshPrivateKeyPassword ) {
 
         this.sshPrivateKeyPassword = sshPrivateKeyPassword;
-        XmlUtils.setAttribute( applicationNode,
-                               AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY_PASSWORD,
-                               this.sshPrivateKeyPassword );
+        XmlUtils.setAttribute(applicationNode,
+                              AtsProjectConfiguration.NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY_PASSWORD,
+                              this.sshPrivateKeyPassword);
     }
 
     public String getDescription() {
@@ -422,8 +422,8 @@ public abstract class AbstractApplicationInfo {
 
     public void markPathsUnchecked() {
 
-        for( PathInfo pathInfo : paths ) {
-            pathInfo.setChecked( false );
+        for (PathInfo pathInfo : paths) {
+            pathInfo.setChecked(false);
         }
     }
 
@@ -435,9 +435,9 @@ public abstract class AbstractApplicationInfo {
     public List<PathInfo> getUnckeckedPaths() {
 
         List<PathInfo> uncheckedPaths = new ArrayList<PathInfo>();
-        for( PathInfo pathInfo : paths ) {
-            if( !pathInfo.isChecked() ) {
-                uncheckedPaths.add( pathInfo );
+        for (PathInfo pathInfo : paths) {
+            if (!pathInfo.isChecked()) {
+                uncheckedPaths.add(pathInfo);
             }
         }
         return uncheckedPaths;
@@ -447,14 +447,14 @@ public abstract class AbstractApplicationInfo {
 
                                  String absolutePath, boolean isFile, boolean useSftpPath ) {
 
-        for( PathInfo pathInfo : paths ) {
+        for (PathInfo pathInfo : paths) {
 
-            if( ( useSftpPath && normalizePath( isFile, absolutePath ).equals( normalizePath( isFile,
-                                                                                              pathInfo.getSftpPath() ) ) )
-                || ( !useSftpPath
-                     && normalizePath( isFile,
-                                       absolutePath ).equals( normalizePath( isFile,
-                                                                             pathInfo.getPath() ) ) ) ) {
+            if ( (useSftpPath && normalizePath(isFile, absolutePath).equals(normalizePath(isFile,
+                                                                                          pathInfo.getSftpPath())))
+                 || (!useSftpPath
+                     && normalizePath(isFile,
+                                      absolutePath).equals(normalizePath(isFile,
+                                                                         pathInfo.getPath())))) {
 
                 return pathInfo;
             }
@@ -479,7 +479,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStatusCommandUrl() {
 
-        if( StringUtils.isNullOrEmpty( statusCommandInfo.url ) ) {
+        if (StringUtils.isNullOrEmpty(statusCommandInfo.url)) {
             return null;
         } else {
             return statusCommandInfo.url;
@@ -488,7 +488,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStatusCommandUrlSearchToken() {
 
-        if( StringUtils.isNullOrEmpty( statusCommandInfo.urlSearchToken ) ) {
+        if (StringUtils.isNullOrEmpty(statusCommandInfo.urlSearchToken)) {
             return null;
         } else {
             return statusCommandInfo.urlSearchToken;
@@ -497,7 +497,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStatusCommand() {
 
-        if( StringUtils.isNullOrEmpty( statusCommandInfo.command ) ) {
+        if (StringUtils.isNullOrEmpty(statusCommandInfo.command)) {
             return null;
         } else {
             return statusCommandInfo.command;
@@ -506,7 +506,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStatusCommandStdOutSearchToken() {
 
-        if( StringUtils.isNullOrEmpty( statusCommandInfo.stdoutSearchToken ) ) {
+        if (StringUtils.isNullOrEmpty(statusCommandInfo.stdoutSearchToken)) {
             return null;
         } else {
             return statusCommandInfo.stdoutSearchToken;
@@ -515,7 +515,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStartCommand() {
 
-        if( StringUtils.isNullOrEmpty( startCommandInfo.command ) ) {
+        if (StringUtils.isNullOrEmpty(startCommandInfo.command)) {
             return null;
         } else {
             return startCommandInfo.command;
@@ -524,7 +524,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStartCommandStdOutSearchToken() {
 
-        if( StringUtils.isNullOrEmpty( startCommandInfo.stdoutSearchToken ) ) {
+        if (StringUtils.isNullOrEmpty(startCommandInfo.stdoutSearchToken)) {
             return null;
         } else {
             return startCommandInfo.stdoutSearchToken;
@@ -533,7 +533,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStopCommand() {
 
-        if( StringUtils.isNullOrEmpty( stopCommandInfo.command ) ) {
+        if (StringUtils.isNullOrEmpty(stopCommandInfo.command)) {
             return null;
         } else {
             return stopCommandInfo.command;
@@ -542,7 +542,7 @@ public abstract class AbstractApplicationInfo {
 
     public String getStopCommandStdOutSearchToken() {
 
-        if( StringUtils.isNullOrEmpty( stopCommandInfo.stdoutSearchToken ) ) {
+        if (StringUtils.isNullOrEmpty(stopCommandInfo.stdoutSearchToken)) {
             return null;
         } else {
             return stopCommandInfo.stdoutSearchToken;
@@ -551,44 +551,44 @@ public abstract class AbstractApplicationInfo {
 
     private String normalizePath( boolean isFile, String path ) {
 
-        if( path == null ) {
+        if (path == null) {
             return null;
         }
 
-        if( isFile ) {
-            path = IoUtils.normalizeFilePath( path );
+        if (isFile) {
+            path = IoUtils.normalizeFilePath(path);
         } else {
-            path = IoUtils.normalizeDirPath( path );
+            path = IoUtils.normalizeDirPath(path);
         }
-        return path.replace( "//", "/" ).replace( "\\\\", "\\" );
+        return path.replace("//", "/").replace("\\\\", "\\");
     }
 
     @Override
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        if( this instanceof AgentInfo ) {
-            sb.append( "Agent Box '" + alias );
+        if (this instanceof AgentInfo) {
+            sb.append("Agent Box '" + alias);
         } else {
-            sb.append( "Application Box '" + alias );
+            sb.append("Application Box '" + alias);
         }
-        sb.append( "'\nhost=" + host );
-        sb.append( "\nport=" + port );
-        sb.append( "\nhome=" + home );
-        if( sshPort > 0 ) {
-            sb.append( "\nsshPort=" + sshPort );
+        sb.append("'\nhost=" + host);
+        sb.append("\nport=" + port);
+        sb.append("\nhome=" + home);
+        if (sshPort > 0) {
+            sb.append("\nsshPort=" + sshPort);
         }
-        sb.append( "\nsystemUser=" + systemUser );
-        sb.append( "\nsystemPassword=" + systemPassword );
-        if( sshPrivateKey != null ) {
-            sb.append( "\nsshPrivateKey=" + sshPrivateKey );
-            if( sshPrivateKeyPassword != null ) {
-                sb.append( "\nsshPrivateKeyPassword=" + sshPrivateKeyPassword );
+        sb.append("\nsystemUser=" + systemUser);
+        sb.append("\nsystemPassword=" + systemPassword);
+        if (sshPrivateKey != null) {
+            sb.append("\nsshPrivateKey=" + sshPrivateKey);
+            if (sshPrivateKeyPassword != null) {
+                sb.append("\nsshPrivateKeyPassword=" + sshPrivateKeyPassword);
             }
         }
 
-        for( PathInfo path : paths ) {
-            sb.append( "\n " + path );
+        for (PathInfo path : paths) {
+            sb.append("\n " + path);
         }
 
         return sb.toString();

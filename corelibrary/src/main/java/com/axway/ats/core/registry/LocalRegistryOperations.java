@@ -30,7 +30,7 @@ import com.sun.jna.platform.win32.WinReg;
  */
 public class LocalRegistryOperations implements IRegistryOperations {
 
-    private static final Logger log                 = Logger.getLogger( LocalRegistryOperations.class );
+    private static final Logger log                 = Logger.getLogger(LocalRegistryOperations.class);
 
     public static String        HKEY_CLASSES_ROOT   = "HKEY_CLASSES_ROOT";
     public static String        HKEY_CURRENT_USER   = "HKEY_CURRENT_USER";
@@ -56,9 +56,9 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                  String keyName ) {
 
         try {
-            checkKeyExists( rootKey, keyPath, keyName );
+            checkKeyExists(rootKey, keyPath, keyName);
             return true;
-        } catch( RuntimeException re ) {
+        } catch (RuntimeException re) {
             return false;
         }
     }
@@ -76,12 +76,12 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                   String keyPath,
                                   String keyName ) {
 
-        checkKeyExists( rootKey, keyPath, keyName );
+        checkKeyExists(rootKey, keyPath, keyName);
         try {
-            return Advapi32Util.registryGetStringValue( getHKey( rootKey ), keyPath, keyName );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Registry key is not of type String. "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            return Advapi32Util.registryGetStringValue(getHKey(rootKey), keyPath, keyName);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Registry key is not of type String. "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -98,13 +98,13 @@ public class LocalRegistryOperations implements IRegistryOperations {
                             String keyPath,
                             String keyName ) {
 
-        checkKeyExists( rootKey, keyPath, keyName );
+        checkKeyExists(rootKey, keyPath, keyName);
 
         try {
-            return Advapi32Util.registryGetIntValue( getHKey( rootKey ), keyPath, keyName );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Registry key is not of type Integer. "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            return Advapi32Util.registryGetIntValue(getHKey(rootKey), keyPath, keyName);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Registry key is not of type Integer. "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -121,13 +121,13 @@ public class LocalRegistryOperations implements IRegistryOperations {
                               String keyPath,
                               String keyName ) {
 
-        checkKeyExists( rootKey, keyPath, keyName );
+        checkKeyExists(rootKey, keyPath, keyName);
 
         try {
-            return Advapi32Util.registryGetLongValue( getHKey( rootKey ), keyPath, keyName );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Registry key is not of type Long. "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            return Advapi32Util.registryGetLongValue(getHKey(rootKey), keyPath, keyName);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Registry key is not of type Long. "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -144,13 +144,13 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                   String keyPath,
                                   String keyName ) {
 
-        checkKeyExists( rootKey, keyPath, keyName );
+        checkKeyExists(rootKey, keyPath, keyName);
 
         try {
-            return Advapi32Util.registryGetBinaryValue( getHKey( rootKey ), keyPath, keyName );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Registry key is not of type Binary. "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            return Advapi32Util.registryGetBinaryValue(getHKey(rootKey), keyPath, keyName);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Registry key is not of type Binary. "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -169,23 +169,23 @@ public class LocalRegistryOperations implements IRegistryOperations {
                             String rootKey,
                             String keyPath ) {
 
-        log.info( "Create regestry key path: " + getDescription( rootKey, keyPath, null ) );
+        log.info("Create regestry key path: " + getDescription(rootKey, keyPath, null));
 
-        int index = keyPath.lastIndexOf( "\\" );
-        if( index < 1 ) {
-            throw new RegistryOperationsException( "Invalid path '" + keyPath + "'" );
+        int index = keyPath.lastIndexOf("\\");
+        if (index < 1) {
+            throw new RegistryOperationsException("Invalid path '" + keyPath + "'");
         }
 
-        String keyParentPath = keyPath.substring( 0, index );
-        String keyName = keyPath.substring( index + 1 );
+        String keyParentPath = keyPath.substring(0, index);
+        String keyName = keyPath.substring(index + 1);
 
-        checkPathDoesNotExist( rootKey, keyPath );
+        checkPathDoesNotExist(rootKey, keyPath);
 
         try {
-            Advapi32Util.registryCreateKey( getHKey( rootKey ), keyParentPath, keyName );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Couldn't create registry key. "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            Advapi32Util.registryCreateKey(getHKey(rootKey), keyParentPath, keyName);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Couldn't create registry key. "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -206,15 +206,15 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                 String keyName,
                                 String keyValue ) {
 
-        log.info( "Set String value '" + keyValue + "' on: " + getDescription( rootKey, keyPath, keyName ) );
+        log.info("Set String value '" + keyValue + "' on: " + getDescription(rootKey, keyPath, keyName));
 
         try {
-            Advapi32Util.registrySetStringValue( getHKey( rootKey ), keyPath, keyName, keyValue );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Couldn't set registry String value '" + keyValue
-                                                           + "' to: "
-                                                           + getDescription( rootKey, keyPath, keyName ),
-                                                   re );
+            Advapi32Util.registrySetStringValue(getHKey(rootKey), keyPath, keyName, keyValue);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Couldn't set registry String value '" + keyValue
+                                                  + "' to: "
+                                                  + getDescription(rootKey, keyPath, keyName),
+                                                  re);
         }
     }
 
@@ -235,15 +235,15 @@ public class LocalRegistryOperations implements IRegistryOperations {
                              String keyName,
                              int keyValue ) {
 
-        log.info( "Set Intger value '" + keyValue + "' on: " + getDescription( rootKey, keyPath, keyName ) );
+        log.info("Set Intger value '" + keyValue + "' on: " + getDescription(rootKey, keyPath, keyName));
 
         try {
-            Advapi32Util.registrySetIntValue( getHKey( rootKey ), keyPath, keyName, keyValue );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Couldn't set registry Integer value '" + keyValue
-                                                           + "' to: "
-                                                           + getDescription( rootKey, keyPath, keyName ),
-                                                   re );
+            Advapi32Util.registrySetIntValue(getHKey(rootKey), keyPath, keyName, keyValue);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Couldn't set registry Integer value '" + keyValue
+                                                  + "' to: "
+                                                  + getDescription(rootKey, keyPath, keyName),
+                                                  re);
         }
     }
 
@@ -264,13 +264,13 @@ public class LocalRegistryOperations implements IRegistryOperations {
                               String keyName,
                               long keyValue ) {
 
-        log.info( "Set Long value '" + keyValue + "' on: " + getDescription( rootKey, keyPath, keyName ) );
+        log.info("Set Long value '" + keyValue + "' on: " + getDescription(rootKey, keyPath, keyName));
 
         try {
-            Advapi32Util.registrySetLongValue( getHKey( rootKey ), keyPath, keyName, keyValue );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Couldn't set registry Long value '" + keyValue + "' to: "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            Advapi32Util.registrySetLongValue(getHKey(rootKey), keyPath, keyName, keyValue);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Couldn't set registry Long value '" + keyValue + "' to: "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -291,13 +291,14 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                 String keyName,
                                 byte[] keyValue ) {
 
-        log.info( "Set Binary value '" + Arrays.toString( keyValue ) + "' on: " + getDescription( rootKey, keyPath, keyName ) );
+        log.info("Set Binary value '" + Arrays.toString(keyValue) + "' on: "
+                 + getDescription(rootKey, keyPath, keyName));
 
         try {
-            Advapi32Util.registrySetBinaryValue( getHKey( rootKey ), keyPath, keyName, keyValue );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Couldn't set registry binary value to: "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            Advapi32Util.registrySetBinaryValue(getHKey(rootKey), keyPath, keyName, keyValue);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Couldn't set registry binary value to: "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -313,13 +314,13 @@ public class LocalRegistryOperations implements IRegistryOperations {
                            String keyPath,
                            String keyName ) {
 
-        log.info( "Delete key: " + getDescription( rootKey, keyPath, keyName ) );
+        log.info("Delete key: " + getDescription(rootKey, keyPath, keyName));
 
         try {
-            Advapi32Util.registryDeleteValue( getHKey( rootKey ), keyPath, keyName );
-        } catch( RuntimeException re ) {
-            throw new RegistryOperationsException( "Couldn't delete registry key. "
-                                                   + getDescription( rootKey, keyPath, keyName ), re );
+            Advapi32Util.registryDeleteValue(getHKey(rootKey), keyPath, keyName);
+        } catch (RuntimeException re) {
+            throw new RegistryOperationsException("Couldn't delete registry key. "
+                                                  + getDescription(rootKey, keyPath, keyName), re);
         }
     }
 
@@ -329,14 +330,14 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                  String keyName ) {
 
         try {
-            WinReg.HKEY rootHKey = getHKey( rootKey );
-            if( !Advapi32Util.registryValueExists( rootHKey, keyPath, keyName ) ) {
-                throw new RegistryOperationsException( "Registry key does not exist. "
-                                                       + getDescription( rootKey, keyPath, keyName ) );
+            WinReg.HKEY rootHKey = getHKey(rootKey);
+            if (!Advapi32Util.registryValueExists(rootHKey, keyPath, keyName)) {
+                throw new RegistryOperationsException("Registry key does not exist. "
+                                                      + getDescription(rootKey, keyPath, keyName));
             }
-        } catch( Win32Exception e ) {
-            throw new RegistryOperationsException( "Registry key path does not exist. "
-                                                   + getDescription( rootKey, keyPath, keyName ), e );
+        } catch (Win32Exception e) {
+            throw new RegistryOperationsException("Registry key path does not exist. "
+                                                  + getDescription(rootKey, keyPath, keyName), e);
         }
     }
 
@@ -344,27 +345,27 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                         String rootKey,
                                         String keyPath ) {
 
-        if( Advapi32Util.registryKeyExists( getHKey( rootKey ), keyPath ) ) {
-            throw new RegistryOperationsException( "Registry path already exists. "
-                                                   + getDescription( rootKey, keyPath, null ) );
+        if (Advapi32Util.registryKeyExists(getHKey(rootKey), keyPath)) {
+            throw new RegistryOperationsException("Registry path already exists. "
+                                                  + getDescription(rootKey, keyPath, null));
         }
     }
 
     private WinReg.HKEY getHKey(
                                  String key ) {
 
-        if( key.equalsIgnoreCase( HKEY_CLASSES_ROOT ) ) {
+        if (key.equalsIgnoreCase(HKEY_CLASSES_ROOT)) {
             return WinReg.HKEY_CLASSES_ROOT;
-        } else if( key.equalsIgnoreCase( HKEY_CURRENT_USER ) ) {
+        } else if (key.equalsIgnoreCase(HKEY_CURRENT_USER)) {
             return WinReg.HKEY_CURRENT_USER;
-        } else if( key.equalsIgnoreCase( HKEY_LOCAL_MACHINE ) ) {
+        } else if (key.equalsIgnoreCase(HKEY_LOCAL_MACHINE)) {
             return WinReg.HKEY_LOCAL_MACHINE;
-        } else if( key.equalsIgnoreCase( HKEY_USERS ) ) {
+        } else if (key.equalsIgnoreCase(HKEY_USERS)) {
             return WinReg.HKEY_USERS;
-        } else if( key.equalsIgnoreCase( HKEY_CURRENT_CONFIG ) ) {
+        } else if (key.equalsIgnoreCase(HKEY_CURRENT_CONFIG)) {
             return WinReg.HKEY_CURRENT_CONFIG;
         } else {
-            throw new RegistryOperationsException( "Unsupported root key '" + key + "'" );
+            throw new RegistryOperationsException("Unsupported root key '" + key + "'");
         }
     }
 
@@ -374,8 +375,8 @@ public class LocalRegistryOperations implements IRegistryOperations {
                                    String keyName ) {
 
         return "Root '" + rootKey + "', path '" + keyPath + "'"
-               + ( keyName != null
+               + (keyName != null
                                   ? ", name '" + keyName + "'"
-                                  : "" );
+                                  : "");
     }
 }

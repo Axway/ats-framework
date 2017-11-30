@@ -29,35 +29,35 @@ public class ApplicationInfo extends AbstractApplicationInfo {
                             Element applicationNode,
                             Map<String, String> defaultValues ) throws AtsConfigurationException {
 
-        super( alias, applicationNode, defaultValues );
+        super(alias, applicationNode, defaultValues);
     }
 
     @Override
     protected void loadMoreInfo(
                                  Element applicationNode ) {
 
-        Element statusCommandNode = getNoMoreThanOneChild( applicationNode, NODE_STATUS_COMMAND );
-        if( statusCommandNode != null ) {
-            statusCommandInfo.url = XmlUtils.getMandatoryAttribute( statusCommandNode, NODE_ATTRIBUTE_URL );
-            statusCommandInfo.urlSearchToken = XmlUtils.getMandatoryAttribute( statusCommandNode,
-                                                                               NODE_ATTRIBUTE_URL_SEARCH_TOKEN );
-            statusCommandInfo.command = XmlUtils.getAttribute( statusCommandNode, NODE_ATTRIBUTE_COMMAND );
-            statusCommandInfo.stdoutSearchToken = XmlUtils.getAttribute( statusCommandNode,
-                                                                         NODE_ATTRIBUTE_STDOUT_SEARCH_TOKEN );
+        Element statusCommandNode = getNoMoreThanOneChild(applicationNode, NODE_STATUS_COMMAND);
+        if (statusCommandNode != null) {
+            statusCommandInfo.url = XmlUtils.getMandatoryAttribute(statusCommandNode, NODE_ATTRIBUTE_URL);
+            statusCommandInfo.urlSearchToken = XmlUtils.getMandatoryAttribute(statusCommandNode,
+                                                                              NODE_ATTRIBUTE_URL_SEARCH_TOKEN);
+            statusCommandInfo.command = XmlUtils.getAttribute(statusCommandNode, NODE_ATTRIBUTE_COMMAND);
+            statusCommandInfo.stdoutSearchToken = XmlUtils.getAttribute(statusCommandNode,
+                                                                        NODE_ATTRIBUTE_STDOUT_SEARCH_TOKEN);
         }
 
-        Element startCommandNode = getNoMoreThanOneChild( applicationNode, NODE_START_COMMAND );
-        if( startCommandNode != null ) {
-            startCommandInfo.command = XmlUtils.getAttribute( startCommandNode, NODE_ATTRIBUTE_COMMAND );
-            startCommandInfo.stdoutSearchToken = XmlUtils.getAttribute( startCommandNode,
-                                                                        NODE_ATTRIBUTE_STDOUT_SEARCH_TOKEN );
+        Element startCommandNode = getNoMoreThanOneChild(applicationNode, NODE_START_COMMAND);
+        if (startCommandNode != null) {
+            startCommandInfo.command = XmlUtils.getAttribute(startCommandNode, NODE_ATTRIBUTE_COMMAND);
+            startCommandInfo.stdoutSearchToken = XmlUtils.getAttribute(startCommandNode,
+                                                                       NODE_ATTRIBUTE_STDOUT_SEARCH_TOKEN);
         }
 
-        Element stopCommandNode = getNoMoreThanOneChild( applicationNode, NODE_STOP_COMMAND );
-        if( stopCommandNode != null ) {
-            stopCommandInfo.command = XmlUtils.getAttribute( stopCommandNode, NODE_ATTRIBUTE_COMMAND );
-            stopCommandInfo.stdoutSearchToken = XmlUtils.getAttribute( stopCommandNode,
-                                                                       NODE_ATTRIBUTE_STDOUT_SEARCH_TOKEN );
+        Element stopCommandNode = getNoMoreThanOneChild(applicationNode, NODE_STOP_COMMAND);
+        if (stopCommandNode != null) {
+            stopCommandInfo.command = XmlUtils.getAttribute(stopCommandNode, NODE_ATTRIBUTE_COMMAND);
+            stopCommandInfo.stdoutSearchToken = XmlUtils.getAttribute(stopCommandNode,
+                                                                      NODE_ATTRIBUTE_STDOUT_SEARCH_TOKEN);
         }
     }
 
@@ -65,11 +65,11 @@ public class ApplicationInfo extends AbstractApplicationInfo {
                                            Element element,
                                            String name ) {
 
-        List<Element> children = XmlUtils.getChildrenByTagName( element, name );
-        if( children.size() == 0 ) {
+        List<Element> children = XmlUtils.getChildrenByTagName(element, name);
+        if (children.size() == 0) {
             return null;
         } else {
-            return children.get( 0 );
+            return children.get(0);
         }
     }
 }

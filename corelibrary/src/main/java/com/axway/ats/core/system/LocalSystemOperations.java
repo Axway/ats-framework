@@ -50,7 +50,7 @@ import com.axway.ats.core.utils.HostUtils;
 
 public class LocalSystemOperations implements ISystemOperations {
 
-    private static final Logger                  log                         = Logger.getLogger( LocalSystemOperations.class );
+    private static final Logger                  log                         = Logger.getLogger(LocalSystemOperations.class);
 
     private static final String                  DATE_FORMAT                 = "MM/dd/yy HH:mm:ss";
 
@@ -63,31 +63,31 @@ public class LocalSystemOperations implements ISystemOperations {
 
     static {
         ASCII_TO_MAPPING = new HashMap<Character, Integer>();
-        ASCII_TO_MAPPING.put( '`', KeyEvent.VK_BACK_QUOTE );
-        ASCII_TO_MAPPING.put( '\'', KeyEvent.VK_QUOTE );
+        ASCII_TO_MAPPING.put('`', KeyEvent.VK_BACK_QUOTE);
+        ASCII_TO_MAPPING.put('\'', KeyEvent.VK_QUOTE);
 
         ASCII_TO_WITH_SHIFT_MAPPING = new HashMap<Character, Integer>();
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '~', KeyEvent.VK_BACK_QUOTE );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '!', KeyEvent.VK_1 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '@', KeyEvent.VK_2 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '#', KeyEvent.VK_3 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '$', KeyEvent.VK_4 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '%', KeyEvent.VK_5 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '^', KeyEvent.VK_6 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '&', KeyEvent.VK_7 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '*', KeyEvent.VK_8 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '(', KeyEvent.VK_9 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( ')', KeyEvent.VK_0 );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '_', KeyEvent.VK_MINUS );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '+', KeyEvent.VK_EQUALS );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '{', KeyEvent.VK_OPEN_BRACKET );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '}', KeyEvent.VK_CLOSE_BRACKET );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( ':', KeyEvent.VK_SEMICOLON );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '"', KeyEvent.VK_QUOTE );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '|', KeyEvent.VK_BACK_SLASH );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '<', KeyEvent.VK_COMMA );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '>', KeyEvent.VK_PERIOD );
-        ASCII_TO_WITH_SHIFT_MAPPING.put( '?', KeyEvent.VK_SLASH );
+        ASCII_TO_WITH_SHIFT_MAPPING.put('~', KeyEvent.VK_BACK_QUOTE);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('!', KeyEvent.VK_1);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('@', KeyEvent.VK_2);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('#', KeyEvent.VK_3);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('$', KeyEvent.VK_4);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('%', KeyEvent.VK_5);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('^', KeyEvent.VK_6);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('&', KeyEvent.VK_7);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('*', KeyEvent.VK_8);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('(', KeyEvent.VK_9);
+        ASCII_TO_WITH_SHIFT_MAPPING.put(')', KeyEvent.VK_0);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('_', KeyEvent.VK_MINUS);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('+', KeyEvent.VK_EQUALS);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('{', KeyEvent.VK_OPEN_BRACKET);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('}', KeyEvent.VK_CLOSE_BRACKET);
+        ASCII_TO_WITH_SHIFT_MAPPING.put(':', KeyEvent.VK_SEMICOLON);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('"', KeyEvent.VK_QUOTE);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('|', KeyEvent.VK_BACK_SLASH);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('<', KeyEvent.VK_COMMA);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('>', KeyEvent.VK_PERIOD);
+        ASCII_TO_WITH_SHIFT_MAPPING.put('?', KeyEvent.VK_SLASH);
     }
 
     /**
@@ -103,7 +103,7 @@ public class LocalSystemOperations implements ISystemOperations {
     @Override
     public String getSystemProperty( String propertyName ) {
 
-        return System.getProperty( propertyName );
+        return System.getProperty(propertyName);
     }
 
     /**
@@ -117,10 +117,10 @@ public class LocalSystemOperations implements ISystemOperations {
         Calendar calendar = Calendar.getInstance();
 
         String result = "";
-        if( inMilliseconds ) {
-            result = String.valueOf( calendar.getTimeInMillis() );
+        if (inMilliseconds) {
+            result = String.valueOf(calendar.getTimeInMillis());
         } else {
-            result = new SimpleDateFormat( DATE_FORMAT ).format( calendar.getTime() );
+            result = new SimpleDateFormat(DATE_FORMAT).format(calendar.getTime());
         }
         return result;
     }
@@ -136,34 +136,34 @@ public class LocalSystemOperations implements ISystemOperations {
         Calendar calendar = Calendar.getInstance();
 
         // parse the date
-        if( inMilliseconds ) {
+        if (inMilliseconds) {
             try {
-                calendar.setTimeInMillis( Long.parseLong( timestamp ) );
-            } catch( NumberFormatException e ) {
-                throw new SystemOperationException( "Could not convert timestamp '" + timestamp
-                                                    + "' to long" );
+                calendar.setTimeInMillis(Long.parseLong(timestamp));
+            } catch (NumberFormatException e) {
+                throw new SystemOperationException("Could not convert timestamp '" + timestamp
+                                                   + "' to long");
             }
         } else {
-            SimpleDateFormat dateFormat = new SimpleDateFormat( DATE_FORMAT );
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
             try {
-                Date date = dateFormat.parse( timestamp );
-                calendar.setTime( date );
-            } catch( ParseException e ) {
-                throw new SystemOperationException( "Could not parse timestamp '" + timestamp + "' to format "
-                                                    + DATE_FORMAT );
+                Date date = dateFormat.parse(timestamp);
+                calendar.setTime(date);
+            } catch (ParseException e) {
+                throw new SystemOperationException("Could not parse timestamp '" + timestamp + "' to format "
+                                                   + DATE_FORMAT);
             }
         }
 
         try {
             OperatingSystemType osType = getOperatingSystemType();
-            if( osType == OperatingSystemType.WINDOWS ) {
-                setWindowsTime( calendar );
+            if (osType == OperatingSystemType.WINDOWS) {
+                setWindowsTime(calendar);
             } else {
-                setUnixTime( calendar );
+                setUnixTime(calendar);
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new SystemOperationException( "Could not set time", e );
+            throw new SystemOperationException("Could not set time", e);
         }
     }
 
@@ -187,45 +187,45 @@ public class LocalSystemOperations implements ISystemOperations {
     public String createScreenshot( String filePath ) {
 
         try {
-            if( filePath == null ) {
+            if (filePath == null) {
                 filePath = "." + DEFAULT_SCREENSHOT_FILE_EXT;
             }
             // extract and validate the image file type
             String fileType = null;
-            int extensionIndex = filePath.lastIndexOf( '.' );
-            if( extensionIndex >= 0 && filePath.length() > ( extensionIndex + 1 ) ) {
-                fileType = filePath.substring( extensionIndex + 1 );
+            int extensionIndex = filePath.lastIndexOf('.');
+            if (extensionIndex >= 0 && filePath.length() > (extensionIndex + 1)) {
+                fileType = filePath.substring(extensionIndex + 1);
                 try {
-                    ImageType.valueOf( fileType.toUpperCase() );
-                } catch( IllegalArgumentException iae ) {
-                    throw new SystemOperationException( "Unsupported image file type \"" + fileType
-                                                        + "\". Use one of these: "
-                                                        + Arrays.toString( ImageType.values() ) );
+                    ImageType.valueOf(fileType.toUpperCase());
+                } catch (IllegalArgumentException iae) {
+                    throw new SystemOperationException("Unsupported image file type \"" + fileType
+                                                       + "\". Use one of these: "
+                                                       + Arrays.toString(ImageType.values()));
                 }
             } else {
-                log.info( "The screenshot file extension was not specified, the default one '.png' will be used instead" );
+                log.info("The screenshot file extension was not specified, the default one '.png' will be used instead");
                 fileType = DEFAULT_SCREENSHOT_FILE_EXT;
                 filePath = filePath + "." + fileType;
             }
 
             File imageFile = null;
-            if( filePath.indexOf( '.' ) == 0 ) {
+            if (filePath.indexOf('.') == 0) {
 
-                imageFile = File.createTempFile( "ats_", "." + fileType );
+                imageFile = File.createTempFile("ats_", "." + fileType);
                 imageFile.deleteOnExit();
                 filePath = imageFile.getCanonicalPath();
             } else {
 
-                imageFile = new File( filePath );
+                imageFile = new File(filePath);
             }
-            Rectangle area = new Rectangle( Toolkit.getDefaultToolkit().getScreenSize() );
-            RenderedImage renderedImage = new Robot().createScreenCapture( area );
-            ImageIO.write( renderedImage, fileType, imageFile );
+            Rectangle area = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+            RenderedImage renderedImage = new Robot().createScreenCapture(area);
+            ImageIO.write(renderedImage, fileType, imageFile);
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new SystemOperationException( "Could not write Screenshot image to file '" + filePath + "'",
-                                                e );
+            throw new SystemOperationException("Could not write Screenshot image to file '" + filePath + "'",
+                                               e);
         }
         return filePath;
     }
@@ -246,22 +246,22 @@ public class LocalSystemOperations implements ISystemOperations {
             do {
                 try {
                     socket = new Socket();
-                    socket.connect( new InetSocketAddress( host, port ), timeout );
+                    socket.connect(new InetSocketAddress(host, port), timeout);
                     return true;
-                } catch( UnknownHostException uhe ) {
-                    throw new SystemOperationException( "Unknown host '" + host + "'", uhe );
-                } catch( Exception e ) {
+                } catch (UnknownHostException uhe) {
+                    throw new SystemOperationException("Unknown host '" + host + "'", uhe);
+                } catch (Exception e) {
                     // Connection refused
                     try {
-                        Thread.sleep( 300 );
-                    } catch( InterruptedException ie ) {}
+                        Thread.sleep(300);
+                    } catch (InterruptedException ie) {}
                 }
-            } while( endTime > System.currentTimeMillis() );
+            } while (endTime > System.currentTimeMillis());
         } finally {
-            if( socket != null ) {
+            if (socket != null) {
                 try {
                     socket.close();
-                } catch( IOException e ) {}
+                } catch (IOException e) {}
             }
         }
 
@@ -273,14 +273,14 @@ public class LocalSystemOperations implements ISystemOperations {
      */
     public ISystemInputOperations getInputOperations() {
 
-        if( inputOperations == null ) {
+        if (inputOperations == null) {
             inputOperations = new SystemInputOperations();
         }
         return inputOperations;
     }
-    
-    public String getHostname(){
-        
+
+    public String getHostname() {
+
         return HostUtils.getLocalHostName();
     }
 
@@ -311,22 +311,21 @@ public class LocalSystemOperations implements ISystemOperations {
      */
     private void setWindowsTime( Calendar calendar ) throws Exception {
 
-        
         // we are using the default date format and the system specific time format
 
         // set the date
-        String dateArguments = String.format( "%1$02d-%2$02d-%3$02d", calendar.get( Calendar.DAY_OF_MONTH ),
-                                              calendar.get( Calendar.MONTH ) + 1,
-                                              calendar.get( Calendar.YEAR ) );
+        String dateArguments = String.format("%1$02d-%2$02d-%3$02d", calendar.get(Calendar.DAY_OF_MONTH),
+                                             calendar.get(Calendar.MONTH) + 1,
+                                             calendar.get(Calendar.YEAR));
 
-        LocalProcessExecutor processExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4,
-                                                                         "cmd /c date " + dateArguments );
+        LocalProcessExecutor processExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4,
+                                                                        "cmd /c date " + dateArguments);
         processExecutor.execute();
 
         // set the time
-        String timeArguments = SimpleDateFormat.getTimeInstance().format( calendar.getTime() );
-        processExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4,
-                                                    "cmd /c time " + timeArguments );
+        String timeArguments = SimpleDateFormat.getTimeInstance().format(calendar.getTime());
+        processExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4,
+                                                   "cmd /c time " + timeArguments);
         processExecutor.execute();
     }
 
@@ -339,15 +338,15 @@ public class LocalSystemOperations implements ISystemOperations {
 
         // set the date
         //MMDDhhmm[[CC]YY][.ss]
-        String dateArguments = String.format( "%1$02d%2$02d%3$02d%4$02d%5$04d.%6$02d",
-                                              calendar.get( Calendar.MONTH ) + 1,
-                                              calendar.get( Calendar.DAY_OF_MONTH ),
-                                              calendar.get( Calendar.HOUR_OF_DAY ),
-                                              calendar.get( Calendar.MINUTE ), calendar.get( Calendar.YEAR ),
-                                              calendar.get( Calendar.SECOND ) );
+        String dateArguments = String.format("%1$02d%2$02d%3$02d%4$02d%5$04d.%6$02d",
+                                             calendar.get(Calendar.MONTH) + 1,
+                                             calendar.get(Calendar.DAY_OF_MONTH),
+                                             calendar.get(Calendar.HOUR_OF_DAY),
+                                             calendar.get(Calendar.MINUTE), calendar.get(Calendar.YEAR),
+                                             calendar.get(Calendar.SECOND));
 
-        LocalProcessExecutor processExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4, "date",
-                                                                         dateArguments );
+        LocalProcessExecutor processExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "date",
+                                                                        dateArguments);
         processExecutor.execute();
     }
 
@@ -368,10 +367,10 @@ public class LocalSystemOperations implements ISystemOperations {
         public void clickAt( int x, int y ) {
 
             Robot robot = getRobot();
-            robot.mouseMove( x, y );
-            robot.mousePress( InputEvent.BUTTON1_MASK );
-            robot.mouseRelease( InputEvent.BUTTON1_MASK );
-            robot.delay( 500 );
+            robot.mouseMove(x, y);
+            robot.mousePress(InputEvent.BUTTON1_MASK);
+            robot.mouseRelease(InputEvent.BUTTON1_MASK);
+            robot.delay(500);
         }
 
         /**
@@ -381,7 +380,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void type( String text ) {
 
-            typeAll( text );
+            typeAll(text);
         }
 
         /**
@@ -390,7 +389,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void type( int... keyCodes ) {
 
-            typeAll( null, keyCodes );
+            typeAll(null, keyCodes);
         }
 
         /**
@@ -404,7 +403,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void type( String text, int... keyCodes ) {
 
-            typeAll( text, keyCodes );
+            typeAll(text, keyCodes);
         }
 
         /**
@@ -412,10 +411,10 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void pressTab() {
 
-            typeAll( null, KeyEvent.VK_TAB );
+            typeAll(null, KeyEvent.VK_TAB);
             try {
-                Thread.sleep( 100 );
-            } catch( InterruptedException e ) {}
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
         }
 
         /**
@@ -423,7 +422,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void pressSpace() {
 
-            typeAll( null, KeyEvent.VK_SPACE );
+            typeAll(null, KeyEvent.VK_SPACE);
         }
 
         /**
@@ -431,7 +430,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void pressEnter() {
 
-            typeAll( null, KeyEvent.VK_ENTER );
+            typeAll(null, KeyEvent.VK_ENTER);
         }
 
         /**
@@ -439,7 +438,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void pressEsc() {
 
-            typeAll( null, KeyEvent.VK_ESCAPE );
+            typeAll(null, KeyEvent.VK_ESCAPE);
         }
 
         /**
@@ -447,7 +446,7 @@ public class LocalSystemOperations implements ISystemOperations {
          */
         public void pressAltF4() {
 
-            typeAll( null, KeyEvent.VK_ALT, KeyEvent.VK_F4 );
+            typeAll(null, KeyEvent.VK_ALT, KeyEvent.VK_F4);
         }
 
         /**
@@ -458,10 +457,10 @@ public class LocalSystemOperations implements ISystemOperations {
         public void keyPress( int keyCode ) {
 
             try {
-                getRobot().keyPress( keyCode );
-            } catch( IllegalArgumentException iae ) {
-                throw new SystemOperationException( "Error pressing '" + KeyEvent.getKeyText( keyCode )
-                                                    + "' key", iae );
+                getRobot().keyPress(keyCode);
+            } catch (IllegalArgumentException iae) {
+                throw new SystemOperationException("Error pressing '" + KeyEvent.getKeyText(keyCode)
+                                                   + "' key", iae);
             }
         }
 
@@ -473,56 +472,56 @@ public class LocalSystemOperations implements ISystemOperations {
         public void keyRelease( int keyCode ) {
 
             try {
-                getRobot().keyRelease( keyCode );
-            } catch( IllegalArgumentException iae ) {
-                throw new SystemOperationException( "Error releasing '" + KeyEvent.getKeyText( keyCode )
-                                                    + "' key", iae );
+                getRobot().keyRelease(keyCode);
+            } catch (IllegalArgumentException iae) {
+                throw new SystemOperationException("Error releasing '" + KeyEvent.getKeyText(keyCode)
+                                                   + "' key", iae);
             }
         }
 
         private Robot getRobot() {
 
             try {
-                if( robot == null ) {
+                if (robot == null) {
                     robot = new Robot();
                 }
                 return robot;
-            } catch( AWTException awte ) {
+            } catch (AWTException awte) {
 
-                throw new SystemOperationException( "Error initializing java Robot", awte );
+                throw new SystemOperationException("Error initializing java Robot", awte);
             }
         }
 
         private void typeAll( String text, int... keyCodes ) {
 
             // tell the user what we are going to type
-            String typeCommand = log( text, keyCodes );
+            String typeCommand = log(text, keyCodes);
 
             int lastPressedIndex = 0;
             try {
 
                 // press the special keys
-                for( int keyCode : keyCodes ) {
-                    keyPress( keyCode );
+                for (int keyCode : keyCodes) {
+                    keyPress(keyCode);
                     lastPressedIndex++;
                 }
 
-                if( text != null ) {
-                    for( int i = 0; i < text.length(); ++i ) {
-                        char charValue = text.charAt( i );
-                        keyPressAndRelease( charValue, typeCommand );
+                if (text != null) {
+                    for (int i = 0; i < text.length(); ++i) {
+                        char charValue = text.charAt(i);
+                        keyPressAndRelease(charValue, typeCommand);
                     }
                 }
 
                 try {
-                    Thread.sleep( 100 );
-                } catch( InterruptedException e ) {}
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {}
 
             } finally {
 
                 // release the special keys in reversed order
-                for( int i = lastPressedIndex - 1; i >= 0; i-- ) {
-                    keyRelease( keyCodes[i] );
+                for (int i = lastPressedIndex - 1; i >= 0; i--) {
+                    keyRelease(keyCodes[i]);
                 }
             }
         }
@@ -531,24 +530,24 @@ public class LocalSystemOperations implements ISystemOperations {
 
             Robot robot = getRobot();
 
-            int intValue = ( int ) charValue;
-            boolean needsShifting = isShiftedChar( charValue );
+            int intValue = (int) charValue;
+            boolean needsShifting = isShiftedChar(charValue);
 
-            intValue = processSpecialCharacter( intValue );
+            intValue = processSpecialCharacter(intValue);
 
-            if( needsShifting ) {
-                robot.keyPress( KeyEvent.VK_SHIFT );
+            if (needsShifting) {
+                robot.keyPress(KeyEvent.VK_SHIFT);
             }
             try {
-                robot.keyPress( intValue );
-                robot.keyRelease( intValue );
-            } catch( Exception e ) {
-                throw new SystemOperationException( "Error typing '" + KeyEvent.getKeyText( intValue )
-                                                    + "' (char value is '" + charValue + "') as part of "
-                                                    + typeCommand, e );
+                robot.keyPress(intValue);
+                robot.keyRelease(intValue);
+            } catch (Exception e) {
+                throw new SystemOperationException("Error typing '" + KeyEvent.getKeyText(intValue)
+                                                   + "' (char value is '" + charValue + "') as part of "
+                                                   + typeCommand, e);
             } finally {
-                if( needsShifting ) {
-                    robot.keyRelease( KeyEvent.VK_SHIFT );
+                if (needsShifting) {
+                    robot.keyRelease(KeyEvent.VK_SHIFT);
                 }
             }
         }
@@ -557,12 +556,12 @@ public class LocalSystemOperations implements ISystemOperations {
 
             boolean isShiftedChar = false;
 
-            if( Character.isLetter( charValue ) ) {
-                if( Character.isUpperCase( charValue ) ) {
+            if (Character.isLetter(charValue)) {
+                if (Character.isUpperCase(charValue)) {
                     isShiftedChar = true;
                 }
             } else {
-                isShiftedChar = ASCII_TO_WITH_SHIFT_MAPPING.containsKey( charValue );
+                isShiftedChar = ASCII_TO_WITH_SHIFT_MAPPING.containsKey(charValue);
             }
             return isShiftedChar;
         }
@@ -570,16 +569,16 @@ public class LocalSystemOperations implements ISystemOperations {
         private int processSpecialCharacter( int intValue ) {
 
             // fix lower case letters
-            if( Character.isLetter( intValue ) && Character.isLowerCase( intValue ) ) {
+            if (Character.isLetter(intValue) && Character.isLowerCase(intValue)) {
                 intValue -= 0x20;
             } else {
-                Character charValue = Character.valueOf( ( char ) intValue );
-                if( ASCII_TO_WITH_SHIFT_MAPPING.containsKey( charValue ) ) {
+                Character charValue = Character.valueOf((char) intValue);
+                if (ASCII_TO_WITH_SHIFT_MAPPING.containsKey(charValue)) {
 
-                    intValue = ASCII_TO_WITH_SHIFT_MAPPING.get( charValue );
-                } else if( ASCII_TO_MAPPING.containsKey( charValue ) ) {
+                    intValue = ASCII_TO_WITH_SHIFT_MAPPING.get(charValue);
+                } else if (ASCII_TO_MAPPING.containsKey(charValue)) {
 
-                    intValue = ASCII_TO_MAPPING.get( charValue );
+                    intValue = ASCII_TO_MAPPING.get(charValue);
                 }
             }
             return intValue;
@@ -588,29 +587,29 @@ public class LocalSystemOperations implements ISystemOperations {
         private String log( String text, int... keyCodes ) {
 
             StringBuilder typeInfo = new StringBuilder();
-            if( keyCodes.length > 0 ) {
+            if (keyCodes.length > 0) {
                 boolean firstKey = true;
-                for( int keyCode : keyCodes ) {
-                    if( firstKey ) {
+                for (int keyCode : keyCodes) {
+                    if (firstKey) {
                         firstKey = false;
                     } else {
-                        typeInfo.append( " + " );
+                        typeInfo.append(" + ");
                     }
-                    typeInfo.append( "'" );
-                    typeInfo.append( KeyEvent.getKeyText( keyCode ) );
-                    typeInfo.append( "'" );
+                    typeInfo.append("'");
+                    typeInfo.append(KeyEvent.getKeyText(keyCode));
+                    typeInfo.append("'");
                 }
             }
-            if( text != null ) {
-                if( keyCodes.length > 0 ) {
-                    typeInfo.append( " + " );
+            if (text != null) {
+                if (keyCodes.length > 0) {
+                    typeInfo.append(" + ");
                 }
-                typeInfo.append( "'" );
-                typeInfo.append( text );
-                typeInfo.append( "'" );
+                typeInfo.append("'");
+                typeInfo.append(text);
+                typeInfo.append("'");
             }
 
-            log.info( "Typing: " + typeInfo );
+            log.info("Typing: " + typeInfo);
             return typeInfo.toString();
         }
     }

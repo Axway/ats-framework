@@ -33,8 +33,8 @@ import java.lang.annotation.Target;
  *
  * Created on : Oct 11, 2007
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Retention( RetentionPolicy.RUNTIME)
+@Target( ElementType.PARAMETER)
 public @interface Validate {
 
     /** The {@link String} name representation of the method's parameter */

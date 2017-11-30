@@ -51,35 +51,35 @@ public class JaasKerberosConfiguration extends Configuration {
     public void setPassword(
                              char[] password ) {
 
-        cb = new CredentialCallbackHandler( principalName, password );
+        cb = new CredentialCallbackHandler(principalName, password);
     }
 
     public void setKeytab(
                            String keytabFilename ) {
 
-        options.put( "useKeyTab", "true" );
-        options.put( "keyTab", keytabFilename );
-        options.put( "doNotPrompt", "true" );
+        options.put("useKeyTab", "true");
+        options.put("keyTab", keytabFilename);
+        options.put("doNotPrompt", "true");
     }
 
     public void initialize() {
 
-        options.put( "debug", "true" );
+        options.put("debug", "true");
 
-        options.put( "principal", principalName ); // Ensure the correct TGT is used.
-        options.put( "refreshKrb5Config", "true" );
+        options.put("principal", principalName); // Ensure the correct TGT is used.
+        options.put("refreshKrb5Config", "true");
 
         appConfigEntries = new AppConfigurationEntry[1];
-        appConfigEntries[0] = new AppConfigurationEntry( LOGIN_MODULE,
-                                                         AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                                                         options );
+        appConfigEntries[0] = new AppConfigurationEntry(LOGIN_MODULE,
+                                                        AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+                                                        options);
 
-        Security.setProperty( "login.configuration.provider", getClass().getName() );
+        Security.setProperty("login.configuration.provider", getClass().getName());
 
         // For each Kerberos client that the loads we 
         // need a separate instance of this class, it gets set here, so next call
         // on the LoginContext will use this instance.
-        setConfiguration( this );
+        setConfiguration(this);
     }
 
     public AppConfigurationEntry[] getAppConfigurationEntry(
@@ -108,13 +108,13 @@ class CredentialCallbackHandler implements CallbackHandler {
     public void handle(
                         Callback[] callbacks ) throws IOException, UnsupportedCallbackException {
 
-        for( int i = 0; i < callbacks.length; i++ ) {
-            if( callbacks[i] instanceof NameCallback ) {
-                NameCallback nc = ( NameCallback ) callbacks[i];
-                nc.setName( username );
-            } else if( callbacks[i] instanceof PasswordCallback ) {
-                PasswordCallback pc = ( PasswordCallback ) callbacks[i];
-                pc.setPassword( password );
+        for (int i = 0; i < callbacks.length; i++) {
+            if (callbacks[i] instanceof NameCallback) {
+                NameCallback nc = (NameCallback) callbacks[i];
+                nc.setName(username);
+            } else if (callbacks[i] instanceof PasswordCallback) {
+                PasswordCallback pc = (PasswordCallback) callbacks[i];
+                pc.setPassword(password);
             }
         }
     }

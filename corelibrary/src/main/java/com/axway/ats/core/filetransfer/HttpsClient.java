@@ -61,7 +61,7 @@ public class HttpsClient extends HttpClient {
     public HttpsClient() {
 
         super();
-        setCustomPort( DEFAULT_HTTPS_PORT );
+        setCustomPort(DEFAULT_HTTPS_PORT);
     }
 
     /**
@@ -73,7 +73,7 @@ public class HttpsClient extends HttpClient {
     public void connect(
                          String hostname ) throws FileTransferException {
 
-        connect( hostname, null, null );
+        connect(hostname, null, null);
     }
 
     /**
@@ -90,22 +90,23 @@ public class HttpsClient extends HttpClient {
                          String userName,
                          String password ) throws FileTransferException {
 
-        super.connect( hostname, userName, password );
+        super.connect(hostname, userName, password);
 
         // trust everybody
         try {
             SSLContext sslContext = SslUtils.getTrustAllSSLContext();
 
             SSLConnectionSocketFactory ssf = new SSLConnectionSocketFactory(sslContext, encryptionProtocols,
-                    cipherSuites, new NoopHostnameVerifier());
+                                                                            cipherSuites, new NoopHostnameVerifier());
 
-            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                    .register("https", ssf).build();
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                                                                                     .register("https", ssf)
+                                                                                     .build();
 
             HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
-                    socketFactoryRegistry);
-            this.httpBuilder.setConnectionManager( connectionManager )
-                            .setSchemePortResolver( new DefaultSchemePortResolver() );
+                                                                                                   socketFactoryRegistry);
+            this.httpBuilder.setConnectionManager(connectionManager)
+                            .setSchemePortResolver(new DefaultSchemePortResolver());
 
             this.httpClient = this.httpBuilder.build();
         } catch (Exception e) {
@@ -120,43 +121,46 @@ public class HttpsClient extends HttpClient {
                          String keystorePassword,
                          String publicKeyAlias ) throws FileTransferException {
 
-        super.connect( hostname, null, null );
+        super.connect(hostname, null, null);
         // if server is old or client is with JDK < 1.6.0_22
         //java.lang.System.setProperty( "sun.security.ssl.allowUnsafeRenegotiation", "true" );
 
         // load keystore
-        KeyStore keyStore = SslUtils.loadKeystore( keystoreFile, keystorePassword );
-        log.debug( "Keystore " + keystoreFile + " opened successfully." );
+        KeyStore keyStore = SslUtils.loadKeystore(keystoreFile, keystorePassword);
+        log.debug("Keystore " + keystoreFile + " opened successfully.");
         TrustStrategy trustStrategy = new TrustStrategy() {
 
             public boolean isTrusted(
                                       X509Certificate[] chain,
                                       String authType ) throws CertificateException {
 
-                log.debug( "Always trust strategy invoked for certificate chain conaining: " + chain[0]
-                           + "| auth: " + authType );
+                log.debug("Always trust strategy invoked for certificate chain conaining: " + chain[0]
+                          + "| auth: " + authType);
                 return true;
             }
         };
         SSLConnectionSocketFactory sslSocketFactory;
         try {
             SSLContext sslContext = new SSLContextBuilder()
-                    .loadKeyMaterial(keyStore, keystorePassword.toCharArray())
-                    .loadTrustMaterial(trustStrategy).useProtocol("TLS").build();
+                                                           .loadKeyMaterial(keyStore, keystorePassword.toCharArray())
+                                                           .loadTrustMaterial(trustStrategy)
+                                                           .useProtocol("TLS")
+                                                           .build();
 
             sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-                    new NoopHostnameVerifier() );
-        } catch( GeneralSecurityException ex ) {
-            throw new FileTransferException( "Could not initialize SSL socket factory. Check concrete datails in exception cause",
-                                                   ex );
+                                                              new NoopHostnameVerifier());
+        } catch (GeneralSecurityException ex) {
+            throw new FileTransferException("Could not initialize SSL socket factory. Check concrete datails in exception cause",
+                                            ex);
         }
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("https", sslSocketFactory).build();
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                                                                                 .register("https", sslSocketFactory)
+                                                                                 .build();
 
         HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
         this.httpBuilder.setSSLSocketFactory(sslSocketFactory)
-        .setConnectionManager(connectionManager)
-        .setSchemePortResolver(new DefaultSchemePortResolver());
+                        .setConnectionManager(connectionManager)
+                        .setSchemePortResolver(new DefaultSchemePortResolver());
 
         this.httpClient = this.httpBuilder.build();
     }
@@ -191,16 +195,16 @@ public class HttpsClient extends HttpClient {
 
         try {
             // first let the parent consume this property
-            super.addCustomProperty( key, value );
+            super.addCustomProperty(key, value);
             // the parent consumed this property
             return;
-        } catch( IllegalArgumentException iae ) {
+        } catch (IllegalArgumentException iae) {
             // the parent did not recognize this property, so it consumed here
-            if( HTTPS_ENCRYPTION_PROTOCOLS.equals( key ) || HTTPS_CIPHER_SUITES.equals( key ) ) {
-                customProperties.put( key, value );
+            if (HTTPS_ENCRYPTION_PROTOCOLS.equals(key) || HTTPS_CIPHER_SUITES.equals(key)) {
+                customProperties.put(key, value);
             } else {
-                throw new IllegalArgumentException( "Unknown property with key '" + key + "' is passed. "
-                                                    + USE_ONE_OF_THE_HTTPS_CONSTANTS );
+                throw new IllegalArgumentException("Unknown property with key '" + key + "' is passed. "
+                                                   + USE_ONE_OF_THE_HTTPS_CONSTANTS);
             }
         }
     }
@@ -211,29 +215,29 @@ public class HttpsClient extends HttpClient {
         super.applyCustomProperties();
 
         // get the encryption protocol
-        Object encryptionProtocolsValue = customProperties.get( HTTPS_ENCRYPTION_PROTOCOLS );
-        if( encryptionProtocolsValue == null ) {
+        Object encryptionProtocolsValue = customProperties.get(HTTPS_ENCRYPTION_PROTOCOLS);
+        if (encryptionProtocolsValue == null) {
             // user did not specify value for this instance, use default value if present
             encryptionProtocolsValue = CoreLibraryConfigurator.getInstance()
                                                               .getFileTransferDefaultHttpsEncryptionProtocols();
         }
-        if( encryptionProtocolsValue != null && encryptionProtocolsValue.toString().trim().length() > 0 ) {
-            encryptionProtocols = parseCustomProperties( encryptionProtocolsValue.toString() );
-            log.debug( "HTTPS encryption protocol set to '" + encryptionProtocolsValue.toString() + "'" );
+        if (encryptionProtocolsValue != null && encryptionProtocolsValue.toString().trim().length() > 0) {
+            encryptionProtocols = parseCustomProperties(encryptionProtocolsValue.toString());
+            log.debug("HTTPS encryption protocol set to '" + encryptionProtocolsValue.toString() + "'");
         } else {
             encryptionProtocolsValue = null;
         }
 
         // get the encryption cipher suites
-        Object cipherSuitesValue = customProperties.get( HTTPS_CIPHER_SUITES );
-        if( cipherSuitesValue == null ) {
+        Object cipherSuitesValue = customProperties.get(HTTPS_CIPHER_SUITES);
+        if (cipherSuitesValue == null) {
             // user did not specify value for this instance, use default value if present
             cipherSuitesValue = CoreLibraryConfigurator.getInstance()
                                                        .getFileTransferDefaultHttpsCipherSuites();
         }
-        if( cipherSuitesValue != null && cipherSuitesValue.toString().trim().length() > 0 ) {
-            cipherSuites = parseCustomProperties( cipherSuitesValue.toString() );
-            log.debug( "HTTPS cipher suites set to '" + cipherSuitesValue.toString() + "'" );
+        if (cipherSuitesValue != null && cipherSuitesValue.toString().trim().length() > 0) {
+            cipherSuites = parseCustomProperties(cipherSuitesValue.toString());
+            log.debug("HTTPS cipher suites set to '" + cipherSuitesValue.toString() + "'");
         } else {
             cipherSuitesValue = null;
         }

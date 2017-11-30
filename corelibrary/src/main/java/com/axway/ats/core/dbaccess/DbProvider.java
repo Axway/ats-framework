@@ -94,7 +94,7 @@ public interface DbProvider {
      */
     public DbRecordValuesList[] select(
                                         com.axway.ats.common.dbaccess.DbQuery dbQuery )
-                                                                                                  throws DbException;
+                                                                                        throws DbException;
 
     /**
      * Execute the select query and get the values in the appropriate type

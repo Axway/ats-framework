@@ -27,21 +27,21 @@ public class JavaSecurityUtils {
 
         try {
             String userTempDir = AtsSystemProperties.SYSTEM_USER_TEMP_DIR;
-            File tempPolicyFile = new File( userTempDir + "/ats_java_security_file.policy" );
-            if( !tempPolicyFile.exists() ) {
+            File tempPolicyFile = new File(userTempDir + "/ats_java_security_file.policy");
+            if (!tempPolicyFile.exists()) {
                 FileWriter fileWriter = null;
                 try {
-                    fileWriter = new FileWriter( tempPolicyFile );
-                    fileWriter.append( "grant{\n" + "\t// Allow everything\n"
-                                       + "\tpermission java.security.AllPermission;\n" + "};\n" );
+                    fileWriter = new FileWriter(tempPolicyFile);
+                    fileWriter.append("grant{\n" + "\t// Allow everything\n"
+                                      + "\tpermission java.security.AllPermission;\n" + "};\n");
                 } finally {
-                    IoUtils.closeStream( fileWriter );
+                    IoUtils.closeStream(fileWriter);
                 }
             }
 
-            System.setProperty( "java.security.policy", tempPolicyFile.getAbsolutePath() );
-        } catch( Exception e ) {
-            throw new RuntimeException( "Error unlocking java security", e );
+            System.setProperty("java.security.policy", tempPolicyFile.getAbsolutePath());
+        } catch (Exception e) {
+            throw new RuntimeException("Error unlocking java security", e);
         }
     }
 }

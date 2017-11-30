@@ -32,7 +32,7 @@ import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
  */
 public class SkipPropertyMatcher extends SkipContentMatcher {
 
-    private static final Logger     log = Logger.getLogger( SkipPropertyMatcher.class );
+    private static final Logger     log = Logger.getLogger(SkipPropertyMatcher.class);
 
     // < property key , match type >
     private Map<String, MATCH_TYPE> keysMap;
@@ -41,7 +41,7 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
 
     public SkipPropertyMatcher( String directoryAlias, String filePath ) {
 
-        super( directoryAlias, filePath );
+        super(directoryAlias, filePath);
 
         this.keysMap = new HashMap<>();
         this.valuesMap = new HashMap<>();
@@ -74,44 +74,44 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
 
     public SkipPropertyMatcher addKeyCondition( String key, MATCH_TYPE type ) {
 
-        if( keysMap.containsKey( key ) ) {
-            if( keysMap.get( key ) != type ) {
+        if (keysMap.containsKey(key)) {
+            if (keysMap.get(key) != type) {
                 StringBuilder sb = new StringBuilder();
-                sb.append( "File " + filePath + ": " );
-                sb.append( "There is already a " + getDescription() + " for key '" + key + "'. " );
-                sb.append( "Current key would be matched by '" + keysMap.get( key ) + "' " );
-                sb.append( "but we change this, so it will be matched by '" + type.getDescription() + "'" );
+                sb.append("File " + filePath + ": ");
+                sb.append("There is already a " + getDescription() + " for key '" + key + "'. ");
+                sb.append("Current key would be matched by '" + keysMap.get(key) + "' ");
+                sb.append("but we change this, so it will be matched by '" + type.getDescription() + "'");
 
-                log.warn( sb.toString() );
+                log.warn(sb.toString());
             }
-        } else if( log.isDebugEnabled() ) {
-            log.debug( "File " + filePath + ": Adding a " + getDescription() + " with key '" + key
-                       + "' matched as '" + type + "'" );
+        } else if (log.isDebugEnabled()) {
+            log.debug("File " + filePath + ": Adding a " + getDescription() + " with key '" + key
+                      + "' matched as '" + type + "'");
         }
 
-        keysMap.put( key, type );
+        keysMap.put(key, type);
 
         return this;
     }
 
     public SkipPropertyMatcher addValueCondition( String value, MATCH_TYPE type ) {
 
-        if( valuesMap.containsKey( value ) ) {
-            if( valuesMap.get( value ) != type ) {
+        if (valuesMap.containsKey(value)) {
+            if (valuesMap.get(value) != type) {
                 StringBuilder sb = new StringBuilder();
-                sb.append( "File " + filePath + ": " );
-                sb.append( "There is already a " + getDescription() + " for value '" + value + "'. " );
-                sb.append( "Current value would be matched by '" + valuesMap.get( value ) + "' " );
-                sb.append( "but we change this, so it will be matched by '" + type.getDescription() + "'" );
+                sb.append("File " + filePath + ": ");
+                sb.append("There is already a " + getDescription() + " for value '" + value + "'. ");
+                sb.append("Current value would be matched by '" + valuesMap.get(value) + "' ");
+                sb.append("but we change this, so it will be matched by '" + type.getDescription() + "'");
 
-                log.warn( sb.toString() );
+                log.warn(sb.toString());
             }
-        } else if( log.isDebugEnabled() ) {
-            log.debug( "File " + filePath + ": Adding a " + getDescription() + " with value '" + value
-                       + "' matched as '" + type + "'" );
+        } else if (log.isDebugEnabled()) {
+            log.debug("File " + filePath + ": Adding a " + getDescription() + " with value '" + value
+                      + "' matched as '" + type + "'");
         }
 
-        valuesMap.put( value, type );
+        valuesMap.put(value, type);
 
         return this;
     }
@@ -119,14 +119,14 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
     public void process( String thisSnapshot, String thatSnapshot, Properties thisProps, Properties thatProps,
                          FileTrace fileTrace ) {
 
-        if( keysMap.size() > 0 ) {
-            processKeys( thisSnapshot, thisProps );
-            processKeys( thatSnapshot, thatProps );
+        if (keysMap.size() > 0) {
+            processKeys(thisSnapshot, thisProps);
+            processKeys(thatSnapshot, thatProps);
         }
 
-        if( valuesMap.size() > 0 ) {
-            processValues( thisSnapshot, thisProps );
-            processValues( thatSnapshot, thatProps );
+        if (valuesMap.size() > 0) {
+            processValues(thisSnapshot, thisProps);
+            processValues(thatSnapshot, thatProps);
         }
     }
 
@@ -136,51 +136,51 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
 
         // cycle all property keys
         // it is possible to match more than one key from the file
-        for( String keyFromFile : props.stringPropertyNames() ) {
+        for (String keyFromFile : props.stringPropertyNames()) {
 
             // cycle all match conditions
-            for( Entry<String, MATCH_TYPE> matcherEntry : keysMap.entrySet() ) {
-                if( matcherEntry.getValue().isRegex() ) {
+            for (Entry<String, MATCH_TYPE> matcherEntry : keysMap.entrySet()) {
+                if (matcherEntry.getValue().isRegex()) {
                     // regular expression
-                    if( keyFromFile.matches( matcherEntry.getKey() ) ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing property '"
-                                       + keyFromFile + "=" + props.getProperty( keyFromFile )
-                                       + "' as its key matches the '" + matcherEntry.getKey()
-                                       + "' regular expression" );
+                    if (keyFromFile.matches(matcherEntry.getKey())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing property '"
+                                      + keyFromFile + "=" + props.getProperty(keyFromFile)
+                                      + "' as its key matches the '" + matcherEntry.getKey()
+                                      + "' regular expression");
                         }
 
-                        keysToRemove.add( keyFromFile );
+                        keysToRemove.add(keyFromFile);
                         break;
                     }
-                } else if( matcherEntry.getValue().isPlainText() ) {
+                } else if (matcherEntry.getValue().isPlainText()) {
                     // just text
-                    if( keyFromFile.trim().equalsIgnoreCase( matcherEntry.getKey().trim() ) ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing property '"
-                                       + keyFromFile + "=" + props.getProperty( keyFromFile )
-                                       + "' as its key equals ignoring case the '" + matcherEntry.getKey()
-                                       + "' text" );
+                    if (keyFromFile.trim().equalsIgnoreCase(matcherEntry.getKey().trim())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing property '"
+                                      + keyFromFile + "=" + props.getProperty(keyFromFile)
+                                      + "' as its key equals ignoring case the '" + matcherEntry.getKey()
+                                      + "' text");
                         }
 
-                        keysToRemove.add( keyFromFile );
+                        keysToRemove.add(keyFromFile);
                         break;
                     }
 
                 }
                 // if( entry.getValue().isContainingText() )
                 else {
-                    if( keyFromFile.trim()
+                    if (keyFromFile.trim()
                                    .toLowerCase()
-                                   .contains( matcherEntry.getKey().trim().toLowerCase() ) ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing property '"
-                                       + keyFromFile + "=" + props.getProperty( keyFromFile )
-                                       + "' as its key contains ignoring case the '" + matcherEntry.getKey()
-                                       + "' text" );
+                                   .contains(matcherEntry.getKey().trim().toLowerCase())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing property '"
+                                      + keyFromFile + "=" + props.getProperty(keyFromFile)
+                                      + "' as its key contains ignoring case the '" + matcherEntry.getKey()
+                                      + "' text");
                         }
 
-                        keysToRemove.add( keyFromFile );
+                        keysToRemove.add(keyFromFile);
                         break;
                     }
                 }
@@ -188,8 +188,8 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
         }
 
         // now remove all matched properties
-        for( String keyToRemove : keysToRemove ) {
-            props.remove( keyToRemove );
+        for (String keyToRemove : keysToRemove) {
+            props.remove(keyToRemove);
         }
     }
 
@@ -199,50 +199,50 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
 
         // cycle all property values
         // it is possible to match more than one value from the file
-        for( String keyFromFile : props.stringPropertyNames() ) {
+        for (String keyFromFile : props.stringPropertyNames()) {
 
-            String valueFromFile = props.getProperty( keyFromFile );
+            String valueFromFile = props.getProperty(keyFromFile);
 
             // cycle all match conditions
-            for( Entry<String, MATCH_TYPE> matcherEntry : valuesMap.entrySet() ) {
-                if( matcherEntry.getValue().isRegex() ) {
+            for (Entry<String, MATCH_TYPE> matcherEntry : valuesMap.entrySet()) {
+                if (matcherEntry.getValue().isRegex()) {
                     // regular expression
-                    if( valueFromFile.matches( matcherEntry.getKey() ) ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing property '"
-                                       + keyFromFile + "=" + valueFromFile + "' as its value matches the '"
-                                       + matcherEntry.getKey() + "' regular expression" );
+                    if (valueFromFile.matches(matcherEntry.getKey())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing property '"
+                                      + keyFromFile + "=" + valueFromFile + "' as its value matches the '"
+                                      + matcherEntry.getKey() + "' regular expression");
                         }
 
-                        keysToRemove.add( keyFromFile );
+                        keysToRemove.add(keyFromFile);
                         break;
                     }
-                } else if( matcherEntry.getValue().isPlainText() ) {
+                } else if (matcherEntry.getValue().isPlainText()) {
                     // just text
-                    if( valueFromFile.trim().equalsIgnoreCase( matcherEntry.getKey().trim() ) ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing property '"
-                                       + keyFromFile + "=" + valueFromFile
-                                       + "' as its value equals ignoring case the '" + matcherEntry.getKey()
-                                       + "' text" );
+                    if (valueFromFile.trim().equalsIgnoreCase(matcherEntry.getKey().trim())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing property '"
+                                      + keyFromFile + "=" + valueFromFile
+                                      + "' as its value equals ignoring case the '" + matcherEntry.getKey()
+                                      + "' text");
                         }
 
-                        keysToRemove.add( keyFromFile );
+                        keysToRemove.add(keyFromFile);
                         break;
                     }
 
                 } else { // if( entry.getValue().isContainingText() )
-                    if( valueFromFile.trim()
+                    if (valueFromFile.trim()
                                      .toLowerCase()
-                                     .contains( matcherEntry.getKey().trim().toLowerCase() ) ) {
-                        if( log.isDebugEnabled() ) {
-                            log.debug( "[" + snapshot + "] File " + filePath + ": Removing property '"
-                                       + keyFromFile + "=" + valueFromFile
-                                       + "' as its value contains ignoring case the '" + matcherEntry.getKey()
-                                       + "' text" );
+                                     .contains(matcherEntry.getKey().trim().toLowerCase())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("[" + snapshot + "] File " + filePath + ": Removing property '"
+                                      + keyFromFile + "=" + valueFromFile
+                                      + "' as its value contains ignoring case the '" + matcherEntry.getKey()
+                                      + "' text");
                         }
 
-                        keysToRemove.add( keyFromFile );
+                        keysToRemove.add(keyFromFile);
                         break;
                     }
                 }
@@ -250,8 +250,8 @@ public class SkipPropertyMatcher extends SkipContentMatcher {
         }
 
         // now remove all matched properties
-        for( String keyToRemove : keysToRemove ) {
-            props.remove( keyToRemove );
+        for (String keyToRemove : keysToRemove) {
+            props.remove(keyToRemove);
         }
     }
 

@@ -39,7 +39,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
  */
 public class MysqlDbProvider extends AbstractDbProvider {
 
-    private static final Logger log                    = Logger.getLogger( MysqlDbProvider.class );
+    private static final Logger log                    = Logger.getLogger(MysqlDbProvider.class);
 
     public final static String  FUNC_CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP()";
     public final static String  FUNC_NOW               = "NOW()";
@@ -55,13 +55,13 @@ public class MysqlDbProvider extends AbstractDbProvider {
      */
     public MysqlDbProvider( DbConnMySQL dbConnection ) {
 
-        super( dbConnection );
+        super(dbConnection);
 
         this.reservedWords = new String[]{ FUNC_CURRENT_TIMESTAMP,
-                FUNC_NOW,
-                FUNC_LOCALTIME,
-                FUNC_LOCALTIMESTAMP,
-                FUNC_UNIX_TIMESTAMP };
+                                           FUNC_NOW,
+                                           FUNC_LOCALTIME,
+                                           FUNC_LOCALTIMESTAMP,
+                                           FUNC_UNIX_TIMESTAMP };
     }
 
     /**
@@ -72,7 +72,7 @@ public class MysqlDbProvider extends AbstractDbProvider {
      */
     public Connection getConnection() throws DbException {
 
-        return ConnectionPool.getConnection( dbConnection );
+        return ConnectionPool.getConnection(dbConnection);
     }
 
     @Override
@@ -82,81 +82,81 @@ public class MysqlDbProvider extends AbstractDbProvider {
                                                String columnTypeName ) throws SQLException, IOException {
 
         String value;
-        Object valueAsObject = resultSet.getObject( index );
-        if( valueAsObject == null ) {
+        Object valueAsObject = resultSet.getObject(index);
+        if (valueAsObject == null) {
             return null;
         }
-        if( valueAsObject != null && valueAsObject.getClass().isArray() ) {
+        if (valueAsObject != null && valueAsObject.getClass().isArray()) {
             // we have an array of primitive data type
             // LONGBLOB types are returned as byte array and '1?' should be transformed to 0x313F
-            if( ! ( valueAsObject instanceof byte[] ) ) {
+            if (! (valueAsObject instanceof byte[])) {
                 // FIXME other array types might be needed to be tracked in a different way 
-                log.warn( "Array type that needs attention" );
+                log.warn("Array type that needs attention");
             }
 
             StringBuilder hexString = new StringBuilder();
-            hexString.append( "0x" );
+            hexString.append("0x");
             // read the binary data from the stream and convert it to hex
-            InputStream blobInputStream = resultSet.getBinaryStream( index );
-            hexString = addBinDataAsHexAndCloseStream( hexString, blobInputStream );
+            InputStream blobInputStream = resultSet.getBinaryStream(index);
+            hexString = addBinDataAsHexAndCloseStream(hexString, blobInputStream);
             value = hexString.toString();
 
-        } else if( valueAsObject instanceof Blob ) {
-            log.info( "Blob detected. Will try to dump as hex" );
+        } else if (valueAsObject instanceof Blob) {
+            log.info("Blob detected. Will try to dump as hex");
             // we have a blob
-            Blob blobValue = ( Blob ) valueAsObject;
+            Blob blobValue = (Blob) valueAsObject;
             InputStream blobInputStream = blobValue.getBinaryStream();
             StringBuilder hexString = new StringBuilder();
-            hexString.append( "0x" );
-            hexString = addBinDataAsHexAndCloseStream( hexString, blobInputStream );
+            hexString.append("0x");
+            hexString = addBinDataAsHexAndCloseStream(hexString, blobInputStream);
             value = hexString.toString();
         } else {
             // treat as a string
-            value = resultSet.getString( index );
-            logDebugInfoForDBValue( value, index, resultSet );
+            value = resultSet.getString(index);
+            logDebugInfoForDBValue(value, index, resultSet);
         }
 
         return value;
     }
-    
+
     @Override
     protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
                                                        String catalog ) throws DbException {
 
-    	String sql = "SELECT TABLE_NAME,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,SUB_PART,PACKED,NULLABLE,INDEX_TYPE "
-                + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName + "'";
+        String sql = "SELECT TABLE_NAME,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,SUB_PART,PACKED,NULLABLE,INDEX_TYPE "
+                     + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName + "'";
 
         String indexName = null;
         Map<String, String> indexes = new HashMap<>();
-        for( DbRecordValuesList valueList : select( sql ) ) {
+        for (DbRecordValuesList valueList : select(sql)) {
             StringBuilder info = new StringBuilder();
             boolean firstTime = true;
-            for( DbRecordValue dbValue : valueList ) {
+            for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
-                if( "INDEX_NAME".equalsIgnoreCase( name ) ) {
+                if ("INDEX_NAME".equalsIgnoreCase(name)) {
                     indexName = value;
                 } else {
-                    info.append( ", " + name + "=" + value );
-                    if( firstTime ) {
+                    info.append(", " + name + "=" + value);
+                    if (firstTime) {
                         firstTime = false;
-                        info.append( name + "=" + value );
+                        info.append(name + "=" + value);
                     } else {
-                        info.append( ", " + name + "=" + value );
+                        info.append(", " + name + "=" + value);
                     }
                 }
             }
 
-            if( indexName == null ) {
+            if (indexName == null) {
                 indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
-                log.warn( "IndexName column not found in query polling for index properties:\nQuery: " + sql
-                          + "\nQuery result: " + valueList.toString()
-                          + "\nWe will use the following as an index name: " + indexName );
+                log.warn("IndexName column not found in query polling for index properties:\nQuery: " + sql
+                         + "\nQuery result: " + valueList.toString()
+                         + "\nWe will use the following as an index name: " + indexName);
             }
 
-            indexes.put( indexName, info.toString() );
+            indexes.put(indexName, info.toString());
         }
 
         return indexes;
-    }    
+    }
 }

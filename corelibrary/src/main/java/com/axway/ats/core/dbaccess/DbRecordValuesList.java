@@ -21,7 +21,7 @@ import java.util.Iterator;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.StringUtils;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DbRecordValuesList extends ArrayList<DbRecordValue> {
 
     public Object get( String columnName ) throws DbException {
@@ -29,22 +29,22 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
         DbRecordValue foundValue = null;
 
         Iterator<DbRecordValue> elementsIter = iterator();
-        while( elementsIter.hasNext() ) {
+        while (elementsIter.hasNext()) {
             DbRecordValue recordValue = elementsIter.next();
-            if( recordValue.getDbColumn().getColumnName().equals( columnName ) ) {
-                if( foundValue == null ) {
+            if (recordValue.getDbColumn().getColumnName().equals(columnName)) {
+                if (foundValue == null) {
                     foundValue = recordValue;
                 } else {
                     // FIXME Tihomir: Is this possible?
-                    throw new DbException( "Ambiguous column name '" + columnName
-                                           + "' - the returned record contains more that one column with this name, you need to specify table or index" );
+                    throw new DbException("Ambiguous column name '" + columnName
+                                          + "' - the returned record contains more that one column with this name, you need to specify table or index");
                 }
             }
         }
 
-        if( foundValue == null ) {
-            throw new DbException( "Unable to extract a column by the name of '" + columnName
-                                   + "' - no such column exists in the result set" );
+        if (foundValue == null) {
+            throw new DbException("Unable to extract a column by the name of '" + columnName
+                                  + "' - no such column exists in the result set");
         }
 
         return foundValue.getValue();
@@ -55,15 +55,15 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
         DbRecordValue foundValue = null;
 
         Iterator<DbRecordValue> elementsIter = iterator();
-        while( elementsIter.hasNext() ) {
+        while (elementsIter.hasNext()) {
             DbRecordValue recordValue = elementsIter.next();
-            if( recordValue.getDbColumn().getColumnName().equals( columnName )
-                && recordValue.getDbColumn().getTableName().equals( tableName ) ) {
-                if( foundValue == null ) {
+            if (recordValue.getDbColumn().getColumnName().equals(columnName)
+                && recordValue.getDbColumn().getTableName().equals(tableName)) {
+                if (foundValue == null) {
                     foundValue = recordValue;
                 } else {
-                    throw new DbException( "Ambigous column name '" + tableName + "." + columnName
-                                           + "' - the returned record contains more that one column with this name, you need to specify index" );
+                    throw new DbException("Ambigous column name '" + tableName + "." + columnName
+                                          + "' - the returned record contains more that one column with this name, you need to specify index");
                 }
             }
         }
@@ -76,14 +76,14 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
         DbRecordValue foundValue = null;
 
         Iterator<DbRecordValue> elementsIter = iterator();
-        while( elementsIter.hasNext() ) {
+        while (elementsIter.hasNext()) {
             DbRecordValue recordValue = elementsIter.next();
-            if( recordValue.getDbColumn().getColumnName().equals( columnName )
-                && recordValue.getDbColumn().getIndex() == index ) {
-                if( foundValue == null ) {
+            if (recordValue.getDbColumn().getColumnName().equals(columnName)
+                && recordValue.getDbColumn().getIndex() == index) {
+                if (foundValue == null) {
                     foundValue = recordValue;
                 } else {
-                    throw new DbException( "There are two columns with the same name and the same index" );
+                    throw new DbException("There are two columns with the same name and the same index");
                 }
             }
         }
@@ -95,32 +95,32 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
     public String toString() {
 
         StringBuilder sBuilder = new StringBuilder();
-        sBuilder.append( "_" );
-        
+        sBuilder.append("_");
+
         Iterator<DbRecordValue> elementsIter = iterator();
-        while( elementsIter.hasNext() ) {
+        while (elementsIter.hasNext()) {
             DbRecordValue recordValue = elementsIter.next();
             String recordValueString = recordValue.getValueAsString();
 
-            ColumnDescription columnDescription = new ColumnDescription( recordValue.getDbColumn()
-                                                                                    .getColumnName(),
-                                                                         recordValue.getDbColumn()
-                                                                                    .getColumnType() );
+            ColumnDescription columnDescription = new ColumnDescription(recordValue.getDbColumn()
+                                                                                   .getColumnName(),
+                                                                        recordValue.getDbColumn()
+                                                                                   .getColumnType());
 
-            if( recordValueString != null ) {
-                if( columnDescription.getType() != null && ( columnDescription.isTypeBinary() ) ) {
+            if (recordValueString != null) {
+                if (columnDescription.getType() != null && (columnDescription.isTypeBinary())) {
                     // we can get very long data here, so we use MD5 checksum instead
-                    recordValueString = "md5:" + StringUtils.md5sum( recordValueString );
+                    recordValueString = "md5:" + StringUtils.md5sum(recordValueString);
                 }
             } else {
                 recordValueString = "NULL";
             }
-            sBuilder.append( "|" );
-            sBuilder.append( recordValue.getDbColumn().getColumnName() );
-            sBuilder.append( "=" );
-            sBuilder.append( recordValueString );
+            sBuilder.append("|");
+            sBuilder.append(recordValue.getDbColumn().getColumnName());
+            sBuilder.append("=");
+            sBuilder.append(recordValueString);
         }
-        sBuilder.append( "|" ).append( "_" );
+        sBuilder.append("|").append("_");
 
         return sBuilder.toString();
     }

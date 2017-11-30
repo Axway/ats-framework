@@ -37,12 +37,12 @@ public class Test_TypeFile extends BaseTest {
     private final Validator             validator              = new Validator();
 
     /** Valid test data */
-    private static final String         EXISTING_FILE_NAME     = "src/test/resources/validation/file.txt"; // TODO use classpath
-    private static final File           EXISTING_FILE          = new File( EXISTING_FILE_NAME );
+    private static final String         EXISTING_FILE_NAME     = "src/test/resources/validation/file.txt";         // TODO use classpath
+    private static final File           EXISTING_FILE          = new File(EXISTING_FILE_NAME);
 
     /** Invalid test data */
     private static final String         NON_EXISTING_FILE_NAME = "src/test/resources/validation/file.tx_NOT_FOUND";
-    private static final File           NON_EXISTING_FILE      = new File( NON_EXISTING_FILE_NAME );
+    private static final File           NON_EXISTING_FILE      = new File(NON_EXISTING_FILE_NAME);
 
     private static final ValidationType VALIDATION_TYPE        = ValidationType.FILE_EXISTING;
 
@@ -53,7 +53,7 @@ public class Test_TypeFile extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -64,10 +64,10 @@ public class Test_TypeFile extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, EXISTING_FILE ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, EXISTING_FILE));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, NON_EXISTING_FILE ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, new Object() ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, null ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, NON_EXISTING_FILE));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, new Object()));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, null));
     }
 }

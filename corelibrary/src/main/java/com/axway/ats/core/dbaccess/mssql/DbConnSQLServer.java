@@ -46,7 +46,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnSQLServer extends DbConnection {
 
-    private static final Logger                log                                   = Logger.getLogger( DbConnSQLServer.class );
+    private static final Logger                log                                   = Logger.getLogger(DbConnSQLServer.class);
 
     private static final String                JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
     /**
@@ -74,15 +74,15 @@ public class DbConnSQLServer extends DbConnection {
     /**
      * Default DB port
      */
-    public static final int                   DEFAULT_PORT                          = 1433;
+    public static final int                    DEFAULT_PORT                          = 1433;
 
     /**
      * The connection URL
      */
-    private StringBuilder                      url = new StringBuilder();
+    private StringBuilder                      url                                   = new StringBuilder();
 
     private BasicDataSource                    ds;
-    
+
     private Boolean                            useSSL;
 
     /**
@@ -108,8 +108,8 @@ public class DbConnSQLServer extends DbConnection {
      * </ul>
      */
     private static Class<? extends DataSource> jdbcDataSourceClass                   = null;
-    
-    public static final String DATABASE_TYPE = "MSSQL";
+
+    public static final String                 DATABASE_TYPE                         = "MSSQL";
 
     /**
      * Constructor
@@ -121,7 +121,7 @@ public class DbConnSQLServer extends DbConnection {
      */
     public DbConnSQLServer( String host, String db, String user, String password ) {
 
-        this( host, db, user, password, null );
+        this(host, db, user, password, null);
     }
 
     /**
@@ -139,23 +139,23 @@ public class DbConnSQLServer extends DbConnection {
                             String password,
                             Map<String, Object> customProperties ) {
 
-        super( DATABASE_TYPE, host, db, user, password, customProperties );
+        super(DATABASE_TYPE, host, db, user, password, customProperties);
         updateConnectionSettings();
 
-        if( !useSSL ) {
-            url.append( jdbcDriverPrefix ).append( host ).append( ":" ).append( port );
+        if (!useSSL) {
+            url.append(jdbcDriverPrefix).append(host).append(":").append(port);
 
-            if( db != null ) {
-                url.append( "/" ).append( db );
+            if (db != null) {
+                url.append("/").append(db);
             }
         } else {
             // url prefix is missing the ':jtds:' part in SSL connection
-            url.append( "jdbc:sqlserver://" ).append( host ).append( ":" ).append( port );
-            
-            if( db != null ) {
-                url.append( ";databaseName=" )
-                   .append( db )
-                   .append( ";integratedSecurity=false;encrypt=true;trustServerCertificate=true" );
+            url.append("jdbc:sqlserver://").append(host).append(":").append(port);
+
+            if (db != null) {
+                url.append(";databaseName=")
+                   .append(db)
+                   .append(";integratedSecurity=false;encrypt=true;trustServerCertificate=true");
             }
         }
     }
@@ -165,13 +165,13 @@ public class DbConnSQLServer extends DbConnection {
                                                Map<String, Object> properties ) {
 
         this.port = DEFAULT_PORT;
-        
-        if( properties != null && properties.containsKey( DbKeys.USE_SECURE_SOCKET )
-            && "true".equals( properties.get( DbKeys.USE_SECURE_SOCKET ) ) ) {
+
+        if (properties != null && properties.containsKey(DbKeys.USE_SECURE_SOCKET)
+            && "true".equals(properties.get(DbKeys.USE_SECURE_SOCKET))) {
             useSSL = true;
         }
 
-        if( useSSL == null ) {
+        if (useSSL == null) {
             useSSL = false;
         }
     }
@@ -179,41 +179,41 @@ public class DbConnSQLServer extends DbConnection {
     @Override
     public DataSource getDataSource() {
 
-        if( jdbcDataSourceClass.getName().equals( DEFAULT_JDBC_DATASOURCE_CLASS_NAME ) ) {
+        if (jdbcDataSourceClass.getName().equals(DEFAULT_JDBC_DATASOURCE_CLASS_NAME)) {
             // jTDS - default SQL server driver. By default we have it in class path
             // jTDS does not provide connection pool so make one using Apache Commons DBCP
             ds = new BasicDataSource();
-            ds.setMaxWait( 60 * 1000 ); // wait 60 sec for new connection
+            ds.setMaxWait(60 * 1000); // wait 60 sec for new connection
 
-            String logAbandoned = System.getProperty( "dbcp.logAbandoned" );
-            if( logAbandoned != null && ( "true".equalsIgnoreCase( logAbandoned ) )
-                || "1".equalsIgnoreCase( logAbandoned ) ) {
-                log.info( "Will log abandoned connections if not cleaned in 120 sec" );
+            String logAbandoned = System.getProperty("dbcp.logAbandoned");
+            if (logAbandoned != null && ("true".equalsIgnoreCase(logAbandoned))
+                || "1".equalsIgnoreCase(logAbandoned)) {
+                log.info("Will log abandoned connections if not cleaned in 120 sec");
                 // log not closed connections
-                ds.setRemoveAbandoned( true );
-                ds.setLogAbandoned( true ); // issue stack trace of not closed connection
-                ds.setRemoveAbandonedTimeout( 120 ); // 120 sec - 2 min
+                ds.setRemoveAbandoned(true);
+                ds.setLogAbandoned(true); // issue stack trace of not closed connection
+                ds.setRemoveAbandonedTimeout(120); // 120 sec - 2 min
             }
 
-            ds.setDriverClassName( getDriverClass().getName() );
-            ds.setUsername( user );
-            ds.setPassword( password );
-            ds.setUrl( getURL() );
+            ds.setDriverClassName(getDriverClass().getName());
+            ds.setUsername(user);
+            ds.setPassword(password);
+            ds.setUrl(getURL());
             return ds;
         } else {
             DataSource ds = null;
             try {
                 ds = jdbcDataSourceClass.newInstance();
                 // FIXME these methods are not standard so error might occur with non-tested driver
-                Method setServerName = jdbcDataSourceClass.getMethod( "setServerName", String.class );
-                setServerName.invoke( ds, this.host );
-                Method setPortNumber = jdbcDataSourceClass.getMethod( "setPortNumber", int.class );
-                setPortNumber.invoke( ds, this.port );
-                Method setDatabase = jdbcDataSourceClass.getMethod( "setDatabase", String.class );
-                setDatabase.invoke( ds, this.db );
-            } catch( Exception e ) {
-                throw new DbException( "Error while configuring data source '" + jdbcDataSourceClass.getName()
-                                       + "' for use", e );
+                Method setServerName = jdbcDataSourceClass.getMethod("setServerName", String.class);
+                setServerName.invoke(ds, this.host);
+                Method setPortNumber = jdbcDataSourceClass.getMethod("setPortNumber", int.class);
+                setPortNumber.invoke(ds, this.port);
+                Method setDatabase = jdbcDataSourceClass.getMethod("setDatabase", String.class);
+                setDatabase.invoke(ds, this.db);
+            } catch (Exception e) {
+                throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
+                                      + "' for use", e);
             }
             return ds;
         }
@@ -234,10 +234,10 @@ public class DbConnSQLServer extends DbConnection {
     @Override
     public String getDescription() {
 
-        StringBuilder description = new StringBuilder( "MSSQL connection to " );
-        description.append( host );
-        description.append( ":" ).append( port );
-        description.append( "/" ).append( db );
+        StringBuilder description = new StringBuilder("MSSQL connection to ");
+        description.append(host);
+        description.append(":").append(port);
+        description.append("/").append(db);
 
         return description.toString();
     }
@@ -251,8 +251,8 @@ public class DbConnSQLServer extends DbConnection {
 
         try {
             ds.close();
-        } catch( Exception e ) {
-            throw new DbException( "Unable to close database source", e );
+        } catch (Exception e) {
+            throw new DbException("Unable to close database source", e);
         }
     }
 
@@ -295,37 +295,37 @@ public class DbConnSQLServer extends DbConnection {
      */
     private void updateConnectionSettings() {
 
-        String value = System.getProperty( JDBC_DRIVER_VENDOR_KEY );
+        String value = System.getProperty(JDBC_DRIVER_VENDOR_KEY);
         MsSQLJDBCDriverVendor vendor = null;// MsSQLJDBCDriverVendor.JTDS; // default version
-        if( !StringUtils.isNullOrEmpty( value ) ) {
+        if (!StringUtils.isNullOrEmpty(value)) {
             value = value.trim().toUpperCase();
             try {
-                vendor = MsSQLJDBCDriverVendor.valueOf( value );
-            } catch( Exception e ) {
+                vendor = MsSQLJDBCDriverVendor.valueOf(value);
+            } catch (Exception e) {
                 StringBuilder sb = new StringBuilder();
-                for( MsSQLJDBCDriverVendor enumValue : MsSQLJDBCDriverVendor.values() ) {
-                    sb.append( enumValue.toString() + "," );
+                for (MsSQLJDBCDriverVendor enumValue : MsSQLJDBCDriverVendor.values()) {
+                    sb.append(enumValue.toString() + ",");
                 }
-                sb.delete( sb.length() - 1, sb.length() ); // remove trailing comma
-                throw new DbException( "Illegal value '" + value
-                                       + "' is specified for Log DB driver. Supported are: " + sb.toString()
-                                       + ". No DB logging will be performed.", e );
+                sb.delete(sb.length() - 1, sb.length()); // remove trailing comma
+                throw new DbException("Illegal value '" + value
+                                      + "' is specified for Log DB driver. Supported are: " + sb.toString()
+                                      + ". No DB logging will be performed.", e);
             }
-            switch( vendor ){
+            switch (vendor) {
                 case JTDS:
-                    System.setProperty( JDBC_PREFIX_KEY, DEFAULT_JDBC_DRIVER_PREFIX );
-                    System.setProperty( JDBC_DRIVER_CLASS_KEY, DEFAULT_JDBC_DRIVER_CLASS_NAME );
-                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, DEFAULT_JDBC_DATASOURCE_CLASS_NAME );
+                    System.setProperty(JDBC_PREFIX_KEY, DEFAULT_JDBC_DRIVER_PREFIX);
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, DEFAULT_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, DEFAULT_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 case JNETDIRECT:
-                    System.setProperty( JDBC_PREFIX_KEY, JNETDIRECT_JDBC_DRIVER_PREFIX );
-                    System.setProperty( JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME );
-                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME );
+                    System.setProperty(JDBC_PREFIX_KEY, JNETDIRECT_JDBC_DRIVER_PREFIX);
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 default:
                     // not expected. Just in case if enum is updated w/o implementation here
-                    throw new DbException( "Not implemented support for MsSQL driver type "
-                                           + vendor.toString() );
+                    throw new DbException("Not implemented support for MsSQL driver type "
+                                          + vendor.toString());
             }
         }
 
@@ -333,62 +333,62 @@ public class DbConnSQLServer extends DbConnection {
         // The class loading check is also here.
 
         // JDBC prefix like "jdbc:jtds:sqlserver://" from URL jdbc:jtds:sqlserver://SERVER-NAME:port/DB-NAME
-        value = System.getProperty( JDBC_PREFIX_KEY );
-        if( value != null ) {
+        value = System.getProperty(JDBC_PREFIX_KEY);
+        if (value != null) {
             jdbcDriverPrefix = value.trim();
         }
-        if( StringUtils.isNullOrEmpty( jdbcDriverPrefix ) ) { // including empty string after trim
+        if (StringUtils.isNullOrEmpty(jdbcDriverPrefix)) { // including empty string after trim
             jdbcDriverPrefix = DEFAULT_JDBC_DRIVER_PREFIX;
         }
-        log.debug( "MsSQL connection: Using JDBC driver prefix: " + jdbcDriverPrefix );
+        log.debug("MsSQL connection: Using JDBC driver prefix: " + jdbcDriverPrefix);
 
         // JDBC driver class
-        value = System.getProperty( JDBC_DRIVER_CLASS_KEY );
+        value = System.getProperty(JDBC_DRIVER_CLASS_KEY);
         String className = null;
-        if( value != null ) {
+        if (value != null) {
             className = value.trim();
         }
-        if( StringUtils.isNullOrEmpty( className ) ) { // including empty string after trim
+        if (StringUtils.isNullOrEmpty(className)) { // including empty string after trim
             className = DEFAULT_JDBC_DRIVER_CLASS_NAME;
         }
-        boolean isClassLoaded = loadClass( className ); // check for availability
-        if( isClassLoaded ) {
+        boolean isClassLoaded = loadClass(className); // check for availability
+        if (isClassLoaded) {
             try {
-                jdbcDriverClass = ( Class<? extends Driver> ) Class.forName( className );
-            } catch( ClassNotFoundException e ) {
-                log.error( null, e ); // Not expected. Already checked in loadClass()
-            } catch( ClassCastException e ) {
-                throw new DbException( "Class with name '" + className
-                                       + "' is not a valid java.sql.Driver class" );
+                jdbcDriverClass = (Class<? extends Driver>) Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                log.error(null, e); // Not expected. Already checked in loadClass()
+            } catch (ClassCastException e) {
+                throw new DbException("Class with name '" + className
+                                      + "' is not a valid java.sql.Driver class");
             }
-            log.debug( "Using JDBC driver class: " + className );
+            log.debug("Using JDBC driver class: " + className);
         } else {
-            throw new DbException( "Could not load MsSQL JDBC driver class with name '" + className + "'" );
+            throw new DbException("Could not load MsSQL JDBC driver class with name '" + className + "'");
         }
 
         // JDBC DataSource class
-        value = System.getProperty( JDBC_DATASOURCE_CLASS_KEY );
+        value = System.getProperty(JDBC_DATASOURCE_CLASS_KEY);
         className = null;
-        if( value != null ) {
+        if (value != null) {
             className = value.trim();
         }
-        if( StringUtils.isNullOrEmpty( className ) ) { // including empty string after trim
+        if (StringUtils.isNullOrEmpty(className)) { // including empty string after trim
             className = DEFAULT_JDBC_DATASOURCE_CLASS_NAME;
         }
-        isClassLoaded = loadClass( className ); // check for availability
-        if( isClassLoaded ) {
+        isClassLoaded = loadClass(className); // check for availability
+        if (isClassLoaded) {
             try {
-                jdbcDataSourceClass = ( Class<? extends DataSource> ) Class.forName( className );
-            } catch( ClassNotFoundException e ) {
-                log.error( null, e ); // Not expected. Already checked in loadClass()
-            } catch( ClassCastException e ) {
-                throw new DbException( "Class with name '" + className
-                                       + "' is not a valid javax.sql.DataSource class" );
+                jdbcDataSourceClass = (Class<? extends DataSource>) Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                log.error(null, e); // Not expected. Already checked in loadClass()
+            } catch (ClassCastException e) {
+                throw new DbException("Class with name '" + className
+                                      + "' is not a valid javax.sql.DataSource class");
             }
-            log.debug( "Using JDBC data source class: " + className );
+            log.debug("Using JDBC data source class: " + className);
         } else {
-            throw new DbException( "Could not load MsSQL JDBC DataSource class with name '" + className
-                                   + "'" );
+            throw new DbException("Could not load MsSQL JDBC DataSource class with name '" + className
+                                  + "'");
         }
 
     }
@@ -400,11 +400,11 @@ public class DbConnSQLServer extends DbConnection {
     private boolean loadClass( String someClass ) {
 
         try {
-            Class.forName( someClass ); // try to load the class
+            Class.forName(someClass); // try to load the class
             return true;
-        } catch( ClassNotFoundException e ) {
-            log.error( "Could not load DB access related class '" + someClass
-                       + "'. Check that it is specified correctly and that it is in the classpath", e );
+        } catch (ClassNotFoundException e) {
+            log.error("Could not load DB access related class '" + someClass
+                      + "'. Check that it is specified correctly and that it is in the classpath", e);
             return false;
         }
     }

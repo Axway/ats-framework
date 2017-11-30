@@ -32,15 +32,15 @@ public class AtsVersion {
     private static String      ATS_FRAMEWORK_VERSION;
 
     static {
-        try(InputStream is = AtsVersion.class.getResourceAsStream( "/ats.version" )) {
+        try (InputStream is = AtsVersion.class.getResourceAsStream("/ats.version")) {
             Properties versionProperties = new Properties();
-            versionProperties.load( is );
+            versionProperties.load(is);
 
-            ATS_FRAMEWORK_VERSION = versionProperties.getProperty( VERSION_KEY );
-        } catch( Exception e ) {
+            ATS_FRAMEWORK_VERSION = versionProperties.getProperty(VERSION_KEY);
+        } catch (Exception e) {
             ATS_FRAMEWORK_VERSION = "";
 
-            System.err.println( "*** ATS WARNING *** Unknown ATS framework version. Following is the error reading the internal version of the ATS framework" );
+            System.err.println("*** ATS WARNING *** Unknown ATS framework version. Following is the error reading the internal version of the ATS framework");
             e.printStackTrace();
         }
     }

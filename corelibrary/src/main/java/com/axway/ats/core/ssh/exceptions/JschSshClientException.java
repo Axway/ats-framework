@@ -25,7 +25,7 @@ public class JschSshClientException extends RuntimeException {
      */
     public JschSshClientException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -36,7 +36,7 @@ public class JschSshClientException extends RuntimeException {
     public JschSshClientException( String message,
                                    Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     /**
@@ -45,7 +45,7 @@ public class JschSshClientException extends RuntimeException {
      */
     public JschSshClientException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
 }

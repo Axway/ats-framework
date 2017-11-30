@@ -29,7 +29,7 @@ public class ExceptionUtils {
     */
     public static String getExceptionMsg( Throwable e ) {
 
-        return getExceptionMsg( e, null );
+        return getExceptionMsg(e, null);
     }
 
     /**
@@ -40,43 +40,43 @@ public class ExceptionUtils {
     public static String getExceptionMsg( Throwable e, String usrMsg ) {
 
         StringBuilder msg = new StringBuilder();
-        if( e != null ) {
-            msg.append( "EXCEPTION\n" );
+        if (e != null) {
+            msg.append("EXCEPTION\n");
 
-            if( !StringUtils.isNullOrEmpty( usrMsg ) ) {
-                msg.append( "USER message:\n\t" );
-                msg.append( usrMsg );
-                msg.append( "\n" );
+            if (!StringUtils.isNullOrEmpty(usrMsg)) {
+                msg.append("USER message:\n\t");
+                msg.append(usrMsg);
+                msg.append("\n");
             }
 
-            if( null != e.getCause() ) {
-                msg.append( "Cause:\n\t" );
-                msg.append( e.getCause().toString() );
-                msg.append( "\n" );
+            if (null != e.getCause()) {
+                msg.append("Cause:\n\t");
+                msg.append(e.getCause().toString());
+                msg.append("\n");
             }
 
-            if( null != e.getMessage() ) {
-                msg.append( "Message:\n\t" );
-                msg.append( getMsgLines( e.getMessage() ) );
-                msg.append( "\n" );
-            } else if( null != e.getLocalizedMessage() ) {
-                msg.append( "Message:\n\t" );
-                msg.append( getMsgLines( e.getLocalizedMessage() ) );
-                msg.append( "\n" );
+            if (null != e.getMessage()) {
+                msg.append("Message:\n\t");
+                msg.append(getMsgLines(e.getMessage()));
+                msg.append("\n");
+            } else if (null != e.getLocalizedMessage()) {
+                msg.append("Message:\n\t");
+                msg.append(getMsgLines(e.getLocalizedMessage()));
+                msg.append("\n");
             } else {
-                msg.append( "Message: " );
-                msg.append( "null" );
-                msg.append( "\n" );
+                msg.append("Message: ");
+                msg.append("null");
+                msg.append("\n");
             }
 
-            msg.append( "TYPE:\n\t" );
-            msg.append( e.getClass().toString() );
+            msg.append("TYPE:\n\t");
+            msg.append(e.getClass().toString());
 
-            msg.append( "\nCALL STACK:\n" );
+            msg.append("\nCALL STACK:\n");
             StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter( sw );
-            e.printStackTrace( pw );
-            msg.append( sw.toString() );
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            msg.append(sw.toString());
         }
         return msg.toString();
     }
@@ -84,10 +84,10 @@ public class ExceptionUtils {
     private static StringBuilder getMsgLines( String msg ) {
 
         StringBuilder resMsg = new StringBuilder();
-        String[] msgLines = msg.split( "\n" );
-        for( int i = 0; i < msgLines.length; i++ ) {
-            resMsg.append( msgLines[i] );
-            resMsg.append( "\n\t" );
+        String[] msgLines = msg.split("\n");
+        for (int i = 0; i < msgLines.length; i++) {
+            resMsg.append(msgLines[i]);
+            resMsg.append("\n\t");
         }
         return resMsg;
     }

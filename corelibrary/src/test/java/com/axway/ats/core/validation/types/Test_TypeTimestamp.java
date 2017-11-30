@@ -52,7 +52,7 @@ public class Test_TypeTimestamp extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -63,10 +63,10 @@ public class Test_TypeTimestamp extends BaseTest {
     @Test
     public void testTimestampFullDayValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_DAY, VALID_DAY_TIMESTAMP ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_DAY, INVALID_DAY_TIMESTAMP ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_DAY, VALID_HOUR_TIMESTAMP ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_DAY, NOT_A_NUMBER ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_DAY, VALID_DAY_TIMESTAMP));
+        assertFalse(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_DAY, INVALID_DAY_TIMESTAMP));
+        assertFalse(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_DAY, VALID_HOUR_TIMESTAMP));
+        assertFalse(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_DAY, NOT_A_NUMBER));
     }
 
     /**
@@ -77,8 +77,8 @@ public class Test_TypeTimestamp extends BaseTest {
     @Test
     public void testTimestampFullHourValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_HOUR, VALID_HOUR_TIMESTAMP ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_HOUR, INVALID_HOUR_TIMESTAMP ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE_TIMESTAMP_HOUR, NOT_A_NUMBER ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_HOUR, VALID_HOUR_TIMESTAMP));
+        assertFalse(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_HOUR, INVALID_HOUR_TIMESTAMP));
+        assertFalse(this.validator.validate(VALIDATION_TYPE_TIMESTAMP_HOUR, NOT_A_NUMBER));
     }
 }

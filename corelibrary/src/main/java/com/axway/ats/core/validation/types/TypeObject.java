@@ -31,7 +31,7 @@ public class TypeObject extends BaseType {
     /** Constructor */
     protected TypeObject( Object val ) {
 
-        super( val );
+        super(val);
     }
 
     /** Constructor */
@@ -39,7 +39,7 @@ public class TypeObject extends BaseType {
                           Object val,
                           Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -50,8 +50,8 @@ public class TypeObject extends BaseType {
     @Override
     public void validate() throws TypeException {
 
-        if( this.value == null ) {
-            throw new TypeException( ERROR_MESSAGE_NULL, this.parameterName );
+        if (this.value == null) {
+            throw new TypeException(ERROR_MESSAGE_NULL, this.parameterName);
         }
     }
 }

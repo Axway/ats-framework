@@ -69,7 +69,7 @@ public class TypeRegex extends TypeString {
     /** Constructor */
     protected TypeRegex( String paramName, Object val, Object[] args, RegexType check ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
         this.typeOfCheck = check;
     }
 
@@ -83,49 +83,49 @@ public class TypeRegex extends TypeString {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_REGEX + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_REGEX + e.getMessage(), e.getParameterName(), e);
         }
 
-        switch( this.typeOfCheck ){
+        switch (this.typeOfCheck) {
             case DATE:
-                if( !this.validatedValue.matches( DATE_PATTERN ) ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_DATE, this.parameterName );
+                if (!this.validatedValue.matches(DATE_PATTERN)) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_DATE, this.parameterName);
                 }
                 return;
             case IPv4_ADDRESS:
-                if( !this.validatedValue.matches( IPv4_EXPRESSION ) ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_IP, this.parameterName );
+                if (!this.validatedValue.matches(IPv4_EXPRESSION)) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_IP, this.parameterName);
                 }
                 return;
             case WHITESPACE:
-                if( !this.validatedValue.matches( WHITESPACE_PATTERN ) ) {
-                    throw new TypeException( ERROR_MESSAGE_CONTAINS_WHITESPACE, this.parameterName );
+                if (!this.validatedValue.matches(WHITESPACE_PATTERN)) {
+                    throw new TypeException(ERROR_MESSAGE_CONTAINS_WHITESPACE, this.parameterName);
                 }
                 return;
             case DOUBLE_QUOTED_WHITESPACE:
-                if( !this.validatedValue.matches( WHITESPACE_PATTERN )
-                    && !this.validatedValue.matches( DOUBLE_QUOTED_WHITESPACE_PATTERN ) ) {
-                    throw new TypeException( ERROR_MESSAGE_CONTAINS_DQ_WHITESPACE, this.parameterName );
+                if (!this.validatedValue.matches(WHITESPACE_PATTERN)
+                    && !this.validatedValue.matches(DOUBLE_QUOTED_WHITESPACE_PATTERN)) {
+                    throw new TypeException(ERROR_MESSAGE_CONTAINS_DQ_WHITESPACE, this.parameterName);
                 }
                 return;
             case DOMAIN:
-                if( !this.validatedValue.matches( DOMAIN_ONLY_EXPRESSION ) ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_DOMAIN, this.parameterName );
+                if (!this.validatedValue.matches(DOMAIN_ONLY_EXPRESSION)) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_DOMAIN, this.parameterName);
                 }
                 return;
             case DOMAIN_OR_SUBDOMAIN:
-                if( !this.validatedValue.matches( DOMAIN_OR_SUBDOMAIN_EXPRESSION ) ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_DOMAIN_OR_SUBDOMAIN, this.parameterName );
+                if (!this.validatedValue.matches(DOMAIN_OR_SUBDOMAIN_EXPRESSION)) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_DOMAIN_OR_SUBDOMAIN, this.parameterName);
                 }
                 return;
             case HOSTNAME:
-                if( !this.validatedValue.matches( HOSTNAME_EXPRESSION ) ) {
-                    throw new TypeException( ERROR_MESSAGE_INVALID_HOSTNAME, this.parameterName );
+                if (!this.validatedValue.matches(HOSTNAME_EXPRESSION)) {
+                    throw new TypeException(ERROR_MESSAGE_INVALID_HOSTNAME, this.parameterName);
                 }
                 return;
             default:
-                throw new TypeException( ERROR_MESSAGE_CHECK_TYPE_NOT_SET, this.parameterName );
+                throw new TypeException(ERROR_MESSAGE_CHECK_TYPE_NOT_SET, this.parameterName);
         }
     }
 }

@@ -39,9 +39,9 @@ public class DbDataTableDescribtion {
                            DbDataTableDescribtion table ) {
 
         boolean result = true;
-        if( name.equals( table.getName() ) && ( columns.size() == table.columns.size() ) ) {
-            for( DbDataColumnDescribtion col : columns ) {
-                if( !col.equals( table.columns.get( columns.indexOf( col ) ) ) ) {
+        if (name.equals(table.getName()) && (columns.size() == table.columns.size())) {
+            for (DbDataColumnDescribtion col : columns) {
+                if (!col.equals(table.columns.get(columns.indexOf(col)))) {
                     result = false;
                 }
             }
@@ -56,10 +56,10 @@ public class DbDataTableDescribtion {
 
         ArrayList<DbDataColumnDescribtion[]> differenColumns = new ArrayList<DbDataColumnDescribtion[]>();
 
-        for( DbDataColumnDescribtion col : columns ) {
-            if( !col.equals( table.columns.get( columns.indexOf( col ) ) ) ) {
-                differenColumns.add( new DbDataColumnDescribtion[]{ col,
-                        table.columns.get( columns.indexOf( col ) ) } );
+        for (DbDataColumnDescribtion col : columns) {
+            if (!col.equals(table.columns.get(columns.indexOf(col)))) {
+                differenColumns.add(new DbDataColumnDescribtion[]{ col,
+                                                                   table.columns.get(columns.indexOf(col)) });
             }
         }
 

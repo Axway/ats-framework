@@ -33,17 +33,17 @@ final class ClassUtilities {
      * Mapping from primitive wrapper Classes to their
      * corresponding primitive Classes.
      */
-    private static final HashMap<Class<?>, Class<?>>      objectToPrimitiveMap  = new HashMap<Class<?>, Class<?>>( 13 );
+    private static final HashMap<Class<?>, Class<?>> objectToPrimitiveMap = new HashMap<Class<?>, Class<?>>(13);
 
     static {
-        objectToPrimitiveMap.put( Boolean.class, Boolean.TYPE );
-        objectToPrimitiveMap.put( Byte.class, Byte.TYPE );
-        objectToPrimitiveMap.put( Character.class, Character.TYPE );
-        objectToPrimitiveMap.put( Double.class, Double.TYPE );
-        objectToPrimitiveMap.put( Float.class, Float.TYPE );
-        objectToPrimitiveMap.put( Integer.class, Integer.TYPE );
-        objectToPrimitiveMap.put( Long.class, Long.TYPE );
-        objectToPrimitiveMap.put( Short.class, Short.TYPE );
+        objectToPrimitiveMap.put(Boolean.class, Boolean.TYPE);
+        objectToPrimitiveMap.put(Byte.class, Byte.TYPE);
+        objectToPrimitiveMap.put(Character.class, Character.TYPE);
+        objectToPrimitiveMap.put(Double.class, Double.TYPE);
+        objectToPrimitiveMap.put(Float.class, Float.TYPE);
+        objectToPrimitiveMap.put(Integer.class, Integer.TYPE);
+        objectToPrimitiveMap.put(Long.class, Long.TYPE);
+        objectToPrimitiveMap.put(Short.class, Short.TYPE);
     }
 
     /**
@@ -51,44 +51,44 @@ final class ClassUtilities {
      * primitive classes whose instances can be assigned an
      * instance of the first.
      */
-    private static final HashMap<Class<?>, Set<Class<?>>> primitiveWideningsMap = new HashMap<Class<?>, Set<Class<?>>>( 11 );
+    private static final HashMap<Class<?>, Set<Class<?>>> primitiveWideningsMap = new HashMap<Class<?>, Set<Class<?>>>(11);
 
     static {
         Set<Class<?>> set = new HashSet<Class<?>>();
 
-        set.add( Short.TYPE );
-        set.add( Integer.TYPE );
-        set.add( Long.TYPE );
-        set.add( Float.TYPE );
-        set.add( Double.TYPE );
-        primitiveWideningsMap.put( Byte.TYPE, set );
+        set.add(Short.TYPE);
+        set.add(Integer.TYPE);
+        set.add(Long.TYPE);
+        set.add(Float.TYPE);
+        set.add(Double.TYPE);
+        primitiveWideningsMap.put(Byte.TYPE, set);
 
         set = new HashSet<Class<?>>();
 
-        set.add( Integer.TYPE );
-        set.add( Long.TYPE );
-        set.add( Float.TYPE );
-        set.add( Double.TYPE );
-        primitiveWideningsMap.put( Short.TYPE, set );
-        primitiveWideningsMap.put( Character.TYPE, set );
+        set.add(Integer.TYPE);
+        set.add(Long.TYPE);
+        set.add(Float.TYPE);
+        set.add(Double.TYPE);
+        primitiveWideningsMap.put(Short.TYPE, set);
+        primitiveWideningsMap.put(Character.TYPE, set);
 
         set = new HashSet<Class<?>>();
 
-        set.add( Long.TYPE );
-        set.add( Float.TYPE );
-        set.add( Double.TYPE );
-        primitiveWideningsMap.put( Integer.TYPE, set );
+        set.add(Long.TYPE);
+        set.add(Float.TYPE);
+        set.add(Double.TYPE);
+        primitiveWideningsMap.put(Integer.TYPE, set);
 
         set = new HashSet<Class<?>>();
 
-        set.add( Float.TYPE );
-        set.add( Double.TYPE );
-        primitiveWideningsMap.put( Long.TYPE, set );
+        set.add(Float.TYPE);
+        set.add(Double.TYPE);
+        primitiveWideningsMap.put(Long.TYPE, set);
 
         set = new HashSet<Class<?>>();
 
-        set.add( Double.TYPE );
-        primitiveWideningsMap.put( Float.TYPE, set );
+        set.add(Double.TYPE);
+        primitiveWideningsMap.put(Float.TYPE, set);
     }
 
     /**
@@ -113,34 +113,34 @@ final class ClassUtilities {
                                              String name,
                                              ClassLoader loader ) throws ClassNotFoundException {
 
-        if( name == null || "".equals( name ) || "null".equals( name ) || "void".equals( name ) )
+        if (name == null || "".equals(name) || "null".equals(name) || "void".equals(name))
             return Void.TYPE;
 
-        if( "boolean".equals( name ) )
+        if ("boolean".equals(name))
             return Boolean.TYPE;
 
-        if( "byte".equals( name ) )
+        if ("byte".equals(name))
             return Byte.TYPE;
 
-        if( "char".equals( name ) )
+        if ("char".equals(name))
             return Character.TYPE;
 
-        if( "double".equals( name ) )
+        if ("double".equals(name))
             return Double.TYPE;
 
-        if( "float".equals( name ) )
+        if ("float".equals(name))
             return Float.TYPE;
 
-        if( "int".equals( name ) )
+        if ("int".equals(name))
             return Integer.TYPE;
 
-        if( "long".equals( name ) )
+        if ("long".equals(name))
             return Long.TYPE;
 
-        if( "short".equals( name ) )
+        if ("short".equals(name))
             return Short.TYPE;
 
-        return Class.forName( name, false, loader );
+        return Class.forName(name, false, loader);
     }
 
     /**
@@ -151,7 +151,7 @@ final class ClassUtilities {
     static boolean classIsAccessible(
                                       Class<?> aClass ) {
 
-        return Modifier.isPublic( aClass.getModifiers() );
+        return Modifier.isPublic(aClass.getModifiers());
     }
 
     /**
@@ -172,7 +172,7 @@ final class ClassUtilities {
                                       Class<?>[] argTypes,
                                       Class<?>[] paramTypes ) {
 
-        return compatibleClasses( argTypes, paramTypes, new ArrayList<TypeComparisonRule>() );
+        return compatibleClasses(argTypes, paramTypes, new ArrayList<TypeComparisonRule>());
     }
 
     /**
@@ -195,15 +195,15 @@ final class ClassUtilities {
                                       Class<?>[] paramTypes,
                                       List<TypeComparisonRule> typeComparisonRules ) {
 
-        if( argTypes.length != paramTypes.length )
+        if (argTypes.length != paramTypes.length)
             return false;
 
-        for( int i = 0; i < argTypes.length; ++i ) {
+        for (int i = 0; i < argTypes.length; ++i) {
             Class<?> argType = argTypes[i];
             Class<?> paramType = paramTypes[i];
 
-            if( argType == null || argType.equals( Void.TYPE ) ) {
-                if( paramType.isPrimitive() ) {
+            if (argType == null || argType.equals(Void.TYPE)) {
+                if (paramType.isPrimitive()) {
                     //we can't pass null as argument to a parameter of primitive type
                     return false;
                 } else {
@@ -212,17 +212,17 @@ final class ClassUtilities {
                 }
             }
 
-            if( !paramType.isAssignableFrom( argType ) ) {
+            if (!paramType.isAssignableFrom(argType)) {
 
                 //get the primitive equivalent of the argument and parameter
                 //if such exists
-                Class<?> lhsPrimEquiv = primitiveEquivalentOf( paramType );
-                Class<?> rhsPrimEquiv = primitiveEquivalentOf( argType );
+                Class<?> lhsPrimEquiv = primitiveEquivalentOf(paramType);
+                Class<?> rhsPrimEquiv = primitiveEquivalentOf(argType);
 
-                if( !primitiveIsAssignableFrom( lhsPrimEquiv, rhsPrimEquiv ) ) {
+                if (!primitiveIsAssignableFrom(lhsPrimEquiv, rhsPrimEquiv)) {
 
                     //everything else failed, so execute the custom rules
-                    if( areTypesCompatible( typeComparisonRules, argType, paramType ) ) {
+                    if (areTypesCompatible(typeComparisonRules, argType, paramType)) {
                         continue;
                     }
 
@@ -256,12 +256,12 @@ final class ClassUtilities {
         Class<?> superclass = aClass.getSuperclass();
         Method overriddenMethod = null;
 
-        if( superclass != null && classIsAccessible( superclass ) ) {
+        if (superclass != null && classIsAccessible(superclass)) {
             try {
-                overriddenMethod = superclass.getMethod( methodName, parameterTypes );
-            } catch( NoSuchMethodException _ ) {}
+                overriddenMethod = superclass.getMethod(methodName, parameterTypes);
+            } catch (NoSuchMethodException _) {}
 
-            if( overriddenMethod != null )
+            if (overriddenMethod != null)
                 return overriddenMethod;
         }
 
@@ -271,15 +271,15 @@ final class ClassUtilities {
 
         Class<?>[] interfaces = aClass.getInterfaces();
 
-        for( int i = 0; i < interfaces.length; ++i ) {
+        for (int i = 0; i < interfaces.length; ++i) {
             overriddenMethod = null;
 
-            if( classIsAccessible( interfaces[i] ) ) {
+            if (classIsAccessible(interfaces[i])) {
                 try {
-                    overriddenMethod = interfaces[i].getMethod( methodName, parameterTypes );
-                } catch( NoSuchMethodException _ ) {}
+                    overriddenMethod = interfaces[i].getMethod(methodName, parameterTypes);
+                } catch (NoSuchMethodException _) {}
 
-                if( overriddenMethod != null )
+                if (overriddenMethod != null)
                     return overriddenMethod;
             }
         }
@@ -287,18 +287,18 @@ final class ClassUtilities {
         overriddenMethod = null;
 
         // Try superclass's superclass and implemented interfaces.
-        if( superclass != null ) {
-            overriddenMethod = getAccessibleMethodFrom( superclass, methodName, parameterTypes );
+        if (superclass != null) {
+            overriddenMethod = getAccessibleMethodFrom(superclass, methodName, parameterTypes);
 
-            if( overriddenMethod != null )
+            if (overriddenMethod != null)
                 return overriddenMethod;
         }
 
         // Try implemented interfaces' extended interfaces...
-        for( int i = 0; i < interfaces.length; ++i ) {
-            overriddenMethod = getAccessibleMethodFrom( interfaces[i], methodName, parameterTypes );
+        for (int i = 0; i < interfaces.length; ++i) {
+            overriddenMethod = getAccessibleMethodFrom(interfaces[i], methodName, parameterTypes);
 
-            if( overriddenMethod != null )
+            if (overriddenMethod != null)
                 return overriddenMethod;
         }
 
@@ -316,8 +316,8 @@ final class ClassUtilities {
                                            Class<?> aClass ) {
 
         return aClass.isPrimitive()
-                                   ? aClass
-                                   : ( Class<?> ) objectToPrimitiveMap.get( aClass );
+                                    ? aClass
+                                    : (Class<?>) objectToPrimitiveMap.get(aClass);
     }
 
     /**
@@ -336,21 +336,21 @@ final class ClassUtilities {
                                               Class<?> lhs,
                                               Class<?> rhs ) {
 
-        if( lhs == null || rhs == null )
+        if (lhs == null || rhs == null)
             return false;
 
-        if( ! ( lhs.isPrimitive() && rhs.isPrimitive() ) )
+        if (! (lhs.isPrimitive() && rhs.isPrimitive()))
             return false;
 
-        if( lhs.equals( rhs ) )
+        if (lhs.equals(rhs))
             return true;
 
-        Set<Class<?>> wideningSet = primitiveWideningsMap.get( rhs );
+        Set<Class<?>> wideningSet = primitiveWideningsMap.get(rhs);
 
-        if( wideningSet == null )
+        if (wideningSet == null)
             return false;
 
-        return wideningSet.contains( lhs );
+        return wideningSet.contains(lhs);
     }
 
     /**
@@ -367,8 +367,8 @@ final class ClassUtilities {
                                                Class<?> argType,
                                                Class<?> paramType ) {
 
-        for( TypeComparisonRule comparisonRule : comparisonRules ) {
-            if( comparisonRule.isCompatible( argType, paramType ) ) {
+        for (TypeComparisonRule comparisonRule : comparisonRules) {
+            if (comparisonRule.isCompatible(argType, paramType)) {
                 return true;
             }
         }

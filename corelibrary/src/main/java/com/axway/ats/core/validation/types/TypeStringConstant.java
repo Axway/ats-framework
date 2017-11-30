@@ -37,7 +37,7 @@ public class TypeStringConstant extends TypeString {
                                   Object val,
                                   Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /** Constructor */
@@ -46,7 +46,7 @@ public class TypeStringConstant extends TypeString {
                                   Object[] args,
                                   boolean iCase ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
         this.ignoreCase = iCase;
 
     }
@@ -61,18 +61,18 @@ public class TypeStringConstant extends TypeString {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_CONSTANT + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_CONSTANT + e.getMessage(), e.getParameterName(), e);
         }
 
-        for( int i = 0; i < this.arguments.length; i++ ) {
-            if( this.validatedValue.equals( this.arguments[i] ) ) {
+        for (int i = 0; i < this.arguments.length; i++) {
+            if (this.validatedValue.equals(this.arguments[i])) {
                 return;
-            } else if( this.ignoreCase && this.validatedValue.equalsIgnoreCase( ( String ) this.arguments[i] ) ) {
+            } else if (this.ignoreCase && this.validatedValue.equalsIgnoreCase((String) this.arguments[i])) {
                 return;
             }
         }
 
-        throw new TypeException( ERROR_MESSAGE_NOT_A_CONSTANT, this.parameterName );
+        throw new TypeException(ERROR_MESSAGE_NOT_A_CONSTANT, this.parameterName);
     }
 }

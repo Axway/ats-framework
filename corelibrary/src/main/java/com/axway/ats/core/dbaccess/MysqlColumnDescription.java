@@ -19,7 +19,7 @@ public class MysqlColumnDescription extends ColumnDescription {
 
     public MysqlColumnDescription( String name,
                                    String type ) {
-        super( name, type );
+        super(name, type);
     }
 
     // for information about all data types in MySQL
@@ -30,15 +30,16 @@ public class MysqlColumnDescription extends ColumnDescription {
 
         String normalizedType = type.toLowerCase();
 
-        return normalizedType.contains( "int" ) || normalizedType.startsWith( "numeric" )
-               || normalizedType.startsWith( "decimal" ) || normalizedType.startsWith( "float" )
-               || normalizedType.startsWith( "double" ) || normalizedType.startsWith( "bit" )
-               || normalizedType.startsWith( "real" );
+        return normalizedType.contains("int") || normalizedType.startsWith("numeric")
+               || normalizedType.startsWith("decimal") || normalizedType.startsWith("float")
+               || normalizedType.startsWith("double") || normalizedType.startsWith("bit")
+               || normalizedType.startsWith("real");
     }
 
     @Override
     public boolean isTypeBinary() {
+
         String normalizedType = type.toLowerCase();
-        return normalizedType.contains( "blob" ) || normalizedType.contains( "binary" );
+        return normalizedType.contains("blob") || normalizedType.contains("binary");
     }
 }

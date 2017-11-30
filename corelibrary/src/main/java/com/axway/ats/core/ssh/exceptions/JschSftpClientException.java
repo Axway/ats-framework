@@ -25,7 +25,7 @@ public class JschSftpClientException extends RuntimeException {
      */
     public JschSftpClientException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -36,7 +36,7 @@ public class JschSftpClientException extends RuntimeException {
     public JschSftpClientException( String message,
                                     Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     /**
@@ -45,7 +45,7 @@ public class JschSftpClientException extends RuntimeException {
      */
     public JschSftpClientException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
 }

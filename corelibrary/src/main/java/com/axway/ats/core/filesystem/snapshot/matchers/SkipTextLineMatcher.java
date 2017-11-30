@@ -30,14 +30,14 @@ import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
  */
 public class SkipTextLineMatcher extends SkipContentMatcher {
 
-    private static final Logger     log = Logger.getLogger( SkipTextLineMatcher.class );
+    private static final Logger     log = Logger.getLogger(SkipTextLineMatcher.class);
 
     // < matcher, match type >
     private Map<String, MATCH_TYPE> matchersMap;
 
     public SkipTextLineMatcher( String directoryAlias, String filePath ) {
 
-        super( directoryAlias, filePath );
+        super(directoryAlias, filePath);
 
         this.matchersMap = new HashMap<>();
     }
@@ -54,18 +54,18 @@ public class SkipTextLineMatcher extends SkipContentMatcher {
 
     public SkipTextLineMatcher addLineCondition( String matcher, MATCH_TYPE type ) {
 
-        log.debug( "File " + filePath + ": Adding a matcher " + matcher + " for " + getDescription()
-                   + " matched as '" + type + "'" );
-        matchersMap.put( matcher, type );
+        log.debug("File " + filePath + ": Adding a matcher " + matcher + " for " + getDescription()
+                  + " matched as '" + type + "'");
+        matchersMap.put(matcher, type);
         return this;
     }
 
     public void process( String thisSnapshot, String thatSnapshot, List<String> thisLines,
                          List<String> thatLines, FileTrace fileTrace ) {
 
-        if( matchersMap.size() > 0 ) {
-            processLines( thisSnapshot, thisLines );
-            processLines( thatSnapshot, thatLines );
+        if (matchersMap.size() > 0) {
+            processLines(thisSnapshot, thisLines);
+            processLines(thatSnapshot, thatLines);
         }
     }
 
@@ -73,9 +73,9 @@ public class SkipTextLineMatcher extends SkipContentMatcher {
 
         // remove matching lines
         Iterator<String> it = lines.iterator();
-        while( it.hasNext() ) {
+        while (it.hasNext()) {
             String line = it.next();
-            if( isLineSkipped( snapshot, line ) ) {
+            if (isLineSkipped(snapshot, line)) {
                 it.remove();
             }
         }
@@ -83,32 +83,32 @@ public class SkipTextLineMatcher extends SkipContentMatcher {
 
     private boolean isLineSkipped( String snapshot, String lineFile ) {
 
-        for( Entry<String, MATCH_TYPE> matcherEntry : matchersMap.entrySet() ) {
+        for (Entry<String, MATCH_TYPE> matcherEntry : matchersMap.entrySet()) {
             String lineMatcher = matcherEntry.getKey();
             MATCH_TYPE matchType = matcherEntry.getValue();
 
-            if( matchType.isRegex() && lineFile.matches( lineMatcher ) ) {// regular expression
-                if( log.isDebugEnabled() ) {
-                    log.debug( "[" + snapshot + "] File " + filePath + ": Removing line " + lineMatcher
-                               + " as it matches the '" + matcherEntry.getKey() + "' regular expression" );
+            if (matchType.isRegex() && lineFile.matches(lineMatcher)) {// regular expression
+                if (log.isDebugEnabled()) {
+                    log.debug("[" + snapshot + "] File " + filePath + ": Removing line " + lineMatcher
+                              + " as it matches the '" + matcherEntry.getKey() + "' regular expression");
                 }
                 return true;
-            } else if( matcherEntry.getValue().isPlainText()
-                       && lineFile.trim().equalsIgnoreCase( lineMatcher.trim() ) ) { // just text
-                if( log.isDebugEnabled() ) {
-                    log.debug( "[" + snapshot + "] File " + filePath + ": Removing line " + lineMatcher
-                               + " as equals ignoring case the '" + matcherEntry.getKey()
-                               + "' regular expression" );
+            } else if (matcherEntry.getValue().isPlainText()
+                       && lineFile.trim().equalsIgnoreCase(lineMatcher.trim())) { // just text
+                if (log.isDebugEnabled()) {
+                    log.debug("[" + snapshot + "] File " + filePath + ": Removing line " + lineMatcher
+                              + " as equals ignoring case the '" + matcherEntry.getKey()
+                              + "' regular expression");
                 }
                 return true;
-            } else if( matcherEntry.getValue().isContainingText()
-                       && lineFile.trim().toLowerCase().contains( matcherEntry.getKey()
-                                                                              .trim()
-                                                                              .toLowerCase() ) ) { // just text
-                if( log.isDebugEnabled() ) {
-                    log.debug( "[" + snapshot + "] File " + filePath + ": Removing line " + lineMatcher
-                               + " as it contains ignoring case the '" + matcherEntry.getKey()
-                               + "' regular expression" );
+            } else if (matcherEntry.getValue().isContainingText()
+                       && lineFile.trim().toLowerCase().contains(matcherEntry.getKey()
+                                                                             .trim()
+                                                                             .toLowerCase())) { // just text
+                if (log.isDebugEnabled()) {
+                    log.debug("[" + snapshot + "] File " + filePath + ": Removing line " + lineMatcher
+                              + " as it contains ignoring case the '" + matcherEntry.getKey()
+                              + "' regular expression");
                 }
                 return true;
             }

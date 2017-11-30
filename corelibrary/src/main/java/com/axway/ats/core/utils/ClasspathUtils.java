@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
  */
 public class ClasspathUtils {
 
-    private static final Logger       log              = Logger.getLogger( ClasspathUtils.class );
+    private static final Logger       log              = Logger.getLogger(ClasspathUtils.class);
 
     /**
      * A map containing all jars found in the classpath:
@@ -54,8 +54,8 @@ public class ClasspathUtils {
      */
     private static List<String>       PROBLEMATIC_JARS = new ArrayList<String>();
     static {
-        PROBLEMATIC_JARS.add( "jaxws-api" );
-        PROBLEMATIC_JARS.add( "jaxb-api" );
+        PROBLEMATIC_JARS.add("jaxws-api");
+        PROBLEMATIC_JARS.add("jaxb-api");
     }
 
     /**
@@ -64,7 +64,7 @@ public class ClasspathUtils {
      */
     public void logClassPath() {
 
-        log.info( "Classpath of JVM on " + HostUtils.getLocalHostIP() + ": \n" + getClassPathDescription() );
+        log.info("Classpath of JVM on " + HostUtils.getLocalHostIP() + ": \n" + getClassPathDescription());
     }
 
     /**
@@ -79,33 +79,33 @@ public class ClasspathUtils {
         StringBuilder classPathLog = new StringBuilder();
         String[] classpathArray = getClassPathArray();
 
-        if( classpathArray.length == 0 ) {
+        if (classpathArray.length == 0) {
             return classPathLog;
         }
 
         // Make a map containing folders as keys and jar names as values
         Map<String, List<String>> classPathMap = new HashMap<String, List<String>>();
-        for( int i = 0; i < classpathArray.length; i++ ) {
-            String jarFullPath = classpathArray[i].replace( "\\", "/" );
-            String absPath = jarFullPath.substring( 0, jarFullPath.lastIndexOf( '/' ) + 1 );
-            String simpleJarName = jarFullPath.substring( jarFullPath.lastIndexOf( '/' ) + 1,
-                                                          jarFullPath.length() );
-            if( classPathMap.containsKey( absPath ) ) {
-                classPathMap.get( absPath ).add( simpleJarName );
+        for (int i = 0; i < classpathArray.length; i++) {
+            String jarFullPath = classpathArray[i].replace("\\", "/");
+            String absPath = jarFullPath.substring(0, jarFullPath.lastIndexOf('/') + 1);
+            String simpleJarName = jarFullPath.substring(jarFullPath.lastIndexOf('/') + 1,
+                                                         jarFullPath.length());
+            if (classPathMap.containsKey(absPath)) {
+                classPathMap.get(absPath).add(simpleJarName);
             } else {
-                classPathMap.put( absPath, new ArrayList<String>( Arrays.asList( simpleJarName ) ) );
+                classPathMap.put(absPath, new ArrayList<String>(Arrays.asList(simpleJarName)));
             }
         }
 
         // append instances of same jar one after another
-        for( String path : new TreeSet<String>( classPathMap.keySet() ) ) {
-            classPathLog.append( "\n" );
-            classPathLog.append( path );
-            List<String> jarList = classPathMap.get( path );
-            Collections.sort( jarList );
-            for( String lib : jarList ) {
-                classPathLog.append( "\n\t" );
-                classPathLog.append( lib );
+        for (String path : new TreeSet<String>(classPathMap.keySet())) {
+            classPathLog.append("\n");
+            classPathLog.append(path);
+            List<String> jarList = classPathMap.get(path);
+            Collections.sort(jarList);
+            for (String lib : jarList) {
+                classPathLog.append("\n\t");
+                classPathLog.append(lib);
             }
         }
         return classPathLog;
@@ -119,12 +119,12 @@ public class ClasspathUtils {
         loadJarsFromClasspath();
 
         List<String> classPath = new ArrayList<String>();
-        for( List<String> elements : loadedJarsMap.values() ) {
-            classPath.addAll( elements );
+        for (List<String> elements : loadedJarsMap.values()) {
+            classPath.addAll(elements);
         }
 
-        if( !classPath.isEmpty() ) {
-            return classPath.toArray( new String[classPath.size()] );
+        if (!classPath.isEmpty()) {
+            return classPath.toArray(new String[classPath.size()]);
         } else {
             return new String[0];
         }
@@ -138,13 +138,13 @@ public class ClasspathUtils {
         loadJarsFromClasspath();
 
         List<String> duplicatedJars = new ArrayList<String>();
-        for( Entry<String, List<String>> loadedJarEntry : loadedJarsMap.entrySet() ) {
-            if( loadedJarEntry.getValue().size() > 1 ) {
-                duplicatedJars.addAll( loadedJarEntry.getValue());
+        for (Entry<String, List<String>> loadedJarEntry : loadedJarsMap.entrySet()) {
+            if (loadedJarEntry.getValue().size() > 1) {
+                duplicatedJars.addAll(loadedJarEntry.getValue());
             }
         }
-        if( !duplicatedJars.isEmpty() ) {
-            return duplicatedJars.toArray( new String[duplicatedJars.size()] );
+        if (!duplicatedJars.isEmpty()) {
+            return duplicatedJars.toArray(new String[duplicatedJars.size()]);
         }
         return new String[0];
     }
@@ -159,30 +159,30 @@ public class ClasspathUtils {
         loadJarsFromClasspath();
 
         StringBuilder logMessage = new StringBuilder();
-        logMessage.append( "The following libraries seems to be present more than once in the classpath: ");
-        for( Entry<String, List<String>> loadedJarEntry : loadedJarsMap.entrySet() ) {
-            if( loadedJarEntry.getValue().size() > 1 ) {
-                logMessage.append( "\n ").append( loadedJarEntry.getKey() ).append( ":" );
-                for( String jarPath : loadedJarEntry.getValue() ) {
-                    logMessage.append( "\n\t" ).append( jarPath );
+        logMessage.append("The following libraries seems to be present more than once in the classpath: ");
+        for (Entry<String, List<String>> loadedJarEntry : loadedJarsMap.entrySet()) {
+            if (loadedJarEntry.getValue().size() > 1) {
+                logMessage.append("\n ").append(loadedJarEntry.getKey()).append(":");
+                for (String jarPath : loadedJarEntry.getValue()) {
+                    logMessage.append("\n\t").append(jarPath);
                 }
             }
-            if( "log4j".equalsIgnoreCase( loadedJarEntry.getKey() ) && loadedJarEntry.getValue().size() > 1 ) {
+            if ("log4j".equalsIgnoreCase(loadedJarEntry.getKey()) && loadedJarEntry.getValue().size() > 1) {
                 String errorMsg = "Log4j library is supposed to be present only in lib_common subfolder. "
                                   + "Otherwise it should cause no logging into the agent log file. Currently Log4j is found at: "
                                   + loadedJarEntry.getValue();
-                log.warn( errorMsg );
-                System.err.println( errorMsg );
+                log.warn(errorMsg);
+                System.err.println(errorMsg);
             }
-            if( PROBLEMATIC_JARS.contains( loadedJarEntry.getKey() ) ) {
+            if (PROBLEMATIC_JARS.contains(loadedJarEntry.getKey())) {
                 String errorMsg = "The following libraries " + loadedJarEntry.getKey() + " located in "
                                   + loadedJarEntry.getValue()
                                   + ". These different jars can cause issues.";
-                log.warn( errorMsg );
-                System.err.println( errorMsg );
+                log.warn(errorMsg);
+                System.err.println(errorMsg);
             }
         }
-        log.warn( logMessage );
+        log.warn(logMessage);
     }
 
     /**
@@ -196,12 +196,12 @@ public class ClasspathUtils {
         URL[] urls = null;
         do {
             //check if the class loader is instance of URL and cast it
-            if( classLoader instanceof URLClassLoader ) {
-                urls = ( ( URLClassLoader ) classLoader ).getURLs();
+            if (classLoader instanceof URLClassLoader) {
+                urls = ((URLClassLoader) classLoader).getURLs();
             } else {
                 // if the ClassLoader is not instance of URLClassLoader we will break the cycle and log a message
-                log.info( "ClassLoader " + classLoader
-                          + " is not instance of URLClassLoader, so it will skip it." );
+                log.info("ClassLoader " + classLoader
+                         + " is not instance of URLClassLoader, so it will skip it.");
 
                 // if the ClassLoader is from JBoss, it is instance of BaseClassLoader,
                 // we can take the ClassPath from a public method -> listResourceCache(), from JBoss-classloader.jar
@@ -210,23 +210,23 @@ public class ClasspathUtils {
                 continue;
             }
             try {
-                loadJarsFromManifestFile( classLoader );
-            } catch( IOException ioe ) {
-                log.warn( "MANIFEST.MF is loaded, so we will not search for duplicated jars!" );
+                loadJarsFromManifestFile(classLoader);
+            } catch (IOException ioe) {
+                log.warn("MANIFEST.MF is loaded, so we will not search for duplicated jars!");
             }
 
             // add all jars from ClassPath to the map
-            for( int i = 0; i < urls.length; i++ ) {
-                addJarToMap( urls[i].getFile() );
+            for (int i = 0; i < urls.length; i++) {
+                addJarToMap(urls[i].getFile());
             }
 
             // get the parent classLoader
             classLoader = classLoader.getParent();
-        } while( classLoader != null );
+        } while (classLoader != null);
 
-        if( loadedJarsMap.isEmpty() ) {
+        if (loadedJarsMap.isEmpty()) {
             // jars are not found, so probably no URL ClassLoaders are found
-            throw new RuntimeException( "Most probrably specific server is used without URLClassLoader instances!" );
+            throw new RuntimeException("Most probrably specific server is used without URLClassLoader instances!");
         }
     }
 
@@ -235,54 +235,54 @@ public class ClasspathUtils {
     */
     private void loadJarsFromManifestFile( ClassLoader classLoader ) throws IOException {
 
-        Enumeration<URL> manifestUrls = ( ( URLClassLoader ) classLoader ).findResources( "META-INF/MANIFEST.MF" );
+        Enumeration<URL> manifestUrls = ((URLClassLoader) classLoader).findResources("META-INF/MANIFEST.MF");
         Manifest manifest = null;
         URL manifestElement = null;
 
-        if( manifestUrls != null ) {
-            while( manifestUrls.hasMoreElements() ) {
+        if (manifestUrls != null) {
+            while (manifestUrls.hasMoreElements()) {
                 manifestElement = manifestUrls.nextElement();
                 try (InputStream is = manifestElement.openStream()) {
-                    manifest = new Manifest( is );
+                    manifest = new Manifest(is);
 
                     // get the 'Class-Path' value from the MANIFEST.MF file
-                    String manifestClassPathValue = manifest.getMainAttributes().getValue( "Class-Path" );
-                    if( manifestClassPathValue != null ) {
-                        log.trace( "Parsing MANIFEST file \"" + manifestElement.getPath() );
-                        String[] arr = manifestClassPathValue.split( " " );
-                        for( int i = 0; i < arr.length; i++ ) {
+                    String manifestClassPathValue = manifest.getMainAttributes().getValue("Class-Path");
+                    if (manifestClassPathValue != null) {
+                        log.trace("Parsing MANIFEST file \"" + manifestElement.getPath());
+                        String[] arr = manifestClassPathValue.split(" ");
+                        for (int i = 0; i < arr.length; i++) {
                             // add listed jars from MANIFEST file to the map
-                            String jarSimpleName = getJarSimpleName( arr[i] );
+                            String jarSimpleName = getJarSimpleName(arr[i]);
                             String manifestFile = manifestElement.getFile();
-                            manifestFile = manifestFile.replace( "\\", "/" );
+                            manifestFile = manifestFile.replace("\\", "/");
 
-                            if( manifestFile.startsWith( "file:/" ) ) {
-                                manifestFile = manifestFile.substring( "file:/".length() );
+                            if (manifestFile.startsWith("file:/")) {
+                                manifestFile = manifestFile.substring("file:/".length());
                             }
 
-                            manifestFile = manifestFile.substring( 0,
-                                                                   manifestFile.indexOf( "!/META-INF/MANIFEST.MF" ) );
-                            manifestFile = manifestFile.substring( 0, manifestFile.lastIndexOf( '/' ) );
+                            manifestFile = manifestFile.substring(0,
+                                                                  manifestFile.indexOf("!/META-INF/MANIFEST.MF"));
+                            manifestFile = manifestFile.substring(0, manifestFile.lastIndexOf('/'));
 
-                            if( !StringUtils.isNullOrEmpty( jarSimpleName ) ) {
+                            if (!StringUtils.isNullOrEmpty(jarSimpleName)) {
                                 String jarAbsolutePath = "";
-                                if( arr[i].startsWith( "file" ) ) {
-                                    jarAbsolutePath = arr[i].substring( 6, arr[i].length() );
+                                if (arr[i].startsWith("file")) {
+                                    jarAbsolutePath = arr[i].substring(6, arr[i].length());
                                 } else {
                                     jarAbsolutePath = manifestFile + "/" + arr[i];
                                 }
-                                if( new File( jarAbsolutePath ).exists() ) {
-                                    addJarToMap( jarAbsolutePath );
+                                if (new File(jarAbsolutePath).exists()) {
+                                    addJarToMap(jarAbsolutePath);
                                 } else {
-                                    log.trace( "File \"" + jarAbsolutePath
-                                               + "\" is defined in /META-INF/MANIFEST.MF \""
-                                               + manifestElement.getPath() + "\", but does not exist!" );
+                                    log.trace("File \"" + jarAbsolutePath
+                                              + "\" is defined in /META-INF/MANIFEST.MF \""
+                                              + manifestElement.getPath() + "\", but does not exist!");
                                 }
                             }
                         }
                     }
-                } catch( IOException ioe ) {
-                    log.error( "Unable to read the MANIFEST.MF file", ioe );
+                } catch (IOException ioe) {
+                    log.error("Unable to read the MANIFEST.MF file", ioe);
                 }
             }
         }
@@ -290,22 +290,22 @@ public class ClasspathUtils {
 
     private void addJarToMap( String jar ) {
 
-        String jarSimpleName = getJarSimpleName( jar );
+        String jarSimpleName = getJarSimpleName(jar);
         String jarAbsolutePath = jar;
-        if( jarAbsolutePath.startsWith( "/" ) ) {
-            jarAbsolutePath = jarAbsolutePath.substring( 1 );
+        if (jarAbsolutePath.startsWith("/")) {
+            jarAbsolutePath = jarAbsolutePath.substring(1);
         }
 
-        if( !StringUtils.isNullOrEmpty( jarSimpleName ) ) {
-            if( !loadedJarsMap.containsKey( jarSimpleName ) ) {
-                loadedJarsMap.put( jarSimpleName, new ArrayList<>( Arrays.asList( jarAbsolutePath ) ) );
+        if (!StringUtils.isNullOrEmpty(jarSimpleName)) {
+            if (!loadedJarsMap.containsKey(jarSimpleName)) {
+                loadedJarsMap.put(jarSimpleName, new ArrayList<>(Arrays.asList(jarAbsolutePath)));
             } else {
-                if( !loadedJarsMap.get( jarSimpleName ).contains( jarAbsolutePath ) ) {
-                    loadedJarsMap.get( jarSimpleName ).add( jarAbsolutePath );
+                if (!loadedJarsMap.get(jarSimpleName).contains(jarAbsolutePath)) {
+                    loadedJarsMap.get(jarSimpleName).add(jarAbsolutePath);
                 }
             }
         } else {
-            log.trace( "Could not parse simple name for JAR \"" + jar + "\"" );
+            log.trace("Could not parse simple name for JAR \"" + jar + "\"");
         }
     }
 
@@ -317,26 +317,26 @@ public class ClasspathUtils {
      */
     private String getJarSimpleName( String jarFullPath ) {
 
-        String jarName = jarFullPath.substring( jarFullPath.lastIndexOf( '/' ) + 1 );
+        String jarName = jarFullPath.substring(jarFullPath.lastIndexOf('/') + 1);
         boolean isSourceFile = false;
 
         String pattern = "(.+?)(-\\d)(.)"; // we get only jar name without version
-        Pattern p = Pattern.compile( pattern );
-        Matcher m = p.matcher( jarName );
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(jarName);
 
-        if( !StringUtils.isNullOrEmpty( jarName )
-            && jarName.substring( 0, jarName.length() - 4 ).endsWith( "sources" ) ) {
+        if (!StringUtils.isNullOrEmpty(jarName)
+            && jarName.substring(0, jarName.length() - 4).endsWith("sources")) {
             isSourceFile = true;
         }
-        if( m.find() ) {
-            jarName = m.group( 1 );
+        if (m.find()) {
+            jarName = m.group(1);
         } else {
-            if( jarName.endsWith( ".jar" ) ) {
+            if (jarName.endsWith(".jar")) {
                 //here we will cut last 4 characters -'.jar'
-                jarName = jarName.substring( 0, jarName.length() - 4 );
+                jarName = jarName.substring(0, jarName.length() - 4);
             }
         }
-        if( isSourceFile )
+        if (isSourceFile)
             return jarName + "-sources";
 
         return jarName;

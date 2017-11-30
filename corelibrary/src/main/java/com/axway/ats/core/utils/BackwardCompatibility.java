@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  * This is an annotation used to mark methods or class fields, 
  * which include code for backward compatibility and/or are subjected to removal in newer versions of ATS framework
  **/
-@Retention(RetentionPolicy.SOURCE)
+@Retention( RetentionPolicy.SOURCE)
 public @interface BackwardCompatibility {
 
 }

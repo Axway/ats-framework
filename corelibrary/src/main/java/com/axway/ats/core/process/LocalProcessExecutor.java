@@ -42,9 +42,9 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class LocalProcessExecutor implements IProcessExecutor {
 
-    private static final Logger log                       = Logger.getLogger( LocalProcessExecutor.class );
+    private static final Logger log                       = Logger.getLogger(LocalProcessExecutor.class);
 
-    private final static int    MAX_STRING_SIZE           = 100000;                                        // max chars used to limit process output
+    private final static int    MAX_STRING_SIZE           = 100000;                                      // max chars used to limit process output
 
     private final static String SKIPPED_CHARACTERS        = "... skipped characters ..."
                                                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
@@ -71,7 +71,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     private boolean             doNotUseStandardInput;
 
     private String              caller;
-    
+
     public LocalProcessExecutor( String caller, String command, String... commandArguments ) {
 
         this.caller = caller;
@@ -79,20 +79,20 @@ public class LocalProcessExecutor implements IProcessExecutor {
         this.commandDescription = command;
 
         this.commandTokens = new ArrayList<String>();
-        if( commandArguments == null || commandArguments.length == 0 ) {
+        if (commandArguments == null || commandArguments.length == 0) {
 
-            this.commandTokens.addAll( Arrays.asList( StringUtils.parseCommandLineArguments( command ) ) );
+            this.commandTokens.addAll(Arrays.asList(StringUtils.parseCommandLineArguments(command)));
         } else {
 
-            this.commandTokens.add( command );
-            for( String commandArgument : commandArguments ) {
+            this.commandTokens.add(command);
+            for (String commandArgument : commandArguments) {
 
-                this.commandTokens.add( commandArgument );
+                this.commandTokens.add(commandArgument);
                 this.commandDescription = this.commandDescription + " " + commandArgument;
             }
         }
 
-        this.processBuilder = new ProcessBuilder( this.commandTokens );
+        this.processBuilder = new ProcessBuilder(this.commandTokens);
     }
 
     /**
@@ -100,7 +100,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
      */
     public void execute() {
 
-        execute( true );
+        execute(true);
     }
 
     /**
@@ -109,51 +109,51 @@ public class LocalProcessExecutor implements IProcessExecutor {
      */
     public void execute( boolean waitForCompletion ) {
 
-        if( !suppressLogMessages ) {
-            log.info( "Executing '" + commandDescription + "'. We will " + ( waitForCompletion
-                                                                                               ? "wait"
-                                                                                               : "not wait" )
-                      + " for its completion" );
+        if (!suppressLogMessages) {
+            log.info("Executing '" + commandDescription + "'. We will " + (waitForCompletion
+                                                                                             ? "wait"
+                                                                                             : "not wait")
+                     + " for its completion");
         }
 
         try {
-            if( workDirectory != null ) {
-                processBuilder.directory( new File( workDirectory ) );
+            if (workDirectory != null) {
+                processBuilder.directory(new File(workDirectory));
             }
             this.theProcess = processBuilder.start();
 
-            errorReaderThread = new ProcessOutputReader( caller, "ERROR OUTPUT", this.theProcess,
-                                                         this.theProcess.getErrorStream(), logErrorOutput,
-                                                         errorOutputFile );
+            errorReaderThread = new ProcessOutputReader(caller, "ERROR OUTPUT", this.theProcess,
+                                                        this.theProcess.getErrorStream(), logErrorOutput,
+                                                        errorOutputFile);
 
-            outputReaderThread = new ProcessOutputReader( caller, "STANDARD OUTPUT", this.theProcess,
-                                                          this.theProcess.getInputStream(), logStandardOutput,
-                                                          standardOutputFile );
+            outputReaderThread = new ProcessOutputReader(caller, "STANDARD OUTPUT", this.theProcess,
+                                                         this.theProcess.getInputStream(), logStandardOutput,
+                                                         standardOutputFile);
 
             errorReaderThread.start();
             outputReaderThread.start();
 
-            if( doNotUseStandardInput ) {
+            if (doNotUseStandardInput) {
 
-                IoUtils.closeStream( theProcess.getOutputStream(), "Could not close process input stream" );
+                IoUtils.closeStream(theProcess.getOutputStream(), "Could not close process input stream");
             }
 
-            if( waitForCompletion ) {
+            if (waitForCompletion) {
                 // wait until the external process finish
                 theProcess.waitFor();
-                if( !suppressLogMessages ) {
-                    log.info( "The execution of '" + commandDescription + "' finished with exit code "
-                              + this.theProcess.exitValue() );
+                if (!suppressLogMessages) {
+                    log.info("The execution of '" + commandDescription + "' finished with exit code "
+                             + this.theProcess.exitValue());
                 }
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String message = "Error executing '" + commandDescription + "': " + e.getMessage();
-            log.error( message );
-            throw new ProcessExecutorException( message, e );
+            log.error(message);
+            throw new ProcessExecutorException(message, e);
         } finally {
-            if( theProcess != null ) { // close input stream for the process since otherwise PIPEs leak
+            if (theProcess != null) { // close input stream for the process since otherwise PIPEs leak
                 // this code should be repositioned if we add support for writing data to the process
-                IoUtils.closeStream( theProcess.getOutputStream(), "Could not close process input stream" );
+                IoUtils.closeStream(theProcess.getOutputStream(), "Could not close process input stream");
             }
         }
     }
@@ -178,7 +178,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
      */
     public void kill() {
 
-        new ProcessUtils( theProcess, commandDescription ).killProcess();
+        new ProcessUtils(theProcess, commandDescription).killProcess();
     }
 
     /**
@@ -188,7 +188,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
      */
     public void killAll() {
 
-        new ProcessUtils( theProcess, commandDescription ).killProcessAndItsChildren();
+        new ProcessUtils(theProcess, commandDescription).killProcessAndItsChildren();
     }
 
     /**
@@ -199,58 +199,58 @@ public class LocalProcessExecutor implements IProcessExecutor {
      */
     public static int killProcess( String startCommandSnippet ) {
 
-        if( startCommandSnippet == null || startCommandSnippet.length() < 2 ) {
+        if (startCommandSnippet == null || startCommandSnippet.length() < 2) {
 
-            throw new IllegalStateException( "The process start command snippet is invalid. The minimum allowed length is 2 characters" );
+            throw new IllegalStateException("The process start command snippet is invalid. The minimum allowed length is 2 characters");
         }
 
         int numberOfKilled = 0;
         int startParsingLine = 0;
         LocalProcessExecutor pExecutor;
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
 
             String command = "ps -Ao pid,args | grep '" + startCommandSnippet
                              + "' | grep -v grep && echo --- && ps -Ao pid,args | grep '"
                              + startCommandSnippet
                              + "' | grep -v grep | awk '{print $1}' | xargs kill -9 2>&1";
-            if( OperatingSystemType.getCurrentOsType() == OperatingSystemType.HP_UX ) {
+            if (OperatingSystemType.getCurrentOsType() == OperatingSystemType.HP_UX) {
                 // Some commands in HP-UX, like 'ps', has different usage depending on which selected behavior: UNIX95,XPG2,XPG3,XPG4
                 //      UNIX95 = Unix 95 behavior
                 //      XPG4   = X/Open's Portability Guide Issue 4
                 // The UNIX95 variable (when set) simply alters the way the 'ps' command functions. In our case enabling '-A' and '-o' options
-                pExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4, "/bin/sh", "-c",
-                                                      "export UNIX95=XPG4 && " + command );
+                pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "/bin/sh", "-c",
+                                                     "export UNIX95=XPG4 && " + command);
             } else {
-                pExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4, "/bin/sh", "-c", command );
+                pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "/bin/sh", "-c", command);
             }
-        } else if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        } else if (OperatingSystemType.getCurrentOsType().isWindows()) {
 
-            pExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4, "cmd",
-                                                  "/c",
-                                                  "wmic process where (commandline like \"%"
-                                                        + startCommandSnippet
-                                                        + "%\") get commandLine,processId <NUL && echo --- <NUL && wmic process where (commandline like \"%"
-                                                        + startCommandSnippet + "%\") call terminate <NUL" );
+            pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "cmd",
+                                                 "/c",
+                                                 "wmic process where (commandline like \"%"
+                                                       + startCommandSnippet
+                                                       + "%\") get commandLine,processId <NUL && echo --- <NUL && wmic process where (commandline like \"%"
+                                                       + startCommandSnippet + "%\") call terminate <NUL");
             startParsingLine = 1;
         } else {
 
-            throw new IllegalStateException( "Not supported operating system type. Report the case to ATS team" );
+            throw new IllegalStateException("Not supported operating system type. Report the case to ATS team");
         }
 
-        pExecutor.setSuppressLogMessages( true );
+        pExecutor.setSuppressLogMessages(true);
         pExecutor.doNotUseStandardInput();
-        pExecutor.execute( true );
+        pExecutor.execute(true);
 
         String output = pExecutor.getStandardOutput();
 
-        String[] lines = output.split( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-        if( lines.length > startParsingLine ) {
+        String[] lines = output.split(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        if (lines.length > startParsingLine) {
 
-            for( int i = startParsingLine; i < lines.length && !"---".equals( lines[i].trim() ); i++ ) {
+            for (int i = startParsingLine; i < lines.length && !"---".equals(lines[i].trim()); i++) {
 
                 String line = lines[i].trim();
-                if( line.isEmpty()
-                    || ( OperatingSystemType.getCurrentOsType().isWindows() && line.contains( "wmic " ) ) ) {
+                if (line.isEmpty()
+                    || (OperatingSystemType.getCurrentOsType().isWindows() && line.contains("wmic "))) {
                     continue;
                 }
                 numberOfKilled++;
@@ -259,33 +259,33 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 //NOTE:
                 //  on Linux, if the 'args' option is not last 'ps -o' option, the start command is stripped and we can't 'grep' from the whole command
                 //  on Windows, no matter of the columns order in 'wmic' command (for example "processId,commandLine") the output is always the same, the PID column is the last one
-                if( OperatingSystemType.getCurrentOsType().isWindows() ) {
-                    int lastSpaceIndex = line.lastIndexOf( ' ' );
-                    pid = line.substring( lastSpaceIndex ).trim();
-                    startCommand = line.substring( 0, lastSpaceIndex );
+                if (OperatingSystemType.getCurrentOsType().isWindows()) {
+                    int lastSpaceIndex = line.lastIndexOf(' ');
+                    pid = line.substring(lastSpaceIndex).trim();
+                    startCommand = line.substring(0, lastSpaceIndex);
                 } else {
-                    int firstSpaceIndex = line.indexOf( ' ' );
-                    pid = line.substring( 0, firstSpaceIndex ).trim();
-                    startCommand = line.substring( firstSpaceIndex ).trim();
+                    int firstSpaceIndex = line.indexOf(' ');
+                    pid = line.substring(0, firstSpaceIndex).trim();
+                    startCommand = line.substring(firstSpaceIndex).trim();
                 }
-                log.info( "Killing process with PID " + pid + " and start command: " + startCommand );
+                log.info("Killing process with PID " + pid + " and start command: " + startCommand);
             }
         }
 
         // try to remove the temp file that gets created from running wmic command
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (OperatingSystemType.getCurrentOsType().isWindows()) {
 
             try {
                 // look in the current working directory
-                File f = new File( "TempWmicBatchFile.bat" );
+                File f = new File("TempWmicBatchFile.bat");
                 // sometimes the file appears after 5-20ms, that is why we will try for 1sec max
                 int retries = 100;
                 // the loop will brake when the temporary file exists and the delete operation is successful
                 // or if the number of retries exceeded
-                while( ! ( f.exists() && f.delete() ) && retries-- > 0 ) {
-                    Thread.sleep( 10 );
+                while (! (f.exists() && f.delete()) && retries-- > 0) {
+                    Thread.sleep(10);
                 }
-            } catch( Exception e ) {}
+            } catch (Exception e) {}
         }
 
         return numberOfKilled;
@@ -298,7 +298,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
      */
     public int getProcessId() {
 
-        return new ProcessUtils( theProcess, commandDescription ).getProcessId();
+        return new ProcessUtils(theProcess, commandDescription).getProcessId();
     }
 
     /**
@@ -421,21 +421,21 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
     public void setEnvVariable( String variableName, String variableValue ) {
 
-        this.processBuilder.environment().put( variableName, variableValue );
+        this.processBuilder.environment().put(variableName, variableValue);
     }
 
     public void appendToEnvVariable( String variableName, String variableValueToAppend ) {
 
         Map<String, String> env = this.processBuilder.environment();
-        if( env.containsKey( variableName ) ) {
-            variableValueToAppend = env.get( variableName ) + variableValueToAppend;
+        if (env.containsKey(variableName)) {
+            variableValueToAppend = env.get(variableName) + variableValueToAppend;
         }
-        env.put( variableName, variableValueToAppend );
+        env.put(variableName, variableValueToAppend);
     }
 
     public String getEnvVariable( String variableName ) {
 
-        return this.processBuilder.environment().get( variableName );
+        return this.processBuilder.environment().get(variableName);
     }
 
     /**
@@ -454,7 +454,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         private String              caller;
 
-        private static final int    READ_TIMEOUT = 60 * 1000;          // in milliseconds
+        private static final int    READ_TIMEOUT = 60 * 1000;                  // in milliseconds
 
         private final StringBuilder content      = new StringBuilder();
 
@@ -473,7 +473,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
         ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
                              boolean logOutput, String outputFile ) {
 
-            log = Logger.getLogger( ProcessOutputReader.class.getSimpleName() + " <" + type + ">" );
+            log = Logger.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
 
             this.caller = caller;
 
@@ -486,17 +486,17 @@ public class LocalProcessExecutor implements IProcessExecutor {
             this.logOutput = logOutput;
 
             // will we send the output to some file
-            if( outputFile != null ) {
+            if (outputFile != null) {
                 try {
-                    this.bufWriterStream = new BufferedWriter( new FileWriter( outputFile ) );
-                } catch( IOException ioe ) {
+                    this.bufWriterStream = new BufferedWriter(new FileWriter(outputFile));
+                } catch (IOException ioe) {
                     String message = "Error connecting to local output file";
-                    log.error( message, ioe );
-                    throw new ProcessExecutorException( message, ioe );
+                    log.error(message, ioe);
+                    throw new ProcessExecutorException(message, ioe);
                 }
             }
-            
-            countdownLatchForExternalProcessCompletion = new CountDownLatch( 1 );
+
+            countdownLatchForExternalProcessCompletion = new CountDownLatch(1);
         }
 
         /**
@@ -509,7 +509,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 externalProcess.exitValue();
                 // it is over
                 return true;
-            } catch( IllegalThreadStateException e ) {
+            } catch (IllegalThreadStateException e) {
                 // not a really elegant way to understand the external process is still running
                 return false;
             }
@@ -518,24 +518,24 @@ public class LocalProcessExecutor implements IProcessExecutor {
         @Override
         public void run() {
 
-            ThreadsPerCaller.registerThread( caller );
+            ThreadsPerCaller.registerThread(caller);
 
             BufferedReader bufReaderStream = null;
             try {
                 String line = null;
                 String dataToLeave = null;
-                bufReaderStream = new BufferedReader( new InputStreamReader( is ) );
+                bufReaderStream = new BufferedReader(new InputStreamReader(is));
 
-                while( true ) {
+                while (true) {
 
                     // wait for data available in the stream we are attached to
                     // or exit if the external process is over
-                    while( !bufReaderStream.ready() ) {
+                    while (!bufReaderStream.ready()) {
                         // no bytes available to read
 
-                        if( isExternalProcessOver() ) {
+                        if (isExternalProcessOver()) {
                             // the external process is over, exit this thread
-                            log.debug( "External process is over, stop reading its stream for " + type ); // STANDARD or ERROR OUTPUT
+                            log.debug("External process is over, stop reading its stream for " + type); // STANDARD or ERROR OUTPUT
                             return;
                         } else {
                             /*
@@ -544,8 +544,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
                              *      If sleep time is too long - it may take a long after external process is over and the moment we exit this thread.
                              */
                             try {
-                                Thread.sleep( 500 );
-                            } catch( InterruptedException ee ) {
+                                Thread.sleep(500);
+                            } catch (InterruptedException ee) {
                                 // continue with next iteration
                             }
                         }
@@ -558,34 +558,34 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
                     // append to internal content buffer
                     // limit buffer to about MAX_STRING_SIZE + current line length
-                    if( this.content.length() > MAX_STRING_SIZE ) {
-                        dataToLeave = this.content.substring( this.content.length() - MAX_STRING_SIZE );
-                        this.content.setLength( MAX_STRING_SIZE );
-                        this.content.replace( 0, SKIPPED_CHARACTERS_LENGTH, SKIPPED_CHARACTERS );
-                        this.content.replace( SKIPPED_CHARACTERS_LENGTH,
-                                              dataToLeave.length() + SKIPPED_CHARACTERS_LENGTH, dataToLeave );
+                    if (this.content.length() > MAX_STRING_SIZE) {
+                        dataToLeave = this.content.substring(this.content.length() - MAX_STRING_SIZE);
+                        this.content.setLength(MAX_STRING_SIZE);
+                        this.content.replace(0, SKIPPED_CHARACTERS_LENGTH, SKIPPED_CHARACTERS);
+                        this.content.replace(SKIPPED_CHARACTERS_LENGTH,
+                                             dataToLeave.length() + SKIPPED_CHARACTERS_LENGTH, dataToLeave);
                     }
-                    this.content.append( line );
-                    this.content.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                    this.content.append(line);
+                    this.content.append(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
 
                     // send to the logging system
-                    if( this.logOutput ) {
-                        log.debug( line );
+                    if (this.logOutput) {
+                        log.debug(line);
                     }
 
                     // append to some file
-                    if( this.bufWriterStream != null ) {
-                        this.bufWriterStream.write( line );
+                    if (this.bufWriterStream != null) {
+                        this.bufWriterStream.write(line);
                         this.bufWriterStream.newLine();
                         this.bufWriterStream.flush();
                     }
                 }
-            } catch( IOException ioe ) {
-                log.error( "Error working with the process output", ioe );
+            } catch (IOException ioe) {
+                log.error("Error working with the process output", ioe);
             } finally {
                 // release the file handles
-                IoUtils.closeStream( this.bufWriterStream );
-                IoUtils.closeStream( bufReaderStream );
+                IoUtils.closeStream(this.bufWriterStream);
+                IoUtils.closeStream(bufReaderStream);
 
                 countdownLatchForExternalProcessCompletion.countDown();
                 ThreadsPerCaller.unregisterThread();
@@ -623,27 +623,27 @@ public class LocalProcessExecutor implements IProcessExecutor {
             boolean isExternalProcessOver = false;
             do {
                 try {
-                    
-                    isExternalProcessOver = countdownLatchForExternalProcessCompletion.await( timeout,
-                                                                                              TimeUnit.MILLISECONDS );
+
+                    isExternalProcessOver = countdownLatchForExternalProcessCompletion.await(timeout,
+                                                                                             TimeUnit.MILLISECONDS);
                     timeout = 0; // this will stop another wait cycle
-                } catch( InterruptedException e1 ) {
+                } catch (InterruptedException e1) {
                     timeout = start + READ_TIMEOUT - System.currentTimeMillis();
-                    if( timeout > 0 ) {
-                        log.warn( "Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
-                                  + timeout + " ms" );
+                    if (timeout > 0) {
+                        log.warn("Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
+                                 + timeout + " ms");
                     }
                 }
-            } while( timeout > 0 );
+            } while (timeout > 0);
 
-            if( isExternalProcessOver ) {
+            if (isExternalProcessOver) {
                 // external process is over, give back the whole output
                 return this.content.toString();
             } else {
                 // the external process is not over yet, we hit timeout
-                throw new ProcessExecutorException( "The " + this.type + " was not fully read in "
-                                                    + READ_TIMEOUT / 1000
-                                                    + " seconds as the external process was not over yet." );
+                throw new ProcessExecutorException("The " + this.type + " was not fully read in "
+                                                   + READ_TIMEOUT / 1000
+                                                   + " seconds as the external process was not over yet.");
             }
         }
     }

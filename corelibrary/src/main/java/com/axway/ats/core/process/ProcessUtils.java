@@ -30,7 +30,7 @@ import com.axway.ats.common.system.OperatingSystemType;
  */
 public class ProcessUtils {
 
-    private static final Logger log = Logger.getLogger( ProcessUtils.class );
+    private static final Logger log = Logger.getLogger(ProcessUtils.class);
 
     private Process             theProcess;
     private String              commandDescription;
@@ -47,9 +47,9 @@ public class ProcessUtils {
      */
     public void killProcess() {
 
-        if( theProcess != null ) {
+        if (theProcess != null) {
             theProcess.destroy();
-            log.debug( "Destroy call is sent to the process '" + commandDescription + "'" );
+            log.debug("Destroy call is sent to the process '" + commandDescription + "'");
         }
     }
 
@@ -60,36 +60,36 @@ public class ProcessUtils {
      */
     public void killProcessAndItsChildren() {
 
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
 
             // first kill child processes because otherwise their parent ID is changed to 1
             int pid = getProcessId();
             String command = "pkill -P " + pid;
-            if( log.isDebugEnabled() ) {
-                log.debug( "Try to destroy child processes with '" + command + "'" );
+            if (log.isDebugEnabled()) {
+                log.debug("Try to destroy child processes with '" + command + "'");
             }
             int exitCode = -1;
             try {
-                exitCode = Runtime.getRuntime().exec( command ).waitFor();
-            } catch( Exception e ) {
-                throw new ProcessExecutorException( "Could not kill the process with id '" + pid + "'", e );
+                exitCode = Runtime.getRuntime().exec(command).waitFor();
+            } catch (Exception e) {
+                throw new ProcessExecutorException("Could not kill the process with id '" + pid + "'", e);
             }
 
             killProcess(); // kill this process
 
-            if( exitCode != 0 ) {
+            if (exitCode != 0) {
 
-                log.warn( "Error while trying to kill subprocesses. Exit code returned from '" + command
-                          + "' command: " + exitCode );
+                log.warn("Error while trying to kill subprocesses. Exit code returned from '" + command
+                         + "' command: " + exitCode);
             }
-        } else if( OperatingSystemType.getCurrentOsType().isWindows() ) { // Windows assumed
+        } else if (OperatingSystemType.getCurrentOsType().isWindows()) { // Windows assumed
 
             // use org.jvnet.winp.WinProcess
-            log.debug( "Windows detected and will try to kill whole subtree." );
-            new WinProcess( theProcess ).killRecursively();
+            log.debug("Windows detected and will try to kill whole subtree.");
+            new WinProcess(theProcess).killRecursively();
         } else {
 
-            throw new IllegalStateException( "Not supported operating system type. Report the case to ATS team" );
+            throw new IllegalStateException("Not supported operating system type. Report the case to ATS team");
         }
     }
 
@@ -100,18 +100,18 @@ public class ProcessUtils {
      */
     public int getProcessId() {
 
-        if( "java.lang.UNIXProcess".equals( theProcess.getClass().getName() ) ) {
+        if ("java.lang.UNIXProcess".equals(theProcess.getClass().getName())) {
             try {
                 Class<?> proc = theProcess.getClass();
-                Field field = proc.getDeclaredField( "pid" );
-                field.setAccessible( true );
-                Object pid = field.get( theProcess );
+                Field field = proc.getDeclaredField("pid");
+                field.setAccessible(true);
+                Object pid = field.get(theProcess);
 
-                int pidNumber = ( Integer ) pid;
-                log.info( "The PID of the sterted process is " + pidNumber );
+                int pidNumber = (Integer) pid;
+                log.info("The PID of the sterted process is " + pidNumber);
                 return pidNumber;
-            } catch( Exception e ) {
-                throw new ProcessExecutorException( "Error retrieving process ID", e );
+            } catch (Exception e) {
+                throw new ProcessExecutorException("Error retrieving process ID", e);
             }
         } else {
             return -1;

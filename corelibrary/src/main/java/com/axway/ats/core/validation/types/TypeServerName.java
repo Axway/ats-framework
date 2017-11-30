@@ -40,7 +40,7 @@ public class TypeServerName extends TypeString {
     protected TypeServerName( String paramName, Object val, Object[] args, boolean requirePort,
                               boolean ext ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
         this.requirePort = requirePort;
         this.extended = ext;
     }
@@ -56,8 +56,8 @@ public class TypeServerName extends TypeString {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_SERVER + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_SERVER + e.getMessage(), e.getParameterName(), e);
         }
 
         BaseType typeIP = null;
@@ -65,36 +65,36 @@ public class TypeServerName extends TypeString {
         BaseType typeCIDR = null;
         BaseType typePort = null;
 
-        String[] tokens = HostUtils.splitAddressHostAndPort( this.validatedValue );
-        if( tokens.length == 1 && requirePort ) {
+        String[] tokens = HostUtils.splitAddressHostAndPort(this.validatedValue);
+        if (tokens.length == 1 && requirePort) {
 
-            throw new TypeException( ERROR_VALIDATING_SERVER_PORT, this.parameterName );
+            throw new TypeException(ERROR_VALIDATING_SERVER_PORT, this.parameterName);
         }
 
-        if( tokens.length == 2 ) { // port number detected
+        if (tokens.length == 2) { // port number detected
 
-            typePort = TypeFactory.getInstance().createValidationType( ValidationType.NUMBER_PORT_NUMBER,
-                                                                       tokens[1] );
+            typePort = TypeFactory.getInstance().createValidationType(ValidationType.NUMBER_PORT_NUMBER,
+                                                                      tokens[1]);
             try {
                 typePort.validate();
-            } catch( TypeException e ) {
-                throw new TypeException( ERROR_VALIDATING_SERVER + e.getMessage(), this.parameterName );
+            } catch (TypeException e) {
+                throw new TypeException(ERROR_VALIDATING_SERVER + e.getMessage(), this.parameterName);
             }
         }
 
         // validate hostname or IP address
-        if( tokens[0].split( ":" ).length > 1 ) { //assume it is IPv6
+        if (tokens[0].split(":").length > 1) { //assume it is IPv6
 
-            if( isValidIPv6Address( tokens[0] ) ) {
+            if (isValidIPv6Address(tokens[0])) {
                 return;
             }
-            throw new TypeException( ERROR_MESSAGE_MALFORMED, this.parameterName );
+            throw new TypeException(ERROR_MESSAGE_MALFORMED, this.parameterName);
         }
 
-        typeIP = TypeFactory.getInstance().createValidationType( ValidationType.STRING_IP, tokens[0] );
-        typeHostname = TypeFactory.getInstance().createValidationType( ValidationType.STRING_HOST_NAME,
-                                                                       tokens[0] );
-        typeCIDR = TypeFactory.getInstance().createValidationType( ValidationType.STRING_CIDR, tokens[0] );
+        typeIP = TypeFactory.getInstance().createValidationType(ValidationType.STRING_IP, tokens[0]);
+        typeHostname = TypeFactory.getInstance().createValidationType(ValidationType.STRING_HOST_NAME,
+                                                                      tokens[0]);
+        typeCIDR = TypeFactory.getInstance().createValidationType(ValidationType.STRING_CIDR, tokens[0]);
 
         // every validation is checked and if it fails it's error message is inserted
         // into the next ones so that in the end if all three of them were to fail
@@ -104,23 +104,23 @@ public class TypeServerName extends TypeString {
         try {
             typeIP.validate();
             return;
-        } catch( TypeException outerException ) {
+        } catch (TypeException outerException) {
             // if not check if this is a valid hostname
             try {
                 typeHostname.validate();
                 return;
-            } catch( TypeException innerException ) {
+            } catch (TypeException innerException) {
                 // check if this is a valid CIDR IPv4 address   //TODO: add support for IPv6
-                if( this.extended ) {
+                if (this.extended) {
                     try {
                         typeCIDR.validate();
                         return;
-                    } catch( TypeException e ) {
-                        throw new TypeException( ERROR_VALIDATING_SERVER + e.getMessage(),
-                                                 this.parameterName );
+                    } catch (TypeException e) {
+                        throw new TypeException(ERROR_VALIDATING_SERVER + e.getMessage(),
+                                                this.parameterName);
                     }
                 }
-                throw new TypeException( ERROR_VALIDATING_SERVER_NEITHER, this.parameterName );
+                throw new TypeException(ERROR_VALIDATING_SERVER_NEITHER, this.parameterName);
             }
         }
     }
@@ -133,9 +133,9 @@ public class TypeServerName extends TypeString {
     private boolean isValidIPv6Address( String address ) {
 
         try {
-            java.net.Inet6Address.getByName( address );
+            java.net.Inet6Address.getByName(address);
             return true;
-        } catch( Exception e ) {
+        } catch (Exception e) {
             return false;
         }
     }

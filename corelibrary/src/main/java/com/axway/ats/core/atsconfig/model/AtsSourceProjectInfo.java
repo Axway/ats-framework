@@ -39,40 +39,40 @@ public class AtsSourceProjectInfo {
         this.sourceNode = sourceNode;
 
         try {
-            this.home = IoUtils.normalizeDirPath( XmlUtils.getAttribute( sourceNode,
-                                                                           AtsProjectConfiguration.NODE_ATTRIBUTE_HOME,
-                                                                           "" ) );
+            this.home = IoUtils.normalizeDirPath(XmlUtils.getAttribute(sourceNode,
+                                                                       AtsProjectConfiguration.NODE_ATTRIBUTE_HOME,
+                                                                       ""));
 
             // agent zip file
-            List<Element> agentZipElements = XmlUtils.getChildrenByTagName( sourceNode, "agentZip" );
-            if( agentZipElements != null && !agentZipElements.isEmpty() ) {
-                this.agentZip = XmlUtils.getMandatoryAttribute( agentZipElements.get( 0 ),
-                                                                AtsProjectConfiguration.NODE_ATTRIBUTE_PATH );
+            List<Element> agentZipElements = XmlUtils.getChildrenByTagName(sourceNode, "agentZip");
+            if (agentZipElements != null && !agentZipElements.isEmpty()) {
+                this.agentZip = XmlUtils.getMandatoryAttribute(agentZipElements.get(0),
+                                                               AtsProjectConfiguration.NODE_ATTRIBUTE_PATH);
                 // check if agent zip comes from a remote location
-                if( !this.agentZip.toLowerCase().startsWith( "http://" ) ) {
-                    boolean absolute = XmlUtils.getBooleanAttribute( agentZipElements.get( 0 ), "absolute",
-                                                                     false );
-                    if( !absolute ) {
+                if (!this.agentZip.toLowerCase().startsWith("http://")) {
+                    boolean absolute = XmlUtils.getBooleanAttribute(agentZipElements.get(0), "absolute",
+                                                                    false);
+                    if (!absolute) {
                         this.agentZip = this.home + this.agentZip;
                     }
                 }
             }
 
             // folder sources
-            for( Element folderPathNode : XmlUtils.getChildrenByTagName( sourceNode,
-                                                                         AtsProjectConfiguration.NODE_ATTRIBUTE_FOLDER ) ) {
-                PathInfo folderPath = new PathInfo( folderPathNode, false, this.home );
+            for (Element folderPathNode : XmlUtils.getChildrenByTagName(sourceNode,
+                                                                        AtsProjectConfiguration.NODE_ATTRIBUTE_FOLDER)) {
+                PathInfo folderPath = new PathInfo(folderPathNode, false, this.home);
                 folderPath.loadInternalFilesMap();
-                this.paths.add( folderPath );
+                this.paths.add(folderPath);
             }
             // file sources
-            for( Element filePathNode : XmlUtils.getChildrenByTagName( sourceNode,
-                                                                       AtsProjectConfiguration.NODE_ATTRIBUTE_FILE ) ) {
-                this.paths.add( new PathInfo( filePathNode, true, this.home ) );
+            for (Element filePathNode : XmlUtils.getChildrenByTagName(sourceNode,
+                                                                      AtsProjectConfiguration.NODE_ATTRIBUTE_FILE)) {
+                this.paths.add(new PathInfo(filePathNode, true, this.home));
             }
-        } catch( AtsConfigurationException e ) {
-            throw new AtsConfigurationException( "Error instantiating " + getClass().getSimpleName()
-                                                 + " with from XML", e );
+        } catch (AtsConfigurationException e) {
+            throw new AtsConfigurationException("Error instantiating " + getClass().getSimpleName()
+                                                + " with from XML", e);
         }
     }
 
@@ -84,7 +84,7 @@ public class AtsSourceProjectInfo {
     public void setHome( String home ) {
 
         this.home = home;
-        XmlUtils.setAttribute( sourceNode, AtsProjectConfiguration.NODE_ATTRIBUTE_HOME, this.home );
+        XmlUtils.setAttribute(sourceNode, AtsProjectConfiguration.NODE_ATTRIBUTE_HOME, this.home);
     }
 
     public String getAgentZip() {
@@ -95,18 +95,18 @@ public class AtsSourceProjectInfo {
     public void setAgentZip( String agentZip ) {
 
         this.agentZip = agentZip;
-        XmlUtils.setAttribute( sourceNode, "agentZip", this.agentZip );
+        XmlUtils.setAttribute(sourceNode, "agentZip", this.agentZip);
     }
 
     @Override
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "Source Project at " );
-        sb.append( home );
+        sb.append("Source Project at ");
+        sb.append(home);
 
-        for( PathInfo path : paths ) {
-            sb.append( "\n " + path.toString() );
+        for (PathInfo path : paths) {
+            sb.append("\n " + path.toString());
         }
 
         return sb.toString();
@@ -114,15 +114,15 @@ public class AtsSourceProjectInfo {
 
     public String findFile( String fileName ) {
 
-        for( PathInfo path : paths ) {
-            if( !path.isFile() && path.getInternalFiles().containsKey( fileName ) ) {
+        for (PathInfo path : paths) {
+            if (!path.isFile() && path.getInternalFiles().containsKey(fileName)) {
 
-                return path.getInternalFiles().get( fileName );
+                return path.getInternalFiles().get(fileName);
             }
-            if( path.isFile() && path.getPath().endsWith( fileName ) ) {
+            if (path.isFile() && path.getPath().endsWith(fileName)) {
 
-                char fileSeparator = path.getPath().charAt( path.getPath().length() - fileName.length() - 1 );
-                if( fileSeparator == '\\' || fileSeparator == '/' ) {
+                char fileSeparator = path.getPath().charAt(path.getPath().length() - fileName.length() - 1);
+                if (fileSeparator == '\\' || fileSeparator == '/') {
 
                     return path.getPath();
                 }

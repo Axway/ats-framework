@@ -35,27 +35,28 @@ public class Test_DbConnOracle extends BaseTest {
     public void accessors() {
 
         Map<String, Object> customProperties = new HashMap<String, Object>();
-        customProperties.put( DbKeys.PORT_KEY, 123 );
+        customProperties.put(DbKeys.PORT_KEY, 123);
 
-        DbConnOracle dbConnection = new DbConnOracle( "host", "db", "user", "pass", customProperties );
+        DbConnOracle dbConnection = new DbConnOracle("host", "db", "user", "pass", customProperties);
 
-        assertEquals( DbConnOracle.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=123))(CONNECT_DATA=(SID=ORCL)))", dbConnection.getURL() );
-        assertTrue( dbConnection.getConnHash().startsWith( "host_123_db" ) );
-        assertEquals( "Oracle connection to host:123/db", dbConnection.getDescription() );
-        assertEquals( OracleDriver.class, dbConnection.getDriverClass() );
+        assertEquals(DbConnOracle.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=123))(CONNECT_DATA=(SID=ORCL)))",
+                     dbConnection.getURL());
+        assertTrue(dbConnection.getConnHash().startsWith("host_123_db"));
+        assertEquals("Oracle connection to host:123/db", dbConnection.getDescription());
+        assertEquals(OracleDriver.class, dbConnection.getDriverClass());
     }
 
     @Test
     public void getDataSource() {
 
-        DbConnOracle dbConnection = new DbConnOracle( "host", "db", "user", "pass" );
+        DbConnOracle dbConnection = new DbConnOracle("host", "db", "user", "pass");
 
-        assertEquals( OracleDataSource.class, dbConnection.getDataSource().getClass() );
+        assertEquals(OracleDataSource.class, dbConnection.getDataSource().getClass());
     }
 
 }

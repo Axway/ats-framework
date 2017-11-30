@@ -35,7 +35,7 @@ public class Test_TypeStringFilename extends BaseTest {
     private final Validator             validator              = new Validator();
 
     /** Valid test data */
-    private static final String         EXISTING_FILE_NAME     = "src/test/resources/validation/file.txt"; // TODO use classpath
+    private static final String         EXISTING_FILE_NAME     = "src/test/resources/validation/file.txt";         // TODO use classpath
 
     /** Invalid test data */
     private static final String         NON_EXISTING_FILE_NAME = "src/test/resources/validation/file.tx_NOT_FOUND";
@@ -49,7 +49,7 @@ public class Test_TypeStringFilename extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -60,10 +60,10 @@ public class Test_TypeStringFilename extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, EXISTING_FILE_NAME ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, EXISTING_FILE_NAME));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, NON_EXISTING_FILE_NAME ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, "" ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, null ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, NON_EXISTING_FILE_NAME));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, ""));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, null));
     }
 }

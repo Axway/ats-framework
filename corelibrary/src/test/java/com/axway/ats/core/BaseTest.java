@@ -22,9 +22,9 @@ import org.apache.log4j.PatternLayout;
 public class BaseTest {
 
     static {
-        ConsoleAppender appender = new ConsoleAppender( new PatternLayout( "%-5p %d{HH:MM:ss} %c{2}: %m%n" ) );
+        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));
 
         //init log4j
-        BasicConfigurator.configure( appender );
+        BasicConfigurator.configure(appender);
     }
 }

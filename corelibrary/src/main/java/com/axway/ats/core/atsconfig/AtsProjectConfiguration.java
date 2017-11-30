@@ -42,49 +42,49 @@ import com.axway.ats.core.utils.XmlUtils;
 
 public class AtsProjectConfiguration {
 
-    private static final String NODE_ATS_PROJECT = "ats_project";
+    private static final String          NODE_ATS_PROJECT                                     = "ats_project";
 
-    private static final String NODE_SOURCE_PROJECT = "src_project";
-    private static final String NODE_ATS_AGENT      = "dst_agent";
-    private static final String NODE_APPLICATION    = "dst_application";
-    private static final String NODE_SHELL_COMMANDS = "shell_commands";
+    private static final String          NODE_SOURCE_PROJECT                                  = "src_project";
+    private static final String          NODE_ATS_AGENT                                       = "dst_agent";
+    private static final String          NODE_APPLICATION                                     = "dst_application";
+    private static final String          NODE_SHELL_COMMANDS                                  = "shell_commands";
 
     // global values for all agents
-    private static final String NODE_APPLICATION_GLOBAL_PROPERTIES                   = "application_global_properties";
-    public static final String  NODE_APPLICATION_GLOBAL_PROPERTY_PORT                = "port";
-    public static final String  NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC      = "unix_java_exec";
-    public static final String  NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC       = "win_java_exec";
-    public static final String  NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY = "win_startup_latency";
+    private static final String          NODE_APPLICATION_GLOBAL_PROPERTIES                   = "application_global_properties";
+    public static final String           NODE_APPLICATION_GLOBAL_PROPERTY_PORT                = "port";
+    public static final String           NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC      = "unix_java_exec";
+    public static final String           NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC       = "win_java_exec";
+    public static final String           NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY = "win_startup_latency";
 
     // agent properties, they overwrite the global values
-    public static final String NODE_APPLICATION_PROPERTY_HOST                     = "host";
-    public static final String NODE_APPLICATION_PROPERTY_PORT                     = "port";
-    public static final String NODE_APPLICATION_PROPERTY_SSH_PORT                 = "sshPort";
-    public static final String NODE_APPLICATION_PROPERTY_SYSTEM_USER              = "systemUser";
-    public static final String NODE_APPLICATION_PROPERTY_SYSTEM_PASSWORD          = "systemPassword";
-    public static final String NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY          = "sshPrivateKey";
-    public static final String NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY_PASSWORD = "sshPrivateKeyPassword";
-    public static final String NODE_APPLICATION_PROPERTY_JAVA_EXEC                = "java_exec";
-    public static final String NODE_APPLICATION_PROPERTY_MEMORY                   = "memory";
-    public static final String NODE_APPLICATION_PROPERTY_STARTUP_LATENCY          = "startup_latency";
-    public static final String NODE_APPLICATION_PROPERTY_POST_INSTALL_COMMAND     = "post_install_shell_command";
-    public static final String NODE_APPLICATION_PROPERTY_POST_START_COMMAND       = "post_start_shell_command";
-    public static final String NODE_APPLICATION_PROPERTY_POST_STOP_COMMAND        = "post_stop_shell_command";
+    public static final String           NODE_APPLICATION_PROPERTY_HOST                       = "host";
+    public static final String           NODE_APPLICATION_PROPERTY_PORT                       = "port";
+    public static final String           NODE_APPLICATION_PROPERTY_SSH_PORT                   = "sshPort";
+    public static final String           NODE_APPLICATION_PROPERTY_SYSTEM_USER                = "systemUser";
+    public static final String           NODE_APPLICATION_PROPERTY_SYSTEM_PASSWORD            = "systemPassword";
+    public static final String           NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY            = "sshPrivateKey";
+    public static final String           NODE_APPLICATION_PROPERTY_SSH_PRIVATE_KEY_PASSWORD   = "sshPrivateKeyPassword";
+    public static final String           NODE_APPLICATION_PROPERTY_JAVA_EXEC                  = "java_exec";
+    public static final String           NODE_APPLICATION_PROPERTY_MEMORY                     = "memory";
+    public static final String           NODE_APPLICATION_PROPERTY_STARTUP_LATENCY            = "startup_latency";
+    public static final String           NODE_APPLICATION_PROPERTY_POST_INSTALL_COMMAND       = "post_install_shell_command";
+    public static final String           NODE_APPLICATION_PROPERTY_POST_START_COMMAND         = "post_start_shell_command";
+    public static final String           NODE_APPLICATION_PROPERTY_POST_STOP_COMMAND          = "post_stop_shell_command";
 
     // common attributes
-    public static final String NODE_ATTRIBUTE_ALIAS  = "alias";
-    public static final String NODE_ATTRIBUTE_HOME   = "home";
-    public static final String NODE_ATTRIBUTE_PATH   = "path";
-    public static final String NODE_ATTRIBUTE_FILE   = "file";
-    public static final String NODE_ATTRIBUTE_FOLDER = "folder";
+    public static final String           NODE_ATTRIBUTE_ALIAS                                 = "alias";
+    public static final String           NODE_ATTRIBUTE_HOME                                  = "home";
+    public static final String           NODE_ATTRIBUTE_PATH                                  = "path";
+    public static final String           NODE_ATTRIBUTE_FILE                                  = "file";
+    public static final String           NODE_ATTRIBUTE_FOLDER                                = "folder";
 
     private AtsSourceProjectInfo         sourceProject;
-    private Map<String, AgentInfo>       agents        = new LinkedHashMap<String, AgentInfo>();
-    private Map<String, ApplicationInfo> applications  = new LinkedHashMap<String, ApplicationInfo>();
-    private List<ShellCommand>           shellCommands = new ArrayList<ShellCommand>();
+    private Map<String, AgentInfo>       agents                                               = new LinkedHashMap<String, AgentInfo>();
+    private Map<String, ApplicationInfo> applications                                         = new LinkedHashMap<String, ApplicationInfo>();
+    private List<ShellCommand>           shellCommands                                        = new ArrayList<ShellCommand>();
 
-    private String   atsConfigurationFile;
-    private Document doc;
+    private String                       atsConfigurationFile;
+    private Document                     doc;
 
     public AtsProjectConfiguration( String atsConfigurationFile ) throws AtsConfigurationException {
 
@@ -103,73 +103,73 @@ public class AtsProjectConfiguration {
         try {
             doc = DocumentBuilderFactory.newInstance()
                                         .newDocumentBuilder()
-                                        .parse( new File( atsConfigurationFile ) );
+                                        .parse(new File(atsConfigurationFile));
             doc.getDocumentElement().normalize();
-        } catch( Exception e ) {
-            throw new AtsConfigurationException( "Error reading ATS configuration file '"
-                                                 + atsConfigurationFile + "'", e );
+        } catch (Exception e) {
+            throw new AtsConfigurationException("Error reading ATS configuration file '"
+                                                + atsConfigurationFile + "'", e);
         }
 
         Element atsProjectNode = doc.getDocumentElement();
-        if( !NODE_ATS_PROJECT.equals( atsProjectNode.getNodeName() ) ) {
-            throw new AtsConfigurationException( "Bad ATS configuration file. Root node name is expected to be '"
-                                                 + NODE_ATS_PROJECT + "', but it is '"
-                                                 + atsProjectNode.getNodeName() + "'" );
+        if (!NODE_ATS_PROJECT.equals(atsProjectNode.getNodeName())) {
+            throw new AtsConfigurationException("Bad ATS configuration file. Root node name is expected to be '"
+                                                + NODE_ATS_PROJECT + "', but it is '"
+                                                + atsProjectNode.getNodeName() + "'");
         }
 
         // project with source libraries
-        List<Element> sourceNodes = XmlUtils.getChildrenByTagName( atsProjectNode, NODE_SOURCE_PROJECT );
-        if( sourceNodes.size() != 1 ) {
-            throw new AtsConfigurationException( "Bad ATS configuration file. We must have exactly 1 "
-                                                 + NODE_SOURCE_PROJECT + " node, but we got "
-                                                 + sourceNodes.size() );
+        List<Element> sourceNodes = XmlUtils.getChildrenByTagName(atsProjectNode, NODE_SOURCE_PROJECT);
+        if (sourceNodes.size() != 1) {
+            throw new AtsConfigurationException("Bad ATS configuration file. We must have exactly 1 "
+                                                + NODE_SOURCE_PROJECT + " node, but we got "
+                                                + sourceNodes.size());
         }
-        sourceProject = new AtsSourceProjectInfo( sourceNodes.get( 0 ) );
+        sourceProject = new AtsSourceProjectInfo(sourceNodes.get(0));
 
         // load the default agent values
-        final Map<String, String> agentDefaultValues = readAgentGlobalProperties( atsProjectNode );
+        final Map<String, String> agentDefaultValues = readAgentGlobalProperties(atsProjectNode);
 
         // ATS agents
-        List<Element> agentNodes = XmlUtils.getChildrenByTagName( atsProjectNode, NODE_ATS_AGENT );
-        for( Element agentNode : agentNodes ) {
-            String agentAlias = XmlUtils.getMandatoryAttribute( agentNode, NODE_ATTRIBUTE_ALIAS );
-            if( agents.containsKey( agentAlias ) ) {
-                throw new AtsConfigurationException( "'" + agentAlias + "' is not a unique agent alias" );
+        List<Element> agentNodes = XmlUtils.getChildrenByTagName(atsProjectNode, NODE_ATS_AGENT);
+        for (Element agentNode : agentNodes) {
+            String agentAlias = XmlUtils.getMandatoryAttribute(agentNode, NODE_ATTRIBUTE_ALIAS);
+            if (agents.containsKey(agentAlias)) {
+                throw new AtsConfigurationException("'" + agentAlias + "' is not a unique agent alias");
             }
-            agents.put( agentAlias, new AgentInfo( agentAlias, agentNode, agentDefaultValues ) );
+            agents.put(agentAlias, new AgentInfo(agentAlias, agentNode, agentDefaultValues));
         }
         // make sure we do not have same: host + port or host + path
-        checkForDuplicatedHostAndPort( agents );
-        checkForDuplicatedHostAndHome( agents );
+        checkForDuplicatedHostAndPort(agents);
+        checkForDuplicatedHostAndHome(agents);
 
         // Generic applications
-        List<Element> applicationNodes = XmlUtils.getChildrenByTagName( atsProjectNode, NODE_APPLICATION );
-        for( Element applicationNode : applicationNodes ) {
-            String applicationAlias = XmlUtils.getMandatoryAttribute( applicationNode, NODE_ATTRIBUTE_ALIAS );
-            if( applications.containsKey( applicationAlias ) ) {
-                throw new AtsConfigurationException( "'" + applicationAlias
-                                                     + "' is not a unique application alias" );
+        List<Element> applicationNodes = XmlUtils.getChildrenByTagName(atsProjectNode, NODE_APPLICATION);
+        for (Element applicationNode : applicationNodes) {
+            String applicationAlias = XmlUtils.getMandatoryAttribute(applicationNode, NODE_ATTRIBUTE_ALIAS);
+            if (applications.containsKey(applicationAlias)) {
+                throw new AtsConfigurationException("'" + applicationAlias
+                                                    + "' is not a unique application alias");
             }
-            applications.put( applicationAlias,
-                              new ApplicationInfo( applicationAlias, applicationNode, agentDefaultValues ) );
+            applications.put(applicationAlias,
+                             new ApplicationInfo(applicationAlias, applicationNode, agentDefaultValues));
         }
         // make sure we do not have same: host + port or host + path
-        checkForDuplicatedHostAndPort( applications );
-        checkForDuplicatedHostAndHome( applications );
+        checkForDuplicatedHostAndPort(applications);
+        checkForDuplicatedHostAndHome(applications);
 
         // Shell commands
-        List<Element> shellCommandsNodes = XmlUtils.getChildrenByTagName( atsProjectNode,
-                                                                          NODE_SHELL_COMMANDS );
-        if( shellCommandsNodes.size() > 0 ) {
+        List<Element> shellCommandsNodes = XmlUtils.getChildrenByTagName(atsProjectNode,
+                                                                         NODE_SHELL_COMMANDS);
+        if (shellCommandsNodes.size() > 0) {
 
             // now get the actual commands
-            shellCommandsNodes = XmlUtils.getChildrenByTagName( shellCommandsNodes.get( 0 ), "command" );
-            for( Element commandNode : shellCommandsNodes ) {
+            shellCommandsNodes = XmlUtils.getChildrenByTagName(shellCommandsNodes.get(0), "command");
+            for (Element commandNode : shellCommandsNodes) {
 
-                String shellCommandAlias = XmlUtils.getAttribute( commandNode, NODE_ATTRIBUTE_ALIAS );
+                String shellCommandAlias = XmlUtils.getAttribute(commandNode, NODE_ATTRIBUTE_ALIAS);
                 String theCommand = commandNode.getTextContent();
 
-                shellCommands.add( new ShellCommand( shellCommandAlias, theCommand ) );
+                shellCommands.add(new ShellCommand(shellCommandAlias, theCommand));
             }
         }
     }
@@ -179,26 +179,26 @@ public class AtsProjectConfiguration {
 
         Map<String, String> addresses = new HashMap<String, String>();
 
-        for( AbstractApplicationInfo anyApplicationInfo : anyApplications.values() ) {
+        for (AbstractApplicationInfo anyApplicationInfo : anyApplications.values()) {
             String thisAddress = anyApplicationInfo.getAddress(); // host:port
-            if( addresses.containsKey( thisAddress ) ) {
+            if (addresses.containsKey(thisAddress)) {
                 // we have duplication, generate meaningful user message
                 String thatAlias = null;
-                for( Entry<String, String> addressEntry : addresses.entrySet() ) {
-                    if( addressEntry.getKey().equals( thisAddress ) ) {
+                for (Entry<String, String> addressEntry : addresses.entrySet()) {
+                    if (addressEntry.getKey().equals(thisAddress)) {
                         thatAlias = addressEntry.getValue();
                         break;
                     }
                 }
 
-                throw new AtsConfigurationException( ( anyApplicationInfo instanceof AgentInfo
-                                                                                               ? "Agents"
-                                                                                               : "Applications" )
+                throw new AtsConfigurationException( (anyApplicationInfo instanceof AgentInfo
+                                                                                              ? "Agents"
+                                                                                              : "Applications")
                                                      + " with aliases '" + anyApplicationInfo.getAlias()
                                                      + "' and '" + thatAlias
-                                                     + "' have same host and port values: " + thisAddress );
+                                                     + "' have same host and port values: " + thisAddress);
             } else {
-                addresses.put( thisAddress, anyApplicationInfo.getAlias() );
+                addresses.put(thisAddress, anyApplicationInfo.getAlias());
             }
         }
     }
@@ -208,26 +208,26 @@ public class AtsProjectConfiguration {
 
         Map<String, String> homes = new HashMap<String, String>();
 
-        for( AbstractApplicationInfo anyApplicationInfo : anyApplications.values() ) {
+        for (AbstractApplicationInfo anyApplicationInfo : anyApplications.values()) {
             String thisHome = anyApplicationInfo.getHost() + anyApplicationInfo.getHome(); // host/port
-            if( homes.containsKey( thisHome ) ) {
+            if (homes.containsKey(thisHome)) {
                 // we have duplication, generate meaningful user message
                 String thatAlias = null;
-                for( Entry<String, String> homeEntry : homes.entrySet() ) {
-                    if( homeEntry.getKey().equals( thisHome ) ) {
+                for (Entry<String, String> homeEntry : homes.entrySet()) {
+                    if (homeEntry.getKey().equals(thisHome)) {
                         thatAlias = homeEntry.getValue();
                         break;
                     }
                 }
-                throw new AtsConfigurationException( ( anyApplicationInfo instanceof AgentInfo
-                                                                                               ? "Agents"
-                                                                                               : "Applications" )
+                throw new AtsConfigurationException( (anyApplicationInfo instanceof AgentInfo
+                                                                                              ? "Agents"
+                                                                                              : "Applications")
                                                      + " with aliases '" + anyApplicationInfo.getAlias()
                                                      + "' and '" + thatAlias
                                                      + "' have same host and home folder values: "
-                                                     + thisHome );
+                                                     + thisHome);
             } else {
-                homes.put( thisHome, anyApplicationInfo.getAlias() );
+                homes.put(thisHome, anyApplicationInfo.getAlias());
             }
         }
     }
@@ -237,51 +237,51 @@ public class AtsProjectConfiguration {
 
         Map<String, String> agentGlobalProperties = new HashMap<String, String>();
 
-        List<Element> globalPropertiesNodes = XmlUtils.getChildrenByTagName( atsProjectNode,
-                                                                             NODE_APPLICATION_GLOBAL_PROPERTIES );
-        if( globalPropertiesNodes.size() >= 1 ) {
-            Element globalPropertiesNode = globalPropertiesNodes.get( 0 );
+        List<Element> globalPropertiesNodes = XmlUtils.getChildrenByTagName(atsProjectNode,
+                                                                            NODE_APPLICATION_GLOBAL_PROPERTIES);
+        if (globalPropertiesNodes.size() >= 1) {
+            Element globalPropertiesNode = globalPropertiesNodes.get(0);
 
             // read port
-            List<Element> portElements = XmlUtils.getChildrenByTagName( globalPropertiesNode,
-                                                                        NODE_APPLICATION_GLOBAL_PROPERTY_PORT );
-            if( portElements.size() >= 1 ) {
-                Node portValueNode = portElements.get( 0 ).getFirstChild();
-                if( portValueNode != null ) {
-                    agentGlobalProperties.put( NODE_APPLICATION_GLOBAL_PROPERTY_PORT,
-                                               portValueNode.getNodeValue() );
+            List<Element> portElements = XmlUtils.getChildrenByTagName(globalPropertiesNode,
+                                                                       NODE_APPLICATION_GLOBAL_PROPERTY_PORT);
+            if (portElements.size() >= 1) {
+                Node portValueNode = portElements.get(0).getFirstChild();
+                if (portValueNode != null) {
+                    agentGlobalProperties.put(NODE_APPLICATION_GLOBAL_PROPERTY_PORT,
+                                              portValueNode.getNodeValue());
                 }
             }
 
             // read Unix java executable location
-            List<Element> unixJavaExeElements = XmlUtils.getChildrenByTagName( globalPropertiesNode,
-                                                                               NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC );
-            if( unixJavaExeElements.size() >= 1 ) {
-                Node unixJavaExeValueNode = unixJavaExeElements.get( 0 ).getFirstChild();
-                if( unixJavaExeValueNode != null ) {
-                    agentGlobalProperties.put( NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC,
-                                               unixJavaExeValueNode.getNodeValue() );
+            List<Element> unixJavaExeElements = XmlUtils.getChildrenByTagName(globalPropertiesNode,
+                                                                              NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC);
+            if (unixJavaExeElements.size() >= 1) {
+                Node unixJavaExeValueNode = unixJavaExeElements.get(0).getFirstChild();
+                if (unixJavaExeValueNode != null) {
+                    agentGlobalProperties.put(NODE_APPLICATION_GLOBAL_PROPERTY_UNIX_JAVA_EXEC,
+                                              unixJavaExeValueNode.getNodeValue());
                 }
             }
             // read Windows java executable location
-            List<Element> winJavaExeElements = XmlUtils.getChildrenByTagName( globalPropertiesNode,
-                                                                              NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC );
-            if( winJavaExeElements.size() >= 1 ) {
-                Node winJavaExeValueNode = winJavaExeElements.get( 0 ).getFirstChild();
-                if( winJavaExeValueNode != null ) {
-                    agentGlobalProperties.put( NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC,
-                                               winJavaExeValueNode.getNodeValue() );
+            List<Element> winJavaExeElements = XmlUtils.getChildrenByTagName(globalPropertiesNode,
+                                                                             NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC);
+            if (winJavaExeElements.size() >= 1) {
+                Node winJavaExeValueNode = winJavaExeElements.get(0).getFirstChild();
+                if (winJavaExeValueNode != null) {
+                    agentGlobalProperties.put(NODE_APPLICATION_GLOBAL_PROPERTY_WIN_JAVA_EXEC,
+                                              winJavaExeValueNode.getNodeValue());
                 }
             }
 
             // read Windows startup latency
-            List<Element> winStartupLatencyElements = XmlUtils.getChildrenByTagName( globalPropertiesNode,
-                                                                                     NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY );
-            if( winStartupLatencyElements.size() >= 1 ) {
-                Node winStartupLatencyValueNode = winStartupLatencyElements.get( 0 ).getFirstChild();
-                if( winStartupLatencyValueNode != null ) {
-                    agentGlobalProperties.put( NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY,
-                                               winStartupLatencyValueNode.getNodeValue() );
+            List<Element> winStartupLatencyElements = XmlUtils.getChildrenByTagName(globalPropertiesNode,
+                                                                                    NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY);
+            if (winStartupLatencyElements.size() >= 1) {
+                Node winStartupLatencyValueNode = winStartupLatencyElements.get(0).getFirstChild();
+                if (winStartupLatencyValueNode != null) {
+                    agentGlobalProperties.put(NODE_APPLICATION_GLOBAL_PROPERTY_WIN_STARTUP_LATENCY,
+                                              winStartupLatencyValueNode.getNodeValue());
                 }
             }
         }
@@ -313,35 +313,35 @@ public class AtsProjectConfiguration {
 
         // save the XML file
         try {
-            OutputFormat format = new OutputFormat( doc );
-            format.setIndenting( true );
-            format.setIndent( 4 );
-            format.setLineWidth( 1000 );
+            OutputFormat format = new OutputFormat(doc);
+            format.setIndenting(true);
+            format.setIndent(4);
+            format.setLineWidth(1000);
 
-            XMLSerializer serializer = new XMLSerializer( new FileOutputStream( new File( atsConfigurationFile ) ),
-                                                          format );
-            serializer.serialize( doc );
-        } catch( Exception e ) {
-            throw new AtsConfigurationException( "Error saving ATS configuration in '" + atsConfigurationFile
-                                                 + "'", e );
+            XMLSerializer serializer = new XMLSerializer(new FileOutputStream(new File(atsConfigurationFile)),
+                                                         format);
+            serializer.serialize(doc);
+        } catch (Exception e) {
+            throw new AtsConfigurationException("Error saving ATS configuration in '" + atsConfigurationFile
+                                                + "'", e);
         }
     }
 
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder( "ATS Project Configuration:" );
+        StringBuilder sb = new StringBuilder("ATS Project Configuration:");
 
-        sb.append( "\n" );
-        sb.append( sourceProject.toString() );
+        sb.append("\n");
+        sb.append(sourceProject.toString());
 
-        for( AgentInfo agentInfo : agents.values() ) {
-            sb.append( "\n" );
-            sb.append( agentInfo.toString() );
+        for (AgentInfo agentInfo : agents.values()) {
+            sb.append("\n");
+            sb.append(agentInfo.toString());
         }
-        for( ApplicationInfo applicationInfo : applications.values() ) {
-            sb.append( "\n" );
-            sb.append( applicationInfo.toString() );
+        for (ApplicationInfo applicationInfo : applications.values()) {
+            sb.append("\n");
+            sb.append(applicationInfo.toString());
         }
 
         return sb.toString();

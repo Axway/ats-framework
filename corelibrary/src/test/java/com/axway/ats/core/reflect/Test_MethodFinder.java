@@ -33,208 +33,209 @@ import com.axway.ats.core.reflect.TypeComparisonRule;
 
 public class Test_MethodFinder extends BaseTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class)
     public void classConstructorNegativeNullClass() throws NoSuchMethodException, AmbiguousMethodException {
 
-        new MethodFinder( null );
+        new MethodFinder(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class)
     public void classConstructorNegativePrimitiveType() throws NoSuchMethodException,
-                                                       AmbiguousMethodException {
+                                                        AmbiguousMethodException {
 
-        new MethodFinder( Integer.TYPE );
+        new MethodFinder(Integer.TYPE);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class)
     public void classConstructorNegativeArrayType() throws NoSuchMethodException, AmbiguousMethodException {
 
-        new MethodFinder( ( new byte[]{} ).getClass() );
+        new MethodFinder( (new byte[]{}).getClass());
     }
 
     @Test
     public void findConstructorInClassPositive() throws NoSuchMethodException, AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( FileInputStream.class );
+        MethodFinder methodFinder = new MethodFinder(FileInputStream.class);
 
         //one argument
-        assertNotNull( methodFinder.findConstructor( new Class<?>[]{ File.class } ) );
+        assertNotNull(methodFinder.findConstructor(new Class<?>[]{ File.class }));
 
         //no arguments
-        methodFinder = new MethodFinder( ArrayList.class );
-        assertNotNull( methodFinder.findConstructor( null ) );
+        methodFinder = new MethodFinder(ArrayList.class);
+        assertNotNull(methodFinder.findConstructor(null));
     }
 
-    @Test(expected = NoSuchMethodException.class)
+    @Test( expected = NoSuchMethodException.class)
     public void findConstructorInClassNegative() throws NoSuchMethodException, AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( FileInputStream.class );
+        MethodFinder methodFinder = new MethodFinder(FileInputStream.class);
 
         //one argument
-        methodFinder.findConstructor( new Class<?>[]{} );
+        methodFinder.findConstructor(new Class<?>[]{});
     }
 
     @Test
     public void findMethodWithNamePositive() throws NoSuchMethodException, AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( FileInputStream.class );
+        MethodFinder methodFinder = new MethodFinder(FileInputStream.class);
 
         //null argument
-        assertNotNull( methodFinder.findMethod( "close", null ) );
+        assertNotNull(methodFinder.findMethod("close", null));
 
         //one argument
-        assertNotNull( methodFinder.findMethod( "read", new Class<?>[]{ ( new byte[]{} ).getClass() } ) );
+        assertNotNull(methodFinder.findMethod("read", new Class<?>[]{ (new byte[]{}).getClass() }));
 
         //several arguments
-        assertNotNull( methodFinder.findMethod( "read", new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Integer.TYPE,
-                Integer.TYPE } ) );
+        assertNotNull(methodFinder.findMethod("read", new Class<?>[]{ (new byte[]{}).getClass(),
+                                                                      Integer.TYPE,
+                                                                      Integer.TYPE }));
 
         //unboxing
-        assertNotNull( methodFinder.findMethod( "read", new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Integer.class,
-                Integer.class } ) );
+        assertNotNull(methodFinder.findMethod("read", new Class<?>[]{ (new byte[]{}).getClass(),
+                                                                      Integer.class,
+                                                                      Integer.class }));
 
         //widening conversion
-        assertNotNull( methodFinder.findMethod( "read", new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Byte.class,
-                Short.TYPE } ) );
+        assertNotNull(methodFinder.findMethod("read", new Class<?>[]{ (new byte[]{}).getClass(),
+                                                                      Byte.class,
+                                                                      Short.TYPE }));
     }
 
-    @Test(expected = NoSuchMethodException.class)
+    @Test( expected = NoSuchMethodException.class)
     public void findMethodWithNameNegative() throws NoSuchMethodException, AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( FileInputStream.class );
+        MethodFinder methodFinder = new MethodFinder(FileInputStream.class);
 
         //one argument
-        methodFinder.findMethod( "read123", new Class<?>[]{} );
+        methodFinder.findMethod("read123", new Class<?>[]{});
 
     }
 
     @Test
     public void findMethodPositive() throws NoSuchMethodException, AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( FileInputStream.class );
+        MethodFinder methodFinder = new MethodFinder(FileInputStream.class);
 
         //one argument
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass() } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass() }));
 
         //several arguments
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Integer.TYPE,
-                Integer.TYPE } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass(),
+                                                              Integer.TYPE,
+                                                              Integer.TYPE }));
 
         //unboxing
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Integer.class,
-                Integer.class } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass(),
+                                                              Integer.class,
+                                                              Integer.class }));
 
         //widening conversion
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Byte.class,
-                Short.TYPE } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass(),
+                                                              Byte.class,
+                                                              Short.TYPE }));
     }
 
-    @Test(expected = NoSuchMethodException.class)
+    @Test( expected = NoSuchMethodException.class)
     public void findMethodNegative() throws NoSuchMethodException, AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( FileInputStream.class );
+        MethodFinder methodFinder = new MethodFinder(FileInputStream.class);
 
         //one argument
-        methodFinder.findMethod( new Class<?>[]{ Integer.class, Integer.class, Integer.class } );
+        methodFinder.findMethod(new Class<?>[]{ Integer.class, Integer.class, Integer.class });
 
     }
 
     @Test
     public void findMethodConstructorMethodListPositive() throws NoSuchMethodException,
-                                                         AmbiguousMethodException {
+                                                          AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( "methods",
-                                                      Arrays.asList( FileInputStream.class.getDeclaredMethods() ) );
+        MethodFinder methodFinder = new MethodFinder("methods",
+                                                     Arrays.asList(FileInputStream.class.getDeclaredMethods()));
 
         //one argument
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass() } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass() }));
 
         //several arguments
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Integer.TYPE,
-                Integer.TYPE } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass(),
+                                                              Integer.TYPE,
+                                                              Integer.TYPE }));
 
         //unboxing
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Integer.class,
-                Integer.class } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass(),
+                                                              Integer.class,
+                                                              Integer.class }));
 
         //widening conversion
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ ( new byte[]{} ).getClass(),
-                Byte.class,
-                Short.TYPE } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ (new byte[]{}).getClass(),
+                                                              Byte.class,
+                                                              Short.TYPE }));
     }
 
-    @Test(expected = NoSuchMethodException.class)
+    @Test( expected = NoSuchMethodException.class)
     public void findMethodConstructorMethodListNegative() throws NoSuchMethodException,
-                                                         AmbiguousMethodException {
+                                                          AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( "methods",
-                                                      Arrays.asList( FileInputStream.class.getDeclaredMethods() ) );
+        MethodFinder methodFinder = new MethodFinder("methods",
+                                                     Arrays.asList(FileInputStream.class.getDeclaredMethods()));
 
         //one argument
-        methodFinder.findMethod( new Class<?>[]{ Integer.class, Integer.class, Integer.class } );
+        methodFinder.findMethod(new Class<?>[]{ Integer.class, Integer.class, Integer.class });
 
     }
 
-    @Test(expected = AmbiguousMethodException.class)
+    @Test( expected = AmbiguousMethodException.class)
     public void findMethodConstructorMethodListNegativeAmbigous() throws NoSuchMethodException,
-                                                                 AmbiguousMethodException {
+                                                                  AmbiguousMethodException {
 
-        MethodFinder methodFinder = new MethodFinder( "ambiguous",
-                                                      Arrays.asList( MethodFinderTester.class.getDeclaredMethods() ) );
+        MethodFinder methodFinder = new MethodFinder("ambiguous",
+                                                     Arrays.asList(MethodFinderTester.class.getDeclaredMethods()));
 
         //no arguments
-        methodFinder.findMethod( "ambiguousMethod", new Class<?>[]{ Void.TYPE } );
+        methodFinder.findMethod("ambiguousMethod", new Class<?>[]{ Void.TYPE });
     }
 
     @Test
     public void findMethodConstructorMethodListCustomRulesPositive() throws NoSuchMethodException,
-                                                                    AmbiguousMethodException {
+                                                                     AmbiguousMethodException {
 
         List<TypeComparisonRule> typeComparisonRules = new ArrayList<TypeComparisonRule>();
-        typeComparisonRules.add( new CustomTypeComparisonRule() );
+        typeComparisonRules.add(new CustomTypeComparisonRule());
 
-        MethodFinder methodFinder = new MethodFinder( "methods",
-                                                      Arrays.asList( MethodFinderTester.class.getDeclaredMethods() ),
-                                                      typeComparisonRules );
+        MethodFinder methodFinder = new MethodFinder("methods",
+                                                     Arrays.asList(MethodFinderTester.class.getDeclaredMethods()),
+                                                     typeComparisonRules);
 
         //one argument - this argument will be evaulated as String in our custom rule
-        assertNotNull( methodFinder.findMethod( new Class<?>[]{ Test_MethodFinder.class } ) );
+        assertNotNull(methodFinder.findMethod(new Class<?>[]{ Test_MethodFinder.class }));
     }
 
     @Test
     public void getParameterTypesFromPositive() {
 
         //no arguments
-        Assert.assertArrayEquals( new Class<?>[]{}, MethodFinder.getParameterTypesFrom( new Object[]{} ) );
+        Assert.assertArrayEquals(new Class<?>[]{}, MethodFinder.getParameterTypesFrom(new Object[]{}));
 
         //two parameters and null
-        Assert.assertArrayEquals( new Class<?>[]{ String.class, Void.TYPE, Integer.class },
-                      MethodFinder.getParameterTypesFrom( new Object[]{ new String( "adf" ), null, 3 } ) );
+        Assert.assertArrayEquals(new Class<?>[]{ String.class, Void.TYPE, Integer.class },
+                                 MethodFinder.getParameterTypesFrom(new Object[]{ new String("adf"), null, 3 }));
     }
 
     @Test
     public void getParameterTypesFromByClassNamePositive() throws ClassNotFoundException {
 
         //two parameters
-        Assert.assertArrayEquals( new Class<?>[]{ Byte.TYPE, String.class },
-                      MethodFinder.getParameterTypesFrom( new String[]{ "byte", "java.lang.String" } ) );
+        Assert.assertArrayEquals(new Class<?>[]{ Byte.TYPE, String.class },
+                                 MethodFinder.getParameterTypesFrom(new String[]{ "byte", "java.lang.String" }));
     }
 
     @Test
     public void getParameterTypesFromByClassNameClassLoaderPositive() throws ClassNotFoundException {
 
         //two parameters
-        Assert.assertArrayEquals( new Class<?>[]{ Byte.TYPE, Test_MethodFinder.class },
-                      MethodFinder.getParameterTypesFrom( new String[]{ "byte",
-                              Test_MethodFinder.class.getName() }, Test_MethodFinder.class.getClassLoader() ) );
+        Assert.assertArrayEquals(new Class<?>[]{ Byte.TYPE, Test_MethodFinder.class },
+                                 MethodFinder.getParameterTypesFrom(new String[]{ "byte",
+                                                                                  Test_MethodFinder.class.getName() },
+                                                                    Test_MethodFinder.class.getClassLoader()));
     }
 
     private static class CustomTypeComparisonRule implements TypeComparisonRule {
@@ -243,7 +244,7 @@ public class Test_MethodFinder extends BaseTest {
                                      Class<?> argType,
                                      Class<?> parameterType ) {
 
-            if( argType == Test_MethodFinder.class && parameterType == String.class ) {
+            if (argType == Test_MethodFinder.class && parameterType == String.class) {
                 return true;
             }
 

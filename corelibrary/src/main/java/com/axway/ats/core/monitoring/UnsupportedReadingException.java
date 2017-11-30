@@ -18,7 +18,7 @@ package com.axway.ats.core.monitoring;
 /**
  * Thrown whenever there is a request for an unsupported reading type
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class UnsupportedReadingException extends RuntimeException {
 
     /**
@@ -27,7 +27,7 @@ public class UnsupportedReadingException extends RuntimeException {
      */
     public UnsupportedReadingException( String readingName ) {
 
-        super( "Reading '" + readingName + "' is not supported" );
+        super("Reading '" + readingName + "' is not supported");
     }
 
 }

@@ -29,7 +29,7 @@ import com.axway.ats.core.validation.ValidationType;
  */
 public class TypeFactory {
     private static TypeFactory  factory            = null;
-    private static Logger       log                = Logger.getLogger( TypeFactory.class );
+    private static Logger       log                = Logger.getLogger(TypeFactory.class);
     private static final String UNSUPPORTED_TYPE   = "The factory has encountered an unsupported validation type. ";
     private static final String ARGUMENTS_REQUIRED = "This validation type requires arguments to be passed. ";
 
@@ -49,7 +49,7 @@ public class TypeFactory {
      */
     public static synchronized TypeFactory getInstance() {
 
-        if( factory == null ) {
+        if (factory == null) {
             factory = new TypeFactory();
         }
 
@@ -70,7 +70,7 @@ public class TypeFactory {
                                                        ValidationType type,
                                                        Object value ) {
 
-        return createValidationType( type, null, value, null );
+        return createValidationType(type, null, value, null);
     }
 
     /**
@@ -92,7 +92,7 @@ public class TypeFactory {
                                                        Object value,
                                                        Object[] args ) {
 
-        return createValidationType( type, null, value, args );
+        return createValidationType(type, null, value, args);
     }
 
     /**
@@ -110,7 +110,7 @@ public class TypeFactory {
                                                        String paramName,
                                                        Object value ) {
 
-        return createValidationType( type, paramName, value, null );
+        return createValidationType(type, paramName, value, null);
     }
 
     /**
@@ -133,83 +133,83 @@ public class TypeFactory {
                                                        Object value,
                                                        Object[] args ) {
 
-        if( !this.checkRequirements( type, args ) ) {
-            log.error( ARGUMENTS_REQUIRED );
+        if (!this.checkRequirements(type, args)) {
+            log.error(ARGUMENTS_REQUIRED);
             return null;
         }
 
-        switch( type ){
+        switch (type) {
             case NONE:
-                return new TypeNone( paramName, value, args );
+                return new TypeNone(paramName, value, args);
 
             case NOT_NULL:
-                return new TypeObject( paramName, value, args );
+                return new TypeObject(paramName, value, args);
 
-                // --- STRING TYPES ---
+            // --- STRING TYPES ---
 
             case STRING_NOT_EMPTY:
-                return new TypeString( paramName, value, args );
+                return new TypeString(paramName, value, args);
             case STRING_EMAIL_ADDRESS:
-                return new TypeEmailAddress( paramName, value, args );
+                return new TypeEmailAddress(paramName, value, args);
             case STRING_CONSTANT:
-                return new TypeStringConstant( paramName, value, args );
+                return new TypeStringConstant(paramName, value, args);
             case STRING_CONSTANT_IGNORE_CASE:
-                return new TypeStringConstant( paramName, value, args, true );
+                return new TypeStringConstant(paramName, value, args, true);
             case STRING_CIDR:
-                return new TypeStringCIDR( paramName, value, args );
-                // validation throughout Regular expressions
+                return new TypeStringCIDR(paramName, value, args);
+            // validation throughout Regular expressions
             case STRING_NO_WHITESPACES:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.WHITESPACE );
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.WHITESPACE);
             case STRING_NO_DOUBLEQUOTED_WHITESPACE:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.DOUBLE_QUOTED_WHITESPACE );
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.DOUBLE_QUOTED_WHITESPACE);
             case STRING_IP:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.IPv4_ADDRESS );
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.IPv4_ADDRESS);
             case STRING_HOST_NAME:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.HOSTNAME );
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.HOSTNAME);
             case STRING_DOMAIN_NAME:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.DOMAIN );
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.DOMAIN);
             case STRING_DOMAIN_OR_SUBDOMAIN:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.DOMAIN_OR_SUBDOMAIN );
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.DOMAIN_OR_SUBDOMAIN);
             case STRING_DATE:
-                return new TypeRegex( paramName, value, args, TypeRegex.RegexType.DATE );
-                // multiple validations required
+                return new TypeRegex(paramName, value, args, TypeRegex.RegexType.DATE);
+            // multiple validations required
             case STRING_EXISTING_FILE:
-                return new TypeStringFilename( paramName, value, args );
+                return new TypeStringFilename(paramName, value, args);
             case STRING_SERVER_ADDRESS:
-                return new TypeServerName( paramName, value, args, false, false );
+                return new TypeServerName(paramName, value, args, false, false);
             case STRING_SERVER_WITH_PORT:
-                return new TypeServerName( paramName, value, args, true, false );
+                return new TypeServerName(paramName, value, args, true, false);
             case STRING_SERVER_OR_CIDR:
-                return new TypeServerName( paramName, value, args, false, true );
+                return new TypeServerName(paramName, value, args, false, true);
 
-                // --- NUMBER TYPES ---
+            // --- NUMBER TYPES ---
 
             case NUMBER_WITHIN_RANGE:
-                return new TypeRange( paramName, value, args );
+                return new TypeRange(paramName, value, args);
             case NUMBER_GREATER_THAN:
-                return new TypeRange( paramName, value, new Object[]{ args[0], Double.MAX_VALUE } );
+                return new TypeRange(paramName, value, new Object[]{ args[0], Double.MAX_VALUE });
             case NUMBER_PORT_NUMBER:
-                return new TypeRange( paramName, value, new Object[]{ LOWEST_PORT, HIGHEST_PORT } );
+                return new TypeRange(paramName, value, new Object[]{ LOWEST_PORT, HIGHEST_PORT });
             case NUMBER_GREATER_THAN_ZERO:
-                return new TypeRange( paramName, value, new Object[]{ 1, Double.MAX_VALUE } );
+                return new TypeRange(paramName, value, new Object[]{ 1, Double.MAX_VALUE });
             case NUMBER_POSITIVE:
-                return new TypeRange( paramName, value, new Object[]{ 0, Double.MAX_VALUE } );
+                return new TypeRange(paramName, value, new Object[]{ 0, Double.MAX_VALUE });
             case NUMBER_TIMESTAMP_FULL_DAY:
-                return new TypeTimestamp( paramName, value, args, true );
+                return new TypeTimestamp(paramName, value, args, true);
             case NUMBER_TIMESTAMP_FULL_HOUR:
-                return new TypeTimestamp( paramName, value, args );
+                return new TypeTimestamp(paramName, value, args);
             case NUMBER_CONSTANT:
-                return new TypeNumberConstant( paramName, value, args );
+                return new TypeNumberConstant(paramName, value, args);
 
-                // --- RESOURCE TYPES ---
+            // --- RESOURCE TYPES ---
 
             case FILE_EXISTING:
-                return new TypeFile( paramName, value, args );
+                return new TypeFile(paramName, value, args);
             case INPUT_STREAM_NOT_EMPTY:
-                return new TypeInputStream( paramName, value, args );
+                return new TypeInputStream(paramName, value, args);
 
             default:
-                log.fatal( UNSUPPORTED_TYPE );
+                log.fatal(UNSUPPORTED_TYPE);
         }
 
         return null;
@@ -221,16 +221,16 @@ public class TypeFactory {
                                        Object[] args ) {
 
         int numberOfArguments = args != null
-                                            ? args.length
-                                            : 0;
-        if( numberOfArguments < 2 ) {
-            if( numberOfArguments < 1 ) {
-                if( type == ValidationType.NUMBER_GREATER_THAN || type == ValidationType.STRING_CONSTANT
-                    || type == ValidationType.NUMBER_CONSTANT ) {
+                                             ? args.length
+                                             : 0;
+        if (numberOfArguments < 2) {
+            if (numberOfArguments < 1) {
+                if (type == ValidationType.NUMBER_GREATER_THAN || type == ValidationType.STRING_CONSTANT
+                    || type == ValidationType.NUMBER_CONSTANT) {
                     return false;
                 }
             }
-            if( type == ValidationType.NUMBER_WITHIN_RANGE ) {
+            if (type == ValidationType.NUMBER_WITHIN_RANGE) {
                 return false;
             }
 

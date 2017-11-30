@@ -45,7 +45,7 @@ public class SPNegoScheme extends GGSSchemeBase {
                          String servicePrincipalName,
                          Oid servicePrincipalOid ) {
 
-        super( client, servicePrincipalName, servicePrincipalOid );
+        super(client, servicePrincipalName, servicePrincipalOid);
     }
 
     public String getSchemeName() {
@@ -71,14 +71,14 @@ public class SPNegoScheme extends GGSSchemeBase {
                                 final HttpRequest request,
                                 final HttpContext context ) throws AuthenticationException {
 
-        return super.authenticate( credentials, request, context );
+        return super.authenticate(credentials, request, context);
     }
 
     @Override
     protected byte[] generateToken(
                                     final byte[] input ) throws GSSException {
 
-        return generateGSSToken( input, new Oid( SPNEGO_OID ) );
+        return generateGSSToken(input, new Oid(SPNEGO_OID));
     }
 
     /**
@@ -90,8 +90,8 @@ public class SPNegoScheme extends GGSSchemeBase {
     public String getParameter(
                                 String name ) {
 
-        if( name == null ) {
-            throw new IllegalArgumentException( "Parameter name may not be null" );
+        if (name == null) {
+            throw new IllegalArgumentException("Parameter name may not be null");
         }
         return null;
     }

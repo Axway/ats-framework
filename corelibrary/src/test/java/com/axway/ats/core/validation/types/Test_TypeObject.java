@@ -45,7 +45,7 @@ public class Test_TypeObject extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -56,7 +56,7 @@ public class Test_TypeObject extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, VALID_OBJECT ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, null ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, VALID_OBJECT));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, null));
     }
 }

@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  */
 public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
 
-    private static final Logger                 log                                = Logger.getLogger( TestcaseStateEventsDispacher.class );
+    private static final Logger                 log                                = Logger.getLogger(TestcaseStateEventsDispacher.class);
 
     private static TestcaseStateEventsDispacher instance;
 
@@ -41,27 +41,27 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
 
         try {
             // try to load a class from Agent WS CLIENT library
-            Class<?> testcaseStateListenerClass = Class.forName( TESTCASE_STATE_LISTENER_CLASS_NAME );
-            Method method = testcaseStateListenerClass.getMethod( "getInstance", new Class[0] );
-            testcaseStateListener = ( ITestcaseStateListener ) method.invoke( null, new Object[0] );
+            Class<?> testcaseStateListenerClass = Class.forName(TESTCASE_STATE_LISTENER_CLASS_NAME);
+            Method method = testcaseStateListenerClass.getMethod("getInstance", new Class[0]);
+            testcaseStateListener = (ITestcaseStateListener) method.invoke(null, new Object[0]);
 
-        } catch( ClassNotFoundException e ) {
-
-            testcaseStateListener = null;
-            log.info( "Class '" + TESTCASE_STATE_LISTENER_CLASS_NAME
-                      + "' not found. It seems that ats-agent-webapp-client-nnn.jar is not in the classpath. This means you will get no messages from any ATS agent called by your code running on this host" );
-        } catch( Exception e ) {
+        } catch (ClassNotFoundException e) {
 
             testcaseStateListener = null;
-            log.info( "Initialization of class '" + TESTCASE_STATE_LISTENER_CLASS_NAME
-                      + "' failed. This means you will get no messages from any ATS agent called by your code running on this host",
-                      e );
+            log.info("Class '" + TESTCASE_STATE_LISTENER_CLASS_NAME
+                     + "' not found. It seems that ats-agent-webapp-client-nnn.jar is not in the classpath. This means you will get no messages from any ATS agent called by your code running on this host");
+        } catch (Exception e) {
+
+            testcaseStateListener = null;
+            log.info("Initialization of class '" + TESTCASE_STATE_LISTENER_CLASS_NAME
+                     + "' failed. This means you will get no messages from any ATS agent called by your code running on this host",
+                     e);
         }
     }
 
     synchronized public static TestcaseStateEventsDispacher getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new TestcaseStateEventsDispacher();
         }
 
@@ -72,7 +72,7 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
     public void onTestStart() {
 
         atLeastOneQueueFailed = false;
-        if( testcaseStateListener != null ) {
+        if (testcaseStateListener != null) {
             testcaseStateListener.onTestStart();
         }
     }
@@ -80,7 +80,7 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
     @Override
     public void onTestEnd() {
 
-        if( testcaseStateListener != null ) {
+        if (testcaseStateListener != null) {
             testcaseStateListener.onTestEnd();
         }
     }
@@ -88,8 +88,8 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
 
-        if( testcaseStateListener != null ) {
-            testcaseStateListener.onConfigureAtsAgents( atsAgents );
+        if (testcaseStateListener != null) {
+            testcaseStateListener.onConfigureAtsAgents(atsAgents);
         }
     }
 
@@ -99,7 +99,7 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
      */
     public void setQueueFinishedAsFailed( boolean isFailed ) {
 
-        if( isFailed ) {
+        if (isFailed) {
             atLeastOneQueueFailed = true;
         }
     }
@@ -115,8 +115,8 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
     @Override
     public void cleanupInternalObjectResources( String atsAgent, String internalObjectResourceId ) {
 
-        if( testcaseStateListener != null ) {
-            testcaseStateListener.cleanupInternalObjectResources( atsAgent, internalObjectResourceId );
+        if (testcaseStateListener != null) {
+            testcaseStateListener.cleanupInternalObjectResources(atsAgent, internalObjectResourceId);
         }
     }
 }

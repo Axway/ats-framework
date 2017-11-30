@@ -37,9 +37,9 @@ public abstract class SkipContentMatcher {
 
         public String getDescription() {
 
-            if( this == TEXT ) {
+            if (this == TEXT) {
                 return "exact text";
-            } else if( this == CONTAINS_TEXT ) {
+            } else if (this == CONTAINS_TEXT) {
                 return "contains text";
             } else {
                 return "regullar expression";

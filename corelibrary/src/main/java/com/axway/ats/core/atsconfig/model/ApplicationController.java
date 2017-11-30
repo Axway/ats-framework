@@ -31,66 +31,66 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class ApplicationController extends AbstractApplicationController {
 
-    private static AbstractAtsLogger log = AbstractAtsLogger.getDefaultInstance( ApplicationController.class );
+    private static AbstractAtsLogger log = AbstractAtsLogger.getDefaultInstance(ApplicationController.class);
 
     public ApplicationController( ApplicationInfo applicationInfo ) {
 
-        super( applicationInfo );
+        super(applicationInfo);
     }
 
     @Override
     public ApplicationStatus getStatus( JschSshClient sshClient,
                                         boolean isTopLevelAction ) throws AtsManagerException {
 
-        if( isTopLevelAction ) {
-            log.info( TOP_LEVEL_ACTION_PREFIX + "Check status of " + anyApplicationInfo.description );
+        if (isTopLevelAction) {
+            log.info(TOP_LEVEL_ACTION_PREFIX + "Check status of " + anyApplicationInfo.description);
         } else {
-            log.debug( "Check status of " + anyApplicationInfo.description );
+            log.debug("Check status of " + anyApplicationInfo.description);
         }
 
         // check if running and available via some URL
-        if( isURLAvailable( ( ApplicationInfo ) anyApplicationInfo ) ) {
+        if (isURLAvailable((ApplicationInfo) anyApplicationInfo)) {
             return ApplicationStatus.STARTED;
         }
 
         // not available via URL
         // check if deployed at all
-        if( !isApplicationInstalled( ( ApplicationInfo ) anyApplicationInfo ) ) {
+        if (!isApplicationInstalled((ApplicationInfo) anyApplicationInfo)) {
 
             return ApplicationStatus.NOT_INSTALLED;
         }
 
         // it is deployed, but not available via URL
         String statusShellCommand = anyApplicationInfo.getStatusCommand();
-        if( statusShellCommand != null ) {
+        if (statusShellCommand != null) {
             try {
-                sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                                   anyApplicationInfo.host, anyApplicationInfo.sshPort );
+                sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                                  anyApplicationInfo.host, anyApplicationInfo.sshPort);
 
-                int exitCode = sshClient.execute( statusShellCommand, true );
-                if( exitCode == 0 ) {
+                int exitCode = sshClient.execute(statusShellCommand, true);
+                if (exitCode == 0) {
 
                     String stdoutSearchToken = anyApplicationInfo.getStatusCommandStdOutSearchToken();
-                    if( stdoutSearchToken != null ) {
-                        if( Pattern.compile( stdoutSearchToken, Pattern.DOTALL )
-                                   .matcher( sshClient.getStandardOutput() )
-                                   .matches() ) {
+                    if (stdoutSearchToken != null) {
+                        if (Pattern.compile(stdoutSearchToken, Pattern.DOTALL)
+                                   .matcher(sshClient.getStandardOutput())
+                                   .matches()) {
 
                             // the application is running but still not accessible via URL, 
                             // maybe it is just starting or there is some problem starting - so let's wait a little longer
-                            if( isURLAvailable( ( ApplicationInfo ) anyApplicationInfo, 60 ) ) {
+                            if (isURLAvailable((ApplicationInfo) anyApplicationInfo, 60)) {
                                 // it got successfully started within the timeout period
                                 return ApplicationStatus.STARTED;
                             } else {
                                 // it will not get started, there is some problem
-                                log.warn( anyApplicationInfo.description
-                                          + " is running, but it is not available for remote connections. You can check its configuration and log files for more details." );
+                                log.warn(anyApplicationInfo.description
+                                         + " is running, but it is not available for remote connections. You can check its configuration and log files for more details.");
                                 return ApplicationStatus.STOPPED;
                             }
                         } else {
-                            log.warn( "Execution of '" + statusShellCommand + "' completed with exit code "
-                                      + exitCode + ", but we did not match the expected '" + stdoutSearchToken
-                                      + "' in STD OUT" );
+                            log.warn("Execution of '" + statusShellCommand + "' completed with exit code "
+                                     + exitCode + ", but we did not match the expected '" + stdoutSearchToken
+                                     + "' in STD OUT");
                             return ApplicationStatus.STOPPED;
                         }
                     } else {
@@ -98,13 +98,13 @@ public class ApplicationController extends AbstractApplicationController {
                         return ApplicationStatus.STARTED;
                     }
                 } else {
-                    log.warn( "Execution of '" + statusShellCommand + "' completed with exit code "
-                              + exitCode );
+                    log.warn("Execution of '" + statusShellCommand + "' completed with exit code "
+                             + exitCode);
                     return ApplicationStatus.STOPPED;
                 }
             } finally {
 
-                if( isTopLevelAction ) {
+                if (isTopLevelAction) {
                     sshClient.disconnect();
                 }
             }
@@ -120,65 +120,65 @@ public class ApplicationController extends AbstractApplicationController {
         JschSshClient sshClient = new JschSshClient();
         try {
             // it must be stopped, before we try to start it
-            ApplicationStatus status = getStatus( sshClient, false );
-            if( status != ApplicationStatus.STOPPED ) {
-                log.error( ( isTopLevelAction
-                                              ? TOP_LEVEL_ACTION_PREFIX
-                                              : "" )
+            ApplicationStatus status = getStatus(sshClient, false);
+            if (status != ApplicationStatus.STOPPED) {
+                log.error( (isTopLevelAction
+                                             ? TOP_LEVEL_ACTION_PREFIX
+                                             : "")
                            + "We will not try to start " + anyApplicationInfo.description
-                           + " as it is currently " + status.name() );
+                           + " as it is currently " + status.name());
                 return status;
             }
 
             // connect
             String command = anyApplicationInfo.getStartCommand();
-            log.info( ( isTopLevelAction
-                                         ? TOP_LEVEL_ACTION_PREFIX
-                                         : "" )
-                      + "Now we will try to start " + anyApplicationInfo.description + " with: " + command );
-            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                               anyApplicationInfo.host, anyApplicationInfo.sshPort );
+            log.info( (isTopLevelAction
+                                        ? TOP_LEVEL_ACTION_PREFIX
+                                        : "")
+                      + "Now we will try to start " + anyApplicationInfo.description + " with: " + command);
+            sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                              anyApplicationInfo.host, anyApplicationInfo.sshPort);
 
             // execute shell command
-            int commandExitCode = sshClient.execute( command, true );
+            int commandExitCode = sshClient.execute(command, true);
 
             // check exit code
             // check if there is something in STD ERR
             boolean isStartedOk = false;
-            if( commandExitCode == 0 && StringUtils.isNullOrEmpty( sshClient.getErrorOutput() ) ) {
+            if (commandExitCode == 0 && StringUtils.isNullOrEmpty(sshClient.getErrorOutput())) {
 
                 String stdoutSearchToken = anyApplicationInfo.getStartCommandStdOutSearchToken();
-                if( stdoutSearchToken != null ) {
+                if (stdoutSearchToken != null) {
                     // we confirm the success by a token in STD OUT
-                    if( Pattern.compile( stdoutSearchToken, Pattern.DOTALL )
-                               .matcher( sshClient.getStandardOutput() )
-                               .matches() ) {
+                    if (Pattern.compile(stdoutSearchToken, Pattern.DOTALL)
+                               .matcher(sshClient.getStandardOutput())
+                               .matches()) {
                         isStartedOk = true;
                     } else {
-                        log.error( "Execution of '" + command + "' completed with exit code "
-                                   + commandExitCode + " and empty STD ERR, but we did not get the expected '"
-                                   + stdoutSearchToken + "' in STD OUT" );
+                        log.error("Execution of '" + command + "' completed with exit code "
+                                  + commandExitCode + " and empty STD ERR, but we did not get the expected '"
+                                  + stdoutSearchToken + "' in STD OUT");
                     }
                 } else {
                     // we confirm the success by checking the status again
-                    if( getStatus( sshClient, false ) == ApplicationStatus.STARTED ) {
+                    if (getStatus(sshClient, false) == ApplicationStatus.STARTED) {
                         isStartedOk = true;
                     }
                 }
             }
 
-            if( isStartedOk ) {
-                log.info( ( isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "" )
-                          + anyApplicationInfo.description + " is successfully started" );
+            if (isStartedOk) {
+                log.info( (isTopLevelAction
+                                            ? TOP_LEVEL_ACTION_PREFIX
+                                            : "")
+                          + anyApplicationInfo.description + " is successfully started");
 
-                executePostActionShellCommand( anyApplicationInfo, "START",
-                                               anyApplicationInfo.getPostStartShellCommand() );
+                executePostActionShellCommand(anyApplicationInfo, "START",
+                                              anyApplicationInfo.getPostStartShellCommand());
                 return ApplicationStatus.STARTED;
             } else {
-                throw new AtsManagerException( "Can't start " + anyApplicationInfo.description + "\n"
-                                               + sshClient.getLastCommandExecutionResult() );
+                throw new AtsManagerException("Can't start " + anyApplicationInfo.description + "\n"
+                                              + sshClient.getLastCommandExecutionResult());
             }
         } finally {
 
@@ -192,64 +192,64 @@ public class ApplicationController extends AbstractApplicationController {
         JschSshClient sshClient = new JschSshClient();
         try {
             // it must be started, before we try to stop it
-            ApplicationStatus status = getStatus( sshClient, false );
-            if( status != ApplicationStatus.STARTED ) {
-                log.error( ( isTopLevelAction
-                                              ? TOP_LEVEL_ACTION_PREFIX
-                                              : "" )
+            ApplicationStatus status = getStatus(sshClient, false);
+            if (status != ApplicationStatus.STARTED) {
+                log.error( (isTopLevelAction
+                                             ? TOP_LEVEL_ACTION_PREFIX
+                                             : "")
                            + "We will not try to stop " + anyApplicationInfo.description
-                           + " as it is currently " + status.name() );
+                           + " as it is currently " + status.name());
                 return status;
             }
 
             // connect
             String command = anyApplicationInfo.getStopCommand();
-            log.info( ( isTopLevelAction
-                                         ? TOP_LEVEL_ACTION_PREFIX
-                                         : "" )
-                      + "Now we will try to stop " + anyApplicationInfo.description + " with: " + command );
-            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                               anyApplicationInfo.host, anyApplicationInfo.sshPort );
+            log.info( (isTopLevelAction
+                                        ? TOP_LEVEL_ACTION_PREFIX
+                                        : "")
+                      + "Now we will try to stop " + anyApplicationInfo.description + " with: " + command);
+            sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                              anyApplicationInfo.host, anyApplicationInfo.sshPort);
 
             // execute shell command
-            int commandExitCode = sshClient.execute( command, true );
+            int commandExitCode = sshClient.execute(command, true);
 
             // check exit code
             // check if there is something in STD ERR
             boolean isStoppedOk = false;
-            if( commandExitCode == 0 && StringUtils.isNullOrEmpty( sshClient.getErrorOutput() ) ) {
+            if (commandExitCode == 0 && StringUtils.isNullOrEmpty(sshClient.getErrorOutput())) {
 
                 String stdoutSearchToken = anyApplicationInfo.getStopCommandStdOutSearchToken();
-                if( stdoutSearchToken != null ) {
+                if (stdoutSearchToken != null) {
                     // we confirm the success by a token in STD OUT
-                    if( Pattern.compile( stdoutSearchToken, Pattern.DOTALL )
-                               .matcher( sshClient.getStandardOutput() )
-                               .matches() ) {
+                    if (Pattern.compile(stdoutSearchToken, Pattern.DOTALL)
+                               .matcher(sshClient.getStandardOutput())
+                               .matches()) {
                         isStoppedOk = true;
                     } else {
-                        log.error( "Execution of '" + command + "' completed with exit code "
-                                   + commandExitCode + " and empty STD ERR, but we did not get the expected '"
-                                   + stdoutSearchToken + "' in STD OUT" );
+                        log.error("Execution of '" + command + "' completed with exit code "
+                                  + commandExitCode + " and empty STD ERR, but we did not get the expected '"
+                                  + stdoutSearchToken + "' in STD OUT");
                     }
                 } else {
                     // we confirm the success by checking the status again
-                    if( getStatus( sshClient, false ) == ApplicationStatus.STOPPED ) {
+                    if (getStatus(sshClient, false) == ApplicationStatus.STOPPED) {
                         isStoppedOk = true;
                     }
                 }
             }
 
-            if( isStoppedOk ) {
-                log.info( ( isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "" )
-                          + anyApplicationInfo.description + " is successfully stopped" );
-                executePostActionShellCommand( anyApplicationInfo, "STOP",
-                                               anyApplicationInfo.getPostStopShellCommand() );
+            if (isStoppedOk) {
+                log.info( (isTopLevelAction
+                                            ? TOP_LEVEL_ACTION_PREFIX
+                                            : "")
+                          + anyApplicationInfo.description + " is successfully stopped");
+                executePostActionShellCommand(anyApplicationInfo, "STOP",
+                                              anyApplicationInfo.getPostStopShellCommand());
                 return ApplicationStatus.STOPPED;
             } else {
-                throw new AtsManagerException( "Can't stop " + anyApplicationInfo.description + "\n"
-                                               + sshClient.getLastCommandExecutionResult() );
+                throw new AtsManagerException("Can't stop " + anyApplicationInfo.description + "\n"
+                                              + sshClient.getLastCommandExecutionResult());
             }
         } finally {
 
@@ -260,25 +260,25 @@ public class ApplicationController extends AbstractApplicationController {
     @Override
     public ApplicationStatus restart() throws AtsManagerException {
 
-        throw new AtsManagerException( "Not implemented" );
+        throw new AtsManagerException("Not implemented");
 
     }
 
     private boolean isURLAvailable( ApplicationInfo anyApplicationInfo, int timeout ) {
 
-        log.info( "We will wait up to " + timeout + " seconds for " + anyApplicationInfo.description
-                  + " to get remotely available" );
+        log.info("We will wait up to " + timeout + " seconds for " + anyApplicationInfo.description
+                 + " to get remotely available");
 
-        long nanoTimeout = TimeUnit.SECONDS.toNanos( timeout );
+        long nanoTimeout = TimeUnit.SECONDS.toNanos(timeout);
         long startTime = System.nanoTime();
-        while( ( System.nanoTime() - startTime ) < nanoTimeout ) {
+        while ( (System.nanoTime() - startTime) < nanoTimeout) {
 
-            if( isURLAvailable( anyApplicationInfo ) ) {
+            if (isURLAvailable(anyApplicationInfo)) {
                 return true;
             }
             try {
-                Thread.sleep( 1000 );
-            } catch( InterruptedException e ) {}
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
         }
 
         return false;
@@ -288,39 +288,39 @@ public class ApplicationController extends AbstractApplicationController {
 
         String urlString = anyApplicationInfo.getStatusCommandUrl();
         try {
-            URL url = new URL( urlString );
-            HttpURLConnection httpConnection = ( HttpURLConnection ) url.openConnection();
-            httpConnection.setConnectTimeout( 10000 );
-            httpConnection.setRequestMethod( "GET" );
+            URL url = new URL(urlString);
+            HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+            httpConnection.setConnectTimeout(10000);
+            httpConnection.setRequestMethod("GET");
             httpConnection.connect();
 
             final int responseCode = httpConnection.getResponseCode();
-            if( responseCode == 200 ) {
+            if (responseCode == 200) {
                 // was able to read from the URL
                 final String verificationToken = anyApplicationInfo.getStatusCommandUrlSearchToken();
-                if( verificationToken != null ) {
+                if (verificationToken != null) {
                     // check if the response contains the expected token
-                    final String responseBody = IoUtils.streamToString( ( ( InputStream ) httpConnection.getContent() ) );
-                    log.debug( "Get '" + urlString + "' returned:\n" + responseBody );
-                    if( !responseBody.contains( verificationToken ) ) {
-                        log.warn( anyApplicationInfo.description
-                                  + " is not available for remote connections. Accessing " + urlString
-                                  + " returns '" + responseCode + ": " + responseBody + "'" );
+                    final String responseBody = IoUtils.streamToString( ((InputStream) httpConnection.getContent()));
+                    log.debug("Get '" + urlString + "' returned:\n" + responseBody);
+                    if (!responseBody.contains(verificationToken)) {
+                        log.warn(anyApplicationInfo.description
+                                 + " is not available for remote connections. Accessing " + urlString
+                                 + " returns '" + responseCode + ": " + responseBody + "'");
                         return false;
                     }
                 }
-                log.info( anyApplicationInfo.description + " is available for remote connections" );
+                log.info(anyApplicationInfo.description + " is available for remote connections");
                 return true;
             } else {
-                log.warn( anyApplicationInfo.description
-                          + " is not available for remote connections. Accessing " + urlString + " returns '"
-                          + responseCode + ": " + httpConnection.getResponseMessage() + "'" );
+                log.warn(anyApplicationInfo.description
+                         + " is not available for remote connections. Accessing " + urlString + " returns '"
+                         + responseCode + ": " + httpConnection.getResponseMessage() + "'");
                 return false;
             }
-        } catch( Exception e ) {
-            log.warn( anyApplicationInfo.description
-                      + " is not available for remote connections. We cannot access " + urlString
-                      + ". Error message is '" + e.getMessage() + "'" );
+        } catch (Exception e) {
+            log.warn(anyApplicationInfo.description
+                     + " is not available for remote connections. We cannot access " + urlString
+                     + ". Error message is '" + e.getMessage() + "'");
             return false;
         }
     }
@@ -329,14 +329,14 @@ public class ApplicationController extends AbstractApplicationController {
 
         JschSftpClient sftpClient = new JschSftpClient();
         try {
-            sftpClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                                anyApplicationInfo.host, anyApplicationInfo.sshPort );
-            boolean isDeployed = sftpClient.isRemoteFileOrDirectoryExisting( anyApplicationInfo.getSftpHome() );
+            sftpClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                               anyApplicationInfo.host, anyApplicationInfo.sshPort);
+            boolean isDeployed = sftpClient.isRemoteFileOrDirectoryExisting(anyApplicationInfo.getSftpHome());
 
-            log.info( anyApplicationInfo.description + " seems " + ( isDeployed
-                                                                                ? ""
-                                                                                : "not " )
-                      + "deployed in " + anyApplicationInfo.getSftpHome() );
+            log.info(anyApplicationInfo.description + " seems " + (isDeployed
+                                                                              ? ""
+                                                                              : "not ")
+                     + "deployed in " + anyApplicationInfo.getSftpHome());
             return isDeployed;
         } finally {
 

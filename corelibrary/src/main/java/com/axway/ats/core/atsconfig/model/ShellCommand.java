@@ -25,12 +25,12 @@ public class ShellCommand {
 
     public ShellCommand( String command ) {
 
-        this( null, command );
+        this(null, command);
     }
 
     public ShellCommand( String alias, String command ) {
 
-        if( !StringUtils.isNullOrEmpty( alias ) ) {
+        if (!StringUtils.isNullOrEmpty(alias)) {
             this.alias = alias;
         }
         this.command = command;

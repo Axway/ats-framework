@@ -136,7 +136,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     public HttpClient() {
 
         super();
-        log = Logger.getLogger( this.getClass() );
+        log = Logger.getLogger(this.getClass());
     }
 
     /**
@@ -153,11 +153,11 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
                          String newPassword ) throws FileTransferException {
 
         boolean createNewHttpClient = true;
-        if( prevConnectionInitializationPerformed ) {
+        if (prevConnectionInitializationPerformed) {
             // check for difference with prev. connection parameters
-            if( hostname != null && hostname.equals( newHostname )
-                && ( ( username != null && username.equals( newUserName ) )
-                     || ( username == null && newUserName == null ) ) ) {
+            if (hostname != null && hostname.equals(newHostname)
+                && ( (username != null && username.equals(newUserName))
+                     || (username == null && newUserName == null))) {
                 createNewHttpClient = false;
             } else {
                 disconnect(); // cleanup connection and HttpClient with different host and/or credentials
@@ -167,21 +167,21 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
         this.username = newUserName;
         this.userpass = newPassword;
 
-        if( newUserName != null ) {
-            log.info( "Connecting to " + newHostname + " on port " + this.port + " using username "
-                      + newUserName + " and password " + newPassword ); // testing soft. so password can be logged
+        if (newUserName != null) {
+            log.info("Connecting to " + newHostname + " on port " + this.port + " using username "
+                     + newUserName + " and password " + newPassword); // testing soft. so password can be logged
         } else {
-            log.info( "Connecting to " + newHostname + " on port " + this.port );
+            log.info("Connecting to " + newHostname + " on port " + this.port);
         }
 
         // DO NOT make new HTTPClient object for every new connection - for possible connection reuse
         //disconnect();
 
-        if( httpClient == null // disconnect performed
-            || createNewHttpClient ) {
+        if (httpClient == null // disconnect performed
+            || createNewHttpClient) {
             // new HTTP client needed
             applyCustomProperties();
-            createNewHttpClientWithCredentials( newHostname, newUserName, newPassword );
+            createNewHttpClientWithCredentials(newHostname, newUserName, newPassword);
         }
         prevConnectionInitializationPerformed = true;
     }
@@ -190,7 +190,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     public void connect( String hostname, String keystoreFile, String keystorePassword,
                          String publicKeyAlias ) throws FileTransferException {
 
-        throw new IllegalStateException( "Keystores could be used used only for HTTPS connections. Use HTTPSClient class" );
+        throw new IllegalStateException("Keystores could be used used only for HTTPS connections. Use HTTPSClient class");
     }
 
     /**
@@ -203,13 +203,13 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     @Override
     public void disconnect() throws FileTransferException {
 
-        if( this.httpClient != null ) {
+        if (this.httpClient != null) {
             // when the client instance is no longer needed, shut down the connection manager to ensure
             // immediate deallocation of all system resources
             try {
                 this.httpClient.close();
-            } catch( IOException ioe ) {
-                throw new FileTransferException( "Client instance was not closed.", ioe );
+            } catch (IOException ioe) {
+                throw new FileTransferException("Client instance was not closed.", ioe);
             } finally {
                 this.httpClient = null;
             }
@@ -221,58 +221,58 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
                                         String remoteFile ) throws FileTransferException {
 
         checkClientInitialized();
-        final String getUrl = constructDownloadUrl( remoteDir, remoteFile );
-        log.info( "Downloading " + getUrl );
-        HttpGet httpGetMethod = new HttpGet( getUrl );
+        final String getUrl = constructDownloadUrl(remoteDir, remoteFile);
+        log.info("Downloading " + getUrl);
+        HttpGet httpGetMethod = new HttpGet(getUrl);
 
         HttpEntity responseEntity = null;
         OutputStream outstream = null;
         boolean errorSavingFile = true;
         try {
             // add headers specified by the user
-            addRequestHeaders( httpGetMethod );
+            addRequestHeaders(httpGetMethod);
 
             // download the file
-            HttpResponse response = httpClient.execute( httpGetMethod, httpContext );
-            if( 200 != response.getStatusLine().getStatusCode() ) {
-                throw new FileTransferException( "Downloading " + getUrl + " returned "
-                                                 + response.getStatusLine() );
+            HttpResponse response = httpClient.execute(httpGetMethod, httpContext);
+            if (200 != response.getStatusLine().getStatusCode()) {
+                throw new FileTransferException("Downloading " + getUrl + " returned "
+                                                + response.getStatusLine());
             }
 
             // save the file
             responseEntity = response.getEntity();
-            if( responseEntity != null ) {
-                outstream = new FileOutputStream( localFile );
-                responseEntity.writeTo( outstream );
+            if (responseEntity != null) {
+                outstream = new FileOutputStream(localFile);
+                responseEntity.writeTo(outstream);
                 outstream.flush();
                 errorSavingFile = false;
             } else {
-                throw new FileTransferException( "No file present in the response" );
+                throw new FileTransferException("No file present in the response");
             }
-        } catch( ClientProtocolException e ) {
-            log.error( "Unable to download file!", e );
-            throw new FileTransferException( e );
-        } catch( IOException e ) {
-            log.error( "Unable to download file!", e );
-            throw new FileTransferException( e );
+        } catch (ClientProtocolException e) {
+            log.error("Unable to download file!", e);
+            throw new FileTransferException(e);
+        } catch (IOException e) {
+            log.error("Unable to download file!", e);
+            throw new FileTransferException(e);
         } finally {
-            if( responseEntity != null ) {
-                IoUtils.closeStream( outstream );
-                if( errorSavingFile ) {
+            if (responseEntity != null) {
+                IoUtils.closeStream(outstream);
+                if (errorSavingFile) {
                     try {
                         // We were not able to properly stream the entity content
                         // to the local file system. The next line consumes the
                         // entity content closes the underlying stream.
-                        EntityUtils.consume( responseEntity );
-                    } catch( IOException e ) {
+                        EntityUtils.consume(responseEntity);
+                    } catch (IOException e) {
                         // we tried our best to release the resources
                     }
                 }
             }
         }
 
-        log.info( "Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "' at "
-                  + this.hostname );
+        log.info("Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "' at "
+                 + this.hostname);
     }
 
     @Override
@@ -280,63 +280,63 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
                                       String remoteFile ) throws FileTransferException {
 
         checkClientInitialized();
-        final String uploadUrl = constructUploadUrl( remoteDir, remoteFile );
-        log.info( "Uploading " + uploadUrl );
+        final String uploadUrl = constructUploadUrl(remoteDir, remoteFile);
+        log.info("Uploading " + uploadUrl);
 
         HttpEntityEnclosingRequestBase uploadMethod;
-        Object uploadMethodObject = customProperties.get( HTTP_HTTPS_UPLOAD_METHOD );
-        if( uploadMethodObject == null
-            || !uploadMethodObject.toString().equals( HTTP_HTTPS_UPLOAD_METHOD__POST ) ) {
-            uploadMethod = new HttpPut( uploadUrl );
+        Object uploadMethodObject = customProperties.get(HTTP_HTTPS_UPLOAD_METHOD);
+        if (uploadMethodObject == null
+            || !uploadMethodObject.toString().equals(HTTP_HTTPS_UPLOAD_METHOD__POST)) {
+            uploadMethod = new HttpPut(uploadUrl);
         } else {
-            uploadMethod = new HttpPost( uploadUrl );
+            uploadMethod = new HttpPost(uploadUrl);
         }
 
         String contentType = DEFAULT_HTTP_HTTPS_UPLOAD_CONTENT_TYPE;
-        Object contentTypeObject = customProperties.get( HTTP_HTTPS_UPLOAD_CONTENT_TYPE );
-        if( contentTypeObject != null ) {
+        Object contentTypeObject = customProperties.get(HTTP_HTTPS_UPLOAD_CONTENT_TYPE);
+        if (contentTypeObject != null) {
             contentType = contentTypeObject.toString();
         }
-        FileEntity fileUploadEntity = new FileEntity( new File( localFile ),
-                                                      ContentType.parse( contentType ) );
-        uploadMethod.setEntity( fileUploadEntity );
+        FileEntity fileUploadEntity = new FileEntity(new File(localFile),
+                                                     ContentType.parse(contentType));
+        uploadMethod.setEntity(fileUploadEntity);
 
         HttpResponse response = null;
         try {
             // add headers specified by the user
-            addRequestHeaders( uploadMethod );
+            addRequestHeaders(uploadMethod);
 
             // upload the file
-            response = httpClient.execute( uploadMethod, httpContext );
+            response = httpClient.execute(uploadMethod, httpContext);
             int responseCode = response.getStatusLine().getStatusCode();
-            if( responseCode < 200 || responseCode > 206 ) {
+            if (responseCode < 200 || responseCode > 206) {
                 // 201 Created - the file is now present on the remote location
                 // 204 No Content - there was a file with same name on same location, we replaced it
-                throw new FileTransferException( "Uploading '" + uploadUrl + "' returned '"
-                                                 + response.getStatusLine() + "'" );
+                throw new FileTransferException("Uploading '" + uploadUrl + "' returned '"
+                                                + response.getStatusLine() + "'");
             }
-        } catch( ClientProtocolException e ) {
-            log.error( "Unable to upload file!", e );
-            throw new FileTransferException( e );
-        } catch( IOException e ) {
-            log.error( "Unable to upload file!", e );
-            throw new FileTransferException( e );
+        } catch (ClientProtocolException e) {
+            log.error("Unable to upload file!", e);
+            throw new FileTransferException(e);
+        } catch (IOException e) {
+            log.error("Unable to upload file!", e);
+            throw new FileTransferException(e);
         } finally {
             // the UPLOAD returns response body on error
-            if( response != null && response.getEntity() != null ) {
+            if (response != null && response.getEntity() != null) {
                 HttpEntity responseEntity = response.getEntity();
                 // ensure that the entity content has been fully consumed and
                 // the underlying stream has been closed
                 try {
-                    EntityUtils.consume( responseEntity );
-                } catch( IOException e ) {
+                    EntityUtils.consume(responseEntity);
+                } catch (IOException e) {
                     // we tried our best to release the resources
                 }
             }
         }
 
-        log.info( "Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
-                  + this.hostname );
+        log.info("Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
+                 + this.hostname);
     }
 
     @Override
@@ -353,7 +353,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     @Override
     public String executeCommand( String command ) throws FileTransferException {
 
-        throw new FileTransferException( "Not implemented" );
+        throw new FileTransferException("Not implemented");
     }
 
     @Override
@@ -382,21 +382,21 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     public void addCookie( String name, String value, String domain, String path, Date expirationDate,
                            boolean isSecure ) {
 
-        if( httpContext == null ) {
+        if (httpContext == null) {
             httpContext = new BasicHttpContext();
         }
-        BasicCookieStore cookieStore = ( BasicCookieStore ) httpContext.getAttribute( HttpClientContext.COOKIE_STORE );
-        if( cookieStore == null ) {
+        BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
+        if (cookieStore == null) {
             cookieStore = new BasicCookieStore();
-            httpContext.setAttribute( HttpClientContext.COOKIE_STORE, cookieStore );
+            httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
         }
 
-        BasicClientCookie cookie = new BasicClientCookie( name, value );
-        cookie.setDomain( domain );
-        cookie.setPath( path );
-        cookie.setExpiryDate( expirationDate );
-        cookie.setSecure( isSecure );
-        cookieStore.addCookie( cookie );
+        BasicClientCookie cookie = new BasicClientCookie(name, value);
+        cookie.setDomain(domain);
+        cookie.setPath(path);
+        cookie.setExpiryDate(expirationDate);
+        cookie.setSecure(isSecure);
+        cookieStore.addCookie(cookie);
     }
 
     /**
@@ -407,16 +407,16 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
      */
     public void removeCookie( String name, String path ) {
 
-        if( httpContext != null ) {
+        if (httpContext != null) {
 
-            BasicCookieStore cookieStore = ( BasicCookieStore ) httpContext.getAttribute( HttpClientContext.COOKIE_STORE );
-            if( cookieStore != null ) {
+            BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
+            if (cookieStore != null) {
 
                 List<Cookie> cookies = cookieStore.getCookies();
                 cookieStore.clear();
-                for( Cookie cookie : cookies ) {
-                    if( !cookie.getName().equals( name ) || !cookie.getPath().equals( path ) ) {
-                        cookieStore.addCookie( cookie );
+                for (Cookie cookie : cookies) {
+                    if (!cookie.getName().equals(name) || !cookie.getPath().equals(path)) {
+                        cookieStore.addCookie(cookie);
                     }
                 }
             }
@@ -428,9 +428,9 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
      */
     public void clearCookies() {
 
-        if( httpContext != null ) {
-            BasicCookieStore cookieStore = ( BasicCookieStore ) httpContext.getAttribute( HttpClientContext.COOKIE_STORE );
-            if( cookieStore != null ) {
+        if (httpContext != null) {
+            BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
+            if (cookieStore != null) {
                 cookieStore.clear();
             }
         }
@@ -439,103 +439,103 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     @Override
     public void addCustomProperty( String key, Object value ) throws IllegalArgumentException {
 
-        if( HTTP_HTTPS_SOCKET_BUFFER_SIZE.equals( key ) ) {
+        if (HTTP_HTTPS_SOCKET_BUFFER_SIZE.equals(key)) {
             String intMsg = "Not an integer value(positive) provided for parameter with key " + key;
-            if( ! ( value instanceof Integer ) && ! ( value instanceof String ) ) {
-                throw new IllegalArgumentException( intMsg );
+            if (! (value instanceof Integer) && ! (value instanceof String)) {
+                throw new IllegalArgumentException(intMsg);
             } else {
                 int intValue = -1;
-                if( value instanceof String ) {
+                if (value instanceof String) {
                     try {
-                        intValue = Integer.parseInt( ( String ) value );
-                    } catch( NumberFormatException ex ) {
-                        throw new IllegalArgumentException( intMsg );
+                        intValue = Integer.parseInt((String) value);
+                    } catch (NumberFormatException ex) {
+                        throw new IllegalArgumentException(intMsg);
                     }
                 } else {
-                    intValue = ( ( Integer ) value ).intValue();
+                    intValue = ((Integer) value).intValue();
                 }
-                if( intValue < 0 ) {
-                    throw new IllegalArgumentException( intMsg );
+                if (intValue < 0) {
+                    throw new IllegalArgumentException(intMsg);
                 } else {
-                    if( intValue > HTTP_HTTPS_SOCKET_BUFFER_SIZE_MAX_VALUE ) {
-                        throw new IllegalArgumentException( "Too big value specified for socket buffer size "
-                                                            + intValue + ". Maximum accepted is "
-                                                            + HTTP_HTTPS_SOCKET_BUFFER_SIZE_MAX_VALUE );
+                    if (intValue > HTTP_HTTPS_SOCKET_BUFFER_SIZE_MAX_VALUE) {
+                        throw new IllegalArgumentException("Too big value specified for socket buffer size "
+                                                           + intValue + ". Maximum accepted is "
+                                                           + HTTP_HTTPS_SOCKET_BUFFER_SIZE_MAX_VALUE);
                     }
                 }
-                customProperties.put( key, new Integer( intValue ) );
+                customProperties.put(key, new Integer(intValue));
             }
-        } else if( HTTP_HTTPS_UPLOAD_METHOD.equals( key ) ) {
+        } else if (HTTP_HTTPS_UPLOAD_METHOD.equals(key)) {
             String uploadMethodString = value.toString();
-            if( HTTP_HTTPS_UPLOAD_METHOD__PUT.equals( uploadMethodString )
-                || HTTP_HTTPS_UPLOAD_METHOD__POST.equals( uploadMethodString ) ) {
-                customProperties.put( key, uploadMethodString );
+            if (HTTP_HTTPS_UPLOAD_METHOD__PUT.equals(uploadMethodString)
+                || HTTP_HTTPS_UPLOAD_METHOD__POST.equals(uploadMethodString)) {
+                customProperties.put(key, uploadMethodString);
             } else {
-                throw new IllegalArgumentException( "Ivalid value specified for HTTP(S) upload method: "
-                                                    + uploadMethodString
-                                                    + ". Use one of the GenericTransferClient.HTTP_HTTPS_UPLOAD_METHOD__* constants for value" );
+                throw new IllegalArgumentException("Ivalid value specified for HTTP(S) upload method: "
+                                                   + uploadMethodString
+                                                   + ". Use one of the GenericTransferClient.HTTP_HTTPS_UPLOAD_METHOD__* constants for value");
             }
-        } else if( HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION.equals( key ) ) {
+        } else if (HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION.equals(key)) {
 
-            this.preemptiveBasicAuthentication = HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE.equals( value.toString() );
-        } else if( HTTP_HTTPS_UPLOAD_CONTENT_TYPE.equals( key ) ) {
+            this.preemptiveBasicAuthentication = HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE.equals(value.toString());
+        } else if (HTTP_HTTPS_UPLOAD_CONTENT_TYPE.equals(key)) {
             String contentTypeValue = value.toString();
-            if( !StringUtils.isNullOrEmpty( contentTypeValue ) ) {
-                customProperties.put( key, contentTypeValue );
+            if (!StringUtils.isNullOrEmpty(contentTypeValue)) {
+                customProperties.put(key, contentTypeValue);
             } else {
-                throw new IllegalArgumentException( "Null or empty value specified for HTTP(S) upload content type" );
+                throw new IllegalArgumentException("Null or empty value specified for HTTP(S) upload content type");
             }
-        } else if( HTTP_HTTPS_SOCKET_READ_TIMEOUT.equals( key ) ) {
+        } else if (HTTP_HTTPS_SOCKET_READ_TIMEOUT.equals(key)) {
             final String errorMsg = "Not supported value for HTTP(S) socket timeout. "
                                     + "Specify value as Integer or String number in milliseconds.";
             int socketReadTimeout = -1;
-            if( value instanceof Number ) {
-                socketReadTimeout = ( ( Number ) value ).intValue();
-            } else if( value instanceof String ) {
+            if (value instanceof Number) {
+                socketReadTimeout = ((Number) value).intValue();
+            } else if (value instanceof String) {
                 try {
-                    socketReadTimeout = Integer.parseInt( ( String ) value );
-                } catch( NumberFormatException ex ) {
-                    throw new IllegalArgumentException( errorMsg );
+                    socketReadTimeout = Integer.parseInt((String) value);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException(errorMsg);
                 }
             } else {
-                throw new IllegalArgumentException( errorMsg );
+                throw new IllegalArgumentException(errorMsg);
             }
-            if( socketReadTimeout < 0 ) {
-                throw new IllegalArgumentException( "Illegal value. Negative number is specified for socket read timeout" );
+            if (socketReadTimeout < 0) {
+                throw new IllegalArgumentException("Illegal value. Negative number is specified for socket read timeout");
             } else {
                 // 0 to wait indefinitely
-                customProperties.put( key, new Integer( socketReadTimeout ) );
+                customProperties.put(key, new Integer(socketReadTimeout));
             }
-        } else if( HTTP_HTTPS_REQUEST_HEADER.equals( key ) ) {
+        } else if (HTTP_HTTPS_REQUEST_HEADER.equals(key)) {
             // add some request header
 
-            String headerString = ( String ) value;
+            String headerString = (String) value;
 
-            int separatorIndex = headerString.indexOf( ':' );
-            if( separatorIndex < 1 ) {
-                throw new IllegalArgumentException( "Custom parameter with key " + HTTP_HTTPS_REQUEST_HEADER
-                                                    + " requires a String value in the form '<header key>:<header value>' while '"
-                                                    + value + "' is passed" );
+            int separatorIndex = headerString.indexOf(':');
+            if (separatorIndex < 1) {
+                throw new IllegalArgumentException("Custom parameter with key " + HTTP_HTTPS_REQUEST_HEADER
+                                                   + " requires a String value in the form '<header key>:<header value>' while '"
+                                                   + value + "' is passed");
             } else {
-                requestHeaders.add( new BasicHeader( headerString.substring( 0, separatorIndex ),
-                                                     headerString.substring( separatorIndex + 1 ) ) );
+                requestHeaders.add(new BasicHeader(headerString.substring(0, separatorIndex),
+                                                   headerString.substring(separatorIndex + 1)));
             }
         } else {
-            throw new IllegalArgumentException( "Unknown property with key '" + key + "' is passed. "
-                                                + USE_ONE_OF_THE_HTTP_HTTPS_CONSTANTS );
+            throw new IllegalArgumentException("Unknown property with key '" + key + "' is passed. "
+                                               + USE_ONE_OF_THE_HTTP_HTTPS_CONSTANTS);
         }
     }
 
     @Override
     public void applyCustomProperties() throws IllegalArgumentException {
 
-        Object value = customProperties.get( HTTP_HTTPS_SOCKET_BUFFER_SIZE );
-        if( value == null ) {
+        Object value = customProperties.get(HTTP_HTTPS_SOCKET_BUFFER_SIZE);
+        if (value == null) {
             socketBufferSize = DEFAULT_SOCKET_BUFFER_SIZE;
         } else {
-            socketBufferSize = ( Integer ) value;
+            socketBufferSize = (Integer) value;
         }
-        log.trace( "HTTP(S) buffer size set to " + socketBufferSize + " bytes" );
+        log.trace("HTTP(S) buffer size set to " + socketBufferSize + " bytes");
     }
 
     /**
@@ -553,35 +553,35 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
                                       boolean needResponse ) throws FileTransferException {
 
         checkClientInitialized();
-        final String getUrl = constructGetUrl( requestedHostRelativeUrl );
+        final String getUrl = constructGetUrl(requestedHostRelativeUrl);
 
         HttpRequestBase httpMethod = null;
-        if( !StringUtils.isNullOrEmpty( httpMethodName ) ) {
+        if (!StringUtils.isNullOrEmpty(httpMethodName)) {
 
             httpMethodName = httpMethodName.trim().toUpperCase();
-            switch( httpMethodName ){
+            switch (httpMethodName) {
                 case "GET":
-                    httpMethod = new HttpGet( getUrl );
+                    httpMethod = new HttpGet(getUrl);
                     break;
                 case "HEAD":
-                    httpMethod = new HttpHead( getUrl );
+                    httpMethod = new HttpHead(getUrl);
                     break;
                 case "OPTIONS":
-                    httpMethod = new HttpOptions( getUrl );
+                    httpMethod = new HttpOptions(getUrl);
                     break;
             }
         }
 
-        if( httpMethod == null ) {
-            throw new IllegalArgumentException( "This method supports only GET, HEAD and OPTIONS methods while you have provided '"
-                                                + httpMethodName + "'" );
+        if (httpMethod == null) {
+            throw new IllegalArgumentException("This method supports only GET, HEAD and OPTIONS methods while you have provided '"
+                                               + httpMethodName + "'");
         }
 
-        log.info( "Performing " + httpMethodName + " request to: " + getUrl );
+        log.info("Performing " + httpMethodName + " request to: " + getUrl);
 
-        addRequestHeaders( httpMethod );
+        addRequestHeaders(httpMethod);
 
-        return ( String ) processHttpRequest( httpMethod, needResponse, true );
+        return (String) processHttpRequest(httpMethod, needResponse, true);
     }
 
     /**
@@ -595,25 +595,25 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
                                      boolean needResponse ) throws FileTransferException {
 
         checkClientInitialized();
-        final String getUrl = constructGetUrl( requestedHostRelativeUrl );
-        log.info( "Performing GET request to: " + getUrl );
-        HttpGet getMethod = new HttpGet( getUrl );
+        final String getUrl = constructGetUrl(requestedHostRelativeUrl);
+        log.info("Performing GET request to: " + getUrl);
+        HttpGet getMethod = new HttpGet(getUrl);
 
-        addRequestHeaders( getMethod );
+        addRequestHeaders(getMethod);
 
-        return ( String ) processHttpRequest( getMethod, needResponse, true );
+        return (String) processHttpRequest(getMethod, needResponse, true);
     }
 
     public InputStream performGetRequest( String requestedHostRelativeUrl ) throws FileTransferException {
 
         checkClientInitialized();
-        final String getUrl = constructGetUrl( requestedHostRelativeUrl );
-        log.info( "Performing GET request to: " + getUrl );
-        HttpGet getMethod = new HttpGet( getUrl );
+        final String getUrl = constructGetUrl(requestedHostRelativeUrl);
+        log.info("Performing GET request to: " + getUrl);
+        HttpGet getMethod = new HttpGet(getUrl);
 
-        addRequestHeaders( getMethod );
+        addRequestHeaders(getMethod);
 
-        return ( InputStream ) processHttpRequest( getMethod, true, false );
+        return (InputStream) processHttpRequest(getMethod, true, false);
     }
 
     /**
@@ -628,61 +628,61 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
                                       HashMap<String, String> paramsMap ) throws FileTransferException {
 
         checkClientInitialized();
-        final String getUrl = constructGetUrl( requestedHostRelativeUrl );
-        log.info( "Performing POST request to: " + getUrl );
-        HttpPost postMethod = new HttpPost( getUrl );
+        final String getUrl = constructGetUrl(requestedHostRelativeUrl);
+        log.info("Performing POST request to: " + getUrl);
+        HttpPost postMethod = new HttpPost(getUrl);
 
-        addRequestHeaders( postMethod );
+        addRequestHeaders(postMethod);
 
-        if( paramsMap != null && paramsMap.size() > 0 ) {
+        if (paramsMap != null && paramsMap.size() > 0) {
 
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>( paramsMap.size() );
-            for( Entry<String, String> paramEntry : paramsMap.entrySet() ) {
-                log.info( "Add parameter " + paramEntry.getKey() + " and value: " + paramEntry.getValue() );
-                parameters.add( new BasicNameValuePair( paramEntry.getKey(), paramEntry.getValue() ) );
+            List<NameValuePair> parameters = new ArrayList<NameValuePair>(paramsMap.size());
+            for (Entry<String, String> paramEntry : paramsMap.entrySet()) {
+                log.info("Add parameter " + paramEntry.getKey() + " and value: " + paramEntry.getValue());
+                parameters.add(new BasicNameValuePair(paramEntry.getKey(), paramEntry.getValue()));
             }
             UrlEncodedFormEntity sendEntity = null;
             try {
-                sendEntity = new UrlEncodedFormEntity( parameters, "UTF-8" );
-            } catch( UnsupportedEncodingException ex ) {
-                throw new FileTransferException( ex );
+                sendEntity = new UrlEncodedFormEntity(parameters, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                throw new FileTransferException(ex);
             }
-            postMethod.setEntity( sendEntity );
+            postMethod.setEntity(sendEntity);
         }
 
-        return ( String ) processHttpRequest( postMethod, needResponse, true );
+        return (String) processHttpRequest(postMethod, needResponse, true);
     }
 
     private void addRequestHeaders( HttpRequestBase httpMethod ) throws FileTransferException {
 
         // pass user credentials with the very first headers
-        if( preemptiveBasicAuthentication ) {
-            if( this.username == null ) {
-                throw new FileTransferException( "We cannot set user credentials as the user name is not set" );
+        if (preemptiveBasicAuthentication) {
+            if (this.username == null) {
+                throw new FileTransferException("We cannot set user credentials as the user name is not set");
             }
 
             try {
-                BasicScheme schema = new BasicScheme( Charset.forName( "US-ASCII" ) );
+                BasicScheme schema = new BasicScheme(Charset.forName("US-ASCII"));
                 Header authenticationHeader = schema.authenticate(
-                                                                   // here we make 'empty' http request, just so we could authenticate the credentials
-                                                                   new UsernamePasswordCredentials( this.username,
-                                                                                                    this.userpass ),
-                                                                   new HttpGet(), httpContext );
-                httpMethod.addHeader( authenticationHeader );
-            } catch( AuthenticationException ae ) {
-                throw new FileTransferException( "Unable to add Basic Authentication header", ae );
+                                                                  // here we make 'empty' http request, just so we could authenticate the credentials
+                                                                  new UsernamePasswordCredentials(this.username,
+                                                                                                  this.userpass),
+                                                                  new HttpGet(), httpContext);
+                httpMethod.addHeader(authenticationHeader);
+            } catch (AuthenticationException ae) {
+                throw new FileTransferException("Unable to add Basic Authentication header", ae);
             }
         }
 
         // Add the rest of the request headers
-        for( Header header : requestHeaders ) {
-            httpMethod.setHeader( header );
+        for (Header header : requestHeaders) {
+            httpMethod.setHeader(header);
         }
     }
 
     protected String constructDownloadUrl( String remoteDir, String remoteFile ) {
 
-        return "http://" + this.hostname + ":" + this.port + getPathPlusFile( remoteDir, remoteFile );
+        return "http://" + this.hostname + ":" + this.port + getPathPlusFile(remoteDir, remoteFile);
     }
 
     protected String constructGetUrl( String requestedHostRelativeUrl ) {
@@ -692,7 +692,7 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
 
     protected String constructUploadUrl( String remoteDir, String remoteFile ) {
 
-        return "http://" + this.hostname + ":" + this.port + getPathPlusFile( remoteDir, remoteFile );
+        return "http://" + this.hostname + ":" + this.port + getPathPlusFile(remoteDir, remoteFile);
     }
 
     /**
@@ -700,16 +700,16 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
      */
     protected String getPathPlusFile( String remoteDir, String remoteFile ) {
 
-        if( !remoteDir.startsWith( "/" ) ) {
+        if (!remoteDir.startsWith("/")) {
             remoteDir = "/" + remoteDir;
         }
-        if( !remoteDir.endsWith( "/" ) ) {
+        if (!remoteDir.endsWith("/")) {
             remoteDir = remoteDir + "/";
         }
-        if( remoteFile.startsWith( "/" ) ) {
-            log.warn( "File name starts with slash('/') character which should be part of the path!" );
-            if( remoteFile.length() > 1 ) {
-                remoteFile = remoteFile.substring( 1 );
+        if (remoteFile.startsWith("/")) {
+            log.warn("File name starts with slash('/') character which should be part of the path!");
+            if (remoteFile.length() > 1) {
+                remoteFile = remoteFile.substring(1);
             }
         }
         return remoteDir + remoteFile;
@@ -734,57 +734,57 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
         InputStream responseAsStream = null;
         try {
             // send request
-            HttpResponse response = httpClient.execute( httpRequest, httpContext );
-            if( 200 != response.getStatusLine().getStatusCode() ) {
-                throw new FileTransferException( "Request to '" + httpRequest.getURI() + "' returned "
-                                                 + response.getStatusLine() );
+            HttpResponse response = httpClient.execute(httpRequest, httpContext);
+            if (200 != response.getStatusLine().getStatusCode()) {
+                throw new FileTransferException("Request to '" + httpRequest.getURI() + "' returned "
+                                                + response.getStatusLine());
             }
 
             // get the response
             responseEntity = response.getEntity();
-            if( !needResponse ) {
+            if (!needResponse) {
                 responseNotConsumed = true;
             } else {
-                if( responseEntity != null ) {
-                    if( !returnAsString ) {
+                if (responseEntity != null) {
+                    if (!returnAsString) {
                         responseAsStream = responseEntity.getContent();
                     } else {
-                        int respLengthEstimate = ( int ) responseEntity.getContentLength();
-                        if( respLengthEstimate < 0 ) {
+                        int respLengthEstimate = (int) responseEntity.getContentLength();
+                        if (respLengthEstimate < 0) {
                             respLengthEstimate = 1024;
                         }
-                        outstream = new ByteArrayOutputStream( respLengthEstimate );
-                        responseEntity.writeTo( outstream );
+                        outstream = new ByteArrayOutputStream(respLengthEstimate);
+                        responseEntity.writeTo(outstream);
                         outstream.flush();
                         responseAsString = outstream.toString();
                     }
                     responseNotConsumed = false;
                 }
             }
-        } catch( ClientProtocolException e ) {
-            log.error( errMsg, e );
-            throw new FileTransferException( e );
-        } catch( IOException e ) {
-            log.error( errMsg, e );
-            throw new FileTransferException( e );
+        } catch (ClientProtocolException e) {
+            log.error(errMsg, e);
+            throw new FileTransferException(e);
+        } catch (IOException e) {
+            log.error(errMsg, e);
+            throw new FileTransferException(e);
         } finally {
-            if( responseEntity != null && outstream != null ) {
-                IoUtils.closeStream( outstream );
+            if (responseEntity != null && outstream != null) {
+                IoUtils.closeStream(outstream);
             }
 
-            if( responseNotConsumed ) {
+            if (responseNotConsumed) {
                 try {
                     // We were not able to properly stream the entity content to the local file system.
                     // The next line consumes the entity content closes the underlying stream.
-                    EntityUtils.consume( responseEntity );
-                } catch( IOException e ) {
+                    EntityUtils.consume(responseEntity);
+                } catch (IOException e) {
                     // we tried our best to release the resources
                 }
             }
         }
 
-        log.info( "Successfully completed GET request '" + httpRequest.getURI() + "'" );
-        if( returnAsString ) {
+        log.info("Successfully completed GET request '" + httpRequest.getURI() + "'");
+        if (returnAsString) {
             return responseAsString;
         }
         return responseAsStream;
@@ -794,43 +794,43 @@ public class HttpClient extends AbstractFileTransferClient implements IFileTrans
     private void createNewHttpClientWithCredentials( String hostname, String userName,
                                                      String password ) throws FileTransferException {
 
-        log.debug( "Creating new HTTP client to host " + hostname );
+        log.debug("Creating new HTTP client to host " + hostname);
         httpBuilder = HttpClientBuilder.create();
 
         RequestConfig.Builder requestConfig = RequestConfig.custom();
-        requestConfig.setConnectTimeout( this.timeout );
-        httpBuilder.setDefaultRequestConfig( requestConfig.build() );
+        requestConfig.setConnectTimeout(this.timeout);
+        httpBuilder.setDefaultRequestConfig(requestConfig.build());
 
         SocketConfig.Builder socket = SocketConfig.custom();
-        socket.setRcvBufSize( this.socketBufferSize );
-        socket.setSndBufSize( this.socketBufferSize );
+        socket.setRcvBufSize(this.socketBufferSize);
+        socket.setSndBufSize(this.socketBufferSize);
 
         PoolingHttpClientConnectionManager conManager = new PoolingHttpClientConnectionManager();
         // set stale connection check
-        conManager.setValidateAfterInactivity( -1 );
-        httpBuilder.setConnectionManager( conManager );
-        Object socketTimeout = customProperties.get( HTTP_HTTPS_SOCKET_READ_TIMEOUT );
-        if( socketTimeout != null ) {
+        conManager.setValidateAfterInactivity(-1);
+        httpBuilder.setConnectionManager(conManager);
+        Object socketTimeout = customProperties.get(HTTP_HTTPS_SOCKET_READ_TIMEOUT);
+        if (socketTimeout != null) {
             // TODO this could be set either with the request config
-            socket.setSoTimeout( Integer.parseInt( socketTimeout.toString() ) );
+            socket.setSoTimeout(Integer.parseInt(socketTimeout.toString()));
         }
-        httpBuilder.setDefaultSocketConfig( socket.build() );
-        if( httpClient != null ) { // cleanup previous client
+        httpBuilder.setDefaultSocketConfig(socket.build());
+        if (httpClient != null) { // cleanup previous client
             disconnect();
         }
-        if( userName != null ) {
+        if (userName != null) {
             BasicCredentialsProvider credentials = new BasicCredentialsProvider();
-            credentials.setCredentials( new AuthScope( hostname, this.port ),
-                                        new UsernamePasswordCredentials( userName, password ) );
-            httpBuilder.setDefaultCredentialsProvider( credentials );
+            credentials.setCredentials(new AuthScope(hostname, this.port),
+                                       new UsernamePasswordCredentials(userName, password));
+            httpBuilder.setDefaultCredentialsProvider(credentials);
         }
         httpClient = httpBuilder.build();
     }
 
     private void checkClientInitialized() throws FileTransferException {
 
-        if( httpClient == null ) {
-            throw new FileTransferException( "Http client is not initialized. Check if any connect method is invoked before." );
+        if (httpClient == null) {
+            throw new FileTransferException("Http client is not initialized. Check if any connect method is invoked before.");
         }
     }
 }

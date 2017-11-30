@@ -56,16 +56,16 @@ public class XmlNode {
         this.node = node;
 
         Namespace nodeNamespace = node.getNamespace();
-        if( nodeNamespace != null && !StringUtils.isNullOrEmpty( nodeNamespace.getPrefix() ) ) {
+        if (nodeNamespace != null && !StringUtils.isNullOrEmpty(nodeNamespace.getPrefix())) {
             this.name = nodeNamespace.getPrefix() + ":" + node.getName();
         } else {
             this.name = node.getName();
         }
 
         this.attributes = new TreeMap<>();
-        for( int i = 0; i < node.attributes().size(); i++ ) {
-            Attribute att = node.attribute( i );
-            this.attributes.put( att.getName(), att.getValue() );
+        for (int i = 0; i < node.attributes().size(); i++) {
+            Attribute att = node.attribute(i);
+            this.attributes.put(att.getName(), att.getValue());
         }
 
         this.value = this.node.getTextTrim();
@@ -74,9 +74,9 @@ public class XmlNode {
 
         this.children = new ArrayList<>();
         List<Element> childrenElements = this.node.elements();
-        for( Element child : childrenElements ) {
-            if( child.getNodeType() == Node.ELEMENT_NODE ) {
-                this.children.add( new XmlNode( this, child ) );
+        for (Element child : childrenElements) {
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                this.children.add(new XmlNode(this, child));
             }
         }
     }
@@ -107,24 +107,24 @@ public class XmlNode {
 
         // cycle through all its parents
         XmlNode _parent = parent;
-        while( _parent != null ) {
-            signatures.add( _parent.getSignature( "" ) );
+        while (_parent != null) {
+            signatures.add(_parent.getSignature(""));
             _parent = _parent.parent;
         }
 
         indent = "\t";
         StringBuilder sb = new StringBuilder();
-        for( int i = signatures.size() - 1; i >= 0; i-- ) {
-            sb.append( "\n" + indent + signatures.get( i ) );
+        for (int i = signatures.size() - 1; i >= 0; i--) {
+            sb.append("\n" + indent + signatures.get(i));
             indent += "\t";
         }
 
-        sb.append( "\n" + this.getSignature( indent ) );
-        if( attributes.size() != 0 ) {
+        sb.append("\n" + this.getSignature(indent));
+        if (attributes.size() != 0) {
             // if there are no attributes, then the node value is already added as part of the signature
-            sb.append( this.getValue() );
+            sb.append(this.getValue());
         }
-        sb.append( "</" + this.name + ">" );
+        sb.append("</" + this.name + ">");
 
         return sb.toString();
     }
@@ -146,16 +146,16 @@ public class XmlNode {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append( indent + "<" + name );
+        sb.append(indent + "<" + name);
         // the signature contains either the node attributes
-        for( Map.Entry<String, String> attribute : attributes.entrySet() ) {
-            sb.append( " " + attribute.getKey() + "=\"" + attribute.getValue() + "\"" );
+        for (Map.Entry<String, String> attribute : attributes.entrySet()) {
+            sb.append(" " + attribute.getKey() + "=\"" + attribute.getValue() + "\"");
         }
-        sb.append( ">" );
+        sb.append(">");
 
         // or the node value
-        if( attributes.size() == 0 && value.length() > 0 ) {
-            sb.append( value );
+        if (attributes.size() == 0 && value.length() > 0) {
+            sb.append(value);
         }
 
         return sb.toString();
@@ -164,19 +164,19 @@ public class XmlNode {
     public String getContent( String indent ) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "\n" + this.getSignature( indent ) );
+        sb.append("\n" + this.getSignature(indent));
 
         boolean hasChildren = false;
-        for( XmlNode child : getChildren() ) {
+        for (XmlNode child : getChildren()) {
             hasChildren = true;
             //sb.append( child.getSignature( indent ) );
-            sb.append( child.getContent( indent + "\t" ) );
+            sb.append(child.getContent(indent + "\t"));
         }
 
-        if( hasChildren ) {
-            sb.append( "\n" + indent );
+        if (hasChildren) {
+            sb.append("\n" + indent);
         }
-        sb.append( "</" + name + ">" );
+        sb.append("</" + name + ">");
 
         return sb.toString();
     }
@@ -196,9 +196,9 @@ public class XmlNode {
 
         this.children.clear();
         List<Element> childrenElements = this.node.elements();
-        for( Element child : childrenElements ) {
-            if( child.getNodeType() == Node.ELEMENT_NODE ) {
-                this.children.add( new XmlNode( this, child ) );
+        for (Element child : childrenElements) {
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                this.children.add(new XmlNode(this, child));
             }
         }
     }
@@ -209,18 +209,18 @@ public class XmlNode {
         String indent = "";
         StringBuilder sb = new StringBuilder();
 
-        sb.append( getSignature( indent ) );
+        sb.append(getSignature(indent));
 
         List<XmlNode> children = getChildren();
-        if( children.size() > 0 ) {
-            for( XmlNode child : children ) {
-                sb.append( child.getContent( indent + "\t" ) );
+        if (children.size() > 0) {
+            for (XmlNode child : children) {
+                sb.append(child.getContent(indent + "\t"));
             }
-            sb.append( "\n" + indent );
-            sb.append( "</" + name + ">" );
+            sb.append("\n" + indent);
+            sb.append("</" + name + ">");
         } else {
-            sb.append( value );
-            sb.append( "</" + name + ">" );
+            sb.append(value);
+            sb.append("</" + name + ">");
         }
 
         return sb.toString();
@@ -240,7 +240,7 @@ public class XmlNode {
 
         this.checked = true;
 
-        for( XmlNode child : getChildren() ) {
+        for (XmlNode child : getChildren()) {
             child.setCheckedIncludingChildren();
         }
     }

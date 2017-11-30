@@ -32,13 +32,13 @@ import com.jcraft.jsch.Session;
 public class JschSftpClient {
 
     // this variable enables the logging
-    private static boolean           isVerbose          = AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.CORE__JSCH_VERBOSE_MODE,
-                                                                                                    false );
+    private static boolean           isVerbose          = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.CORE__JSCH_VERBOSE_MODE,
+                                                                                                   false);
     /*
      * If called from ATS plugin, it will log into plugin console,
      * otherwise will log into log4j
      */
-    private static AbstractAtsLogger log                = AbstractAtsLogger.getDefaultInstance( JschSftpClient.class );
+    private static AbstractAtsLogger log                = AbstractAtsLogger.getDefaultInstance(JschSftpClient.class);
 
     private static final int         CONNECTION_TIMEOUT = 20000;
 
@@ -72,7 +72,7 @@ public class JschSftpClient {
      */
     public void connect( String user, String password, String host ) {
 
-        connect( user, password, host, -1 );
+        connect(user, password, host, -1);
     }
 
     /**
@@ -85,7 +85,7 @@ public class JschSftpClient {
      */
     public void connect( String user, String password, String host, int port ) {
 
-        connect( user, password, host, port, null, null );
+        connect(user, password, host, port, null, null);
     }
 
     /**
@@ -103,9 +103,9 @@ public class JschSftpClient {
 
         try {
             // disconnect if needed or stay connected if the host is the same
-            if( this.session != null && this.session.isConnected() ) {
+            if (this.session != null && this.session.isConnected()) {
 
-                if( this.host.equals( host ) && this.user.equals( user ) && this.port == port ) {
+                if (this.host.equals(host) && this.user.equals(user) && this.port == port) {
 
                     return; //already connected
                 } else {
@@ -118,27 +118,27 @@ public class JschSftpClient {
             this.port = port;
 
             JSch jsch = new JSch();
-            if( privateKey != null ) {
-                jsch.addIdentity( privateKey, privateKeyPassword );
+            if (privateKey != null) {
+                jsch.addIdentity(privateKey, privateKeyPassword);
             }
-            if( port > 0 ) {
-                this.session = jsch.getSession( user, host, port );
+            if (port > 0) {
+                this.session = jsch.getSession(user, host, port);
             } else {
-                this.session = jsch.getSession( user, host );
+                this.session = jsch.getSession(user, host);
             }
-            this.session.setPassword( password );
+            this.session.setPassword(password);
 
             // skip checking of known hosts and verifying RSA keys
-            this.session.setConfig( "StrictHostKeyChecking", "no" );
+            this.session.setConfig("StrictHostKeyChecking", "no");
 
-            this.session.connect( CONNECTION_TIMEOUT );
+            this.session.connect(CONNECTION_TIMEOUT);
 
-            this.channel = ( ChannelSftp ) this.session.openChannel( "sftp" );
+            this.channel = (ChannelSftp) this.session.openChannel("sftp");
             this.channel.connect(); // there is a bug in the other method channel.connect( TIMEOUT );
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new JschSftpClientException( e.getMessage(), e );
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -147,10 +147,10 @@ public class JschSftpClient {
      */
     public void disconnect() {
 
-        if( channel != null && channel.isConnected() ) {
+        if (channel != null && channel.isConnected()) {
             channel.disconnect();
         }
-        if( session != null ) {
+        if (session != null) {
             session.disconnect();
         }
     }
@@ -163,17 +163,17 @@ public class JschSftpClient {
     public boolean isRemoteFileOrDirectoryExisting( String fileOrDirPath ) {
 
         try {
-            channel.ls( fileOrDirPath );
+            channel.ls(fileOrDirPath);
             return true;
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
             String errorMessage = e.getMessage();
-            if( errorMessage != null && errorMessage.contains( "No such file" ) ) {
+            if (errorMessage != null && errorMessage.contains("No such file")) {
                 return false;
             }
 
-            throw new JschSftpClientException( e.getMessage(), e );
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -186,12 +186,12 @@ public class JschSftpClient {
 
         try {
             List<LsEntry> entries = new ArrayList<LsEntry>();
-            channel.ls( directoryPath, new LsEntrySelector( entries ) );
+            channel.ls(directoryPath, new LsEntrySelector(entries));
             return entries.size() == 0;
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new JschSftpClientException( e.getMessage(), e );
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -205,12 +205,12 @@ public class JschSftpClient {
 
         try {
             List<LsEntry> entries = new ArrayList<LsEntry>();
-            channel.ls( directoryPath, new LsEntrySelector( entries ) );
-            return getFileEntries( entries, directoryPath );
+            channel.ls(directoryPath, new LsEntrySelector(entries));
+            return getFileEntries(entries, directoryPath);
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new JschSftpClientException( e.getMessage(), e );
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -222,15 +222,15 @@ public class JschSftpClient {
      */
     public void uploadFile( String sourceFile, String destFile ) {
 
-        if( isVerbose ) {
-            log.debug( "Upload file " + sourceFile + " to " + destFile );
+        if (isVerbose) {
+            log.debug("Upload file " + sourceFile + " to " + destFile);
         }
 
         try {
-            channel.put( sourceFile, destFile );
+            channel.put(sourceFile, destFile);
 
-        } catch( Exception e ) {
-            throw new JschSftpClientException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -242,15 +242,15 @@ public class JschSftpClient {
      */
     public void downloadFile( String destFile, String sourceFile ) {
 
-        if( isVerbose ) {
-            log.debug( "Download file " + sourceFile + " to " + destFile );
+        if (isVerbose) {
+            log.debug("Download file " + sourceFile + " to " + destFile);
         }
 
         try {
-            channel.get( destFile, sourceFile );
+            channel.get(destFile, sourceFile);
 
-        } catch( Exception e ) {
-            throw new JschSftpClientException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -262,40 +262,40 @@ public class JschSftpClient {
      */
     public void uploadDirectory( String sourceDir, String destDir, boolean createParentDirs ) {
 
-        if( isVerbose ) {
-            log.debug( "Upload directory " + sourceDir + " to " + destDir );
+        if (isVerbose) {
+            log.debug("Upload directory " + sourceDir + " to " + destDir);
         }
 
-        destDir = IoUtils.normalizeUnixDir( destDir );
+        destDir = IoUtils.normalizeUnixDir(destDir);
 
-        File srcDir = new File( sourceDir );
-        if( !srcDir.isDirectory() ) {
+        File srcDir = new File(sourceDir);
+        if (!srcDir.isDirectory()) {
 
-            throw new JschSftpClientException( "The local directory '" + sourceDir
-                                               + "' is not a Directory or doesn't exist" );
+            throw new JschSftpClientException("The local directory '" + sourceDir
+                                              + "' is not a Directory or doesn't exist");
         }
 
-        if( createParentDirs ) {
-            makeRemoteDirectories( destDir );
+        if (createParentDirs) {
+            makeRemoteDirectories(destDir);
         } else {
-            makeRemoteDirectory( destDir );
+            makeRemoteDirectory(destDir);
         }
         try {
             File[] files = srcDir.listFiles();
-            if( files != null ) {
-                for( File file : files ) {
+            if (files != null) {
+                for (File file : files) {
 
                     String remoteFilePath = destDir + file.getName();
-                    if( file.isDirectory() ) {
-                        uploadDirectory( file.getCanonicalPath(), remoteFilePath, false );
+                    if (file.isDirectory()) {
+                        uploadDirectory(file.getCanonicalPath(), remoteFilePath, false);
                     } else {
-                        uploadFile( file.getCanonicalPath(), remoteFilePath );
+                        uploadFile(file.getCanonicalPath(), remoteFilePath);
                     }
                 }
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new JschSftpClientException( e.getMessage(), e );
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -309,8 +309,8 @@ public class JschSftpClient {
         try {
             return channel.getHome();
 
-        } catch( Exception e ) {
-            throw new JschSftpClientException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -321,17 +321,17 @@ public class JschSftpClient {
      */
     public void makeRemoteDirectory( String dirPath ) {
 
-        if( isVerbose ) {
-            log.debug( "Create remote directory " + dirPath );
+        if (isVerbose) {
+            log.debug("Create remote directory " + dirPath);
         }
 
         try {
-            if( !isRemoteFileOrDirectoryExisting( dirPath ) ) {
-                channel.mkdir( dirPath );
+            if (!isRemoteFileOrDirectoryExisting(dirPath)) {
+                channel.mkdir(dirPath);
             }
 
-        } catch( Exception e ) {
-            throw new JschSftpClientException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -342,27 +342,27 @@ public class JschSftpClient {
      */
     public void makeRemoteDirectories( String dirPath ) {
 
-        if( isVerbose ) {
-            log.debug( "Create remote directory " + dirPath );
+        if (isVerbose) {
+            log.debug("Create remote directory " + dirPath);
         }
 
         try {
-            if( !isRemoteFileOrDirectoryExisting( dirPath ) ) {
+            if (!isRemoteFileOrDirectoryExisting(dirPath)) {
 
-                dirPath = IoUtils.normalizeUnixDir( dirPath );
+                dirPath = IoUtils.normalizeUnixDir(dirPath);
                 int dirSeparatorIndex = 0;
-                while( ( dirSeparatorIndex = dirPath.indexOf( '/', dirSeparatorIndex + 1 ) ) > 0 ) {
+                while ( (dirSeparatorIndex = dirPath.indexOf('/', dirSeparatorIndex + 1)) > 0) {
 
-                    String currentDirPath = dirPath.substring( 0, dirSeparatorIndex );
-                    if( !isRemoteFileOrDirectoryExisting( currentDirPath ) ) {
+                    String currentDirPath = dirPath.substring(0, dirSeparatorIndex);
+                    if (!isRemoteFileOrDirectoryExisting(currentDirPath)) {
 
-                        channel.mkdir( currentDirPath );
+                        channel.mkdir(currentDirPath);
                     }
                 }
             }
 
-        } catch( Exception e ) {
-            throw new JschSftpClientException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -374,37 +374,37 @@ public class JschSftpClient {
      */
     public void removeRemoteDirectory( String directoryPath, boolean isRecursive ) {
 
-        if( isVerbose ) {
-            log.debug( "Delete remote directory " + directoryPath + ( isRecursive
-                                                                                  ? " recursively"
-                                                                                  : "" ) );
+        if (isVerbose) {
+            log.debug("Delete remote directory " + directoryPath + (isRecursive
+                                                                                ? " recursively"
+                                                                                : ""));
         }
 
         try {
-            if( isRemoteFileOrDirectoryExisting( directoryPath ) ) {
+            if (isRemoteFileOrDirectoryExisting(directoryPath)) {
 
-                if( isRecursive ) {
-                    List<FileEntry> entries = ls( directoryPath );
-                    for( FileEntry fileEntry : entries ) {
+                if (isRecursive) {
+                    List<FileEntry> entries = ls(directoryPath);
+                    for (FileEntry fileEntry : entries) {
 
-                        if( fileEntry.isDirectory() ) {
-                            removeRemoteDirectory( fileEntry.getPath(), isRecursive );
+                        if (fileEntry.isDirectory()) {
+                            removeRemoteDirectory(fileEntry.getPath(), isRecursive);
                         } else {
-                            removeRemoteFile( fileEntry.getPath() );
+                            removeRemoteFile(fileEntry.getPath());
                         }
                     }
                 }
 
-                channel.rmdir( directoryPath );
+                channel.rmdir(directoryPath);
             }
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new JschSftpClientException( "Error while deleting directory '" + directoryPath + "'"
-                                               + ( isRecursive
-                                                               ? " recursively"
-                                                               : "" ),
-                                               e );
+            throw new JschSftpClientException("Error while deleting directory '" + directoryPath + "'"
+                                              + (isRecursive
+                                                             ? " recursively"
+                                                             : ""),
+                                              e);
         }
     }
 
@@ -415,15 +415,15 @@ public class JschSftpClient {
      */
     public void removeRemoteFile( String filePath ) {
 
-        if( isVerbose ) {
-            log.debug( "Delete remote file " + filePath );
+        if (isVerbose) {
+            log.debug("Delete remote file " + filePath);
         }
 
         try {
-            channel.rm( filePath );
+            channel.rm(filePath);
 
-        } catch( Exception e ) {
-            throw new JschSftpClientException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new JschSftpClientException(e.getMessage(), e);
         }
     }
 
@@ -434,7 +434,7 @@ public class JschSftpClient {
      */
     public void purgeRemoteDirectoryContents( String directoryPath ) {
 
-        purgeRemoteDirectoryContents( directoryPath, null );
+        purgeRemoteDirectoryContents(directoryPath, null);
     }
 
     /**
@@ -445,63 +445,63 @@ public class JschSftpClient {
      */
     public void purgeRemoteDirectoryContents( String directoryPath, List<String> preservedPaths ) {
 
-        if( isVerbose ) {
-            log.debug( "Cleanup the content of remote directory " + directoryPath );
+        if (isVerbose) {
+            log.debug("Cleanup the content of remote directory " + directoryPath);
         }
 
         try {
-            if( isRemoteFileOrDirectoryExisting( directoryPath ) ) {
+            if (isRemoteFileOrDirectoryExisting(directoryPath)) {
 
-                List<FileEntry> entries = ls( directoryPath );
-                for( FileEntry fileEntry : entries ) {
+                List<FileEntry> entries = ls(directoryPath);
+                for (FileEntry fileEntry : entries) {
 
-                    if( fileEntry.isDirectory() ) {
+                    if (fileEntry.isDirectory()) {
 
-                        if( preservedPaths == null
-                            || ( preservedPaths != null
-                                 && !preservedPaths.contains( IoUtils.normalizeUnixDir( fileEntry.getPath() ) ) ) ) { // skip preserved directories
+                        if (preservedPaths == null
+                            || (preservedPaths != null
+                                && !preservedPaths.contains(IoUtils.normalizeUnixDir(fileEntry.getPath())))) { // skip preserved directories
 
-                            purgeRemoteDirectoryContents( fileEntry.getPath(), preservedPaths );
+                            purgeRemoteDirectoryContents(fileEntry.getPath(), preservedPaths);
                             // the directory may not be empty now, if there are some preserved files/folders in it
-                            if( preservedPaths == null
-                                || ( preservedPaths != null && isDirectoryEmpty( fileEntry.getPath() ) ) ) {
+                            if (preservedPaths == null
+                                || (preservedPaths != null && isDirectoryEmpty(fileEntry.getPath()))) {
 
-                                removeRemoteDirectory( fileEntry.getPath(), false );
+                                removeRemoteDirectory(fileEntry.getPath(), false);
                             }
                         }
-                    } else if( preservedPaths == null
-                               || ( preservedPaths != null
-                                    && !preservedPaths.contains( fileEntry.getPath() ) ) ) { // skip preserved files
+                    } else if (preservedPaths == null
+                               || (preservedPaths != null
+                                   && !preservedPaths.contains(fileEntry.getPath()))) { // skip preserved files
 
-                        removeRemoteFile( fileEntry.getPath() );
+                        removeRemoteFile(fileEntry.getPath());
                     }
                 }
             }
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new JschSftpClientException( "Error while purging directory contnets '" + directoryPath
-                                               + "'", e );
+            throw new JschSftpClientException("Error while purging directory contnets '" + directoryPath
+                                              + "'", e);
         }
     }
 
     private List<FileEntry> getFileEntries( List<LsEntry> lsEntries, String parentPath ) {
 
         List<FileEntry> fileEntries = new ArrayList<FileEntry>();
-        for( LsEntry lsEntry : lsEntries ) {
-            fileEntries.add( getFileEntry( lsEntry, parentPath ) );
+        for (LsEntry lsEntry : lsEntries) {
+            fileEntries.add(getFileEntry(lsEntry, parentPath));
         }
         return fileEntries;
     }
 
     private FileEntry getFileEntry( LsEntry lsEntry, String parentPath ) {
 
-        FileEntry fileEntry = new FileEntry( lsEntry.getFilename(),
-                                             IoUtils.normalizeUnixDir( parentPath ) + lsEntry.getFilename(),
-                                             lsEntry.getAttrs().isDir() );
-        fileEntry.setSize( lsEntry.getAttrs().getSize() );
-        fileEntry.setParentPath( parentPath );
-        fileEntry.setLastModificationTime( lsEntry.getAttrs().getMTime() );
+        FileEntry fileEntry = new FileEntry(lsEntry.getFilename(),
+                                            IoUtils.normalizeUnixDir(parentPath) + lsEntry.getFilename(),
+                                            lsEntry.getAttrs().isDir());
+        fileEntry.setSize(lsEntry.getAttrs().getSize());
+        fileEntry.setParentPath(parentPath);
+        fileEntry.setLastModificationTime(lsEntry.getAttrs().getMTime());
         return fileEntry;
     }
 
@@ -522,8 +522,8 @@ public class JschSftpClient {
         @Override
         public int select( LsEntry lsEntry ) {
 
-            if( !lsEntry.getFilename().endsWith( "." ) ) {
-                this.entries.add( lsEntry );
+            if (!lsEntry.getFilename().endsWith(".")) {
+                this.entries.add(lsEntry);
             }
             return ChannelSftp.LsEntrySelector.CONTINUE;
         }

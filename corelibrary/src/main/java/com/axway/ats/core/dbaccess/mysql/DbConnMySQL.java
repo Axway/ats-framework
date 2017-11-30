@@ -32,7 +32,7 @@ public class DbConnMySQL extends DbConnection {
     /**
      * Default DB port
      */
-    public static final int    DEFAULT_PORT      = 3306;
+    public static final int     DEFAULT_PORT      = 3306;
 
     /**
      * The JDBC MySQL prefix string
@@ -43,8 +43,8 @@ public class DbConnMySQL extends DbConnection {
      * The connection URL
      */
     private String              url;
-    
-    public static final String DATABASE_TYPE = "MYSQL";
+
+    public static final String  DATABASE_TYPE     = "MYSQL";
 
     /**
      * Constructor
@@ -56,7 +56,7 @@ public class DbConnMySQL extends DbConnection {
      */
     public DbConnMySQL( String host, String db, String user, String password ) {
 
-        this( host, db, user, password, null );
+        this(host, db, user, password, null);
     }
 
     /**
@@ -71,14 +71,14 @@ public class DbConnMySQL extends DbConnection {
     public DbConnMySQL( String host, String db, String user, String password,
                         Map<String, Object> customProperties ) {
 
-        super( DATABASE_TYPE, host, db, user, password, customProperties );
+        super(DATABASE_TYPE, host, db, user, password, customProperties);
 
-        url = new StringBuilder().append( JDBC_MYSQL_PREFIX )
-                                 .append( host )
-                                 .append( ":" )
-                                 .append( port )
-                                 .append( "/" )
-                                 .append( db )
+        url = new StringBuilder().append(JDBC_MYSQL_PREFIX)
+                                 .append(host)
+                                 .append(":")
+                                 .append(port)
+                                 .append("/")
+                                 .append(db)
                                  .toString();
     }
 
@@ -87,11 +87,11 @@ public class DbConnMySQL extends DbConnection {
 
         this.port = DEFAULT_PORT;
 
-        if( customProperties != null && !customProperties.isEmpty() ) {
+        if (customProperties != null && !customProperties.isEmpty()) {
             //read the port if such is set
-            Object portValue = customProperties.get( DbKeys.PORT_KEY );
-            if( portValue != null ) {
-                this.port = ( Integer ) portValue;
+            Object portValue = customProperties.get(DbKeys.PORT_KEY);
+            if (portValue != null) {
+                this.port = (Integer) portValue;
             }
         }
     }
@@ -100,12 +100,12 @@ public class DbConnMySQL extends DbConnection {
     public DataSource getDataSource() {
 
         MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();// do not use connection pool
-        dataSource.setServerName( this.host );
-        dataSource.setPort( this.port );
-        dataSource.setDatabaseName( this.db );
-        dataSource.setUser( this.user );
-        dataSource.setPassword( this.password );
-        dataSource.setAllowMultiQueries( true );
+        dataSource.setServerName(this.host);
+        dataSource.setPort(this.port);
+        dataSource.setDatabaseName(this.db);
+        dataSource.setUser(this.user);
+        dataSource.setPassword(this.password);
+        dataSource.setAllowMultiQueries(true);
 
         return dataSource;
     }
@@ -125,10 +125,10 @@ public class DbConnMySQL extends DbConnection {
     @Override
     public String getDescription() {
 
-        StringBuilder description = new StringBuilder( "MySQL connection to " );
-        description.append( host );
-        description.append( ":" ).append( port );
-        description.append( "/" ).append( db );
+        StringBuilder description = new StringBuilder("MySQL connection to ");
+        description.append(host);
+        description.append(":").append(port);
+        description.append("/").append(db);
 
         return description.toString();
     }

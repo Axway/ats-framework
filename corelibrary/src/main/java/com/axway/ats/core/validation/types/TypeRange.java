@@ -38,7 +38,7 @@ public class TypeRange extends TypeNumber {
                          Object val,
                          Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -51,31 +51,31 @@ public class TypeRange extends TypeNumber {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_RANGE + e.getMessage(), this.parameterName, e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_RANGE + e.getMessage(), this.parameterName, e);
         }
 
         // check if arguments are in fact numbers
-        Double min = extractNumber( this.arguments[0] );
-        Double max = extractNumber( this.arguments[1] );
+        Double min = extractNumber(this.arguments[0]);
+        Double max = extractNumber(this.arguments[1]);
 
-        if( min == null || max == null ) {
-            throw new TypeException( ERROR_MESSAGE_WRONG_RANGE, this.parameterName );
+        if (min == null || max == null) {
+            throw new TypeException(ERROR_MESSAGE_WRONG_RANGE, this.parameterName);
         }
 
         this.lowerLimit = min.doubleValue();
         this.upperLimit = max.doubleValue();
 
-        if( this.upperLimit <= this.lowerLimit ) {
-            throw new TypeException( ERROR_MESSAGE_WRONG_RANGE, this.parameterName );
+        if (this.upperLimit <= this.lowerLimit) {
+            throw new TypeException(ERROR_MESSAGE_WRONG_RANGE, this.parameterName);
         }
 
-        if( this.validatedValue <= this.upperLimit && this.validatedValue >= this.lowerLimit ) {
+        if (this.validatedValue <= this.upperLimit && this.validatedValue >= this.lowerLimit) {
             return;
         }
 
-        throw new TypeException( "Argument [" + this.validatedValue
-                                 + "] is not within the predefined range: " + "[" + this.lowerLimit + ","
-                                 + this.upperLimit + "]", this.parameterName );
+        throw new TypeException("Argument [" + this.validatedValue
+                                + "] is not within the predefined range: " + "[" + this.lowerLimit + ","
+                                + this.upperLimit + "]", this.parameterName);
     }
 }

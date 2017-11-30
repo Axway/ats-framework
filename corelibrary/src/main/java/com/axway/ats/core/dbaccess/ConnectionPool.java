@@ -59,28 +59,28 @@ public class ConnectionPool {
         String connectionDescription = dbConnection.getConnHash();
         DataSource dataSource;
 
-        if( dataSourceMap.containsKey( connectionDescription ) ) {
+        if (dataSourceMap.containsKey(connectionDescription)) {
             // use the cached connection
-            dataSource = dataSourceMap.get( connectionDescription );
+            dataSource = dataSourceMap.get(connectionDescription);
         } else {
             dataSource = dbConnection.getDataSource();
-            dataSourceMap.put( connectionDescription, dataSource );
+            dataSourceMap.put(connectionDescription, dataSource);
         }
 
         try {
             Connection newConnection;
-            if( dataSource instanceof BasicDataSource ) {
+            if (dataSource instanceof BasicDataSource) {
                 // DBCP BasicDataSource does not support getConnection(user,pass) method
                 newConnection = dataSource.getConnection();
             } else {
-                newConnection = dataSource.getConnection( dbConnection.getUser(),
-                                                          dbConnection.getPassword() );
+                newConnection = dataSource.getConnection(dbConnection.getUser(),
+                                                         dbConnection.getPassword());
             }
             return newConnection;
 
-        } catch( SQLException sqle ) {
-            throw new DbException( "Unable to connect to database using location '" + dbConnection.getURL()
-                                   + "' and user '" + dbConnection.getUser() + "'", sqle );
+        } catch (SQLException sqle) {
+            throw new DbException("Unable to connect to database using location '" + dbConnection.getURL()
+                                  + "' and user '" + dbConnection.getUser() + "'", sqle);
         }
     }
 
@@ -92,13 +92,13 @@ public class ConnectionPool {
     public static synchronized void removeConnection(
                                                       DbConnection dbConnection ) throws DbException {
 
-        if( dataSourceMap.containsKey( dbConnection.getConnHash() ) ) {
-            dataSourceMap.remove( dbConnection.getConnHash() );
+        if (dataSourceMap.containsKey(dbConnection.getConnHash())) {
+            dataSourceMap.remove(dbConnection.getConnHash());
         } else {
-            log = Logger.getLogger( ConnectionPool.class );
+            log = Logger.getLogger(ConnectionPool.class);
 
-            log.info( "Cannot remove the connection " + dbConnection.hashCode()
-                      + " from the pool, as it is not present in there" );
+            log.info("Cannot remove the connection " + dbConnection.hashCode()
+                     + " from the pool, as it is not present in there");
 
         }
     }

@@ -38,7 +38,7 @@ public class TypeEmailAddress extends TypeString {
                                 Object val,
                                 Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -51,20 +51,20 @@ public class TypeEmailAddress extends TypeString {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_MESSAGE_INVALID_EMAIL + e.getMessage(), this.parameterName, e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_MESSAGE_INVALID_EMAIL + e.getMessage(), this.parameterName, e);
         }
 
         try {
-            String email = ( String ) this.value;
+            String email = (String) this.value;
             // Note that the JavaMail's implementation of email address validation is
             // somewhat limited. The Javadoc says "The current implementation checks many,
             // but not all, syntax rules.". For example, the address a@ is correctly
             // flagged as invalid, but the address "a"@ is considered
             // valid by JavaMail, even though it is not valid according to RFC 822.
-            new InternetAddress( email, true );
-        } catch( AddressException ae ) {
-            throw new TypeException( ERROR_MESSAGE_INVALID_EMAIL, this.parameterName, ae );
+            new InternetAddress(email, true);
+        } catch (AddressException ae) {
+            throw new TypeException(ERROR_MESSAGE_INVALID_EMAIL, this.parameterName, ae);
         }
     }
 }

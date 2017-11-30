@@ -15,17 +15,17 @@
  */
 package com.axway.ats.core.monitoring;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MonitoringException extends RuntimeException {
 
     public MonitoringException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public MonitoringException( String message,
                                 Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

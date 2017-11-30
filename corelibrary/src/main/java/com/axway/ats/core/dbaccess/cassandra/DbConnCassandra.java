@@ -34,7 +34,7 @@ public class DbConnCassandra extends DbConnection {
     /**
      * Default DB port
      */
-    public static final int   DEFAULT_PORT    = 9042;
+    public static final int    DEFAULT_PORT  = 9042;
 
     public static final String DATABASE_TYPE = "CASSANDRA";
 
@@ -50,7 +50,7 @@ public class DbConnCassandra extends DbConnection {
     public DbConnCassandra( String host, String db, String user, String password,
                             Map<String, Object> customProperties ) {
 
-        super( DATABASE_TYPE, host, db, user, password, customProperties );
+        super(DATABASE_TYPE, host, db, user, password, customProperties);
     }
 
     public int getPort() {
@@ -68,16 +68,16 @@ public class DbConnCassandra extends DbConnection {
 
         this.port = DEFAULT_PORT;
 
-        if( customProperties != null && !customProperties.isEmpty() ) {
+        if (customProperties != null && !customProperties.isEmpty()) {
             //read the port if such is set
-            Object portValue = customProperties.get( DbKeys.PORT_KEY );
-            if( portValue != null ) {
-                this.port = ( Integer ) portValue;
+            Object portValue = customProperties.get(DbKeys.PORT_KEY);
+            if (portValue != null) {
+                this.port = (Integer) portValue;
             }
 
-            Object allowFilteringValue = customProperties.get( CassandraKeys.ALLOW_FILTERING );
-            if( allowFilteringValue != null ) {
-                this.allowFiltering = ( Boolean ) allowFilteringValue;
+            Object allowFilteringValue = customProperties.get(CassandraKeys.ALLOW_FILTERING);
+            if (allowFilteringValue != null) {
+                this.allowFiltering = (Boolean) allowFilteringValue;
             }
         }
     }
@@ -103,10 +103,10 @@ public class DbConnCassandra extends DbConnection {
     @Override
     public String getDescription() {
 
-        StringBuilder description = new StringBuilder( "Cassandra connection to " );
-        description.append( host );
-        description.append( ":" ).append( port );
-        description.append( "/" ).append( db );
+        StringBuilder description = new StringBuilder("Cassandra connection to ");
+        description.append(host);
+        description.append(":").append(port);
+        description.append("/").append(db);
 
         return description.toString();
     }

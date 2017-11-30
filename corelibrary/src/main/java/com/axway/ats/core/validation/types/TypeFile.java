@@ -36,7 +36,7 @@ public class TypeFile extends TypeObject {
     /** Constructor */
     protected TypeFile( Object val ) {
 
-        super( val );
+        super(val);
     }
 
     /** Constructor */
@@ -44,7 +44,7 @@ public class TypeFile extends TypeObject {
                         Object val,
                         Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -57,22 +57,22 @@ public class TypeFile extends TypeObject {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_FILE + e.getMessage(), this.parameterName, e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_FILE + e.getMessage(), this.parameterName, e);
         }
 
         File file = null;
 
         try {
-            file = ( File ) this.value;
-        } catch( ClassCastException e ) {
-            throw new TypeException( ERROR_MESSAGE_CAST_EXCEPTION, this.parameterName, e );
+            file = (File) this.value;
+        } catch (ClassCastException e) {
+            throw new TypeException(ERROR_MESSAGE_CAST_EXCEPTION, this.parameterName, e);
         }
 
-        if( file != null && file.isFile() ) {
+        if (file != null && file.isFile()) {
             return;
         }
 
-        throw new TypeException( ERROR_MESSAGE_INVALID_FILE, this.parameterName );
+        throw new TypeException(ERROR_MESSAGE_INVALID_FILE, this.parameterName);
     }
 }

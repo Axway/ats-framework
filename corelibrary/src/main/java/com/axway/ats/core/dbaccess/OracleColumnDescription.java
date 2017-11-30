@@ -19,7 +19,7 @@ public class OracleColumnDescription extends ColumnDescription {
 
     public OracleColumnDescription(
                                     String name, String type ) {
-        super( name.toLowerCase(), type.toLowerCase() );
+        super(name.toLowerCase(), type.toLowerCase());
     }
 
     // for information about all data types in Oracle
@@ -28,17 +28,19 @@ public class OracleColumnDescription extends ColumnDescription {
 
     @Override
     public boolean isTypeBinary() {
+
         String normType = type.toLowerCase();
-        return "binary".equals( normType ) || "varbinary".equals( normType )
-               || "blob".equals( normType ) || normType.contains( "clob" )
-               || normType.contains( "raw" );
+        return "binary".equals(normType) || "varbinary".equals(normType)
+               || "blob".equals(normType) || normType.contains("clob")
+               || normType.contains("raw");
     }
 
     @Override
     public boolean isTypeNumeric() {
+
         String normType = type.toLowerCase();
-        return normType.contains( "int" ) || normType.contains( "number" )
-               || normType.contains( "float" ) || normType.contains( "double" )
-               || normType.contains( "dec" ) || normType.contains( "numeric" );
+        return normType.contains("int") || normType.contains("number")
+               || normType.contains("float") || normType.contains("double")
+               || normType.contains("dec") || normType.contains("numeric");
     }
 }

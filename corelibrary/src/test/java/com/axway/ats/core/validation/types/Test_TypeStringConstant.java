@@ -41,7 +41,7 @@ public class Test_TypeStringConstant extends BaseTest {
 
     /** Invalid test data */
     private static final String         INVALID_CONSTANT           = "peperonni";
-    @SuppressWarnings("boxing")
+    @SuppressWarnings( "boxing")
     private static final Integer[]      INVALID_CONSTANT_LIST      = { 1, 2, 3, 4, 5 };
 
     private static final ValidationType VALIDATION_TYPE            = ValidationType.STRING_CONSTANT;
@@ -53,7 +53,7 @@ public class Test_TypeStringConstant extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -64,13 +64,13 @@ public class Test_TypeStringConstant extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, VALID_CONSTANT, CONSTANTS_LIST ) );
-        assertTrue( this.validator.validate( ValidationType.STRING_CONSTANT_IGNORE_CASE,
-                                             VALID_CONSTANT_IGNORE_CASE,
-                                             CONSTANTS_LIST ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, VALID_CONSTANT, CONSTANTS_LIST));
+        assertTrue(this.validator.validate(ValidationType.STRING_CONSTANT_IGNORE_CASE,
+                                           VALID_CONSTANT_IGNORE_CASE,
+                                           CONSTANTS_LIST));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, INVALID_CONSTANT, CONSTANTS_LIST ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, VALID_CONSTANT, INVALID_CONSTANT_LIST ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, VALID_CONSTANT ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, INVALID_CONSTANT, CONSTANTS_LIST));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, VALID_CONSTANT, INVALID_CONSTANT_LIST));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, VALID_CONSTANT));
     }
 }

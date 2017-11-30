@@ -39,9 +39,9 @@ public class LocalProcessTalker implements IProcessTalker {
      * we set a global timeout for the whole usage. But we do not want this. We only
      * want to set timeout to some of the simple operations(like expectXYZ).
      */
-    private int defaultTimeoutSeconds = -1;
+    private int     defaultTimeoutSeconds = -1;
 
-    private String command;
+    private String  command;
 
     public LocalProcessTalker( String command ) throws ProcessTalkException {
 
@@ -50,9 +50,9 @@ public class LocalProcessTalker implements IProcessTalker {
         expect = new ExpectJ();
 
         try {
-            shell = expect.spawn( command );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error starting command '" + command + "'", e );
+            shell = expect.spawn(command);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error starting command '" + command + "'", e);
         }
     }
 
@@ -62,18 +62,18 @@ public class LocalProcessTalker implements IProcessTalker {
         this.command = command;
 
         try {
-            shell = expect.spawn( command );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error starting command '" + command + "'", e );
+            shell = expect.spawn(command);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error starting command '" + command + "'", e);
         }
     }
 
     public void setDefaultOperationTimeout(
                                             int defaultTimeoutSeconds ) throws ProcessTalkException {
 
-        if( defaultTimeoutSeconds < -1 ) {
-            throw new ProcessTalkException( "Invalid timeout value '" + defaultTimeoutSeconds
-                                            + "'. It must be a positive number or -1 for no timeout" );
+        if (defaultTimeoutSeconds < -1) {
+            throw new ProcessTalkException("Invalid timeout value '" + defaultTimeoutSeconds
+                                           + "'. It must be a positive number or -1 for no timeout");
         } else {
             this.defaultTimeoutSeconds = defaultTimeoutSeconds;
         }
@@ -85,11 +85,11 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.expect( pattern, false, defaultTimeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+            shell.expect(pattern, false, defaultTimeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
         }
     }
 
@@ -100,33 +100,33 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.expect( pattern, false, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+            shell.expect(pattern, false, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
         }
     }
-    
+
     @Override
     public void expectErr( String pattern, int timeoutSeconds ) {
 
         checkCommandIsGiven();
 
         try {
-            shell.expectErr( pattern, false, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+            shell.expectErr(pattern, false, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
         }
-        
+
     }
 
     public void expectByRegex(
                                String pattern ) throws ProcessTalkException {
 
-        expectByRegex( pattern, defaultTimeoutSeconds );
+        expectByRegex(pattern, defaultTimeoutSeconds);
     }
 
     public void expectByRegex(
@@ -136,33 +136,33 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.expect( pattern, true, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+            shell.expect(pattern, true, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
         }
     }
-    
+
     @Override
     public void expectErrByRegex( String pattern, int timeoutSeconds ) {
 
         checkCommandIsGiven();
 
         try {
-            shell.expectErr( pattern, true, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting pattern '" + pattern + "'", e );
+            shell.expectErr(pattern, true, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting pattern '" + pattern + "'", e);
         }
-        
+
     }
 
     public int expectAny(
                           String[] patterns ) throws ProcessTalkException {
 
-        return expectAny( patterns, defaultTimeoutSeconds );
+        return expectAny(patterns, defaultTimeoutSeconds);
     }
 
     public int expectAny(
@@ -178,18 +178,18 @@ public class LocalProcessTalker implements IProcessTalker {
              * and while matching the patterns we cannot remove them from the list
              * so it throws a java.lang.UnsupportedOperationException
              */
-            return shell.expectAny( new ArrayList<String>( Arrays.asList( patterns ) ),
-                                    false,
-                                    timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
+            return shell.expectAny(new ArrayList<String>(Arrays.asList(patterns)),
+                                   false,
+                                   timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting any of the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error expecting any of the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
         }
     }
-    
+
     @Override
     public int expectErrAny( String[] patterns, int timeoutSeconds ) {
 
@@ -202,22 +202,22 @@ public class LocalProcessTalker implements IProcessTalker {
              * and while matching the patterns we cannot remove them from the list
              * so it throws a java.lang.UnsupportedOperationException
              */
-            return shell.expectErrAny( new ArrayList<String>( Arrays.asList( patterns ) ),
-                                    false,
-                                    timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
+            return shell.expectErrAny(new ArrayList<String>(Arrays.asList(patterns)),
+                                      false,
+                                      timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting any of the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error expecting any of the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
         }
     }
 
     public int expectAnyByRegex(
                                  String[] regexPatterns ) throws ProcessTalkException {
 
-        return expectAnyByRegex( regexPatterns, defaultTimeoutSeconds );
+        return expectAnyByRegex(regexPatterns, defaultTimeoutSeconds);
     }
 
     public int expectAnyByRegex(
@@ -227,40 +227,40 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            return shell.expectAny( new ArrayList<String>( Arrays.asList( regexPatterns ) ),
-                                    true,
-                                    timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
+            return shell.expectAny(new ArrayList<String>(Arrays.asList(regexPatterns)),
+                                   true,
+                                   timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting any of the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error expecting any of the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
         }
     }
-    
+
     @Override
     public int expectErrAnyByRegex( String[] regexPatterns, int timeoutSeconds ) {
 
         checkCommandIsGiven();
 
         try {
-            return shell.expectErrAny( new ArrayList<String>( Arrays.asList( regexPatterns ) ),
-                                    true,
-                                    timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error expecting any of the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
+            return shell.expectErrAny(new ArrayList<String>(Arrays.asList(regexPatterns)),
+                                      true,
+                                      timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting any of the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error expecting any of the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
         }
     }
 
     public void expectAll(
                            String[] patterns ) throws ProcessTalkException {
 
-        expectAll( patterns, defaultTimeoutSeconds );
+        expectAll(patterns, defaultTimeoutSeconds);
     }
 
     public void expectAll(
@@ -270,37 +270,37 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.expectAll( new ArrayList<String>( Arrays.asList( patterns ) ), false, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
+            shell.expectAll(new ArrayList<String>(Arrays.asList(patterns)), false, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
         }
     }
-    
+
     @Override
     public void expectErrAll( String[] patterns, int timeoutSeconds ) {
 
         checkCommandIsGiven();
 
         try {
-            shell.expectErrAll( new ArrayList<String>( Arrays.asList( patterns ) ), false, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting the following patterns '"
-                                            + Arrays.toString( patterns ) + "'", e );
+            shell.expectErrAll(new ArrayList<String>(Arrays.asList(patterns)), false, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting the following patterns '"
+                                           + Arrays.toString(patterns) + "'", e);
         }
-        
+
     }
 
     public void expectAllByRegex(
                                   String[] regexPatterns ) throws ProcessTalkException {
 
-        expectAllByRegex( regexPatterns, defaultTimeoutSeconds );
+        expectAllByRegex(regexPatterns, defaultTimeoutSeconds);
     }
 
     public void expectAllByRegex(
@@ -310,31 +310,31 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.expectAll( new ArrayList<String>( Arrays.asList( regexPatterns ) ), true, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
+            shell.expectAll(new ArrayList<String>(Arrays.asList(regexPatterns)), true, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
         }
     }
-    
+
     @Override
     public void expectErrAllByRegex( String[] regexPatterns, int timeoutSeconds ) {
 
         checkCommandIsGiven();
 
         try {
-            shell.expectErrAll( new ArrayList<String>( Arrays.asList( regexPatterns ) ), true, timeoutSeconds );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error expecting the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error expecting the following regex patterns '"
-                                            + Arrays.toString( regexPatterns ) + "'", e );
+            shell.expectErrAll(new ArrayList<String>(Arrays.asList(regexPatterns)), true, timeoutSeconds);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error expecting the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error expecting the following regex patterns '"
+                                           + Arrays.toString(regexPatterns) + "'", e);
         }
-        
+
     }
 
     public void send(
@@ -343,9 +343,9 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.send( text );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error sending '" + text + "' to the external process", e );
+            shell.send(text);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error sending '" + text + "' to the external process", e);
         }
     }
 
@@ -355,8 +355,8 @@ public class LocalProcessTalker implements IProcessTalker {
 
         try {
             shell.sendEnterKey();
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error sending ENTER to the external process", e );
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error sending ENTER to the external process", e);
         }
     }
 
@@ -368,13 +368,13 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.sendEnterKeyInLoop( intermediatePattern, finalPattern, maxLoopTimes );
-        } catch( IOException e ) {
-            throw new ProcessTalkException( "Error sending ENTER in loop to the external process", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error sending ENTER in loop to the external process", e );
-        } catch( InterruptedException e ) {
-            throw new ProcessTalkException( "Error sending ENTER in loop to the external process", e );
+            shell.sendEnterKeyInLoop(intermediatePattern, finalPattern, maxLoopTimes);
+        } catch (IOException e) {
+            throw new ProcessTalkException("Error sending ENTER in loop to the external process", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error sending ENTER in loop to the external process", e);
+        } catch (InterruptedException e) {
+            throw new ProcessTalkException("Error sending ENTER in loop to the external process", e);
         }
     }
 
@@ -385,8 +385,8 @@ public class LocalProcessTalker implements IProcessTalker {
 
         try {
             return shell.isClosed();
-        } catch( Exception e ) {
-            throw new ProcessTalkException( "Error checking if the external process is closed.", e );
+        } catch (Exception e) {
+            throw new ProcessTalkException("Error checking if the external process is closed.", e);
         }
     }
 
@@ -396,8 +396,8 @@ public class LocalProcessTalker implements IProcessTalker {
 
         try {
             return shell.getExitValue();
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error getting the external process exit value", e );
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error getting the external process exit value", e);
         }
     }
 
@@ -407,10 +407,10 @@ public class LocalProcessTalker implements IProcessTalker {
 
         try {
             shell.expectClose();
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error waiting for the external process to finish", e );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error waiting for the external process to finish", e );
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error waiting for the external process to finish", e);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error waiting for the external process to finish", e);
         }
     }
 
@@ -420,11 +420,11 @@ public class LocalProcessTalker implements IProcessTalker {
         checkCommandIsGiven();
 
         try {
-            shell.expectClose( timeOutSeconds );
-        } catch( TimeoutException e ) {
-            throw new ProcessTalkException( "Error waiting for the external process to finish", e );
-        } catch( ExpectJException e ) {
-            throw new ProcessTalkException( "Error waiting for the external process to finish", e );
+            shell.expectClose(timeOutSeconds);
+        } catch (TimeoutException e) {
+            throw new ProcessTalkException("Error waiting for the external process to finish", e);
+        } catch (ExpectJException e) {
+            throw new ProcessTalkException("Error waiting for the external process to finish", e);
         }
     }
 
@@ -440,8 +440,8 @@ public class LocalProcessTalker implements IProcessTalker {
 
         try {
             return shell.getCurrentStandardOutContents();
-        } catch( Exception e ) {
-            throw new ProcessTalkException( "Error getting the current output content.", e );
+        } catch (Exception e) {
+            throw new ProcessTalkException("Error getting the current output content.", e);
         }
     }
 
@@ -452,8 +452,8 @@ public class LocalProcessTalker implements IProcessTalker {
 
         try {
             return shell.getCurrentStandardErrContents();
-        } catch( Exception e ) {
-            throw new ProcessTalkException( "Error getting the current error content.", e );
+        } catch (Exception e) {
+            throw new ProcessTalkException("Error getting the current error content.", e);
         }
     }
 
@@ -468,17 +468,17 @@ public class LocalProcessTalker implements IProcessTalker {
 
         checkCommandIsGiven();
 
-        Process systemObject = ( Process ) shell.getSystemObject();
+        Process systemObject = (Process) shell.getSystemObject();
         systemObject.destroy();
 
-        new ProcessUtils( systemObject, command ).killProcess();
+        new ProcessUtils(systemObject, command).killProcess();
         shell.stop();
     }
 
     private void checkCommandIsGiven() {
 
-        if( shell == null ) {
-            throw new ProcessTalkException( "You have not given the command to run" );
+        if (shell == null) {
+            throw new ProcessTalkException("You have not given the command to run");
         }
     }
 
@@ -488,7 +488,7 @@ public class LocalProcessTalker implements IProcessTalker {
         // if this instance is garbage collected - try to kill its children processes
         try {
             killExternalProcessWithChildren();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             // remain silent
         }
 

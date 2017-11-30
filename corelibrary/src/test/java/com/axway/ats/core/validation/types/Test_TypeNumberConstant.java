@@ -36,7 +36,7 @@ public class Test_TypeNumberConstant extends BaseTest {
 
     /** Valid test data */
     private static final String         VALID_CONSTANT   = "2";
-    @SuppressWarnings("boxing")
+    @SuppressWarnings( "boxing")
     private static final Integer[]      CONSTANTS_LIST   = { 1, 2, 3, 4 };
 
     /** Invalid test data */
@@ -51,7 +51,7 @@ public class Test_TypeNumberConstant extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -62,9 +62,9 @@ public class Test_TypeNumberConstant extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, VALID_CONSTANT, CONSTANTS_LIST ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, VALID_CONSTANT, CONSTANTS_LIST));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, INVALID_CONSTANT, CONSTANTS_LIST ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, VALID_CONSTANT ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, INVALID_CONSTANT, CONSTANTS_LIST));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, VALID_CONSTANT));
     }
 }

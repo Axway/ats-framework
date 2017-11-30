@@ -48,8 +48,8 @@ import com.axway.ats.core.filetransfer.model.ftp.SynchronizationFtpTransferListe
 /**
 * Tests the {@link Apacheorg.apache.commons.net.ftp.FTPClient} class
 */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(FtpClient.class)
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( FtpClient.class)
 public class Test_FTPClient extends BaseTest {
 
     private static final int                     PORT_NUMBER           = 21;
@@ -73,41 +73,41 @@ public class Test_FTPClient extends BaseTest {
     @BeforeClass
     public static void beforeClass() throws IOException {
 
-        new File( LOCAL_FILE_NAME ).createNewFile();
+        new File(LOCAL_FILE_NAME).createNewFile();
     }
 
     @AfterClass
     public static void afterClass() throws IOException {
 
-        new File( LOCAL_FILE_NAME ).delete();
+        new File(LOCAL_FILE_NAME).delete();
     }
 
     @Before
     public void makeMeHappy() {
 
-        mockFtp = createMock( org.apache.commons.net.ftp.FTPClient.class );
+        mockFtp = createMock(org.apache.commons.net.ftp.FTPClient.class);
         testObject = new FtpClient();
-        testObject.setCustomPort( PORT_NUMBER );
+        testObject.setCustomPort(PORT_NUMBER);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test( expected = AssertionError.class)
     public void testConnectBinary() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
         //mockFtp.setDebugStream( isA( DebugStream.class ) );
         //mockFtp.setDebug( true );
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.setDebugMode( true );
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.setDebugMode(true);
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
         verifyAll();
     }
@@ -115,18 +115,18 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testConnectAscii() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.setTransferMode( TransferMode.ASCII );
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.setTransferMode(TransferMode.ASCII);
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
         verifyAll();
     }
@@ -134,21 +134,21 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testDisconnect() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        expect( mockFtp.isConnected() ).andReturn( true );
+        expect(mockFtp.isConnected()).andReturn(true);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         mockFtp.disconnect();
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
         testObject.disconnect();
 
         verifyAll();
@@ -157,18 +157,18 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testConnectCustomPort() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, CUSTOM_PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, CUSTOM_PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.setCustomPort( CUSTOM_PORT_NUMBER );
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.setCustomPort(CUSTOM_PORT_NUMBER);
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
         verifyAll();
     }
@@ -176,54 +176,54 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testConnectCustomTimeout() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( CUSTOM_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(CUSTOM_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.setConnectionTimeout( CUSTOM_TIMEOUT );
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.setConnectionTimeout(CUSTOM_TIMEOUT);
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testSecureConnect() throws FileTransferException {
 
-        testObject.connect( HOSTNAME, KEYSTORE_FILE, KEYSTORE_PASSWORD, ALIAS );
+        testObject.connect(HOSTNAME, KEYSTORE_FILE, KEYSTORE_PASSWORD, ALIAS);
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testConnectNegative() throws FileTransferException {
 
         FtpClient client = new FtpClient();
-        client.setCustomPort( PORT_NUMBER );
-        client.connect( HOSTNAME, USERNAME, PASSWORD );
+        client.setCustomPort(PORT_NUMBER);
+        client.connect(HOSTNAME, USERNAME, PASSWORD);
     }
 
     @Test
     public void testChangeModeASCII() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        expect( mockFtp.isConnected() ).andReturn( true );
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.isConnected()).andReturn(true);
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.setTransferMode( TransferMode.ASCII );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.setTransferMode(TransferMode.ASCII);
 
         verifyAll();
     }
@@ -231,22 +231,22 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testChangeModeBinary() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)).andReturn(true);
 
-        expect( mockFtp.isConnected() ).andReturn( true );
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.isConnected()).andReturn(true);
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.setTransferMode( TransferMode.ASCII );
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.setTransferMode( TransferMode.BINARY );
+        testObject.setTransferMode(TransferMode.ASCII);
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.setTransferMode(TransferMode.BINARY);
 
         verifyAll();
     }
@@ -254,24 +254,24 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testChangeModeNegative() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        expect( mockFtp.isConnected() ).andReturn( true );
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.isConnected()).andReturn(true);
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)).andReturn(true);
 
-        expect( mockFtp.isConnected() ).andReturn( true );
+        expect(mockFtp.isConnected()).andReturn(true);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.setTransferMode( TransferMode.ASCII ); //BINARY
-        testObject.setTransferMode( TransferMode.ASCII );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.setTransferMode(TransferMode.ASCII); //BINARY
+        testObject.setTransferMode(TransferMode.ASCII);
 
         verifyAll();
     }
@@ -279,41 +279,42 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testDownload() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        expect( mockFtp.retrieveFile( eq( REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME ), isA( FileOutputStream.class ) ) ).andReturn( true );
+        expect(mockFtp.retrieveFile(eq(REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME),
+                                    isA(FileOutputStream.class))).andReturn(true);
 
-        expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
+        expect(mockFtp.getPassiveHost()).andReturn(HOSTNAME);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.downloadFile( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.downloadFile(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test( expected = AssertionError.class)
     public void testDownloadException() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.downloadFile( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.downloadFile(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
@@ -321,41 +322,42 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testUpload() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        expect( mockFtp.storeFile( eq( REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
+        expect(mockFtp.storeFile(eq(REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME),
+                                 isA(FileInputStream.class))).andReturn(true);
 
-        expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
+        expect(mockFtp.getPassiveHost()).andReturn(HOSTNAME);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.uploadFile( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.uploadFile(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test( expected = AssertionError.class)
     public void testUploadException() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.uploadFile( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.uploadFile(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
@@ -364,178 +366,179 @@ public class Test_FTPClient extends BaseTest {
     public void testStartUploadAndPauseThenResume() throws Exception {
 
         // connect
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        mockFtp.addProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.addProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         // upload
-        expect( mockFtp.storeFile( eq( REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
+        expect(mockFtp.storeFile(eq(REMOTE_DIRECTORY_NAME + "/" + REMOTE_FILE_NAME),
+                                 isA(FileInputStream.class))).andReturn(true);
+        expect(mockFtp.getPassiveHost()).andReturn(HOSTNAME);
 
-        mockFtp.removeProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.removeProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
-        Assert.assertFalse( testObject.canResume );
+        Assert.assertFalse(testObject.isTransferStartedAndPaused);
+        Assert.assertFalse(testObject.canResume);
 
-        testObject.startUploadAndPause( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.startUploadAndPause(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
-        Assert.assertTrue( testObject.isTransferStartedAndPaused );
+        Assert.assertTrue(testObject.isTransferStartedAndPaused);
 
         testObject.resumePausedTransfer();
 
-        Assert.assertFalse( testObject.canResume );
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
+        Assert.assertFalse(testObject.canResume);
+        Assert.assertFalse(testObject.isTransferStartedAndPaused);
 
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testStartUploadAndPauseTwice() throws Exception {
 
         // connect
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        mockFtp.addProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.addProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         // upload
-        expect( mockFtp.printWorkingDirectory() ).andReturn( CURRENT_REMOTE_DIR );
-        expect( mockFtp.changeWorkingDirectory( REMOTE_DIRECTORY_NAME ) ).andReturn( true );
-        expect( mockFtp.storeFile( eq( REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.changeWorkingDirectory( CURRENT_REMOTE_DIR ) ).andReturn( true );
-        expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
+        expect(mockFtp.printWorkingDirectory()).andReturn(CURRENT_REMOTE_DIR);
+        expect(mockFtp.changeWorkingDirectory(REMOTE_DIRECTORY_NAME)).andReturn(true);
+        expect(mockFtp.storeFile(eq(REMOTE_FILE_NAME), isA(FileInputStream.class))).andReturn(true);
+        expect(mockFtp.changeWorkingDirectory(CURRENT_REMOTE_DIR)).andReturn(true);
+        expect(mockFtp.getPassiveHost()).andReturn(HOSTNAME);
 
-        mockFtp.removeProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.removeProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
-        Assert.assertFalse( testObject.canResume );
+        Assert.assertFalse(testObject.isTransferStartedAndPaused);
+        Assert.assertFalse(testObject.canResume);
 
-        testObject.startUploadAndPause( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.startUploadAndPause(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
-        Assert.assertTrue( testObject.isTransferStartedAndPaused );
+        Assert.assertTrue(testObject.isTransferStartedAndPaused);
 
-        testObject.startUploadAndPause( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.startUploadAndPause(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testResumeWOStartUploadAndPause() throws Exception {
 
         // connect
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
-        Assert.assertFalse( testObject.canResume );
+        Assert.assertFalse(testObject.isTransferStartedAndPaused);
+        Assert.assertFalse(testObject.canResume);
 
         testObject.resumePausedTransfer();
 
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testStartUploadAndPauseThenUpload() throws Exception {
 
         // connect
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        mockFtp.addProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.addProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         // upload
-        expect( mockFtp.printWorkingDirectory() ).andReturn( CURRENT_REMOTE_DIR );
-        expect( mockFtp.changeWorkingDirectory( REMOTE_DIRECTORY_NAME ) ).andReturn( true );
-        expect( mockFtp.storeFile( eq( REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.changeWorkingDirectory( CURRENT_REMOTE_DIR ) ).andReturn( true );
-        expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
+        expect(mockFtp.printWorkingDirectory()).andReturn(CURRENT_REMOTE_DIR);
+        expect(mockFtp.changeWorkingDirectory(REMOTE_DIRECTORY_NAME)).andReturn(true);
+        expect(mockFtp.storeFile(eq(REMOTE_FILE_NAME), isA(FileInputStream.class))).andReturn(true);
+        expect(mockFtp.changeWorkingDirectory(CURRENT_REMOTE_DIR)).andReturn(true);
+        expect(mockFtp.getPassiveHost()).andReturn(HOSTNAME);
 
-        mockFtp.removeProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.removeProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
-        Assert.assertFalse( testObject.canResume );
+        Assert.assertFalse(testObject.isTransferStartedAndPaused);
+        Assert.assertFalse(testObject.canResume);
 
-        testObject.startUploadAndPause( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.startUploadAndPause(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
-        Assert.assertTrue( testObject.isTransferStartedAndPaused );
+        Assert.assertTrue(testObject.isTransferStartedAndPaused);
 
-        testObject.uploadFile( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.uploadFile(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testStartUploadAndPauseThenDownload() throws Exception {
 
         // connect
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        mockFtp.addProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.addProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         // upload
-        expect( mockFtp.printWorkingDirectory() ).andReturn( CURRENT_REMOTE_DIR );
-        expect( mockFtp.changeWorkingDirectory( REMOTE_DIRECTORY_NAME ) ).andReturn( true );
-        expect( mockFtp.storeFile( eq( REMOTE_FILE_NAME ), isA( FileInputStream.class ) ) ).andReturn( true );
-        expect( mockFtp.changeWorkingDirectory( CURRENT_REMOTE_DIR ) ).andReturn( true );
-        expect( mockFtp.getPassiveHost() ).andReturn( HOSTNAME );
+        expect(mockFtp.printWorkingDirectory()).andReturn(CURRENT_REMOTE_DIR);
+        expect(mockFtp.changeWorkingDirectory(REMOTE_DIRECTORY_NAME)).andReturn(true);
+        expect(mockFtp.storeFile(eq(REMOTE_FILE_NAME), isA(FileInputStream.class))).andReturn(true);
+        expect(mockFtp.changeWorkingDirectory(CURRENT_REMOTE_DIR)).andReturn(true);
+        expect(mockFtp.getPassiveHost()).andReturn(HOSTNAME);
 
-        mockFtp.removeProtocolCommandListener( isA( SynchronizationFtpTransferListener.class ) );
+        mockFtp.removeProtocolCommandListener(isA(SynchronizationFtpTransferListener.class));
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
 
-        Assert.assertFalse( testObject.isTransferStartedAndPaused );
-        Assert.assertFalse( testObject.canResume );
+        Assert.assertFalse(testObject.isTransferStartedAndPaused);
+        Assert.assertFalse(testObject.canResume);
 
-        testObject.startUploadAndPause( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.startUploadAndPause(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
-        Assert.assertTrue( testObject.isTransferStartedAndPaused );
+        Assert.assertTrue(testObject.isTransferStartedAndPaused);
 
-        testObject.downloadFile( LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME );
+        testObject.downloadFile(LOCAL_FILE_NAME, REMOTE_DIRECTORY_NAME, REMOTE_FILE_NAME);
 
         verifyAll();
     }
@@ -543,25 +546,25 @@ public class Test_FTPClient extends BaseTest {
     @Test
     public void testGatherResponses() throws Exception {
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
         FtpResponseListener listener = new FtpResponseListener();
-        expectNew( FtpResponseListener.class ).andReturn( listener );
+        expectNew(FtpResponseListener.class).andReturn(listener);
 
-        mockFtp.addProtocolCommandListener( listener );
-        mockFtp.removeProtocolCommandListener( listener );
+        mockFtp.addProtocolCommandListener(listener);
+        mockFtp.removeProtocolCommandListener(listener);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.enableResponseCollection( true );
-        testObject.enableResponseCollection( false );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.enableResponseCollection(true);
+        testObject.enableResponseCollection(false);
 
         verifyAll();
     }
@@ -571,29 +574,29 @@ public class Test_FTPClient extends BaseTest {
 
         FtpResponseListener listener = new FtpResponseListener();
         List<String> initializeResponses = new ArrayList<String>();
-        initializeResponses.add( "1" );
-        listener.setResponses( initializeResponses );
+        initializeResponses.add("1");
+        listener.setResponses(initializeResponses);
 
-        expectNew( org.apache.commons.net.ftp.FTPClient.class ).andReturn( mockFtp );
+        expectNew(org.apache.commons.net.ftp.FTPClient.class).andReturn(mockFtp);
 
-        mockFtp.setConnectTimeout( DEFAULT_TIMEOUT );
-        mockFtp.connect( HOSTNAME, PORT_NUMBER );
-        expect( mockFtp.login( USERNAME, PASSWORD ) ).andReturn( true );
+        mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
+        mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
-        expect( mockFtp.setFileType( org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE ) ).andReturn( true );
+        expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
 
-        expectNew( FtpResponseListener.class ).andReturn( listener );
+        expectNew(FtpResponseListener.class).andReturn(listener);
 
-        mockFtp.addProtocolCommandListener( listener );
+        mockFtp.addProtocolCommandListener(listener);
 
         replayAll();
 
-        testObject.connect( HOSTNAME, USERNAME, PASSWORD );
-        testObject.enableResponseCollection( true );
+        testObject.connect(HOSTNAME, USERNAME, PASSWORD);
+        testObject.enableResponseCollection(true);
         String[] responses = testObject.getResponses();
 
-        Assert.assertEquals( initializeResponses.size(), responses.length );
-        Assert.assertEquals( initializeResponses.get( 0 ), responses[0] );
+        Assert.assertEquals(initializeResponses.size(), responses.length);
+        Assert.assertEquals(initializeResponses.get(0), responses[0]);
 
         verifyAll();
     }

@@ -35,10 +35,10 @@ public interface IProcessTalker {
     public void expect(
                         String pattern,
                         int timeoutSeconds );
-    
+
     public void expectErr(
-                          String pattern,
-                          int timeoutSeconds );
+                           String pattern,
+                           int timeoutSeconds );
 
     public void expectByRegex(
                                String pattern );
@@ -46,10 +46,10 @@ public interface IProcessTalker {
     public void expectByRegex(
                                String pattern,
                                int timeoutSeconds );
-    
+
     public void expectErrByRegex(
-                                 String pattern,
-                                 int timeoutSeconds );
+                                  String pattern,
+                                  int timeoutSeconds );
 
     public int expectAny(
                           String[] patterns );
@@ -59,8 +59,8 @@ public interface IProcessTalker {
                           int timeoutSeconds );
 
     public int expectErrAny(
-                            String[] patterns,
-                            int timeoutSeconds );
+                             String[] patterns,
+                             int timeoutSeconds );
 
     public int expectAnyByRegex(
                                  String[] regexPatterns );
@@ -68,10 +68,10 @@ public interface IProcessTalker {
     public int expectAnyByRegex(
                                  String[] regexPatterns,
                                  int timeoutSeconds );
-    
+
     public int expectErrAnyByRegex(
-                                   String[] regexPatterns,
-                                   int timeoutSeconds );
+                                    String[] regexPatterns,
+                                    int timeoutSeconds );
 
     public void expectAll(
                            String[] patterns );
@@ -79,10 +79,10 @@ public interface IProcessTalker {
     public void expectAll(
                            String[] patterns,
                            int timeoutSeconds );
-    
+
     public void expectErrAll(
-                             String[] patterns,
-                             int timeoutSeconds );
+                              String[] patterns,
+                              int timeoutSeconds );
 
     public void expectAllByRegex(
                                   String[] regexPatterns );
@@ -90,10 +90,10 @@ public interface IProcessTalker {
     public void expectAllByRegex(
                                   String[] regexPatterns,
                                   int timeoutSeconds );
-    
+
     public void expectErrAllByRegex(
-                                    String[] regexPatterns,
-                                    int timeoutSeconds );
+                                     String[] regexPatterns,
+                                     int timeoutSeconds );
 
     public void send(
                       String text );

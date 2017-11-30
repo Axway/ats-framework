@@ -30,7 +30,7 @@ public class AgentInfo extends AbstractApplicationInfo {
                       Element agentNode,
                       Map<String, String> defaultValues ) throws AtsConfigurationException {
 
-        super( alias, agentNode, defaultValues );
+        super(alias, agentNode, defaultValues);
     }
 
     private static final String AGENT_FOLDER_PARAM  = "<agentFolderPath>";
@@ -77,69 +77,70 @@ public class AgentInfo extends AbstractApplicationInfo {
     protected void loadMoreInfo(
                                  Element applicationNode ) {
 
-        if( isUnix() ) {
-            statusCommandInfo.command = AgentCommands.Linux.STATUS.replace( AGENT_FOLDER_PARAM, home )
-                                                                  .replace( AGENT_PORT_PARAM,
-                                                                            getPortToken() );
+        if (isUnix()) {
+            statusCommandInfo.command = AgentCommands.Linux.STATUS.replace(AGENT_FOLDER_PARAM, home)
+                                                                  .replace(AGENT_PORT_PARAM,
+                                                                           getPortToken());
         } else {
-            statusCommandInfo.command = AgentCommands.Windows.STATUS.replace( AGENT_FOLDER_PARAM, home )
-                                                                    .replace( AGENT_PORT_PARAM,
-                                                                              getPortToken() );
+            statusCommandInfo.command = AgentCommands.Windows.STATUS.replace(AGENT_FOLDER_PARAM, home)
+                                                                    .replace(AGENT_PORT_PARAM,
+                                                                             getPortToken());
         }
 
-        if( isUnix() ) {
-            startCommandInfo.command = AgentCommands.Linux.START.replace( AGENT_FOLDER_PARAM, home )
-                                                                .replace( AGENT_PORT_PARAM, getPortToken() )
-                                                                .replace( AGENT_JAVAEXE_PARAM,
-                                                                          getJavaExecutableToken() )
-                                                                .replace( AGENT_MEMORY_PARAM,
-                                                                          getMemoryToken() );
+        if (isUnix()) {
+            startCommandInfo.command = AgentCommands.Linux.START.replace(AGENT_FOLDER_PARAM, home)
+                                                                .replace(AGENT_PORT_PARAM, getPortToken())
+                                                                .replace(AGENT_JAVAEXE_PARAM,
+                                                                         getJavaExecutableToken())
+                                                                .replace(AGENT_MEMORY_PARAM,
+                                                                         getMemoryToken());
         } else {
-            startCommandInfo.command = AgentCommands.Windows.START.replace( AGENT_FOLDER_PARAM, home )
-                                                                  .replace( AGENT_PORT_PARAM, getPortToken() )
-                                                                  .replace( AGENT_JAVAEXE_PARAM,
-                                                                            getJavaExecutableToken() )
-                                                                  .replace( AGENT_MEMORY_PARAM,
-                                                                            getMemoryToken() );
+            startCommandInfo.command = AgentCommands.Windows.START.replace(AGENT_FOLDER_PARAM, home)
+                                                                  .replace(AGENT_PORT_PARAM, getPortToken())
+                                                                  .replace(AGENT_JAVAEXE_PARAM,
+                                                                           getJavaExecutableToken())
+                                                                  .replace(AGENT_MEMORY_PARAM,
+                                                                           getMemoryToken());
         }
 
-        if( isUnix() ) {
-            stopCommandInfo.command = AgentCommands.Linux.STOP.replace( AGENT_FOLDER_PARAM, home )
-                                                              .replace( AGENT_PORT_PARAM, getPortToken() );
+        if (isUnix()) {
+            stopCommandInfo.command = AgentCommands.Linux.STOP.replace(AGENT_FOLDER_PARAM, home)
+                                                              .replace(AGENT_PORT_PARAM, getPortToken());
         } else {
-            stopCommandInfo.command = AgentCommands.Windows.STOP.replace( AGENT_FOLDER_PARAM, home )
-                                                                .replace( AGENT_PORT_PARAM, getPortToken() );
+            stopCommandInfo.command = AgentCommands.Windows.STOP.replace(AGENT_FOLDER_PARAM, home)
+                                                                .replace(AGENT_PORT_PARAM, getPortToken());
         }
 
         restartCommandInfo = new ShellCommandInfo();
-        if( isUnix() ) {
-            restartCommandInfo.command = AgentCommands.Linux.RESTART.replace( AGENT_FOLDER_PARAM, home )
-                                                                    .replace( AGENT_PORT_PARAM,
-                                                                              getPortToken() )
-                                                                    .replace( AGENT_JAVAEXE_PARAM,
-                                                                              getJavaExecutableToken() )
-                                                                    .replace( AGENT_MEMORY_PARAM,
-                                                                              getMemoryToken() );
+        if (isUnix()) {
+            restartCommandInfo.command = AgentCommands.Linux.RESTART.replace(AGENT_FOLDER_PARAM, home)
+                                                                    .replace(AGENT_PORT_PARAM,
+                                                                             getPortToken())
+                                                                    .replace(AGENT_JAVAEXE_PARAM,
+                                                                             getJavaExecutableToken())
+                                                                    .replace(AGENT_MEMORY_PARAM,
+                                                                             getMemoryToken());
         } else {
-            restartCommandInfo.command = AgentCommands.Windows.RESTART.replace( AGENT_FOLDER_PARAM, home )
-                                                                      .replace( AGENT_PORT_PARAM,
-                                                                                getPortToken() )
-                                                                      .replace( AGENT_JAVAEXE_PARAM,
-                                                                                getJavaExecutableToken() )
-                                                                      .replace( AGENT_MEMORY_PARAM,
-                                                                                getMemoryToken() );
+            restartCommandInfo.command = AgentCommands.Windows.RESTART.replace(AGENT_FOLDER_PARAM, home)
+                                                                      .replace(AGENT_PORT_PARAM,
+                                                                               getPortToken())
+                                                                      .replace(AGENT_JAVAEXE_PARAM,
+                                                                               getJavaExecutableToken())
+                                                                      .replace(AGENT_MEMORY_PARAM,
+                                                                               getMemoryToken());
         }
 
         versionCommandInfo = new ShellCommandInfo();
-        if( isUnix() ) {
-            versionCommandInfo.command = AgentInfo.AgentCommands.Linux.VERSION.replace( AGENT_FOLDER_PARAM,
-                                                                                        home )
-                                                                              .replace( AGENT_JAVAEXE_PARAM,
-                                                                                        getJavaExecutableToken() );
+        if (isUnix()) {
+            versionCommandInfo.command = AgentInfo.AgentCommands.Linux.VERSION.replace(AGENT_FOLDER_PARAM,
+                                                                                       home)
+                                                                              .replace(AGENT_JAVAEXE_PARAM,
+                                                                                       getJavaExecutableToken());
         } else {
-            versionCommandInfo.command = AgentInfo.AgentCommands.Windows.VERSION.replace( AGENT_FOLDER_PARAM,
-                                                                                          home ).replace( AGENT_JAVAEXE_PARAM,
-                                                                                                  getJavaExecutableToken() );
+            versionCommandInfo.command = AgentInfo.AgentCommands.Windows.VERSION.replace(AGENT_FOLDER_PARAM,
+                                                                                         home)
+                                                                                .replace(AGENT_JAVAEXE_PARAM,
+                                                                                         getJavaExecutableToken());
         }
     }
 

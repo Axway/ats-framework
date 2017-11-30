@@ -40,7 +40,7 @@ import com.axway.ats.core.gss.GssClient;
  * is talking to URL http://host.com/path.
  */
 @Immutable
-@SuppressWarnings("deprecation")
+@SuppressWarnings( "deprecation")
 public class SPNegoSchemeFactory implements AuthSchemeFactory, AuthSchemeProvider {
     private GssClient gssClient;
     private String    servicePrincipalName;
@@ -52,35 +52,35 @@ public class SPNegoSchemeFactory implements AuthSchemeFactory, AuthSchemeProvide
 
         this.gssClient = gssClient;
         this.servicePrincipalName = servicePrincipalName;
-        this.servicePrincipalOid = getOidForType( servicePrincipalType );
+        this.servicePrincipalOid = getOidForType(servicePrincipalType);
     }
 
     public AuthScheme newInstance(
                                    final HttpParams params ) {
 
-        return new SPNegoScheme( gssClient, servicePrincipalName, servicePrincipalOid );
+        return new SPNegoScheme(gssClient, servicePrincipalName, servicePrincipalOid);
     }
 
     public AuthScheme create(
                               final HttpContext context ) {
 
-        return new SPNegoScheme( gssClient, servicePrincipalName, servicePrincipalOid );
+        return new SPNegoScheme(gssClient, servicePrincipalName, servicePrincipalOid);
     }
 
     private Oid getOidForType(
                                String type ) {
 
-        if( "NT_USER_NAME".equals( type ) ) {
+        if ("NT_USER_NAME".equals(type)) {
             return GSSName.NT_USER_NAME;
-        } else if( "NT_HOSTBASED_SERVICE".equals( type ) ) {
+        } else if ("NT_HOSTBASED_SERVICE".equals(type)) {
             return GSSName.NT_HOSTBASED_SERVICE;
-        } else if( "NT_MACHINE_UID_NAME".equals( type ) ) {
+        } else if ("NT_MACHINE_UID_NAME".equals(type)) {
             return GSSName.NT_MACHINE_UID_NAME;
-        } else if( "NT_STRING_UID_NAME".equals( type ) ) {
+        } else if ("NT_STRING_UID_NAME".equals(type)) {
             return GSSName.NT_STRING_UID_NAME;
-        } else if( "NT_ANONYMOUS".equals( type ) ) {
+        } else if ("NT_ANONYMOUS".equals(type)) {
             return GSSName.NT_ANONYMOUS;
-        } else if( "NT_EXPORT_NAME".equals( type ) ) {
+        } else if ("NT_EXPORT_NAME".equals(type)) {
             return GSSName.NT_EXPORT_NAME;
         }
         return GSSName.NT_USER_NAME;

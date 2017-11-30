@@ -53,7 +53,7 @@ public abstract class GGSSchemeBase extends AuthSchemeBase {
         UNINITIATED, CHALLENGE_RECEIVED, TOKEN_GENERATED, FAILED,
     }
 
-    private final Log    log = LogFactory.getLog( getClass() );
+    private final Log    log = LogFactory.getLog(getClass());
 
     private final Base64 base64codec;
 
@@ -89,21 +89,21 @@ public abstract class GGSSchemeBase extends AuthSchemeBase {
                                        final Oid oid ) throws GSSException {
 
         byte[] token = input;
-        if( token == null ) {
+        if (token == null) {
             token = new byte[0];
         }
         GSSManager manager = getManager();
 
-        GSSName serverName = manager.createName( servicePrincipalName, servicePrincipalOid );
+        GSSName serverName = manager.createName(servicePrincipalName, servicePrincipalOid);
 
-        GSSContext gssContext = manager.createContext( serverName.canonicalize( oid ),
-                                                       oid,
-                                                       null,
-                                                       GSSContext.DEFAULT_LIFETIME );
-        gssContext.requestMutualAuth( true );
-        gssContext.requestCredDeleg( true );
+        GSSContext gssContext = manager.createContext(serverName.canonicalize(oid),
+                                                      oid,
+                                                      null,
+                                                      GSSContext.DEFAULT_LIFETIME);
+        gssContext.requestMutualAuth(true);
+        gssContext.requestCredDeleg(true);
         // Get client to login if not already done
-        return gssClient.negotiate( gssContext, token );
+        return gssClient.negotiate(gssContext, token);
     }
 
     protected abstract byte[] generateToken(
@@ -122,7 +122,7 @@ public abstract class GGSSchemeBase extends AuthSchemeBase {
                                 final Credentials credentials,
                                 final HttpRequest request ) throws AuthenticationException {
 
-        return authenticate( credentials, request, null );
+        return authenticate(credentials, request, null);
     }
 
     @Override
@@ -131,41 +131,41 @@ public abstract class GGSSchemeBase extends AuthSchemeBase {
                                 final HttpRequest request,
                                 final HttpContext context ) throws AuthenticationException {
 
-        if( request == null ) {
-            throw new IllegalArgumentException( "HTTP request may not be null" );
+        if (request == null) {
+            throw new IllegalArgumentException("HTTP request may not be null");
         }
-        switch( state ){
+        switch (state) {
             case UNINITIATED:
-                throw new AuthenticationException( getSchemeName() + " authentication has not been initiated" );
+                throw new AuthenticationException(getSchemeName() + " authentication has not been initiated");
             case FAILED:
-                throw new AuthenticationException( getSchemeName() + " authentication has failed" );
+                throw new AuthenticationException(getSchemeName() + " authentication has failed");
             case CHALLENGE_RECEIVED:
                 try {
-                    token = generateToken( token );
+                    token = generateToken(token);
                     state = State.TOKEN_GENERATED;
-                } catch( GSSException gsse ) {
+                } catch (GSSException gsse) {
                     state = State.FAILED;
-                    if( gsse.getMajor() == GSSException.DEFECTIVE_CREDENTIAL
-                        || gsse.getMajor() == GSSException.CREDENTIALS_EXPIRED )
-                        throw new InvalidCredentialsException( gsse.getMessage(), gsse );
-                    if( gsse.getMajor() == GSSException.NO_CRED )
-                        throw new InvalidCredentialsException( gsse.getMessage(), gsse );
-                    if( gsse.getMajor() == GSSException.DEFECTIVE_TOKEN
+                    if (gsse.getMajor() == GSSException.DEFECTIVE_CREDENTIAL
+                        || gsse.getMajor() == GSSException.CREDENTIALS_EXPIRED)
+                        throw new InvalidCredentialsException(gsse.getMessage(), gsse);
+                    if (gsse.getMajor() == GSSException.NO_CRED)
+                        throw new InvalidCredentialsException(gsse.getMessage(), gsse);
+                    if (gsse.getMajor() == GSSException.DEFECTIVE_TOKEN
                         || gsse.getMajor() == GSSException.DUPLICATE_TOKEN
-                        || gsse.getMajor() == GSSException.OLD_TOKEN )
-                        throw new AuthenticationException( gsse.getMessage(), gsse );
+                        || gsse.getMajor() == GSSException.OLD_TOKEN)
+                        throw new AuthenticationException(gsse.getMessage(), gsse);
                     // other error
-                    throw new AuthenticationException( gsse.getMessage() );
+                    throw new AuthenticationException(gsse.getMessage());
                 }
                 // continue to next case block
             case TOKEN_GENERATED:
-                String tokenstr = new String( base64codec.encode( token ) );
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Sending response '" + tokenstr + "' back to the auth server" );
+                String tokenstr = new String(base64codec.encode(token));
+                if (log.isDebugEnabled()) {
+                    log.debug("Sending response '" + tokenstr + "' back to the auth server");
                 }
-                return new BasicHeader( "Authorization", "Negotiate " + tokenstr );
+                return new BasicHeader("Authorization", "Negotiate " + tokenstr);
             default:
-                throw new IllegalStateException( "Illegal state: " + state );
+                throw new IllegalStateException("Illegal state: " + state);
         }
     }
 
@@ -175,15 +175,15 @@ public abstract class GGSSchemeBase extends AuthSchemeBase {
                                    int beginIndex,
                                    int endIndex ) throws MalformedChallengeException {
 
-        String challenge = buffer.substringTrimmed( beginIndex, endIndex );
-        if( log.isDebugEnabled() ) {
-            log.debug( "Received challenge '" + challenge + "' from the auth server" );
+        String challenge = buffer.substringTrimmed(beginIndex, endIndex);
+        if (log.isDebugEnabled()) {
+            log.debug("Received challenge '" + challenge + "' from the auth server");
         }
-        if( state == State.UNINITIATED ) {
-            token = base64codec.decode( challenge.getBytes() );
+        if (state == State.UNINITIATED) {
+            token = base64codec.decode(challenge.getBytes());
             state = State.CHALLENGE_RECEIVED;
         } else {
-            log.debug( "Authentication already attempted" );
+            log.debug("Authentication already attempted");
             state = State.FAILED;
         }
     }

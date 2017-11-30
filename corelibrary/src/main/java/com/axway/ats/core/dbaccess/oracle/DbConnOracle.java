@@ -38,17 +38,17 @@ import oracle.jdbc.pool.OracleDataSource;
  */
 public class DbConnOracle extends DbConnection {
 
-    private static Logger       log              = Logger.getLogger( DbConnOracle.class );
+    private static Logger       log              = Logger.getLogger(DbConnOracle.class);
 
     /**
      * Default DB protocol
      */
-    private static final String    DEFAULT_PROTOCOL  = "TCP";
-    
+    private static final String DEFAULT_PROTOCOL = "TCP";
+
     /**
      * Default DB port
      */
-    public static final int    DEFAULT_PORT     = 1521;
+    public static final int     DEFAULT_PORT     = 1521;
 
     /**
      * Default SID
@@ -86,8 +86,8 @@ public class DbConnOracle extends DbConnection {
     private String              url;
 
     private OracleDataSource    dataSource;
-    
-    public static final String DATABASE_TYPE = "ORACLE";
+
+    public static final String  DATABASE_TYPE    = "ORACLE";
 
     /**
      * Constructor
@@ -99,7 +99,7 @@ public class DbConnOracle extends DbConnection {
      */
     public DbConnOracle( String host, String schemaName, String user, String password ) {
 
-        this( host, schemaName, user, password, null );
+        this(host, schemaName, user, password, null);
     }
 
     /**
@@ -114,37 +114,37 @@ public class DbConnOracle extends DbConnection {
     public DbConnOracle( String host, String schemaName, String user, String password,
                          Map<String, Object> customProperties ) {
 
-        super( DATABASE_TYPE, host, schemaName, user, password, customProperties );
+        super(DATABASE_TYPE, host, schemaName, user, password, customProperties);
 
         //set the URL
-        if( this.sid != null ) {
+        if (this.sid != null) {
 
-            this.url = new StringBuffer().append( URL_PREFIX )
+            this.url = new StringBuffer().append(URL_PREFIX)
                                          .append(this.protocol)
-                                         .append(")(HOST=" )
-                                         .append( host )
-                                         .append( ")(PORT=" )
-                                         .append( this.port )
-                                         .append( "))(CONNECT_DATA=(SID=" )
-                                         .append( this.sid )
+                                         .append(")(HOST=")
+                                         .append(host)
+                                         .append(")(PORT=")
+                                         .append(this.port)
+                                         .append("))(CONNECT_DATA=(SID=")
+                                         .append(this.sid)
                                          .append(")))")
                                          .toString();
         } else {
             // using service name
-            if( this.serviceName != null ) {
+            if (this.serviceName != null) {
 
-                this.url = new StringBuffer().append( URL_PREFIX)
+                this.url = new StringBuffer().append(URL_PREFIX)
                                              .append(this.protocol)
-                                             .append(")(HOST=" )
-                                             .append( host )
-                                             .append( ")(PORT=" )
-                                             .append( this.port )
-                                             .append( "))(CONNECT_DATA=(SERVICE_NAME=" )
-                                             .append( this.serviceName )
+                                             .append(")(HOST=")
+                                             .append(host)
+                                             .append(")(PORT=")
+                                             .append(this.port)
+                                             .append("))(CONNECT_DATA=(SERVICE_NAME=")
+                                             .append(this.serviceName)
                                              .append(")))")
                                              .toString();
             } else {
-                throw new DbException( "Service Name or SID is not specified" );
+                throw new DbException("Service Name or SID is not specified");
             }
         }
     }
@@ -152,58 +152,58 @@ public class DbConnOracle extends DbConnection {
     @Override
     protected void initializeCustomProperties( Map<String, Object> customProperties ) {
 
-        if( customProperties != null && !customProperties.isEmpty() ) {
+        if (customProperties != null && !customProperties.isEmpty()) {
 
             //read the Service Name if such is set
-            Object serviceNameValue = customProperties.get( OracleKeys.SERVICE_NAME_KEY );
-            if( serviceNameValue != null ) {
-                String serviceNameValueString = ( ( String ) serviceNameValue ).trim();
-                if( serviceNameValueString.length() > 0 ) {
+            Object serviceNameValue = customProperties.get(OracleKeys.SERVICE_NAME_KEY);
+            if (serviceNameValue != null) {
+                String serviceNameValueString = ((String) serviceNameValue).trim();
+                if (serviceNameValueString.length() > 0) {
                     this.serviceName = serviceNameValueString;
                 }
             }
-            
-            Object protocolValue = customProperties.get( OracleKeys.USE_SECURE_SOCKET );
-            if( protocolValue != null ) {
-                this.useEncryption = Boolean.parseBoolean( protocolValue.toString() );
-                if( useEncryption ) {
+
+            Object protocolValue = customProperties.get(OracleKeys.USE_SECURE_SOCKET);
+            if (protocolValue != null) {
+                this.useEncryption = Boolean.parseBoolean(protocolValue.toString());
+                if (useEncryption) {
                     this.protocol = "TCPS";
                 }
             }
 
             //read the SID if such is set
-            Object sidValue = customProperties.get( OracleKeys.SID_KEY );
-            if( sidValue != null ) {
-                String sidValueString = ( ( String ) sidValue ).trim();
-                if( sidValueString.length() > 0 ) {
+            Object sidValue = customProperties.get(OracleKeys.SID_KEY);
+            if (sidValue != null) {
+                String sidValueString = ((String) sidValue).trim();
+                if (sidValueString.length() > 0) {
                     this.sid = sidValueString;
                 }
             }
-      
+
             //read the PORT if such is set
-            Object portValue = customProperties.get( DbKeys.PORT_KEY );
-            if( portValue != null ) {
-                this.port = ( Integer ) portValue;
+            Object portValue = customProperties.get(DbKeys.PORT_KEY);
+            if (portValue != null) {
+                this.port = (Integer) portValue;
             }
         }
-        
-        if( this.useEncryption == null ) {
+
+        if (this.useEncryption == null) {
             this.useEncryption = false;
         }
-        
+
         //set the default values
-        if( this.protocol == null ) {
+        if (this.protocol == null) {
             this.protocol = DEFAULT_PROTOCOL;
         }
 
         //set the default values
-        if( this.port < 1 ) {
+        if (this.port < 1) {
             this.port = DEFAULT_PORT;
         }
-        if( this.serviceName != null && this.sid != null ) {
+        if (this.serviceName != null && this.sid != null) {
 
-            log.warn( "Both SID and Service Name are supplied. By default SID will be used." );
-        } else if( this.serviceName == null && this.sid == null ) {
+            log.warn("Both SID and Service Name are supplied. By default SID will be used.");
+        } else if (this.serviceName == null && this.sid == null) {
             this.sid = DEFAULT_SID;
         }
     }
@@ -213,48 +213,54 @@ public class DbConnOracle extends DbConnection {
 
         try {
             dataSource = new OracleDataSource();
-            dataSource.setServerName( this.host );
-            dataSource.setUser( this.user );
-            dataSource.setPassword( this.password );
-            if( db != null && !"".equals( db ) ) { // case when SID or serviceName is not used
-                dataSource.setDatabaseName( this.db );
+            dataSource.setServerName(this.host);
+            dataSource.setUser(this.user);
+            dataSource.setPassword(this.password);
+            if (db != null && !"".equals(db)) { // case when SID or serviceName is not used
+                dataSource.setDatabaseName(this.db);
             }
-            dataSource.setURL( this.url );
+            dataSource.setURL(this.url);
 
             //enable connection caching - we'll have pooled connections this way
-            dataSource.setConnectionCachingEnabled( true );
-            
-            if ( useEncryption && this.customProperties != null) {
+            dataSource.setConnectionCachingEnabled(true);
+
+            if (useEncryption && this.customProperties != null) {
                 if (this.customProperties.containsKey(OracleKeys.KEY_STORE_FULL_PATH)
-                        && this.customProperties.containsKey(OracleKeys.KEY_STORE_TYPE)
-                        && this.customProperties.containsKey(OracleKeys.KEY_STORE_PASSWORD)) {
+                    && this.customProperties.containsKey(OracleKeys.KEY_STORE_TYPE)
+                    && this.customProperties.containsKey(OracleKeys.KEY_STORE_PASSWORD)) {
 
                     Properties sslConnectionProperties = new Properties();
                     sslConnectionProperties.setProperty(OracleKeys.KEY_STORE_FULL_PATH,
-                            this.customProperties.get(OracleKeys.KEY_STORE_FULL_PATH).toString());
+                                                        this.customProperties.get(OracleKeys.KEY_STORE_FULL_PATH)
+                                                                             .toString());
                     sslConnectionProperties.setProperty(OracleKeys.KEY_STORE_TYPE,
-                            this.customProperties.get(OracleKeys.KEY_STORE_TYPE).toString());
+                                                        this.customProperties.get(OracleKeys.KEY_STORE_TYPE)
+                                                                             .toString());
                     sslConnectionProperties.setProperty(OracleKeys.KEY_STORE_PASSWORD,
-                            this.customProperties.get(OracleKeys.KEY_STORE_PASSWORD).toString());
+                                                        this.customProperties.get(OracleKeys.KEY_STORE_PASSWORD)
+                                                                             .toString());
                     // this property is set just in case, later we should remove it
                     sslConnectionProperties.setProperty("javax.net.ssl.trustAnchors",
-                            this.customProperties.get(OracleKeys.KEY_STORE_PASSWORD).toString());
+                                                        this.customProperties.get(OracleKeys.KEY_STORE_PASSWORD)
+                                                                             .toString());
                     dataSource.setConnectionProperties(sslConnectionProperties);
                 } else {
-                    log.info( "Not all custom properties starting as DbConnection.KEY_STORE_XXX are set. We will try to prepare a default secure connection to Oracle DB" );
-                    try{
+                    log.info("Not all custom properties starting as DbConnection.KEY_STORE_XXX are set. We will try to prepare a default secure connection to Oracle DB");
+                    try {
                         Certificate[] certs = SslUtils.getCertificatesFromSocket(host, String.valueOf(port));
-                        dataSource.setConnectionProperties(SslUtils.createKeyStore(certs[0], this.host, this.db, "", "", ""));
+                        dataSource.setConnectionProperties(SslUtils.createKeyStore(certs[0], this.host, this.db, "", "",
+                                                                                   ""));
                     } catch (Exception e) {
-                        throw new DbException( "Secure connection to Oracle DB could not be prepared due to failure in creating default certificate.", e );
+                        throw new DbException("Secure connection to Oracle DB could not be prepared due to failure in creating default certificate.",
+                                              e);
                     }
                 }
             }
 
             return dataSource;
-        } catch( SQLException e ) {
+        } catch (SQLException e) {
 
-            throw new DbException( "Unable to create database source", e );
+            throw new DbException("Unable to create database source", e);
         }
     }
 
@@ -273,10 +279,10 @@ public class DbConnOracle extends DbConnection {
     @Override
     public String getDescription() {
 
-        StringBuilder description = new StringBuilder( "Oracle connection to " );
-        description.append( host );
-        description.append( ":" ).append( port );
-        description.append( "/" ).append( db );
+        StringBuilder description = new StringBuilder("Oracle connection to ");
+        description.append(host);
+        description.append(":").append(port);
+        description.append("/").append(db);
 
         return description.toString();
     }
@@ -290,8 +296,8 @@ public class DbConnOracle extends DbConnection {
 
         try {
             dataSource.close();
-        } catch( SQLException e ) {
-            throw new DbException( "Unable to close database source", e );
+        } catch (SQLException e) {
+            throw new DbException("Unable to close database source", e);
         }
     }
 }

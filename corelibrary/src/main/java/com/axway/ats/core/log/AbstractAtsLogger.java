@@ -28,10 +28,10 @@ public abstract class AbstractAtsLogger {
 
     public static synchronized AbstractAtsLogger getDefaultInstance( Class<?> callingClass ) {
 
-        AbstractAtsLogger logger = loggers.get( callingClass );
-        if( logger == null ) {
-            logger = createNewInstance( callingClass );
-            loggers.put( callingClass, logger );
+        AbstractAtsLogger logger = loggers.get(callingClass);
+        if (logger == null) {
+            logger = createNewInstance(callingClass);
+            loggers.put(callingClass, logger);
         }
 
         return logger;
@@ -44,8 +44,8 @@ public abstract class AbstractAtsLogger {
 
     public static synchronized AbstractAtsLogger createNewInstance( Class<?> callingClass ) {
 
-        if( defaultInstance == null ) {
-            defaultInstance = new AtsLog4jLogger( callingClass );
+        if (defaultInstance == null) {
+            defaultInstance = new AtsLog4jLogger(callingClass);
         }
 
         return defaultInstance.newInstance();

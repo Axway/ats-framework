@@ -34,73 +34,74 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
     @Test
     public void createMysqlNoCustom() {
 
-        DbConnMySQL dbConnection = ( DbConnMySQL ) DatabaseProviderFactory.createDbConnection( DbConnMySQL.DATABASE_TYPE,
-                                                                                           "host",
-                                                                                           "db",
-                                                                                           "user",
-                                                                                           "pass" );
+        DbConnMySQL dbConnection = (DbConnMySQL) DatabaseProviderFactory.createDbConnection(DbConnMySQL.DATABASE_TYPE,
+                                                                                            "host",
+                                                                                            "db",
+                                                                                            "user",
+                                                                                            "pass");
 
-        assertEquals( DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:mysql://host:3306/db", dbConnection.getURL() );
+        assertEquals(DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mysql://host:3306/db", dbConnection.getURL());
     }
 
     @Test
     public void createMSSQLNoCustom() {
 
-        DbConnSQLServer dbConnection = ( DbConnSQLServer ) DatabaseProviderFactory.createDbConnection( DbConnSQLServer.DATABASE_TYPE,
-                                                                                                   "host",
-                                                                                                   "db",
-                                                                                                   "user",
-                                                                                                   "pass" );
+        DbConnSQLServer dbConnection = (DbConnSQLServer) DatabaseProviderFactory.createDbConnection(DbConnSQLServer.DATABASE_TYPE,
+                                                                                                    "host",
+                                                                                                    "db",
+                                                                                                    "user",
+                                                                                                    "pass");
 
-        assertEquals( DbConnSQLServer.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL() );
+        assertEquals(DbConnSQLServer.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL());
     }
 
     @Test
     public void createOracleNoCustom() {
 
-        DbConnOracle dbConnection = ( DbConnOracle ) DatabaseProviderFactory.createDbConnection( DbConnOracle.DATABASE_TYPE,
-                                                                                             "host",
-                                                                                             "db",
-                                                                                             "user",
-                                                                                             "pass" );
+        DbConnOracle dbConnection = (DbConnOracle) DatabaseProviderFactory.createDbConnection(DbConnOracle.DATABASE_TYPE,
+                                                                                              "host",
+                                                                                              "db",
+                                                                                              "user",
+                                                                                              "pass");
 
-        assertEquals( DbConnOracle.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=1521))(CONNECT_DATA=(SID=ORCL)))", dbConnection.getURL() );
+        assertEquals(DbConnOracle.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=1521))(CONNECT_DATA=(SID=ORCL)))",
+                     dbConnection.getURL());
     }
 
     @Test
     public void createMysqlWithCustomProperties() {
 
         Map<String, Object> customProperties = new HashMap<String, Object>();
-        customProperties.put( DbKeys.PORT_KEY, 123 );
+        customProperties.put(DbKeys.PORT_KEY, 123);
 
-        DbConnMySQL dbConnection = ( DbConnMySQL ) DatabaseProviderFactory.createDbConnection( DbConnMySQL.DATABASE_TYPE,
-                                                                                           "host",
-                                                                                           "db",
-                                                                                           "user",
-                                                                                           "pass",
-                                                                                           customProperties );
+        DbConnMySQL dbConnection = (DbConnMySQL) DatabaseProviderFactory.createDbConnection(DbConnMySQL.DATABASE_TYPE,
+                                                                                            "host",
+                                                                                            "db",
+                                                                                            "user",
+                                                                                            "pass",
+                                                                                            customProperties);
 
-        assertEquals( DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:mysql://host:123/db", dbConnection.getURL() );
+        assertEquals(DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mysql://host:123/db", dbConnection.getURL());
     }
 
     @Test
@@ -108,41 +109,42 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         Map<String, Object> customProperties = new HashMap<String, Object>();
 
-        DbConnSQLServer dbConnection = ( DbConnSQLServer ) DatabaseProviderFactory.createDbConnection( DbConnSQLServer.DATABASE_TYPE,
-                                                                                                   "host",
-                                                                                                   "db",
-                                                                                                   "user",
-                                                                                                   "pass",
-                                                                                                   customProperties );
+        DbConnSQLServer dbConnection = (DbConnSQLServer) DatabaseProviderFactory.createDbConnection(DbConnSQLServer.DATABASE_TYPE,
+                                                                                                    "host",
+                                                                                                    "db",
+                                                                                                    "user",
+                                                                                                    "pass",
+                                                                                                    customProperties);
 
-        assertEquals( DbConnSQLServer.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL() );
+        assertEquals(DbConnSQLServer.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL());
     }
 
     @Test
     public void createOracleWithCustomProperties() {
 
         Map<String, Object> customProperties = new HashMap<String, Object>();
-        customProperties.put( DbKeys.PORT_KEY, 123 );
-        customProperties.put( OracleKeys.SID_KEY, "sid1" );
+        customProperties.put(DbKeys.PORT_KEY, 123);
+        customProperties.put(OracleKeys.SID_KEY, "sid1");
 
-        DbConnOracle dbConnection = ( DbConnOracle ) DatabaseProviderFactory.createDbConnection( DbConnOracle.DATABASE_TYPE,
-                                                                                             "host",
-                                                                                             "db",
-                                                                                             "user",
-                                                                                             "pass",
-                                                                                             customProperties );
+        DbConnOracle dbConnection = (DbConnOracle) DatabaseProviderFactory.createDbConnection(DbConnOracle.DATABASE_TYPE,
+                                                                                              "host",
+                                                                                              "db",
+                                                                                              "user",
+                                                                                              "pass",
+                                                                                              customProperties);
 
-        assertEquals( DbConnOracle.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=123))(CONNECT_DATA=(SID=sid1)))", dbConnection.getURL() );
+        assertEquals(DbConnOracle.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=123))(CONNECT_DATA=(SID=sid1)))",
+                     dbConnection.getURL());
     }
 
 }

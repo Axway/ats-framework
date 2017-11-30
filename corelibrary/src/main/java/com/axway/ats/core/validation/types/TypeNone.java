@@ -23,12 +23,12 @@ public class TypeNone extends BaseType {
                      Object val,
                      Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     @Override
     public void validate() throws TypeException {
 
-    //do nothing
+        //do nothing
     }
 }

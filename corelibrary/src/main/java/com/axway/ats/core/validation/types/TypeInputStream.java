@@ -41,7 +41,7 @@ public class TypeInputStream extends TypeObject {
                                Object val,
                                Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -56,26 +56,26 @@ public class TypeInputStream extends TypeObject {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_INPUT_STREAM + e.getMessage(), this.parameterName, e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_INPUT_STREAM + e.getMessage(), this.parameterName, e);
         }
 
         InputStream stream = null;
 
         try {
-            stream = ( InputStream ) this.value;
-        } catch( ClassCastException e ) {
-            throw new TypeException( ERROR_MESSAGE_CAST_EXCEPTION, this.parameterName, e );
+            stream = (InputStream) this.value;
+        } catch (ClassCastException e) {
+            throw new TypeException(ERROR_MESSAGE_CAST_EXCEPTION, this.parameterName, e);
         }
 
         try {
-            if( stream != null && stream.available() > 0 ) {
+            if (stream != null && stream.available() > 0) {
                 return;
             }
-        } catch( IOException e ) {
-            throw new TypeException( ERROR_MESSAGE_UNABLE_TO_READ, this.parameterName, e );
+        } catch (IOException e) {
+            throw new TypeException(ERROR_MESSAGE_UNABLE_TO_READ, this.parameterName, e);
         }
 
-        throw new TypeException( ERROR_MESSAGE_INVALID_STREAM, this.parameterName );
+        throw new TypeException(ERROR_MESSAGE_INVALID_STREAM, this.parameterName);
     }
 }

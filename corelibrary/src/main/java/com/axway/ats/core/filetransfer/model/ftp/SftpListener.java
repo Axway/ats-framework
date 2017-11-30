@@ -20,7 +20,7 @@ import com.jcraft.jsch.Logger;
 /** Class used to log sent commands and received responses, when debugMode is true (enabled) for for @SftpClient **/
 public class SftpListener implements Logger {
 
-    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger( SftpListener.class );
+    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SftpListener.class);
 
     public SftpListener() {
 
@@ -39,7 +39,7 @@ public class SftpListener implements Logger {
                      int level,
                      String message ) {
 
-        log.debug( message );
+        log.debug(message);
 
     }
 

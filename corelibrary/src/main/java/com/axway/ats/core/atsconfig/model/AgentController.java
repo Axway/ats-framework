@@ -35,81 +35,81 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class AgentController extends AbstractApplicationController {
 
-    private static AbstractAtsLogger log = AbstractAtsLogger.getDefaultInstance( AgentController.class );
+    private static AbstractAtsLogger log = AbstractAtsLogger.getDefaultInstance(AgentController.class);
 
     private AtsSourceProjectInfo     sourceProjectInfo;
 
     public AgentController( AgentInfo agentInfo, AtsSourceProjectInfo sourceProjectInfo ) {
 
-        super( agentInfo );
+        super(agentInfo);
     }
 
     @Override
     public ApplicationStatus getStatus( JschSshClient sshClient,
                                         boolean isTopLevelAction ) throws AtsManagerException {
 
-        if( isTopLevelAction ) {
-            log.info( TOP_LEVEL_ACTION_PREFIX + "Check status of " + anyApplicationInfo.description );
+        if (isTopLevelAction) {
+            log.info(TOP_LEVEL_ACTION_PREFIX + "Check status of " + anyApplicationInfo.description);
         } else {
-            log.debug( "Check status of " + anyApplicationInfo.description );
+            log.debug("Check status of " + anyApplicationInfo.description);
         }
 
         // check if running and available via WS
-        if( isWsdlAvailable( anyApplicationInfo ) ) {
+        if (isWsdlAvailable(anyApplicationInfo)) {
 
-            updateAgentVersion( anyApplicationInfo, sshClient, false );
+            updateAgentVersion(anyApplicationInfo, sshClient, false);
             return ApplicationStatus.STARTED;
         }
 
         // not available via WS
         // check if deployed at all
-        if( !isAgentInstalled( anyApplicationInfo ) ) {
+        if (!isAgentInstalled(anyApplicationInfo)) {
 
             return ApplicationStatus.NOT_INSTALLED;
         }
-        updateAgentVersion( anyApplicationInfo, sshClient, false );
+        updateAgentVersion(anyApplicationInfo, sshClient, false);
 
         // it is deployed, but not available via WS
         try {
-            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
-                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+            sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                              anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                              anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
             String shellStatusCommand = anyApplicationInfo.getStatusCommand();
 
-            int exitCode = sshClient.execute( shellStatusCommand, true );
-            if( exitCode == 0 ) {
-                if( sshClient.getStandardOutput().contains( " not running" ) ) {
-                    log.info( anyApplicationInfo.description + " is not running" );
+            int exitCode = sshClient.execute(shellStatusCommand, true);
+            if (exitCode == 0) {
+                if (sshClient.getStandardOutput().contains(" not running")) {
+                    log.info(anyApplicationInfo.description + " is not running");
                     return ApplicationStatus.STOPPED;
-                } else if( sshClient.getStandardOutput().contains( " is running" ) ) {
+                } else if (sshClient.getStandardOutput().contains(" is running")) {
 
                     // the agent window is up, maybe it is just starting or
                     // there is a some problem starting
-                    if( isWsdlAvailable( anyApplicationInfo, 60 ) ) {
+                    if (isWsdlAvailable(anyApplicationInfo, 60)) {
                         // it got successfully started within the timeout period
                         return ApplicationStatus.STARTED;
                     } else {
                         // it will not get started, there is some problem
-                        log.warn( anyApplicationInfo.description
-                                  + " is running, but it is not available for remote connections. You can check the agent's log files for problem details." );
+                        log.warn(anyApplicationInfo.description
+                                 + " is running, but it is not available for remote connections. You can check the agent's log files for problem details.");
                         return ApplicationStatus.STOPPED;
                     }
                 }
-                throw new AtsManagerException( "Can't parse " + anyApplicationInfo.description
-                                               + " status message \"" + sshClient.getStandardOutput() + "\"",
-                                               sshClient.getStandardOutput(), sshClient.getErrorOutput() );
+                throw new AtsManagerException("Can't parse " + anyApplicationInfo.description
+                                              + " status message \"" + sshClient.getStandardOutput() + "\"",
+                                              sshClient.getStandardOutput(), sshClient.getErrorOutput());
             } else {
 
-                throw new AtsManagerException( "Can't get " + anyApplicationInfo.description
-                                               + " status using " + ( anyApplicationInfo.isUnix()
-                                                                                                  ? "agent.sh"
-                                                                                                  : "agent.bat" )
-                                               + ". The status command exit code is " + exitCode,
-                                               sshClient.getStandardOutput(), sshClient.getErrorOutput() );
+                throw new AtsManagerException("Can't get " + anyApplicationInfo.description
+                                              + " status using " + (anyApplicationInfo.isUnix()
+                                                                                                ? "agent.sh"
+                                                                                                : "agent.bat")
+                                              + ". The status command exit code is " + exitCode,
+                                              sshClient.getStandardOutput(), sshClient.getErrorOutput());
             }
         } finally {
 
-            if( isTopLevelAction ) {
+            if (isTopLevelAction) {
                 sshClient.disconnect();
             }
         }
@@ -120,49 +120,49 @@ public class AgentController extends AbstractApplicationController {
 
         JschSshClient sshClient = new JschSshClient();
         try {
-            ApplicationStatus status = getStatus( sshClient, false );
-            if( status != ApplicationStatus.STOPPED ) {
-                log.error( ( isTopLevelAction
-                                              ? TOP_LEVEL_ACTION_PREFIX
-                                              : "" )
+            ApplicationStatus status = getStatus(sshClient, false);
+            if (status != ApplicationStatus.STOPPED) {
+                log.error( (isTopLevelAction
+                                             ? TOP_LEVEL_ACTION_PREFIX
+                                             : "")
                            + "We will not try to start " + anyApplicationInfo.description
-                           + " as it is currently " + status.name() );
+                           + " as it is currently " + status.name());
                 return status;
             }
 
-            log.info( ( isTopLevelAction
-                                         ? TOP_LEVEL_ACTION_PREFIX
-                                         : "" )
-                      + "Now we will try to start " + anyApplicationInfo.description );
-            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
-                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+            log.info( (isTopLevelAction
+                                        ? TOP_LEVEL_ACTION_PREFIX
+                                        : "")
+                      + "Now we will try to start " + anyApplicationInfo.description);
+            sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                              anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                              anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
 
             String agentStartCommand = anyApplicationInfo.getStartCommand();
 
-            log.info( ( isTopLevelAction
-                                         ? TOP_LEVEL_ACTION_PREFIX
-                                         : "" )
-                      + anyApplicationInfo.description + " start with: " + agentStartCommand );
-            final int startCommandExitCode = sshClient.execute( agentStartCommand, true );
+            log.info( (isTopLevelAction
+                                        ? TOP_LEVEL_ACTION_PREFIX
+                                        : "")
+                      + anyApplicationInfo.description + " start with: " + agentStartCommand);
+            final int startCommandExitCode = sshClient.execute(agentStartCommand, true);
             final String startCommandExecutionResult = sshClient.getLastCommandExecutionResult();
-            if( startCommandExitCode == 0 && StringUtils.isNullOrEmpty( sshClient.getErrorOutput() ) ) {
+            if (startCommandExitCode == 0 && StringUtils.isNullOrEmpty(sshClient.getErrorOutput())) {
 
-                log.info( ( isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "" )
+                log.info( (isTopLevelAction
+                                            ? TOP_LEVEL_ACTION_PREFIX
+                                            : "")
                           + anyApplicationInfo.description
-                          + " is probably started, but we will do a quick check" );
+                          + " is probably started, but we will do a quick check");
 
                 boolean isWsdlAvailable = false;
                 int startupLatency = anyApplicationInfo.startupLatency;
-                if( startupLatency > 0 ) {
+                if (startupLatency > 0) {
                     // some applications do not start quickly and the user can set a static startup latency
-                    log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait statically "
-                              + startupLatency + " seconds for application startup" );
+                    log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait statically "
+                             + startupLatency + " seconds for application startup");
                     try {
-                        Thread.sleep( startupLatency * 1000 );
-                    } catch( InterruptedException e ) {}
+                        Thread.sleep(startupLatency * 1000);
+                    } catch (InterruptedException e) {}
                 } else {
                     // The user did not set a static startup latency period, so here we will do it in
                     // a more dynamic way by waiting some time for the WSDL.
@@ -171,23 +171,23 @@ public class AgentController extends AbstractApplicationController {
                     // on the agent, but the PID file is still not present and when
                     // we run getStatus() a little later,  we will still think the agent is not running,
                     // but it just needs some more time
-                    isWsdlAvailable = isWsdlAvailable( anyApplicationInfo, 10 );
+                    isWsdlAvailable = isWsdlAvailable(anyApplicationInfo, 10);
                 }
 
-                if( isWsdlAvailable || getStatus( sshClient, false ) == ApplicationStatus.STARTED ) {
-                    log.info( ( isTopLevelAction
-                                                 ? TOP_LEVEL_ACTION_PREFIX
-                                                 : "" )
-                              + anyApplicationInfo.description + " is successfully started" );
-                    executePostActionShellCommand( anyApplicationInfo, "START",
-                                                   anyApplicationInfo.getPostStartShellCommand() );
+                if (isWsdlAvailable || getStatus(sshClient, false) == ApplicationStatus.STARTED) {
+                    log.info( (isTopLevelAction
+                                                ? TOP_LEVEL_ACTION_PREFIX
+                                                : "")
+                              + anyApplicationInfo.description + " is successfully started");
+                    executePostActionShellCommand(anyApplicationInfo, "START",
+                                                  anyApplicationInfo.getPostStartShellCommand());
                     return ApplicationStatus.STARTED;
                 }
             }
 
-            throw new AtsManagerException( "Can't start " + anyApplicationInfo.description + "\n"
-                                           + startCommandExecutionResult
-                                           + "\nYou can check the nohup.out file for details" );
+            throw new AtsManagerException("Can't start " + anyApplicationInfo.description + "\n"
+                                          + startCommandExecutionResult
+                                          + "\nYou can check the nohup.out file for details");
         } finally {
 
             sshClient.disconnect();
@@ -201,48 +201,48 @@ public class AgentController extends AbstractApplicationController {
 
         JschSshClient sshClient = new JschSshClient();
         try {
-            ApplicationStatus status = getStatus( sshClient, false );
-            if( status != ApplicationStatus.STARTED ) {
-                log.error( ( isTopLevelAction
-                                              ? TOP_LEVEL_ACTION_PREFIX
-                                              : "" )
+            ApplicationStatus status = getStatus(sshClient, false);
+            if (status != ApplicationStatus.STARTED) {
+                log.error( (isTopLevelAction
+                                             ? TOP_LEVEL_ACTION_PREFIX
+                                             : "")
                            + "We will not try to stop " + anyApplicationInfo.description
-                           + " as it is currently " + status.name() );
+                           + " as it is currently " + status.name());
                 return status;
             }
 
-            log.info( ( isTopLevelAction
-                                         ? TOP_LEVEL_ACTION_PREFIX
-                                         : "" )
-                      + "Now we will try to stop " + anyApplicationInfo.description );
-            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
-                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+            log.info( (isTopLevelAction
+                                        ? TOP_LEVEL_ACTION_PREFIX
+                                        : "")
+                      + "Now we will try to stop " + anyApplicationInfo.description);
+            sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                              anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                              anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
             String agentStopCommand = anyApplicationInfo.getStopCommand();
 
-            log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " stop with: "
-                      + agentStopCommand );
-            final int stopCommandExitCode = sshClient.execute( agentStopCommand, true );
+            log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " stop with: "
+                     + agentStopCommand);
+            final int stopCommandExitCode = sshClient.execute(agentStopCommand, true);
             final String stopCommandExecutionResult = sshClient.getLastCommandExecutionResult();
-            if( stopCommandExitCode == 0 && StringUtils.isNullOrEmpty( sshClient.getErrorOutput() ) ) {
+            if (stopCommandExitCode == 0 && StringUtils.isNullOrEmpty(sshClient.getErrorOutput())) {
 
-                log.info( anyApplicationInfo.description
-                          + " is probably stopped, but we will do a quick check" );
+                log.info(anyApplicationInfo.description
+                         + " is probably stopped, but we will do a quick check");
 
-                if( getStatus( sshClient, false ) == ApplicationStatus.STOPPED ) {
-                    log.info( ( isTopLevelAction
-                                                 ? TOP_LEVEL_ACTION_PREFIX
-                                                 : "" )
-                              + anyApplicationInfo.description + " is successfully stopped" );
-                    executePostActionShellCommand( anyApplicationInfo, "STOP",
-                                                   anyApplicationInfo.getPostStopShellCommand() );
+                if (getStatus(sshClient, false) == ApplicationStatus.STOPPED) {
+                    log.info( (isTopLevelAction
+                                                ? TOP_LEVEL_ACTION_PREFIX
+                                                : "")
+                              + anyApplicationInfo.description + " is successfully stopped");
+                    executePostActionShellCommand(anyApplicationInfo, "STOP",
+                                                  anyApplicationInfo.getPostStopShellCommand());
                     return ApplicationStatus.STOPPED;
                 }
             }
 
-            throw new AtsManagerException( "Can't stop " + anyApplicationInfo.description + "\n"
-                                           + stopCommandExecutionResult
-                                           + "\nYou can check the nohup.out file for details" );
+            throw new AtsManagerException("Can't stop " + anyApplicationInfo.description + "\n"
+                                          + stopCommandExecutionResult
+                                          + "\nYou can check the nohup.out file for details");
         } finally {
 
             sshClient.disconnect();
@@ -254,55 +254,55 @@ public class AgentController extends AbstractApplicationController {
 
         JschSshClient sshClient = new JschSshClient();
         try {
-            ApplicationStatus status = getStatus( sshClient, false );
-            if( status != ApplicationStatus.STOPPED && status != ApplicationStatus.STARTED ) {
-                log.error( TOP_LEVEL_ACTION_PREFIX + "We will not try to restart "
-                           + anyApplicationInfo.description + " as it is currently " + status.name() );
+            ApplicationStatus status = getStatus(sshClient, false);
+            if (status != ApplicationStatus.STOPPED && status != ApplicationStatus.STARTED) {
+                log.error(TOP_LEVEL_ACTION_PREFIX + "We will not try to restart "
+                          + anyApplicationInfo.description + " as it is currently " + status.name());
                 return status;
             }
 
-            log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to restart "
-                      + anyApplicationInfo.description );
-            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
-                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+            log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to restart "
+                     + anyApplicationInfo.description);
+            sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                              anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                              anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
 
-            String agentRestartCommand = ( ( AgentInfo ) anyApplicationInfo ).getRestartCommand();
+            String agentRestartCommand = ((AgentInfo) anyApplicationInfo).getRestartCommand();
 
-            log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " restart with: "
-                      + agentRestartCommand );
-            final int restartCommandExitCode = sshClient.execute( agentRestartCommand, true );
+            log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " restart with: "
+                     + agentRestartCommand);
+            final int restartCommandExitCode = sshClient.execute(agentRestartCommand, true);
             final String restartCommandExecutionResult = sshClient.getLastCommandExecutionResult();
-            if( restartCommandExitCode == 0 && StringUtils.isNullOrEmpty( sshClient.getErrorOutput() ) ) {
+            if (restartCommandExitCode == 0 && StringUtils.isNullOrEmpty(sshClient.getErrorOutput())) {
 
-                if( !anyApplicationInfo.isUnix() ) {
+                if (!anyApplicationInfo.isUnix()) {
                     // Windows only - wait for some time to bring up the CMD
                     // window
                     int startupLatency = anyApplicationInfo.startupLatency;
-                    if( startupLatency > 0 ) {
-                        log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait "
-                                  + startupLatency + " seconds for the CMD window to show up" );
+                    if (startupLatency > 0) {
+                        log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait "
+                                 + startupLatency + " seconds for the CMD window to show up");
                         try {
-                            Thread.sleep( startupLatency * 1000 );
-                        } catch( InterruptedException e ) {}
+                            Thread.sleep(startupLatency * 1000);
+                        } catch (InterruptedException e) {}
                     }
                 }
 
-                log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
-                          + " is probably started, but we will do a quick check" );
+                log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
+                         + " is probably started, but we will do a quick check");
 
-                if( getStatus( sshClient, false ) == ApplicationStatus.STARTED ) {
-                    log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
-                              + " is successfully restarted" );
-                    executePostActionShellCommand( anyApplicationInfo, "START",
-                                                   anyApplicationInfo.getPostStartShellCommand() );
+                if (getStatus(sshClient, false) == ApplicationStatus.STARTED) {
+                    log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
+                             + " is successfully restarted");
+                    executePostActionShellCommand(anyApplicationInfo, "START",
+                                                  anyApplicationInfo.getPostStartShellCommand());
                     return ApplicationStatus.STARTED;
                 }
             }
 
-            throw new AtsManagerException( "Can't restart " + anyApplicationInfo.description + "\n"
-                                           + restartCommandExecutionResult
-                                           + "\nYou can check the nohup.out file for details" );
+            throw new AtsManagerException("Can't restart " + anyApplicationInfo.description + "\n"
+                                          + restartCommandExecutionResult
+                                          + "\nYou can check the nohup.out file for details");
         } finally {
 
             sshClient.disconnect();
@@ -312,65 +312,65 @@ public class AgentController extends AbstractApplicationController {
     public ApplicationStatus upgrade( ApplicationStatus previousStatus ) throws AtsManagerException {
 
         // we enter here when the agent is STARTED or STOPPED
-        log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform full upgrade on "
-                  + anyApplicationInfo.description );
+        log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform full upgrade on "
+                 + anyApplicationInfo.description);
 
         String agentZip = sourceProjectInfo.getAgentZip();
-        if( StringUtils.isNullOrEmpty( agentZip ) ) {
-            throw new AtsManagerException( "The agent zip file is not specified in the configuration" );
+        if (StringUtils.isNullOrEmpty(agentZip)) {
+            throw new AtsManagerException("The agent zip file is not specified in the configuration");
         }
 
         // extract agent.zip to a temporary local directory
-        String agentFolder = IoUtils.normalizeDirPath( extractAgentZip( agentZip ) );
+        String agentFolder = IoUtils.normalizeDirPath(extractAgentZip(agentZip));
 
         JschSftpClient sftpClient = new JschSftpClient();
         try {
-            sftpClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
-                                anyApplicationInfo.host, anyApplicationInfo.sshPort,
-                                anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+            sftpClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
 
-            if( !sftpClient.isRemoteFileOrDirectoryExisting( anyApplicationInfo.sftpHome ) ) {
+            if (!sftpClient.isRemoteFileOrDirectoryExisting(anyApplicationInfo.sftpHome)) {
 
-                throw new AtsManagerException( "The " + anyApplicationInfo.description
-                                               + " is not installed in " + anyApplicationInfo.sftpHome
-                                               + ". You must install it first." );
+                throw new AtsManagerException("The " + anyApplicationInfo.description
+                                              + " is not installed in " + anyApplicationInfo.sftpHome
+                                              + ". You must install it first.");
             }
 
-            if( previousStatus == ApplicationStatus.STARTED ) {
+            if (previousStatus == ApplicationStatus.STARTED) {
                 // agent is started, stop it before the upgrade
-                log.info( "We must stop the agent prior to upgrading" );
+                log.info("We must stop the agent prior to upgrading");
                 try {
-                    stop( false );
-                } catch( AtsManagerException e ) {
-                    throw new AtsManagerException( "Canceling upgrade as could not stop the agent", e );
+                    stop(false);
+                } catch (AtsManagerException e) {
+                    throw new AtsManagerException("Canceling upgrade as could not stop the agent", e);
                 }
             }
 
             // cleanup the remote directories content
-            List<String> preservedPaths = getPreservedPathsList( anyApplicationInfo.paths );
-            sftpClient.purgeRemoteDirectoryContents( anyApplicationInfo.sftpHome, preservedPaths );
+            List<String> preservedPaths = getPreservedPathsList(anyApplicationInfo.paths);
+            sftpClient.purgeRemoteDirectoryContents(anyApplicationInfo.sftpHome, preservedPaths);
 
             anyApplicationInfo.markPathsUnchecked();
-            updateAgentFolder( sftpClient, anyApplicationInfo, agentFolder, "" );
+            updateAgentFolder(sftpClient, anyApplicationInfo, agentFolder, "");
 
-            for( PathInfo pathInfo : anyApplicationInfo.getUnckeckedPaths() ) {
+            for (PathInfo pathInfo : anyApplicationInfo.getUnckeckedPaths()) {
 
-                if( pathInfo.isUpgrade() ) {
-                    if( pathInfo.isFile() ) {
-                        String fileName = IoUtils.getFileName( pathInfo.getSftpPath() );
-                        String filePath = sourceProjectInfo.findFile( fileName );
-                        if( filePath == null ) {
-                            log.warn( "File '" + fileName
-                                      + "' can not be found in the source project libraries,"
-                                      + " so we can not upgrade it on the target agent" );
+                if (pathInfo.isUpgrade()) {
+                    if (pathInfo.isFile()) {
+                        String fileName = IoUtils.getFileName(pathInfo.getSftpPath());
+                        String filePath = sourceProjectInfo.findFile(fileName);
+                        if (filePath == null) {
+                            log.warn("File '" + fileName
+                                     + "' can not be found in the source project libraries,"
+                                     + " so we can not upgrade it on the target agent");
                             continue;
                         }
-                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf( '/' );
-                        if( lastSlashIdx > 0 ) {
-                            sftpClient.makeRemoteDirectories( pathInfo.getSftpPath()
-                                                                      .substring( 0, lastSlashIdx ) );
+                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf('/');
+                        if (lastSlashIdx > 0) {
+                            sftpClient.makeRemoteDirectories(pathInfo.getSftpPath()
+                                                                     .substring(0, lastSlashIdx));
                         }
-                        sftpClient.uploadFile( filePath, pathInfo.getSftpPath() );
+                        sftpClient.uploadFile(filePath, pathInfo.getSftpPath());
                     } else {
                         // TODO: upgrade directory
                     }
@@ -378,24 +378,24 @@ public class AgentController extends AbstractApplicationController {
             }
 
             // make agent start file to be executable
-            makeScriptsExecutable( anyApplicationInfo );
+            makeScriptsExecutable(anyApplicationInfo);
 
             // execute post install shell command, if any
-            executePostActionShellCommand( anyApplicationInfo, "INSTALL",
-                                           anyApplicationInfo.postInstallShellCommand );
+            executePostActionShellCommand(anyApplicationInfo, "INSTALL",
+                                          anyApplicationInfo.postInstallShellCommand);
 
-            if( previousStatus == ApplicationStatus.STARTED ) {
-                log.info( "We stopped the agent while upgrading. We will start it back on" );
-                ApplicationStatus newStatus = start( false );
+            if (previousStatus == ApplicationStatus.STARTED) {
+                log.info("We stopped the agent while upgrading. We will start it back on");
+                ApplicationStatus newStatus = start(false);
 
-                log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
-                          + " is successfully upgraded" );
+                log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
+                         + " is successfully upgraded");
                 return newStatus;
             } else {
                 // agent status was not changed in this method
 
-                log.info( TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
-                          + " is successfully upgraded" );
+                log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
+                         + " is successfully upgraded");
                 return ApplicationStatus.STOPPED;
             }
         } finally {
@@ -413,19 +413,19 @@ public class AgentController extends AbstractApplicationController {
      */
     private boolean isWsdlAvailable( AbstractApplicationInfo agentInfo, int timeout ) {
 
-        log.info( "We will wait up to " + timeout + " seconds for " + agentInfo.getDescription()
-                  + " to get remotely available" );
+        log.info("We will wait up to " + timeout + " seconds for " + agentInfo.getDescription()
+                 + " to get remotely available");
 
-        long nanoTimeout = TimeUnit.SECONDS.toNanos( timeout );
+        long nanoTimeout = TimeUnit.SECONDS.toNanos(timeout);
         long startTime = System.nanoTime();
-        while( ( System.nanoTime() - startTime ) < nanoTimeout ) {
+        while ( (System.nanoTime() - startTime) < nanoTimeout) {
 
-            if( isWsdlAvailable( agentInfo ) ) {
+            if (isWsdlAvailable(agentInfo)) {
                 return true;
             }
             try {
-                Thread.sleep( 1000 );
-            } catch( InterruptedException e ) {}
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
         }
 
         return false;
@@ -441,25 +441,25 @@ public class AgentController extends AbstractApplicationController {
 
         String urlString = "http://" + agentInfo.getAddress() + "/agentapp/agentservice?wsdl";
         try {
-            URL url = new URL( urlString );
-            HttpURLConnection httpConnection = ( HttpURLConnection ) url.openConnection();
-            httpConnection.setConnectTimeout( 10000 );
-            httpConnection.setRequestMethod( "GET" );
+            URL url = new URL(urlString);
+            HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+            httpConnection.setConnectTimeout(10000);
+            httpConnection.setRequestMethod("GET");
             httpConnection.connect();
 
-            if( httpConnection.getResponseCode() == 200 ) {
-                log.info( agentInfo.getDescription() + " is available for remote connections" );
+            if (httpConnection.getResponseCode() == 200) {
+                log.info(agentInfo.getDescription() + " is available for remote connections");
                 return true;
             } else {
-                log.warn( agentInfo.getDescription() + " is not available for remote connections. Accessing "
-                          + urlString + " returns '" + httpConnection.getResponseCode() + ": "
-                          + httpConnection.getResponseMessage() + "'" );
+                log.warn(agentInfo.getDescription() + " is not available for remote connections. Accessing "
+                         + urlString + " returns '" + httpConnection.getResponseCode() + ": "
+                         + httpConnection.getResponseMessage() + "'");
                 return false;
             }
-        } catch( Exception e ) {
-            log.warn( agentInfo.getDescription()
-                      + " is not available for remote connections. We cannot access " + urlString
-                      + ". Error message is '" + e.getMessage() + "'" );
+        } catch (Exception e) {
+            log.warn(agentInfo.getDescription()
+                     + " is not available for remote connections. We cannot access " + urlString
+                     + ". Error message is '" + e.getMessage() + "'");
             return false;
         }
     }
@@ -476,33 +476,33 @@ public class AgentController extends AbstractApplicationController {
     private void updateAgentVersion( AbstractApplicationInfo agentInfo, JschSshClient sshClient,
                                      boolean isTopLevelAction ) throws AtsManagerException {
 
-        if( agentInfo.getVersion() != null ) {
+        if (agentInfo.getVersion() != null) {
             // we already know the version
             return;
         }
 
         try {
-            sshClient.connect( agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
-                               agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword );
-            String shellVersionCommand = ( ( AgentInfo ) agentInfo ).getVersionCommand();
+            sshClient.connect(agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
+                              agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword);
+            String shellVersionCommand = ((AgentInfo) agentInfo).getVersionCommand();
 
-            int exitCode = sshClient.execute( shellVersionCommand, true );
+            int exitCode = sshClient.execute(shellVersionCommand, true);
             String stdout = sshClient.getStandardOutput();
-            int versionKeyIndex = stdout.indexOf( AtsVersion.VERSION_KEY + "=" );
-            if( exitCode == 0 && versionKeyIndex > -1 ) {
-                agentInfo.setVersion( stdout.substring( versionKeyIndex
-                                                        + ( AtsVersion.VERSION_KEY + "=" ).length() )
-                                            .trim() );
+            int versionKeyIndex = stdout.indexOf(AtsVersion.VERSION_KEY + "=");
+            if (exitCode == 0 && versionKeyIndex > -1) {
+                agentInfo.setVersion(stdout.substring(versionKeyIndex
+                                                      + (AtsVersion.VERSION_KEY + "=").length())
+                                           .trim());
                 return;
             }
 
             // maybe the agent is old one and have no 'version' option
-            if( !stdout.toLowerCase().startsWith( "usage" ) ) {
-                log.info( "Unable to parse " + agentInfo.getDescription() + " 'version' output:\n" + stdout
-                          + " (stderr: \"" + sshClient.getErrorOutput() + "\")" );
+            if (!stdout.toLowerCase().startsWith("usage")) {
+                log.info("Unable to parse " + agentInfo.getDescription() + " 'version' output:\n" + stdout
+                         + " (stderr: \"" + sshClient.getErrorOutput() + "\")");
             }
         } finally {
-            if( isTopLevelAction ) {
+            if (isTopLevelAction) {
                 sshClient.disconnect();
             }
         }
@@ -520,15 +520,15 @@ public class AgentController extends AbstractApplicationController {
 
         JschSftpClient sftpClient = new JschSftpClient();
         try {
-            sftpClient.connect( agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
-                                agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword );
-            boolean isDeployed = sftpClient.isRemoteFileOrDirectoryExisting( agentInfo.getSftpHome()
-                                                                             + "ats-agent/webapp/agentapp.war" );
+            sftpClient.connect(agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
+                               agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword);
+            boolean isDeployed = sftpClient.isRemoteFileOrDirectoryExisting(agentInfo.getSftpHome()
+                                                                            + "ats-agent/webapp/agentapp.war");
 
-            log.info( agentInfo.getDescription() + " seems " + ( isDeployed
-                                                                            ? ""
-                                                                            : "not" )
-                      + " deployed in " + agentInfo.getSftpHome() );
+            log.info(agentInfo.getDescription() + " seems " + (isDeployed
+                                                                          ? ""
+                                                                          : "not")
+                     + " deployed in " + agentInfo.getSftpHome());
             return isDeployed;
         } finally {
 
@@ -545,18 +545,18 @@ public class AgentController extends AbstractApplicationController {
     private void makeScriptsExecutable( AbstractApplicationInfo agentInfo ) throws AtsManagerException {
 
         // set executable privileges to the script files
-        if( agentInfo.isUnix() ) {
+        if (agentInfo.isUnix()) {
 
-            log.info( "Set executable priviledges on all 'sh' files in " + agentInfo.getHome() );
+            log.info("Set executable priviledges on all 'sh' files in " + agentInfo.getHome());
             JschSshClient sshClient = new JschSshClient();
             try {
-                sshClient.connect( agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
-                                   agentInfo.sshPort, agentInfo.sshPrivateKey,
-                                   agentInfo.sshPrivateKeyPassword );
-                int exitCode = sshClient.execute( "chmod a+x " + agentInfo.getHome() + "/*.sh", true );
-                if( exitCode != 0 ) {
-                    throw new AtsManagerException( "Unable to set execute privileges to the shell script files in '"
-                                                   + agentInfo.getHome() + "'" );
+                sshClient.connect(agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
+                                  agentInfo.sshPort, agentInfo.sshPrivateKey,
+                                  agentInfo.sshPrivateKeyPassword);
+                int exitCode = sshClient.execute("chmod a+x " + agentInfo.getHome() + "/*.sh", true);
+                if (exitCode != 0) {
+                    throw new AtsManagerException("Unable to set execute privileges to the shell script files in '"
+                                                  + agentInfo.getHome() + "'");
                 }
             } finally {
                 sshClient.disconnect();
@@ -572,9 +572,9 @@ public class AgentController extends AbstractApplicationController {
     private List<String> getPreservedPathsList( List<PathInfo> pathInfos ) {
 
         List<String> preservedPaths = new ArrayList<String>();
-        if( pathInfos != null ) {
-            for( PathInfo path : pathInfos ) {
-                preservedPaths.add( path.getSftpPath() );
+        if (pathInfos != null) {
+            for (PathInfo path : pathInfos) {
+                preservedPaths.add(path.getSftpPath());
             }
         }
         return preservedPaths;
@@ -593,35 +593,35 @@ public class AgentController extends AbstractApplicationController {
                                     String relativeFolderPath ) throws AtsManagerException {
 
         String remoteFolderPath = agentInfo.getSftpHome() + relativeFolderPath;
-        if( !sftpClient.isRemoteFileOrDirectoryExisting( remoteFolderPath ) ) {
-            sftpClient.uploadDirectory( localAgentFolder + relativeFolderPath, remoteFolderPath, true );
+        if (!sftpClient.isRemoteFileOrDirectoryExisting(remoteFolderPath)) {
+            sftpClient.uploadDirectory(localAgentFolder + relativeFolderPath, remoteFolderPath, true);
             return;
         }
 
-        File localFolder = new File( localAgentFolder + relativeFolderPath );
+        File localFolder = new File(localAgentFolder + relativeFolderPath);
         File[] localEntries = localFolder.listFiles();
-        if( localEntries != null && localEntries.length > 0 ) {
+        if (localEntries != null && localEntries.length > 0) {
 
-            for( File localEntry : localEntries ) {
+            for (File localEntry : localEntries) {
 
                 String remoteFilePath = remoteFolderPath + localEntry.getName();
-                PathInfo pathInfo = agentInfo.getPathInfo( remoteFilePath, localEntry.isFile(), true );
-                if( pathInfo != null ) {
+                PathInfo pathInfo = agentInfo.getPathInfo(remoteFilePath, localEntry.isFile(), true);
+                if (pathInfo != null) {
 
-                    pathInfo.setChecked( true );
-                    if( !pathInfo.isUpgrade() ) {
-                        log.info( "Skipping upgrade of '" + remoteFilePath
-                                  + "', because its 'upgrade' flag is 'false'" );
+                    pathInfo.setChecked(true);
+                    if (!pathInfo.isUpgrade()) {
+                        log.info("Skipping upgrade of '" + remoteFilePath
+                                 + "', because its 'upgrade' flag is 'false'");
                         continue;
                     }
                 }
 
-                if( localEntry.isDirectory() ) {
-                    updateAgentFolder( sftpClient, agentInfo, localAgentFolder,
-                                       relativeFolderPath + localEntry.getName() + "/" );
+                if (localEntry.isDirectory()) {
+                    updateAgentFolder(sftpClient, agentInfo, localAgentFolder,
+                                      relativeFolderPath + localEntry.getName() + "/");
                 } else {
                     String localFilePath = localAgentFolder + relativeFolderPath + localEntry.getName();
-                    sftpClient.uploadFile( localFilePath, remoteFilePath );
+                    sftpClient.uploadFile(localFilePath, remoteFilePath);
                 }
             }
         }
@@ -637,24 +637,24 @@ public class AgentController extends AbstractApplicationController {
      */
     private String extractAgentZip( String agentZipPath ) throws AtsManagerException {
 
-        File agentZip = new File( agentZipPath );
-        if( !agentZip.exists() ) {
+        File agentZip = new File(agentZipPath);
+        if (!agentZip.exists()) {
 
-            throw new AtsManagerException( "The agent ZIP file doesn't exist '" + agentZipPath + "'" );
+            throw new AtsManagerException("The agent ZIP file doesn't exist '" + agentZipPath + "'");
         }
-        final String tempPath = IoUtils.normalizeDirPath( AtsSystemProperties.SYSTEM_USER_TEMP_DIR
-                                                            + "/ats_tmp/" );
-        String agentFolderName = tempPath + "agent_" + String.valueOf( agentZip.lastModified() );
-        File agentFolder = new File( agentFolderName );
-        if( !agentFolder.exists() ) {
+        final String tempPath = IoUtils.normalizeDirPath(AtsSystemProperties.SYSTEM_USER_TEMP_DIR
+                                                         + "/ats_tmp/");
+        String agentFolderName = tempPath + "agent_" + String.valueOf(agentZip.lastModified());
+        File agentFolder = new File(agentFolderName);
+        if (!agentFolder.exists()) {
 
             try {
-                IoUtils.unzip( agentZipPath, agentFolderName, true );
-            } catch( IOException ioe ) {
+                IoUtils.unzip(agentZipPath, agentFolderName, true);
+            } catch (IOException ioe) {
 
-                throw new AtsManagerException( "Unable to unzip the agent ZIP file '" + agentZipPath
-                                               + "' to the temporary created directory '" + agentFolderName
-                                               + "'", ioe );
+                throw new AtsManagerException("Unable to unzip the agent ZIP file '" + agentZipPath
+                                              + "' to the temporary created directory '" + agentFolderName
+                                              + "'", ioe);
             }
         }
 

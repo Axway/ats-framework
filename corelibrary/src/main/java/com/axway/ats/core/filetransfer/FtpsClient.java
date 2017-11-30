@@ -48,12 +48,12 @@ import com.axway.ats.core.utils.SslUtils;
 public class FtpsClient extends AbstractFileTransferClient implements IFileTransferClient {
 
     private org.apache.commons.net.ftp.FTPSClient ftpsConnection                 = null;
-    @SuppressWarnings("unused")
+    @SuppressWarnings( "unused")
     private String                                keystorePassphrase             = null;
-    @SuppressWarnings("unused")
+    @SuppressWarnings( "unused")
     private String                                keystoreFile                   = null;
 
-    private static final Logger                   log                            = Logger.getLogger( FtpsClient.class );
+    private static final Logger                   log                            = Logger.getLogger(FtpsClient.class);
 
     private static final String                   USE_ONE_OF_THE_FTPS_CONSTANTS  = "Use one of the FTPS_* constants for key and values in GenericFileTransferClient class";
 
@@ -89,24 +89,24 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     public void setTransferMode(
                                  TransferMode mode ) throws FileTransferException {
 
-        if( this.ftpsConnection != null && this.ftpsConnection.isConnected() && this.transferMode != mode ) {
+        if (this.ftpsConnection != null && this.ftpsConnection.isConnected() && this.transferMode != mode) {
             try {
-                log.info( "Set file transfer mode to " + mode );
-                if( mode == TransferMode.ASCII ) {
-                    if( !this.ftpsConnection.setFileType( org.apache.commons.net.ftp.FTPSClient.ASCII_FILE_TYPE ) ) {
-                        throw new Exception( "Unable to set transfer mode to ASCII" );
+                log.info("Set file transfer mode to " + mode);
+                if (mode == TransferMode.ASCII) {
+                    if (!this.ftpsConnection.setFileType(org.apache.commons.net.ftp.FTPSClient.ASCII_FILE_TYPE)) {
+                        throw new Exception("Unable to set transfer mode to ASCII");
                     }
                 } else {
-                    if( !this.ftpsConnection.setFileType( org.apache.commons.net.ftp.FTPSClient.BINARY_FILE_TYPE ) ) {
-                        throw new Exception( "Unable to set transfer mode to BINARY" );
+                    if (!this.ftpsConnection.setFileType(org.apache.commons.net.ftp.FTPSClient.BINARY_FILE_TYPE)) {
+                        throw new Exception("Unable to set transfer mode to BINARY");
                     }
                 }
-            } catch( Exception e ) {
-                throw new FileTransferException( "Error setting file transfer mode to " + mode, e );
+            } catch (Exception e) {
+                throw new FileTransferException("Error setting file transfer mode to " + mode, e);
             }
         }
 
-        super.setTransferMode( mode );
+        super.setTransferMode(mode);
     }
 
     /**
@@ -123,10 +123,10 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
                          String userName,
                          String password ) throws FileTransferException {
 
-        log.info( "Connecting to " + hostname + " on port " + this.port + " using username " + userName
-                  + " and password " + password );
+        log.info("Connecting to " + hostname + " on port " + this.port + " using username " + userName
+                 + " and password " + password);
 
-        performConnect( hostname, userName, password, null, null );
+        performConnect(hostname, userName, password, null, null);
     }
 
     @Override
@@ -136,10 +136,10 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
                          String keystorePassword,
                          String publicKeyAlias ) throws FileTransferException {
 
-        log.info( "Connecting to " + hostname + " on port " + this.port + " using keystore file "
-                  + keystoreFile + " and public key alias " + publicKeyAlias );
+        log.info("Connecting to " + hostname + " on port " + this.port + " using keystore file "
+                 + keystoreFile + " and public key alias " + publicKeyAlias);
 
-        performConnect( hostname, publicKeyAlias, null, keystoreFile, keystorePassword );
+        performConnect(hostname, publicKeyAlias, null, keystoreFile, keystorePassword);
     }
 
     private void performConnect(
@@ -154,42 +154,42 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
         applyCustomProperties();
 
         //this.ftpsConnection = new FTPSClient( this.protocol, this.implicit);
-        this.ftpsConnection = new org.apache.commons.net.ftp.FTPSClient( this.implicit,
-                                                                         SslUtils.getSSLContext( keystoreFile,
-                                                                                                 keystorePassword,
-                                                                                                 this.protocol ) );
-        if( this.listener != null ) {
-            this.listener.setResponses( new ArrayList<String>() );
-            this.ftpsConnection.addProtocolCommandListener( ( ( FtpResponseListener ) listener ) );
+        this.ftpsConnection = new org.apache.commons.net.ftp.FTPSClient(this.implicit,
+                                                                        SslUtils.getSSLContext(keystoreFile,
+                                                                                               keystorePassword,
+                                                                                               this.protocol));
+        if (this.listener != null) {
+            this.listener.setResponses(new ArrayList<String>());
+            this.ftpsConnection.addProtocolCommandListener( ((FtpResponseListener) listener));
         }
         /* if debug mode is true, we log messages from all levels */
-        if( isDebugMode() ) {
-            this.ftpsConnection.addProtocolCommandListener( new FtpListener() );
+        if (isDebugMode()) {
+            this.ftpsConnection.addProtocolCommandListener(new FtpListener());
         }
         try {
-            this.ftpsConnection.setConnectTimeout( this.timeout );
+            this.ftpsConnection.setConnectTimeout(this.timeout);
             // connect to the host
-            this.ftpsConnection.connect( hostname, this.port );
+            this.ftpsConnection.connect(hostname, this.port);
             // login to the host
-            if( !this.ftpsConnection.login( userName, password ) ) {
-                throw new Exception( "Invallid username and/or password" );
+            if (!this.ftpsConnection.login(userName, password)) {
+                throw new Exception("Invallid username and/or password");
             }
             // set transfer mode
-            if( this.transferMode == TransferMode.ASCII ) {
-                if( !this.ftpsConnection.setFileType( org.apache.commons.net.ftp.FTPSClient.ASCII_FILE_TYPE ) ) {
-                    throw new Exception( "Unable to set transfer mode to ASCII" );
+            if (this.transferMode == TransferMode.ASCII) {
+                if (!this.ftpsConnection.setFileType(org.apache.commons.net.ftp.FTPSClient.ASCII_FILE_TYPE)) {
+                    throw new Exception("Unable to set transfer mode to ASCII");
                 }
             } else {
-                if( !this.ftpsConnection.setFileType( org.apache.commons.net.ftp.FTPSClient.BINARY_FILE_TYPE ) ) {
-                    throw new Exception( "Unable to set transfer mode to BINARY" );
+                if (!this.ftpsConnection.setFileType(org.apache.commons.net.ftp.FTPSClient.BINARY_FILE_TYPE)) {
+                    throw new Exception("Unable to set transfer mode to BINARY");
                 }
             }
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errMessage = "Unable to connect to  " + hostname + " on port " + this.port
                                 + " using username " + userName + " and password " + password;
-            log.error( errMessage, e );
-            throw new FileTransferException( e );
+            log.error(errMessage, e);
+            throw new FileTransferException(e);
         }
     }
 
@@ -201,12 +201,12 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     @Override
     public void disconnect() throws FileTransferException {
 
-        if( this.ftpsConnection != null && this.ftpsConnection.isConnected() ) {
+        if (this.ftpsConnection != null && this.ftpsConnection.isConnected()) {
             try {
                 this.ftpsConnection.disconnect();
                 this.ftpsConnection = null;
-            } catch( IOException e ) {
-                throw new FileTransferException( e );
+            } catch (IOException e) {
+                throw new FileTransferException(e);
             }
         }
 
@@ -221,36 +221,36 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
         FileOutputStream fos = null;
         try {
             String remoteFileAbsPath = null;
-            remoteDir = remoteDir.replace( "\\", "/" );
-            remoteFile = remoteFile.replace( "\\", "/" );
+            remoteDir = remoteDir.replace("\\", "/");
+            remoteFile = remoteFile.replace("\\", "/");
 
-            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
-                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
-            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
+            if (remoteDir.endsWith("/") && remoteFile.endsWith("/")) {
+                remoteFileAbsPath = remoteDir.substring(0, remoteDir.length() - 2) + remoteFile;
+            } else if (!remoteDir.endsWith("/") && !remoteFile.endsWith("/")) {
                 remoteFileAbsPath = remoteDir + "/" + remoteFile;
             } else {
                 remoteFileAbsPath = remoteDir + remoteFile;
             }
             // download the file
-            fos = new FileOutputStream( new File( localFile ) );
-            if( !this.ftpsConnection.retrieveFile( remoteFileAbsPath, fos ) ) {
-                throw new FileTransferException( "Unable to retrieve " + remoteDir + "/" + remoteFile
-                                                 + " from " + this.ftpsConnection.getPassiveHost() + " as a"
-                                                 + localFile );
+            fos = new FileOutputStream(new File(localFile));
+            if (!this.ftpsConnection.retrieveFile(remoteFileAbsPath, fos)) {
+                throw new FileTransferException("Unable to retrieve " + remoteDir + "/" + remoteFile
+                                                + " from " + this.ftpsConnection.getPassiveHost() + " as a"
+                                                + localFile);
             }
-        } catch( Exception e ) {
-            log.error( "Unable to download file " + localFile, e );
-            throw new FileTransferException( e );
+        } catch (Exception e) {
+            log.error("Unable to download file " + localFile, e);
+            throw new FileTransferException(e);
         } finally {
             // close the file output stream
-            IoUtils.closeStream( fos, "Unable to close the file stream after successful download!" );
+            IoUtils.closeStream(fos, "Unable to close the file stream after successful download!");
         }
 
-        if( remoteDir != null && !remoteDir.endsWith( "/" ) ) {
+        if (remoteDir != null && !remoteDir.endsWith("/")) {
             remoteDir += "/";
         }
-        log.info( "Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "', host "
-                  + ftpsConnection.getPassiveHost() );
+        log.info("Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "', host "
+                 + ftpsConnection.getPassiveHost());
     }
 
     @Override
@@ -263,53 +263,53 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
 
         try {
             String remoteFileAbsPath = null;
-            remoteDir = remoteDir.replace( "\\", "/" );
-            remoteFile = remoteFile.replace( "\\", "/" );
+            remoteDir = remoteDir.replace("\\", "/");
+            remoteFile = remoteFile.replace("\\", "/");
 
-            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
-                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
-            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
+            if (remoteDir.endsWith("/") && remoteFile.endsWith("/")) {
+                remoteFileAbsPath = remoteDir.substring(0, remoteDir.length() - 2) + remoteFile;
+            } else if (!remoteDir.endsWith("/") && !remoteFile.endsWith("/")) {
                 remoteFileAbsPath = remoteDir + "/" + remoteFile;
             } else {
                 remoteFileAbsPath = remoteDir + remoteFile;
             }
             // upload the file
-            fis = new FileInputStream( new File( localFile ) );
-            if( !this.ftpsConnection.storeFile( remoteFileAbsPath, fis ) ) {
-                throw new FileTransferException( "Unable to store " + localFile + " to "
-                                                 + this.ftpsConnection.getPassiveHost() + " as a" + remoteDir
-                                                 + "/" + remoteFile );
+            fis = new FileInputStream(new File(localFile));
+            if (!this.ftpsConnection.storeFile(remoteFileAbsPath, fis)) {
+                throw new FileTransferException("Unable to store " + localFile + " to "
+                                                + this.ftpsConnection.getPassiveHost() + " as a" + remoteDir
+                                                + "/" + remoteFile);
             }
-        } catch( Exception e ) {
-            log.error( "Unable to upload file!", e );
-            throw new FileTransferException( e );
+        } catch (Exception e) {
+            log.error("Unable to upload file!", e);
+            throw new FileTransferException(e);
         } finally {
-            IoUtils.closeStream( fis, "Unable to close the file stream after successful upload!" );
+            IoUtils.closeStream(fis, "Unable to close the file stream after successful upload!");
         }
 
-        if( remoteDir != null && !remoteDir.endsWith( "/" ) ) {
+        if (remoteDir != null && !remoteDir.endsWith("/")) {
             remoteDir += "/";
         }
-        log.info( "Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
-                  + ftpsConnection.getPassiveHost() );
+        log.info("Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
+                 + ftpsConnection.getPassiveHost());
     }
 
     @Override
     public String executeCommand(
                                   String command ) throws FileTransferException {
 
-        log.info( "Run '" + command + "'" );
+        log.info("Run '" + command + "'");
         String returnCode = "";
 
         try {
-            this.ftpsConnection.sendCommand( command );
-            returnCode = String.valueOf( this.ftpsConnection.sendCommand( command ) );
-        } catch( IOException e ) {
-            log.error( "Error running command: '" + command + "'", e );
-            throw new FileTransferException( e );
+            this.ftpsConnection.sendCommand(command);
+            returnCode = String.valueOf(this.ftpsConnection.sendCommand(command));
+        } catch (IOException e) {
+            log.error("Error running command: '" + command + "'", e);
+            throw new FileTransferException(e);
         }
 
-        log.info( "Return code is '" + returnCode + "'" );
+        log.info("Return code is '" + returnCode + "'");
         return returnCode;
     }
 
@@ -317,9 +317,9 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     protected TransferListener addListener(
                                             int progressEventNumber ) {
 
-        SynchronizationFtpTransferListener listener = new SynchronizationFtpTransferListener( this,
-                                                                                              progressEventNumber );
-        this.ftpsConnection.addProtocolCommandListener( listener );
+        SynchronizationFtpTransferListener listener = new SynchronizationFtpTransferListener(this,
+                                                                                             progressEventNumber);
+        this.ftpsConnection.addProtocolCommandListener(listener);
 
         return listener;
     }
@@ -328,7 +328,7 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     protected void removeListener(
                                    TransferListener listener ) {
 
-        this.ftpsConnection.removeProtocolCommandListener( ( ProtocolCommandListener ) listener );
+        this.ftpsConnection.removeProtocolCommandListener((ProtocolCommandListener) listener);
 
     }
 
@@ -347,16 +347,16 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     public void enableResponseCollection(
                                           boolean enable ) {
 
-        if( enable ) {
+        if (enable) {
             this.listener = new FtpResponseListener();
             // If it's connected add the listener to gather the responses
-            if( this.ftpsConnection != null ) {
-                this.ftpsConnection.addProtocolCommandListener( ( FtpResponseListener ) listener );
+            if (this.ftpsConnection != null) {
+                this.ftpsConnection.addProtocolCommandListener((FtpResponseListener) listener);
             }
         } else {
             // If it's connected remove the listener
-            if( this.ftpsConnection != null ) {
-                this.ftpsConnection.removeProtocolCommandListener( ( FtpResponseListener ) listener );
+            if (this.ftpsConnection != null) {
+                this.ftpsConnection.removeProtocolCommandListener((FtpResponseListener) listener);
             }
             this.listener = null;
         }
@@ -365,13 +365,13 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
     @Override
     public String[] getResponses() {
 
-        if( this.listener == null ) {
+        if (this.listener == null) {
             return new String[]{};
         }
 
         List<String> responses = this.listener.getResponses();
 
-        return responses.toArray( new String[responses.size()] );
+        return responses.toArray(new String[responses.size()]);
     }
 
     @Override
@@ -379,19 +379,19 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
                                    String key,
                                    Object value ) throws IllegalArgumentException {
 
-        if( key.equals( FTPS_CONNECTION_TYPE ) ) {
-            if( ! ( value instanceof Integer ) ) {
-                throw new IllegalArgumentException( "Value '" + value + "' for property key '" + key
-                                                    + "' has not supported type. "
-                                                    + USE_ONE_OF_THE_FTPS_CONSTANTS );
+        if (key.equals(FTPS_CONNECTION_TYPE)) {
+            if (! (value instanceof Integer)) {
+                throw new IllegalArgumentException("Value '" + value + "' for property key '" + key
+                                                   + "' has not supported type. "
+                                                   + USE_ONE_OF_THE_FTPS_CONSTANTS);
             } else {
-                customProperties.put( key, value );
+                customProperties.put(key, value);
             }
-        } else if( key.equals( FTPS_ENCRYPTION_PROTOCOLS ) ) {
-            customProperties.put( key, value );
+        } else if (key.equals(FTPS_ENCRYPTION_PROTOCOLS)) {
+            customProperties.put(key, value);
         } else {
-            throw new IllegalArgumentException( "Unknown property with key '" + key + "' is passed. "
-                                                + USE_ONE_OF_THE_FTPS_CONSTANTS );
+            throw new IllegalArgumentException("Unknown property with key '" + key + "' is passed. "
+                                               + USE_ONE_OF_THE_FTPS_CONSTANTS);
         }
     }
 
@@ -401,40 +401,41 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
         Set<Entry<String, Object>> customPropertiesSet = customProperties.entrySet();
         Object value;
         boolean ftpsConnectionTypeIsSet = false;
-        for( Entry<String, Object> customPropertyEntry : customPropertiesSet ) {
+        for (Entry<String, Object> customPropertyEntry : customPropertiesSet) {
             value = customPropertyEntry.getValue();
-            if( customPropertyEntry.getKey().equals( FTPS_CONNECTION_TYPE ) ) {
+            if (customPropertyEntry.getKey().equals(FTPS_CONNECTION_TYPE)) {
                 ftpsConnectionTypeIsSet = true;
-                if( value.equals( FTPS_CONNECTION_TYPE__IMPLICIT ) ) {
-                    log.debug( "Setting FTPS connection type to IMPLICIT_SSL" );
+                if (value.equals(FTPS_CONNECTION_TYPE__IMPLICIT)) {
+                    log.debug("Setting FTPS connection type to IMPLICIT_SSL");
                     implicit = true;
                     protocol = "SSL";
-                } else if( value.equals( FTPS_CONNECTION_TYPE__AUTH_SSL ) ) {
-                    log.debug( "Setting FTPS connection type to AUTH_SSL" );
+                } else if (value.equals(FTPS_CONNECTION_TYPE__AUTH_SSL)) {
+                    log.debug("Setting FTPS connection type to AUTH_SSL");
                     implicit = false;
                     protocol = "SSL";
-                } else if( value.equals( FTPS_CONNECTION_TYPE__AUTH_TLS ) ) {
-                    log.debug( "Setting FTPS connection type to AUTH_TLS" );
+                } else if (value.equals(FTPS_CONNECTION_TYPE__AUTH_TLS)) {
+                    log.debug("Setting FTPS connection type to AUTH_TLS");
                     implicit = false;
                     protocol = "TLSv1.2";
                 } else {
                     ftpsConnectionTypeIsSet = false;
-                    throw new IllegalArgumentException( "Unknown value '"
-                                                        + value
-                                                        + "' for FTPS connection type. "
-                                                        + "Check value used in addCustomProperty() method. Use one of the GenericFileTransferClient.FTPS_CONNECTION_TYPE__* constants for value" );
+                    throw new IllegalArgumentException("Unknown value '"
+                                                       + value
+                                                       + "' for FTPS connection type. "
+                                                       + "Check value used in addCustomProperty() method. Use one of the GenericFileTransferClient.FTPS_CONNECTION_TYPE__* constants for value");
                 }
-            } else if( customPropertyEntry.getKey().equals( FTPS_ENCRYPTION_PROTOCOLS ) ) {
+            } else if (customPropertyEntry.getKey().equals(FTPS_ENCRYPTION_PROTOCOLS)) {
                 // currently we can set just one protocol
-                String[] encryptionProtocols = parseCustomProperties( value.toString() );
+                String[] encryptionProtocols = parseCustomProperties(value.toString());
                 protocol = encryptionProtocols[0];
             } else {
-                throw new IllegalArgumentException( "Unknown property with key '" + customPropertyEntry.getKey() + "' is passed. "
-                                                    + USE_ONE_OF_THE_FTPS_CONSTANTS );
+                throw new IllegalArgumentException("Unknown property with key '" + customPropertyEntry.getKey()
+                                                   + "' is passed. "
+                                                   + USE_ONE_OF_THE_FTPS_CONSTANTS);
             }
         }
-        if( !ftpsConnectionTypeIsSet ) { // set explicitly the default connection type
-            log.debug( "Using by default the FTPS connection type AUTH_TLS" );
+        if (!ftpsConnectionTypeIsSet) { // set explicitly the default connection type
+            log.debug("Using by default the FTPS connection type AUTH_TLS");
             implicit = false;
             protocol = "TLSv1.2";
         }

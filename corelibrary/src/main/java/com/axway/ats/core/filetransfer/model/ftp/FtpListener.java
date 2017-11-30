@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 /** Class used to log sent commands and received responses, when debugMode is true (enabled) for @FtpClient or @FtpsClient **/
 public class FtpListener implements ProtocolCommandListener {
 
-    private static final Logger log = Logger.getLogger( FtpListener.class );
+    private static final Logger log = Logger.getLogger(FtpListener.class);
 
     public FtpListener() {
 
@@ -32,7 +32,7 @@ public class FtpListener implements ProtocolCommandListener {
     public void protocolCommandSent(
                                      ProtocolCommandEvent event ) {
 
-        log.debug( "Sending the following command: " + event.getMessage() );
+        log.debug("Sending the following command: " + event.getMessage());
 
     }
 
@@ -40,7 +40,7 @@ public class FtpListener implements ProtocolCommandListener {
     public void protocolReplyReceived(
                                        ProtocolCommandEvent event ) {
 
-        log.debug( "Receiving the following reply: " + event.getMessage() );
+        log.debug("Receiving the following reply: " + event.getMessage());
 
     }
 

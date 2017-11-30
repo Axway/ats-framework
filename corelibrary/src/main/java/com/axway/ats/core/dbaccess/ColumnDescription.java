@@ -21,7 +21,7 @@ package com.axway.ats.core.dbaccess;
 public class ColumnDescription {
 
     private String   name;
-    protected String   type;
+    protected String type;
     private String[] subTypes;
 
     public ColumnDescription( String name,
@@ -35,7 +35,7 @@ public class ColumnDescription {
                               String type,
                               String[] subTypes ) {
 
-        this( name, type );
+        this(name, type);
         this.subTypes = subTypes;
     }
 
@@ -76,8 +76,8 @@ public class ColumnDescription {
      */
     public boolean isTypeNumeric() {
 
-        return type.contains( "int" ) || type.contains( "decimal" ) || type.contains( "numeric" )
-               || type.contains( "real" ) || type.contains( "double" ) || type.contains( "bit" );
+        return type.contains("int") || type.contains("decimal") || type.contains("numeric")
+               || type.contains("real") || type.contains("double") || type.contains("bit");
     }
 
     /**
@@ -91,9 +91,9 @@ public class ColumnDescription {
         // MsSQL - 'image' type is only MsSQL one; also there is no 'blob' type there
         // 'char binary' and 'varchar binary' are not considered
 
-        return type.contains( "blob" ) || type.contains( "clob" ) || "binary".equals( type )
-               || type.startsWith( "binary(" ) || "varbinary".equals( type )
-               || type.startsWith( "varbinary(" ) || "image".equals( type );
+        return type.contains("blob") || type.contains("clob") || "binary".equals(type)
+               || type.startsWith("binary(") || "varbinary".equals(type)
+               || type.startsWith("varbinary(") || "image".equals(type);
 
     }
 
@@ -102,7 +102,7 @@ public class ColumnDescription {
      */
     public boolean isTypeBit() {
 
-        return type.contains( "bit" );
+        return type.contains("bit");
     }
 
     @Override

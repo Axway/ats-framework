@@ -37,12 +37,12 @@ public class Test_TypeInputStream extends BaseTest {
 
     private final Validator             validator          = new Validator();
 
-    private static final String         EXISTING_FILE_NAME = "src/test/resources/validation/file.txt"; // TODO use classpath
-    private static final File           EXISTING_FILE      = new File( EXISTING_FILE_NAME );
+    private static final String         EXISTING_FILE_NAME = "src/test/resources/validation/file.txt";   // TODO use classpath
+    private static final File           EXISTING_FILE      = new File(EXISTING_FILE_NAME);
 
     /** Invalid test data */
     private static final String         EMPTY_FILE_NAME    = "src/test/resources/validation/empty.file"; // TODO use classpath
-    private static final File           EMPTY_FILE         = new File( EMPTY_FILE_NAME );
+    private static final File           EMPTY_FILE         = new File(EMPTY_FILE_NAME);
 
     private static final ValidationType VALIDATION_TYPE    = ValidationType.INPUT_STREAM_NOT_EMPTY;
 
@@ -53,7 +53,7 @@ public class Test_TypeInputStream extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -64,15 +64,15 @@ public class Test_TypeInputStream extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        FileInputStream stream = new FileInputStream( EXISTING_FILE );
-        assertTrue( this.validator.validate( VALIDATION_TYPE, stream ) );
+        FileInputStream stream = new FileInputStream(EXISTING_FILE);
+        assertTrue(this.validator.validate(VALIDATION_TYPE, stream));
         stream.close();
 
-        stream = new FileInputStream( EMPTY_FILE );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, stream ) );
+        stream = new FileInputStream(EMPTY_FILE);
+        assertFalse(this.validator.validate(VALIDATION_TYPE, stream));
         stream.close();
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, new Object() ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, null ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, new Object()));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, null));
     }
 }

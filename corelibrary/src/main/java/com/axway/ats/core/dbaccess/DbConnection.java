@@ -69,8 +69,8 @@ public abstract class DbConnection {
         this.password = password;
 
         this.customProperties = customProperties;
-        initializeCustomProperties( customProperties );
-        
+        initializeCustomProperties(customProperties);
+
         this.connectionCounter = ++globalConnectionCounter;
     }
 
@@ -152,21 +152,22 @@ public abstract class DbConnection {
 
         return this.connectionCounter;
     }
-    
+
     /**
      * Get the connection hash
      * 
      * @return the connection hash - it is based on the host port and database
      */
     public String getConnHash() {
+
         StringBuilder connHash = new StringBuilder();
-        connHash.append( host );
-        connHash.append( "_" );
-        connHash.append( port );
-        connHash.append( "_" );
-        connHash.append( db );
-        connHash.append( "_" );
-        connHash.append( getConnectionCounter() );
+        connHash.append(host);
+        connHash.append("_");
+        connHash.append(port);
+        connHash.append("_");
+        connHash.append(db);
+        connHash.append("_");
+        connHash.append(getConnectionCounter());
 
         return connHash.toString();
     }

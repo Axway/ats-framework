@@ -57,14 +57,14 @@ public final class XmlUtils {
             DOMParser parser = new DOMParser();
 
             // Required settings from the DomParser
-            parser.setFeature( "http://apache.org/xml/features/dom/defer-node-expansion", false );
-            parser.setFeature( "http://apache.org/xml/features/continue-after-fatal-error", true );
-            parser.setFeature( "http://apache.org/xml/features/allow-java-encodings", true );
-            parser.parse( new InputSource( configurationFileStream ) );
+            parser.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
+            parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error", true);
+            parser.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
+            parser.parse(new InputSource(configurationFileStream));
 
             return parser.getDocument();
         } finally {
-            IoUtils.closeStream( configurationFileStream );
+            IoUtils.closeStream(configurationFileStream);
         }
     }
 
@@ -77,9 +77,9 @@ public final class XmlUtils {
     public static List<Element> getChildrenByTagName( Element parent, String name ) {
 
         List<Element> nodeList = new ArrayList<Element>();
-        for( Node child = parent.getFirstChild(); child != null; child = child.getNextSibling() ) {
-            if( child.getNodeType() == Node.ELEMENT_NODE && name.equals( child.getNodeName() ) ) {
-                nodeList.add( ( Element ) child );
+        for (Node child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child.getNodeType() == Node.ELEMENT_NODE && name.equals(child.getNodeName())) {
+                nodeList.add((Element) child);
             }
         }
 
@@ -94,12 +94,12 @@ public final class XmlUtils {
      * @throws XMLException if the mandatory attribute is missing or its value is empty
      */
     public static String getMandatoryAttribute( Element node,
-                                                String attributeName ) throws XMLException{
+                                                String attributeName ) throws XMLException {
 
-        String attributeValue = getAttribute( node, attributeName );
-        if( StringUtils.isNullOrEmpty( attributeValue ) ) {
-            throw new XMLException( node.getNodeName() + " is missing mandatory attribute '"
-                                                 + attributeName + "'" );
+        String attributeValue = getAttribute(node, attributeName);
+        if (StringUtils.isNullOrEmpty(attributeValue)) {
+            throw new XMLException(node.getNodeName() + " is missing mandatory attribute '"
+                                   + attributeName + "'");
         }
 
         return attributeValue;
@@ -114,12 +114,12 @@ public final class XmlUtils {
      */
     public static boolean getBooleanAttribute( Element node, String attributeName, boolean defaultValue ) {
 
-        String attributeValue = getAttribute( node, attributeName );
-        if( attributeValue == null ) {
+        String attributeValue = getAttribute(node, attributeName);
+        if (attributeValue == null) {
             return defaultValue;
         }
 
-        return Boolean.parseBoolean( attributeValue );
+        return Boolean.parseBoolean(attributeValue);
     }
 
     /**
@@ -131,8 +131,8 @@ public final class XmlUtils {
      */
     public static String getAttribute( Element node, String attributeName, String defaultValue ) {
 
-        String attributeValue = getAttribute( node, attributeName );
-        if( attributeValue == null ) {
+        String attributeValue = getAttribute(node, attributeName);
+        if (attributeValue == null) {
             attributeValue = defaultValue;
         }
         return attributeValue;
@@ -147,8 +147,8 @@ public final class XmlUtils {
     public static String getAttribute( Element node, String attributeName ) {
 
         String attributeValue = null;
-        Node attributeNode = node.getAttributes().getNamedItem( attributeName );
-        if( attributeNode != null ) {
+        Node attributeNode = node.getAttributes().getNamedItem(attributeName);
+        if (attributeNode != null) {
             attributeValue = attributeNode.getNodeValue();
         }
         return attributeValue;
@@ -162,6 +162,6 @@ public final class XmlUtils {
      */
     public static void setAttribute( Element node, String attributeName, String attributeValue ) {
 
-        node.setAttribute( attributeName, attributeValue );
+        node.setAttribute(attributeName, attributeValue);
     }
 }

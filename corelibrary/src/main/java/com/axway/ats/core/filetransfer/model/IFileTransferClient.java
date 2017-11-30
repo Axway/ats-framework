@@ -31,7 +31,7 @@ public interface IFileTransferClient {
      */
     public void setTransferMode(
                                  com.axway.ats.common.filetransfer.TransferMode mode )
-                                                                                                 throws FileTransferException;
+                                                                                       throws FileTransferException;
 
     /**
      * Upload a the file to the specified directory and with the specified file name

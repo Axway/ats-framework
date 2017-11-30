@@ -91,14 +91,14 @@ public interface ISystemOperations {
      * @return machine hostname
      */
     public String getHostname();
-    
+
     /**
      * ClassPath list all JARs in current application's ClassPath
      * 
      * @return array of all detected JARs from ClassPath
      */
     public String[] getClassPath();
-    
+
     /**
      * Log all JARs in current application's ClassPath
      */
@@ -112,5 +112,5 @@ public interface ISystemOperations {
     /**
      * Log all duplicated JARs in current application's ClassPath
      */
-    public void logDuplicatedJars();    
+    public void logDuplicatedJars();
 }

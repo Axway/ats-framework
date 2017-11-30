@@ -29,7 +29,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 
 public class DbConnPostgreSQL extends DbConnection {
 
-    private static final Logger log                    = Logger.getLogger( DbConnPostgreSQL.class );
+    private static final Logger log                    = Logger.getLogger(DbConnPostgreSQL.class);
 
     public static final String  DATABASE_TYPE          = "PostgreSQL";
 
@@ -60,7 +60,7 @@ public class DbConnPostgreSQL extends DbConnection {
      */
     public DbConnPostgreSQL( String host, String db, String user, String password ) {
 
-        this( host, db, user, password, null );
+        this(host, db, user, password, null);
     }
 
     /**
@@ -75,14 +75,14 @@ public class DbConnPostgreSQL extends DbConnection {
     public DbConnPostgreSQL( String host, String db, String user, String password,
                              Map<String, Object> customProperties ) {
 
-        super( DATABASE_TYPE, host, db, user, password, customProperties );
+        super(DATABASE_TYPE, host, db, user, password, customProperties);
 
-        url = new StringBuilder().append( JDBC_POSTGRESQL_PREFIX )
-                                 .append( host )
-                                 .append( ":" )
-                                 .append( port )
-                                 .append( "/" )
-                                 .append( db )
+        url = new StringBuilder().append(JDBC_POSTGRESQL_PREFIX)
+                                 .append(host)
+                                 .append(":")
+                                 .append(port)
+                                 .append("/")
+                                 .append(db)
                                  .toString();
     }
 
@@ -91,11 +91,11 @@ public class DbConnPostgreSQL extends DbConnection {
 
         this.port = DEFAULT_PORT;
 
-        if( customProperties != null && !customProperties.isEmpty() ) {
+        if (customProperties != null && !customProperties.isEmpty()) {
             //read the port if such is set
-            Object portValue = customProperties.get( DbKeys.PORT_KEY );
-            if( portValue != null ) {
-                this.port = ( Integer ) portValue;
+            Object portValue = customProperties.get(DbKeys.PORT_KEY);
+            if (portValue != null) {
+                this.port = (Integer) portValue;
             }
         }
 
@@ -104,10 +104,10 @@ public class DbConnPostgreSQL extends DbConnection {
     @Override
     public String getDescription() {
 
-        StringBuilder description = new StringBuilder( "PostgreSQL connection to " );
-        description.append( host );
-        description.append( ":" ).append( port );
-        description.append( "/" ).append( db );
+        StringBuilder description = new StringBuilder("PostgreSQL connection to ");
+        description.append(host);
+        description.append(":").append(port);
+        description.append("/").append(db);
 
         return description.toString();
     }
@@ -117,24 +117,24 @@ public class DbConnPostgreSQL extends DbConnection {
 
         // PostgreSQL does not provide connection pool (as of version 42.1.3) so make one using Apache Commons DBCP 
         ds = new BasicDataSource();
-        ds.setMaxWait( 60 * 1000 ); // wait 60 sec for new connection
+        ds.setMaxWait(60 * 1000); // wait 60 sec for new connection
         //ds.setMaxActive( -1 );
         //ds.setMaxIdle( 1000 );
 
-        String logAbandoned = System.getProperty( "dbcp.logAbandoned" );
-        if( logAbandoned != null && ( "true".equalsIgnoreCase( logAbandoned ) )
-            || "1".equalsIgnoreCase( logAbandoned ) ) {
-            log.info( "Will log abandoned connections if not cleaned in 120 sec" );
+        String logAbandoned = System.getProperty("dbcp.logAbandoned");
+        if (logAbandoned != null && ("true".equalsIgnoreCase(logAbandoned))
+            || "1".equalsIgnoreCase(logAbandoned)) {
+            log.info("Will log abandoned connections if not cleaned in 120 sec");
             // log not closed connections
-            ds.setRemoveAbandoned( true );
-            ds.setLogAbandoned( true ); // issue stack trace of not closed connection
-            ds.setRemoveAbandonedTimeout( 120 ); // 120 sec - 2 min
+            ds.setRemoveAbandoned(true);
+            ds.setLogAbandoned(true); // issue stack trace of not closed connection
+            ds.setRemoveAbandonedTimeout(120); // 120 sec - 2 min
         }
 
-        ds.setDriverClassName( getDriverClass().getName() );
-        ds.setUsername( user );
-        ds.setPassword( password );
-        ds.setUrl( getURL() );
+        ds.setDriverClassName(getDriverClass().getName());
+        ds.setUsername(user);
+        ds.setPassword(password);
+        ds.setUrl(getURL());
         return ds;
     }
 
@@ -155,8 +155,8 @@ public class DbConnPostgreSQL extends DbConnection {
 
         try {
             ds.close();
-        } catch( Exception e ) {
-            throw new DbException( "Unable to close database source", e );
+        } catch (Exception e) {
+            throw new DbException("Unable to close database source", e);
         }
 
     }

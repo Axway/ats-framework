@@ -23,7 +23,7 @@ import com.axway.ats.core.filesystem.model.FileAttributes;
  * This exception is thrown when an attribute is not supported on the
  * given operating system and its value cannot be set or get
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AttributeNotSupportedException extends FileSystemOperationException {
 
     /**
@@ -35,6 +35,6 @@ public class AttributeNotSupportedException extends FileSystemOperationException
     public AttributeNotSupportedException( FileAttributes fileAttribute,
                                            OperatingSystemType osType ) {
 
-        super( "Attribute " + fileAttribute + " is not supported on operating system " + osType );
+        super("Attribute " + fileAttribute + " is not supported on operating system " + osType);
     }
 }

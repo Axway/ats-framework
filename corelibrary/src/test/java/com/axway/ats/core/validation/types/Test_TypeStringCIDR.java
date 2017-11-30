@@ -53,7 +53,7 @@ public class Test_TypeStringCIDR extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -64,12 +64,12 @@ public class Test_TypeStringCIDR extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, VALID_CIDR_ADDRESS ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, VALID_CIDR_ADDRESS));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, CIDR_ADDRESS_OUT_OF_RANGE ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, CIDR_ADDRESS_ALPHA ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, CIDR_ADDRESS_MISSCALCULATED ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, CIDR_ADDRESS_MALFORMED ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, CIDR_ADDRESS_IP_MALFORMED ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, CIDR_ADDRESS_OUT_OF_RANGE));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, CIDR_ADDRESS_ALPHA));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, CIDR_ADDRESS_MISSCALCULATED));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, CIDR_ADDRESS_MALFORMED));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, CIDR_ADDRESS_IP_MALFORMED));
     }
 }

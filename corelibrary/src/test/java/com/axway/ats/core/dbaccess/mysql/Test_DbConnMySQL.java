@@ -34,27 +34,27 @@ public class Test_DbConnMySQL extends BaseTest {
     public void accessors() {
 
         Map<String, Object> customProperties = new HashMap<String, Object>();
-        customProperties.put( DbKeys.PORT_KEY, 123 );
+        customProperties.put(DbKeys.PORT_KEY, 123);
 
-        DbConnMySQL dbConnection = new DbConnMySQL( "host", "db", "user", "pass", customProperties );
+        DbConnMySQL dbConnection = new DbConnMySQL("host", "db", "user", "pass", customProperties);
 
-        assertEquals( DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType() );
-        assertEquals( "host", dbConnection.getHost() );
-        assertEquals( "db", dbConnection.getDb() );
-        assertEquals( "user", dbConnection.getUser() );
-        assertEquals( "pass", dbConnection.getPassword() );
-        assertEquals( "jdbc:mysql://host:123/db", dbConnection.getURL() );
-        assertTrue( dbConnection.getConnHash().startsWith( "host_123_db" ) );
-        assertEquals( "MySQL connection to host:123/db", dbConnection.getDescription() );
-        assertEquals( Driver.class, dbConnection.getDriverClass() );
+        assertEquals(DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mysql://host:123/db", dbConnection.getURL());
+        assertTrue(dbConnection.getConnHash().startsWith("host_123_db"));
+        assertEquals("MySQL connection to host:123/db", dbConnection.getDescription());
+        assertEquals(Driver.class, dbConnection.getDriverClass());
     }
 
     @Test
     public void getDataSource() {
 
-        DbConnMySQL dbConnection = new DbConnMySQL( "host", "db", "user", "pass" );
+        DbConnMySQL dbConnection = new DbConnMySQL("host", "db", "user", "pass");
 
-        assertEquals( MysqlConnectionPoolDataSource.class, dbConnection.getDataSource().getClass() );
+        assertEquals(MysqlConnectionPoolDataSource.class, dbConnection.getDataSource().getClass());
     }
 
 }

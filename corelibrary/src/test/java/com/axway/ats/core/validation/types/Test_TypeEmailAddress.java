@@ -53,7 +53,7 @@ public class Test_TypeEmailAddress extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -64,11 +64,11 @@ public class Test_TypeEmailAddress extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, VALID_EMAIL_ADDRESS ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, VALID_EMAIL_ADDRESS));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, EMPTY_STRING ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, EMAIL_ADDRESS_NO_HOST ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, EMAIL_ADDRESS_NO_USER ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, EMAIL_ADDRESS_WRONG_SYNTAX ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, EMPTY_STRING));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, EMAIL_ADDRESS_NO_HOST));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, EMAIL_ADDRESS_NO_USER));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, EMAIL_ADDRESS_WRONG_SYNTAX));
     }
 }

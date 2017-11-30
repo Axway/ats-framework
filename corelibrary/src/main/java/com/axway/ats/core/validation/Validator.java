@@ -55,7 +55,7 @@ public class Validator {
 
     protected static final String VALIDATION_ERROR_MESSAGE   = "Validation failed while validating argument ";
 
-    private static Logger         log                        = Logger.getLogger( Validator.class );
+    private static Logger         log                        = Logger.getLogger(Validator.class);
 
     private final List<BaseType>  typeValidators;
 
@@ -70,18 +70,18 @@ public class Validator {
     // -------------------------------------------------------------------------
     protected void pushMethodName( String methodName ) {
 
-        this.methodNames.push( methodName );
+        this.methodNames.push(methodName);
     }
 
     public void methodEnd( boolean result ) {
 
         String message = "END   - " + popMethodName();
-        if( result ) {
+        if (result) {
             message += ". SUCCESS!";
         } else {
             message += ". FAILURE!";
         }
-        log.info( message );
+        log.info(message);
     }
 
     /** Default constructor */
@@ -103,7 +103,7 @@ public class Validator {
      */
     public boolean validate( ValidationType type, Object value ) {
 
-        return validate( type, value, null );
+        return validate(type, value, null);
     }
 
     /**
@@ -126,17 +126,17 @@ public class Validator {
 
         TypeFactory factory = TypeFactory.getInstance();
         BaseType baseType;
-        if( value != null ) {
-            if( value.getClass().isArray() ) {
-                for( int i = 0; i < Array.getLength( value ); i++ ) {
-                    baseType = factory.createValidationType( type, Array.get( value, i ), args );
-                    if( !validate( baseType ) ) {
+        if (value != null) {
+            if (value.getClass().isArray()) {
+                for (int i = 0; i < Array.getLength(value); i++) {
+                    baseType = factory.createValidationType(type, Array.get(value, i), args);
+                    if (!validate(baseType)) {
                         return false;
                     }
                 }
             } else {
-                baseType = factory.createValidationType( type, value, args );
-                if( !validate( baseType ) ) {
+                baseType = factory.createValidationType(type, value, args);
+                if (!validate(baseType)) {
                     return false;
                 }
             }
@@ -144,15 +144,15 @@ public class Validator {
         }
         return false;
     }
-    
+
     private boolean validate(
                               BaseType baseType ) {
 
-        if( baseType != null ) {
+        if (baseType != null) {
             try {
                 baseType.validate();
-            } catch( TypeException e ) {
-                log.error( VALIDATION_ERROR_MESSAGE + "." + e.getMessage() );
+            } catch (TypeException e) {
+                log.error(VALIDATION_ERROR_MESSAGE + "." + e.getMessage());
                 return false;
             }
             return true;
@@ -168,7 +168,7 @@ public class Validator {
      */
     public void validateMethodParameters( String errMessagePrefix, Object[] argumentsValues ) {
 
-        validateMethodParameters( errMessagePrefix, argumentsValues, DEFAULT_STACK_TRACE_OFFSET );
+        validateMethodParameters(errMessagePrefix, argumentsValues, DEFAULT_STACK_TRACE_OFFSET);
     }
 
     /**
@@ -178,7 +178,7 @@ public class Validator {
      */
     public void validateMethodParameters( Object[] argumentsValues ) {
 
-        validateMethodParameters( null, argumentsValues, DEFAULT_STACK_TRACE_OFFSET );
+        validateMethodParameters(null, argumentsValues, DEFAULT_STACK_TRACE_OFFSET);
     }
 
     /**
@@ -191,16 +191,16 @@ public class Validator {
      */
     public void validateMethodParameters( String errMessagePrefix, Object[] argumentsValues, int offset ) {
 
-        if( StringUtils.isNullOrEmpty( errMessagePrefix ) ) {
+        if (StringUtils.isNullOrEmpty(errMessagePrefix)) {
             // there will be no change in the actual error message
             errMessagePrefix = "";
         } else {
             errMessagePrefix = errMessagePrefix + ": ";
         }
 
-        init( errMessagePrefix, argumentsValues, offset );
+        init(errMessagePrefix, argumentsValues, offset);
 
-        validate( errMessagePrefix );
+        validate(errMessagePrefix);
     }
 
     /**
@@ -210,16 +210,16 @@ public class Validator {
     private void validate( String errMessagePrefix ) {
 
         try {
-            for( BaseType type : this.typeValidators ) {
-                if( type != null ) {
+            for (BaseType type : this.typeValidators) {
+                if (type != null) {
                     try {
                         type.validate();
-                    } catch( TypeException e ) {
+                    } catch (TypeException e) {
                         String param = e.getParameterName() == null
                                                                     ? ": "
                                                                     : "\"" + e.getParameterName() + "\" : ";
-                        throw new InvalidInputArgumentsException( errMessagePrefix + VALIDATION_ERROR_MESSAGE
-                                                                  + param + e.getMessage() );
+                        throw new InvalidInputArgumentsException(errMessagePrefix + VALIDATION_ERROR_MESSAGE
+                                                                 + param + e.getMessage());
                     }
                 }
             }
@@ -240,24 +240,24 @@ public class Validator {
     private void init( String errMessagePrefix, Object[] argumentsValues, int offset ) {
 
         try {
-            throw new Exception( "Stack Trace" );
-        } catch( Exception e ) {
+            throw new Exception("Stack Trace");
+        } catch (Exception e) {
 
             // get the stack-element before the last (i.e. us)
-            if( ( offset < e.getStackTrace().length ) && ( offset >= 0 ) ) {
+            if ( (offset < e.getStackTrace().length) && (offset >= 0)) {
 
                 // Sometimes, using IBM JRE/JDK, the expected stack trace is changed and at the top
                 // of the StackTrace stack is added one more Class - Throwable. So we have to skip it
-                if( Throwable.class.getName().equals( e.getStackTrace()[0].getClassName() ) ) {
+                if (Throwable.class.getName().equals(e.getStackTrace()[0].getClassName())) {
                     offset++;
                 }
 
                 StackTraceElement stack = e.getStackTrace()[offset];
                 String sClassName = stack.getClassName();
-                pushMethodName( stack.getMethodName() );
+                pushMethodName(stack.getMethodName());
 
                 // log the method name and arguments
-                logMethodSignature( methodNames, argumentsValues );
+                logMethodSignature(methodNames, argumentsValues);
 
                 // find the method
                 Annotation[][] parameterAnnotations;
@@ -265,80 +265,80 @@ public class Validator {
                 Constructor<?> matchedConstructor;
                 Class<?> targetClass;
                 try {
-                    targetClass = Class.forName( sClassName );
-                    MethodFinder methodFinder = new MethodFinder( targetClass );
+                    targetClass = Class.forName(sClassName);
+                    MethodFinder methodFinder = new MethodFinder(targetClass);
 
-                    Class<?>[] parameterTypes = MethodFinder.getParameterTypesFrom( argumentsValues );
+                    Class<?>[] parameterTypes = MethodFinder.getParameterTypesFrom(argumentsValues);
 
-                    if( "<init>".equals( methodNames.peek() ) ) {
-                        matchedConstructor = methodFinder.findConstructor( parameterTypes );
+                    if ("<init>".equals(methodNames.peek())) {
+                        matchedConstructor = methodFinder.findConstructor(parameterTypes);
                         parameterAnnotations = matchedConstructor.getParameterAnnotations();
                     } else {
-                        matchedMethod = methodFinder.findMethod( methodNames.peek(), parameterTypes );
+                        matchedMethod = methodFinder.findMethod(methodNames.peek(), parameterTypes);
                         parameterAnnotations = matchedMethod.getParameterAnnotations();
                     }
-                } catch( ClassNotFoundException cnfe ) {
+                } catch (ClassNotFoundException cnfe) {
                     // throw runtime exception, as this is a fatal error
-                    throw new RuntimeException( errMessagePrefix + "Could not find class '" + sClassName
-                                                + "'", cnfe );
-                } catch( NoSuchMethodException nsme ) {
+                    throw new RuntimeException(errMessagePrefix + "Could not find class '" + sClassName
+                                               + "'", cnfe);
+                } catch (NoSuchMethodException nsme) {
                     // throw runtime exception, as this is a fatal error
-                    throw new RuntimeException( errMessagePrefix + "Could not find method '"
-                                                + methodNames.peek() + "'", nsme );
-                } catch( AmbiguousMethodException ame ) {
+                    throw new RuntimeException(errMessagePrefix + "Could not find method '"
+                                               + methodNames.peek() + "'", nsme);
+                } catch (AmbiguousMethodException ame) {
                     // throw runtime exception, as this is a fatal error
-                    throw new RuntimeException( errMessagePrefix + "Found ambiguous method '"
-                                                + methodNames.peek() + "'", ame );
+                    throw new RuntimeException(errMessagePrefix + "Found ambiguous method '"
+                                               + methodNames.peek() + "'", ame);
                 }
 
-                for( int i = 0; i < parameterAnnotations.length; i++ ) {
+                for (int i = 0; i < parameterAnnotations.length; i++) {
                     Annotation[] currentParamAnnotations = parameterAnnotations[i];
 
-                    for( Annotation currentParamAnnotation : currentParamAnnotations ) {
-                        if( currentParamAnnotation instanceof Validate ) {
+                    for (Annotation currentParamAnnotation : currentParamAnnotations) {
+                        if (currentParamAnnotation instanceof Validate) {
                             // perform validation
-                            Validate validateAnnotation = ( Validate ) currentParamAnnotation;
+                            Validate validateAnnotation = (Validate) currentParamAnnotation;
 
                             ValidationType validationType = validateAnnotation.type();
                             // if we are checking for valid constants, then the
                             // args array should contain
                             // the name of the array holding the valid constants
-                            if( validationType == ValidationType.STRING_CONSTANT
-                                || validationType == ValidationType.NUMBER_CONSTANT ) {
+                            if (validationType == ValidationType.STRING_CONSTANT
+                                || validationType == ValidationType.NUMBER_CONSTANT) {
                                 try {
                                     String arrayName = validateAnnotation.args()[0];
 
                                     // get the field and set access level if
                                     // necessary
-                                    Field arrayField = targetClass.getDeclaredField( arrayName );
-                                    if( !arrayField.isAccessible() ) {
-                                        arrayField.setAccessible( true );
+                                    Field arrayField = targetClass.getDeclaredField(arrayName);
+                                    if (!arrayField.isAccessible()) {
+                                        arrayField.setAccessible(true);
                                     }
-                                    Object arrayValidConstants = arrayField.get( null );
+                                    Object arrayValidConstants = arrayField.get(null);
 
                                     // convert the object array to string array
-                                    String[] arrayValidConstatnsStr = new String[Array.getLength( arrayValidConstants )];
-                                    for( int j = 0; j < Array.getLength( arrayValidConstants ); j++ ) {
-                                        arrayValidConstatnsStr[j] = Array.get( arrayValidConstants, j )
+                                    String[] arrayValidConstatnsStr = new String[Array.getLength(arrayValidConstants)];
+                                    for (int j = 0; j < Array.getLength(arrayValidConstants); j++) {
+                                        arrayValidConstatnsStr[j] = Array.get(arrayValidConstants, j)
                                                                          .toString();
                                     }
-                                    createBaseTypes( validationType, validateAnnotation.name(),
-                                                     argumentsValues[i], arrayValidConstatnsStr );
+                                    createBaseTypes(validationType, validateAnnotation.name(),
+                                                    argumentsValues[i], arrayValidConstatnsStr);
 
-                                } catch( IndexOutOfBoundsException iobe ) {
+                                } catch (IndexOutOfBoundsException iobe) {
                                     // throw runtime exception, as this is a
                                     // fatal error
-                                    throw new RuntimeException( errMessagePrefix
-                                                                + "You need to specify the name of the array with valid constants in the 'args' field of the Validate annotation" );
-                                } catch( Exception e1 ) {
+                                    throw new RuntimeException(errMessagePrefix
+                                                               + "You need to specify the name of the array with valid constants in the 'args' field of the Validate annotation");
+                                } catch (Exception e1) {
                                     // throw runtime exception, as this is a
                                     // fatal error
-                                    throw new RuntimeException( errMessagePrefix
-                                                                + "Could not get array with valid constants" );
+                                    throw new RuntimeException(errMessagePrefix
+                                                               + "Could not get array with valid constants");
                                 }
                             } else {
-                                createBaseTypes( validationType, validateAnnotation.name(),
-                                                 argumentsValues[i], validateAnnotation.args() );
+                                createBaseTypes(validationType, validateAnnotation.name(),
+                                                argumentsValues[i], validateAnnotation.args());
                             }
                         }
                     }
@@ -351,40 +351,40 @@ public class Validator {
     private void logMethodSignature( Stack<String> methodNames, Object[] argumentsValues ) {
 
         StringBuffer buffer = new StringBuffer();
-        buffer.append( methodNames.peek() ).append( "( " );
+        buffer.append(methodNames.peek()).append("( ");
 
-        for( int i = 0; i < argumentsValues.length; i++ ) {
-            if( argumentsValues[i] == null ) {
-                buffer.append( "null" );
+        for (int i = 0; i < argumentsValues.length; i++) {
+            if (argumentsValues[i] == null) {
+                buffer.append("null");
             } else {
-                if( argumentsValues[i].getClass().isArray() ) {
+                if (argumentsValues[i].getClass().isArray()) {
                     // we have an array, so get all elements
-                    buffer.append( "{ " );
+                    buffer.append("{ ");
 
-                    for( int j = 0; j < Array.getLength( argumentsValues[i] ); j++ ) {
-                        if( Array.get( argumentsValues[i], j ) == null ) {
-                            buffer.append( "null" );
+                    for (int j = 0; j < Array.getLength(argumentsValues[i]); j++) {
+                        if (Array.get(argumentsValues[i], j) == null) {
+                            buffer.append("null");
                         } else {
-                            buffer.append( Array.get( argumentsValues[i], j ).toString() );
+                            buffer.append(Array.get(argumentsValues[i], j).toString());
                         }
-                        if( ( j + 1 ) != Array.getLength( argumentsValues[i] ) ) {
-                            buffer.append( " , " );
+                        if ( (j + 1) != Array.getLength(argumentsValues[i])) {
+                            buffer.append(" , ");
                         }
                     }
 
-                    buffer.append( " }" );
+                    buffer.append(" }");
 
                 } else {
-                    buffer.append( argumentsValues[i].toString() );
+                    buffer.append(argumentsValues[i].toString());
                 }
             }
-            if( ( i + 1 ) != argumentsValues.length ) {
-                buffer.append( " , " );
+            if ( (i + 1) != argumentsValues.length) {
+                buffer.append(" , ");
             }
         }
-        buffer.append( " )" );
+        buffer.append(" )");
 
-        log.debug( "START - " + buffer );
+        log.debug("START - " + buffer);
     }
 
     /** Creates as much validation types as needed to validate the input data */
@@ -392,29 +392,29 @@ public class Validator {
 
         // if this is an array of types to be validated, then add each
         // of them separatly to the list
-        if( ( values != null ) && values.getClass().isArray() ) {
-            for( int i = 0; i < Array.getLength( values ); i++ ) {
-                Object value = Array.get( values, i );
+        if ( (values != null) && values.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(values); i++) {
+                Object value = Array.get(values, i);
                 TypeFactory factory = TypeFactory.getInstance();
-                BaseType baseType = factory.createValidationType( type, paramName, value, args );
-                this.typeValidators.add( baseType );
+                BaseType baseType = factory.createValidationType(type, paramName, value, args);
+                this.typeValidators.add(baseType);
             }
             // otherwise just add the single validation type
         } else {
             TypeFactory factory = TypeFactory.getInstance();
 
-            String message = new StringBuilder().append( "Validating if parameter with the name of [" )
-                                                .append( paramName )
-                                                .append( "] and value [" )
-                                                .append( values )
-                                                .append( "] is by the type of [" )
-                                                .append( type )
-                                                .append( "]" )
+            String message = new StringBuilder().append("Validating if parameter with the name of [")
+                                                .append(paramName)
+                                                .append("] and value [")
+                                                .append(values)
+                                                .append("] is by the type of [")
+                                                .append(type)
+                                                .append("]")
                                                 .toString();
-            log.debug( message );
+            log.debug(message);
 
-            BaseType baseType = factory.createValidationType( type, paramName, values, args );
-            this.typeValidators.add( baseType );
+            BaseType baseType = factory.createValidationType(type, paramName, values, args);
+            this.typeValidators.add(baseType);
         }
     }
 }

@@ -41,14 +41,14 @@ public class SnapshotConfiguration implements Serializable {
     // XML files
     private boolean           checkXmlFilesContent;
     private Set<String>       xmlFileExtensions;
-    
+
     // INI files    
     private boolean           checkIniFilesContent;
     private char              iniFilesStartComment = '#';
     private char              iniFilesStartSection = '[';
     private char              iniFilesDelimiter    = '=';
     private Set<String>       iniFileExtensions;
-    
+
     // TEXT files
     private boolean           checkTextFilesContent;
     private Set<String>       textFileExtensions;
@@ -57,16 +57,16 @@ public class SnapshotConfiguration implements Serializable {
         // set default values
 
         propertiesFileExtensions = new HashSet<>();
-        propertiesFileExtensions.add( ".properties" );
+        propertiesFileExtensions.add(".properties");
 
         xmlFileExtensions = new HashSet<>();
-        xmlFileExtensions.add( ".xml" );
+        xmlFileExtensions.add(".xml");
 
         iniFileExtensions = new HashSet<>();
-        iniFileExtensions.add( ".ini" );
-        
+        iniFileExtensions.add(".ini");
+
         textFileExtensions = new HashSet<>();
-        textFileExtensions.add( ".txt" );
+        textFileExtensions.add(".txt");
 
         iniFilesStartComment = '#';
         iniFilesStartSection = '[';
@@ -192,7 +192,6 @@ public class SnapshotConfiguration implements Serializable {
 
         this.iniFilesDelimiter = iniFilesPropertyDelimiter;
     }
-    
 
     public boolean isCheckTextFilesContent() {
 
@@ -212,8 +211,8 @@ public class SnapshotConfiguration implements Serializable {
     public void setPropertiesFileExtensions( String[] extensions ) {
 
         propertiesFileExtensions.clear();
-        for( String extension : extensions ) {
-            propertiesFileExtensions.add( extension );
+        for (String extension : extensions) {
+            propertiesFileExtensions.add(extension);
         }
     }
 
@@ -225,8 +224,8 @@ public class SnapshotConfiguration implements Serializable {
     public void setXmlFileExtensions( String[] extensions ) {
 
         xmlFileExtensions.clear();
-        for( String extension : extensions ) {
-            xmlFileExtensions.add( extension );
+        for (String extension : extensions) {
+            xmlFileExtensions.add(extension);
         }
     }
 
@@ -238,11 +237,11 @@ public class SnapshotConfiguration implements Serializable {
     public void setIniFileExtensions( String[] extensions ) {
 
         iniFileExtensions.clear();
-        for( String extension : extensions ) {
-            iniFileExtensions.add( extension );
+        for (String extension : extensions) {
+            iniFileExtensions.add(extension);
         }
     }
-    
+
     /**
      * Set file extensions that will be treated as TEXT files.
      * Default extension is '.text'
@@ -251,8 +250,8 @@ public class SnapshotConfiguration implements Serializable {
     public void setTextFileExtensions( String[] extensions ) {
 
         textFileExtensions.clear();
-        for( String extension : extensions ) {
-            textFileExtensions.add( extension );
+        for (String extension : extensions) {
+            textFileExtensions.add(extension);
         }
     }
 
@@ -262,8 +261,8 @@ public class SnapshotConfiguration implements Serializable {
      */
     public FileType getFileType( String filePath ) {
 
-        for( String xmlExt : xmlFileExtensions ) {
-            if( filePath.endsWith( xmlExt ) ) {
+        for (String xmlExt : xmlFileExtensions) {
+            if (filePath.endsWith(xmlExt)) {
                 // it is XML file
                 return checkXmlFilesContent
                                             ? FileType.XML
@@ -271,26 +270,26 @@ public class SnapshotConfiguration implements Serializable {
             }
         }
 
-        for( String propertiesExt : propertiesFileExtensions ) {
-            if( filePath.endsWith( propertiesExt ) ) {
+        for (String propertiesExt : propertiesFileExtensions) {
+            if (filePath.endsWith(propertiesExt)) {
                 // it is Properties file
                 return checkPropertiesFilesContent
-                                                 ? FileType.PROPERTIES
-                                                 : FileType.REGULAR;
+                                                   ? FileType.PROPERTIES
+                                                   : FileType.REGULAR;
             }
         }
 
-        for( String iniExt : iniFileExtensions ) {
-            if( filePath.endsWith( iniExt ) ) {
+        for (String iniExt : iniFileExtensions) {
+            if (filePath.endsWith(iniExt)) {
                 // it is INI file
                 return checkIniFilesContent
                                             ? FileType.INI
                                             : FileType.REGULAR;
             }
         }
-        
-        for( String textExt : textFileExtensions ) {
-            if( filePath.endsWith( textExt ) ) {
+
+        for (String textExt : textFileExtensions) {
+            if (filePath.endsWith(textExt)) {
                 // it is INI file
                 return checkTextFilesContent
                                              ? FileType.TEXT

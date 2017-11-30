@@ -43,30 +43,30 @@ public class SeekInputStream extends InputStream {
         super();
 
         //setup stream & initial buffer
-        this.stream = new BufferedInputStream( s );
+        this.stream = new BufferedInputStream(s);
         this.bufsize = DEFAULT_BUFSIZE;
         this.buffer = new byte[this.bufsize];
 
         //mark source stream if possible
-        if( this.stream.markSupported() )
-            this.stream.mark( Integer.MAX_VALUE );
+        if (this.stream.markSupported())
+            this.stream.mark(Integer.MAX_VALUE);
 
         //precache contents
-        int nr = this.stream.read( this.buffer, this.size, READ_CHUNK );
-        while( 0 < nr ) {
+        int nr = this.stream.read(this.buffer, this.size, READ_CHUNK);
+        while (0 < nr) {
             this.size += nr;
-            if( this.size >= this.bufsize - READ_CHUNK ) {
+            if (this.size >= this.bufsize - READ_CHUNK) {
                 int newsize = 2 * this.bufsize;
                 byte[] newbuf = new byte[newsize];
-                System.arraycopy( this.buffer, 0, newbuf, 0, this.size );
+                System.arraycopy(this.buffer, 0, newbuf, 0, this.size);
                 this.bufsize = newsize;
                 this.buffer = newbuf;
             }
-            nr = this.stream.read( this.buffer, this.size, READ_CHUNK );
+            nr = this.stream.read(this.buffer, this.size, READ_CHUNK);
         }
 
         //reset source stream if possible
-        if( this.stream.markSupported() )
+        if (this.stream.markSupported())
             this.stream.reset();
     }
 
@@ -105,7 +105,7 @@ public class SeekInputStream extends InputStream {
     public int read() {
 
         int delta = this.size - this.pos;
-        if( 0 >= delta )
+        if (0 >= delta)
             return -1;
         else return this.buffer[this.pos++] & 0xFF;
     }
@@ -117,11 +117,11 @@ public class SeekInputStream extends InputStream {
                      int len ) {
 
         int rem = this.size - this.pos;
-        if( 0 >= rem )
+        if (0 >= rem)
             return -1;
-        if( len > rem )
+        if (len > rem)
             len = rem;
-        System.arraycopy( this.buffer, this.pos, b, off, len );
+        System.arraycopy(this.buffer, this.pos, b, off, len);
         this.pos += len;
 
         return len;
@@ -130,14 +130,14 @@ public class SeekInputStream extends InputStream {
     @Override
     public void reset() {
 
-        this.seek( this.mark );
+        this.seek(this.mark);
     }
 
     public int seek(
                      int pos ) {
 
         //validate argument
-        if( ( 0 > pos ) || ( this.size < pos ) )
+        if ( (0 > pos) || (this.size < pos))
             return -1;
 
         //seek there
@@ -150,14 +150,14 @@ public class SeekInputStream extends InputStream {
                       long n ) {
 
         //accept only 
-        if( 0 >= n )
+        if (0 >= n)
             return 0;
 
         int pos = this.pos;
         n += pos;
-        if( Integer.MAX_VALUE <= n )
+        if (Integer.MAX_VALUE <= n)
             n = Integer.MAX_VALUE;
-        return this.seek( ( int ) n ) - pos;
+        return this.seek((int) n) - pos;
     }
 
 }

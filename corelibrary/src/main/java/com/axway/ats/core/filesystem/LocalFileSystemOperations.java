@@ -94,9 +94,9 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class LocalFileSystemOperations implements IFileSystemOperations {
 
-    private static final Logger              log                                  = Logger.getLogger( LocalFileSystemOperations.class );
+    private static final Logger              log                                  = Logger.getLogger(LocalFileSystemOperations.class);
 
-    private static final Charset             DEFAULT_CHARSET                      = Charset.forName( "UTF-8" );
+    private static final Charset             DEFAULT_CHARSET                      = Charset.forName("UTF-8");
 
     //  line-terminator chars
     private static final byte                LINE_TERM_LF                         = '\n';
@@ -108,7 +108,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     //file transfer socket commands (during file/directory copy)
     private static final String              FILE_COPY_SOCKET_COMMAND             = "file";
     private static final String              DIR_CREATE_SOCKET_COMMAND            = "dir";
-    private static final int                 INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                                                                                  // used for file/dir command and  file name length
+    private static final int                 INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                                                                                // used for file/dir command and  file name length
 
     //read buffer
     private static final int                 READ_BUFFER_SIZE                     = 16384;
@@ -117,7 +117,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private static final int                 FILE_TRANSFER_TIMEOUT                = 60 * 1000;
 
     // file size threshold after which a warning is issued for too-big file and that problems might arise
-    private static final int                 FILE_SIZE_FOR_WARNING                = 10 * 1024 * 1024;                                                                                      // 10 MB
+    private static final int                 FILE_SIZE_FOR_WARNING                = 10 * 1024 * 1024;                                                                                    // 10 MB
 
     /**
      * The ASCII decimal code of the character at the beginning of the allowed
@@ -150,7 +150,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      *      '.' (dot) ordinary SELinux context only
      *      '+' (plus) SELinux ACLs or other things beyond ordinary context
      */
-    private static final Pattern             longListingPattern                   = Pattern.compile( "[a-z\\-]{1}([rwxtTsS\\-]{9})[\\.\\+]?\\s+\\d+\\s+([^\\s]+)\\s+([^\\s]+)\\s+\\d+.*" );
+    private static final Pattern             longListingPattern                   = Pattern.compile("[a-z\\-]{1}([rwxtTsS\\-]{9})[\\.\\+]?\\s+\\d+\\s+([^\\s]+)\\s+([^\\s]+)\\s+\\d+.*");
 
     // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs. Instance should be Hashtable to synchronize access operations;
     private Map<Integer, FileTransferStatus> fileTransferStates                   = new Hashtable<Integer, FileTransferStatus>();
@@ -177,28 +177,28 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         BufferedOutputStream outputStream = null;
 
         try {
-            outputStream = new BufferedOutputStream( new FileOutputStream( filename ) );
+            outputStream = new BufferedOutputStream(new FileOutputStream(filename));
             //if the file size is bigger than 0, fill the file, otherwise create an empty file
-            if( size > 0 ) {
-                if( randomContent ) {
+            if (size > 0) {
+                if (randomContent) {
                     byte[] nextByte = new byte[1];
                     long currentSize = 0;
 
                     //Write random bytes until size is reached
-                    while( currentSize < size ) {
+                    while (currentSize < size) {
                         //write a byte
-                        randomGenerator.nextBytes( nextByte );
-                        outputStream.write( nextByte );
+                        randomGenerator.nextBytes(nextByte);
+                        outputStream.write(nextByte);
                         currentSize++;
                     }
                 } else {
                     byte nextByte = Byte.MIN_VALUE;
                     long currentSize = 0;
 
-                    while( currentSize < size ) {
-                        outputStream.write( nextByte );
+                    while (currentSize < size) {
+                        outputStream.write(nextByte);
 
-                        if( nextByte == Byte.MAX_VALUE ) {
+                        if (nextByte == Byte.MAX_VALUE) {
                             nextByte = 0;
                         } else {
                             nextByte++;
@@ -208,16 +208,16 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 }
             }
 
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Could not generate file", ioe );
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Could not generate file", ioe);
         } finally {
-            if( outputStream != null ) {
+            if (outputStream != null) {
                 try {
                     outputStream.close();
 
-                    log.info( "Successfully created binary file '" + filename + "' with size " + size );
-                } catch( IOException ioe ) {
-                    log.error( "Could not close file output stream", ioe );
+                    log.info("Successfully created binary file '" + filename + "' with size " + size);
+                } catch (IOException ioe) {
+                    log.error("Could not close file output stream", ioe);
                 }
             }
         }
@@ -231,15 +231,15 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                   long groupId,
                                   boolean randomContent ) {
 
-        createBinaryFile( filename, size, randomContent );
+        createBinaryFile(filename, size, randomContent);
 
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
             //set the file attributes if OS is Unix
-            chown( userId, groupId, filename );
-            log.info( "Successfully changed UID to " + userId + " and GID to " + groupId );
+            chown(userId, groupId, filename);
+            log.info("Successfully changed UID to " + userId + " and GID to " + groupId);
 
         } else {
-            log.info( "Target OS is not Unix. UID and GID attributes will be ignored" );
+            log.info("Target OS is not Unix. UID and GID attributes will be ignored");
         }
     }
 
@@ -251,7 +251,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              EndOfLineStyle eol ) {
 
         String terminationString;
-        if( eol == null ) {
+        if (eol == null) {
             terminationString = EndOfLineStyle.getCurrentOsStyle().getTerminationString();
         } else {
             terminationString = eol.getTerminationString();
@@ -259,31 +259,31 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         BufferedWriter fileWriter = null;
 
         try {
-            fileWriter = new BufferedWriter( new FileWriter( filename ) );
+            fileWriter = new BufferedWriter(new FileWriter(filename));
 
             //if the file size is bigger than 0, fill the file, otherwise create an empty file
-            if( size > 0 ) {
-                if( randomContent ) {
+            if (size > 0) {
+                if (randomContent) {
                     //init the random number generator class
                     Random randomGen = new Random();
 
-                    int charAsciiCode = randomGen.nextInt( END_CHARACTER_CODE_DECIMAL
-                                                           - START_CHARACTER_CODE_DECIMAL )
+                    int charAsciiCode = randomGen.nextInt(END_CHARACTER_CODE_DECIMAL
+                                                          - START_CHARACTER_CODE_DECIMAL)
                                         + START_CHARACTER_CODE_DECIMAL;
 
                     //write a preceding random char before the line separator if possible,
                     //then output the line-separator and fill the remainder with random data
-                    fileWriter.write( ( char ) charAsciiCode );
-                    fileWriter.write( terminationString );
+                    fileWriter.write((char) charAsciiCode);
+                    fileWriter.write(terminationString);
 
                     long currentSize = terminationString.length() + 1;
-                    while( currentSize < size ) {
+                    while (currentSize < size) {
                         //write a random character
-                        charAsciiCode = randomGen.nextInt( END_CHARACTER_CODE_DECIMAL
-                                                           - START_CHARACTER_CODE_DECIMAL )
+                        charAsciiCode = randomGen.nextInt(END_CHARACTER_CODE_DECIMAL
+                                                          - START_CHARACTER_CODE_DECIMAL)
                                         + START_CHARACTER_CODE_DECIMAL;
 
-                        fileWriter.write( ( char ) charAsciiCode );
+                        fileWriter.write((char) charAsciiCode);
                         currentSize++;
                     }
                 } else {
@@ -291,38 +291,38 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
                     //write a preceding random char before the line separator if possible,
                     //then output the line-separator and fill the remainder with random data
-                    fileWriter.write( ( char ) charAsciiCode );
-                    fileWriter.write( terminationString );
+                    fileWriter.write((char) charAsciiCode);
+                    fileWriter.write(terminationString);
 
                     long currentSize = terminationString.length() + 1;
-                    while( currentSize < size ) {
+                    while (currentSize < size) {
 
                         //reset to the first character in the sequence if we are passed
                         //the last character
-                        if( ++charAsciiCode > END_CHARACTER_CODE_DECIMAL ) {
+                        if (++charAsciiCode > END_CHARACTER_CODE_DECIMAL) {
                             charAsciiCode = START_CHARACTER_CODE_DECIMAL;
                         }
 
-                        fileWriter.write( ( char ) charAsciiCode );
+                        fileWriter.write((char) charAsciiCode);
                         currentSize++;
                     }
                 }
-            } else if( fileContent != null ) {
-                fileWriter.write( fileContent );
+            } else if (fileContent != null) {
+                fileWriter.write(fileContent);
             }
 
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Could not generate file", ioe );
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Could not generate file", ioe);
         } finally {
-            if( fileWriter != null ) {
+            if (fileWriter != null) {
                 try {
                     fileWriter.close();
-                    log.info( "Successfully created file '" + filename + ( fileContent != null
-                                                                                               ? "' with user defined content."
-                                                                                               : "' with size "
-                                                                                                 + size ) );
-                } catch( IOException ioe ) {
-                    log.error( "Could not close file writer", ioe );
+                    log.info("Successfully created file '" + filename + (fileContent != null
+                                                                                             ? "' with user defined content."
+                                                                                             : "' with size "
+                                                                                               + size));
+                } catch (IOException ioe) {
+                    log.error("Could not close file writer", ioe);
                 }
             }
         }
@@ -335,7 +335,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             boolean randomContent,
                             EndOfLineStyle eol ) {
 
-        createFile( filename, null, size, randomContent, eol );
+        createFile(filename, null, size, randomContent, eol);
     }
 
     @Override
@@ -344,7 +344,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             long size,
                             boolean randomContent ) {
 
-        createFile( filename, size, randomContent, null );
+        createFile(filename, size, randomContent, null);
     }
 
     @Override
@@ -352,7 +352,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String filename,
                             String fileContent ) {
 
-        createFile( filename, fileContent, -1, false, null );
+        createFile(filename, fileContent, -1, false, null);
     }
 
     @Override
@@ -363,7 +363,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             long groupId,
                             boolean randomContent ) {
 
-        createFile( filename, size, userId, groupId, randomContent, null );
+        createFile(filename, size, userId, groupId, randomContent, null);
     }
 
     @Override
@@ -375,8 +375,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             boolean randomContent,
                             EndOfLineStyle eol ) {
 
-        createFile( filename, size, randomContent, eol );
-        setFileOwnerAndGroupIDs( filename, userId, groupId );
+        createFile(filename, size, randomContent, eol);
+        setFileOwnerAndGroupIDs(filename, userId, groupId);
     }
 
     @Override
@@ -386,8 +386,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             long userId,
                             long groupId ) {
 
-        createFile( filename, fileContent, -1, false, null );
-        setFileOwnerAndGroupIDs( filename, userId, groupId );
+        createFile(filename, fileContent, -1, false, null);
+        setFileOwnerAndGroupIDs(filename, userId, groupId);
     }
 
     private void setFileOwnerAndGroupIDs(
@@ -395,13 +395,13 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                           long userId,
                                           long groupId ) {
 
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
             //set the file attributes if OS is Unix
-            chown( userId, groupId, filename );
-            log.info( "Successfully changed UID to " + userId + " and GID to " + groupId );
+            chown(userId, groupId, filename);
+            log.info("Successfully changed UID to " + userId + " and GID to " + groupId);
 
         } else {
-            log.info( "Target OS is not Unix. UID and GID attributes will be ignored" );
+            log.info("Target OS is not Unix. UID and GID attributes will be ignored");
         }
     }
 
@@ -410,64 +410,64 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                               String filePath,
                               String contentToAdd ) {
 
-        if( !new File( filePath ).exists() ) {
-            throw new FileSystemOperationException( "Unable to append content to file '" + filePath
-                                                    + "' as it does not exist" );
+        if (!new File(filePath).exists()) {
+            throw new FileSystemOperationException("Unable to append content to file '" + filePath
+                                                   + "' as it does not exist");
         }
 
-        if( new File( filePath ).isDirectory() ) {
-            throw new FileSystemOperationException( "Unable to append content to '" + filePath
-                                                    + "' as it is a directory, but file was expected" );
+        if (new File(filePath).isDirectory()) {
+            throw new FileSystemOperationException("Unable to append content to '" + filePath
+                                                   + "' as it is a directory, but file was expected");
         }
 
         BufferedWriter fileWriter = null;
 
         try {
-            fileWriter = new BufferedWriter( new FileWriter( filePath, true ) );
-            fileWriter.write( contentToAdd );
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Unable to append content to file '" + filePath + "'",
-                                                    ioe );
+            fileWriter = new BufferedWriter(new FileWriter(filePath, true));
+            fileWriter.write(contentToAdd);
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Unable to append content to file '" + filePath + "'",
+                                                   ioe);
         } finally {
-            if( fileWriter != null ) {
+            if (fileWriter != null) {
                 try {
                     fileWriter.close();
 
-                    log.info( "Successfully appended " + contentToAdd.length() + " characters to file '"
-                              + filePath + "'" );
-                } catch( IOException ioe ) {
-                    log.error( "Could not close file writer", ioe );
+                    log.info("Successfully appended " + contentToAdd.length() + " characters to file '"
+                             + filePath + "'");
+                } catch (IOException ioe) {
+                    log.error("Could not close file writer", ioe);
                 }
             }
         }
     }
 
-    @SuppressWarnings("resource")
+    @SuppressWarnings( "resource")
     @Override
     public void copyFile(
                           String sourceFile,
                           String destinationFile,
                           boolean failOnError ) {
 
-        File inputFile = new File( sourceFile );
-        checkFileExistence( inputFile );
+        File inputFile = new File(sourceFile);
+        checkFileExistence(inputFile);
 
         FileChannel srcChannel = null;
         FileChannel dstChannel = null;
 
         try {
             // Create channel on the source
-            srcChannel = new FileInputStream( sourceFile ).getChannel();
+            srcChannel = new FileInputStream(sourceFile).getChannel();
 
             // Create channel on the destination
-            dstChannel = new FileOutputStream( destinationFile ).getChannel();
+            dstChannel = new FileOutputStream(destinationFile).getChannel();
 
             // Copy file contents from source to destination
-            dstChannel.truncate( 0 );
+            dstChannel.truncate(0);
 
-            if( log.isDebugEnabled() ) {
-                log.debug( "Copying file '" + sourceFile + "' of " + srcChannel.size() + "bytes to '"
-                           + destinationFile + "'" );
+            if (log.isDebugEnabled()) {
+                log.debug("Copying file '" + sourceFile + "' of " + srcChannel.size() + "bytes to '"
+                          + destinationFile + "'");
             }
 
             /* Copy the file in chunks.
@@ -476,32 +476,32 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
              * bigger then 2 GBs
              */
             final long CHUNK = 16 * 1024 * 1024; // 16 MB chunks
-            for( long pos = 0; pos < srcChannel.size(); ) {
-                pos += dstChannel.transferFrom( srcChannel, pos, CHUNK );
+            for (long pos = 0; pos < srcChannel.size();) {
+                pos += dstChannel.transferFrom(srcChannel, pos, CHUNK);
             }
 
-            if( srcChannel.size() != dstChannel.size() ) {
-                throw new FileSystemOperationException( "Size of the destination file \"" + destinationFile
-                                                        + "\" and the source file \"" + sourceFile
-                                                        + "\" missmatch!" );
+            if (srcChannel.size() != dstChannel.size()) {
+                throw new FileSystemOperationException("Size of the destination file \"" + destinationFile
+                                                       + "\" and the source file \"" + sourceFile
+                                                       + "\" missmatch!");
             }
-            
-            if( osType.isUnix() ) {
+
+            if (osType.isUnix()) {
                 // set the original file permission to the new file
-                setFilePermissions( destinationFile, getFilePermissions( sourceFile ) );
+                setFilePermissions(destinationFile, getFilePermissions(sourceFile));
             }
 
-        } catch( IOException e ) {
-            throw new FileSystemOperationException( "Unable to copy file '" + sourceFile + "' to '"
-                                                    + destinationFile + "'", e );
+        } catch (IOException e) {
+            throw new FileSystemOperationException("Unable to copy file '" + sourceFile + "' to '"
+                                                   + destinationFile + "'", e);
         } finally {
             // Close the channels
-            IoUtils.closeStream( srcChannel,
-                                 "Unable to close input channel while copying file '" + sourceFile + "' to '"
-                                             + destinationFile + "'" );
-            IoUtils.closeStream( dstChannel,
-                                 "Unable to close destination channel while copying file '" + sourceFile
-                                             + "' to '" + destinationFile + "'" );
+            IoUtils.closeStream(srcChannel,
+                                "Unable to close input channel while copying file '" + sourceFile + "' to '"
+                                            + destinationFile + "'");
+            IoUtils.closeStream(dstChannel,
+                                "Unable to close destination channel while copying file '" + sourceFile
+                                            + "' to '" + destinationFile + "'");
         }
     }
 
@@ -525,43 +525,43 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                  boolean isRecursive,
                                  boolean failOnError ) {
 
-        if( fromDirName == null ) {
-            throw new IllegalArgumentException( "Could not copy directories. The source directory name is null" );
+        if (fromDirName == null) {
+            throw new IllegalArgumentException("Could not copy directories. The source directory name is null");
         }
-        if( toDirName == null ) {
-            throw new IllegalArgumentException( "Could not copy directories. The target directory name is null" );
+        if (toDirName == null) {
+            throw new IllegalArgumentException("Could not copy directories. The target directory name is null");
         }
-        if( isRecursive && toDirName.startsWith( fromDirName ) ) {
-            throw new IllegalArgumentException( "Could not copy directories. The target directory is subdirectory of the source one" );
+        if (isRecursive && toDirName.startsWith(fromDirName)) {
+            throw new IllegalArgumentException("Could not copy directories. The target directory is subdirectory of the source one");
         }
 
-        File fromDir = new File( fromDirName );
-        checkFileExistence( fromDir );
+        File fromDir = new File(fromDirName);
+        checkFileExistence(fromDir);
 
         Socket socket = null;
         OutputStream sos = null;
         try {
-            socket = new Socket( toHost, toPort );
+            socket = new Socket(toHost, toPort);
             sos = socket.getOutputStream();
 
-            sendFileToSocketStream( fromDir, toDirName, sos, failOnError );
-            sendFilesToSocketStream( fromDir.listFiles(),
-                                     fromDirName,
-                                     toDirName,
-                                     sos,
-                                     isRecursive,
-                                     failOnError );
-        } catch( IOException ioe ) {
+            sendFileToSocketStream(fromDir, toDirName, sos, failOnError);
+            sendFilesToSocketStream(fromDir.listFiles(),
+                                    fromDirName,
+                                    toDirName,
+                                    sos,
+                                    isRecursive,
+                                    failOnError);
+        } catch (IOException ioe) {
 
-            throw new FileSystemOperationException( "Unable to send directory '" + fromDirName + "' to '"
-                                                    + toDirName + "' on " + toHost + ":" + toPort, ioe );
+            throw new FileSystemOperationException("Unable to send directory '" + fromDirName + "' to '"
+                                                   + toDirName + "' on " + toHost + ":" + toPort, ioe);
         } finally {
-            IoUtils.closeStream( sos );
-            if( socket != null ) {
+            IoUtils.closeStream(sos);
+            if (socket != null) {
                 try {
                     socket.close();
-                } catch( IOException e ) {
-                    log.error( "Could not close the socket", e );
+                } catch (IOException e) {
+                    log.error("Could not close the socket", e);
                 }
             }
         }
@@ -585,28 +585,28 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             int toPort,
                             boolean failOnError ) {
 
-        File file = new File( fromFileName );
-        checkFileExistence( file );
+        File file = new File(fromFileName);
+        checkFileExistence(file);
 
         Socket socket = null;
         OutputStream sos = null;
         try {
 
-            socket = new Socket( toHost, toPort );
+            socket = new Socket(toHost, toPort);
             sos = socket.getOutputStream();
 
-            sendFileToSocketStream( file, toFileName, sos, failOnError );
-        } catch( IOException ioe ) {
+            sendFileToSocketStream(file, toFileName, sos, failOnError);
+        } catch (IOException ioe) {
 
-            throw new FileSystemOperationException( "Unable to send file '" + fromFileName + "' to '"
-                                                    + toFileName + "' on " + toHost + ":" + toPort, ioe );
+            throw new FileSystemOperationException("Unable to send file '" + fromFileName + "' to '"
+                                                   + toFileName + "' on " + toHost + ":" + toPort, ioe);
         } finally {
-            IoUtils.closeStream( sos );
-            if( socket != null ) {
+            IoUtils.closeStream(sos);
+            if (socket != null) {
                 try {
                     socket.close();
-                } catch( IOException e ) {
-                    log.error( "Could not close the socket", e );
+                } catch (IOException e) {
+                    log.error("Could not close the socket", e);
                 }
             }
         }
@@ -622,26 +622,26 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                       Integer copyFileStartPort,
                                       Integer copyFileEndPort ) {
 
-        if( copyFileStartPort != null || copyFileEndPort != null ) {
+        if (copyFileStartPort != null || copyFileEndPort != null) {
             String startErrorMsg = "Specified port for copy file '";
             String endErrorMsg = "' port must be a positive integer!";
 
             // check if both values are positive
-            if( copyFileStartPort == null || copyFileStartPort < 0 ) {
-                throw new RuntimeException( startErrorMsg + copyFileStartPort + endErrorMsg );
-            } else if( copyFileEndPort == null || copyFileEndPort < 0 ) {
-                throw new RuntimeException( startErrorMsg + copyFileEndPort + endErrorMsg );
-            } else if( copyFileStartPort == 0 || copyFileEndPort == 0 ) {
-                if( copyFileStartPort == 0 && copyFileEndPort != 0 ) {
-                    throw new RuntimeException( startErrorMsg + copyFileStartPort + endErrorMsg );
+            if (copyFileStartPort == null || copyFileStartPort < 0) {
+                throw new RuntimeException(startErrorMsg + copyFileStartPort + endErrorMsg);
+            } else if (copyFileEndPort == null || copyFileEndPort < 0) {
+                throw new RuntimeException(startErrorMsg + copyFileEndPort + endErrorMsg);
+            } else if (copyFileStartPort == 0 || copyFileEndPort == 0) {
+                if (copyFileStartPort == 0 && copyFileEndPort != 0) {
+                    throw new RuntimeException(startErrorMsg + copyFileStartPort + endErrorMsg);
                 } else {
-                    throw new RuntimeException( startErrorMsg + copyFileEndPort + endErrorMsg );
+                    throw new RuntimeException(startErrorMsg + copyFileEndPort + endErrorMsg);
                 }
             }
 
-            if( copyFileStartPort > copyFileEndPort ) {
-                log.warn( "Specified start port for copy file '" + copyFileStartPort
-                          + "' is bigger than the end port '" + copyFileEndPort + "'. We will switch them!" );
+            if (copyFileStartPort > copyFileEndPort) {
+                log.warn("Specified start port for copy file '" + copyFileStartPort
+                         + "' is bigger than the end port '" + copyFileEndPort + "'. We will switch them!");
                 this.copyFileStartPort = copyFileEndPort;
                 this.copyFileEndPort = copyFileStartPort;
 
@@ -662,18 +662,18 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         ServerSocket server = null;
         Integer copyFileCurrentPort;
-        for( copyFileCurrentPort = copyFileStartPort; copyFileCurrentPort <= copyFileEndPort; copyFileCurrentPort++ ) {
+        for (copyFileCurrentPort = copyFileStartPort; copyFileCurrentPort <= copyFileEndPort; copyFileCurrentPort++) {
             try {
-                server = new ServerSocket( copyFileCurrentPort );
+                server = new ServerSocket(copyFileCurrentPort);
                 return server;
-            } catch( IOException e ) {
-                log.debug( "Searching free port for remote file copy. Port " + copyFileCurrentPort
-                           + " is busy. We will check next one." );
+            } catch (IOException e) {
+                log.debug("Searching free port for remote file copy. Port " + copyFileCurrentPort
+                          + " is busy. We will check next one.");
                 continue;
             }
         }
-        throw new RuntimeException( "Remote file transfer copy. No free port found in range "
-                                    + copyFileStartPort + " to " + copyFileEndPort + "." );
+        throw new RuntimeException("Remote file transfer copy. No free port found in range "
+                                   + copyFileStartPort + " to " + copyFileEndPort + ".");
     }
 
     /**
@@ -688,18 +688,18 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         try {
 
             final ServerSocket server;
-            if( copyFileStartPort == null && copyFileEndPort == null ) {
-                server = new ServerSocket( 0 );
+            if (copyFileStartPort == null && copyFileEndPort == null) {
+                server = new ServerSocket(0);
             } else {
                 server = getServerSocket();
             }
             freePort = server.getLocalPort();
 
-            log.debug( "Starting file transfer server on port: " + freePort );
+            log.debug("Starting file transfer server on port: " + freePort);
 
             final FileTransferStatus transferStatus = new FileTransferStatus();
-            fileTransferStates.put( freePort, transferStatus );
-            Thread thread = new Thread( new Runnable() {
+            fileTransferStates.put(freePort, transferStatus);
+            Thread thread = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -708,96 +708,96 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     FileOutputStream fos = null;
                     DataInputStream dis = null;
                     try {
-                        server.setReuseAddress( true );
-                        server.setSoTimeout( FILE_TRANSFER_TIMEOUT );
+                        server.setReuseAddress(true);
+                        server.setSoTimeout(FILE_TRANSFER_TIMEOUT);
                         socket = server.accept();
 
-                        dis = new DataInputStream( socket.getInputStream() );
+                        dis = new DataInputStream(socket.getInputStream());
                         int fdTypeLength = dis.readInt();
-                        for( ;; ) {
-                            checkParamLengthForSocketTransfer( fdTypeLength, "file type length" );
-                            String fdType = readString( dis, fdTypeLength ); // directory or file
+                        for (;;) {
+                            checkParamLengthForSocketTransfer(fdTypeLength, "file type length");
+                            String fdType = readString(dis, fdTypeLength); // directory or file
                             int fileNameLength = dis.readInt();
-                            checkParamLengthForSocketTransfer( fileNameLength, "file name length" );
-                            String fileName = readString( dis, fileNameLength );
-                            fileName = IoUtils.normalizeFilePath( fileName, osType ); // switch file separators according to the current OS
-                            File file = new File( fileName );
-                            if( fdType.equals( FILE_COPY_SOCKET_COMMAND ) ) {
+                            checkParamLengthForSocketTransfer(fileNameLength, "file name length");
+                            String fileName = readString(dis, fileNameLength);
+                            fileName = IoUtils.normalizeFilePath(fileName, osType); // switch file separators according to the current OS
+                            File file = new File(fileName);
+                            if (fdType.equals(FILE_COPY_SOCKET_COMMAND)) {
 
                                 long fileSize = dis.readLong();
-                                log.debug( "Creating file: " + fileName + " with size: " + fileSize
-                                           + " bytes" );
+                                log.debug("Creating file: " + fileName + " with size: " + fileSize
+                                          + " bytes");
 
                                 try {
-                                    fos = new FileOutputStream( file, false );
-                                } catch( IOException e ) {
-                                    throw new IOException( "Could not create destination file '" + file + "'",
-                                                           e );
+                                    fos = new FileOutputStream(file, false);
+                                } catch (IOException e) {
+                                    throw new IOException("Could not create destination file '" + file + "'",
+                                                          e);
                                 }
                                 byte[] buff = new byte[FILE_TRANSFER_BUFFER_SIZE];
                                 int readBytes = -1;
-                                while( fileSize > 0 && ( readBytes = dis.read( buff,
-                                                                               0,
-                                                                               ( int ) Math.min( buff.length,
-                                                                                                 fileSize ) ) ) > -1 ) {
-                                    fos.write( buff, 0, readBytes );
+                                while (fileSize > 0 && (readBytes = dis.read(buff,
+                                                                             0,
+                                                                             (int) Math.min(buff.length,
+                                                                                            fileSize))) > -1) {
+                                    fos.write(buff, 0, readBytes);
                                     fos.flush();
                                     fileSize -= readBytes;
                                 }
-                                IoUtils.closeStream( fos );
-                            } else if( fdType.equals( DIR_CREATE_SOCKET_COMMAND ) ) {
+                                IoUtils.closeStream(fos);
+                            } else if (fdType.equals(DIR_CREATE_SOCKET_COMMAND)) {
 
-                                if( !file.exists() ) {
+                                if (!file.exists()) {
 
-                                    log.debug( "Creating directory: " + fileName );
-                                    if( !file.mkdirs() ) {
+                                    log.debug("Creating directory: " + fileName);
+                                    if (!file.mkdirs()) {
                                         throw new RuntimeException();
                                     }
                                 }
                             } else {
 
-                                log.error( "Unknown socket command (must be the file descriptor type): "
-                                           + fdType );
+                                log.error("Unknown socket command (must be the file descriptor type): "
+                                          + fdType);
                                 return;
                             }
 
                             // check for more files/directories
                             try {
                                 fdTypeLength = dis.readInt();
-                            } catch( EOFException eofe ) {
+                            } catch (EOFException eofe) {
                                 // this is the end of the input stream
                                 break;
                             }
                         }
 
-                    } catch( SocketTimeoutException ste ) {
+                    } catch (SocketTimeoutException ste) {
                         // timeout usually will be when waiting for client connection but theoretically could be also in the middle of reading data
-                        log.error( "Reached timeout of " + ( FILE_TRANSFER_TIMEOUT / 1000 )
-                                   + " seconds while waiting for file/directory copy operation.", ste );
+                        log.error("Reached timeout of " + (FILE_TRANSFER_TIMEOUT / 1000)
+                                  + " seconds while waiting for file/directory copy operation.", ste);
                         transferStatus.transferException = ste;
-                    } catch( IOException e ) {
-                        log.error( "An I/O error occurred", e );
+                    } catch (IOException e) {
+                        log.error("An I/O error occurred", e);
                         transferStatus.transferException = e;
                     } finally {
 
-                        IoUtils.closeStream( fos );
-                        IoUtils.closeStream( dis );
-                        if( socket != null ) {
+                        IoUtils.closeStream(fos);
+                        IoUtils.closeStream(dis);
+                        if (socket != null) {
                             try {
                                 socket.close();
-                            } catch( IOException e ) {
-                                log.error( "Could not close the Socket", e );
+                            } catch (IOException e) {
+                                log.error("Could not close the Socket", e);
                             }
                         }
-                        if( server != null ) {
+                        if (server != null) {
                             try {
                                 server.close();
-                            } catch( IOException e ) {
-                                log.error( "Could not close the ServerSocket", e );
+                            } catch (IOException e) {
+                                log.error("Could not close the ServerSocket", e);
                             }
                         }
 
-                        synchronized( transferStatus ) {
+                        synchronized (transferStatus) {
 
                             transferStatus.finished = true;
                             transferStatus.notify();
@@ -809,11 +809,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                                 int cmdParamLength,
                                                                 String commandType ) throws IOException {
 
-                    if( cmdParamLength > INTERNAL_SOCKET_PARAMETER_MAX_LENGTH ) {
-                        throw new IOException( "Illegal length for command " + commandType + ": "
-                                               + cmdParamLength + "(max allowed is "
-                                               + INTERNAL_SOCKET_PARAMETER_MAX_LENGTH
-                                               + "); Probably non ATS agent has connected. Closing communication" );
+                    if (cmdParamLength > INTERNAL_SOCKET_PARAMETER_MAX_LENGTH) {
+                        throw new IOException("Illegal length for command " + commandType + ": "
+                                              + cmdParamLength + "(max allowed is "
+                                              + INTERNAL_SOCKET_PARAMETER_MAX_LENGTH
+                                              + "); Probably non ATS agent has connected. Closing communication");
                     }
                 }
 
@@ -831,17 +831,17 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     byte[] buff = new byte[length];
 
                     // this method blocks until the specified bytes are read from the stream
-                    dis.readFully( buff, 0, length );
-                    return new String( buff, DEFAULT_CHARSET );
+                    dis.readFully(buff, 0, length);
+                    return new String(buff, DEFAULT_CHARSET);
                 }
 
-            } );
+            });
 
-            thread.setName( "ATSFileTransferSocket-port" + freePort + "__" + thread.getName() );
+            thread.setName("ATSFileTransferSocket-port" + freePort + "__" + thread.getName());
             thread.start();
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new FileSystemOperationException( "Unable to open file transfer socket", e );
+            throw new FileSystemOperationException("Unable to open file transfer socket", e);
         }
 
         return freePort;
@@ -856,26 +856,26 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public void waitForFileTransferCompletion(
                                                int port ) throws Exception {
 
-        FileTransferStatus transferStatus = fileTransferStates.get( port );
-        if( transferStatus != null ) {
+        FileTransferStatus transferStatus = fileTransferStates.get(port);
+        if (transferStatus != null) {
 
-            synchronized( transferStatus ) {
-                if( !transferStatus.finished ) {
+            synchronized (transferStatus) {
+                if (!transferStatus.finished) {
 
                     try {
-                        transferStatus.wait( FILE_TRANSFER_TIMEOUT );
-                    } catch( InterruptedException e ) {
-                        throw new FileSystemOperationException( "Timeout while waiting to read the last data chunk from the remote agent. The timeout is "
-                                                                + ( FILE_TRANSFER_TIMEOUT / 1000 ) + " sec.",
-                                                                e );
+                        transferStatus.wait(FILE_TRANSFER_TIMEOUT);
+                    } catch (InterruptedException e) {
+                        throw new FileSystemOperationException("Timeout while waiting to read the last data chunk from the remote agent. The timeout is "
+                                                               + (FILE_TRANSFER_TIMEOUT / 1000) + " sec.",
+                                                               e);
                     }
                 }
             }
-            synchronized( fileTransferStates ) {
-                fileTransferStates.remove( port );
+            synchronized (fileTransferStates) {
+                fileTransferStates.remove(port);
             }
-            if( transferStatus.transferException != null ) {
-                throw new Exception( "Error while transferring data", transferStatus.transferException );
+            if (transferStatus.transferException != null) {
+                throw new Exception("Error while transferring data", transferStatus.transferException);
             }
         }
     }
@@ -884,14 +884,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public void deleteFile(
                             String fileName ) {
 
-        File file = new File( fileName );
-        boolean fileExists = checkFileExistence( file, false );
+        File file = new File(fileName);
+        boolean fileExists = checkFileExistence(file, false);
 
-        if( fileExists && !file.delete() ) {
-            throw new FileSystemOperationException( "Unable to delete " + ( file.isDirectory()
-                                                                                               ? "directory"
-                                                                                               : "file" )
-                                                    + " '" + fileName + "'" );
+        if (fileExists && !file.delete()) {
+            throw new FileSystemOperationException("Unable to delete " + (file.isDirectory()
+                                                                                             ? "directory"
+                                                                                             : "file")
+                                                   + " '" + fileName + "'");
         }
     }
 
@@ -901,33 +901,33 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String destinationFile,
                             boolean overwrite ) {
 
-        File oldFile = new File( sourceFile );
-        File newFile = new File( destinationFile );
+        File oldFile = new File(sourceFile);
+        File newFile = new File(destinationFile);
 
         //first check if the file exists
-        checkFileExistence( oldFile );
+        checkFileExistence(oldFile);
 
         //check if the destination file exists - overwrite it if
         //required, otherwise we need to notify the client by throwing an exception
-        if( newFile.exists() ) {
-            if( overwrite ) {
-                if( !newFile.delete() ) {
-                    throw new FileSystemOperationException( "Could not delete file '" + destinationFile
-                                                            + "'" );
+        if (newFile.exists()) {
+            if (overwrite) {
+                if (!newFile.delete()) {
+                    throw new FileSystemOperationException("Could not delete file '" + destinationFile
+                                                           + "'");
                 }
             } else {
-                throw new FileSystemOperationException( "File '" + destinationFile
-                                                        + "' already exists and overwrite mode is not turned on" );
+                throw new FileSystemOperationException("File '" + destinationFile
+                                                       + "' already exists and overwrite mode is not turned on");
             }
         }
 
         //rename the file
-        if( !oldFile.renameTo( newFile ) ) {
-            throw new FileSystemOperationException( "Could not rename file '" + sourceFile + "' to '"
-                                                    + destinationFile + "'" );
+        if (!oldFile.renameTo(newFile)) {
+            throw new FileSystemOperationException("Could not rename file '" + sourceFile + "' to '"
+                                                   + destinationFile + "'");
         }
 
-        log.info( "Successfully renamed file '" + sourceFile + "' to '" + destinationFile + "'" );
+        log.info("Successfully renamed file '" + sourceFile + "' to '" + destinationFile + "'");
     }
 
     @Override
@@ -944,19 +944,19 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         File outputFile = null;
         try {
             try {
-                inputFile = new File( fileName );
-                outputFile = new File( fileName + "_" + System.currentTimeMillis() + ".tmp" );
+                inputFile = new File(fileName);
+                outputFile = new File(fileName + "_" + System.currentTimeMillis() + ".tmp");
 
-                inFileReader = new BufferedReader( new FileReader( inputFile ) );
-                outFileWriter = new BufferedWriter( new FileWriter( outputFile, false ) );
+                inFileReader = new BufferedReader(new FileReader(inputFile));
+                outFileWriter = new BufferedWriter(new FileWriter(outputFile, false));
 
                 String currentLine = inFileReader.readLine();
-                while( currentLine != null ) {
+                while (currentLine != null) {
 
-                    if( isRegex ) {
-                        outFileWriter.write( currentLine.replaceAll( searchString, newString ) );
+                    if (isRegex) {
+                        outFileWriter.write(currentLine.replaceAll(searchString, newString));
                     } else {
-                        outFileWriter.write( currentLine.replace( searchString, newString ) );
+                        outFileWriter.write(currentLine.replace(searchString, newString));
                     }
                     outFileWriter.newLine();
 
@@ -964,30 +964,30 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     currentLine = inFileReader.readLine();
                 }
 
-                log.info( "Successfully replaced all instances of '" + searchString + "' in file '" + fileName
-                          + "'" );
+                log.info("Successfully replaced all instances of '" + searchString + "' in file '" + fileName
+                         + "'");
             } finally {
-                IoUtils.closeStream( inFileReader );
-                IoUtils.closeStream( outFileWriter );
+                IoUtils.closeStream(inFileReader);
+                IoUtils.closeStream(outFileWriter);
             }
 
             //after we are finished, rename the temporary file to the original one
-            if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+            if (OperatingSystemType.getCurrentOsType().isUnix()) {
 
                 // getting original file permissions before overriding operation
-                String permissions = getFilePermissions( inputFile.getCanonicalPath() );
+                String permissions = getFilePermissions(inputFile.getCanonicalPath());
 
-                renameFile( outputFile.getCanonicalPath(), fileName, true );
+                renameFile(outputFile.getCanonicalPath(), fileName, true);
                 // restoring file permissions
-                setFilePermissions( fileName, permissions );
+                setFilePermissions(fileName, permissions);
             } else {
 
-                renameFile( outputFile.getCanonicalPath(), fileName, true );
+                renameFile(outputFile.getCanonicalPath(), fileName, true);
             }
-        } catch( IOException ioe ) {
+        } catch (IOException ioe) {
 
-            throw new FileSystemOperationException( "Unable to replace text '" + searchString + "' in file '"
-                                                    + fileName + "'", ioe );
+            throw new FileSystemOperationException("Unable to replace text '" + searchString + "' in file '"
+                                                   + fileName + "'", ioe);
         }
     }
 
@@ -995,32 +995,32 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public boolean doesFileExist(
                                   String fileName ) {
 
-        File file = new File( fileName );
+        File file = new File(fileName);
         boolean fileExists = file.exists();
-        if( fileExists ) {
-            log.info( "File '" + fileName + "' exists" );
+        if (fileExists) {
+            log.info("File '" + fileName + "' exists");
         } else {
-            log.info( "File '" + fileName + "' does not exist" );
+            log.info("File '" + fileName + "' does not exist");
         }
 
         return fileExists;
     }
-    
+
     @Override
     public boolean doesDirectoryExist(
                                        String dirName ) {
 
-        File file = new File( dirName );
+        File file = new File(dirName);
         // check if the file/directory exists
         boolean fileExists = file.exists();
 
-        if( fileExists ) {
+        if (fileExists) {
             // check if the file is a directory
             boolean isDirectory = file.isDirectory();
-            if( !isDirectory ) {
+            if (!isDirectory) {
                 // the file, referred by dirName, does exist, but it is not a directory
-                log.error( "File '" + dirName + "' is not a directory" );
-                throw new IllegalArgumentException( "'" + dirName + "' does not point to a directory" );
+                log.error("File '" + dirName + "' is not a directory");
+                throw new IllegalArgumentException("'" + dirName + "' does not point to a directory");
             } else {
                 // the file, referred by dirName, does exist and is a directory
                 return true;
@@ -1034,12 +1034,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public String getFilePermissions(
                                       String sourceFile ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.PERMISSIONS );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.PERMISSIONS);
 
-        return getPermissions( sourceFile );
+        return getPermissions(sourceFile);
     }
 
     private String getPermissions(
@@ -1050,46 +1050,46 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         int othersPermissions = 0;
 
         try {
-            Path path = Paths.get( sourceFile );
+            Path path = Paths.get(sourceFile);
             PosixFileAttributes attr;
-            attr = Files.readAttributes( path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS );
+            attr = Files.readAttributes(path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
             Set<PosixFilePermission> filePermissions = attr.permissions();
 
-            if( filePermissions.contains( PosixFilePermission.OWNER_READ ) ) {
+            if (filePermissions.contains(PosixFilePermission.OWNER_READ)) {
                 ownerPermissions += 4;
             }
-            if( filePermissions.contains( PosixFilePermission.OWNER_WRITE ) ) {
+            if (filePermissions.contains(PosixFilePermission.OWNER_WRITE)) {
                 ownerPermissions += 2;
             }
-            if( filePermissions.contains( PosixFilePermission.OWNER_EXECUTE ) ) {
+            if (filePermissions.contains(PosixFilePermission.OWNER_EXECUTE)) {
                 ownerPermissions += 1;
             }
-            if( filePermissions.contains( PosixFilePermission.GROUP_READ ) ) {
+            if (filePermissions.contains(PosixFilePermission.GROUP_READ)) {
                 groupPermissions += 4;
             }
-            if( filePermissions.contains( PosixFilePermission.GROUP_WRITE ) ) {
+            if (filePermissions.contains(PosixFilePermission.GROUP_WRITE)) {
                 groupPermissions += 2;
             }
-            if( filePermissions.contains( PosixFilePermission.GROUP_EXECUTE ) ) {
+            if (filePermissions.contains(PosixFilePermission.GROUP_EXECUTE)) {
                 groupPermissions += 1;
             }
-            if( filePermissions.contains( PosixFilePermission.OTHERS_READ ) ) {
+            if (filePermissions.contains(PosixFilePermission.OTHERS_READ)) {
                 othersPermissions += 4;
             }
-            if( filePermissions.contains( PosixFilePermission.OTHERS_WRITE ) ) {
+            if (filePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
                 othersPermissions += 2;
             }
-            if( filePermissions.contains( PosixFilePermission.OTHERS_EXECUTE ) ) {
+            if (filePermissions.contains(PosixFilePermission.OTHERS_EXECUTE)) {
                 othersPermissions += 1;
             }
 
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Could not get permissions for file '" + sourceFile + "'",
-                                                    ioe );
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Could not get permissions for file '" + sourceFile + "'",
+                                                   ioe);
         }
 
-        return "0"+String.valueOf( ownerPermissions ) + String.valueOf( groupPermissions )
-               + String.valueOf( othersPermissions );
+        return "0" + String.valueOf(ownerPermissions) + String.valueOf(groupPermissions)
+               + String.valueOf(othersPermissions);
     }
 
     @Override
@@ -1097,32 +1097,32 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                     String sourceFile,
                                     String permissions ) {
 
-        sourceFile = IoUtils.normalizeFilePath( sourceFile, osType );
-        File file = new File( sourceFile );
+        sourceFile = IoUtils.normalizeFilePath(sourceFile, osType);
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.PERMISSIONS );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.PERMISSIONS);
 
         try {
-            Files.setPosixFilePermissions( new File( sourceFile ).getCanonicalFile().toPath(),
-                                           getPosixFilePermission( Integer.parseInt( permissions, 8 ) ) );
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Could not update permissions for file '" + sourceFile
-                                                    + "'", ioe );
+            Files.setPosixFilePermissions(new File(sourceFile).getCanonicalFile().toPath(),
+                                          getPosixFilePermission(Integer.parseInt(permissions, 8)));
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Could not update permissions for file '" + sourceFile
+                                                   + "'", ioe);
         }
-        log.info( "Successfully set permissions of file '" + sourceFile + "' to " + permissions );
+        log.info("Successfully set permissions of file '" + sourceFile + "' to " + permissions);
     }
 
     @Override
     public long getFileUID(
                             String sourceFile ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.UID );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.UID);
 
-        return getUserId( sourceFile );
+        return getUserId(sourceFile);
     }
 
     @Override
@@ -1130,25 +1130,25 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String sourceFile,
                             long uid ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.UID );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.UID);
 
-        long gid = getGroupId( sourceFile );
-        chown( uid, gid, sourceFile );
+        long gid = getGroupId(sourceFile);
+        chown(uid, gid, sourceFile);
     }
 
     @Override
     public long getFileGID(
                             String sourceFile ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.GID );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.GID);
 
-        return getGroupId( sourceFile );
+        return getGroupId(sourceFile);
     }
 
     @Override
@@ -1156,45 +1156,45 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String sourceFile,
                             long gid ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.GID );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.GID);
 
-        long uid = getUserId( sourceFile );
-        chown( uid, gid, sourceFile );
+        long uid = getUserId(sourceFile);
+        chown(uid, gid, sourceFile);
     }
 
     @Override
     public String getFileGroup(
                                 String sourceFile ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.GROUP );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.GROUP);
 
-        return getGroup( sourceFile );
+        return getGroup(sourceFile);
     }
 
     @Override
     public String getFileOwner(
                                 String sourceFile ) {
 
-        File file = new File( sourceFile );
+        File file = new File(sourceFile);
 
-        checkFileExistence( file );
-        checkAttributeOsSupport( FileAttributes.OWNER );
+        checkFileExistence(file);
+        checkAttributeOsSupport(FileAttributes.OWNER);
 
-        return getOwner( sourceFile );
+        return getOwner(sourceFile);
     }
 
     @Override
     public long getFileModificationTime(
                                          String sourceFile ) {
 
-        File file = new File( sourceFile );
-        checkFileExistence( file );
+        File file = new File(sourceFile);
+        checkFileExistence(file);
 
         return file.lastModified();
     }
@@ -1204,12 +1204,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                          String sourceFile,
                                          long lastModificationTime ) {
 
-        File file = new File( sourceFile );
-        checkFileExistence( file );
+        File file = new File(sourceFile);
+        checkFileExistence(file);
 
-        if( !file.setLastModified( lastModificationTime ) ) {
-            throw new FileSystemOperationException( "Could not set last modification time for file '"
-                                                    + sourceFile + "'" );
+        if (!file.setLastModified(lastModificationTime)) {
+            throw new FileSystemOperationException("Could not set last modification time for file '"
+                                                   + sourceFile + "'");
         }
     }
 
@@ -1218,50 +1218,50 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                         String sourceFile,
                                         boolean hidden ) {
 
-        sourceFile = IoUtils.normalizeFilePath( sourceFile, osType );
-        checkFileExistence( new File( sourceFile ) );
+        sourceFile = IoUtils.normalizeFilePath(sourceFile, osType);
+        checkFileExistence(new File(sourceFile));
 
-        final String errMsg = "Could not " + ( hidden
-                                                      ? "set"
-                                                      : "unset" )
+        final String errMsg = "Could not " + (hidden
+                                                     ? "set"
+                                                     : "unset")
                               + " the hidden attribute of file '" + sourceFile + "'";
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (OperatingSystemType.getCurrentOsType().isWindows()) {
             try {
-                Path path = Paths.get( sourceFile );
+                Path path = Paths.get(sourceFile);
                 DosFileAttributes attr;
-                attr = Files.readAttributes( path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS );
+                attr = Files.readAttributes(path, DosFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
 
                 boolean goHidden = attr.isHidden();
-                if( !hidden && goHidden ) {
-                    Files.setAttribute( path, "dos:hidden", false, LinkOption.NOFOLLOW_LINKS );
-                } else if( hidden && !goHidden ) {
-                    Files.setAttribute( path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS );
+                if (!hidden && goHidden) {
+                    Files.setAttribute(path, "dos:hidden", false, LinkOption.NOFOLLOW_LINKS);
+                } else if (hidden && !goHidden) {
+                    Files.setAttribute(path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS);
                 }
-            } catch( IOException e ) {
-                throw new FileSystemOperationException( errMsg, e );
+            } catch (IOException e) {
+                throw new FileSystemOperationException(errMsg, e);
             }
-        } else if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        } else if (OperatingSystemType.getCurrentOsType().isUnix()) {
             // a '.' prefix makes the file hidden
-            String filePath = IoUtils.getFilePath( sourceFile );
-            String fileName = IoUtils.getFileName( sourceFile );
-            if( hidden ) {
-                if( fileName.startsWith( "." ) ) {
-                    log.warn( "File '" + sourceFile + "' is already hidden. No changes are made!" );
+            String filePath = IoUtils.getFilePath(sourceFile);
+            String fileName = IoUtils.getFileName(sourceFile);
+            if (hidden) {
+                if (fileName.startsWith(".")) {
+                    log.warn("File '" + sourceFile + "' is already hidden. No changes are made!");
                     return;
                 } else {
                     fileName = "." + fileName;
                 }
             } else {
-                if( !fileName.startsWith( "." ) ) {
-                    log.warn( "File '" + sourceFile + "' is already NOT hidden. No changes are made!" );
+                if (!fileName.startsWith(".")) {
+                    log.warn("File '" + sourceFile + "' is already NOT hidden. No changes are made!");
                     return;
                 } else {
-                    fileName = fileName.substring( 1 );
+                    fileName = fileName.substring(1);
                 }
             }
-            renameFile( sourceFile, filePath + fileName, false );
+            renameFile(sourceFile, filePath + fileName, false);
         } else {
-            throw new FileSystemOperationException( errMsg + ": Unknown OS type" );
+            throw new FileSystemOperationException(errMsg + ": Unknown OS type");
         }
     }
 
@@ -1269,8 +1269,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public long getFileSize(
                              String sourceFile ) {
 
-        File file = new File( sourceFile );
-        checkFileExistence( file );
+        File file = new File(sourceFile);
+        checkFileExistence(file);
 
         return file.length();
     }
@@ -1283,50 +1283,50 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                boolean acceptDirectories,
                                boolean recursiveSearch ) {
 
-        File startLocation = new File( location );
-        if( !startLocation.exists() ) {
+        File startLocation = new File(location);
+        if (!startLocation.exists()) {
 
-            if( log.isDebugEnabled() ) {
-                log.debug( "Start location '" + location + "' does not exist" );
+            if (log.isDebugEnabled()) {
+                log.debug("Start location '" + location + "' does not exist");
             }
             return new String[0];
         }
-        if( !startLocation.isDirectory() ) {
+        if (!startLocation.isDirectory()) {
 
-            throw new FileSystemOperationException( "Start location '" + location + "' is not a directory" );
+            throw new FileSystemOperationException("Start location '" + location + "' is not a directory");
         }
 
-        FileNameSearchFilter fileNameSearchFilter = new FileNameSearchFilter( searchString,
-                                                                              isRegex,
-                                                                              acceptDirectories );
-        List<String> matchedFiles = getMatchingFiles( startLocation, fileNameSearchFilter, recursiveSearch );
+        FileNameSearchFilter fileNameSearchFilter = new FileNameSearchFilter(searchString,
+                                                                             isRegex,
+                                                                             acceptDirectories);
+        List<String> matchedFiles = getMatchingFiles(startLocation, fileNameSearchFilter, recursiveSearch);
 
-        return matchedFiles.toArray( new String[0] );
+        return matchedFiles.toArray(new String[0]);
     }
 
     @Override
     public String getFileUniqueId(
                                    String fileName ) {
 
-        String modTime = Long.toString( getFileModificationTime( fileName ) );
+        String modTime = Long.toString(getFileModificationTime(fileName));
         String gid = null;
         String uid = null;
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
 
-            gid = Long.toString( getFileGID( fileName ) );
-            uid = Long.toString( getFileUID( fileName ) );
+            gid = Long.toString(getFileGID(fileName));
+            uid = Long.toString(getFileUID(fileName));
         } else {
 
             gid = "-1";
             uid = "-1";
         }
-        return new StringBuilder().append( fileName )
-                                  .append( "." )
-                                  .append( modTime )
-                                  .append( "." )
-                                  .append( gid )
-                                  .append( "." )
-                                  .append( uid )
+        return new StringBuilder().append(fileName)
+                                  .append(".")
+                                  .append(modTime)
+                                  .append(".")
+                                  .append(gid)
+                                  .append(".")
+                                  .append(uid)
                                   .toString();
     }
 
@@ -1338,48 +1338,48 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         InputStream input = null;
         MessageDigest digest;
         try {
-            input = new BufferedInputStream( new FileInputStream( sourceFile ) );
+            input = new BufferedInputStream(new FileInputStream(sourceFile));
 
             //obtain MD5 digest
-            digest = MessageDigest.getInstance( "MD5" );
+            digest = MessageDigest.getInstance("MD5");
 
-            switch( mode ){
+            switch (mode) {
                 case BINARY: {
-                    digestBinContent( input, digest );
+                    digestBinContent(input, digest);
                     break;
                 }
                 case ASCII: {
-                    digestNormContent( input, digest );
+                    digestNormContent(input, digest);
                     break;
                 }
                 default: {
-                    throw new FileSystemOperationException( "MD5 digest mode '" + mode + "' not supported" );
+                    throw new FileSystemOperationException("MD5 digest mode '" + mode + "' not supported");
                 }
             }
-        } catch( FileNotFoundException fnfe ) {
-            throw new FileDoesNotExistException( sourceFile );
-        } catch( NoSuchAlgorithmException nsae ) {
-            throw new FileSystemOperationException( "MD5 sum cannot be calculated", nsae );
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Could read content of file '" + sourceFile + "'", ioe );
+        } catch (FileNotFoundException fnfe) {
+            throw new FileDoesNotExistException(sourceFile);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new FileSystemOperationException("MD5 sum cannot be calculated", nsae);
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Could read content of file '" + sourceFile + "'", ioe);
         } finally {
-            IoUtils.closeStream( input, "Could not close stream" );
+            IoUtils.closeStream(input, "Could not close stream");
         }
 
         //retrieve final MD5 value and convert to hex
-        return StringUtils.byteArray2Hex( digest.digest() );
+        return StringUtils.byteArray2Hex(digest.digest());
     }
 
     @Override
     public void createDirectory(
                                  String directoryName ) {
 
-        File directory = new File( directoryName );
+        File directory = new File(directoryName);
 
-        if( !directory.exists() ) {
+        if (!directory.exists()) {
 
-            if( !directory.mkdirs() ) {
-                throw new FileSystemOperationException( "Unable to create directory " + directoryName );
+            if (!directory.mkdirs()) {
+                throw new FileSystemOperationException("Unable to create directory " + directoryName);
             }
         }
     }
@@ -1390,14 +1390,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                  long userId,
                                  long groupId ) {
 
-        createDirectory( directoryName );
+        createDirectory(directoryName);
 
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
             //set the file attributes if OS is Unix
-            chown( userId, groupId, directoryName );
-            log.info( "Successfully changed UID to " + userId + " and GID to " + groupId );
+            chown(userId, groupId, directoryName);
+            log.info("Successfully changed UID to " + userId + " and GID to " + groupId);
         } else {
-            log.info( "Target OS is not Unix. UID and GID attributes will be ignored" );
+            log.info("Target OS is not Unix. UID and GID attributes will be ignored");
         }
     }
 
@@ -1408,29 +1408,29 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                boolean isRecursive,
                                boolean failOnError ) {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "Copy contents of directory '" + fromDirName + "' to '" + toDirName + "'" );
+        if (log.isDebugEnabled()) {
+            log.debug("Copy contents of directory '" + fromDirName + "' to '" + toDirName + "'");
         }
-        if( fromDirName == null ) {
-            throw new IllegalArgumentException( "Could not copy directories. The source directory name is null" );
+        if (fromDirName == null) {
+            throw new IllegalArgumentException("Could not copy directories. The source directory name is null");
         }
-        if( toDirName == null ) {
-            throw new IllegalArgumentException( "Could not copy directories. The target directory name is null" );
+        if (toDirName == null) {
+            throw new IllegalArgumentException("Could not copy directories. The target directory name is null");
         }
-        if( isRecursive
-            && IoUtils.normalizeDirPath( toDirName ).startsWith( IoUtils.normalizeDirPath( fromDirName ) ) ) {
-            throw new IllegalArgumentException( "Could not copy directories. The target directory is subdirectory of the source one" );
+        if (isRecursive
+            && IoUtils.normalizeDirPath(toDirName).startsWith(IoUtils.normalizeDirPath(fromDirName))) {
+            throw new IllegalArgumentException("Could not copy directories. The target directory is subdirectory of the source one");
         }
-        File sourceDir = new File( fromDirName );
-        if( ! ( sourceDir.exists() && sourceDir.isDirectory() ) ) {
-            throw new FileSystemOperationException( "Could not read source directory. Directory named '"
-                                                    + fromDirName + "' does not exist." );
+        File sourceDir = new File(fromDirName);
+        if (! (sourceDir.exists() && sourceDir.isDirectory())) {
+            throw new FileSystemOperationException("Could not read source directory. Directory named '"
+                                                   + fromDirName + "' does not exist.");
         }
-        copyDirectoryInternal( sourceDir,
-                               new File( toDirName ),
-                               ( String[] ) null,
-                               isRecursive,
-                               failOnError );
+        copyDirectoryInternal(sourceDir,
+                              new File(toDirName),
+                              (String[]) null,
+                              isRecursive,
+                              failOnError);
     }
 
     @Override
@@ -1438,18 +1438,18 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                  String directoryName,
                                  boolean deleteRecursively ) {
 
-        if( deleteRecursively ) {
+        if (deleteRecursively) {
             // we need to also delete all content within the directory
-            purgeContents( directoryName );
+            purgeContents(directoryName);
         }
-        deleteFile( directoryName );
+        deleteFile(directoryName);
     }
 
     @Override
     public void purgeDirectoryContents(
                                         String directoryName ) {
 
-        purgeContents( directoryName );
+        purgeContents(directoryName);
     }
 
     @Override
@@ -1457,7 +1457,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                           String fileName,
                                           int numLinesToRead ) {
 
-        return getLastLinesFromFile( fileName, numLinesToRead, StandardCharsets.ISO_8859_1 );
+        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1);
     }
 
     @Override
@@ -1469,23 +1469,23 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         LinkedList<String> lastLinesList = new LinkedList<String>();
         ReversedLinesFileReader reversedReader = null;
         try {
-            reversedReader = new ReversedLinesFileReader( new File( fileName ), 4096, chartset );
-            while( lastLinesList.size() < numLinesToRead ) {
+            reversedReader = new ReversedLinesFileReader(new File(fileName), 4096, chartset);
+            while (lastLinesList.size() < numLinesToRead) {
                 String line = reversedReader.readLine();
                 // check if the file has less lines than the wanted
-                if( line != null ) {
-                    lastLinesList.addFirst( line );
+                if (line != null) {
+                    lastLinesList.addFirst(line);
                 } else {
                     break;
                 }
             }
 
-            return lastLinesList.toArray( new String[lastLinesList.size()] );
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Error reading file '" + fileName + "'", ioe );
+            return lastLinesList.toArray(new String[lastLinesList.size()]);
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Error reading file '" + fileName + "'", ioe);
         } finally {
-            if( reversedReader != null ) {
-                IoUtils.closeStream( reversedReader );
+            if (reversedReader != null) {
+                IoUtils.closeStream(reversedReader);
             }
         }
     }
@@ -1495,43 +1495,43 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String fileName,
                             String fileEncoding ) {
 
-        File file = new File( fileName );
-        if( !file.exists() ) {
-            throw new FileSystemOperationException( "File '" + fileName + "' does not exist" );
+        File file = new File(fileName);
+        if (!file.exists()) {
+            throw new FileSystemOperationException("File '" + fileName + "' does not exist");
         }
-        if( !file.isFile() ) {
-            throw new FileSystemOperationException( "File '" + fileName + "' is not a regular file" );
+        if (!file.isFile()) {
+            throw new FileSystemOperationException("File '" + fileName + "' is not a regular file");
         }
-        if( file.length() > FILE_SIZE_FOR_WARNING ) {
-            log.warn( "Large file detected for reading contents! Name '" + fileName + "', " + file.length()
-                      + " bytes. Make sure you have " + "enough heap size specified to be able to read it." );
+        if (file.length() > FILE_SIZE_FOR_WARNING) {
+            log.warn("Large file detected for reading contents! Name '" + fileName + "', " + file.length()
+                     + " bytes. Make sure you have " + "enough heap size specified to be able to read it.");
         }
         StringBuilder fileContents = new StringBuilder();
 
         BufferedReader fileReader = null;
         try {
-            if( fileEncoding == null ) { // use default system file encoding
-                fileReader = new BufferedReader( new FileReader( file ) );
+            if (fileEncoding == null) { // use default system file encoding
+                fileReader = new BufferedReader(new FileReader(file));
             } else {
-                fileReader = new BufferedReader( new InputStreamReader( new FileInputStream( file ),
-                                                                        fileEncoding ) );
+                fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                                                                      fileEncoding));
             }
 
             char[] charBuffer = new char[READ_BUFFER_SIZE];
 
             int charsRead = -1;
-            while( ( charsRead = fileReader.read( charBuffer ) ) > -1 ) {
-                fileContents.append( charBuffer, 0, charsRead );
+            while ( (charsRead = fileReader.read(charBuffer)) > -1) {
+                fileContents.append(charBuffer, 0, charsRead);
             }
 
             return fileContents.toString();
-        } catch( FileNotFoundException fnfe ) {
-            throw new FileSystemOperationException( "File '" + fileName + "' does not exist" );
-        } catch( IOException ioe ) {
-            throw new FileSystemOperationException( "Error reading file '" + fileName + "'", ioe );
+        } catch (FileNotFoundException fnfe) {
+            throw new FileSystemOperationException("File '" + fileName + "' does not exist");
+        } catch (IOException ioe) {
+            throw new FileSystemOperationException("Error reading file '" + fileName + "'", ioe);
         } finally {
-            if( fileReader != null ) {
-                IoUtils.closeStream( fileReader );
+            if (fileReader != null) {
+                IoUtils.closeStream(fileReader);
             }
         }
     }
@@ -1544,20 +1544,20 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                            long searchFromPosition,
                                                            int currentLineNumber ) {
 
-        File targetFile = new File( fileName );
-        if( !targetFile.exists() ) {
-            throw new FileDoesNotExistException( fileName );
+        File targetFile = new File(fileName);
+        if (!targetFile.exists()) {
+            throw new FileDoesNotExistException(fileName);
         }
-        if( searchFromPosition < 0l ) {
+        if (searchFromPosition < 0l) {
             searchFromPosition = 0l;
-        } else if( searchFromPosition > targetFile.length() ) {
-            throw new FileSystemOperationException( "The file '" + fileName + "' has size("
-                                                    + targetFile.length()
-                                                    + " bytes) lower than the starting position for search ("
-                                                    + searchFromPosition
-                                                    + " byte). It is possible that file size had been cut since previous inspection but this is not supported." );
+        } else if (searchFromPosition > targetFile.length()) {
+            throw new FileSystemOperationException("The file '" + fileName + "' has size("
+                                                   + targetFile.length()
+                                                   + " bytes) lower than the starting position for search ("
+                                                   + searchFromPosition
+                                                   + " byte). It is possible that file size had been cut since previous inspection but this is not supported.");
         }
-        if( currentLineNumber <= 0 ) {
+        if (currentLineNumber <= 0) {
             currentLineNumber = 1;
         }
 
@@ -1565,54 +1565,54 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         RandomAccessFile raf = null;
         try {
             List<Pattern> searchPatterns = null;
-            if( isRegex ) {
+            if (isRegex) {
                 searchPatterns = new ArrayList<Pattern>();
-                for( String searchText : searchTexts ) {
-                    searchPatterns.add( Pattern.compile( searchText, Pattern.DOTALL ) );
+                for (String searchText : searchTexts) {
+                    searchPatterns.add(Pattern.compile(searchText, Pattern.DOTALL));
                 }
             }
 
-            raf = new RandomAccessFile( targetFile, "r" );
-            raf.seek( searchFromPosition );
+            raf = new RandomAccessFile(targetFile, "r");
+            raf.seek(searchFromPosition);
 
             List<String> matchedLines = new ArrayList<String>();
             List<String> matchedPatterns = new ArrayList<String>();
             List<Integer> matchedLineNumbers = new ArrayList<Integer>();
             String line = null;
             long lastLineByteOffset = searchFromPosition;
-            while( ( line = IoUtils.readLineWithEOL( raf ) ) != null ) {
+            while ( (line = IoUtils.readLineWithEOL(raf)) != null) {
 
-                for( int i = 0; i < searchTexts.length; i++ ) {
-                    if( ( isRegex && searchPatterns.get( i ).matcher( line ).matches() )
-                        || ( !isRegex && line.contains( searchTexts[i] ) ) ) {
+                for (int i = 0; i < searchTexts.length; i++) {
+                    if ( (isRegex && searchPatterns.get(i).matcher(line).matches())
+                         || (!isRegex && line.contains(searchTexts[i]))) {
 
                         matches++;
-                        matchedLines.add( line.trim() );
-                        matchedPatterns.add( searchTexts[i] );
-                        matchedLineNumbers.add( currentLineNumber );
+                        matchedLines.add(line.trim());
+                        matchedPatterns.add(searchTexts[i]);
+                        matchedLineNumbers.add(currentLineNumber);
                         lastLineByteOffset = raf.getFilePointer();
                         break;
                     }
                 }
-                if( line.endsWith( "\n" ) || line.endsWith( "\r" ) ) {
+                if (line.endsWith("\n") || line.endsWith("\r")) {
                     currentLineNumber++;
                     lastLineByteOffset = raf.getFilePointer();
                 }
             }
 
-            return new FileMatchInfo( matches,
-                                      currentLineNumber,
-                                      lastLineByteOffset,
-                                      matchedLines.toArray( new String[matchedLines.size()] ),
-                                      matchedLineNumbers.toArray( new Integer[matchedLines.size()] ),
-                                      matchedPatterns.toArray( new String[matchedPatterns.size()] ) );
-        } catch( IOException ioe ) {
+            return new FileMatchInfo(matches,
+                                     currentLineNumber,
+                                     lastLineByteOffset,
+                                     matchedLines.toArray(new String[matchedLines.size()]),
+                                     matchedLineNumbers.toArray(new Integer[matchedLines.size()]),
+                                     matchedPatterns.toArray(new String[matchedPatterns.size()]));
+        } catch (IOException ioe) {
 
-            throw new FileSystemOperationException( "Could not read file '" + fileName
-                                                    + "' seeking from byte " + searchFromPosition, ioe );
+            throw new FileSystemOperationException("Could not read file '" + fileName
+                                                   + "' seeking from byte " + searchFromPosition, ioe);
         } finally {
 
-            IoUtils.closeStream( raf );
+            IoUtils.closeStream(raf);
         }
     }
 
@@ -1631,11 +1631,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                               boolean isSimpleMode ) {
 
         // generate a regular expression if in simple mode
-        if( isSimpleMode ) {
-            searchPattern = constructRegex( searchPattern );
+        if (isSimpleMode) {
+            searchPattern = constructRegex(searchPattern);
         }
 
-        Pattern pattern = Pattern.compile( searchPattern );
+        Pattern pattern = Pattern.compile(searchPattern);
 
         //list to store the matched lines
         List<String> matchedLines = new ArrayList<String>();
@@ -1643,25 +1643,25 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         try {
             //open the file
-            inputReader = new BufferedReader( new FileReader( fileName ) );
+            inputReader = new BufferedReader(new FileReader(fileName));
 
             // read contents
             String line = inputReader.readLine();
-            while( line != null ) {
+            while (line != null) {
                 //check current line for match
-                if( pattern.matcher( line ).matches() ) {
-                    matchedLines.add( line );
+                if (pattern.matcher(line).matches()) {
+                    matchedLines.add(line);
                 }
 
                 line = inputReader.readLine();
             }
-        } catch( IOException ioe ) {
-            throw new RuntimeException( "Could not grep file '" + fileName + "'", ioe );
+        } catch (IOException ioe) {
+            throw new RuntimeException("Could not grep file '" + fileName + "'", ioe);
         } finally {
-            IoUtils.closeStream( inputReader );
+            IoUtils.closeStream(inputReader);
         }
 
-        return matchedLines.toArray( new String[0] );
+        return matchedLines.toArray(new String[0]);
     }
 
     /**
@@ -1698,30 +1698,30 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public void lockFile(
                           String fileName ) {
 
-        synchronized( lockedFiles ) {
+        synchronized (lockedFiles) {
 
-            if( lockedFiles.containsKey( fileName ) ) {
+            if (lockedFiles.containsKey(fileName)) {
 
-                log.warn( "File '" + fileName + "' is already locked" );
+                log.warn("File '" + fileName + "' is already locked");
             } else {
 
                 try {
-                    File fileToLock = new File( fileName );
-                    @SuppressWarnings("resource")
+                    File fileToLock = new File(fileName);
+                    @SuppressWarnings( "resource")
                     //keep lock to the file
-                    FileChannel channel = new RandomAccessFile( fileToLock, "rw" ).getChannel();
+                    FileChannel channel = new RandomAccessFile(fileToLock, "rw").getChannel();
 
                     FileLock fileLock = channel.lock();
-                    lockedFiles.put( fileName, fileLock );
-                } catch( FileNotFoundException fnfe ) {
-                    throw new FileSystemOperationException( "File '" + fileName + "' is not found", fnfe );
-                } catch( OverlappingFileLockException ofle ) {
-                    throw new FileSystemOperationException( "File '" + fileName
-                                                            + "' is already locked in the current JVM"
-                                                            + ", but not from this class, so we can't unlock it later.",
-                                                            ofle );
-                } catch( Exception e ) {
-                    throw new FileSystemOperationException( "Could not lock file '" + fileName + "'", e );
+                    lockedFiles.put(fileName, fileLock);
+                } catch (FileNotFoundException fnfe) {
+                    throw new FileSystemOperationException("File '" + fileName + "' is not found", fnfe);
+                } catch (OverlappingFileLockException ofle) {
+                    throw new FileSystemOperationException("File '" + fileName
+                                                           + "' is already locked in the current JVM"
+                                                           + ", but not from this class, so we can't unlock it later.",
+                                                           ofle);
+                } catch (Exception e) {
+                    throw new FileSystemOperationException("Could not lock file '" + fileName + "'", e);
                 }
             }
         }
@@ -1736,20 +1736,20 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public void unlockFile(
                             String fileName ) {
 
-        synchronized( lockedFiles ) {
+        synchronized (lockedFiles) {
 
-            FileLock fileLock = lockedFiles.get( fileName );
-            if( fileLock != null ) {
+            FileLock fileLock = lockedFiles.get(fileName);
+            if (fileLock != null) {
                 try {
                     fileLock.release();
-                } catch( Exception e ) {
-                    throw new FileSystemOperationException( "Could not unlock file '" + fileName + "'", e );
+                } catch (Exception e) {
+                    throw new FileSystemOperationException("Could not unlock file '" + fileName + "'", e);
                 } finally {
-                    IoUtils.closeStream( fileLock.channel() );
-                    lockedFiles.remove( fileName );
+                    IoUtils.closeStream(fileLock.channel());
+                    lockedFiles.remove(fileName);
                 }
             } else {
-                log.warn( "File '" + fileName + "' is not locked, so we will not try to unlock it" );
+                log.warn("File '" + fileName + "' is not locked, so we will not try to unlock it");
             }
         }
     }
@@ -1773,41 +1773,41 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             boolean isFileRotated = false;
 
             // Open the file for read only
-            File file = new File( fileName );
+            File file = new File(fileName);
             try {
-                reader = new RandomAccessFile( file, "r" );
-            } catch( FileNotFoundException fne ) {
-                throw new FileSystemOperationException( "File '" + fileName + "' not found.", fne );
+                reader = new RandomAccessFile(file, "r");
+            } catch (FileNotFoundException fne) {
+                throw new FileSystemOperationException("File '" + fileName + "' not found.", fne);
             }
 
             long length = file.length();
-            if( length < fromBytePosition ) {
+            if (length < fromBytePosition) {
                 // File was rotated
                 isFileRotated = true;
                 position = 0;
             } else {
                 position = fromBytePosition;
             }
-            reader.seek( position );
+            reader.seek(position);
 
-            String line = IoUtils.readLineWithEOL( reader );
-            if( line != null ) {
+            String line = IoUtils.readLineWithEOL(reader);
+            if (line != null) {
 
-                StringBuilder sb = new StringBuilder( line.length() );
-                while( line != null ) {
-                    sb.append( line );
+                StringBuilder sb = new StringBuilder(line.length());
+                while (line != null) {
+                    sb.append(line);
                     //TODO: consider file encoding
-                    line = IoUtils.readLineWithEOL( reader );
+                    line = IoUtils.readLineWithEOL(reader);
                 }
                 position = reader.getFilePointer();
-                return new FileTailInfo( position, isFileRotated, sb.toString() );
+                return new FileTailInfo(position, isFileRotated, sb.toString());
             }
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not read file '" + fileName
-                                                    + "' from byte position " + fromBytePosition, e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not read file '" + fileName
+                                                   + "' from byte position " + fromBytePosition, e);
         } finally {
-            IoUtils.closeStream( reader );
+            IoUtils.closeStream(reader);
         }
         return null;
     }
@@ -1822,20 +1822,20 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void purgeContents(
                                 String directoryName ) {
 
-        File file = new File( directoryName );
+        File file = new File(directoryName);
 
-        boolean exists = checkFileExistence( file, false );
+        boolean exists = checkFileExistence(file, false);
 
-        if( exists ) {
-            if( file.isDirectory() ) {
+        if (exists) {
+            if (file.isDirectory()) {
                 File[] files = file.listFiles();
-                if( files != null ) {
-                    for( File c : files ) {
-                        deleteRecursively( c );
+                if (files != null) {
+                    for (File c : files) {
+                        deleteRecursively(c);
                     }
                 }
             } else {
-                throw new FileSystemOperationException( directoryName + " is not a directory! " );
+                throw new FileSystemOperationException(directoryName + " is not a directory! ");
             }
         }
     }
@@ -1850,17 +1850,17 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void deleteRecursively(
                                     File file ) {
 
-        if( file.isDirectory() ) {
+        if (file.isDirectory()) {
             File[] files = file.listFiles();
-            if( files != null ) {
-                for( File c : files ) {
-                    deleteRecursively( c );
+            if (files != null) {
+                for (File c : files) {
+                    deleteRecursively(c);
                 }
             }
         }
 
-        if( !file.delete() ) {
-            throw new FileSystemOperationException( "Unable to delete " + file );
+        if (!file.delete()) {
+            throw new FileSystemOperationException("Unable to delete " + file);
         }
     }
 
@@ -1880,8 +1880,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         //read in chunks and update
         int nr;
-        while( ( nr = input.read( readBuffer ) ) > 0 ) {
-            digest.update( readBuffer, 0, nr );
+        while ( (nr = input.read(readBuffer)) > 0) {
+            digest.update(readBuffer, 0, nr);
         }
     }
 
@@ -1897,15 +1897,15 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                     MessageDigest digest ) throws IOException {
 
         byte[] normSepData = NORM_LINESEP.getBytes();
-        for( int inValue = input.read(); -1 < inValue; inValue = input.read() ) {
+        for (int inValue = input.read(); -1 < inValue; inValue = input.read()) {
             //skip line-terminator chars
-            byte value = ( byte ) inValue;
-            if( LINE_TERM_LF == value ) {
+            byte value = (byte) inValue;
+            if (LINE_TERM_LF == value) {
                 //we have a line-feed char, digest the normal line-terminator if prev char was not a line-term
-                digest.update( normSepData );
-            } else if( LINE_TERM_CR != value ) {
+                digest.update(normSepData);
+            } else if (LINE_TERM_CR != value) {
                 //we're not in line-terminator sequence, update digest and mark
-                digest.update( value );
+                digest.update(value);
             }
         }
     }
@@ -1930,15 +1930,15 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         final char[] searchArr = wildcardPattern.toCharArray();
         StringBuilder regExp = new StringBuilder();
-        for( int j = 0; j < searchArr.length; j++ ) {
-            if( searchArr[j] == QUESTION ) {
-                regExp.append( REGEX_ANYCHAR );
-            } else if( searchArr[j] == STAR ) {
-                regExp.append( REGEX_ANYCHARS );
-            } else if( searchArr[j] == DOT ) {
-                regExp.append( REGEX_DOT );
+        for (int j = 0; j < searchArr.length; j++) {
+            if (searchArr[j] == QUESTION) {
+                regExp.append(REGEX_ANYCHAR);
+            } else if (searchArr[j] == STAR) {
+                regExp.append(REGEX_ANYCHARS);
+            } else if (searchArr[j] == DOT) {
+                regExp.append(REGEX_DOT);
             } else {
-                regExp.append( searchArr[j] );
+                regExp.append(searchArr[j]);
             }
         }
         return regExp.toString();
@@ -1956,17 +1956,17 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                         long groupId,
                         String filename ) {
 
-        filename = IoUtils.normalizeFilePath( filename, osType );
+        filename = IoUtils.normalizeFilePath(filename, osType);
         String[] command = new String[]{ "/bin/sh",
                                          "-c",
-                                         "chown " + String.valueOf( userId ) + ":" + String.valueOf( groupId )
+                                         "chown " + String.valueOf(userId) + ":" + String.valueOf(groupId)
                                                + " '" + filename + "'" };;
 
-        String[] result = executeExternalProcess( command );
+        String[] result = executeExternalProcess(command);
 
-        if( !result[2].equals( "0" ) ) {
-            throw new FileSystemOperationException( "Could not update UID and GID for '" + filename + "': "
-                                                    + result[1] );
+        if (!result[2].equals("0")) {
+            throw new FileSystemOperationException("Could not update UID and GID for '" + filename + "': "
+                                                   + result[1]);
         }
     }
 
@@ -1980,11 +1980,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String filename ) {
 
         try {
-            String[] stats = getFileStats( filename, true );
-            return Long.parseLong( stats[1] );
+            String[] stats = getFileStats(filename, true);
+            return Long.parseLong(stats[1]);
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get UID for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get UID for '" + filename + "'", e);
         }
     }
 
@@ -1998,11 +1998,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            String[] stats = getFileStats( filename, false );
+            String[] stats = getFileStats(filename, false);
             return stats[1];
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get owner for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get owner for '" + filename + "'", e);
         }
     }
 
@@ -2016,11 +2016,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            String[] stats = getFileStats( filename, true );
-            return Long.parseLong( stats[2] );
+            String[] stats = getFileStats(filename, true);
+            return Long.parseLong(stats[2]);
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get GID for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get GID for '" + filename + "'", e);
         }
     }
 
@@ -2034,11 +2034,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            String[] stats = getFileStats( filename, false );
+            String[] stats = getFileStats(filename, false);
             return stats[2];
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get group for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get group for '" + filename + "'", e);
         }
     }
 
@@ -2053,35 +2053,35 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                    boolean numericUidAndGid ) throws FileSystemOperationException,
                                                               IOException {
 
-        filename = IoUtils.normalizeFilePath( filename, osType );
-        File file = new File( filename );
-        checkFileExistence( file );
+        filename = IoUtils.normalizeFilePath(filename, osType);
+        File file = new File(filename);
+        checkFileExistence(file);
         String command = file.isDirectory()
                                             ? "ls -ld "
                                             : "ls -la ";
-        if( numericUidAndGid ) {
+        if (numericUidAndGid) {
             command = command.trim() + "n ";
         }
 
         String[] commandTokens = new String[]{ "/bin/sh", "-c", command + "'" + filename + "' 2>&1" };
-        String[] result = executeExternalProcess( commandTokens );
+        String[] result = executeExternalProcess(commandTokens);
 
-        String[] lines = result[0].split( "\n" );
-        for( String line : lines ) {
+        String[] lines = result[0].split("\n");
+        for (String line : lines) {
             line = line.trim();
-            if( line.endsWith( filename ) || line.contains( " " + filename + " " ) ) {
-                Matcher m = longListingPattern.matcher( line );
-                if( m.matches() ) {
-                    return new String[]{ m.group( 1 ), m.group( 2 ), m.group( 3 ) };
+            if (line.endsWith(filename) || line.contains(" " + filename + " ")) {
+                Matcher m = longListingPattern.matcher(line);
+                if (m.matches()) {
+                    return new String[]{ m.group(1), m.group(2), m.group(3) };
                 }
             }
         }
 
-        throw new FileSystemOperationException( "Could not get statistics for '" + filename + "' file"
-                                                + "\nby running the following command: "
-                                                + Arrays.toString( commandTokens )
-                                                + "\nCould not parse the result form the 'ls' command! Result: \n"
-                                                + result[0] );
+        throw new FileSystemOperationException("Could not get statistics for '" + filename + "' file"
+                                               + "\nby running the following command: "
+                                               + Arrays.toString(commandTokens)
+                                               + "\nCould not parse the result form the 'ls' command! Result: \n"
+                                               + result[0]);
     }
 
     /**
@@ -2101,54 +2101,54 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                         boolean isRecursive,
                                         boolean failOnError ) {
 
-        if( from == null || !from.exists() || !from.isDirectory() ) {
+        if (from == null || !from.exists() || !from.isDirectory()) {
             return;
         }
 
-        if( !to.exists() ) {
-            if( !to.mkdirs() ) {
-                throw new FileSystemOperationException( "Could not create target directory "
-                                                        + to.getAbsolutePath() );
+        if (!to.exists()) {
+            if (!to.mkdirs()) {
+                throw new FileSystemOperationException("Could not create target directory "
+                                                       + to.getAbsolutePath());
             }
         }
-        
-        if( osType.isUnix() ) {
+
+        if (osType.isUnix()) {
             // set the original file permission to the new file
-            setFilePermissions( to.getAbsolutePath(), getFilePermissions( from.getAbsolutePath() ) );
+            setFilePermissions(to.getAbsolutePath(), getFilePermissions(from.getAbsolutePath()));
         }
 
         String[] list = from.list();
 
         // Some JVMs return null for File.list() when the directory is empty.
-        if( list != null ) {
+        if (list != null) {
             boolean skipThisFile = false;
-            for( int i = 0; i < list.length; i++ ) {
+            for (int i = 0; i < list.length; i++) {
                 skipThisFile = false;
                 String fileName = list[i];
 
-                if( filter != null ) {
-                    for( int j = 0; j < filter.length; j++ ) {
-                        if( fileName.equals( filter[j] ) ) {
+                if (filter != null) {
+                    for (int j = 0; j < filter.length; j++) {
+                        if (fileName.equals(filter[j])) {
                             skipThisFile = true;
                             break;
                         }
                     }
                 }
 
-                if( !skipThisFile ) {
-                    File entry = new File( from, fileName );
-                    if( entry.isDirectory() ) {
-                        if( isRecursive ) {
-                            copyDirectoryInternal( entry,
-                                                   new File( to, fileName ),
-                                                   filter,
-                                                   isRecursive,
-                                                   failOnError );
+                if (!skipThisFile) {
+                    File entry = new File(from, fileName);
+                    if (entry.isDirectory()) {
+                        if (isRecursive) {
+                            copyDirectoryInternal(entry,
+                                                  new File(to, fileName),
+                                                  filter,
+                                                  isRecursive,
+                                                  failOnError);
                         } // else - skip
                     } else {
-                        copyFile( entry.getAbsolutePath(),
-                                  to.getAbsolutePath() + "/" + fileName,
-                                  failOnError );
+                        copyFile(entry.getAbsolutePath(),
+                                 to.getAbsolutePath() + "/" + fileName,
+                                 failOnError);
                     }
                 }
             }
@@ -2164,7 +2164,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void checkFileExistence(
                                      File file ) throws FileDoesNotExistException {
 
-        checkFileExistence( file, true );
+        checkFileExistence(file, true);
     }
 
     private boolean checkFileExistence(
@@ -2172,14 +2172,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                         boolean failIfNotExist ) throws FileDoesNotExistException {
 
         boolean exists = file.exists();
-        if( !exists ) {
-            if( failIfNotExist ) {
-                throw new FileDoesNotExistException( file );
+        if (!exists) {
+            if (failIfNotExist) {
+                throw new FileDoesNotExistException(file);
             } else {
-                log.warn( "The " + ( file.isDirectory()
-                                                        ? "directory"
-                                                        : "file" )
-                          + " does not exist" );
+                log.warn("The " + (file.isDirectory()
+                                                      ? "directory"
+                                                      : "file")
+                         + " does not exist");
             }
         }
 
@@ -2195,14 +2195,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void checkAttributeOsSupport(
                                           FileAttributes attr ) throws AttributeNotSupportedException {
 
-        switch( attr ){
+        switch (attr) {
             case PERMISSIONS:
             case GROUP:
             case OWNER:
             case GID:
             case UID:
-                if( !this.osType.isUnix() ) {
-                    throw new AttributeNotSupportedException( attr, this.osType );
+                if (!this.osType.isUnix()) {
+                    throw new AttributeNotSupportedException(attr, this.osType);
                 }
                 break;
             default:;
@@ -2230,23 +2230,23 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                           boolean failOnError ) throws FileDoesNotExistException,
                                                                 IOException {
 
-        if( files != null ) {
+        if (files != null) {
             // fix possible path on Windows: d:/work/path -> D:\work\path
-            File fromDir = new File( fromDirName );
+            File fromDir = new File(fromDirName);
             fromDirName = fromDir.getCanonicalPath();
             /* 
              * getCanonicalPath() does not append slash or backslash at the end of the filepath, so we manually append it
              * This is done, because later, this slash or backslash is needed, when constructing the target file name
              */
             fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
-            for( File file : files ) {
-                checkFileExistence( file );
+            for (File file : files) {
+                checkFileExistence(file);
 
                 String fileName = file.getCanonicalPath();
-                String toFileName = fileName.replace( fromDirName, toDirName );
+                String toFileName = fileName.replace(fromDirName, toDirName);
 
-                sendFileToSocketStream( file, toFileName, outputStream, failOnError );
-                if( file.isDirectory() && isRecursive ) {
+                sendFileToSocketStream(file, toFileName, outputStream, failOnError);
+                if (file.isDirectory() && isRecursive) {
                     /* Append slash, so we can concatenate files properly.
                      * Even though, on Windows, we well concatenate slash as well,
                      * it manages to transform it to \\, when saving files to disk,
@@ -2255,12 +2255,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                      * ( ../path/to/file -> saved as ../path/to/\file )
                      */
                     toFileName += "/";
-                    sendFilesToSocketStream( file.listFiles(),
-                                             file.getCanonicalPath(),
-                                             toFileName,
-                                             outputStream,
-                                             isRecursive,
-                                             failOnError );
+                    sendFilesToSocketStream(file.listFiles(),
+                                            file.getCanonicalPath(),
+                                            toFileName,
+                                            outputStream,
+                                            isRecursive,
+                                            failOnError);
                 }
             }
         }
@@ -2284,52 +2284,52 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         FileInputStream fis = null;
         try {
 
-            DataOutputStream dos = new DataOutputStream( outputStream );
+            DataOutputStream dos = new DataOutputStream(outputStream);
 
-            if( file.isDirectory() ) {
+            if (file.isDirectory()) {
 
-                byte[] dirCreateCommandBytes = DIR_CREATE_SOCKET_COMMAND.getBytes( DEFAULT_CHARSET );
-                dos.writeInt( dirCreateCommandBytes.length );
-                dos.write( dirCreateCommandBytes );
+                byte[] dirCreateCommandBytes = DIR_CREATE_SOCKET_COMMAND.getBytes(DEFAULT_CHARSET);
+                dos.writeInt(dirCreateCommandBytes.length);
+                dos.write(dirCreateCommandBytes);
 
-                byte[] fileNameBytes = toFileName.getBytes( DEFAULT_CHARSET );
-                dos.writeInt( fileNameBytes.length );
-                dos.write( fileNameBytes );
+                byte[] fileNameBytes = toFileName.getBytes(DEFAULT_CHARSET);
+                dos.writeInt(fileNameBytes.length);
+                dos.write(fileNameBytes);
                 dos.flush();
             } else {
 
                 long initialFileSize = file.length();
                 long bytesLeftToWrite = initialFileSize;
 
-                byte[] fileCopyCommandBytes = FILE_COPY_SOCKET_COMMAND.getBytes( DEFAULT_CHARSET );
-                dos.writeInt( fileCopyCommandBytes.length );
-                dos.write( fileCopyCommandBytes );
+                byte[] fileCopyCommandBytes = FILE_COPY_SOCKET_COMMAND.getBytes(DEFAULT_CHARSET);
+                dos.writeInt(fileCopyCommandBytes.length);
+                dos.write(fileCopyCommandBytes);
 
-                byte[] fileNameBytes = toFileName.getBytes( DEFAULT_CHARSET );
-                dos.writeInt( fileNameBytes.length );
-                dos.write( fileNameBytes );
-                dos.writeLong( initialFileSize );
+                byte[] fileNameBytes = toFileName.getBytes(DEFAULT_CHARSET);
+                dos.writeInt(fileNameBytes.length);
+                dos.write(fileNameBytes);
+                dos.writeLong(initialFileSize);
 
-                fis = new FileInputStream( file );
+                fis = new FileInputStream(file);
                 byte[] buff = new byte[FILE_TRANSFER_BUFFER_SIZE];
                 int bytesCount = -1;
-                while( ( bytesCount = fis.read( buff ) ) > -1 ) {
-                    if( bytesCount <= bytesLeftToWrite ) {
-                        dos.write( buff, 0, bytesCount );
+                while ( (bytesCount = fis.read(buff)) > -1) {
+                    if (bytesCount <= bytesLeftToWrite) {
+                        dos.write(buff, 0, bytesCount);
                         dos.flush();
                         bytesLeftToWrite -= bytesCount;
                     } else {
-                        if( failOnError ) {
-                            throw new FileSystemOperationException( "The size of file \"" + file.getName()
-                                                                    + "\" was increased with "
-                                                                    + ( bytesCount - bytesLeftToWrite )
-                                                                    + " bytes! The initial file size was "
-                                                                    + initialFileSize
-                                                                    + ". ATS will ignore this error if you set the failOnError flag to false." );
+                        if (failOnError) {
+                            throw new FileSystemOperationException("The size of file \"" + file.getName()
+                                                                   + "\" was increased with "
+                                                                   + (bytesCount - bytesLeftToWrite)
+                                                                   + " bytes! The initial file size was "
+                                                                   + initialFileSize
+                                                                   + ". ATS will ignore this error if you set the failOnError flag to false.");
                         }
                         // The file is growing while we are sending it.
                         // We will send only the initial number of bytes, because we already told the recipient side how many bytes to expect.
-                        dos.write( buff, 0, ( int ) bytesLeftToWrite );
+                        dos.write(buff, 0, (int) bytesLeftToWrite);
                         bytesLeftToWrite = 0;
                         dos.flush();
 
@@ -2338,28 +2338,28 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     }
                 }
 
-                if( bytesLeftToWrite > 0 ) {
-                    if( failOnError ) {
-                        throw new FileSystemOperationException( "The size of file \"" + file.getName()
-                                                                + "\" was decreased with " + bytesLeftToWrite
-                                                                + " bytes! The initial file size was "
-                                                                + initialFileSize
-                                                                + ". ATS will ignore this error if you set the failOnError flag to false." );
+                if (bytesLeftToWrite > 0) {
+                    if (failOnError) {
+                        throw new FileSystemOperationException("The size of file \"" + file.getName()
+                                                               + "\" was decreased with " + bytesLeftToWrite
+                                                               + " bytes! The initial file size was "
+                                                               + initialFileSize
+                                                               + ". ATS will ignore this error if you set the failOnError flag to false.");
                     }
                     // The file is shrinking while we are sending it.
                     // We will fill it to the initial size, because we already told the recipient side how many bytes to expect.
-                    log.warn( "File " + file.getPath()
-                              + " is getting smaller while copying it. We will append " + bytesLeftToWrite
-                              + " zero bytes to reach its initial size of " + initialFileSize + " bytes" );
-                    while( bytesLeftToWrite-- > 0 ) {
-                        dos.write( 0 );
+                    log.warn("File " + file.getPath()
+                             + " is getting smaller while copying it. We will append " + bytesLeftToWrite
+                             + " zero bytes to reach its initial size of " + initialFileSize + " bytes");
+                    while (bytesLeftToWrite-- > 0) {
+                        dos.write(0);
                     }
                     dos.flush();
                 }
             }
         } finally {
 
-            IoUtils.closeStream( fis );
+            IoUtils.closeStream(fis);
         }
     }
 
@@ -2380,27 +2380,27 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         File[] files = startLocation.listFiles();
         // listFiles() can return 'null' even when we have no rights to read in the 'startLocaltion' directory
-        if( files != null ) {
+        if (files != null) {
 
-            for( File child : files ) {
-                if( searchFilter.accept( child ) ) {
+            for (File child : files) {
+                if (searchFilter.accept(child)) {
                     try {
                         String path = child.getCanonicalPath();
-                        if( child.isDirectory() ) {
+                        if (child.isDirectory()) {
                             // when the path points to a directory, we add file separator character at the end
-                            matchingFiles.add( IoUtils.normalizeDirPath( path ) );
+                            matchingFiles.add(IoUtils.normalizeDirPath(path));
                         } else {
-                            matchingFiles.add( path );
+                            matchingFiles.add(path);
                         }
-                    } catch( IOException ioe ) {
-                        throw new FileSystemOperationException( "Could not get the canonical path of file: "
-                                                                + child.getAbsolutePath(), ioe );
+                    } catch (IOException ioe) {
+                        throw new FileSystemOperationException("Could not get the canonical path of file: "
+                                                               + child.getAbsolutePath(), ioe);
                     }
                 }
 
                 //if recursion is allowed
-                if( recursiveSearch && child.isDirectory() ) {
-                    matchingFiles.addAll( getMatchingFiles( child, searchFilter, recursiveSearch ) );
+                if (recursiveSearch && child.isDirectory()) {
+                    matchingFiles.addAll(getMatchingFiles(child, searchFilter, recursiveSearch));
                 }
             }
         }
@@ -2433,9 +2433,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
             boolean fileMatches = false;
 
-            if( pathname.isFile() || acceptDirectories ) {
-                if( ( isRegex && pathname.getName().matches( searchPattern ) )
-                    || ( !isRegex && pathname.getName().equals( searchPattern ) ) ) {
+            if (pathname.isFile() || acceptDirectories) {
+                if ( (isRegex && pathname.getName().matches(searchPattern))
+                     || (!isRegex && pathname.getName().equals(searchPattern))) {
 
                     fileMatches = true;
                 }
@@ -2475,46 +2475,46 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                        String outputDirPath ) throws FileSystemOperationException {
 
         ZipArchiveEntry zipEntry = null;
-        File outputDir = new File( outputDirPath );
+        File outputDir = new File(outputDirPath);
         outputDir.mkdirs();//check if the dir is created
 
-        try (ZipFile zipFile = new ZipFile( zipFilePath )) {
+        try (ZipFile zipFile = new ZipFile(zipFilePath)) {
             Enumeration<? extends ZipArchiveEntry> entries = zipFile.getEntries();
             int unixPermissions = 0;
 
-            while( entries.hasMoreElements() ) {
+            while (entries.hasMoreElements()) {
                 zipEntry = entries.nextElement();
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Extracting " + zipEntry.getName() );
+                if (log.isDebugEnabled()) {
+                    log.debug("Extracting " + zipEntry.getName());
                 }
-                File entryDestination = new File( outputDirPath, zipEntry.getName() );
+                File entryDestination = new File(outputDirPath, zipEntry.getName());
 
                 unixPermissions = zipEntry.getUnixMode();
-                if( zipEntry.isDirectory() ) {
+                if (zipEntry.isDirectory()) {
                     entryDestination.mkdirs();
                 } else {
                     entryDestination.getParentFile().mkdirs();
                     InputStream in = null;
                     OutputStream out = null;
 
-                    in = zipFile.getInputStream( zipEntry );
-                    out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
+                    in = zipFile.getInputStream(zipEntry);
+                    out = new BufferedOutputStream(new FileOutputStream(entryDestination));
 
-                    IoUtils.copyStream( in, out );
+                    IoUtils.copyStream(in, out);
                 }
-                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                if (OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS) {//check if the OS is UNIX
                     // set file/dir permissions, after it is created
-                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getPosixFilePermission( unixPermissions ) );
+                    Files.setPosixFilePermissions(entryDestination.getCanonicalFile().toPath(),
+                                                  getPosixFilePermission(unixPermissions));
                 }
             }
-        } catch( Exception e ) {
-            String errorMsg = "Unable to unzip " + ( ( zipEntry != null )
-                                                                          ? zipEntry.getName() + " from "
-                                                                          : "" )
+        } catch (Exception e) {
+            String errorMsg = "Unable to unzip " + ( (zipEntry != null)
+                                                                        ? zipEntry.getName() + " from "
+                                                                        : "")
                               + zipFilePath + ".Target directory '" + outputDirPath
                               + "' is in inconsistent state.";
-            throw new FileSystemOperationException( errorMsg, e );
+            throw new FileSystemOperationException(errorMsg, e);
         }
     }
 
@@ -2530,22 +2530,22 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     @Override
     public void extract( String archiveFilePath, String outputDirPath ) throws FileSystemOperationException {
 
-        if( archiveFilePath.endsWith( ".zip" ) ) {
-            extractZip( archiveFilePath, outputDirPath );
-        } else if( archiveFilePath.endsWith( ".gz" ) && !archiveFilePath.endsWith( ".tar.gz" ) ) {
-            extractGZip( archiveFilePath, outputDirPath );
-        } else if( archiveFilePath.endsWith( "tar.gz" ) ) {
-            extractTarGZip( archiveFilePath, outputDirPath );
-        } else if( archiveFilePath.endsWith( ".tar" ) ) {
-            extractTar( archiveFilePath, outputDirPath );
+        if (archiveFilePath.endsWith(".zip")) {
+            extractZip(archiveFilePath, outputDirPath);
+        } else if (archiveFilePath.endsWith(".gz") && !archiveFilePath.endsWith(".tar.gz")) {
+            extractGZip(archiveFilePath, outputDirPath);
+        } else if (archiveFilePath.endsWith("tar.gz")) {
+            extractTarGZip(archiveFilePath, outputDirPath);
+        } else if (archiveFilePath.endsWith(".tar")) {
+            extractTar(archiveFilePath, outputDirPath);
         } else {
-            String[] filenameTokens = IoUtils.getFileName( archiveFilePath ).split( "\\." );
-            if( filenameTokens.length <= 1 ) {
-                throw new FileSystemOperationException( "Archive format was not provided." );
+            String[] filenameTokens = IoUtils.getFileName(archiveFilePath).split("\\.");
+            if (filenameTokens.length <= 1) {
+                throw new FileSystemOperationException("Archive format was not provided.");
             } else {
-                throw new FileSystemOperationException( "Archive with format '"
-                                                        + filenameTokens[filenameTokens.length - 1]
-                                                        + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' ." );
+                throw new FileSystemOperationException("Archive with format '"
+                                                       + filenameTokens[filenameTokens.length - 1]
+                                                       + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' .");
             }
         }
 
@@ -2554,34 +2554,34 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void extractTar( String tarFilePath, String outputDirPath ) {
 
         TarArchiveEntry entry = null;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream( new FileInputStream( tarFilePath ) )) {
-            while( ( entry = ( TarArchiveEntry ) tis.getNextEntry() ) != null ) {
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Extracting " + entry.getName() );
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new FileInputStream(tarFilePath))) {
+            while ( (entry = (TarArchiveEntry) tis.getNextEntry()) != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Extracting " + entry.getName());
                 }
-                File entryDestination = new File( outputDirPath, entry.getName() );
-                if( entry.isDirectory() ) {
+                File entryDestination = new File(outputDirPath, entry.getName());
+                if (entry.isDirectory()) {
                     entryDestination.mkdirs();
                 } else {
                     entryDestination.getParentFile().mkdirs();
-                    OutputStream out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
-                    IoUtils.copyStream( tis, out, false, true );
+                    OutputStream out = new BufferedOutputStream(new FileOutputStream(entryDestination));
+                    IoUtils.copyStream(tis, out, false, true);
                 }
-                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                if (OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS) {//check if the OS is UNIX
                     // set file/dir permissions, after it is created
-                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getPosixFilePermission( entry.getMode() ) );
+                    Files.setPosixFilePermissions(entryDestination.getCanonicalFile().toPath(),
+                                                  getPosixFilePermission(entry.getMode()));
                 }
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errorMsg = null;
-            if( entry != null ) {
+            if (entry != null) {
                 errorMsg = "Unable to untar " + entry.getName() + " from " + tarFilePath
                            + ".Target directory '" + outputDirPath + "' is in inconsistent state.";
             } else {
                 errorMsg = "Could not read data from " + tarFilePath;
             }
-            throw new FileSystemOperationException( errorMsg, e );
+            throw new FileSystemOperationException(errorMsg, e);
         }
 
     }
@@ -2589,62 +2589,62 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void extractTarGZip( String tarGzipFilePath, String outputDirPath ) {
 
         TarArchiveEntry entry = null;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream( new GzipCompressorInputStream( new FileInputStream( tarGzipFilePath ) ) )) {
-            while( ( entry = ( TarArchiveEntry ) tis.getNextEntry() ) != null ) {
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Extracting " + entry.getName() );
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(tarGzipFilePath)))) {
+            while ( (entry = (TarArchiveEntry) tis.getNextEntry()) != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Extracting " + entry.getName());
                 }
-                File entryDestination = new File( outputDirPath, entry.getName() );
-                if( entry.isDirectory() ) {
+                File entryDestination = new File(outputDirPath, entry.getName());
+                if (entry.isDirectory()) {
                     entryDestination.mkdirs();
                 } else {
                     entryDestination.getParentFile().mkdirs();
-                    OutputStream out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
-                    IoUtils.copyStream( tis, out, false, true );
+                    OutputStream out = new BufferedOutputStream(new FileOutputStream(entryDestination));
+                    IoUtils.copyStream(tis, out, false, true);
                 }
-                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                if (OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS) {//check if the OS is UNIX
                     // set file/dir permissions, after it is created
-                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getPosixFilePermission( entry.getMode() ) );
+                    Files.setPosixFilePermissions(entryDestination.getCanonicalFile().toPath(),
+                                                  getPosixFilePermission(entry.getMode()));
                 }
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errorMsg = null;
-            if( entry != null ) {
+            if (entry != null) {
                 errorMsg = "Unable to gunzip " + entry.getName() + " from " + tarGzipFilePath
                            + ".Target directory '" + outputDirPath + "' is in inconsistent state.";
             } else {
                 errorMsg = "Could not read data from " + tarGzipFilePath;
             }
-            throw new FileSystemOperationException( errorMsg, e );
+            throw new FileSystemOperationException(errorMsg, e);
         }
 
     }
 
     private void extractGZip( String gzipFilePath, String outputDirPath ) {
 
-        String outputFileName = new File( gzipFilePath ).getName();
-        outputFileName = outputFileName.substring( 0, outputFileName.lastIndexOf( ".gz" ) );
+        String outputFileName = new File(gzipFilePath).getName();
+        outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf(".gz"));
         String outputFilePath = outputDirPath + File.separator + outputFileName;
-        new File( outputDirPath ).mkdirs();
+        new File(outputDirPath).mkdirs();
         InputStream in = null;
         try {
-            String filePermissions = getFilePermissions( gzipFilePath );
-            in = new GZIPInputStream( new FileInputStream( gzipFilePath ) );
-            BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( outputFilePath ) );
+            String filePermissions = getFilePermissions(gzipFilePath);
+            in = new GZIPInputStream(new FileInputStream(gzipFilePath));
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outputFilePath));
 
-            IoUtils.copyStream( in, out );
-            if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+            IoUtils.copyStream(in, out);
+            if (OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS) {//check if the OS is UNIX
                 // set file permissions, after it is created
-                this.setFilePermissions( outputFilePath, filePermissions );
+                this.setFilePermissions(outputFilePath, filePermissions);
             }
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errorMsg = "Unable to gunzip " + gzipFilePath + ".Target directory '" + outputDirPath
                               + "' is in inconsistent state.";
-            throw new FileSystemOperationException( errorMsg, e );
+            throw new FileSystemOperationException(errorMsg, e);
         } finally {
-            IoUtils.closeStream( in, "Could not close stream for file '" + gzipFilePath + "'" );
+            IoUtils.closeStream(in, "Could not close stream for file '" + gzipFilePath + "'");
         }
 
     }
@@ -2652,46 +2652,46 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void extractZip( String zipFilePath, String outputDirPath ) {
 
         ZipArchiveEntry zipEntry = null;
-        File outputDir = new File( outputDirPath );
+        File outputDir = new File(outputDirPath);
         outputDir.mkdirs();//check if the dir is created
 
-        try (ZipFile zipFile = new ZipFile( zipFilePath )) {
+        try (ZipFile zipFile = new ZipFile(zipFilePath)) {
             Enumeration<? extends ZipArchiveEntry> entries = zipFile.getEntries();
             int unixPermissions = 0;
 
-            while( entries.hasMoreElements() ) {
+            while (entries.hasMoreElements()) {
                 zipEntry = entries.nextElement();
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Extracting " + zipEntry.getName() );
+                if (log.isDebugEnabled()) {
+                    log.debug("Extracting " + zipEntry.getName());
                 }
-                File entryDestination = new File( outputDirPath, zipEntry.getName() );
+                File entryDestination = new File(outputDirPath, zipEntry.getName());
 
                 unixPermissions = zipEntry.getUnixMode();
-                if( zipEntry.isDirectory() ) {
+                if (zipEntry.isDirectory()) {
                     entryDestination.mkdirs();
                 } else {
                     entryDestination.getParentFile().mkdirs();
                     InputStream in = null;
                     OutputStream out = null;
 
-                    in = zipFile.getInputStream( zipEntry );
-                    out = new BufferedOutputStream( new FileOutputStream( entryDestination ) );
+                    in = zipFile.getInputStream(zipEntry);
+                    out = new BufferedOutputStream(new FileOutputStream(entryDestination));
 
-                    IoUtils.copyStream( in, out );
+                    IoUtils.copyStream(in, out);
                 }
-                if( OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS ) {//check if the OS is UNIX
+                if (OperatingSystemType.getCurrentOsType() != OperatingSystemType.WINDOWS) {//check if the OS is UNIX
                     // set file/dir permissions, after it is created
-                    Files.setPosixFilePermissions( entryDestination.getCanonicalFile().toPath(),
-                                                   getPosixFilePermission( unixPermissions ) );
+                    Files.setPosixFilePermissions(entryDestination.getCanonicalFile().toPath(),
+                                                  getPosixFilePermission(unixPermissions));
                 }
             }
-        } catch( Exception e ) {
-            String errorMsg = "Unable to unzip " + ( ( zipEntry != null )
-                                                                          ? zipEntry.getName() + " from "
-                                                                          : "" )
+        } catch (Exception e) {
+            String errorMsg = "Unable to unzip " + ( (zipEntry != null)
+                                                                        ? zipEntry.getName() + " from "
+                                                                        : "")
                               + zipFilePath + ".Target directory '" + outputDirPath
                               + "' is in inconsistent state.";
-            throw new FileSystemOperationException( errorMsg, e );
+            throw new FileSystemOperationException(errorMsg, e);
         }
 
     }
@@ -2704,32 +2704,32 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         // using bitwise operations check the file permissions in decimal
         // numeric system
         // e.g. 100100 AND 100, we will have for result 100
-        if( ( permissions & 256 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OWNER_READ );
+        if ( (permissions & 256) > 0) {
+            filePermissions.add(PosixFilePermission.OWNER_READ);
         }
-        if( ( permissions & 128 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OWNER_WRITE );
+        if ( (permissions & 128) > 0) {
+            filePermissions.add(PosixFilePermission.OWNER_WRITE);
         }
-        if( ( permissions & 64 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OWNER_EXECUTE );
+        if ( (permissions & 64) > 0) {
+            filePermissions.add(PosixFilePermission.OWNER_EXECUTE);
         }
-        if( ( permissions & 32 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.GROUP_READ );
+        if ( (permissions & 32) > 0) {
+            filePermissions.add(PosixFilePermission.GROUP_READ);
         }
-        if( ( permissions & 16 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.GROUP_WRITE );
+        if ( (permissions & 16) > 0) {
+            filePermissions.add(PosixFilePermission.GROUP_WRITE);
         }
-        if( ( permissions & 8 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.GROUP_EXECUTE );
+        if ( (permissions & 8) > 0) {
+            filePermissions.add(PosixFilePermission.GROUP_EXECUTE);
         }
-        if( ( permissions & 4 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OTHERS_READ );
+        if ( (permissions & 4) > 0) {
+            filePermissions.add(PosixFilePermission.OTHERS_READ);
         }
-        if( ( permissions & 2 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OTHERS_WRITE );
+        if ( (permissions & 2) > 0) {
+            filePermissions.add(PosixFilePermission.OTHERS_WRITE);
         }
-        if( ( permissions & 1 ) > 0 ) {
-            filePermissions.add( PosixFilePermission.OTHERS_EXECUTE );
+        if ( (permissions & 1) > 0) {
+            filePermissions.add(PosixFilePermission.OTHERS_EXECUTE);
         }
 
         return filePermissions;
@@ -2743,34 +2743,34 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         String exitCode = "";
         try {
             // start the external process
-            Process process = Runtime.getRuntime().exec( command );
+            Process process = Runtime.getRuntime().exec(command);
 
             // read the external process output streams
             // reading both streams helps releasing OS resources
-            stdOut = IoUtils.streamToString( process.getInputStream() ).trim();
-            stdErr = IoUtils.streamToString( process.getErrorStream() ).trim();
+            stdOut = IoUtils.streamToString(process.getInputStream()).trim();
+            stdErr = IoUtils.streamToString(process.getErrorStream()).trim();
 
             //process.getOutputStream().close();
 
-            exitCode = String.valueOf( process.waitFor() );
-        } catch( Exception e ) {
+            exitCode = String.valueOf(process.waitFor());
+        } catch (Exception e) {
             StringBuilder err = new StringBuilder();
-            err.append( "Error executing command '" );
-            err.append( Arrays.toString( command ) );
-            err.append( "'" );
-            if( !StringUtils.isNullOrEmpty( stdOut ) ) {
-                err.append( "\nSTD OUT: " );
-                err.append( stdOut );
+            err.append("Error executing command '");
+            err.append(Arrays.toString(command));
+            err.append("'");
+            if (!StringUtils.isNullOrEmpty(stdOut)) {
+                err.append("\nSTD OUT: ");
+                err.append(stdOut);
             }
-            if( !StringUtils.isNullOrEmpty( stdErr ) ) {
-                err.append( "\nSTD ERR: " );
-                err.append( stdErr );
+            if (!StringUtils.isNullOrEmpty(stdErr)) {
+                err.append("\nSTD ERR: ");
+                err.append(stdErr);
             }
-            if( !StringUtils.isNullOrEmpty( exitCode ) ) {
-                err.append( "\nexit code: " );
-                err.append( exitCode );
+            if (!StringUtils.isNullOrEmpty(exitCode)) {
+                err.append("\nexit code: ");
+                err.append(exitCode);
             }
-            throw new FileSystemOperationException( err.toString(), e );
+            throw new FileSystemOperationException(err.toString(), e);
         }
 
         return new String[]{ stdOut, stdErr, exitCode };
@@ -2789,35 +2789,35 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                 String srcFileName,
                                                 String dstFilePath ) throws Exception {
 
-        File dstFile = new File( dstFilePath );
+        File dstFile = new File(dstFilePath);
 
         // check if file exists
-        if( dstFile.exists() ) {
+        if (dstFile.exists()) {
             // check if dstFile is indeed a File
-            if( dstFile.isFile() ) {
-                log.debug( " will overwrite '" + dstFilePath + "'" );
+            if (dstFile.isFile()) {
+                log.debug(" will overwrite '" + dstFilePath + "'");
                 return dstFilePath;
-            } else if( dstFile.isDirectory() ) {// check if dstFile is a directory
-                dstFilePath = new File( dstFilePath, srcFileName ).getAbsolutePath();
+            } else if (dstFile.isDirectory()) {// check if dstFile is a directory
+                dstFilePath = new File(dstFilePath, srcFileName).getAbsolutePath();
                 return dstFilePath;
             } else {
-                throw new IllegalArgumentException( "File '" + dstFilePath
-                                                    + "' is neither file nor directory" );
+                throw new IllegalArgumentException("File '" + dstFilePath
+                                                   + "' is neither file nor directory");
             }
         } else {
             // check if dstFile points to a directory (which is not existing)
-            if( dstFilePath.endsWith( File.separator ) ) {
-                throw new FileNotFoundException( "File path '" + dstFilePath
-                                                 + "' points to a non-existing directory" );
+            if (dstFilePath.endsWith(File.separator)) {
+                throw new FileNotFoundException("File path '" + dstFilePath
+                                                + "' points to a non-existing directory");
             } else {
                 // dstFile points to a non-existing file
                 // check if dstFile's parent exists and is directory
-                File dstFileParent = new File( dstFilePath ).getParentFile();
-                if( dstFileParent.exists() && dstFileParent.isDirectory()) {
+                File dstFileParent = new File(dstFilePath).getParentFile();
+                if (dstFileParent.exists() && dstFileParent.isDirectory()) {
                     return dstFilePath;
                 } else {
-                    throw new FileNotFoundException( "Directory '" + dstFileParent.getAbsolutePath()
-                                                     + "' does not exist or is a regular file" );
+                    throw new FileNotFoundException("Directory '" + dstFileParent.getAbsolutePath()
+                                                    + "' does not exist or is a regular file");
                 }
             }
         }

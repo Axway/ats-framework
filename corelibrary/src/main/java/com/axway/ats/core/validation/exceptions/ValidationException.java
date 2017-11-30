@@ -21,17 +21,17 @@ public class ValidationException extends Exception {
 
     public ValidationException( String errorMessage ) {
 
-        super( errorMessage );
+        super(errorMessage);
     }
 
     public ValidationException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public ValidationException( String errorMessage,
                                 Throwable cause ) {
 
-        super( errorMessage, cause );
+        super(errorMessage, cause);
     }
 }

@@ -25,18 +25,18 @@ public class InvalidInputArgumentsException extends RuntimeException {
 
     public InvalidInputArgumentsException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public InvalidInputArgumentsException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public InvalidInputArgumentsException( String message,
                                            Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

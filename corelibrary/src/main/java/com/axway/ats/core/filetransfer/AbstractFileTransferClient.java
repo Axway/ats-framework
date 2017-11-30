@@ -126,9 +126,9 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
                             final String remoteDir,
                             final String remoteFile ) throws FileTransferException {
 
-        checkPausedTransferRunning( false );
+        checkPausedTransferRunning(false);
 
-        performUploadFile( localFile, remoteDir, remoteFile );
+        performUploadFile(localFile, remoteDir, remoteFile);
     }
 
     /**
@@ -157,9 +157,9 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
                               String remoteDir,
                               String remoteFile ) throws FileTransferException {
 
-        checkPausedTransferRunning( false );
+        checkPausedTransferRunning(false);
 
-        performDownloadFile( localFile, remoteDir, remoteFile );
+        performDownloadFile(localFile, remoteDir, remoteFile);
     }
 
     /**
@@ -177,17 +177,17 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
 
     public synchronized void resumePausedTransfer() throws FileTransferException {
 
-        checkPausedTransferRunning( true );
+        checkPausedTransferRunning(true);
 
-        final Logger log = Logger.getLogger( AbstractFileTransferClient.class );
+        final Logger log = Logger.getLogger(AbstractFileTransferClient.class);
 
-        while( !canResume ) {
+        while (!canResume) {
             try {
-                log.debug( "Waiting for the transfer to start..." );
+                log.debug("Waiting for the transfer to start...");
                 // Wait to be notified when the transfer is started and will be paused.
                 this.wait();
-            } catch( InterruptedException e ) {
-                throw new FileTransferException( "Interrupted while waiting for a transfer to start", e );
+            } catch (InterruptedException e) {
+                throw new FileTransferException("Interrupted while waiting for a transfer to start", e);
             }
         }
 
@@ -197,11 +197,11 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
         this.notifyAll();
 
         try {
-            log.debug( "Waiting for the transfer to finish..." );
+            log.debug("Waiting for the transfer to finish...");
             // Wait to be notified that the transfer is done.
             this.wait();
-        } catch( InterruptedException e ) {
-            throw new FileTransferException( "Interrupted while waiting for a transfer to finish", e );
+        } catch (InterruptedException e) {
+            throw new FileTransferException("Interrupted while waiting for a transfer to finish", e);
         } finally {
             this.isTransferStartedAndPaused = false; // the paused transfer has finished
         }
@@ -212,19 +212,19 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
                                      final String remoteDir,
                                      final String remoteFile ) throws FileTransferException {
 
-        checkPausedTransferRunning( false );
+        checkPausedTransferRunning(false);
 
         this.isTransferStartedAndPaused = true; // a paused transfer is started.
         final Thread currentThread = Thread.currentThread(); // get the executor thread.
 
-        final Thread uploadThread = new Thread( "Upload Thread" ) {
+        final Thread uploadThread = new Thread("Upload Thread") {
 
-            private final Logger log = Logger.getLogger( this.getName() );
+            private final Logger log = Logger.getLogger(this.getName());
 
             @Override
             public void run() {
 
-                synchronized( AbstractFileTransferClient.this ) {
+                synchronized (AbstractFileTransferClient.this) {
 
                     // Notify the executor thread that the upload is starting.
                     // The executor thread will stop waiting for the upload to start
@@ -233,29 +233,29 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
                     AbstractFileTransferClient.this.notifyAll();
 
                     int progressEventNumber = 0; // the number of the progress event on which to wait
-                    if( new File( localFile ).length() == 0 ) {
+                    if (new File(localFile).length() == 0) {
                         // if the file is empty no progress events will be fired
                         progressEventNumber = -1;
                     }
 
                     // Add a listener to notify the executor that the transfer is paused.
-                    TransferListener listener = addListener( progressEventNumber );
+                    TransferListener listener = addListener(progressEventNumber);
 
                     try {
                         // Start the upload.
-                        AbstractFileTransferClient.this.performUploadFile( localFile, remoteDir, remoteFile );
+                        AbstractFileTransferClient.this.performUploadFile(localFile, remoteDir, remoteFile);
 
                         // Notify the executor thread that the upload has finished successfully.
                         AbstractFileTransferClient.this.notifyAll();
-                    } catch( FileTransferException e ) {
-                        log.error( "Upload failed.", e );
+                    } catch (FileTransferException e) {
+                        log.error("Upload failed.", e);
 
                         // Interrupt the executor thread so that an exception can be thrown
                         // while waiting for the upload to finish.
                         currentThread.interrupt();
                     } finally {
                         // Ensure the listener is removed to prevent deadlocks in further transfers.
-                        removeListener( listener );
+                        removeListener(listener);
                     }
                 }
             }
@@ -272,11 +272,11 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
     protected void checkPausedTransferRunning(
                                                boolean expected ) throws FileTransferException {
 
-        if( isTransferStartedAndPaused && !expected ) {
-            throw new FileTransferException( "A transfer is already started and paused. It must be resumed before another one is initiated." );
+        if (isTransferStartedAndPaused && !expected) {
+            throw new FileTransferException("A transfer is already started and paused. It must be resumed before another one is initiated.");
         }
-        if( !isTransferStartedAndPaused && expected ) {
-            throw new FileTransferException( "A transfer is not started and paused. Cannot perform resume." );
+        if (!isTransferStartedAndPaused && expected) {
+            throw new FileTransferException("A transfer is not started and paused. Cannot perform resume.");
         }
     }
 
@@ -317,13 +317,13 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
      */
     public String[] getResponses() {
 
-        if( this.listener == null ) {
+        if (this.listener == null) {
             return new String[]{};
         }
 
         List<String> responses = this.listener.getResponses();
 
-        return responses.toArray( new String[responses.size()] );
+        return responses.toArray(new String[responses.size()]);
     }
 
     /**
@@ -340,7 +340,7 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
                                    String key,
                                    Object value ) throws IllegalArgumentException {
 
-        throw new IllegalArgumentException( "Not supported" );
+        throw new IllegalArgumentException("Not supported");
 
     }
 
@@ -367,8 +367,8 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
     protected String[] parseCustomProperties(
                                               String source ) {
 
-        String[] result = source.split( "," );
-        for( int i = 0; i < result.length; i++ ) {
+        String[] result = source.split(",");
+        for (int i = 0; i < result.length; i++) {
             result[i] = result[i].trim();
         }
 

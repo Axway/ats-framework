@@ -36,7 +36,7 @@ public class Test_TypeString extends BaseTest {
 
     /** Invalid test data */
     private static final String         EMPTY_STRING     = "";
-    private static final Integer        NOT_A_STRING     = new Integer( 1 );
+    private static final Integer        NOT_A_STRING     = new Integer(1);
 
     /** Valid test data */
     private static final Object         NON_EMPTY_STRING = "This string is not empty";
@@ -50,7 +50,7 @@ public class Test_TypeString extends BaseTest {
     @Before
     public void setUp() throws Exception {
 
-    // empty
+        // empty
     }
 
     /**
@@ -61,10 +61,10 @@ public class Test_TypeString extends BaseTest {
     @Test
     public void testValidation() throws Exception {
 
-        assertTrue( this.validator.validate( VALIDATION_TYPE, NON_EMPTY_STRING ) );
+        assertTrue(this.validator.validate(VALIDATION_TYPE, NON_EMPTY_STRING));
 
-        assertFalse( this.validator.validate( VALIDATION_TYPE, EMPTY_STRING ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, NOT_A_STRING ) );
-        assertFalse( this.validator.validate( VALIDATION_TYPE, null ) );
+        assertFalse(this.validator.validate(VALIDATION_TYPE, EMPTY_STRING));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, NOT_A_STRING));
+        assertFalse(this.validator.validate(VALIDATION_TYPE, null));
     }
 }

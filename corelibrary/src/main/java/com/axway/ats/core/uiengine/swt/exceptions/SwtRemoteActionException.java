@@ -27,16 +27,16 @@ public class SwtRemoteActionException extends RuntimeException {
 
     public SwtRemoteActionException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public SwtRemoteActionException( String message,
                                      Throwable cause ) {
 
-        super( message );
+        super(message);
 
         StringWriter stringWriter = new StringWriter();
-        cause.printStackTrace( new PrintWriter( stringWriter ) );
+        cause.printStackTrace(new PrintWriter(stringWriter));
         this.causeStackTrace = stringWriter.toString();
     }
 
@@ -49,9 +49,9 @@ public class SwtRemoteActionException extends RuntimeException {
     public void printStackTrace(
                                  PrintStream s ) {
 
-        s.println( this );
-        if( causeStackTrace != null ) {
-            s.print( "Caused by: " + causeStackTrace );
+        s.println(this);
+        if (causeStackTrace != null) {
+            s.print("Caused by: " + causeStackTrace);
         }
     }
 
@@ -59,9 +59,9 @@ public class SwtRemoteActionException extends RuntimeException {
     public void printStackTrace(
                                  PrintWriter s ) {
 
-        s.println( this );
-        if( causeStackTrace != null ) {
-            s.print( "Caused by: " + causeStackTrace );
+        s.println(this);
+        if (causeStackTrace != null) {
+            s.print("Caused by: " + causeStackTrace);
         }
     }
 

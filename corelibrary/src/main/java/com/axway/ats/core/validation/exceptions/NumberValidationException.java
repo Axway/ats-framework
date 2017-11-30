@@ -21,18 +21,18 @@ public class NumberValidationException extends ValidationException {
 
     public NumberValidationException( String errorMessage ) {
 
-        super( errorMessage );
+        super(errorMessage);
     }
 
     public NumberValidationException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public NumberValidationException( String errorMessage,
                                       Throwable cause ) {
 
-        super( errorMessage, cause );
+        super(errorMessage, cause);
     }
 
 }

@@ -28,7 +28,7 @@ public class AtsManagerException extends Exception {
      */
     public AtsManagerException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -39,7 +39,7 @@ public class AtsManagerException extends Exception {
     public AtsManagerException( String message,
                                 Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     /**
@@ -52,7 +52,7 @@ public class AtsManagerException extends Exception {
                                 String commandStdout,
                                 String commandStderr ) {
 
-        super( message );
+        super(message);
         this.commandStdout = commandStdout;
         this.commandStderr = commandStderr;
     }
@@ -80,14 +80,14 @@ public class AtsManagerException extends Exception {
 
         super.printStackTrace();
 
-        if( commandStdout != null || commandStderr != null ) {
+        if (commandStdout != null || commandStderr != null) {
 
-            System.err.println( "\nCommand execution output:" );
-            if( commandStdout != null ) {
-                System.err.println( "STDOUT: " + commandStdout );
+            System.err.println("\nCommand execution output:");
+            if (commandStdout != null) {
+                System.err.println("STDOUT: " + commandStdout);
             }
-            if( commandStderr != null ) {
-                System.err.println( "STDERR: " + commandStderr );
+            if (commandStderr != null) {
+                System.err.println("STDERR: " + commandStderr);
             }
         }
     }

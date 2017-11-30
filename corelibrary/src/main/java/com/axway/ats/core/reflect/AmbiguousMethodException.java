@@ -19,11 +19,11 @@ package com.axway.ats.core.reflect;
  * Exception thrown when we search for a method by some
  * properties, but there is ambiguity
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class AmbiguousMethodException extends Exception {
 
     public AmbiguousMethodException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

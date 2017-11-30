@@ -32,8 +32,8 @@ public class FtpResponseListener extends AbstractResponseListener implements Pro
     public void protocolReplyReceived(
                                        ProtocolCommandEvent event ) {
 
-        responses.add( event.getMessage() );
-        
+        responses.add(event.getMessage());
+
     }
 
 }

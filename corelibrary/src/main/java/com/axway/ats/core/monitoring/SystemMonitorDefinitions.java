@@ -18,42 +18,40 @@ package com.axway.ats.core.monitoring;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class SystemMonitorDefinitions {
-	
 
     // The name of the Agent component we use for monitoring a physical system
     // It must be the same as in the corresponding agent_descriptor.xml file
     public static final String       ATS_SYSTEM_MONITORING_COMPONENT_NAME               = "auto-system-monitoring";
-    
+
     // Combinet statistics for (CPU-only, Memory-only etc)
-    
+
     /** All CPU related statistics */
-    public static final String READING_CPU                = "READING_CPU";
+    public static final String       READING_CPU                                        = "READING_CPU";
 
     /** All MEMORY related statistics */
-    public static final String READING_MEMORY             = "READING_MEMORY";
+    public static final String       READING_MEMORY                                     = "READING_MEMORY";
 
     /** All VIRTUAL MEMORY related statistics */
-    public static final String READING_VIRTUAL_MEMORY     = "READING_VIRTUAL_MEMORY";
+    public static final String       READING_VIRTUAL_MEMORY                             = "READING_VIRTUAL_MEMORY";
 
     /** All IO related statistics */
-    public static final String READING_IO                 = "READING_IO";
+    public static final String       READING_IO                                         = "READING_IO";
 
     /** All network interfaces related statistics */
-    public static final String READING_NETWORK_INTERFACES = "READING_NICS";
+    public static final String       READING_NETWORK_INTERFACES                         = "READING_NICS";
 
     /** All Netstat related statistics */
-    public static final String READING_NETSTAT            = "READING_NETSTAT";
+    public static final String       READING_NETSTAT                                    = "READING_NETSTAT";
 
     /** All TCP related statistics */
-    public static final String READING_TCP                = "READING_TCP";
+    public static final String       READING_TCP                                        = "READING_TCP";
 
     /** All PROCESS CPU related statistics */
-    public static final String READING_PROCESS_CPU        = "READING_PROCESS_CPU";
+    public static final String       READING_PROCESS_CPU                                = "READING_PROCESS_CPU";
 
     /** All PROCESS MEMORY related statistics */
-    public static final String READING_PROCESS_MEMORY     = "READING_PROCESS_MEMORY";
+    public static final String       READING_PROCESS_MEMORY                             = "READING_PROCESS_MEMORY";
 
     // CPU related statistics
     private static final Set<String> ALL_CPU_READINGS;
@@ -162,73 +160,73 @@ public class SystemMonitorDefinitions {
 
     static {
         ALL_CPU_READINGS = new HashSet<String>();
-        ALL_CPU_READINGS.add( READING_CPU_LOAD__LAST_MINUTE );
-        ALL_CPU_READINGS.add( READING_CPU_LOAD__LAST_5_MINUTES );
-        ALL_CPU_READINGS.add( READING_CPU_LOAD__LAST_15_MINUTES );
-        ALL_CPU_READINGS.add( READING_CPU_USAGE__WAIT );
-        ALL_CPU_READINGS.add( READING_CPU_USAGE__KERNEL );
-        ALL_CPU_READINGS.add( READING_CPU_USAGE__USER );
-        ALL_CPU_READINGS.add( READING_CPU_USAGE__TOTAL );
+        ALL_CPU_READINGS.add(READING_CPU_LOAD__LAST_MINUTE);
+        ALL_CPU_READINGS.add(READING_CPU_LOAD__LAST_5_MINUTES);
+        ALL_CPU_READINGS.add(READING_CPU_LOAD__LAST_15_MINUTES);
+        ALL_CPU_READINGS.add(READING_CPU_USAGE__WAIT);
+        ALL_CPU_READINGS.add(READING_CPU_USAGE__KERNEL);
+        ALL_CPU_READINGS.add(READING_CPU_USAGE__USER);
+        ALL_CPU_READINGS.add(READING_CPU_USAGE__TOTAL);
 
         ALL_MEMORY_READINGS = new HashSet<String>();
-        ALL_MEMORY_READINGS.add( READING_MEMORY__ACTUAL_USED );
-        ALL_MEMORY_READINGS.add( READING_MEMORY__ACTUAL_FREE );
-        ALL_MEMORY_READINGS.add( READING_MEMORY__USED );
-        ALL_MEMORY_READINGS.add( READING_MEMORY__FREE );
+        ALL_MEMORY_READINGS.add(READING_MEMORY__ACTUAL_USED);
+        ALL_MEMORY_READINGS.add(READING_MEMORY__ACTUAL_FREE);
+        ALL_MEMORY_READINGS.add(READING_MEMORY__USED);
+        ALL_MEMORY_READINGS.add(READING_MEMORY__FREE);
 
         ALL_VIRTUAL_MEMORY_READINGS = new HashSet<String>();
-        ALL_VIRTUAL_MEMORY_READINGS.add( READING_VIRTUAL_MEMORY__TOTAL );
-        ALL_VIRTUAL_MEMORY_READINGS.add( READING_VIRTUAL_MEMORY__USED );
-        ALL_VIRTUAL_MEMORY_READINGS.add( READING_VIRTUAL_MEMORY__FREE );
-        ALL_VIRTUAL_MEMORY_READINGS.add( READING_VIRTUAL_MEMORY__PAGES_IN );
-        ALL_VIRTUAL_MEMORY_READINGS.add( READING_VIRTUAL_MEMORY__PAGES_OUT );
+        ALL_VIRTUAL_MEMORY_READINGS.add(READING_VIRTUAL_MEMORY__TOTAL);
+        ALL_VIRTUAL_MEMORY_READINGS.add(READING_VIRTUAL_MEMORY__USED);
+        ALL_VIRTUAL_MEMORY_READINGS.add(READING_VIRTUAL_MEMORY__FREE);
+        ALL_VIRTUAL_MEMORY_READINGS.add(READING_VIRTUAL_MEMORY__PAGES_IN);
+        ALL_VIRTUAL_MEMORY_READINGS.add(READING_VIRTUAL_MEMORY__PAGES_OUT);
 
         ALL_IO_READINGS = new HashSet<String>();
-        ALL_IO_READINGS.add( READING_IO__READ_BYTES_ALL_DEVICES );
-        ALL_IO_READINGS.add( READING_IO__WRITE_BYTES_ALL_DEVICES );
+        ALL_IO_READINGS.add(READING_IO__READ_BYTES_ALL_DEVICES);
+        ALL_IO_READINGS.add(READING_IO__WRITE_BYTES_ALL_DEVICES);
 
         ALL_NETWORK_INTERFACES_READINGS = new HashSet<String>();
-        ALL_NETWORK_INTERFACES_READINGS.add( READING_NETWORK_TRAFFIC );
+        ALL_NETWORK_INTERFACES_READINGS.add(READING_NETWORK_TRAFFIC);
 
         ALL_NETSTAT_READINGS = new HashSet<String>();
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__ACTIVE_CONNECTION_OPENINGS );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__PASSIVE_CONNECTION_OPENINGS );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__FAILED_CONNECTION_ATTEMPTS );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__RESET_CONNECTIONS );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__CURRENT_CONNECTIONS );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__SEGMENTS_RECEIVED );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__SEGMENTS_SENT );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__SEGMENTS_RETRANSMITTED );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__OUT_RESETS );
-        ALL_NETSTAT_READINGS.add( READING_NETSTAT__IN_ERRORS );
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__ACTIVE_CONNECTION_OPENINGS);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__PASSIVE_CONNECTION_OPENINGS);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__FAILED_CONNECTION_ATTEMPTS);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__RESET_CONNECTIONS);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__CURRENT_CONNECTIONS);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__SEGMENTS_RECEIVED);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__SEGMENTS_SENT);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__SEGMENTS_RETRANSMITTED);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__OUT_RESETS);
+        ALL_NETSTAT_READINGS.add(READING_NETSTAT__IN_ERRORS);
 
         ALL_TCP_READINGS = new HashSet<String>();
-        ALL_TCP_READINGS.add( READING_TCP__CLOSE );
-        ALL_TCP_READINGS.add( READING_TCP__LISTEN );
-        ALL_TCP_READINGS.add( READING_TCP__SYN_SENT );
-        ALL_TCP_READINGS.add( READING_TCP__SYN_RECEIVED );
-        ALL_TCP_READINGS.add( READING_TCP__ESTABLISHED );
-        ALL_TCP_READINGS.add( READING_TCP__CLOSE_WAIT );
-        ALL_TCP_READINGS.add( READING_TCP__LAST_ACK );
-        ALL_TCP_READINGS.add( READING_TCP__FIN_WAIT1 );
-        ALL_TCP_READINGS.add( READING_TCP__FIN_WAIT2 );
-        ALL_TCP_READINGS.add( READING_TCP__CLOSING );
-        ALL_TCP_READINGS.add( READING_TCP__TIME_WAIT );
-        ALL_TCP_READINGS.add( READING_TCP__BOUND );
-        ALL_TCP_READINGS.add( READING_TCP__IDLE );
-        ALL_TCP_READINGS.add( READING_TCP__TOTAL_INBOUND );
-        ALL_TCP_READINGS.add( READING_TCP__TOTAL_OUTBOUND );
+        ALL_TCP_READINGS.add(READING_TCP__CLOSE);
+        ALL_TCP_READINGS.add(READING_TCP__LISTEN);
+        ALL_TCP_READINGS.add(READING_TCP__SYN_SENT);
+        ALL_TCP_READINGS.add(READING_TCP__SYN_RECEIVED);
+        ALL_TCP_READINGS.add(READING_TCP__ESTABLISHED);
+        ALL_TCP_READINGS.add(READING_TCP__CLOSE_WAIT);
+        ALL_TCP_READINGS.add(READING_TCP__LAST_ACK);
+        ALL_TCP_READINGS.add(READING_TCP__FIN_WAIT1);
+        ALL_TCP_READINGS.add(READING_TCP__FIN_WAIT2);
+        ALL_TCP_READINGS.add(READING_TCP__CLOSING);
+        ALL_TCP_READINGS.add(READING_TCP__TIME_WAIT);
+        ALL_TCP_READINGS.add(READING_TCP__BOUND);
+        ALL_TCP_READINGS.add(READING_TCP__IDLE);
+        ALL_TCP_READINGS.add(READING_TCP__TOTAL_INBOUND);
+        ALL_TCP_READINGS.add(READING_TCP__TOTAL_OUTBOUND);
 
         ALL_PROCESS_CPU_READINGS = new HashSet<String>();
-        ALL_PROCESS_CPU_READINGS.add( READING_PROCESS_CPU__USAGE_USER );
-        ALL_PROCESS_CPU_READINGS.add( READING_PROCESS_CPU__USAGE_KERNEL );
-        ALL_PROCESS_CPU_READINGS.add( READING_PROCESS_CPU__USAGE_TOTAL );
+        ALL_PROCESS_CPU_READINGS.add(READING_PROCESS_CPU__USAGE_USER);
+        ALL_PROCESS_CPU_READINGS.add(READING_PROCESS_CPU__USAGE_KERNEL);
+        ALL_PROCESS_CPU_READINGS.add(READING_PROCESS_CPU__USAGE_TOTAL);
 
         ALL_PROCESS_MEMORY_READINGS = new HashSet<String>();
-        ALL_PROCESS_MEMORY_READINGS.add( READING_PROCESS_MEMORY__VIRTUAL );
-        ALL_PROCESS_MEMORY_READINGS.add( READING_PROCESS_MEMORY__RESIDENT );
-        ALL_PROCESS_MEMORY_READINGS.add( READING_PROCESS_MEMORY__SHARED );
-        ALL_PROCESS_MEMORY_READINGS.add( READING_PROCESS_MEMORY__PAGE_FAULTS );
+        ALL_PROCESS_MEMORY_READINGS.add(READING_PROCESS_MEMORY__VIRTUAL);
+        ALL_PROCESS_MEMORY_READINGS.add(READING_PROCESS_MEMORY__RESIDENT);
+        ALL_PROCESS_MEMORY_READINGS.add(READING_PROCESS_MEMORY__SHARED);
+        ALL_PROCESS_MEMORY_READINGS.add(READING_PROCESS_MEMORY__PAGE_FAULTS);
     }
 
     public static Set<String> getAllCpuReadings() {
@@ -278,13 +276,13 @@ public class SystemMonitorDefinitions {
 
     public static boolean isProcessReading( String readingName ) {
 
-        return ( readingName.equalsIgnoreCase( READING_PROCESS_CPU__USAGE_USER )
-                 || readingName.equalsIgnoreCase( READING_PROCESS_CPU__USAGE_KERNEL )
-                 || readingName.equalsIgnoreCase( READING_PROCESS_CPU__USAGE_TOTAL )
+        return (readingName.equalsIgnoreCase(READING_PROCESS_CPU__USAGE_USER)
+                || readingName.equalsIgnoreCase(READING_PROCESS_CPU__USAGE_KERNEL)
+                || readingName.equalsIgnoreCase(READING_PROCESS_CPU__USAGE_TOTAL)
 
-                 || readingName.equalsIgnoreCase( READING_PROCESS_MEMORY__VIRTUAL )
-                 || readingName.equalsIgnoreCase( READING_PROCESS_MEMORY__RESIDENT )
-                 || readingName.equalsIgnoreCase( READING_PROCESS_MEMORY__SHARED )
-                 || readingName.equalsIgnoreCase( READING_PROCESS_MEMORY__PAGE_FAULTS ) );
+                || readingName.equalsIgnoreCase(READING_PROCESS_MEMORY__VIRTUAL)
+                || readingName.equalsIgnoreCase(READING_PROCESS_MEMORY__RESIDENT)
+                || readingName.equalsIgnoreCase(READING_PROCESS_MEMORY__SHARED)
+                || readingName.equalsIgnoreCase(READING_PROCESS_MEMORY__PAGE_FAULTS));
     }
 }

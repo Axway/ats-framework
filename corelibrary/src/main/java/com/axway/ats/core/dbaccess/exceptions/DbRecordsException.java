@@ -15,34 +15,34 @@
  */
 package com.axway.ats.core.dbaccess.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DbRecordsException extends DbException {
 
     //constructor for no records
     public DbRecordsException() {
 
-        this( "No records returned" );
+        this("No records returned");
     }
 
     //constructor for wrong number of records
     public DbRecordsException( int numActualRecords, int numExpectedRecords ) {
 
-        this( "The nuber of expected records is " + numExpectedRecords + " while the actual number is "
-              + numActualRecords );
+        this("The nuber of expected records is " + numExpectedRecords + " while the actual number is "
+             + numActualRecords);
     }
 
     public DbRecordsException( String errorMessage ) {
 
-        super( errorMessage );
+        super(errorMessage);
     }
 
     public DbRecordsException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public DbRecordsException( String errorMessage, Throwable cause ) {
 
-        super( errorMessage, cause );
+        super(errorMessage, cause);
     }
 }

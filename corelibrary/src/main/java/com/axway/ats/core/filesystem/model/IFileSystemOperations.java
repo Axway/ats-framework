@@ -91,10 +91,9 @@ public interface IFileSystemOperations {
 
     public boolean doesFileExist(
                                   String fileName );
-    
-    public boolean doesDirectoryExist(
-                                      String dirName );
 
+    public boolean doesDirectoryExist(
+                                       String dirName );
 
     public String getFilePermissions(
                                       String sourceFile );
@@ -180,9 +179,9 @@ public interface IFileSystemOperations {
                                                            int currentLineNumber );
 
     public String[] getLastLinesFromFile(
-                                         String fileName,
-                                         int numLinesToRead );
-    
+                                          String fileName,
+                                          int numLinesToRead );
+
     public String[] getLastLinesFromFile(
                                           String fileName,
                                           int numLinesToRead,
@@ -217,9 +216,9 @@ public interface IFileSystemOperations {
     public void unzip(
                        String zipFilePath,
                        String outputDirPath ) throws FileSystemOperationException;
-    
+
     public void extract(
-                         String archiveFilePath, 
+                         String archiveFilePath,
                          String outputDirPath ) throws FileSystemOperationException;
 
 }

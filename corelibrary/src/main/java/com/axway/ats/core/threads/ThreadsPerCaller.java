@@ -36,7 +36,7 @@ public class ThreadsPerCaller {
     synchronized public static void registerThread(
                                                     String caller ) {
 
-        threads.put( Thread.currentThread().getName(), caller );
+        threads.put(Thread.currentThread().getName(), caller);
     }
 
     /**
@@ -46,7 +46,7 @@ public class ThreadsPerCaller {
      */
     synchronized public static void unregisterThread() {
 
-        threads.remove( Thread.currentThread().getName() );
+        threads.remove(Thread.currentThread().getName());
     }
 
     /**
@@ -56,6 +56,6 @@ public class ThreadsPerCaller {
      */
     synchronized public static String getCaller() {
 
-        return threads.get( Thread.currentThread().getName() );
+        return threads.get(Thread.currentThread().getName());
     }
 }

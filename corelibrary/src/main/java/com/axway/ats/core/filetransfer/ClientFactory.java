@@ -27,7 +27,7 @@ import com.axway.ats.common.filetransfer.TransferProtocol;
  */
 public class ClientFactory {
 
-    private static Logger        log     = Logger.getLogger( ClientFactory.class );
+    private static Logger        log     = Logger.getLogger(ClientFactory.class);
 
     private static ClientFactory factory = null;
 
@@ -36,7 +36,7 @@ public class ClientFactory {
      */
     public synchronized static final ClientFactory getInstance() {
 
-        if( factory == null ) {
+        if (factory == null) {
             factory = new ClientFactory();
         }
         return factory;
@@ -59,21 +59,21 @@ public class ClientFactory {
      * @see {@link TransferProtocol}
      */
     public final IFileTransferClient getClient(
-                                               TransferProtocol protocol,
-                                               String keystoreFile,
-                                               String keystringPassphrase ) throws Exception {
+                                                TransferProtocol protocol,
+                                                String keystoreFile,
+                                                String keystringPassphrase ) throws Exception {
 
-        switch( protocol ){
+        switch (protocol) {
             case FTPS:
                 FtpsClient ftps = new FtpsClient();
-                ftps.setCustomPort( protocol.getDefaultPort() );
+                ftps.setCustomPort(protocol.getDefaultPort());
                 return ftps;
             case HTTPS:
                 HttpsClient https = new HttpsClient();
-                https.setCustomPort( protocol.getDefaultPort() );
+                https.setCustomPort(protocol.getDefaultPort());
                 return https;
             default:
-                throw new Exception( "No implementation for the " + protocol + " is currently available" );
+                throw new Exception("No implementation for the " + protocol + " is currently available");
         }
     }
 
@@ -87,36 +87,36 @@ public class ClientFactory {
      * @see {@link TransferProtocol}
      */
     public IFileTransferClient getClient(
-                                         TransferProtocol protocol,
-                                         int port ) throws FileTransferException {
+                                          TransferProtocol protocol,
+                                          int port ) throws FileTransferException {
 
-        switch( protocol ){
+        switch (protocol) {
             case FTP:
                 FtpClient ftp = new FtpClient();
-                ftp.setCustomPort( port );
+                ftp.setCustomPort(port);
                 return ftp;
             case FTPS:
                 FtpsClient ftps = new FtpsClient();
-                ftps.setCustomPort( port );
+                ftps.setCustomPort(port);
                 return ftps;
             case SFTP:
                 SftpClient sftp = new SftpClient();
-                sftp.setCustomPort( port );
+                sftp.setCustomPort(port);
                 return sftp;
             case HTTP:
                 HttpClient http = new HttpClient();
-                http.setCustomPort( port );
+                http.setCustomPort(port);
                 return http;
             case HTTPS:
                 HttpsClient https = new HttpsClient();
-                https.setCustomPort( port );
+                https.setCustomPort(port);
                 return https;
             default:
-                throw new FileTransferException( "No implementation for the " + protocol
-                                                       + " protocol is currently available" );
+                throw new FileTransferException("No implementation for the " + protocol
+                                                + " protocol is currently available");
         }
     }
-    
+
     /**
      * Returns a product specific {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
      * 
@@ -131,8 +131,8 @@ public class ClientFactory {
                                           int port ) throws FileTransferException {
 
         // load the custom client
-        IFileTransferClient client = loadCustomClient( customFileTransferClient );
-        client.setCustomPort( port );
+        IFileTransferClient client = loadCustomClient(customFileTransferClient);
+        client.setCustomPort(port);
 
         return client;
     }
@@ -145,32 +145,32 @@ public class ClientFactory {
      * @throws FileTransferException
      */
     private IFileTransferClient loadCustomClient(
-                                                 String customFileTransferClient )
-                                                                                  throws FileTransferException {
+                                                  String customFileTransferClient )
+                                                                                    throws FileTransferException {
 
         try {
             // load the custom client class
             Class<?> customFileTransferClientClass = this.getClass()
                                                          .getClassLoader()
-                                                         .loadClass( customFileTransferClient );
+                                                         .loadClass(customFileTransferClient);
 
             // make an instance of the custom client
-            IFileTransferClient client = ( IFileTransferClient ) customFileTransferClientClass.newInstance();
+            IFileTransferClient client = (IFileTransferClient) customFileTransferClientClass.newInstance();
 
-            log.info( "Loaded custom file transfer client: " + customFileTransferClient );
+            log.info("Loaded custom file transfer client: " + customFileTransferClient);
             return client;
-        } catch( ClassNotFoundException e ) {
-            throw new FileTransferException( "Custom file transfer client not found in the classpath: "
-                                                   + customFileTransferClient );
-        } catch( ClassCastException e ) {
-            throw new FileTransferException( "Wrong type of the custom file transfer client: "
-                                                   + customFileTransferClient );
-        } catch( InstantiationException e ) {
-            throw new FileTransferException( "Unable to create an instance of the custom file transfer client: "
-                                                   + customFileTransferClient );
-        } catch( IllegalAccessException e ) {
-            throw new FileTransferException( "Unable to create an instance of the custom file transfer client: "
-                                                   + customFileTransferClient );
+        } catch (ClassNotFoundException e) {
+            throw new FileTransferException("Custom file transfer client not found in the classpath: "
+                                            + customFileTransferClient);
+        } catch (ClassCastException e) {
+            throw new FileTransferException("Wrong type of the custom file transfer client: "
+                                            + customFileTransferClient);
+        } catch (InstantiationException e) {
+            throw new FileTransferException("Unable to create an instance of the custom file transfer client: "
+                                            + customFileTransferClient);
+        } catch (IllegalAccessException e) {
+            throw new FileTransferException("Unable to create an instance of the custom file transfer client: "
+                                            + customFileTransferClient);
         }
     }
 }

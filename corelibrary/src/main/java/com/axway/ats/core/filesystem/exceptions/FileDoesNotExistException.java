@@ -22,7 +22,7 @@ import com.axway.ats.common.filesystem.FileSystemOperationException;
 /**
  * Exception thrown when a file does not exist
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class FileDoesNotExistException extends FileSystemOperationException {
 
     /**
@@ -32,7 +32,7 @@ public class FileDoesNotExistException extends FileSystemOperationException {
      */
     public FileDoesNotExistException( String fileName ) {
 
-        super( "File '" + fileName + "' does not exist" );
+        super("File '" + fileName + "' does not exist");
     }
 
     /**
@@ -42,6 +42,6 @@ public class FileDoesNotExistException extends FileSystemOperationException {
      */
     public FileDoesNotExistException( File file ) {
 
-        super( "File '" + file.getPath() + "' does not exist" );
+        super("File '" + file.getPath() + "' does not exist");
     }
 }

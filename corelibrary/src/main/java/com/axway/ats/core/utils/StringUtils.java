@@ -33,7 +33,7 @@ public class StringUtils {
     private static final int     METHOD_ARGS__MAX_ELEMENT_LENGTH  = 100;
 
     // Command line arguments pattern
-    private static final Pattern COMMAND_ARGUMENTS_PATTERN        = Pattern.compile( "(?:\\\"[^\\\"]*\\\")|(?:\\'[^\\']*\\')|(?:[^\\s]+)" );
+    private static final Pattern COMMAND_ARGUMENTS_PATTERN        = Pattern.compile("(?:\\\"[^\\\"]*\\\")|(?:\\'[^\\']*\\')|(?:[^\\s]+)");
 
     /**
      * Tests if a string is null or empty
@@ -55,10 +55,10 @@ public class StringUtils {
      */
     public static boolean isNotNullAndEquals( String string1, String string2 ) {
 
-        if( string1 == null ) {
+        if (string1 == null) {
             return false;
         } else {
-            return string1.equals( string2 );
+            return string1.equals(string2);
         }
     }
 
@@ -71,8 +71,8 @@ public class StringUtils {
     public static String byteArray2Hex( byte[] bytes ) {
 
         StringBuilder result = new StringBuilder();
-        for( int i = 0; i < bytes.length; i++ ) {
-            result.append( Integer.toString( ( bytes[i] & 0xff ) + 0x100, 16 ).substring( 1 ) );
+        for (int i = 0; i < bytes.length; i++) {
+            result.append(Integer.toString( (bytes[i] & 0xff) + 0x100, 16).substring(1));
         }
 
         return result.toString();
@@ -88,14 +88,14 @@ public class StringUtils {
 
         byte[] defaultBytes = data.getBytes();
         try {
-            MessageDigest algorithm = MessageDigest.getInstance( "MD5" );
+            MessageDigest algorithm = MessageDigest.getInstance("MD5");
             algorithm.reset();
-            algorithm.update( defaultBytes );
+            algorithm.update(defaultBytes);
             byte messageDigest[] = algorithm.digest();
 
-            return byteArray2Hex( messageDigest );
-        } catch( NoSuchAlgorithmException nsae ) {
-            throw new RuntimeException( nsae );
+            return byteArray2Hex(messageDigest);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(nsae);
         }
     }
 
@@ -108,53 +108,53 @@ public class StringUtils {
     public static String methodInputArgumentsToString( Object[] arguments ) {
 
         // no arguments
-        if( arguments.length == 0 ) {
+        if (arguments.length == 0) {
             return "{}";
         }
 
         StringBuilder argumentsStr = new StringBuilder();
 
-        argumentsStr.append( "{ " );
-        for( Object argument : arguments ) {
-            if( argument != null && argument.getClass().isArray() ) {
+        argumentsStr.append("{ ");
+        for (Object argument : arguments) {
+            if (argument != null && argument.getClass().isArray()) {
 
                 // check the array length - if it is huge, we
                 // don't want it in the console or in memory
-                int arrayLenght = Array.getLength( argument );
-                if( arrayLenght > METHOD_ARGS__MAX_NUMBER_ELEMENTS ) {
+                int arrayLenght = Array.getLength(argument);
+                if (arrayLenght > METHOD_ARGS__MAX_NUMBER_ELEMENTS) {
                     // just give the array address
-                    argumentsStr.append( argument.getClass().getSimpleName() + " array at address "
-                                         + argument );
+                    argumentsStr.append(argument.getClass().getSimpleName() + " array at address "
+                                        + argument);
                 } else {
-                    argumentsStr.append( "[" );
+                    argumentsStr.append("[");
 
-                    for( int i = 0; i < arrayLenght; i++ ) {
+                    for (int i = 0; i < arrayLenght; i++) {
 
-                        Object arrayElement = Array.get( argument, i );
-                        if( arrayElement instanceof String ) {
-                            argumentsStr.append( trimAndQuoteStringArgument( ( String ) arrayElement ) );
+                        Object arrayElement = Array.get(argument, i);
+                        if (arrayElement instanceof String) {
+                            argumentsStr.append(trimAndQuoteStringArgument((String) arrayElement));
                         } else {
-                            argumentsStr.append( arrayElement );
+                            argumentsStr.append(arrayElement);
                         }
 
-                        if( i < arrayLenght - 1 ) {
-                            argumentsStr.append( ", " );
+                        if (i < arrayLenght - 1) {
+                            argumentsStr.append(", ");
                         }
                     }
 
-                    argumentsStr.append( "]" );
+                    argumentsStr.append("]");
                 }
             } else {
-                if( argument instanceof String ) {
-                    argumentsStr.append( trimAndQuoteStringArgument( ( String ) argument ) );
+                if (argument instanceof String) {
+                    argumentsStr.append(trimAndQuoteStringArgument((String) argument));
                 } else {
-                    argumentsStr.append( argument );
+                    argumentsStr.append(argument);
                 }
             }
-            argumentsStr.append( ", " );
+            argumentsStr.append(", ");
         }
-        argumentsStr.delete( argumentsStr.length() - 2, argumentsStr.length() );
-        argumentsStr.append( " }" );
+        argumentsStr.delete(argumentsStr.length() - 2, argumentsStr.length());
+        argumentsStr.append(" }");
 
         return argumentsStr.toString();
     }
@@ -168,14 +168,14 @@ public class StringUtils {
     private static String trimAndQuoteStringArgument( String argument ) {
 
         StringBuilder trimmedArg = new StringBuilder();
-        trimmedArg.append( "\"" );
+        trimmedArg.append("\"");
 
-        if( argument.length() > METHOD_ARGS__MAX_ELEMENT_LENGTH ) {
-            trimmedArg.append( argument.substring( 0, METHOD_ARGS__MAX_ELEMENT_LENGTH ) );
-            trimmedArg.append( "...\" (argument has been trimmed)" );
+        if (argument.length() > METHOD_ARGS__MAX_ELEMENT_LENGTH) {
+            trimmedArg.append(argument.substring(0, METHOD_ARGS__MAX_ELEMENT_LENGTH));
+            trimmedArg.append("...\" (argument has been trimmed)");
         } else {
-            trimmedArg.append( argument );
-            trimmedArg.append( "\"" );
+            trimmedArg.append(argument);
+            trimmedArg.append("\"");
         }
 
         return trimmedArg.toString();
@@ -190,16 +190,16 @@ public class StringUtils {
     public static String[] parseCommandLineArguments( String commandWithArguments ) {
 
         List<String> commandArguments = new ArrayList<String>();
-        Matcher matcher = COMMAND_ARGUMENTS_PATTERN.matcher( commandWithArguments );
-        while( matcher.find() ) {
+        Matcher matcher = COMMAND_ARGUMENTS_PATTERN.matcher(commandWithArguments);
+        while (matcher.find()) {
             String arg = matcher.group();
-            if( ( arg.indexOf( '"' ) == 0 && arg.lastIndexOf( '"' ) == arg.length() - 1 )
-                || ( arg.indexOf( '\'' ) == 0 && arg.lastIndexOf( '\'' ) == arg.length() - 1 ) ) {
+            if ( (arg.indexOf('"') == 0 && arg.lastIndexOf('"') == arg.length() - 1)
+                 || (arg.indexOf('\'') == 0 && arg.lastIndexOf('\'') == arg.length() - 1)) {
 
-                arg = arg.substring( 1, arg.length() - 1 );
+                arg = arg.substring(1, arg.length() - 1);
             }
-            commandArguments.add( arg );
+            commandArguments.add(arg);
         }
-        return commandArguments.toArray( new String[0] );
+        return commandArguments.toArray(new String[0]);
     }
 }

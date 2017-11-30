@@ -20,7 +20,7 @@ package com.axway.ats.core.validation.exceptions;
  * information about the specific validation error, so that
  * it can later on present it in a friendly manner.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class TypeException extends Exception {
 
     String parameterName = null;
@@ -33,7 +33,7 @@ public class TypeException extends Exception {
     public TypeException( String errorMessage,
                           String parameter ) {
 
-        super( errorMessage );
+        super(errorMessage);
         this.parameterName = parameter;
     }
 
@@ -47,7 +47,7 @@ public class TypeException extends Exception {
                           String parameter,
                           Throwable cause ) {
 
-        super( errorMessage, cause );
+        super(errorMessage, cause);
         this.parameterName = parameter;
     }
 

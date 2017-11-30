@@ -42,7 +42,7 @@ public class CoreLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public static synchronized CoreLibraryConfigurator getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new CoreLibraryConfigurator();
         }
         instance.reloadData();
@@ -60,7 +60,7 @@ public class CoreLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferDefaultHttpsEncryptionProtocols(
                                                                 String protocols ) {
 
-        setTempProperty( FILE_TRANSFER_HTTPS_DEFAULT_ENCRYPTION_PROTOCOLS, protocols );
+        setTempProperty(FILE_TRANSFER_HTTPS_DEFAULT_ENCRYPTION_PROTOCOLS, protocols);
     }
 
     /**
@@ -71,7 +71,7 @@ public class CoreLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getFileTransferDefaultHttpsEncryptionProtocols() {
 
-        return getOptionalProperty( FILE_TRANSFER_HTTPS_DEFAULT_ENCRYPTION_PROTOCOLS );
+        return getOptionalProperty(FILE_TRANSFER_HTTPS_DEFAULT_ENCRYPTION_PROTOCOLS);
     }
 
     /**
@@ -84,7 +84,7 @@ public class CoreLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferDefaultHttpsCipherSuites(
                                                          String cipherSuites ) {
 
-        setTempProperty( FILE_TRANSFER_HTTPS_DEFAULT_CIPHER_SUITES, cipherSuites );
+        setTempProperty(FILE_TRANSFER_HTTPS_DEFAULT_CIPHER_SUITES, cipherSuites);
     }
 
     /**
@@ -95,7 +95,7 @@ public class CoreLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getFileTransferDefaultHttpsCipherSuites() {
 
-        return getOptionalProperty( FILE_TRANSFER_HTTPS_DEFAULT_CIPHER_SUITES );
+        return getOptionalProperty(FILE_TRANSFER_HTTPS_DEFAULT_CIPHER_SUITES);
     }
 
     @Override

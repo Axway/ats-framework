@@ -19,7 +19,7 @@ public class MssqlColumnDescription extends ColumnDescription {
 
     public MssqlColumnDescription( String name,
                                    String type ) {
-        super( name, type );
+        super(name, type);
     }
 
     // for information about all data types in MSSQL
@@ -30,16 +30,17 @@ public class MssqlColumnDescription extends ColumnDescription {
 
         String normalizedType = type.toLowerCase();
 
-        return normalizedType.contains( "int" ) || normalizedType.contains( "money" )
-               || normalizedType.startsWith( "decimal" ) || normalizedType.startsWith( "numeric" )
-               || normalizedType.startsWith( "real" ) || normalizedType.startsWith( "float" )
-               || normalizedType.startsWith( "bit" );
+        return normalizedType.contains("int") || normalizedType.contains("money")
+               || normalizedType.startsWith("decimal") || normalizedType.startsWith("numeric")
+               || normalizedType.startsWith("real") || normalizedType.startsWith("float")
+               || normalizedType.startsWith("bit");
     }
 
     @Override
     public boolean isTypeBinary() {
-        String normalizedType = type.toLowerCase(); 
-        return "image".equals( normalizedType ) || normalizedType.startsWith( "binary" )
-               || normalizedType.startsWith( "varbinary" );
+
+        String normalizedType = type.toLowerCase();
+        return "image".equals(normalizedType) || normalizedType.startsWith("binary")
+               || normalizedType.startsWith("varbinary");
     }
 }

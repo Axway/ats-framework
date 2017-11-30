@@ -35,7 +35,7 @@ public class TypeNumberConstant extends TypeNumber {
                                   Object val,
                                   Object[] args ) {
 
-        super( paramName, val, args );
+        super(paramName, val, args);
     }
 
     /**
@@ -48,20 +48,20 @@ public class TypeNumberConstant extends TypeNumber {
         try {
             super.validate();
 
-        } catch( TypeException e ) {
-            throw new TypeException( ERROR_VALIDATING_CONSTANT + e.getMessage(), e.getParameterName(), e );
+        } catch (TypeException e) {
+            throw new TypeException(ERROR_VALIDATING_CONSTANT + e.getMessage(), e.getParameterName(), e);
         }
 
-        for( int i = 0; i < this.arguments.length; i++ ) {
-            Double current = extractNumber( this.arguments[i] );
-            if( current == null ) {
+        for (int i = 0; i < this.arguments.length; i++) {
+            Double current = extractNumber(this.arguments[i]);
+            if (current == null) {
                 continue;
             }
-            if( this.validatedValue == current.doubleValue() ) {
+            if (this.validatedValue == current.doubleValue()) {
                 return;
             }
         }
 
-        throw new TypeException( ERROR_MESSAGE_NOT_WITHIN_RANGE, this.parameterName );
+        throw new TypeException(ERROR_MESSAGE_NOT_WITHIN_RANGE, this.parameterName);
     }
 }

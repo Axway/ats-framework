@@ -49,7 +49,7 @@ public class Test_TypeRegex extends BaseTest {
     private static final String  INVALID_DATE_WRONG_DAY             = "32/03/2007";
     private static final String  INVALID_DATE_WRONG_YEAR            = "32/03/-2";
 
-    private static final Integer NON_STRING_VALUE                   = new Integer( 1 );
+    private static final Integer NON_STRING_VALUE                   = new Integer(1);
     private static final String  NON_EMPTY_STRING                   = "text-with-no-whitespaces-at-all";
     private static final String  DOUBLEQUOTED_STRING                = " \" \" ";
     private static final String  WHITESPACE_STRING                  = " text with white spaces";
@@ -84,13 +84,13 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testDateValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_DATE, VALID_DATE ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_DATE, VALID_DATE));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_DATE, NON_STRING_VALUE ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DATE, INVALID_DATE_LEAP ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DATE, INVALID_DATE_WRONG_DAY ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DATE, INVALID_DATE_WRONG_MONTH ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DATE, INVALID_DATE_WRONG_YEAR ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_DATE, NON_STRING_VALUE));
+        assertFalse(this.validator.validate(ValidationType.STRING_DATE, INVALID_DATE_LEAP));
+        assertFalse(this.validator.validate(ValidationType.STRING_DATE, INVALID_DATE_WRONG_DAY));
+        assertFalse(this.validator.validate(ValidationType.STRING_DATE, INVALID_DATE_WRONG_MONTH));
+        assertFalse(this.validator.validate(ValidationType.STRING_DATE, INVALID_DATE_WRONG_YEAR));
     }
 
     /**
@@ -101,11 +101,11 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testDomainValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_DOMAIN_NAME, VALID_HOSTNAME ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, VALID_HOSTNAME));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID_CHARACTERS ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID_DOMAIN ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID));
+        assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID_CHARACTERS));
+        assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID_DOMAIN));
     }
 
     /**
@@ -116,14 +116,14 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testDomainOrSubdomainValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
-                                             VALID_DOMAIN_NAME_WITH_SUBDOMAIN ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
+                                           VALID_DOMAIN_NAME_WITH_SUBDOMAIN));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_DOMAIN_OR_SUBDOMAIN, HOSTNAME_INVALID ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
-                                              HOSTNAME_INVALID_CHARACTERS ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
-                                              HOSTNAME_INVALID_DOMAIN ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN, HOSTNAME_INVALID));
+        assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
+                                            HOSTNAME_INVALID_CHARACTERS));
+        assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
+                                            HOSTNAME_INVALID_DOMAIN));
     }
 
     /**
@@ -134,15 +134,15 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testHostnameValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_HOST_NAME, VALID_HOSTNAME ) );
-        assertTrue( this.validator.validate( ValidationType.STRING_HOST_NAME, VALID_HOSTNAME2 ) );
-        assertTrue( this.validator.validate( ValidationType.STRING_HOST_NAME, VALID_HOSTNAME3 ) );
-        assertTrue( this.validator.validate( ValidationType.STRING_HOST_NAME, VALID_HOSTNAME4 ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME));
+        assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME2));
+        assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME3));
+        assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME4));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID2 ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID3 ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID_CHARACTERS ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID));
+        assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID2));
+        assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID3));
+        assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID_CHARACTERS));
     }
 
     /**
@@ -153,13 +153,13 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testIpValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_IP, VALID_IP ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_IP, VALID_IP));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_IP, IP_INVALID ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_IP, IP_WITH_FEWER_NUMBERS ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_IP, IP_WITH_NUMBERS_OUT_OF_RANGE_BELOW ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_IP, IP_WITH_NUMBERS_OUT_OF_RANGE_OVER ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_IP, IP_WITH_ALPHA_NUMBER ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_IP, IP_INVALID));
+        assertFalse(this.validator.validate(ValidationType.STRING_IP, IP_WITH_FEWER_NUMBERS));
+        assertFalse(this.validator.validate(ValidationType.STRING_IP, IP_WITH_NUMBERS_OUT_OF_RANGE_BELOW));
+        assertFalse(this.validator.validate(ValidationType.STRING_IP, IP_WITH_NUMBERS_OUT_OF_RANGE_OVER));
+        assertFalse(this.validator.validate(ValidationType.STRING_IP, IP_WITH_ALPHA_NUMBER));
     }
 
     /**
@@ -170,10 +170,10 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testWhitespaceValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_NO_WHITESPACES, NON_EMPTY_STRING ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_NO_WHITESPACES, NON_EMPTY_STRING));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_NO_WHITESPACES, WHITESPACE_STRING ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_NO_WHITESPACES, DOUBLEQUOTED_STRING ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_NO_WHITESPACES, WHITESPACE_STRING));
+        assertFalse(this.validator.validate(ValidationType.STRING_NO_WHITESPACES, DOUBLEQUOTED_STRING));
     }
 
     /**
@@ -184,13 +184,13 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testDQWhitespaceValidation() throws Exception {
 
-        assertTrue( this.validator.validate( ValidationType.STRING_NO_DOUBLEQUOTED_WHITESPACE,
-                                             NON_EMPTY_STRING ) );
+        assertTrue(this.validator.validate(ValidationType.STRING_NO_DOUBLEQUOTED_WHITESPACE,
+                                           NON_EMPTY_STRING));
 
-        assertFalse( this.validator.validate( ValidationType.STRING_NO_DOUBLEQUOTED_WHITESPACE,
-                                              WHITESPACE_STRING ) );
-        assertFalse( this.validator.validate( ValidationType.STRING_NO_DOUBLEQUOTED_WHITESPACE,
-                                              DOUBLEQUOTED_STRING ) );
+        assertFalse(this.validator.validate(ValidationType.STRING_NO_DOUBLEQUOTED_WHITESPACE,
+                                            WHITESPACE_STRING));
+        assertFalse(this.validator.validate(ValidationType.STRING_NO_DOUBLEQUOTED_WHITESPACE,
+                                            DOUBLEQUOTED_STRING));
     }
 
 }

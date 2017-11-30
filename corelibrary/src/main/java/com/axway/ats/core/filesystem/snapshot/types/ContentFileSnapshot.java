@@ -29,15 +29,15 @@ public abstract class ContentFileSnapshot extends FileSnapshot {
     public ContentFileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule ) {
         // we are interested in file content
         // do not check MD5 and size
-        super( configuration.setCheckMD5( false ).setCheckSize( false ), path, fileRule );
+        super(configuration.setCheckMD5(false).setCheckSize(false), path, fileRule);
     }
 
     ContentFileSnapshot( String path, long size, long timeModified, String md5, String permissions ) {
-        super( path, size, timeModified, md5, permissions );
+        super(path, size, timeModified, md5, permissions);
 
-        if( configuration != null ) {
-            configuration.setCheckMD5( false );
-            configuration.setCheckSize( false );
+        if (configuration != null) {
+            configuration.setCheckMD5(false);
+            configuration.setCheckSize(false);
         }
     }
 
@@ -51,28 +51,28 @@ public abstract class ContentFileSnapshot extends FileSnapshot {
     protected String loadFileContent( String agent, String filePath ) {
 
         String fileContent;
-        if( agent == null ) {
+        if (agent == null) {
             // It is a local file
-            fileContent = new LocalFileSystemOperations().readFile( filePath, "UTF-8" );
+            fileContent = new LocalFileSystemOperations().readFile(filePath, "UTF-8");
         } else {
             // It is a remote file.
             // As we need to use Action Library code in order to get the file content, here we use
             // java reflection, so do not need to introduce compile dependency
             try {
-                Class<?> fileSystemOperationsClass = Class.forName( "com.axway.ats.action.filesystem.RemoteFileSystemOperations" );
-                Object fileSystemOperationsInstance = fileSystemOperationsClass.getConstructor( String.class )
-                                                                               .newInstance( agent );
+                Class<?> fileSystemOperationsClass = Class.forName("com.axway.ats.action.filesystem.RemoteFileSystemOperations");
+                Object fileSystemOperationsInstance = fileSystemOperationsClass.getConstructor(String.class)
+                                                                               .newInstance(agent);
 
                 //call the printIt method
-                Method readFileMethod = fileSystemOperationsClass.getDeclaredMethod( "readFile", String.class,
-                                                                                     String.class );
-                fileContent = readFileMethod.invoke( fileSystemOperationsInstance, filePath, "UTF-8" )
+                Method readFileMethod = fileSystemOperationsClass.getDeclaredMethod("readFile", String.class,
+                                                                                    String.class);
+                fileContent = readFileMethod.invoke(fileSystemOperationsInstance, filePath, "UTF-8")
                                             .toString();
-            } catch( Exception e ) {
+            } catch (Exception e) {
                 // this will cancel the comparison
                 // the other option is to add a difference to the FileTrace object, instead of throwing an exception here
-                throw new FileSystemOperationException( "Error loading '" + filePath + "' file from "
-                                                        + agent, e );
+                throw new FileSystemOperationException("Error loading '" + filePath + "' file from "
+                                                       + agent, e);
             }
         }
 

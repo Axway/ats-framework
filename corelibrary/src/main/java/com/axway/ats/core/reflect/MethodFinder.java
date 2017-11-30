@@ -73,30 +73,30 @@ public final class MethodFinder {
      */
     public MethodFinder( Class<?> targetClass ) {
 
-        if( targetClass == null ) {
-            throw new IllegalArgumentException( "null Class parameter" );
+        if (targetClass == null) {
+            throw new IllegalArgumentException("null Class parameter");
         }
 
-        if( targetClass.isPrimitive() ) {
-            throw new IllegalArgumentException( "primitive Class parameter" );
+        if (targetClass.isPrimitive()) {
+            throw new IllegalArgumentException("primitive Class parameter");
         }
 
-        if( targetClass.isArray() ) {
-            throw new IllegalArgumentException( "array Class parameter" );
+        if (targetClass.isArray()) {
+            throw new IllegalArgumentException("array Class parameter");
         }
 
         this.searchedObjectName = "class " + targetClass.getName();
         this.customMatchingRules = new ArrayList<TypeComparisonRule>();
 
         //load all constructors
-        for( Constructor<?> constructor : targetClass.getDeclaredConstructors() ) {
-            constructors.add( constructor );
-            paramMap.put( constructor, constructor.getParameterTypes() );
+        for (Constructor<?> constructor : targetClass.getDeclaredConstructors()) {
+            constructors.add(constructor);
+            paramMap.put(constructor, constructor.getParameterTypes());
         }
 
-        this.methods.addAll( Arrays.asList( targetClass.getDeclaredMethods() ) );
+        this.methods.addAll(Arrays.asList(targetClass.getDeclaredMethods()));
 
-        loadMethods( this.methods );
+        loadMethods(this.methods);
     }
 
     /**
@@ -106,11 +106,11 @@ public final class MethodFinder {
     public MethodFinder( String searchedObjectName,
                          List<Method> methods ) {
 
-        this.methods.addAll( methods );
+        this.methods.addAll(methods);
         this.searchedObjectName = searchedObjectName;
         this.customMatchingRules = new ArrayList<TypeComparisonRule>();
 
-        loadMethods( this.methods );
+        loadMethods(this.methods);
     }
 
     /**
@@ -122,11 +122,11 @@ public final class MethodFinder {
                          List<Method> methods,
                          List<TypeComparisonRule> customMatchingRules ) {
 
-        this.methods.addAll( methods );
+        this.methods.addAll(methods);
         this.searchedObjectName = searchedObjectName;
         this.customMatchingRules = customMatchingRules;
 
-        loadMethods( methods );
+        loadMethods(methods);
     }
 
     /**
@@ -135,26 +135,26 @@ public final class MethodFinder {
     private void loadMethods(
                               List<Method> targetMethods ) {
 
-        for( Method targetMethod : targetMethods ) {
+        for (Method targetMethod : targetMethods) {
 
             String methodName = targetMethod.getName();
             Class<?>[] paramTypes = targetMethod.getParameterTypes();
 
             Class<?> targetClass = targetMethod.getDeclaringClass();
 
-            List<Method> list = methodMap.get( methodName );
+            List<Method> list = methodMap.get(methodName);
 
-            if( list == null ) {
+            if (list == null) {
                 list = new ArrayList<Method>();
-                methodMap.put( methodName, list );
+                methodMap.put(methodName, list);
             }
 
-            if( !ClassUtilities.classIsAccessible( targetClass ) )
-                targetMethod = ClassUtilities.getAccessibleMethodFrom( targetClass, methodName, paramTypes );
+            if (!ClassUtilities.classIsAccessible(targetClass))
+                targetMethod = ClassUtilities.getAccessibleMethodFrom(targetClass, methodName, paramTypes);
 
-            if( targetMethod != null ) {
-                list.add( targetMethod );
-                paramMap.put( targetMethod, paramTypes );
+            if (targetMethod != null) {
+                list.add(targetMethod);
+                paramMap.put(targetMethod, paramTypes);
             }
         }
     }
@@ -178,12 +178,12 @@ public final class MethodFinder {
      */
     public Constructor<?> findConstructor(
                                            Class<?>[] parameterTypes ) throws NoSuchMethodException,
-                                                                      AmbiguousMethodException {
+                                                                       AmbiguousMethodException {
 
-        if( parameterTypes == null )
+        if (parameterTypes == null)
             parameterTypes = new Class[0];
 
-        return ( Constructor<?> ) findMemberIn( constructors, parameterTypes );
+        return (Constructor<?>) findMemberIn(constructors, parameterTypes);
     }
 
     /**
@@ -207,16 +207,16 @@ public final class MethodFinder {
     public Method findMethod(
                               String methodName,
                               Class<?>[] parameterTypes ) throws NoSuchMethodException,
-                                                         AmbiguousMethodException {
+                                                          AmbiguousMethodException {
 
         //get only the methods with the specified name
-        List<Method> methodList = methodMap.get( methodName );
+        List<Method> methodList = methodMap.get(methodName);
 
-        if( methodList == null )
-            throw new NoSuchMethodException( "no method named " + methodName + " found in "
-                                             + searchedObjectName );
+        if (methodList == null)
+            throw new NoSuchMethodException("no method named " + methodName + " found in "
+                                            + searchedObjectName);
 
-        return findMethod( methodList, parameterTypes );
+        return findMethod(methodList, parameterTypes);
     }
 
     /**
@@ -239,9 +239,9 @@ public final class MethodFinder {
      */
     public Method findMethod(
                               Class<?>[] parameterTypes ) throws NoSuchMethodException,
-                                                         AmbiguousMethodException {
+                                                          AmbiguousMethodException {
 
-        return ( Method ) findMemberIn( methods, parameterTypes );
+        return (Method) findMemberIn(methods, parameterTypes);
     }
 
     /**
@@ -254,12 +254,12 @@ public final class MethodFinder {
     private Method findMethod(
                                List<Method> methodList,
                                Class<?>[] parameterTypes ) throws NoSuchMethodException,
-                                                          AmbiguousMethodException {
+                                                           AmbiguousMethodException {
 
-        if( parameterTypes == null )
+        if (parameterTypes == null)
             parameterTypes = new Class[0];
 
-        return ( Method ) findMemberIn( methodList, parameterTypes );
+        return (Method) findMemberIn(methodList, parameterTypes);
     }
 
     /**
@@ -270,27 +270,27 @@ public final class MethodFinder {
     private Member findMemberIn(
                                  List<? extends Member> memberList,
                                  Class<?>[] parameterTypes ) throws NoSuchMethodException,
-                                                            AmbiguousMethodException {
+                                                             AmbiguousMethodException {
 
         List<Member> matchingMembers = new ArrayList<Member>();
 
-        for( Member member : memberList ) {
-            Class<?>[] methodParamTypes = paramMap.get( member );
+        for (Member member : memberList) {
+            Class<?>[] methodParamTypes = paramMap.get(member);
 
-            if( Arrays.equals( methodParamTypes, parameterTypes ) )
+            if (Arrays.equals(methodParamTypes, parameterTypes))
                 return member;
 
-            if( ClassUtilities.compatibleClasses( parameterTypes, methodParamTypes, customMatchingRules ) )
-                matchingMembers.add( member );
+            if (ClassUtilities.compatibleClasses(parameterTypes, methodParamTypes, customMatchingRules))
+                matchingMembers.add(member);
         }
 
-        if( matchingMembers.isEmpty() )
-            throw new NoSuchMethodException( "No member matching given args found in " + searchedObjectName );
+        if (matchingMembers.isEmpty())
+            throw new NoSuchMethodException("No member matching given args found in " + searchedObjectName);
 
-        if( matchingMembers.size() == 1 )
-            return matchingMembers.get( 0 );
+        if (matchingMembers.size() == 1)
+            return matchingMembers.get(0);
 
-        return findMostSpecificMemberIn( matchingMembers );
+        return findMostSpecificMemberIn(matchingMembers);
     }
 
     /**
@@ -302,22 +302,22 @@ public final class MethodFinder {
      */
     private Member findMostSpecificMemberIn(
                                              List<Member> memberList ) throws NoSuchMethodException,
-                                                                      AmbiguousMethodException {
+                                                                       AmbiguousMethodException {
 
         List<Member> mostSpecificMembers = new ArrayList<Member>();
 
-        for( Member member : memberList ) {
+        for (Member member : memberList) {
 
-            if( mostSpecificMembers.isEmpty() ) {
+            if (mostSpecificMembers.isEmpty()) {
                 // First guy in is the most specific so far.
-                mostSpecificMembers.add( member );
+                mostSpecificMembers.add(member);
             } else {
                 boolean moreSpecific = true;
                 boolean lessSpecific = false;
 
                 // Is member more specific than everyone in the most-specific set?
-                for( Member moreSpecificMember : mostSpecificMembers ) {
-                    if( !memberIsMoreSpecific( member, moreSpecificMember ) ) {
+                for (Member moreSpecificMember : mostSpecificMembers) {
+                    if (!memberIsMoreSpecific(member, moreSpecificMember)) {
                         /* Can't be more specific than the whole set.  Bail out, and
                            mark whether member is less specific than the member
                            under consideration.  If it is less specific, it need not be
@@ -326,28 +326,28 @@ public final class MethodFinder {
                            enough yet to make that assessment. */
 
                         moreSpecific = false;
-                        lessSpecific = memberIsMoreSpecific( moreSpecificMember, member );
+                        lessSpecific = memberIsMoreSpecific(moreSpecificMember, member);
                         break;
                     }
                 }
 
-                if( moreSpecific ) {
+                if (moreSpecific) {
                     // Member is the most specific now.
                     mostSpecificMembers.clear();
-                    mostSpecificMembers.add( member );
-                } else if( !lessSpecific ) {
+                    mostSpecificMembers.add(member);
+                } else if (!lessSpecific) {
                     // Add to ambiguity set if mutually unspecific.
-                    mostSpecificMembers.add( member );
+                    mostSpecificMembers.add(member);
                 }
             }
         }
 
-        if( mostSpecificMembers.size() > 1 ) {
-            throw new AmbiguousMethodException( "Ambiguous request for member matching given args in "
-                                                + searchedObjectName );
+        if (mostSpecificMembers.size() > 1) {
+            throw new AmbiguousMethodException("Ambiguous request for member matching given args in "
+                                               + searchedObjectName);
         }
 
-        return mostSpecificMembers.get( 0 );
+        return mostSpecificMembers.get(0);
     }
 
     /**
@@ -361,10 +361,10 @@ public final class MethodFinder {
                                           Member first,
                                           Member second ) {
 
-        Class<?>[] firstParamTypes = paramMap.get( first );
-        Class<?>[] secondParamTypes = paramMap.get( second );
+        Class<?>[] firstParamTypes = paramMap.get(first);
+        Class<?>[] secondParamTypes = paramMap.get(second);
 
-        return ClassUtilities.compatibleClasses( firstParamTypes, secondParamTypes, customMatchingRules );
+        return ClassUtilities.compatibleClasses(firstParamTypes, secondParamTypes, customMatchingRules);
     }
 
     /**
@@ -379,17 +379,17 @@ public final class MethodFinder {
 
         List<Class<?>> argTypes = new ArrayList<Class<?>>();
 
-        if( args != null ) {
-            for( Object arg : args ) {
-                if( arg == null ) {
-                    argTypes.add( Void.TYPE );
+        if (args != null) {
+            for (Object arg : args) {
+                if (arg == null) {
+                    argTypes.add(Void.TYPE);
                 } else {
-                    argTypes.add( arg.getClass() );
+                    argTypes.add(arg.getClass());
                 }
             }
         }
 
-        return argTypes.toArray( new Class<?>[]{} );
+        return argTypes.toArray(new Class<?>[]{});
     }
 
     /**
@@ -412,7 +412,7 @@ public final class MethodFinder {
     public static Class<?>[] getParameterTypesFrom(
                                                     String[] classNames ) throws ClassNotFoundException {
 
-        return getParameterTypesFrom( classNames, MethodFinder.class.getClassLoader() );
+        return getParameterTypesFrom(classNames, MethodFinder.class.getClassLoader());
     }
 
     /**
@@ -439,13 +439,13 @@ public final class MethodFinder {
 
         List<Class<?>> types = new ArrayList<Class<?>>();
 
-        if( classNames != null ) {
+        if (classNames != null) {
 
-            for( String className : classNames ) {
-                types.add( ClassUtilities.classForNameOrPrimitive( className, loader ) );
+            for (String className : classNames) {
+                types.add(ClassUtilities.classForNameOrPrimitive(className, loader));
             }
         }
 
-        return types.toArray( new Class<?>[]{} );
+        return types.toArray(new Class<?>[]{});
     }
 }
