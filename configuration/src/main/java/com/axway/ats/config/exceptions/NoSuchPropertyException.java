@@ -18,11 +18,11 @@ package com.axway.ats.config.exceptions;
 /**
  * This exception is thrown when the user tries to read an undefined property
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchPropertyException extends ConfigurationException {
 
     public NoSuchPropertyException( String key ) {
 
-        super( "No property with name '" + key + "' has been defined" );
+        super("No property with name '" + key + "' has been defined");
     }
 }

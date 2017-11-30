@@ -43,9 +43,9 @@ import com.axway.ats.config.exceptions.ConfigurationException;
  */
 public class ConfigurationResource {
 
-    private static final Logger log = Logger.getLogger( ConfigurationResource.class );
+    private static final Logger log = Logger.getLogger(ConfigurationResource.class);
 
-    private Properties properties;
+    private Properties          properties;
 
     public ConfigurationResource() {
 
@@ -55,8 +55,8 @@ public class ConfigurationResource {
     public String getProperty(
                                String name ) {
 
-        String propertyValue = properties.getProperty( name );
-        if( propertyValue != null ) {
+        String propertyValue = properties.getProperty(name);
+        if (propertyValue != null) {
             propertyValue = propertyValue.trim();
         }
 
@@ -68,15 +68,15 @@ public class ConfigurationResource {
 
         HashMap<String, String> result = new HashMap<String, String>();
 
-        for( Map.Entry<Object, Object> property : properties.entrySet() ) {
-            String key = ( String ) property.getKey();
-            String value = ( String ) property.getValue();
-            if( value != null ) {
+        for (Map.Entry<Object, Object> property : properties.entrySet()) {
+            String key = (String) property.getKey();
+            String value = (String) property.getValue();
+            if (value != null) {
                 value = value.trim();
             }
 
-            if( key.toLowerCase().startsWith( prefix.toLowerCase() ) ) {
-                result.put( key, value );
+            if (key.toLowerCase().startsWith(prefix.toLowerCase())) {
+                result.put(key, value);
             }
         }
 
@@ -92,7 +92,7 @@ public class ConfigurationResource {
                              String name,
                              String value ) {
 
-        properties.setProperty( name, value );
+        properties.setProperty(name, value);
     }
 
     public void loadFromXmlFile(
@@ -103,10 +103,10 @@ public class ConfigurationResource {
             DOMParser parser = new DOMParser();
 
             // Required settings from the DomParser
-            parser.setFeature( "http://apache.org/xml/features/dom/defer-node-expansion", false ); // otherwise
-            parser.setFeature( "http://apache.org/xml/features/continue-after-fatal-error", true );
-            parser.setFeature( "http://apache.org/xml/features/allow-java-encodings", true );
-            parser.parse( new InputSource( resourceStream ) );
+            parser.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false); // otherwise
+            parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error", true);
+            parser.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
+            parser.parse(new InputSource(resourceStream));
 
             Document doc = parser.getDocument();
             Element rootElement = doc.getDocumentElement();
@@ -119,18 +119,18 @@ public class ConfigurationResource {
 
             //start reading the DOM
             NodeList rootElementChildren = rootElement.getChildNodes();
-            for( int i = 0; i < rootElementChildren.getLength(); i++ ) {
-                Node rootElementChild = rootElementChildren.item( i );
-                if( rootElementChild.getNodeType() == Node.ELEMENT_NODE ) {
-                    readXmlElement( currentElementPath, ( Element ) rootElementChild );
+            for (int i = 0; i < rootElementChildren.getLength(); i++) {
+                Node rootElementChild = rootElementChildren.item(i);
+                if (rootElementChild.getNodeType() == Node.ELEMENT_NODE) {
+                    readXmlElement(currentElementPath, (Element) rootElementChild);
                 }
             }
-        } catch( SAXException e ) {
-            throw new ConfigurationException( "Error while parsing config file '" + resourceIdentifier + "'",
-                                              e );
-        } catch( IOException ioe ) {
-            throw new ConfigurationException( "Error while parsing config file '" + resourceIdentifier + "'",
-                                              ioe );
+        } catch (SAXException e) {
+            throw new ConfigurationException("Error while parsing config file '" + resourceIdentifier + "'",
+                                             e);
+        } catch (IOException ioe) {
+            throw new ConfigurationException("Error while parsing config file '" + resourceIdentifier + "'",
+                                             ioe);
         }
     }
 
@@ -144,28 +144,28 @@ public class ConfigurationResource {
                                  Element element ) {
 
         //append this node element to the current path
-        currentElementPath.add( element.getNodeName() );
+        currentElementPath.add(element.getNodeName());
 
         NodeList childNodes = element.getChildNodes();
-        for( int i = 0; i < childNodes.getLength(); i++ ) {
-            Node childNode = childNodes.item( i );
-            if( childNode.getNodeType() == Node.ELEMENT_NODE ) {
-                readXmlElement( currentElementPath, ( Element ) childNode );
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                readXmlElement(currentElementPath, (Element) childNode);
             }
         }
 
         //read all attributes
         NamedNodeMap attributes = element.getAttributes();
-        for( int i = 0; i < attributes.getLength(); i++ ) {
-            Attr attribute = ( Attr ) attributes.item( i );
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Attr attribute = (Attr) attributes.item(i);
 
-            String propertyName = getCurrentXmlElementPath( currentElementPath ) + attribute.getName();
+            String propertyName = getCurrentXmlElementPath(currentElementPath) + attribute.getName();
             String propertyValue = attribute.getValue();
 
             //put in the properties table
-            properties.put( propertyName, propertyValue );
+            properties.put(propertyName, propertyValue);
 
-            log.debug( "Added property with name '" + propertyName + "' and value '" + propertyValue + "'" );
+            log.debug("Added property with name '" + propertyName + "' and value '" + propertyValue + "'");
         }
 
         //after we are done with the node, remove it from the path
@@ -182,9 +182,9 @@ public class ConfigurationResource {
 
         StringBuilder result = new StringBuilder();
 
-        for( String element : currentElementPath ) {
-            result.append( element );
-            result.append( "." );
+        for (String element : currentElementPath) {
+            result.append(element);
+            result.append(".");
         }
 
         return result.toString();
@@ -195,10 +195,10 @@ public class ConfigurationResource {
                                         String resourceIdentifier ) {
 
         try {
-            properties.load( resourceStream );
-        } catch( IOException ioe ) {
-            throw new ConfigurationException( "Exception while reading configuration file '"
-                                              + resourceIdentifier + "'", ioe );
+            properties.load(resourceStream);
+        } catch (IOException ioe) {
+            throw new ConfigurationException("Exception while reading configuration file '"
+                                             + resourceIdentifier + "'", ioe);
         }
     }
 }

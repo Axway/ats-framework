@@ -18,17 +18,17 @@ package com.axway.ats.config.exceptions;
 /**
  * The base exception for the configuration component
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ConfigurationException extends RuntimeException {
 
     public ConfigurationException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public ConfigurationException( String message,
                                    Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

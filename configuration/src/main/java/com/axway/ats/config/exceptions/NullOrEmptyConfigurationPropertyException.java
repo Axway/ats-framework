@@ -16,11 +16,11 @@
 
 package com.axway.ats.config.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NullOrEmptyConfigurationPropertyException extends ConfigurationException {
 
     public NullOrEmptyConfigurationPropertyException( String key ) {
 
-        super( "Null/Empty value for property with name '" + key + "'" );
+        super("Null/Empty value for property with name '" + key + "'");
     }
 }

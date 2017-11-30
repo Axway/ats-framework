@@ -18,7 +18,7 @@ package com.axway.ats.config.exceptions;
 /**
  * This exception will be thrown when the configuration source does not exist 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ConfigSourceDoesNotExistException extends ConfigurationException {
 
     /**
@@ -26,6 +26,6 @@ public class ConfigSourceDoesNotExistException extends ConfigurationException {
      */
     public ConfigSourceDoesNotExistException( String sourceIdentifier ) {
 
-        super( "Configuration source '" + sourceIdentifier + "' does not exist" );
+        super("Configuration source '" + sourceIdentifier + "' does not exist");
     }
 }

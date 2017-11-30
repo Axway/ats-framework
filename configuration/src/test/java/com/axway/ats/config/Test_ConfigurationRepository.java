@@ -32,22 +32,22 @@ import com.axway.ats.config.exceptions.NoSuchPropertyException;
 
 public class Test_ConfigurationRepository extends BaseTest {
 
-    private static final String configFile1Name = "resource1.properties";
-    private static final String configFile2Name = "resource2.xml";
+    private static final String                  configFile1Name  = "resource1.properties";
+    private static final String                  configFile2Name  = "resource2.xml";
 
-    private static File configFile1;
-    private static File configFile2;
+    private static File                          configFile1;
+    private static File                          configFile2;
 
     private static final ConfigurationRepository configRepository = ConfigurationRepository.getInstance();
 
     @BeforeClass
     public static void setUpTest_ConfigurationRepository() throws URISyntaxException {
 
-        URL configFile1URL = Test_ConfigurationRepository.class.getResource( configFile1Name );
-        configFile1 = new File( configFile1URL.toURI() );
+        URL configFile1URL = Test_ConfigurationRepository.class.getResource(configFile1Name);
+        configFile1 = new File(configFile1URL.toURI());
 
-        URL configFile2URL = Test_ConfigurationRepository.class.getResource( configFile2Name );
-        configFile2 = new File( configFile2URL.toURI() );
+        URL configFile2URL = Test_ConfigurationRepository.class.getResource(configFile2Name);
+        configFile2 = new File(configFile2URL.toURI());
     }
 
     @Before
@@ -59,120 +59,120 @@ public class Test_ConfigurationRepository extends BaseTest {
     @Test
     public void registerUserConfigResourcePositive() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        assertEquals( "perf-8.perf.domain.com",
-                      configRepository.getProperty( "common.testboxes.testbox1.host" ) );
-        assertEquals( 12, configRepository.getProperties( "common.testboxes" ).keySet().size() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        assertEquals("perf-8.perf.domain.com",
+                     configRepository.getProperty("common.testboxes.testbox1.host"));
+        assertEquals(12, configRepository.getProperties("common.testboxes").keySet().size());
     }
 
     @Test
     public void verifyResourceTakenLastOverrideOtherResource() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        assertEquals( "perf-8.perf.domain.com",
-                      configRepository.getProperty( "common.testboxes.testbox1.host" ) );
-        assertEquals( 12, configRepository.getProperties( "common.testboxes" ).keySet().size() );
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        assertEquals("perf-8.perf.domain.com",
+                     configRepository.getProperty("common.testboxes.testbox1.host"));
+        assertEquals(12, configRepository.getProperties("common.testboxes").keySet().size());
     }
 
     @Test
     public void verifyPropertyNotInOneResourceWillBeTakenFromOthers() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
-        assertEquals( "exch2003.perf.domain.com",
-                      configRepository.getProperty( "common.mailservers.second-mail-server.host" ) );
-        assertEquals( 2,
-                      configRepository.getProperties( "common.mailservers.second-mail-server" )
-                                      .keySet()
-                                      .size() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
+        assertEquals("exch2003.perf.domain.com",
+                     configRepository.getProperty("common.mailservers.second-mail-server.host"));
+        assertEquals(2,
+                     configRepository.getProperties("common.mailservers.second-mail-server")
+                                     .keySet()
+                                     .size());
     }
 
     @Test
     public void verifyInMemoryConfigWillOverwriteAllResources() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
 
-        configRepository.setTempProperty( "common.testboxes.testbox1.host", "test" );
-        assertEquals( "test", configRepository.getProperty( "common.testboxes.testbox1.host" ) );
-        assertEquals( 1, configRepository.getProperties( "common.testboxes" ).keySet().size() );
+        configRepository.setTempProperty("common.testboxes.testbox1.host", "test");
+        assertEquals("test", configRepository.getProperty("common.testboxes.testbox1.host"));
+        assertEquals(1, configRepository.getProperties("common.testboxes").keySet().size());
     }
 
-    @Test(expected = NoSuchPropertyException.class)
+    @Test( expected = NoSuchPropertyException.class)
     public void verifyDefaultSettingsAreTakenLast() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
 
         //the value should be taken from the first resource, as the second one is added to the bottom of the list
-        assertEquals( "perf-8.perf.domain.com",
-                      configRepository.getProperty( "common.testboxes.testbox1.host" ) );
-        assertEquals( 12, configRepository.getProperties( "common.testboxes" ).keySet().size() );
+        assertEquals("perf-8.perf.domain.com",
+                     configRepository.getProperty("common.testboxes.testbox1.host"));
+        assertEquals(12, configRepository.getProperties("common.testboxes").keySet().size());
 
         //the value should be taken from the first resource, as the second one is added to the bottom of the list
-        assertEquals( "value1", configRepository.getProperty( "default.settings.setting1" ) );
-        assertEquals( 1, configRepository.getProperties( "default.settings" ).keySet().size() );
+        assertEquals("value1", configRepository.getProperty("default.settings.setting1"));
+        assertEquals(1, configRepository.getProperties("default.settings").keySet().size());
     }
 
-    @Test(expected = NoSuchPropertyException.class)
+    @Test( expected = NoSuchPropertyException.class)
     public void getPropertyWhichDoesNotExist() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
 
-        configRepository.getProperty( "asdfsadf" );
+        configRepository.getProperty("asdfsadf");
     }
 
     @Test
     public void getPropertiesWhichDoNotExist() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
 
-        assertEquals( 0, configRepository.getProperties( "sdasdasd" ).keySet().size() );
+        assertEquals(0, configRepository.getProperties("sdasdasd").keySet().size());
     }
 
     @Test
     public void checkPropertyIsTrimmed() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
 
         // the original value is 'abc ' but we expect 'abc'
-        assertEquals( "abc", configRepository.getProperty( "test.has.white.space.at.end" ) );
+        assertEquals("abc", configRepository.getProperty("test.has.white.space.at.end"));
     }
 
     @Test
     public void checkPropertyIsCleared() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        assertEquals( "perf-8.perf.domain.com",
-                      configRepository.getProperty( "common.testboxes.testbox1.host" ) );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        assertEquals("perf-8.perf.domain.com",
+                     configRepository.getProperty("common.testboxes.testbox1.host"));
 
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
-        assertEquals( "perf-9.perf.domain.com",
-                      configRepository.getProperty( "common.testboxes.testbox1.host" ) );
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
+        assertEquals("perf-9.perf.domain.com",
+                     configRepository.getProperty("common.testboxes.testbox1.host"));
 
-        configRepository.setTempProperty( "common.testboxes.testbox1.host", "host1" );
-        assertEquals( "host1", configRepository.getProperty( "common.testboxes.testbox1.host" ) );
+        configRepository.setTempProperty("common.testboxes.testbox1.host", "host1");
+        assertEquals("host1", configRepository.getProperty("common.testboxes.testbox1.host"));
 
         configRepository.clearTempResources();
-        assertEquals( "perf-9.perf.domain.com",
-                      configRepository.getProperty( "common.testboxes.testbox1.host" ) );
+        assertEquals("perf-9.perf.domain.com",
+                     configRepository.getProperty("common.testboxes.testbox1.host"));
     }
 
     @Test
     public void verifyOperationsWithgetProperties() throws ConfigurationException {
 
-        configRepository.registerConfigFile( configFile1.getAbsolutePath() );
-        Map<String, String> properties = configRepository.getProperties( "common.testboxes.testbox1" );
-        assertEquals( "perf-8.perf.domain.com", properties.get( "common.testboxes.testbox1.host" ) );
+        configRepository.registerConfigFile(configFile1.getAbsolutePath());
+        Map<String, String> properties = configRepository.getProperties("common.testboxes.testbox1");
+        assertEquals("perf-8.perf.domain.com", properties.get("common.testboxes.testbox1.host"));
 
-        configRepository.registerConfigFile( configFile2.getAbsolutePath() );
-        properties = configRepository.getProperties( "common.testboxes.testbox1" );
-        assertEquals( "perf-9.perf.domain.com", properties.get( "common.testboxes.testbox1.host" ) );
+        configRepository.registerConfigFile(configFile2.getAbsolutePath());
+        properties = configRepository.getProperties("common.testboxes.testbox1");
+        assertEquals("perf-9.perf.domain.com", properties.get("common.testboxes.testbox1.host"));
 
-        configRepository.setTempProperty( "common.testboxes.testbox1.host", "host1" );
-        properties = configRepository.getProperties( "common.testboxes.testbox1" );
-        assertEquals( "host1", properties.get( "common.testboxes.testbox1.host" ) );
+        configRepository.setTempProperty("common.testboxes.testbox1.host", "host1");
+        properties = configRepository.getProperties("common.testboxes.testbox1");
+        assertEquals("host1", properties.get("common.testboxes.testbox1.host"));
     }
 }

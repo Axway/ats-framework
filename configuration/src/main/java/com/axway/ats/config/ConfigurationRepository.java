@@ -45,20 +45,20 @@ import com.axway.ats.config.exceptions.NoSuchPropertyException;
 public class ConfigurationRepository {
 
     //the logger instance
-    private static final Logger log = Logger.getLogger( ConfigurationRepository.class );
+    private static final Logger                  log = Logger.getLogger(ConfigurationRepository.class);
 
     //the singleton instance
     private static final ConfigurationRepository instance;
 
     // this is intended to be a short living resource, when we search for properties we will search here first
-    private ConfigurationResource tempResource;
+    private ConfigurationResource                tempResource;
 
     // this is intended to be a long living resource, 
     // we will search here if the properties are not present in the short living resource
-    private ConfigurationResource permResource;
+    private ConfigurationResource                permResource;
 
     // this memory is used just to assure that the new configuration is correct
-    private ConfigurationResource permResourceBackup;
+    private ConfigurationResource                permResourceBackup;
 
     static {
         // create the instance
@@ -106,16 +106,16 @@ public class ConfigurationRepository {
                                           String filePath,
                                           boolean overrideExistProperties ) {
 
-        URL configFileURL = ConfigurationRepository.class.getResource( filePath );
-        if( configFileURL == null ) {
-            throw new ConfigSourceDoesNotExistException( filePath );
+        URL configFileURL = ConfigurationRepository.class.getResource(filePath);
+        if (configFileURL == null) {
+            throw new ConfigSourceDoesNotExistException(filePath);
         }
 
-        InputStream fileStream = ConfigurationRepository.class.getResourceAsStream( filePath );
-        ConfigurationResource newPermResource = createConfigurationResourceFromStream( fileStream,
-                                                                                       configFileURL.getFile() );
+        InputStream fileStream = ConfigurationRepository.class.getResourceAsStream(filePath);
+        ConfigurationResource newPermResource = createConfigurationResourceFromStream(fileStream,
+                                                                                      configFileURL.getFile());
 
-        assignTheNewPermResource( newPermResource, overrideExistProperties );
+        assignTheNewPermResource(newPermResource, overrideExistProperties);
     }
 
     /**
@@ -127,16 +127,16 @@ public class ConfigurationRepository {
     void registerConfigFile(
                              String filePath ) {
 
-        File configFile = new File( filePath );
+        File configFile = new File(filePath);
         ConfigurationResource newPermResource = null;
         try {
-            newPermResource = createConfigurationResourceFromStream( new FileInputStream( configFile ),
-                                                                     configFile.getAbsolutePath() );
-        } catch( FileNotFoundException e ) {
-            throw new ConfigSourceDoesNotExistException( filePath );
+            newPermResource = createConfigurationResourceFromStream(new FileInputStream(configFile),
+                                                                    configFile.getAbsolutePath());
+        } catch (FileNotFoundException e) {
+            throw new ConfigSourceDoesNotExistException(filePath);
         }
 
-        assignTheNewPermResource( newPermResource, true );
+        assignTheNewPermResource(newPermResource, true);
     }
 
     private void assignTheNewPermResource(
@@ -144,9 +144,9 @@ public class ConfigurationRepository {
                                            boolean overrideExistProperties ) {
 
         // backup the current resource
-        copyProperties( permResource, permResourceBackup, true );
+        copyProperties(permResource, permResourceBackup, true);
         // set the new resource
-        copyProperties( newPermResource, permResource, overrideExistProperties );
+        copyProperties(newPermResource, permResource, overrideExistProperties);
         // if exception is thrown while the new settings are loaded - we will revert back the previous assignments
     }
 
@@ -163,25 +163,25 @@ public class ConfigurationRepository {
         String value = null;
 
         //look for the first property that matches from the temporary resources
-        value = tempResource.getProperty( name );
-        if( value != null ) {
-            if( log.isTraceEnabled() ) {
-                log.trace( "Returning property '" + name + "' with value '" + value );
+        value = tempResource.getProperty(name);
+        if (value != null) {
+            if (log.isTraceEnabled()) {
+                log.trace("Returning property '" + name + "' with value '" + value);
             }
             return value;
         }
 
         //the property is not found in the temporary resources, now look for it in the permanent resources
-        value = permResource.getProperty( name );
-        if( value != null ) {
-            if( log.isTraceEnabled() ) {
-                log.trace( "Returning property '" + name + "' with value '" + value );
+        value = permResource.getProperty(name);
+        if (value != null) {
+            if (log.isTraceEnabled()) {
+                log.trace("Returning property '" + name + "' with value '" + value);
             }
             return value;
         }
 
         //we didn't find the property
-        throw new NoSuchPropertyException( name );
+        throw new NoSuchPropertyException(name);
     }
 
     /**
@@ -197,8 +197,8 @@ public class ConfigurationRepository {
                         String defaultValue ) {
 
         try {
-            return getProperty( name );
-        } catch( NoSuchPropertyException nspe ) {
+            return getProperty(name);
+        } catch (NoSuchPropertyException nspe) {
             //we didn't find the property, use its default value
             return defaultValue;
         }
@@ -215,8 +215,8 @@ public class ConfigurationRepository {
                                 String name ) {
 
         try {
-            return getProperty( name );
-        } catch( NoSuchPropertyException nspe ) {
+            return getProperty(name);
+        } catch (NoSuchPropertyException nspe) {
             return null;
         }
     }
@@ -231,11 +231,11 @@ public class ConfigurationRepository {
     Map<String, String> getProperties(
                                        String prefix ) {
 
-        Map<String, String> matchingTempProperties = tempResource.getProperties( prefix );
-        if( !matchingTempProperties.isEmpty() ) {
+        Map<String, String> matchingTempProperties = tempResource.getProperties(prefix);
+        if (!matchingTempProperties.isEmpty()) {
             return matchingTempProperties;
         } else {
-            return permResource.getProperties( prefix );
+            return permResource.getProperties(prefix);
         }
     }
 
@@ -252,7 +252,7 @@ public class ConfigurationRepository {
                           String name,
                           String value ) {
 
-        tempResource.setProperty( name, value );
+        tempResource.setProperty(name, value);
     }
 
     /**
@@ -277,18 +277,18 @@ public class ConfigurationRepository {
                                  ConfigurationResource to,
                                  boolean overrideExistProperties ) {
 
-        for( Map.Entry<Object, Object> property : from.getProperties() ) {
-            String key = ( String ) property.getKey();
-            String value = ( String ) property.getValue();
-            if( value != null ) {
+        for (Map.Entry<Object, Object> property : from.getProperties()) {
+            String key = (String) property.getKey();
+            String value = (String) property.getValue();
+            if (value != null) {
                 value = value.trim();
             }
-            if( to.getProperty( key ) != null ) {
-                if( overrideExistProperties ) {
-                    to.setProperty( key, value );
+            if (to.getProperty(key) != null) {
+                if (overrideExistProperties) {
+                    to.setProperty(key, value);
                 }
             } else {
-                to.setProperty( key, value );
+                to.setProperty(key, value);
             }
         }
     }
@@ -304,17 +304,17 @@ public class ConfigurationRepository {
                                                                          String resourceIdentifier ) {
 
         ConfigurationResource configResource;
-        if( resourceIdentifier.endsWith( ".xml" ) ) {
+        if (resourceIdentifier.endsWith(".xml")) {
             configResource = new ConfigurationResource();
-            configResource.loadFromXmlFile( resourceStream, resourceIdentifier );
+            configResource.loadFromXmlFile(resourceStream, resourceIdentifier);
             return configResource;
-        } else if( resourceIdentifier.endsWith( ".properties" ) ) {
+        } else if (resourceIdentifier.endsWith(".properties")) {
             configResource = new ConfigurationResource();
-            configResource.loadFromPropertiesFile( resourceStream, resourceIdentifier );
+            configResource.loadFromPropertiesFile(resourceStream, resourceIdentifier);
             return configResource;
         } else {
-            throw new ConfigurationException( "Not supported file extension. We expect either 'xml' or 'properties': "
-                                              + resourceIdentifier );
+            throw new ConfigurationException("Not supported file extension. We expect either 'xml' or 'properties': "
+                                             + resourceIdentifier);
         }
     }
 }

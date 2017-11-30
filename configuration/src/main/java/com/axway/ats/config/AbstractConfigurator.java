@@ -29,7 +29,7 @@ import com.axway.ats.config.exceptions.ConfigurationException;
  */
 public abstract class AbstractConfigurator {
 
-    protected final Logger log;
+    protected final Logger          log;
 
     // a handle to the global singleton repository
     private ConfigurationRepository configRepository;
@@ -37,7 +37,7 @@ public abstract class AbstractConfigurator {
     public AbstractConfigurator() {
 
         //create the logger instance
-        log = Logger.getLogger( this.getClass() );
+        log = Logger.getLogger(this.getClass());
 
         // Get the instance of the configuration repository.
         // It is our only entry point for getting and setting properties
@@ -54,7 +54,7 @@ public abstract class AbstractConfigurator {
     public String getOptionalProperty(
                                        String propertyName ) {
 
-        return configRepository.getOptionalProperty( propertyName );
+        return configRepository.getOptionalProperty(propertyName);
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class AbstractConfigurator {
     public final String getProperty(
                                      String name ) {
 
-        return configRepository.getProperty( name );
+        return configRepository.getProperty(name);
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class AbstractConfigurator {
     public final Map<String, String> getProperties(
                                                     String prefix ) {
 
-        return configRepository.getProperties( prefix );
+        return configRepository.getProperties(prefix);
     }
 
     /**
@@ -92,12 +92,12 @@ public abstract class AbstractConfigurator {
     protected final int getIntegerProperty(
                                             String name ) {
 
-        String propertyValue = configRepository.getProperty( name );
+        String propertyValue = configRepository.getProperty(name);
         try {
-            return Integer.parseInt( propertyValue );
-        } catch( NumberFormatException nfe ) {
-            throw new ConfigurationException( "Configuration setting '" + name + "' is not a number: '"
-                                              + propertyValue + "'" );
+            return Integer.parseInt(propertyValue);
+        } catch (NumberFormatException nfe) {
+            throw new ConfigurationException("Configuration setting '" + name + "' is not a number: '"
+                                             + propertyValue + "'");
         }
     }
 
@@ -110,12 +110,12 @@ public abstract class AbstractConfigurator {
     protected final long getLongProperty(
                                           String name ) {
 
-        String propertyValue = configRepository.getProperty( name );
+        String propertyValue = configRepository.getProperty(name);
         try {
-            return Long.parseLong( propertyValue );
-        } catch( NumberFormatException nfe ) {
-            throw new ConfigurationException( "Configuration setting '" + name + "' is not a number: '"
-                                              + propertyValue + "'" );
+            return Long.parseLong(propertyValue);
+        } catch (NumberFormatException nfe) {
+            throw new ConfigurationException("Configuration setting '" + name + "' is not a number: '"
+                                             + propertyValue + "'");
         }
     }
 
@@ -130,17 +130,17 @@ public abstract class AbstractConfigurator {
     protected final boolean getBooleanProperty(
                                                 String name ) {
 
-        String propertyValue = configRepository.getProperty( name );
-        if( "true".equalsIgnoreCase( propertyValue ) ) {
+        String propertyValue = configRepository.getProperty(name);
+        if ("true".equalsIgnoreCase(propertyValue)) {
             return true;
-        } else if( "false".equalsIgnoreCase( propertyValue ) ) {
+        } else if ("false".equalsIgnoreCase(propertyValue)) {
             return false;
         } else {
-            throw new ConfigurationException( "Configuration setting '" + name + "' is not a boolean: '"
-                                              + propertyValue + "'" );
+            throw new ConfigurationException("Configuration setting '" + name + "' is not a boolean: '"
+                                             + propertyValue + "'");
         }
     }
-    
+
     /**
      * Get a property by name and convert it to a char.
      * <br>Valid values are 1 character long Strings
@@ -151,12 +151,12 @@ public abstract class AbstractConfigurator {
      */
     protected final char getCharProperty( String name ) {
 
-        String propertyValue = configRepository.getProperty( name );
-        if( propertyValue.length() == 1 ) {
+        String propertyValue = configRepository.getProperty(name);
+        if (propertyValue.length() == 1) {
             return propertyValue.toCharArray()[0];
         } else {
-            throw new ConfigurationException( "Configuration setting '" + name + "' is not a char: '"
-                                              + propertyValue + "'" );
+            throw new ConfigurationException("Configuration setting '" + name + "' is not a char: '"
+                                             + propertyValue + "'");
         }
     }
 
@@ -168,7 +168,7 @@ public abstract class AbstractConfigurator {
                                          String name,
                                          String value ) {
 
-        setTempProperty( name, value );
+        setTempProperty(name, value);
     }
 
     /**
@@ -184,10 +184,10 @@ public abstract class AbstractConfigurator {
                                        String name,
                                        String value ) {
 
-        configRepository.setTempProperty( name, value );
+        configRepository.setTempProperty(name, value);
 
         //check if the new data is correct and if so - reload it
-        reloadDataAndCheckItsIntegrity( null, name, value );
+        reloadDataAndCheckItsIntegrity(null, name, value);
     }
 
     /**
@@ -208,7 +208,7 @@ public abstract class AbstractConfigurator {
         configRepository.clearTempResources();
 
         //check if the new data is correct and if so - reload it
-        reloadDataAndCheckItsIntegrity( null, null, null );
+        reloadDataAndCheckItsIntegrity(null, null, null);
     }
 
     /**
@@ -220,10 +220,10 @@ public abstract class AbstractConfigurator {
     protected final void addConfigFile(
                                         String configFilePath ) {
 
-        ConfigurationRepository.getInstance().registerConfigFile( configFilePath );
+        ConfigurationRepository.getInstance().registerConfigFile(configFilePath);
 
         //check if the new data is correct and if so reload it
-        reloadDataAndCheckItsIntegrity( configFilePath, null, null );
+        reloadDataAndCheckItsIntegrity(configFilePath, null, null);
     }
 
     /**
@@ -238,29 +238,29 @@ public abstract class AbstractConfigurator {
     protected final void addConfigFileFromClassPath(
                                                      String configFilePath,
                                                      boolean catchException,
-                                                     boolean overrideExistProperties) {
+                                                     boolean overrideExistProperties ) {
 
-        if( catchException ) {
+        if (catchException) {
             try {
-                addConfigFileFromClassPath( configFilePath ,overrideExistProperties);
-            } catch( ConfigSourceDoesNotExistException e ) {
-                log.warn( "Configuration file '" + configFilePath
-                          + "' is not available and will not be loaded" );
+                addConfigFileFromClassPath(configFilePath, overrideExistProperties);
+            } catch (ConfigSourceDoesNotExistException e) {
+                log.warn("Configuration file '" + configFilePath
+                         + "' is not available and will not be loaded");
 
                 return;
             }
         } else {
-            addConfigFileFromClassPath( configFilePath , overrideExistProperties);
+            addConfigFileFromClassPath(configFilePath, overrideExistProperties);
         }
 
         //check if the new data is correct and if so reload it
-        reloadDataAndCheckItsIntegrity( configFilePath, null, null );
+        reloadDataAndCheckItsIntegrity(configFilePath, null, null);
     }
 
     private final void addConfigFileFromClassPath(
-                                                   String configFilePath , boolean overrideExistProperties) {
+                                                   String configFilePath, boolean overrideExistProperties ) {
 
-        ConfigurationRepository.getInstance().registerConfigFileFromClassPath( configFilePath , overrideExistProperties);
+        ConfigurationRepository.getInstance().registerConfigFileFromClassPath(configFilePath, overrideExistProperties);
     }
 
     /**
@@ -274,19 +274,19 @@ public abstract class AbstractConfigurator {
         try {
             //check if the configuration is OK
             reloadData();
-        } catch( ConfigurationException ce ) {
+        } catch (ConfigurationException ce) {
             //there is some problem with the data, rollback the previous configuration
             ConfigurationRepository.getInstance().rollBackNewPermConfiguration();
 
             String errorMessage = "Error loading configuration data";
-            if( newConfigFile != null ) {
+            if (newConfigFile != null) {
                 errorMessage += " from " + newConfigFile;
             } else {
                 errorMessage += ": Bad new property - name='" + newPropertyName + "', value='"
                                 + newPropertyValue + "'";
             }
 
-            throw new ConfigurationException( errorMessage, ce );
+            throw new ConfigurationException(errorMessage, ce);
         }
     }
 
