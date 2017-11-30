@@ -34,7 +34,7 @@ import com.axway.ats.harness.testng.exceptions.DataProviderException;
  */
 public class Test_AtsDataProvider extends BaseTest {
 
-    Logger sLog = Logger.getLogger( Test_AtsDataProvider.class );
+    Logger sLog = Logger.getLogger(Test_AtsDataProvider.class);
 
     /**
      * @throws NoSuchMethodException
@@ -45,14 +45,14 @@ public class Test_AtsDataProvider extends BaseTest {
      */
     @Test
     public void verifyExcelProviderPositive() throws NoSuchMethodException, DataProviderException,
-                                             NoSuchPropertyException, ConfigurationException {
+                                              NoSuchPropertyException, ConfigurationException {
 
-        Method testMethod = findMethodByNameOnly( ExcelProviderTest.class, "test_scenario_1" );
-        Object[][] testData = AtsDataProvider.getTestData( testMethod );
+        Method testMethod = findMethodByNameOnly(ExcelProviderTest.class, "test_scenario_1");
+        Object[][] testData = AtsDataProvider.getTestData(testMethod);
 
-        assertEquals( 10, testData.length );
-        assertEquals( 9, testData[0].length );
-        assertEquals( "Pavel Georgiev/pgeorgiev@tmwd.com", testData[0][0] );
+        assertEquals(10, testData.length);
+        assertEquals(9, testData[0].length);
+        assertEquals("Pavel Georgiev/pgeorgiev@tmwd.com", testData[0][0]);
     }
 
     /**
@@ -62,12 +62,12 @@ public class Test_AtsDataProvider extends BaseTest {
      * @throws NoSuchPropertyException 
      * 
      */
-    @Test(expected = DataProviderException.class)
+    @Test( expected = DataProviderException.class)
     public void verifyProviderNegativeNoDataFile() throws NoSuchMethodException, DataProviderException,
-                                                  NoSuchPropertyException, ConfigurationException {
+                                                   NoSuchPropertyException, ConfigurationException {
 
-        Method testMethod = findMethodByNameOnly( AtsProviderNoExcelTest.class, "wrong" );
-        AtsDataProvider.getTestData( testMethod );
+        Method testMethod = findMethodByNameOnly(AtsProviderNoExcelTest.class, "wrong");
+        AtsDataProvider.getTestData(testMethod);
     }
 
     /**
@@ -77,24 +77,24 @@ public class Test_AtsDataProvider extends BaseTest {
      * @throws NoSuchPropertyException 
      * 
      */
-    @Test(expected = DataProviderException.class)
+    @Test( expected = DataProviderException.class)
     public void verifyProviderNegativeNoSheetInExcel() throws NoSuchMethodException, DataProviderException,
-                                                      NoSuchPropertyException, ConfigurationException {
+                                                       NoSuchPropertyException, ConfigurationException {
 
-        Method testMethod = findMethodByNameOnly( ExcelProviderTest.class, "wrong" );
-        AtsDataProvider.getTestData( testMethod );
+        Method testMethod = findMethodByNameOnly(ExcelProviderTest.class, "wrong");
+        AtsDataProvider.getTestData(testMethod);
     }
 
     private Method findMethodByNameOnly(
                                          Class<?> classToSearch,
                                          String methodName ) throws NoSuchMethodException {
 
-        for( Method classMethod : classToSearch.getDeclaredMethods() ) {
-            if( classMethod.getName().equals( methodName ) ) {
+        for (Method classMethod : classToSearch.getDeclaredMethods()) {
+            if (classMethod.getName().equals(methodName)) {
                 return classMethod;
             }
         }
 
-        throw new NoSuchMethodException( methodName );
+        throw new NoSuchMethodException(methodName);
     }
 }

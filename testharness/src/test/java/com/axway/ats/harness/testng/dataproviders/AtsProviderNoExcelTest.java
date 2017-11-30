@@ -21,7 +21,7 @@ import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
 public class AtsProviderNoExcelTest {
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
     public void wrong(
                        String sender ) {
 

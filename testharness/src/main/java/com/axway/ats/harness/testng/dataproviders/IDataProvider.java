@@ -36,5 +36,5 @@ public interface IDataProvider {
      */
     public Object[][] fetchDataBlock(
                                       Method m ) throws DataProviderException, NoSuchPropertyException,
-                                                ConfigurationException;
+                                                 ConfigurationException;
 }

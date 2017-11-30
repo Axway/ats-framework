@@ -22,10 +22,10 @@ import com.axway.ats.harness.BaseTest;
 import com.axway.ats.harness.testng.TestOptions;
 import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
-@TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER + "AnotherFolder2/")
+@TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER + "AnotherFolder2/")
 public class Test_BasicDataProvider2 extends BaseTest {
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
     public void dataFileFolder_fromClassAnnotat(
                                                  String user,
                                                  String pswd,
@@ -33,7 +33,7 @@ public class Test_BasicDataProvider2 extends BaseTest {
 
     }
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
     public void dataDrivenTest2(
                                  String protocol,
                                  int port,

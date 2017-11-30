@@ -23,53 +23,44 @@ import com.axway.ats.harness.BaseTest;
 import com.axway.ats.harness.testng.TestOptions;
 import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
-@TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER + "AnotherFolder/")
+@TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER + "AnotherFolder/")
 public class Test_BasicDataProvider extends BaseTest {
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFileFolder_fromMethodAnnotation(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFileFolder_fromMethodAnnotation( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFile = TestDetails.DATA_FILE2, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFileFolder_fromClassAnnotation(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFile = TestDetails.DATA_FILE2, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFileFolder_fromClassAnnotation( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_fromMethodAnnotation(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_fromMethodAnnotation( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFile = "Test_BasicDataProvider.xls", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_notInPackage(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFile = "Test_BasicDataProvider.xls", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_notInPackage( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = "src/test/resources/", dataFile = "com/axway/ats/harness/testng/dataproviders.ExcelProviderTest.xls", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_withinPackage(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
-            String arg6, String arg7, String arg8) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = "src/test/resources/", dataFile = "com/axway/ats/harness/testng/dataproviders.ExcelProviderTest.xls", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_withinPackage( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5,
+                                        String arg6, String arg7, String arg8 ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
-    @TestOptions(dataFile = "Test_BasicDataProvider", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_noFileExtension(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
+    @TestOptions( dataFile = "Test_BasicDataProvider", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_noFileExtension( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1
-            + "NON_EXISTING_FILE", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_wrongFile(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1
+                                                                             + "NON_EXISTING_FILE", dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_wrongFile( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataSheet_fromMethodAnnotation(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataSheet_fromMethodAnnotation( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1)
-    public void dataSheet_usingTheMethodName(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1)
+    public void dataSheet_usingTheMethodName( String user, String pswd, String subject ) {}
 }

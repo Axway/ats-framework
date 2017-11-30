@@ -63,7 +63,7 @@ public class TestBox extends Box {
     public void setHost(
                          String host ) {
 
-        verifyNotNullNorEmptyParameter( "host", host );
+        verifyNotNullNorEmptyParameter("host", host);
         this.host = host;
     }
 
@@ -85,19 +85,19 @@ public class TestBox extends Box {
     public void setDbPort(
                            String dbPortStr ) {
 
-        verifyNotNullNorEmptyParameter( "dbPort", dbPortStr );
+        verifyNotNullNorEmptyParameter("dbPort", dbPortStr);
         int dbPortInt = DB_PORT_NOT_SPECIFIED;
         final String errMsg = "'. Expected number within range [" + LOWEST_PORT_NUMBER + ","
                               + HIGHEST_PORT_NUMBER + "]";
         try {
             dbPortStr = dbPortStr.trim();
-            dbPortInt = Integer.parseInt( dbPortStr );
-        } catch( NumberFormatException e ) {
-            throw new IllegalArgumentException( "Illegal value for DB port specified: '" + dbPortStr + errMsg );
+            dbPortInt = Integer.parseInt(dbPortStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Illegal value for DB port specified: '" + dbPortStr + errMsg);
         }
-        if( dbPortInt < LOWEST_PORT_NUMBER || dbPortInt > HIGHEST_PORT_NUMBER ) {
-            throw new IllegalArgumentException( "Illegal number for DB port specified: '" + dbPortInt
-                                                + errMsg );
+        if (dbPortInt < LOWEST_PORT_NUMBER || dbPortInt > HIGHEST_PORT_NUMBER) {
+            throw new IllegalArgumentException("Illegal number for DB port specified: '" + dbPortInt
+                                               + errMsg);
         }
         this.dbPort = dbPortInt;
     }
@@ -118,7 +118,7 @@ public class TestBox extends Box {
     public void setAdminUser(
                               String adminUser ) {
 
-        verifyNotNullNorEmptyParameter( "adminUser", adminUser );
+        verifyNotNullNorEmptyParameter("adminUser", adminUser);
         this.adminUser = adminUser;
     }
 
@@ -138,7 +138,7 @@ public class TestBox extends Box {
     public void setAdminPass(
                               String adminPass ) {
 
-        verifyNotNullNorEmptyParameter( "adminPass", adminPass );
+        verifyNotNullNorEmptyParameter("adminPass", adminPass);
         this.adminPass = adminPass;
     }
 
@@ -158,7 +158,7 @@ public class TestBox extends Box {
     public void setDbType(
                            String dbType ) {
 
-        verifyNotNullNorEmptyParameter( "dbType", dbType );
+        verifyNotNullNorEmptyParameter("dbType", dbType);
         this.dbType = dbType;
     }
 
@@ -178,7 +178,7 @@ public class TestBox extends Box {
     public void setDbName(
                            String dbName ) {
 
-        verifyNotNullNorEmptyParameter( "dbName", dbName );
+        verifyNotNullNorEmptyParameter("dbName", dbName);
         this.dbName = dbName;
     }
 
@@ -198,7 +198,7 @@ public class TestBox extends Box {
     public void setDbUser(
                            String dbUser ) {
 
-        verifyNotNullNorEmptyParameter( "dbUser", dbUser );
+        verifyNotNullNorEmptyParameter("dbUser", dbUser);
         this.dbUser = dbUser;
     }
 
@@ -218,7 +218,7 @@ public class TestBox extends Box {
     public void setDbPass(
                            String dbPass ) {
 
-        verifyNotNullNorEmptyParameter( "dbPass", dbPass );
+        verifyNotNullNorEmptyParameter("dbPass", dbPass);
         this.dbPass = dbPass;
     }
 
@@ -248,13 +248,13 @@ public class TestBox extends Box {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "Test Box: host = " + host );
-        sb.append( ", db type = " + dbType );
-        sb.append( ", db port = " + dbPort );
-        sb.append( ", db name = " + dbName );
-        sb.append( ", db user = " + dbUser );
-        sb.append( ", db pass = " + dbPass );
-        sb.append( super.toString() );
+        sb.append("Test Box: host = " + host);
+        sb.append(", db type = " + dbType);
+        sb.append(", db port = " + dbPort);
+        sb.append(", db name = " + dbName);
+        sb.append(", db user = " + dbUser);
+        sb.append(", db pass = " + dbPass);
+        sb.append(super.toString());
 
         return sb.toString();
     }

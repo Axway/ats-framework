@@ -61,8 +61,8 @@ public class TestDetails {
     public static final String TENGHT_TEST_SCENARIO    = "test_scenario_10";
 
     // a method with less parameters than that in the excel data sheet
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = "test_scenario_1")
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = "test_scenario_1")
     public void test_scenario_1(
                                  String parameter1,
                                  String parameter2 ) {
@@ -70,8 +70,8 @@ public class TestDetails {
     }
 
     // a method with more parameters than that in the excel data sheet
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = "dataSheet_usingTheMethodName")
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = "dataSheet_usingTheMethodName")
     public void dataSheet_usingTheMethodName(
                                               String parameter1,
                                               String parameter2,
@@ -81,8 +81,8 @@ public class TestDetails {
     }
 
     // a method with number of parameters equal to that in the excel data sheet
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = "dataSheet_usingTheMethodName")
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = TestDetails.DATA_FILE1, dataSheet = "dataSheet_usingTheMethodName")
     public void dataSheet_usingEqualP(
                                        String parameter1,
                                        String parameter2,

@@ -15,7 +15,7 @@
  */
 package com.axway.ats.harness.testng.exceptions;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class TestHarnessInitializationException extends Exception {
 
     public TestHarnessInitializationException() {
@@ -26,17 +26,17 @@ public class TestHarnessInitializationException extends Exception {
     public TestHarnessInitializationException( String message,
                                                Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     public TestHarnessInitializationException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public TestHarnessInitializationException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
 }

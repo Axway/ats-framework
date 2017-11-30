@@ -25,18 +25,15 @@ import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
 public class Test_BasicDataProviderWithoutClassAnnotation extends BaseTest {
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
-    @TestOptions(dataFile = TestDetails.DATA_FILE2, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFileFolder_fromClassAnnotation(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
+    @TestOptions( dataFile = TestDetails.DATA_FILE2, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFileFolder_fromClassAnnotation( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
-    @TestOptions(dataFile = TestDetails.DATA_FILE_IN_CLASSPATH, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_fromClasspath(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @TestOptions( dataFile = TestDetails.DATA_FILE_IN_CLASSPATH, dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_fromClasspath( String user, String pswd, String subject ) {}
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
-    @TestOptions(dataSheet = TestDetails.FIRST_TEST_SCENARIO)
-    public void dataFile_fromClasspath_negative(String user, String pswd, String subject) {
-    }
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class, expectedExceptions = TestNGException.class)
+    @TestOptions( dataSheet = TestDetails.FIRST_TEST_SCENARIO)
+    public void dataFile_fromClasspath_negative( String user, String pswd, String subject ) {}
 }

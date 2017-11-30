@@ -36,42 +36,42 @@ import com.axway.ats.log.appenders.ReportAppender;
 @Deprecated
 public class InitTestHarness {
 
-    private Logger logger = Logger.getLogger( InitTestHarness.class );
+    private Logger logger = Logger.getLogger(InitTestHarness.class);
 
     public InitTestHarness() throws TestHarnessInitializationException {
 
-        @SuppressWarnings("deprecation")
+        @SuppressWarnings( "deprecation")
         TestNG testNgInstance = TestNG.getDefault();
-        if( testNgInstance != null ) {
+        if (testNgInstance != null) {
             //Attaching our listeners only when our appenders are loaded
-            if( ActiveDbAppender.getCurrentInstance() != null || ReportAppender.isAppenderActive() ) {
+            if (ActiveDbAppender.getCurrentInstance() != null || ReportAppender.isAppenderActive()) {
 
-                addListener( testNgInstance,
-                             testNgInstance.getTestListeners(),
-                             "com.axway.ats.harness.testng.AtsTestngTestListener" );
-                addListener( testNgInstance,
-                             testNgInstance.getSuiteListeners(),
-                             "com.axway.ats.harness.testng.AtsTestngSuiteListener" );
+                addListener(testNgInstance,
+                            testNgInstance.getTestListeners(),
+                            "com.axway.ats.harness.testng.AtsTestngTestListener");
+                addListener(testNgInstance,
+                            testNgInstance.getSuiteListeners(),
+                            "com.axway.ats.harness.testng.AtsTestngSuiteListener");
             }
 
             //Attaching custom test and suite listeners from the ats.config.properties file
             CommonConfigurator configurator = CommonConfigurator.getInstance();
-            List<String> customTestListeners = getListeners( configurator,
-                                                             "harness.testng.customtestlisteners" );
-            List<String> customSuiteListeners = getListeners( configurator,
-                                                              "harness.testng.customsuitelisteners" );
-            if( customTestListeners.size() > 0 ) {
-                for( String listener : customTestListeners ) {
-                    addListener( testNgInstance, testNgInstance.getTestListeners(), listener );
+            List<String> customTestListeners = getListeners(configurator,
+                                                            "harness.testng.customtestlisteners");
+            List<String> customSuiteListeners = getListeners(configurator,
+                                                             "harness.testng.customsuitelisteners");
+            if (customTestListeners.size() > 0) {
+                for (String listener : customTestListeners) {
+                    addListener(testNgInstance, testNgInstance.getTestListeners(), listener);
                 }
             }
-            if( customSuiteListeners.size() > 0 ) {
-                for( String listener : customSuiteListeners ) {
-                    addListener( testNgInstance, testNgInstance.getSuiteListeners(), listener );
+            if (customSuiteListeners.size() > 0) {
+                for (String listener : customSuiteListeners) {
+                    addListener(testNgInstance, testNgInstance.getSuiteListeners(), listener);
                 }
             }
         } else {
-            throw new TestHarnessInitializationException( "Unable to get TestNG instance." );
+            throw new TestHarnessInitializationException("Unable to get TestNG instance.");
         }
     }
 
@@ -82,15 +82,15 @@ public class InitTestHarness {
         List<String> listeners = new ArrayList<String>();
         String customListeners = "";
         try {
-            customListeners = configurator.getProperty( key );
-        } catch( NoSuchPropertyException e ) {
+            customListeners = configurator.getProperty(key);
+        } catch (NoSuchPropertyException e) {
             //It is normal state, the property is optional
             return listeners;
         }
-        String[] parts = customListeners.split( "[\\s\\,]+" );
-        for( String p : parts ) {
-            if( !p.isEmpty() ) {
-                listeners.add( p );
+        String[] parts = customListeners.split("[\\s\\,]+");
+        for (String p : parts) {
+            if (!p.isEmpty()) {
+                listeners.add(p);
             }
         }
         return listeners;
@@ -109,17 +109,17 @@ public class InitTestHarness {
 
         Class<?> listenerClass;
         try {
-            listenerClass = Class.forName( listenerClassName );
-            if( !isListenerAlreadyAttached( existingListeners, listenerClass ) ) {
+            listenerClass = Class.forName(listenerClassName);
+            if (!isListenerAlreadyAttached(existingListeners, listenerClass)) {
                 Object listener = listenerClass.newInstance();
-                testNG.addListener( listener );
-                logger.info( "Successfully attached listener \"" + listenerClassName + "\"." );
+                testNG.addListener(listener);
+                logger.info("Successfully attached listener \"" + listenerClassName + "\".");
             } else {
-                logger.info( "Skip attaching listener \"" + listenerClassName
-                             + "\". It's already attached!" );
+                logger.info("Skip attaching listener \"" + listenerClassName
+                            + "\". It's already attached!");
             }
-        } catch( Exception e ) {
-            logger.error( "Error attaching listener: \"" + listenerClassName + "\".", e );
+        } catch (Exception e) {
+            logger.error("Error attaching listener: \"" + listenerClassName + "\".", e);
         }
     }
 
@@ -133,8 +133,8 @@ public class InitTestHarness {
                                                List<?> list,
                                                Class<?> listenerClass ) {
 
-        for( Object o : list ) {
-            if( o.getClass().equals( listenerClass ) ) {
+        for (Object o : list) {
+            if (o.getClass().equals(listenerClass)) {
                 return true;
             }
         }

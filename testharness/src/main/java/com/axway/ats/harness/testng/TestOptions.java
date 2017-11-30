@@ -30,8 +30,8 @@ import com.axway.ats.common.PublicAtsApi;
  * This annotation can be applied on test methods and classes but some arguments are applicable only methods. See the
  * arguments documentation.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ METHOD, TYPE })
+@Retention( RetentionPolicy.RUNTIME)
+@Target( { METHOD, TYPE })
 @PublicAtsApi
 public @interface TestOptions {
 

@@ -28,16 +28,16 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  */
 public class RetryAnalyzer implements IRetryAnalyzer {
 
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats");
 
-    private String                  lastTestName;
+    private String                   lastTestName;
 
     /*
      * Number of passed runs of the current test.
      * The value is static, so can easily be retrieved from our TestNG listeners. That is ok as no more
      * than one instance of this class exists at a time.
      */
-    private static int              passedRuns;
+    private static int               passedRuns;
 
     public RetryAnalyzer() {
 
@@ -50,37 +50,37 @@ public class RetryAnalyzer implements IRetryAnalyzer {
                           final ITestResult testResult ) {
 
         /* we get here after processing onTestFailed events
-    	*  this method is executed after StartTestCaseEvent and before EndTestCaseEvent
-    	*  a check is performed, in DbEventRequestProcessor.endTestCase(), if the current testcase is marked for deletion
-    	*  for more on how and where all testcases, marked for deletion is performed,
-    	*  see DbEventRequestProcessor.processEventRequest()
-    	*/
+        *  this method is executed after StartTestCaseEvent and before EndTestCaseEvent
+        *  a check is performed, in DbEventRequestProcessor.endTestCase(), if the current testcase is marked for deletion
+        *  for more on how and where all testcases, marked for deletion is performed,
+        *  see DbEventRequestProcessor.processEventRequest()
+        */
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
         final String testClassName = testClass.getName();
-        final String testName = getTestName( testResult );
+        final String testName = getTestName(testResult);
         final String fullTestName = testClassName + "@" + testName;
 
-        if( fullTestName.equals( lastTestName ) ) {
+        if (fullTestName.equals(lastTestName)) {
             ++passedRuns;
         } else {
             lastTestName = fullTestName;
             passedRuns = 1;
         }
-        
-        if (passedRuns < getMaxRuns( testResult )) {
-        	
-        	// delete the current test
+
+        if (passedRuns < getMaxRuns(testResult)) {
+
+            // delete the current test
             deleteCurrentTestcase();
-            
+
             // instruct TestNG to rerun the test
             return true;
         } else {
-        	// all possible test runs are exhausted, do not rerun
-        	return false;
+            // all possible test runs are exhausted, do not rerun
+            return false;
         }
-        
+
     }
 
     public static int getNumberPassedRuns() {
@@ -92,8 +92,8 @@ public class RetryAnalyzer implements IRetryAnalyzer {
 
         ActiveDbAppender dbAppender = ActiveDbAppender.getCurrentInstance();
 
-        if( dbAppender != null ) {
-            logger.deleteTestcase( dbAppender.getTestCaseId() );
+        if (dbAppender != null) {
+            logger.deleteTestcase(dbAppender.getTestCaseId());
         }
     }
 
@@ -104,8 +104,8 @@ public class RetryAnalyzer implements IRetryAnalyzer {
 
         // check if there is a description annotation and get the test name
         Method testCaseMethod = result.getMethod().getConstructorOrMethod().getMethod();
-        Description testCaseDescription = testCaseMethod.getAnnotation( Description.class );
-        if( testCaseDescription != null && testCaseDescription.name().length() > 0 ) {
+        Description testCaseDescription = testCaseMethod.getAnnotation(Description.class);
+        if (testCaseDescription != null && testCaseDescription.name().length() > 0) {
             testName = testCaseDescription.name();
         }
 
@@ -127,21 +127,21 @@ public class RetryAnalyzer implements IRetryAnalyzer {
 
         // check if max runs comes from the test method
         Method testCaseMethod = result.getMethod().getConstructorOrMethod().getMethod();
-        TestOptions testOptions = testCaseMethod.getAnnotation( TestOptions.class );
-        if( testOptions != null ) {
+        TestOptions testOptions = testCaseMethod.getAnnotation(TestOptions.class);
+        if (testOptions != null) {
             int maxRuns = testOptions.maxRuns();
-            if( maxRuns != -1 ) {
+            if (maxRuns != -1) {
                 return maxRuns;
             }
         }
 
         // check if max runs comes from the test class or its parent class
         Class<?> testClass = result.getInstance().getClass();
-        while( testClass != null ) {
-            testOptions = testClass.getAnnotation( TestOptions.class );
-            if( testOptions != null ) {
+        while (testClass != null) {
+            testOptions = testClass.getAnnotation(TestOptions.class);
+            if (testOptions != null) {
                 int maxRuns = testOptions.maxRuns();
-                if( maxRuns != -1 ) {
+                if (maxRuns != -1) {
                     return maxRuns;
                 }
             }

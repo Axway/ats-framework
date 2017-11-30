@@ -21,7 +21,7 @@ import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
 public class ExcelProviderTest {
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
     public void test_scenario_1(
                                  String sender,
                                  String recipientTo,
@@ -35,7 +35,7 @@ public class ExcelProviderTest {
 
     }
 
-    @Test(dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
+    @Test( dataProvider = "ConfigurableDataProvider", dataProviderClass = AtsDataProvider.class)
     public void wrong(
                        String password ) {
 

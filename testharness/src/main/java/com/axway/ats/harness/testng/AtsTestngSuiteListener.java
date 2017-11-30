@@ -50,12 +50,13 @@ import com.axway.ats.log.AtsDbLogger;
 @PublicAtsApi
 public class AtsTestngSuiteListener implements ISuiteListener {
 
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats");
 
     public void onStart( ISuite suite ) {
+
         // get the run name specified by the user
         String runName = CommonConfigurator.getInstance().getRunName();
-        if( runName.equals( CommonConfigurator.DEFAULT_RUN_NAME ) ) {
+        if (runName.equals(CommonConfigurator.DEFAULT_RUN_NAME)) {
             // the user did not specify a run name, use the one from TestNG
             runName = suite.getName();
         }
@@ -66,9 +67,9 @@ public class AtsTestngSuiteListener implements ISuiteListener {
         // cleanup the class level listener
         new AtsTestngClassListener().resetTempData();
         // cleanup the test level listener
-        for( ITestListener listener : testNgInstance.getTestListeners() ) {
-            if( listener instanceof AtsTestngTestListener ) {
-                ( ( AtsTestngTestListener ) listener ).resetTempData();
+        for (ITestListener listener : testNgInstance.getTestListeners()) {
+            if (listener instanceof AtsTestngTestListener) {
+                ((AtsTestngTestListener) listener).resetTempData();
             }
         }
 
@@ -78,25 +79,28 @@ public class AtsTestngSuiteListener implements ISuiteListener {
             InetAddress addr = InetAddress.getLocalHost();
             hostNameIp = addr.getHostName() + "/" + addr.getHostAddress();
 
-        } catch( UnknownHostException uhe ) {
+        } catch (UnknownHostException uhe) {
             hostNameIp = null;
         }
 
-        logger.startRun( runName, CommonConfigurator.getInstance().getOsName(), CommonConfigurator.getInstance().getProductName(),
-                         CommonConfigurator.getInstance().getVersionName(), CommonConfigurator.getInstance().getBuildName(), hostNameIp );
+        logger.startRun(runName, CommonConfigurator.getInstance().getOsName(),
+                        CommonConfigurator.getInstance().getProductName(),
+                        CommonConfigurator.getInstance().getVersionName(),
+                        CommonConfigurator.getInstance().getBuildName(), hostNameIp);
 
         logSystemInformation();
         logClassPath();
     }
 
     public void onFinish( ISuite suite ) {
+
         // clear the lastSuiteName
         AtsTestngTestListener.resetLastSuiteName();
         /*
          * If not patched testNG is used then we will have one suite left to end before we end the run, unless
          * no suite was ever started
          */
-        if( AtsTestngClassListener.getLastSuiteName() == null ) {
+        if (AtsTestngClassListener.getLastSuiteName() == null) {
             logger.endSuite();
         }
 
@@ -108,46 +112,46 @@ public class AtsTestngSuiteListener implements ISuiteListener {
 
         StringBuilder systemInformation = new StringBuilder();
 
-        appendMessage( systemInformation, "ATS version: '", AtsVersion.getAtsVersion() );
-        appendMessage( systemInformation, " os.name: '", ( String ) System.getProperty( "os.name" ) );
-        appendMessage( systemInformation, " os.arch: '", ( String ) System.getProperty( "os.arch" ) );
-        appendMessage( systemInformation, " java.version: '",
-                       ( String ) System.getProperty( "java.version" ) );
-        appendMessage( systemInformation, " java.home: '", ( String ) System.getProperty( "java.home" ) );
+        appendMessage(systemInformation, "ATS version: '", AtsVersion.getAtsVersion());
+        appendMessage(systemInformation, " os.name: '", (String) System.getProperty("os.name"));
+        appendMessage(systemInformation, " os.arch: '", (String) System.getProperty("os.arch"));
+        appendMessage(systemInformation, " java.version: '",
+                      (String) System.getProperty("java.version"));
+        appendMessage(systemInformation, " java.home: '", (String) System.getProperty("java.home"));
 
         List<String> ipList = new ArrayList<String>();
-        for( InetAddress ip : HostUtils.getAllIpAddresses() ) {
-            ipList.add( ip.getHostAddress() );
+        for (InetAddress ip : HostUtils.getAllIpAddresses()) {
+            ipList.add(ip.getHostAddress());
         }
 
-        appendMessage( systemInformation, " IP addresses: '", ipList.toString() );
+        appendMessage(systemInformation, " IP addresses: '", ipList.toString());
 
-        logger.info( "System information : " + systemInformation.toString() );
+        logger.info("System information : " + systemInformation.toString());
     }
 
     private void logClassPath() {
 
         // print JVM classpath if user has enabled it
-        if( AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__CLASSPATH_ON_START, false ) ) {
+        if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__CLASSPATH_ON_START, false)) {
 
             StringBuilder classpath = new StringBuilder();
 
-            classpath.append( " Test Executor classpath on \"" );
-            classpath.append( HostUtils.getLocalHostIP() );
-            classpath.append( "\" : \n" );
-            classpath.append( new ClasspathUtils().getClassPathDescription() );
+            classpath.append(" Test Executor classpath on \"");
+            classpath.append(HostUtils.getLocalHostIP());
+            classpath.append("\" : \n");
+            classpath.append(new ClasspathUtils().getClassPathDescription());
 
-            logger.info( classpath, true );
+            logger.info(classpath, true);
         }
     }
 
     private void appendMessage( StringBuilder message, String valueDesc, String value ) {
 
-        if( !StringUtils.isNullOrEmpty( value ) ) {
-            if( message.length() > 0 ) {
-                message.append( "," );
+        if (!StringUtils.isNullOrEmpty(value)) {
+            if (message.length() > 0) {
+                message.append(",");
             }
-            message.append( valueDesc + value + "'" );
+            message.append(valueDesc + value + "'");
         }
     }
 }

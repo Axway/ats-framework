@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.axway.ats.config.exceptions.ConfigurationException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 class BoxesMap<T extends Box> extends HashMap<String, T> {
 
     BoxesMap() {
@@ -40,41 +40,41 @@ class BoxesMap<T extends Box> extends HashMap<String, T> {
               String prefix,
               Class<T> boxClass ) {
 
-        for( Map.Entry<String, String> boxesProperty : boxesProperties.entrySet() ) {
+        for (Map.Entry<String, String> boxesProperty : boxesProperties.entrySet()) {
 
             //extract the test box name and the key value
             String key = boxesProperty.getKey();
             String value = boxesProperty.getValue();
 
-            String[] tokens = key.split( "\\." );
+            String[] tokens = key.split("\\.");
 
-            if( tokens.length != prefix.split( "\\." ).length + 2 ) {
-                throw new ConfigurationException( "Improper format of key '" + key + "'" );
+            if (tokens.length != prefix.split("\\.").length + 2) {
+                throw new ConfigurationException("Improper format of key '" + key + "'");
             }
 
             String boxName = tokens[tokens.length - 2];
             String boxPropertyKey = tokens[tokens.length - 1];
 
-            T box = get( boxName );
-            if( box == null ) {
+            T box = get(boxName);
+            if (box == null) {
                 try {
                     box = boxClass.newInstance();
-                } catch( InstantiationException ie ) {
-                    throw new ConfigurationException( "Cannot create a new box", ie );
-                } catch( IllegalAccessException iae ) {
-                    throw new ConfigurationException( "Cannot create a new box", iae );
+                } catch (InstantiationException ie) {
+                    throw new ConfigurationException("Cannot create a new box", ie);
+                } catch (IllegalAccessException iae) {
+                    throw new ConfigurationException("Cannot create a new box", iae);
                 }
 
-                put( boxName, box );
+                put(boxName, box);
             }
 
             //try to find a suitable setter
-            boolean foundSetter = setPropertyUsingSetter( boxName, box, boxPropertyKey, value );
+            boolean foundSetter = setPropertyUsingSetter(boxName, box, boxPropertyKey, value);
 
             //if a suitable setter was not found, just set the property
             //as a generic one
-            if( !foundSetter ) {
-                box.setProperty( boxPropertyKey, value );
+            if (!foundSetter) {
+                box.setProperty(boxPropertyKey, value);
             }
         }
     }
@@ -95,7 +95,7 @@ class BoxesMap<T extends Box> extends HashMap<String, T> {
                                             String value ) {
 
         Method[] boxClassMethods = box.getClass().getDeclaredMethods();
-        for( Method boxClassMethod : boxClassMethods ) {
+        for (Method boxClassMethod : boxClassMethods) {
 
             String methodName = boxClassMethod.getName();
             String setterName = "set" + key;
@@ -103,27 +103,27 @@ class BoxesMap<T extends Box> extends HashMap<String, T> {
             //look if the current method is the setter we are looking for,
             //skip otherwise. The comparison is case insensitive as to forgive 
             //user errors in configuration files
-            if( !methodName.equalsIgnoreCase( setterName ) ) {
+            if (!methodName.equalsIgnoreCase(setterName)) {
                 continue;
             }
 
             //check if the setter has the right number of arguments
             Class<?>[] parameterTypes = boxClassMethod.getParameterTypes();
-            if( parameterTypes.length != 1 || parameterTypes[0] != String.class ) {
+            if (parameterTypes.length != 1 || parameterTypes[0] != String.class) {
                 continue;
             }
 
             String methodDescription = boxName + "." + boxClassMethod.getName() + "( '" + value + "' )";
 
             try {
-                boxClassMethod.invoke( box, new Object[]{ value } );
+                boxClassMethod.invoke(box, new Object[]{ value });
                 return true;
-            } catch( IllegalArgumentException e ) {
-                throw new ConfigurationException( "Could not invoke setter " + methodDescription, e );
-            } catch( IllegalAccessException e ) {
-                throw new ConfigurationException( "Could not invoke setter " + methodDescription, e );
-            } catch( InvocationTargetException e ) {
-                throw new ConfigurationException( "Could not invoke setter " + methodDescription, e );
+            } catch (IllegalArgumentException e) {
+                throw new ConfigurationException("Could not invoke setter " + methodDescription, e);
+            } catch (IllegalAccessException e) {
+                throw new ConfigurationException("Could not invoke setter " + methodDescription, e);
+            } catch (InvocationTargetException e) {
+                throw new ConfigurationException("Could not invoke setter " + methodDescription, e);
             }
         }
 

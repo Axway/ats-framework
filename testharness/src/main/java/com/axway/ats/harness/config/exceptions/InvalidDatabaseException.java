@@ -18,11 +18,11 @@ package com.axway.ats.harness.config.exceptions;
 
 import com.axway.ats.config.exceptions.ConfigurationException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class InvalidDatabaseException extends ConfigurationException {
 
     public InvalidDatabaseException( String dbType ) {
 
-        super( "Invalid database '" + dbType + "' specified" );
+        super("Invalid database '" + dbType + "' specified");
     }
 }

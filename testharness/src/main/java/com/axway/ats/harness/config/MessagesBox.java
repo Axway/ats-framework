@@ -45,7 +45,7 @@ public class MessagesBox extends Box {
     public void setHost(
                          String host ) {
 
-        verifyNotNullNorEmptyParameter( "host", host );
+        verifyNotNullNorEmptyParameter("host", host);
         this.host = host;
     }
 
@@ -65,7 +65,7 @@ public class MessagesBox extends Box {
     public void setDbName(
                            String dbName ) {
 
-        verifyNotNullNorEmptyParameter( "dbName", dbName );
+        verifyNotNullNorEmptyParameter("dbName", dbName);
         this.dbName = dbName;
     }
 
@@ -85,7 +85,7 @@ public class MessagesBox extends Box {
     public void setDbUser(
                            String dbUser ) {
 
-        verifyNotNullNorEmptyParameter( "dbUser", dbUser );
+        verifyNotNullNorEmptyParameter("dbUser", dbUser);
         this.dbUser = dbUser;
     }
 
@@ -105,7 +105,7 @@ public class MessagesBox extends Box {
     public void setDbPass(
                            String dbPass ) {
 
-        verifyNotNullNorEmptyParameter( "dbPass", dbPass );
+        verifyNotNullNorEmptyParameter("dbPass", dbPass);
         this.dbPass = dbPass;
     }
 
@@ -125,7 +125,7 @@ public class MessagesBox extends Box {
     public void setDbTable(
                             String dbTable ) {
 
-        verifyNotNullNorEmptyParameter( "dbTable", dbTable );
+        verifyNotNullNorEmptyParameter("dbTable", dbTable);
         this.dbTable = dbTable;
     }
 
@@ -152,12 +152,12 @@ public class MessagesBox extends Box {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "Messages Box: host = " + host );
-        sb.append( ", db name = " + dbName );
-        sb.append( ", db user = " + dbUser );
-        sb.append( ", db pass = " + dbPass );
-        sb.append( ", db table = " + dbTable );
-        sb.append( super.toString() );
+        sb.append("Messages Box: host = " + host);
+        sb.append(", db name = " + dbName);
+        sb.append(", db user = " + dbUser);
+        sb.append(", db pass = " + dbPass);
+        sb.append(", db table = " + dbTable);
+        sb.append(super.toString());
 
         return sb.toString();
     }

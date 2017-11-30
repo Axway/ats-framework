@@ -51,16 +51,16 @@ abstract class Box implements Serializable {
     public String getProperty(
                                String name ) {
 
-        return properties.getProperty( name );
+        return properties.getProperty(name);
     }
 
     /**
      * Get all properties associated with this box
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings( { "unchecked", "rawtypes" })
     public Map<String, Object> getProperties() {
 
-        return new HashMap<String, Object>( ( Map ) properties );
+        return new HashMap<String, Object>((Map) properties);
 
     }
 
@@ -74,7 +74,7 @@ abstract class Box implements Serializable {
                              String name,
                              String value ) {
 
-        properties.put( name, value );
+        properties.put(name, value);
 
     }
 
@@ -82,8 +82,8 @@ abstract class Box implements Serializable {
                                                    String key,
                                                    String value ) {
 
-        if( value == null || value.trim().length() == 0 ) {
-            throw new NullOrEmptyConfigurationPropertyException( key );
+        if (value == null || value.trim().length() == 0) {
+            throw new NullOrEmptyConfigurationPropertyException(key);
         }
     }
 
@@ -103,9 +103,9 @@ abstract class Box implements Serializable {
 
         Properties newProperties = new Properties();
 
-        for( Enumeration<?> keys = this.properties.propertyNames(); keys.hasMoreElements(); ) {
+        for (Enumeration<?> keys = this.properties.propertyNames(); keys.hasMoreElements();) {
             Object key = keys.nextElement();
-            newProperties.put( key, this.properties.get( key ) );
+            newProperties.put(key, this.properties.get(key));
         }
 
         return newProperties;

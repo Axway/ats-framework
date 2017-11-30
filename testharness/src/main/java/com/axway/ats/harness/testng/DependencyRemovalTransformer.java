@@ -37,8 +37,8 @@ public class DependencyRemovalTransformer implements IAnnotationTransformer {
                            Constructor testConstructor,
                            Method testMethod ) {
 
-        annotation.setDependsOnMethods( null );
-        annotation.setDependsOnGroups( null );
+        annotation.setDependsOnMethods(null);
+        annotation.setDependsOnGroups(null);
     }
 
 }

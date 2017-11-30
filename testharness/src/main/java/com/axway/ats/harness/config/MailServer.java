@@ -36,7 +36,7 @@ public class MailServer extends Box {
     void setHost(
                   String host ) {
 
-        verifyNotNullNorEmptyParameter( "host", host );
+        verifyNotNullNorEmptyParameter("host", host);
         this.host = host;
     }
 
@@ -54,7 +54,7 @@ public class MailServer extends Box {
     void setDefaultPass(
                          String defaultPass ) {
 
-        verifyNotNullNorEmptyParameter( "defaultPass", defaultPass );
+        verifyNotNullNorEmptyParameter("defaultPass", defaultPass);
         this.defaultPass = defaultPass;
     }
 
@@ -75,9 +75,9 @@ public class MailServer extends Box {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "Mail Server: host = " + host );
-        sb.append( ", dafault pass = " + defaultPass );
-        sb.append( super.toString() );
+        sb.append("Mail Server: host = " + host);
+        sb.append(", dafault pass = " + defaultPass);
+        sb.append(super.toString());
 
         return sb.toString();
     }

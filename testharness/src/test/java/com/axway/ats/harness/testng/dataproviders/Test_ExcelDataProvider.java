@@ -32,12 +32,12 @@ public class Test_ExcelDataProvider extends BaseTest {
      * @throws NoSuchMethodException
      * @throws DataProviderException
      */
-    @Test(expected = DataProviderException.class)
+    @Test( expected = DataProviderException.class)
     public void lessMethodParameters() throws RuntimeException, NoSuchMethodException, DataProviderException {
 
-        Method testMethod = findMethodByNameOnly( TestDetails.class, "test_scenario_1" );
+        Method testMethod = findMethodByNameOnly(TestDetails.class, "test_scenario_1");
         ExcelDataProvider excelDataProvider = new ExcelDataProvider();
-        excelDataProvider.fetchDataBlock( testMethod );
+        excelDataProvider.fetchDataBlock(testMethod);
 
     }
 
@@ -48,12 +48,12 @@ public class Test_ExcelDataProvider extends BaseTest {
      * @throws NoSuchMethodException
      * @throws DataProviderException
      */
-    @Test(expected = DataProviderException.class)
+    @Test( expected = DataProviderException.class)
     public void moreMethodParameters() throws RuntimeException, NoSuchMethodException, DataProviderException {
 
-        Method testMethod = findMethodByNameOnly( TestDetails.class, "dataSheet_usingTheMethodName" );
+        Method testMethod = findMethodByNameOnly(TestDetails.class, "dataSheet_usingTheMethodName");
         ExcelDataProvider excelDataProvider = new ExcelDataProvider();
-        excelDataProvider.fetchDataBlock( testMethod );
+        excelDataProvider.fetchDataBlock(testMethod);
 
     }
 
@@ -67,9 +67,9 @@ public class Test_ExcelDataProvider extends BaseTest {
     @Test
     public void testNormalReturn() throws RuntimeException, NoSuchMethodException, DataProviderException {
 
-        Method testMethod = findMethodByNameOnly( TestDetails.class, "dataSheet_usingEqualP" );
+        Method testMethod = findMethodByNameOnly(TestDetails.class, "dataSheet_usingEqualP");
         ExcelDataProvider excelDataProvider = new ExcelDataProvider();
-        excelDataProvider.fetchDataBlock( testMethod );
+        excelDataProvider.fetchDataBlock(testMethod);
 
     }
 
@@ -77,12 +77,12 @@ public class Test_ExcelDataProvider extends BaseTest {
                                          Class<?> classToSearch,
                                          String methodName ) throws NoSuchMethodException {
 
-        for( Method classMethod : classToSearch.getDeclaredMethods() ) {
-            if( classMethod.getName().equals( methodName ) ) {
+        for (Method classMethod : classToSearch.getDeclaredMethods()) {
+            if (classMethod.getName().equals(methodName)) {
                 return classMethod;
             }
         }
 
-        throw new NoSuchMethodException( methodName );
+        throw new NoSuchMethodException(methodName);
     }
 }

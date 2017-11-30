@@ -48,46 +48,46 @@ public class Test_CommonConfigurator extends BaseTest {
     private static final String nullPropertyConfigFileName    = "resourceNullProperty.properties";
     private static final String unknownPropertyConfigFileName = "resourceUnknownProperty.properties";
 
-    private static File configFile1;
-    private static File configFile2;
-    private static File nullPropertyConfigFile;
-    private static File unknownPropertyConfigFile;
+    private static File         configFile1;
+    private static File         configFile2;
+    private static File         nullPropertyConfigFile;
+    private static File         unknownPropertyConfigFile;
 
-    private static final String TEXTBOX1_HOST      = "perf-8.perf.domain.com";
-    private static final String TEXTBOX1_HOST2     = "perf-9.perf.domain.com";
-    private static final int    TEXTBOX1_DBPORT    = 12345;
-    private static final String TEXTBOX1_ADMINPASS = "PASSWORD123";
-    private static final String TEXTBOX1_DBNAME    = "dbname";
-    private static final String TEXTBOX1_DBUSER    = "axway_user";
-    private static final String TEXTBOX1_DBPASS    = "axway";
-    private static final String TEXTBOX1_DBTYPE    = "Oracle";
+    private static final String TEXTBOX1_HOST                 = "perf-8.perf.domain.com";
+    private static final String TEXTBOX1_HOST2                = "perf-9.perf.domain.com";
+    private static final int    TEXTBOX1_DBPORT               = 12345;
+    private static final String TEXTBOX1_ADMINPASS            = "PASSWORD123";
+    private static final String TEXTBOX1_DBNAME               = "dbname";
+    private static final String TEXTBOX1_DBUSER               = "axway_user";
+    private static final String TEXTBOX1_DBPASS               = "axway";
+    private static final String TEXTBOX1_DBTYPE               = "Oracle";
 
-    private static final String TEXTBOX2_HOST      = "10.11.12.13";
-    private static final String TEXTBOX2_ADMINUSER = "admin";
+    private static final String TEXTBOX2_HOST                 = "10.11.12.13";
+    private static final String TEXTBOX2_ADMINUSER            = "admin";
 
-    private static final String MAILSERVER_HOST        = "exch2003.perf.domain.com";
-    private static final String MAILSERVER_DEFAULTPASS = "PASSWORD123";
+    private static final String MAILSERVER_HOST               = "exch2003.perf.domain.com";
+    private static final String MAILSERVER_DEFAULTPASS        = "PASSWORD123";
 
-    private static final String MESSAGEBOX_HOST    = "domain.com";
-    private static final String MESSAGEBOX_DBNAME  = "messages";
-    private static final String MESSAGEBOX_DBUSER  = "root";
-    private static final String MESSAGEBOX_DBPASS  = "axway";
-    private static final String MESSAGEBOX_DBTABLE = "messages_axway";
+    private static final String MESSAGEBOX_HOST               = "domain.com";
+    private static final String MESSAGEBOX_DBNAME             = "messages";
+    private static final String MESSAGEBOX_DBUSER             = "root";
+    private static final String MESSAGEBOX_DBPASS             = "axway";
+    private static final String MESSAGEBOX_DBTABLE            = "messages_axway";
 
     @BeforeClass
     public static void setUpTest_TestDataConfigurator() throws URISyntaxException {
 
-        URL configFile1URL = Test_CommonConfigurator.class.getResource( configFile1Name );
-        configFile1 = new File( configFile1URL.toURI() );
+        URL configFile1URL = Test_CommonConfigurator.class.getResource(configFile1Name);
+        configFile1 = new File(configFile1URL.toURI());
 
-        URL configFile2URL = Test_CommonConfigurator.class.getResource( configFile2Name );
-        configFile2 = new File( configFile2URL.toURI() );
+        URL configFile2URL = Test_CommonConfigurator.class.getResource(configFile2Name);
+        configFile2 = new File(configFile2URL.toURI());
 
-        URL nullPropertyConfigFileURL = Test_CommonConfigurator.class.getResource( nullPropertyConfigFileName );
-        nullPropertyConfigFile = new File( nullPropertyConfigFileURL.toURI() );
+        URL nullPropertyConfigFileURL = Test_CommonConfigurator.class.getResource(nullPropertyConfigFileName);
+        nullPropertyConfigFile = new File(nullPropertyConfigFileURL.toURI());
 
-        URL unknownPropertyConfigFileURL = Test_CommonConfigurator.class.getResource( unknownPropertyConfigFileName );
-        unknownPropertyConfigFile = new File( unknownPropertyConfigFileURL.toURI() );
+        URL unknownPropertyConfigFileURL = Test_CommonConfigurator.class.getResource(unknownPropertyConfigFileName);
+        unknownPropertyConfigFile = new File(unknownPropertyConfigFileURL.toURI());
     }
 
     @Before
@@ -95,9 +95,9 @@ public class Test_CommonConfigurator extends BaseTest {
                         SecurityException, NoSuchMethodException {
 
         //re-initialize the repository and configurator
-        Method initMethod = ConfigurationRepository.class.getDeclaredMethod( "initialize", new Class<?>[]{} );
-        initMethod.setAccessible( true );
-        initMethod.invoke( ConfigurationRepository.getInstance(), new Object[]{} );
+        Method initMethod = ConfigurationRepository.class.getDeclaredMethod("initialize", new Class<?>[]{});
+        initMethod.setAccessible(true);
+        initMethod.invoke(ConfigurationRepository.getInstance(), new Object[]{});
 
         CommonConfigurator.clearInstance();
     }
@@ -106,49 +106,49 @@ public class Test_CommonConfigurator extends BaseTest {
     public void registerConfigFile() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
     }
 
     @Test
     public void registerConfigFileFromClasspath() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFileFromClasspath( "/com/axway/ats/harness/config/resource2.xml" );
+        testDataConfigurator.registerConfigFileFromClasspath("/com/axway/ats/harness/config/resource2.xml");
     }
 
-    @Test(expected = ConfigSourceDoesNotExistException.class)
+    @Test( expected = ConfigSourceDoesNotExistException.class)
     public void registerConfigFileNegative() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( "dasdasd" );
+        testDataConfigurator.registerConfigFile("dasdasd");
     }
 
-    @Test(expected = ConfigSourceDoesNotExistException.class)
+    @Test( expected = ConfigSourceDoesNotExistException.class)
     public void registerConfigFileFromClasspathNegative() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFileFromClasspath( "/asdfasdfas" );
+        testDataConfigurator.registerConfigFileFromClasspath("/asdfasdfas");
     }
 
     @Test
     public void testBoxProperties() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
-        TestBox textbox1 = testDataConfigurator.getTestBox( "testbox1" );
-        TestBox textbox2 = testDataConfigurator.getTestBox( "testbox2" );
+        TestBox textbox1 = testDataConfigurator.getTestBox("testbox1");
+        TestBox textbox2 = testDataConfigurator.getTestBox("testbox2");
 
-        assertEquals( TEXTBOX1_HOST, textbox1.getHost() );
-        assertEquals( TEXTBOX1_DBPORT, textbox1.getDbPort() );
-        assertEquals( TEXTBOX1_ADMINPASS, textbox1.getAdminPass() );
-        assertEquals( TEXTBOX1_DBNAME, textbox1.getDbName() );
-        assertEquals( TEXTBOX1_DBUSER, textbox1.getDbUser() );
-        assertEquals( TEXTBOX1_DBPASS, textbox1.getDbPass() );
-        assertEquals( TEXTBOX1_DBTYPE.toLowerCase(), textbox1.getDbType().toString().toLowerCase() );
+        assertEquals(TEXTBOX1_HOST, textbox1.getHost());
+        assertEquals(TEXTBOX1_DBPORT, textbox1.getDbPort());
+        assertEquals(TEXTBOX1_ADMINPASS, textbox1.getAdminPass());
+        assertEquals(TEXTBOX1_DBNAME, textbox1.getDbName());
+        assertEquals(TEXTBOX1_DBUSER, textbox1.getDbUser());
+        assertEquals(TEXTBOX1_DBPASS, textbox1.getDbPass());
+        assertEquals(TEXTBOX1_DBTYPE.toLowerCase(), textbox1.getDbType().toString().toLowerCase());
 
-        assertEquals( TEXTBOX2_HOST, textbox2.getHost() );
-        assertEquals( TEXTBOX2_ADMINUSER, textbox2.getAdminUser() );
+        assertEquals(TEXTBOX2_HOST, textbox2.getHost());
+        assertEquals(TEXTBOX2_ADMINUSER, textbox2.getAdminUser());
     }
 
     @Test
@@ -156,124 +156,125 @@ public class Test_CommonConfigurator extends BaseTest {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
 
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
-        TestBox textbox1 = testDataConfigurator.getTestBox( "testbox1" );
-        assertEquals( TEXTBOX1_HOST, textbox1.getHost() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
+        TestBox textbox1 = testDataConfigurator.getTestBox("testbox1");
+        assertEquals(TEXTBOX1_HOST, textbox1.getHost());
 
-        testDataConfigurator.registerConfigFile( configFile2.getAbsolutePath() );
-        textbox1 = testDataConfigurator.getTestBox( "testbox1" );
-        assertEquals( TEXTBOX1_HOST2, textbox1.getHost() );
+        testDataConfigurator.registerConfigFile(configFile2.getAbsolutePath());
+        textbox1 = testDataConfigurator.getTestBox("testbox1");
+        assertEquals(TEXTBOX1_HOST2, textbox1.getHost());
 
-        testDataConfigurator.setTempProperty( "common.testboxes.testbox1.host", "host1" );
-        textbox1 = testDataConfigurator.getTestBox( "testbox1" );
-        assertEquals( "host1", textbox1.getHost() );
+        testDataConfigurator.setTempProperty("common.testboxes.testbox1.host", "host1");
+        textbox1 = testDataConfigurator.getTestBox("testbox1");
+        assertEquals("host1", textbox1.getHost());
 
         testDataConfigurator.clearTempProperties();
-        textbox1 = testDataConfigurator.getTestBox( "testbox1" );
-        assertEquals( TEXTBOX1_HOST2, textbox1.getHost() );
+        textbox1 = testDataConfigurator.getTestBox("testbox1");
+        assertEquals(TEXTBOX1_HOST2, textbox1.getHost());
     }
 
     @Test
     public void testGetTestBoxes() {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
         List<TestBox> testBoxes = testDataConfigurator.getTestBoxes();
-        if( testBoxes == null || testBoxes.size() != 2 ) {
+        if (testBoxes == null || testBoxes.size() != 2) {
             throw new AssertionFailedError();
         }
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test( expected = ConfigurationException.class)
     public void testBoxNegative() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
-        testDataConfigurator.getTestBox( "INVALID_TEST_BOX" );
+        testDataConfigurator.getTestBox("INVALID_TEST_BOX");
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test( expected = ConfigurationException.class)
     public void nullProperty() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( nullPropertyConfigFile.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(nullPropertyConfigFile.getAbsolutePath());
     }
 
     @Test
     public void unknownProperty() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( unknownPropertyConfigFile.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(unknownPropertyConfigFile.getAbsolutePath());
 
         ConfigurationRepository.getInstance();
-        TestBox testboxUnknownProperty = testDataConfigurator.getTestBox( "testboxUnknownProperty" );
-        assertEquals( "value1", testboxUnknownProperty.getProperty( "someUnknownProperty" ) );
+        TestBox testboxUnknownProperty = testDataConfigurator.getTestBox("testboxUnknownProperty");
+        assertEquals("value1", testboxUnknownProperty.getProperty("someUnknownProperty"));
     }
 
     @Test
     public void messageBoxProperties() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
-        MessagesBox msgBox = testDataConfigurator.getMessagesBox( "axway" );
-        assertEquals( MESSAGEBOX_HOST, msgBox.getHost() );
-        assertEquals( MESSAGEBOX_DBNAME, msgBox.getDbName() );
-        assertEquals( MESSAGEBOX_DBUSER, msgBox.getDbUser() );
-        assertEquals( MESSAGEBOX_DBPASS, msgBox.getDbPass() );
-        assertEquals( MESSAGEBOX_DBTABLE, msgBox.getDbTable() );
+        MessagesBox msgBox = testDataConfigurator.getMessagesBox("axway");
+        assertEquals(MESSAGEBOX_HOST, msgBox.getHost());
+        assertEquals(MESSAGEBOX_DBNAME, msgBox.getDbName());
+        assertEquals(MESSAGEBOX_DBUSER, msgBox.getDbUser());
+        assertEquals(MESSAGEBOX_DBPASS, msgBox.getDbPass());
+        assertEquals(MESSAGEBOX_DBTABLE, msgBox.getDbTable());
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test( expected = ConfigurationException.class)
     public void messageBoxNegative() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
-        testDataConfigurator.getMessagesBox( "INVALID_MESSAGE_BOX" );
+        testDataConfigurator.getMessagesBox("INVALID_MESSAGE_BOX");
     }
 
     @Test
     public void mailServerProperties() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
-        MailServer mailServer = testDataConfigurator.getMailServer( "exchange" );
-        assertEquals( MAILSERVER_HOST, mailServer.getHost() );
-        assertEquals( MAILSERVER_DEFAULTPASS, mailServer.getDefaultPass() );
+        MailServer mailServer = testDataConfigurator.getMailServer("exchange");
+        assertEquals(MAILSERVER_HOST, mailServer.getHost());
+        assertEquals(MAILSERVER_DEFAULTPASS, mailServer.getDefaultPass());
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test( expected = ConfigurationException.class)
     public void mailServerNegative() throws ConfigurationException {
 
         CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
-        testDataConfigurator.registerConfigFile( configFile1.getAbsolutePath() );
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
-        testDataConfigurator.getMailServer( "INVALID_MAIL_SERVER" );
+        testDataConfigurator.getMailServer("INVALID_MAIL_SERVER");
     }
 
     @Test
     public void testLocalHost_HostLocality() {
+
         String host = "localhost";
-        CommonConfigurator.getInstance().setHostLocality( host, false );
-        boolean isLocal = HostUtils.isLocalHost( host );
-        HostUtils.setHostLocality( host, true); // revert before assert so fail should not leave modified locality globally
-        Assert.assertFalse( isLocal  );
+        CommonConfigurator.getInstance().setHostLocality(host, false);
+        boolean isLocal = HostUtils.isLocalHost(host);
+        HostUtils.setHostLocality(host, true); // revert before assert so fail should not leave modified locality globally
+        Assert.assertFalse(isLocal);
 
         host = "127.0.0.1";
-        CommonConfigurator.getInstance().setHostLocality( host, false );
-        isLocal = HostUtils.isLocalHost( host );
-        HostUtils.setHostLocality( host, true); // revert
-        Assert.assertFalse( isLocal );
+        CommonConfigurator.getInstance().setHostLocality(host, false);
+        isLocal = HostUtils.isLocalHost(host);
+        HostUtils.setHostLocality(host, true); // revert
+        Assert.assertFalse(isLocal);
 
         host = "my.hostname.localD123";
-        CommonConfigurator.getInstance().setHostLocality( host, true );
-        isLocal = HostUtils.isLocalHost( host );
-        HostUtils.setHostLocality( host, false); // revert
-        Assert.assertTrue( isLocal );
+        CommonConfigurator.getInstance().setHostLocality(host, true);
+        isLocal = HostUtils.isLocalHost(host);
+        HostUtils.setHostLocality(host, false); // revert
+        Assert.assertTrue(isLocal);
 
     }
 }

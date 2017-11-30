@@ -35,7 +35,7 @@ public class AtsReportListener implements IReporter {
     private String         mailSubjectFormat = "Report for automated runs. Execution status - ";
 
     public AtsReportListener() {
-        ReportAppender.setCombinedHtmlMailReport( true );
+        ReportAppender.setCombinedHtmlMailReport(true);
     }
 
     @Override
@@ -45,15 +45,15 @@ public class AtsReportListener implements IReporter {
                                 String arg2 ) {
 
         //we just need the report format, that why we set other fields null
-        ReportFormatter reportFormatter = new ReportFormatter( ReportAppender.getRuns(),
-                                                               mailSubjectFormat,
-                                                               null,
-                                                               null,
-                                                               0,
-                                                               null );
+        ReportFormatter reportFormatter = new ReportFormatter(ReportAppender.getRuns(),
+                                                              mailSubjectFormat,
+                                                              null,
+                                                              null,
+                                                              0,
+                                                              null);
         // send report by mail
-        MailReportSender mailReportSender = new MailReportSender( reportFormatter.getDescription(),
-                                                                  reportFormatter.toHtml() );
+        MailReportSender mailReportSender = new MailReportSender(reportFormatter.getDescription(),
+                                                                 reportFormatter.toHtml());
         mailReportSender.send();
 
     }

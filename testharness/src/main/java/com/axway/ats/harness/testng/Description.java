@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 /**
  * Provides some description about a test which is used while logging into the log db
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Retention( RetentionPolicy.RUNTIME)
+@Target( ElementType.METHOD)
 public @interface Description {
 
     /**

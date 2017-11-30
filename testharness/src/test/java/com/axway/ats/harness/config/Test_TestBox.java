@@ -28,125 +28,125 @@ public class Test_TestBox extends BaseTest {
     private static final String TOO_HIGH_PORT_NUMBER_STR     = "" + 64 * 1024 + 1;
     private static final String NOT_A_NUMBER_PORT_STR        = "1ab";
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testHostNull() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setHost( null );
+        testBox.setHost(null);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testHostEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setHost( ONLY_SPACE_STR ); // test trim too
+        testBox.setHost(ONLY_SPACE_STR); // test trim too
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbPortNull() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbPort( null );
+        testBox.setDbPort(null);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbPortEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbPort( ONLY_SPACE_STR );
+        testBox.setDbPort(ONLY_SPACE_STR);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class)
     public void testDbPortNegativeInteger() throws IllegalArgumentException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbPort( NEGATIVE_NUMBER_FOR_PORT_STR );
+        testBox.setDbPort(NEGATIVE_NUMBER_FOR_PORT_STR);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class)
     public void testDbPortTooHigh() throws IllegalArgumentException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbPort( TOO_HIGH_PORT_NUMBER_STR );
+        testBox.setDbPort(TOO_HIGH_PORT_NUMBER_STR);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class)
     public void testDbPortNotANumber() throws IllegalArgumentException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbPort( NOT_A_NUMBER_PORT_STR );
+        testBox.setDbPort(NOT_A_NUMBER_PORT_STR);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbNameNull() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbName( null );
+        testBox.setDbName(null);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbNameEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbName( ONLY_SPACE_STR );
+        testBox.setDbName(ONLY_SPACE_STR);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbTypeNull() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbType( null );
+        testBox.setDbType(null);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbTypeEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbType( ONLY_SPACE_STR );
+        testBox.setDbType(ONLY_SPACE_STR);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testAdminUserNull() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setAdminUser( null );
+        testBox.setAdminUser(null);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testAdminUserEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setAdminUser( ONLY_SPACE_STR );
+        testBox.setAdminUser(ONLY_SPACE_STR);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbUserNull() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbUser( null );
+        testBox.setDbUser(null);
     }
 
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbUserEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbUser( ONLY_SPACE_STR );
+        testBox.setDbUser(ONLY_SPACE_STR);
     }
 
     // Code expects not null. Possible misbehavior - why pass should not be null
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testAdminPassEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setAdminPass( ONLY_SPACE_STR );
+        testBox.setAdminPass(ONLY_SPACE_STR);
     }
 
     // Code expects not null. Possible misbehavior - why pass should not be null
-    @Test(expected = NullOrEmptyConfigurationPropertyException.class)
+    @Test( expected = NullOrEmptyConfigurationPropertyException.class)
     public void testDbPassEmpty() throws NullOrEmptyConfigurationPropertyException {
 
         TestBox testBox = new TestBox();
-        testBox.setDbPass( ONLY_SPACE_STR );
+        testBox.setDbPass(ONLY_SPACE_STR);
     }
 
 }

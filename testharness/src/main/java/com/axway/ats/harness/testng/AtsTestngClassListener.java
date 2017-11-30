@@ -29,8 +29,8 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  */
 public class AtsTestngClassListener {
 
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger( "com.axway.ats" );
-    private static String           lastSuiteName;
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats");
+    private static String            lastSuiteName;
 
     /**
      * Invoked when tests from a new class are about to start 
@@ -38,13 +38,13 @@ public class AtsTestngClassListener {
      */
     public void onStart( ITestClass testClass ) {
 
-        if( ActiveDbAppender.getCurrentInstance() != null ) {
+        if (ActiveDbAppender.getCurrentInstance() != null) {
 
             String suiteName = testClass.getName();
-            String suiteSimpleName = suiteName.substring( suiteName.lastIndexOf( '.' ) + 1 );
+            String suiteSimpleName = suiteName.substring(suiteName.lastIndexOf('.') + 1);
 
-            String packageName = getPackageName( suiteName );
-            logger.startSuite( packageName, suiteSimpleName );
+            String packageName = getPackageName(suiteName);
+            logger.startSuite(packageName, suiteSimpleName);
             lastSuiteName = suiteName;
         }
     }
@@ -54,13 +54,13 @@ public class AtsTestngClassListener {
      */
     public void onFinish() {
 
-        if( ActiveDbAppender.getCurrentInstance() != null ) {
-            if( lastSuiteName != null ) {
+        if (ActiveDbAppender.getCurrentInstance() != null) {
+            if (lastSuiteName != null) {
                 logger.endSuite();
                 lastSuiteName = null;
             } else { // should not happen
-                logger.error( "Wrong test listeners state",
-                              new RuntimeException( "AtsTestngClassListener.onFinish() method is invoked but seems that onStart() is not invoked first" ) );
+                logger.error("Wrong test listeners state",
+                             new RuntimeException("AtsTestngClassListener.onFinish() method is invoked but seems that onStart() is not invoked first"));
             }
         }
     }
@@ -77,12 +77,12 @@ public class AtsTestngClassListener {
 
     public static String getPackageName( String className ) {
 
-        if( !StringUtils.isNullOrEmpty( className ) ) {
-            int lastDotInx = className.lastIndexOf( '.' );
-            if( lastDotInx <= 0 ) {
+        if (!StringUtils.isNullOrEmpty(className)) {
+            int lastDotInx = className.lastIndexOf('.');
+            if (lastDotInx <= 0) {
                 return "";
             } else {
-                return className.substring( 0, lastDotInx );
+                return className.substring(0, lastDotInx);
             }
         } else {
             return "";

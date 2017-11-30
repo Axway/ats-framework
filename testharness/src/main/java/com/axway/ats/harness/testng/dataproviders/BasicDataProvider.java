@@ -50,54 +50,54 @@ public class BasicDataProvider {
      */
     protected InputStream getDataFileInputStream(
                                                   Method m ) throws DataProviderException,
-                                                            NoSuchPropertyException, ConfigurationException {
+                                                             NoSuchPropertyException, ConfigurationException {
 
         // Search data file folder in:
         // - test method TestOptions annotation
         // - test class TestOptions annotation
         // - test harness properties file
-        String dataFileFolder = getDataFileFolder( m );
+        String dataFileFolder = getDataFileFolder(m);
         // Search data file in(it will never return null):
         // - test class TestOptions annotation
         // - use the class name
         String dataFileName;
 
-        if( dataFileFolder != null ) {
+        if (dataFileFolder != null) {
 
-            dataFileName = getDataFileName( m, XLSX );
+            dataFileName = getDataFileName(m, XLSX);
             // We know the data file folder. Check if the file exists.
-            File dataFile = new File( new File( dataFileFolder ), dataFileName );
+            File dataFile = new File(new File(dataFileFolder), dataFileName);
 
-            if( !dataFile.exists() ) {
-                dataFileName = getDataFileName( m, XLS );
-                dataFile = new File( new File( dataFileFolder ), dataFileName );
+            if (!dataFile.exists()) {
+                dataFileName = getDataFileName(m, XLS);
+                dataFile = new File(new File(dataFileFolder), dataFileName);
             }
 
             try {
-                return new FileInputStream( dataFile );
-            } catch( FileNotFoundException fnfe ) {
-                throw new DataProviderException( "Data file does not exist. Neither " + dataFile
-                                                 + " nor same name .xlsx file was found. " );
+                return new FileInputStream(dataFile);
+            } catch (FileNotFoundException fnfe) {
+                throw new DataProviderException("Data file does not exist. Neither " + dataFile
+                                                + " nor same name .xlsx file was found. ");
             }
         } else {
 
-            dataFileName = getDataFileName( m, XLSX );
+            dataFileName = getDataFileName(m, XLSX);
             // Data file folder is not specified.
             // Try to find the data file in the classpath.
-            InputStream fileInputStream = m.getDeclaringClass().getResourceAsStream( dataFileName );
+            InputStream fileInputStream = m.getDeclaringClass().getResourceAsStream(dataFileName);
 
-            if( fileInputStream != null ) {
+            if (fileInputStream != null) {
                 return fileInputStream;
             }
 
-            dataFileName = getDataFileName( m, XLS );
+            dataFileName = getDataFileName(m, XLS);
             // Data file folder is not specified.
             // Try to find the data file in the classpath.
-            fileInputStream = m.getDeclaringClass().getResourceAsStream( dataFileName );
+            fileInputStream = m.getDeclaringClass().getResourceAsStream(dataFileName);
 
-            if( fileInputStream == null ) {
-                throw new DataProviderException( "Data file does not exist. Neither " + dataFileName
-                                                 + " nor same name .xlsx was found in classpath" );
+            if (fileInputStream == null) {
+                throw new DataProviderException("Data file does not exist. Neither " + dataFileName
+                                                + " nor same name .xlsx was found in classpath");
             }
 
             return fileInputStream;
@@ -118,9 +118,9 @@ public class BasicDataProvider {
         String dataSheet = m.getName();
 
         // search thru a TestOptions annotation applied on test method
-        TestOptions testOptions = m.getAnnotation( TestOptions.class );
-        if( testOptions != null ) {
-            if( testOptions.dataSheet().length() > 0 ) {
+        TestOptions testOptions = m.getAnnotation(TestOptions.class);
+        if (testOptions != null) {
+            if (testOptions.dataSheet().length() > 0) {
                 dataSheet = testOptions.dataSheet();
             }
         }
@@ -148,8 +148,8 @@ public class BasicDataProvider {
         String dataFileName;
 
         // search thru a TestOptions annotation applied on test method
-        TestOptions testOptions = m.getAnnotation( TestOptions.class );
-        if( testOptions != null && testOptions.dataFile().length() > 0 ) {
+        TestOptions testOptions = m.getAnnotation(TestOptions.class);
+        if (testOptions != null && testOptions.dataFile().length() > 0) {
             dataFileName = testOptions.dataFile();
         } else {
             //either there was no TestOptions annotation or it did not have the dataFile attribute set
@@ -158,26 +158,26 @@ public class BasicDataProvider {
             dataFileName = declaringClass.getName() + fileExtension;
         }
 
-        return transformFileName( dataFileName );
+        return transformFileName(dataFileName);
     }
 
     private String transformFileName(
                                       String fileName ) throws DataProviderException {
 
-        int indexLastDot = fileName.lastIndexOf( '.' );
-        if( indexLastDot < 1 ) {
-            throw new DataProviderException( "No file extension found in file name: " + fileName );
+        int indexLastDot = fileName.lastIndexOf('.');
+        if (indexLastDot < 1) {
+            throw new DataProviderException("No file extension found in file name: " + fileName);
         }
 
-        String filePathAndName = fileName.substring( 0, indexLastDot );
-        String fileExtension = fileName.substring( indexLastDot + 1 );
+        String filePathAndName = fileName.substring(0, indexLastDot);
+        String fileExtension = fileName.substring(indexLastDot + 1);
 
         //if this is a fully qualified name put a slash in front of it
-        if( filePathAndName.indexOf( '.' ) > -1 ) {
+        if (filePathAndName.indexOf('.') > -1) {
             filePathAndName = "/" + filePathAndName;
         }
 
-        return filePathAndName.replaceAll( "\\.", "/" ) + "." + fileExtension;
+        return filePathAndName.replaceAll("\\.", "/") + "." + fileExtension;
     }
 
     /**
@@ -197,20 +197,20 @@ public class BasicDataProvider {
         TestOptions testOptions;
 
         // search thru a TestOptions annotation applied on test method
-        testOptions = m.getAnnotation( TestOptions.class );
-        if( testOptions != null ) {
+        testOptions = m.getAnnotation(TestOptions.class);
+        if (testOptions != null) {
             dataFileFolder = testOptions.dataFileFolder();
-            if( dataFileFolder.length() > 0 ) {
+            if (dataFileFolder.length() > 0) {
                 // the test method specifies the data file folder
                 return dataFileFolder;
             }
         }
 
         // search thru a TestOptions annotation applied on test class
-        testOptions = m.getDeclaringClass().getAnnotation( TestOptions.class );
-        if( testOptions != null ) {
+        testOptions = m.getDeclaringClass().getAnnotation(TestOptions.class);
+        if (testOptions != null) {
             dataFileFolder = testOptions.dataFileFolder();
-            if( dataFileFolder.length() > 0 ) {
+            if (dataFileFolder.length() > 0) {
                 // the test class specifies the data file folder
                 return dataFileFolder;
             }
@@ -218,7 +218,7 @@ public class BasicDataProvider {
 
         // search thru a test harness properties file
         dataFileFolder = TestHarnessConfigurator.getInstance().getSuitesRootDirectory();
-        if( dataFileFolder != null && !"".equals( dataFileFolder ) ) {
+        if (dataFileFolder != null && !"".equals(dataFileFolder)) {
             return dataFileFolder;
         }
 

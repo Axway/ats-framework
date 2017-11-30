@@ -25,13 +25,13 @@ import com.axway.ats.harness.testng.dataproviders.DataProviderType;
  */
 public class TestHarnessConfigurator extends AbstractConfigurator {
 
-    private static final String PROPERTIES_FILE_NAME = "/ats.harness.properties";
+    private static final String            PROPERTIES_FILE_NAME          = "/ats.harness.properties";
 
-    private static final String PROPERTY_DATA_PROVIDER        = "harness.dataprovider.type";
-    private static final String PROPERTY_TEST_CASES_DIRECTORY = "harness.dataprovider.testcasesroot";
+    private static final String            PROPERTY_DATA_PROVIDER        = "harness.dataprovider.type";
+    private static final String            PROPERTY_TEST_CASES_DIRECTORY = "harness.dataprovider.testcasesroot";
 
-    private DataProviderType propertyDataProvider;
-    private String           propertyTestcasesRoot;
+    private DataProviderType               propertyDataProvider;
+    private String                         propertyTestcasesRoot;
 
     /**
      * The singleton instance for this configurator
@@ -43,13 +43,13 @@ public class TestHarnessConfigurator extends AbstractConfigurator {
         super();
 
         //add the resource to the repository
-        addConfigFileFromClassPath( configurationSource, true , false);
+        addConfigFileFromClassPath(configurationSource, true, false);
     }
 
     public static synchronized TestHarnessConfigurator getInstance() {
 
-        if( instance == null ) {
-            instance = new TestHarnessConfigurator( PROPERTIES_FILE_NAME );
+        if (instance == null) {
+            instance = new TestHarnessConfigurator(PROPERTIES_FILE_NAME);
         }
 
         return instance;
@@ -74,15 +74,15 @@ public class TestHarnessConfigurator extends AbstractConfigurator {
     @Override
     protected void reloadData() {
 
-        String propertyDataProviderString = getProperty( PROPERTY_DATA_PROVIDER );
+        String propertyDataProviderString = getProperty(PROPERTY_DATA_PROVIDER);
         try {
-            propertyDataProvider = Enum.valueOf( DataProviderType.class,
-                                                 propertyDataProviderString.toUpperCase() );
-        } catch( IllegalArgumentException iae ) {
-            throw new ConfigurationException( "Data provider '" + propertyDataProviderString
-                                              + "' is not supported" );
+            propertyDataProvider = Enum.valueOf(DataProviderType.class,
+                                                propertyDataProviderString.toUpperCase());
+        } catch (IllegalArgumentException iae) {
+            throw new ConfigurationException("Data provider '" + propertyDataProviderString
+                                             + "' is not supported");
         }
 
-        propertyTestcasesRoot = getProperty( PROPERTY_TEST_CASES_DIRECTORY );
+        propertyTestcasesRoot = getProperty(PROPERTY_TEST_CASES_DIRECTORY);
     }
 }

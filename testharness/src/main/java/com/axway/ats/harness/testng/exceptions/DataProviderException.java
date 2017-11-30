@@ -39,7 +39,7 @@ public class DataProviderException extends Exception {
      */
     public DataProviderException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -53,7 +53,7 @@ public class DataProviderException extends Exception {
      */
     public DataProviderException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     /**
@@ -69,7 +69,7 @@ public class DataProviderException extends Exception {
     public DataProviderException( String message,
                                   Throwable cause ) {
 
-        super( message + "\nCAUSE: " + cause.getMessage(), cause );
+        super(message + "\nCAUSE: " + cause.getMessage(), cause);
     }
 
 }

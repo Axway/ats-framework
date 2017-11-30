@@ -33,7 +33,7 @@ import com.axway.ats.harness.testng.exceptions.DataProviderException;
 @PublicAtsApi
 public class ExcelDataProvider extends BasicDataProvider implements IDataProvider {
 
-    Logger sLog = Logger.getLogger( ExcelDataProvider.class );
+    Logger sLog = Logger.getLogger(ExcelDataProvider.class);
 
     /**
      * Returns a set of test data, depending on the {@link Method} that requires it. This specific implementation
@@ -50,23 +50,23 @@ public class ExcelDataProvider extends BasicDataProvider implements IDataProvide
      */
     public Object[][] fetchDataBlock(
                                       Method m ) throws DataProviderException, NoSuchPropertyException,
-                                                ConfigurationException {
+                                                 ConfigurationException {
 
-        InputStream dataFileInputStream = getDataFileInputStream( m );
-        String dataSheet = getDataSheet( m );
+        InputStream dataFileInputStream = getDataFileInputStream(m);
+        String dataSheet = getDataSheet(m);
 
-        ExcelParser excelParser = new ExcelParser( dataFileInputStream, dataSheet );
-        Object[][] data = excelParser.getDataBlock( m );
+        ExcelParser excelParser = new ExcelParser(dataFileInputStream, dataSheet);
+        Object[][] data = excelParser.getDataBlock(m);
 
         //When the number of test method input arguments is different than the number of columns
         //in the table feeding this test method a friendly RuntimeException exception is thrown
 
-        if( data.length != 0 ) {
+        if (data.length != 0) {
 
-            if( data[0].length != m.getParameterTypes().length ) {
+            if (data[0].length != m.getParameterTypes().length) {
 
-                throw new RuntimeException( "Unable to load data.Expected " + m.getParameterTypes().length
-                                            + " number of parameters while recieved " + data[0].length + "!" );
+                throw new RuntimeException("Unable to load data.Expected " + m.getParameterTypes().length
+                                           + " number of parameters while recieved " + data[0].length + "!");
             }
 
         }

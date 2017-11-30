@@ -44,34 +44,34 @@ import com.axway.ats.log.model.TestCaseResult;
 @PublicAtsApi
 public class AtsJunitTestListener extends RunListener {
 
-    private static final Logger     log                              = Logger.getLogger( AtsJunitTestListener.class );
+    private static final Logger      log                              = Logger.getLogger(AtsJunitTestListener.class);
 
-    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger( "com.axway.ats" );
+    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger("com.axway.ats");
 
-    private static final String     MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
+    private static final String      MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
 
-    private static final String     MSG__TEST_FAILED                 = "[JUnit]: TEST FAILED";
+    private static final String      MSG__TEST_FAILED                 = "[JUnit]: TEST FAILED";
 
-    private static final String     MSG__TEST_FAILED_ASSERTION_ERROR = "[JUnit]: ASSERTION ERROR. TEST FAILED";
+    private static final String      MSG__TEST_FAILED_ASSERTION_ERROR = "[JUnit]: ASSERTION ERROR. TEST FAILED";
 
-    private static final String     MSG__TEST_IGNORED                = "[JUnit]: TEST IGNORED due to @Ignore annotation";
+    private static final String      MSG__TEST_IGNORED                = "[JUnit]: TEST IGNORED due to @Ignore annotation";
 
     /**
      * Keeps track of last suite name (class with test methods)
      */
-    private static String           lastSuiteName;
+    private static String            lastSuiteName;
 
     /**
      * Keeps track of last started method. Used because listener is not notified for successfully ended method.
      * Only testFinished is invoked then and {@link Description} does not provide test result status.
      */
-    private String                  lastStartedMethod;
+    private String                   lastStartedMethod;
 
     /**
      * keep status about last running method because there is not notification that test passes.
      * If test finishes and this is not set to true (in testFailure()) than it is assumed that the test has passed.
      */
-    private boolean                 lastStartedMethodIsFailing;
+    private boolean                  lastStartedMethodIsFailing;
 
     /**
     *
@@ -80,26 +80,27 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testRunStarted( Description description ) throws Exception {
 
-        if( log.isDebugEnabled() ) { // currently always returns null for Description parameter
-            log.debug( "testRunStarted(): Called before any test is run. Description of all tests expected: "
-                       + description );
+        if (log.isDebugEnabled()) { // currently always returns null for Description parameter
+            log.debug("testRunStarted(): Called before any test is run. Description of all tests expected: "
+                      + description);
         }
-        String runNameSysProp = AtsSystemProperties.getPropertyAsString( AtsSystemProperties.TEST_HARNESS__JUNIT_RUN_NAME,
-                                                                         "JUnit run(nameless)" );
+        String runNameSysProp = AtsSystemProperties.getPropertyAsString(AtsSystemProperties.TEST_HARNESS__JUNIT_RUN_NAME,
+                                                                        "JUnit run(nameless)");
 
         String hostNameIp = "";
         try {
             InetAddress addr = InetAddress.getLocalHost();
             hostNameIp = addr.getHostName() + "/" + addr.getHostAddress();
 
-        } catch( UnknownHostException uhe ) {
+        } catch (UnknownHostException uhe) {
             hostNameIp = null;
         }
 
-        logger.startRun( runNameSysProp /* no suite name in JUnit */, CommonConfigurator.getInstance().getOsName(),
-                         CommonConfigurator.getInstance().getProductName(), CommonConfigurator.getInstance().getVersionName(),
-                         CommonConfigurator.getInstance().getBuildName(), hostNameIp );
-        super.testRunStarted( description );
+        logger.startRun(runNameSysProp /* no suite name in JUnit */, CommonConfigurator.getInstance().getOsName(),
+                        CommonConfigurator.getInstance().getProductName(),
+                        CommonConfigurator.getInstance().getVersionName(),
+                        CommonConfigurator.getInstance().getBuildName(), hostNameIp);
+        super.testRunStarted(description);
     }
 
     /**
@@ -109,18 +110,18 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testRunFinished( Result result ) throws Exception {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "testRunFinished(): result " + "| failure count: " + result.getFailureCount()
-                       + "| ignored count: " + result.getIgnoreCount() + "| tests run count: "
-                       + result.getRunCount() + "| Run time: " + result.getRunTime() + "ms." );
+        if (log.isDebugEnabled()) {
+            log.debug("testRunFinished(): result " + "| failure count: " + result.getFailureCount()
+                      + "| ignored count: " + result.getIgnoreCount() + "| tests run count: "
+                      + result.getRunCount() + "| Run time: " + result.getRunTime() + "ms.");
         }
-        if( lastSuiteName != null ) {
+        if (lastSuiteName != null) {
             logger.endSuite();
             lastSuiteName = null; // Run finished. A lastSuiteName should not be visible between runs
         }
         // end the run
         logger.endRun();
-        super.testRunFinished( result );
+        super.testRunFinished(result);
     }
 
     /**
@@ -130,17 +131,17 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testAssumptionFailure( Failure failure ) {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "testAssumptionFailure(): Test failed: " + failure.toString() + "| Description: "
-                       + failure.getDescription() );
+        if (log.isDebugEnabled()) {
+            log.debug("testAssumptionFailure(): Test failed: " + failure.toString() + "| Description: "
+                      + failure.getDescription());
         }
-        log.info( "Test assumption failure received. It will be stored in DB as test failed event." );
+        log.info("Test assumption failure received. It will be stored in DB as test failed event.");
         try {
-            testFailure( failure );
-        } catch( Exception e ) {
-            log.error( "Error while processing testFailure event", e );
+            testFailure(failure);
+        } catch (Exception e) {
+            log.error("Error while processing testFailure event", e);
         }
-        super.testAssumptionFailure( failure );
+        super.testAssumptionFailure(failure);
     }
 
     /**
@@ -149,30 +150,30 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testFinished( Description description ) throws Exception {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "testFinished(): description: " + description.getDisplayName() + "| is suite: "
-                       + description.isSuite() + "| is test: " + description.isTest() + "| test class: "
-                       + description.getClassName() + "| test method: " + description.getMethodName()
-                       + "| children: " + description.getChildren() );
+        if (log.isDebugEnabled()) {
+            log.debug("testFinished(): description: " + description.getDisplayName() + "| is suite: "
+                      + description.isSuite() + "| is test: " + description.isTest() + "| test class: "
+                      + description.getClassName() + "| test method: " + description.getMethodName()
+                      + "| children: " + description.getChildren());
         }
 
-        if( !lastStartedMethodIsFailing && lastStartedMethod.equals( description.getMethodName() ) ) {
+        if (!lastStartedMethodIsFailing && lastStartedMethod.equals(description.getMethodName())) {
             // successfully run method
-            logger.info( MSG__TEST_PASSED );
+            logger.info(MSG__TEST_PASSED);
             try {
                 // end a test case and scenario
-                logger.endTestcase( TestCaseResult.PASSED );
+                logger.endTestcase(TestCaseResult.PASSED);
                 sendTestEndEventToAgents();
-            } catch( Exception e ) {
+            } catch (Exception e) {
                 String msg = "UNEXPECTED EXCEPTION IN AutoLogTestListener@testFinished()";
                 try {
-                    logger.fatal( msg, e );
-                } catch( Exception e1 ) {
-                    System.err.println( TimeUtils.getFormattedDateTillMilliseconds()
-                                        + "UNEXPECTED EXCEPTION IN JUnit AutoLogTestListener@testFinished" );
+                    logger.fatal(msg, e);
+                } catch (Exception e1) {
+                    System.err.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + "UNEXPECTED EXCEPTION IN JUnit AutoLogTestListener@testFinished");
                     e.printStackTrace();
                     // log in console because DB logging might fail
-                    System.err.println( "The message above could not be logged:" );
+                    System.err.println("The message above could not be logged:");
                     e1.printStackTrace();
                 }
             }
@@ -180,7 +181,7 @@ public class AtsJunitTestListener extends RunListener {
             // Failure is already tracked in testFailure()
         }
         lastStartedMethodIsFailing = false; // reset status for next test to be run
-        super.testFinished( description );
+        super.testFinished(description);
     }
 
     /**
@@ -190,10 +191,10 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testStarted( Description description ) throws Exception {
 
-        if( log.isDebugEnabled() ) {
+        if (log.isDebugEnabled()) {
 
-            log.debug( "testStarted(): Called when an atomic test is about to be started. Description generally class and method: "
-                       + description ); //, new Exception( "debugging trace" ) );
+            log.debug("testStarted(): Called when an atomic test is about to be started. Description generally class and method: "
+                      + description); //, new Exception( "debugging trace" ) );
 
         }
         lastStartedMethodIsFailing = false;
@@ -201,33 +202,33 @@ public class AtsJunitTestListener extends RunListener {
 
         String suiteName;
         String suiteSimpleName;
-        String tcName = getTestName( description );
+        String tcName = getTestName(description);
         // Update last started method. Note that testStarted() is invoked even before @Before methods
         lastStartedMethod = description.getMethodName(); // TODO: check for overridden methods
-        String tcDescription = getTestDescription( description );
+        String tcDescription = getTestDescription(description);
 
         suiteName = testClass.getName(); // assuming not JUnit 3 class "TestSuite"
         suiteSimpleName = testClass.getSimpleName();
 
         // check if we need to start a new group
-        if( !suiteName.equals( lastSuiteName ) ) {
-            if( lastSuiteName != null ) {
+        if (!suiteName.equals(lastSuiteName)) {
+            if (lastSuiteName != null) {
                 logger.endSuite();
             }
 
-            String packName = suiteName.substring( 0, suiteName.lastIndexOf( '.' ) );
-            logger.startSuite( packName, suiteSimpleName );
+            String packName = suiteName.substring(0, suiteName.lastIndexOf('.'));
+            logger.startSuite(packName, suiteSimpleName);
             lastSuiteName = suiteName;
         }
 
         // start a scenario and test case
-        logger.startTestcase( suiteName, suiteSimpleName, tcName, "", tcDescription );
+        logger.startTestcase(suiteName, suiteSimpleName, tcName, "", tcDescription);
 
         // send TestStart event to all ATS agents
         TestcaseStateEventsDispacher.getInstance().onTestStart();
 
-        logger.info( "[JUnit]: Starting " + suiteName + "@" + tcName );
-        super.testStarted( description );
+        logger.info("[JUnit]: Starting " + suiteName + "@" + tcName);
+        super.testStarted(description);
     }
 
     /**
@@ -237,9 +238,9 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testFailure( Failure failure ) throws Exception {
 
-        if( log.isDebugEnabled() ) {
-            log.debug( "testFailure(): Test failed: " + failure.toString() + "| Description: "
-                       + failure.getDescription() );
+        if (log.isDebugEnabled()) {
+            log.debug("testFailure(): Test failed: " + failure.toString() + "| Description: "
+                      + failure.getDescription());
         }
         try {
             lastStartedMethodIsFailing = true;
@@ -248,23 +249,23 @@ public class AtsJunitTestListener extends RunListener {
 
             // if this is an assertion error, we need to log it
             Throwable failureException = failure.getException();
-            if( failureException instanceof AssertionError ) {
-                logger.error( MSG__TEST_FAILED_ASSERTION_ERROR, failureException ); //.getMessage() );
+            if (failureException instanceof AssertionError) {
+                logger.error(MSG__TEST_FAILED_ASSERTION_ERROR, failureException); //.getMessage() );
             } else {
-                logger.error( MSG__TEST_FAILED, failureException );
+                logger.error(MSG__TEST_FAILED, failureException);
             }
 
             //open a performance test scenario and test case
-            logger.endTestcase( TestCaseResult.FAILED );
+            logger.endTestcase(TestCaseResult.FAILED);
             sendTestEndEventToAgents();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             try {
-                logger.fatal( "UNEXPECTED EXCEPTION IN AutoLogTestListener@onTestFailure", e );
-            } catch( Exception e1 ) {
+                logger.fatal("UNEXPECTED EXCEPTION IN AutoLogTestListener@onTestFailure", e);
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
         } finally {
-            super.testFailure( failure );
+            super.testFailure(failure);
         }
     }
 
@@ -275,31 +276,31 @@ public class AtsJunitTestListener extends RunListener {
     @Override
     public void testIgnored( Description description ) throws Exception {
 
-        if( log.isDebugEnabled() ) {
-            log.info( "testIgnored(): description: " + description.getDisplayName() + "| is test: "
-                      + description.isTest() + "| test class: " + description.getClassName()
-                      + "| test method: " + description.getMethodName() + "| children: 0? =>"
-                      + description.getChildren() );
+        if (log.isDebugEnabled()) {
+            log.info("testIgnored(): description: " + description.getDisplayName() + "| is test: "
+                     + description.isTest() + "| test class: " + description.getClassName()
+                     + "| test method: " + description.getMethodName() + "| children: 0? =>"
+                     + description.getChildren());
         }
         // manually invoking testStarted()
-        testStarted( description );
+        testStarted(description);
 
         String ignoreDetails = "";
-        Ignore ignoreAnnotation = getMethod( description ).getAnnotation( Ignore.class );
-        if( ignoreAnnotation != null ) {
+        Ignore ignoreAnnotation = getMethod(description).getAnnotation(Ignore.class);
+        if (ignoreAnnotation != null) {
             ignoreDetails = ignoreAnnotation.value();
         }
-        if( ignoreDetails.isEmpty() ) {
-            logger.info( MSG__TEST_IGNORED );
+        if (ignoreDetails.isEmpty()) {
+            logger.info(MSG__TEST_IGNORED);
         } else {
-            logger.info( MSG__TEST_IGNORED + " Details: " + ignoreDetails );
+            logger.info(MSG__TEST_IGNORED + " Details: " + ignoreDetails);
         }
 
         //open a performance test scenario and test case
-        logger.endTestcase( TestCaseResult.SKIPPED );
+        logger.endTestcase(TestCaseResult.SKIPPED);
         sendTestEndEventToAgents();
 
-        super.testIgnored( description );
+        super.testIgnored(description);
     }
 
     private void sendTestEndEventToAgents() {
@@ -328,7 +329,7 @@ public class AtsJunitTestListener extends RunListener {
      */
     private Method getMethod( Description description ) {
 
-        if( description == null ) {
+        if (description == null) {
             throw new IllegalArgumentException();
         }
 
@@ -336,10 +337,10 @@ public class AtsJunitTestListener extends RunListener {
         Method testCaseMethod = null;
         try {
             testCaseMethod = description.getTestClass()
-                                        .getDeclaredMethod( description.getMethodName() /* parameterTypes */ );
-        } catch( Exception e ) {// NoSuchMethodException
-            log.error( "Could not get test method named " + description.getMethodName()
-                       + " in order to inspect it for Description annotation.", e );
+                                        .getDeclaredMethod(description.getMethodName() /* parameterTypes */ );
+        } catch (Exception e) {// NoSuchMethodException
+            log.error("Could not get test method named " + description.getMethodName()
+                      + " in order to inspect it for Description annotation.", e);
         }
         return testCaseMethod;
     }

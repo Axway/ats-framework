@@ -38,25 +38,25 @@ public class AtsDataProvider {
      * @throws ConfigurationException
      * @throws NoSuchPropertyException
      */
-    @DataProvider(name = "ConfigurableDataProvider")
+    @DataProvider( name = "ConfigurableDataProvider")
     public static Object[][] getTestData(
                                           Method m ) throws DataProviderException, NoSuchPropertyException,
-                                                    ConfigurationException {
+                                                     ConfigurationException {
 
         DataProviderType dataProviderType = TestHarnessConfigurator.getInstance().getDataProvider();
         IDataProvider dataProvider = null;
 
         // TODO: this should probably go in a factory
-        switch( dataProviderType ){
+        switch (dataProviderType) {
             case EXCEL: {
                 dataProvider = new ExcelDataProvider();
                 break;
             }
             default:
-                throw new DataProviderException( "Data provider '" + dataProviderType.toString()
-                                                 + "' is not supported" );
+                throw new DataProviderException("Data provider '" + dataProviderType.toString()
+                                                + "' is not supported");
         }
 
-        return dataProvider.fetchDataBlock( m );
+        return dataProvider.fetchDataBlock(m);
     }
 }

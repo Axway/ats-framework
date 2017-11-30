@@ -33,17 +33,17 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public final class CommonConfigurator extends AbstractConfigurator {
 
-    private static final String       TEST_BOXES_PATH     = "common.testboxes.";
-    private static final String       MESSAGE_BOXES_PATH  = "common.messageboxes.";
-    private static final String       MAIL_SERVERS_PATH   = "common.mailservers.";
-    private static final String       LOGGING_RUN_PATH    = "ats.db.logging.run.";
-    
+    private static final String       TEST_BOXES_PATH    = "common.testboxes.";
+    private static final String       MESSAGE_BOXES_PATH = "common.messageboxes.";
+    private static final String       MAIL_SERVERS_PATH  = "common.mailservers.";
+    private static final String       LOGGING_RUN_PATH   = "ats.db.logging.run.";
+
     private static final String       KEY__RUN_NAME      = "ats.db.logging.run.name";
     private static final String       KEY__OS_NAME       = "ats.db.logging.run.os";
     private static final String       KEY__PRODUCT_NAME  = "ats.db.logging.run.product";
     private static final String       KEY__VERSION_NAME  = "ats.db.logging.run.version";
-    private static final String       KEY__BUILD_NAME     = "ats.db.logging.run.build";
-    
+    private static final String       KEY__BUILD_NAME    = "ats.db.logging.run.build";
+
     public static final String        DEFAULT_RUN_NAME   = "Default Run Name";
 
     // Run parameters
@@ -52,7 +52,7 @@ public final class CommonConfigurator extends AbstractConfigurator {
     private String                    productName        = "Default Product Name";
     private String                    versionName        = "1.0.0";
     private String                    buildName          = "1000";
-    
+
     /**
      * The singleton instance for this configurator
      */
@@ -72,18 +72,18 @@ public final class CommonConfigurator extends AbstractConfigurator {
      * Map to hold all the mail servers data
      */
     private BoxesMap<MailServer>      mailServersMap     = new BoxesMap<MailServer>();
-    
+
     private CommonConfigurator( String configurationSource ) {
 
         super();
 
         //add the resource to the repository
         try {
-            addConfigFileFromClassPath( configurationSource, false, true /* overwrite defaults */ );
-        } catch( ConfigSourceDoesNotExistException e ) {
+            addConfigFileFromClassPath(configurationSource, false, true /* overwrite defaults */ );
+        } catch (ConfigSourceDoesNotExistException e) {
             //log a warning here, because this is just a default config source
-            log.warn( "Default config source '" + configurationSource
-                      + "' is not available and will not be loaded" );
+            log.warn("Default config source '" + configurationSource
+                     + "' is not available and will not be loaded");
         }
     }
 
@@ -94,8 +94,8 @@ public final class CommonConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public static synchronized CommonConfigurator getInstance() {
 
-        if( instance == null ) {
-            instance = new CommonConfigurator( "/ats.config.properties" );
+        if (instance == null) {
+            instance = new CommonConfigurator("/ats.config.properties");
         }
         return instance;
     }
@@ -117,9 +117,9 @@ public final class CommonConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public TestBox getTestBox( String name ) {
 
-        TestBox testBox = testBoxMap.get( name );
-        if( testBox == null ) {
-            throw new ConfigurationException( "No test box with name '" + name + "'" );
+        TestBox testBox = testBoxMap.get(name);
+        if (testBox == null) {
+            throw new ConfigurationException("No test box with name '" + name + "'");
         }
 
         return testBox;
@@ -134,7 +134,7 @@ public final class CommonConfigurator extends AbstractConfigurator {
     public List<TestBox> getTestBoxes() {
 
         List<TestBox> allTestBoxes = new ArrayList<TestBox>();
-        allTestBoxes.addAll( testBoxMap.values() );
+        allTestBoxes.addAll(testBoxMap.values());
         return allTestBoxes;
     }
 
@@ -147,9 +147,9 @@ public final class CommonConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public MessagesBox getMessagesBox( String name ) {
 
-        MessagesBox messagesBox = messageBoxMap.get( name );
-        if( messagesBox == null ) {
-            throw new ConfigurationException( "No messages box with name '" + name + "'" );
+        MessagesBox messagesBox = messageBoxMap.get(name);
+        if (messagesBox == null) {
+            throw new ConfigurationException("No messages box with name '" + name + "'");
         }
 
         return messagesBox;
@@ -164,14 +164,14 @@ public final class CommonConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public MailServer getMailServer( String name ) {
 
-        MailServer mailServer = mailServersMap.get( name );
-        if( mailServer == null ) {
-            throw new ConfigurationException( "No mail server with name '" + name + "'" );
+        MailServer mailServer = mailServersMap.get(name);
+        if (mailServer == null) {
+            throw new ConfigurationException("No mail server with name '" + name + "'");
         }
 
         return mailServer;
     }
-    
+
     public String getRunName() {
 
         return runName;
@@ -205,12 +205,12 @@ public final class CommonConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void registerConfigFile( String fileName ) {
 
-        if( StringUtils.isNullOrEmpty( fileName ) ) {
-            throw new ConfigurationException( "Null or empty file path: '" + fileName + "'" );
+        if (StringUtils.isNullOrEmpty(fileName)) {
+            throw new ConfigurationException("Null or empty file path: '" + fileName + "'");
         }
         fileName = fileName.trim();
 
-        addConfigFile( fileName );
+        addConfigFile(fileName);
     }
 
     /**
@@ -221,55 +221,55 @@ public final class CommonConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void registerConfigFileFromClasspath( String classpathIdentifier ) {
 
-        if( StringUtils.isNullOrEmpty( classpathIdentifier ) ) {
-            throw new ConfigurationException( "Null or empty file path: '" + classpathIdentifier + "'" );
+        if (StringUtils.isNullOrEmpty(classpathIdentifier)) {
+            throw new ConfigurationException("Null or empty file path: '" + classpathIdentifier + "'");
         }
         classpathIdentifier = classpathIdentifier.trim();
 
-        if( !classpathIdentifier.startsWith( "/" ) ) {
+        if (!classpathIdentifier.startsWith("/")) {
             classpathIdentifier = "/" + classpathIdentifier;
         }
 
-        addConfigFileFromClassPath( classpathIdentifier, false, true );
+        addConfigFileFromClassPath(classpathIdentifier, false, true);
     }
 
     @Override
     protected void reloadData() {
 
         //reload the test boxes
-        Map<String, String> testBoxesProperties = getProperties( TEST_BOXES_PATH );
-        testBoxMap = new BoxesMap<TestBox>( testBoxesProperties, TEST_BOXES_PATH, TestBox.class );
+        Map<String, String> testBoxesProperties = getProperties(TEST_BOXES_PATH);
+        testBoxMap = new BoxesMap<TestBox>(testBoxesProperties, TEST_BOXES_PATH, TestBox.class);
 
         //reload the messages boxes
-        Map<String, String> messageBoxesProperties = getProperties( MESSAGE_BOXES_PATH );
-        messageBoxMap = new BoxesMap<MessagesBox>( messageBoxesProperties, MESSAGE_BOXES_PATH,
-                                                   MessagesBox.class );
+        Map<String, String> messageBoxesProperties = getProperties(MESSAGE_BOXES_PATH);
+        messageBoxMap = new BoxesMap<MessagesBox>(messageBoxesProperties, MESSAGE_BOXES_PATH,
+                                                  MessagesBox.class);
 
         //reload the mail servers
-        Map<String, String> mailServersProperties = getProperties( MAIL_SERVERS_PATH );
-        mailServersMap = new BoxesMap<MailServer>( mailServersProperties, MAIL_SERVERS_PATH,
-                                                   MailServer.class );
-        
-        //reload the test boxes
-        Map<String, String> loggingRunMap = getProperties( LOGGING_RUN_PATH );
+        Map<String, String> mailServersProperties = getProperties(MAIL_SERVERS_PATH);
+        mailServersMap = new BoxesMap<MailServer>(mailServersProperties, MAIL_SERVERS_PATH,
+                                                  MailServer.class);
 
-        if( loggingRunMap.containsKey( KEY__RUN_NAME ) ) {
-            runName = loggingRunMap.get( KEY__RUN_NAME );
+        //reload the test boxes
+        Map<String, String> loggingRunMap = getProperties(LOGGING_RUN_PATH);
+
+        if (loggingRunMap.containsKey(KEY__RUN_NAME)) {
+            runName = loggingRunMap.get(KEY__RUN_NAME);
         }
-        if( loggingRunMap.containsKey( KEY__OS_NAME ) ) {
-            osName = loggingRunMap.get( KEY__OS_NAME );
+        if (loggingRunMap.containsKey(KEY__OS_NAME)) {
+            osName = loggingRunMap.get(KEY__OS_NAME);
         }
-        if( loggingRunMap.containsKey( KEY__PRODUCT_NAME ) ) {
-            productName = loggingRunMap.get( KEY__PRODUCT_NAME );
+        if (loggingRunMap.containsKey(KEY__PRODUCT_NAME)) {
+            productName = loggingRunMap.get(KEY__PRODUCT_NAME);
         }
-        if( loggingRunMap.containsKey( KEY__VERSION_NAME ) ) {
-            versionName = loggingRunMap.get( KEY__VERSION_NAME );
+        if (loggingRunMap.containsKey(KEY__VERSION_NAME)) {
+            versionName = loggingRunMap.get(KEY__VERSION_NAME);
         }
-        if( loggingRunMap.containsKey( KEY__BUILD_NAME ) ) {
-            buildName = loggingRunMap.get( KEY__BUILD_NAME );
+        if (loggingRunMap.containsKey(KEY__BUILD_NAME)) {
+            buildName = loggingRunMap.get(KEY__BUILD_NAME);
         }
     }
-    
+
     /**
      * By default ATS tries to discover on its own if some host is a local or remote one. </br>
      * In case you find this discovery is not accurate, you can use this method 
@@ -287,10 +287,10 @@ public final class CommonConfigurator extends AbstractConfigurator {
 
         // this method currently does not read data from the configuration properties file
         // this may change in future
-        if( StringUtils.isNullOrEmpty( host ) ) {
-            throw new IllegalArgumentException( "Bad host parameter provided: '" + host + "'" );
+        if (StringUtils.isNullOrEmpty(host)) {
+            throw new IllegalArgumentException("Bad host parameter provided: '" + host + "'");
         }
 
-        HostUtils.setHostLocality( host, isLocal );
+        HostUtils.setHostLocality(host, isLocal);
     }
 }
