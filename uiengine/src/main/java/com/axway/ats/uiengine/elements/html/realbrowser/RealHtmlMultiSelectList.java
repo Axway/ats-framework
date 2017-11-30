@@ -45,17 +45,17 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
     public RealHtmlMultiSelectList( UiDriver uiDriver,
                                     UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "select" },
-                                                                    "select" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "select" },
+                                                                   "select");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
     }
@@ -70,15 +70,15 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
     public void setValue(
                           String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement element = RealHtmlElementLocator.findElement( this );
-            Select select = new Select( element );
-            select.selectByVisibleText( value );
-        } catch( NoSuchElementException nsee ) {
-            throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
-                                                  + this.toString() + ")" );
+            WebElement element = RealHtmlElementLocator.findElement(this);
+            Select select = new Select(element);
+            select.selectByVisibleText(value);
+        } catch (NoSuchElementException nsee) {
+            throw new SeleniumOperationException("Option with label '" + value + "' not found. ("
+                                                 + this.toString() + ")");
         }
         UiEngineUtilities.sleep();
     }
@@ -93,22 +93,22 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
     public void unsetValue(
                             String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        Select select = new Select( element );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        Select select = new Select(element);
         // select.deselectByVisibleText( value ); // this method doesn't throw an exception if the option doesn't exist
-        for( WebElement option : select.getOptions() ) {
-            if( option.getText().equals( value ) ) {
-                if( option.isSelected() ) {
+        for (WebElement option : select.getOptions()) {
+            if (option.getText().equals(value)) {
+                if (option.isSelected()) {
                     option.click();
                     UiEngineUtilities.sleep();
                 }
                 return;
             }
         }
-        throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
-                                                  + this.toString() + ")" );
+        throw new SeleniumOperationException("Option with label '" + value + "' not found. ("
+                                             + this.toString() + ")");
     }
 
     /**
@@ -118,14 +118,14 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
     @PublicAtsApi
     public String[] getValues() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        Select select = new Select( element );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        Select select = new Select(element);
         List<WebElement> selectedOptions = select.getAllSelectedOptions();
         String[] result = new String[selectedOptions.size()];
         int i = 0;
-        for( WebElement selectedOption : selectedOptions ) {
+        for (WebElement selectedOption : selectedOptions) {
             result[i++] = selectedOption.getText();
         }
         return result;
@@ -146,16 +146,16 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
         expectedValue = expectedValue.trim();
 
         String[] selectedValues = getValues();
-        for( String selectedValue : selectedValues ) {
+        for (String selectedValue : selectedValues) {
             selectedValue = selectedValue.trim();
-            if( selectedValue.equals( expectedValue ) ) {
+            if (selectedValue.equals(expectedValue)) {
                 isSelected = true;
                 break;
             }
         }
 
-        if( !isSelected ) {
-            throw new VerifyEqualityException( expectedValue, Arrays.toString( selectedValues ), this );
+        if (!isSelected) {
+            throw new VerifyEqualityException(expectedValue, Arrays.toString(selectedValues), this);
         }
     }
 
@@ -174,16 +174,16 @@ public class RealHtmlMultiSelectList extends HtmlMultiSelectList {
         notExpectedValue = notExpectedValue.trim();
 
         String[] selectedValues = getValues();
-        for( String selectedValue : selectedValues ) {
+        for (String selectedValue : selectedValues) {
             selectedValue = selectedValue.trim();
-            if( selectedValue.equals( notExpectedValue ) ) {
+            if (selectedValue.equals(notExpectedValue)) {
                 isSelected = true;
                 break;
             }
         }
 
-        if( isSelected ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (isSelected) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

@@ -34,34 +34,34 @@ import com.axway.ats.core.utils.IoUtils;
 @PublicAtsApi
 public class UiEngineConfigurator extends AbstractConfigurator {
 
-    private static Logger               log                                        = Logger.getLogger( UiEngineConfigurator.class );
+    private static Logger               log                                   = Logger.getLogger(UiEngineConfigurator.class);
     // the configuration file this class reads
-    private static final String         PROPERTIES_FILE_NAME                       = "/ats.uiengine.properties";
+    private static final String         PROPERTIES_FILE_NAME                  = "/ats.uiengine.properties";
 
     // the property keys in the configuration file
-    private static final String         PROPERTY_MAP_FILES_BASE_DIRECTORY          = "uiengine.mapFilesBaseDir";
-    private static final String         PROPERTY_COMMAND_DELAY                     = "uiengine.commandDelay";
-    private static final String         PROPERTY_ELEMENT_STATE_CHANGE_DELAY        = "uiengine.elementStateChangeDelay";
-    private static final String         PROPERTY_HIGHLIGHT_ELEMENTS                = "uiengine.highlightElements";
-    private static final String         PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS      = "uiengine.workWithInvisibleElements";
+    private static final String         PROPERTY_MAP_FILES_BASE_DIRECTORY     = "uiengine.mapFilesBaseDir";
+    private static final String         PROPERTY_COMMAND_DELAY                = "uiengine.commandDelay";
+    private static final String         PROPERTY_ELEMENT_STATE_CHANGE_DELAY   = "uiengine.elementStateChangeDelay";
+    private static final String         PROPERTY_HIGHLIGHT_ELEMENTS           = "uiengine.highlightElements";
+    private static final String         PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS = "uiengine.workWithInvisibleElements";
 
-    private static final String         PROPERTY_BROWSER_ACTION_TIMEOUT            = "uiengine.browser.action.timeout";
-    private static final String         PROPERTY_BROWSER_DOWNLOAD_DIR              = "browser.download.dir";
-    private static final String         PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES       = "browser.download.mimeTypes";
+    private static final String         PROPERTY_BROWSER_ACTION_TIMEOUT       = "uiengine.browser.action.timeout";
+    private static final String         PROPERTY_BROWSER_DOWNLOAD_DIR         = "browser.download.dir";
+    private static final String         PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES  = "browser.download.mimeTypes";
 
-    private static final String         PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT         = "uiengine.wait.page.to.load.timeout";
+    private static final String         PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT    = "uiengine.wait.page.to.load.timeout";
 
     /**
      * Options for starting Chrome Selenium driver.
      * These are not kept in the regular key-value map as it can be a complex object.
      */
     private static ChromeOptions        chromeOptions;
-    
+
     /**
      * Options for starting Firefox Selenium driver.
      * These are not kept in the regular key-value map as it can be a complex object.
      */
-    private static FirefoxOptions        firefoxOptions;
+    private static FirefoxOptions       firefoxOptions;
 
     /**
      * The singleton instance for this configurator
@@ -73,14 +73,14 @@ public class UiEngineConfigurator extends AbstractConfigurator {
         super();
 
         //add the resource to the repository
-        addConfigFileFromClassPath( configurationSource, true, false );
+        addConfigFileFromClassPath(configurationSource, true, false);
     }
 
     @PublicAtsApi
     public static synchronized UiEngineConfigurator getInstance() {
 
-        if( instance == null ) {
-            instance = new UiEngineConfigurator( PROPERTIES_FILE_NAME );
+        if (instance == null) {
+            instance = new UiEngineConfigurator(PROPERTIES_FILE_NAME);
         }
         return instance;
     }
@@ -91,7 +91,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getMapFilesBaseDir() {
 
-        return getProperty( PROPERTY_MAP_FILES_BASE_DIRECTORY );
+        return getProperty(PROPERTY_MAP_FILES_BASE_DIRECTORY);
     }
 
     /**
@@ -101,7 +101,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setMapFilesBaseDir( String mapFilesBaseDir ) {
 
-        setTempProperty( PROPERTY_MAP_FILES_BASE_DIRECTORY, mapFilesBaseDir );
+        setTempProperty(PROPERTY_MAP_FILES_BASE_DIRECTORY, mapFilesBaseDir);
     }
 
     /**
@@ -110,7 +110,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public int getCommandDelay() {
 
-        return getIntegerProperty( PROPERTY_COMMAND_DELAY );
+        return getIntegerProperty(PROPERTY_COMMAND_DELAY);
     }
 
     /**
@@ -120,7 +120,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setCommandDelay( int commandDelay ) {
 
-        setTempProperty( PROPERTY_COMMAND_DELAY, Integer.toString( commandDelay ) );
+        setTempProperty(PROPERTY_COMMAND_DELAY, Integer.toString(commandDelay));
     }
 
     /**
@@ -129,7 +129,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public int getElementStateChangeDelay() {
 
-        return getIntegerProperty( PROPERTY_ELEMENT_STATE_CHANGE_DELAY );
+        return getIntegerProperty(PROPERTY_ELEMENT_STATE_CHANGE_DELAY);
     }
 
     /**
@@ -139,7 +139,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setElementStateChangeDelay( int elementStateChangeDelay ) {
 
-        setTempProperty( PROPERTY_ELEMENT_STATE_CHANGE_DELAY, Integer.toString( elementStateChangeDelay ) );
+        setTempProperty(PROPERTY_ELEMENT_STATE_CHANGE_DELAY, Integer.toString(elementStateChangeDelay));
     }
 
     /**
@@ -148,7 +148,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getHighlightElements() {
 
-        return getBooleanProperty( PROPERTY_HIGHLIGHT_ELEMENTS );
+        return getBooleanProperty(PROPERTY_HIGHLIGHT_ELEMENTS);
     }
 
     /**
@@ -158,7 +158,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setHighlightElements( boolean highlightElements ) {
 
-        setTempProperty( PROPERTY_HIGHLIGHT_ELEMENTS, Boolean.toString( highlightElements ) );
+        setTempProperty(PROPERTY_HIGHLIGHT_ELEMENTS, Boolean.toString(highlightElements));
     }
 
     /**
@@ -168,8 +168,8 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     public int getBrowserActionTimeout() {
 
         try {
-            return getIntegerProperty( PROPERTY_BROWSER_ACTION_TIMEOUT );
-        } catch( NoSuchPropertyException nspe ) {
+            return getIntegerProperty(PROPERTY_BROWSER_ACTION_TIMEOUT);
+        } catch (NoSuchPropertyException nspe) {
             return -1;
         }
     }
@@ -183,7 +183,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setBrowserActionTimeout( int actionTimeout ) {
 
-        setTempProperty( PROPERTY_BROWSER_ACTION_TIMEOUT, Integer.toString( actionTimeout ) );
+        setTempProperty(PROPERTY_BROWSER_ACTION_TIMEOUT, Integer.toString(actionTimeout));
     }
 
     @Override
@@ -200,19 +200,19 @@ public class UiEngineConfigurator extends AbstractConfigurator {
 
         String downloadDir = null;
         try {
-            downloadDir = getProperty( PROPERTY_BROWSER_DOWNLOAD_DIR );
-        } catch( NoSuchPropertyException nspe ) {
-            log.warn( nspe.getMessage() );
+            downloadDir = getProperty(PROPERTY_BROWSER_DOWNLOAD_DIR);
+        } catch (NoSuchPropertyException nspe) {
+            log.warn(nspe.getMessage());
         }
-        if( downloadDir == null || downloadDir.trim().isEmpty() ) {
+        if (downloadDir == null || downloadDir.trim().isEmpty()) {
             try {
-                downloadDir = new File( AtsSystemProperties.SYSTEM_USER_TEMP_DIR ).getCanonicalPath();
-                setBrowserDownloadDir( downloadDir );
-            } catch( IOException e ) {
-                log.error( "Can't get canonical path of the system temp directory." );
+                downloadDir = new File(AtsSystemProperties.SYSTEM_USER_TEMP_DIR).getCanonicalPath();
+                setBrowserDownloadDir(downloadDir);
+            } catch (IOException e) {
+                log.error("Can't get canonical path of the system temp directory.");
             }
         }
-        return IoUtils.normalizeDirPath( downloadDir );
+        return IoUtils.normalizeDirPath(downloadDir);
     }
 
     /**
@@ -222,7 +222,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setBrowserDownloadDir( String directory ) {
 
-        setTempProperty( PROPERTY_BROWSER_DOWNLOAD_DIR, directory );
+        setTempProperty(PROPERTY_BROWSER_DOWNLOAD_DIR, directory);
     }
 
     /**
@@ -233,10 +233,10 @@ public class UiEngineConfigurator extends AbstractConfigurator {
 
         String downloadMimeTypes = null;
         try {
-            downloadMimeTypes = getProperty( PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES );
-        } catch( NoSuchPropertyException nspe ) {
+            downloadMimeTypes = getProperty(PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES);
+        } catch (NoSuchPropertyException nspe) {
             downloadMimeTypes = "";
-            log.warn( nspe.getMessage() );
+            log.warn(nspe.getMessage());
         }
         return downloadMimeTypes;
     }
@@ -249,7 +249,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setBrowserDownloadMimeTypes( String downloadMimeTypes ) {
 
-        setTempProperty( PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES, downloadMimeTypes );
+        setTempProperty(PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES, downloadMimeTypes);
     }
 
     /**
@@ -259,8 +259,8 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     public int getWaitPageToLoadTimeout() {
 
         try {
-            return getIntegerProperty( PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT );
-        } catch( NoSuchPropertyException nspe ) {
+            return getIntegerProperty(PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT);
+        } catch (NoSuchPropertyException nspe) {
             return -1;
         }
     }
@@ -273,7 +273,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setWaitPageToLoadTimeout( int pageLoadTimeout ) {
 
-        setTempProperty( PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT, Integer.toString( pageLoadTimeout ) );
+        setTempProperty(PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT, Integer.toString(pageLoadTimeout));
     }
 
     /**
@@ -284,8 +284,8 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     public boolean isWorkWithInvisibleElements() {
 
         try {
-            return getBooleanProperty( PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS );
-        } catch( NoSuchPropertyException nspe ) {
+            return getBooleanProperty(PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS);
+        } catch (NoSuchPropertyException nspe) {
             return Boolean.FALSE;
         }
     }
@@ -297,8 +297,8 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public void setWorkWithInvisibleElements( boolean workWithInvisibleElements ) {
 
-        setTempProperty( PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS,
-                         Boolean.toString( workWithInvisibleElements ) );
+        setTempProperty(PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS,
+                        Boolean.toString(workWithInvisibleElements));
     }
 
     /**
@@ -319,7 +319,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
 
         chromeOptions = options;
     }
-    
+
     /**
      * @return the Firefox options
      */

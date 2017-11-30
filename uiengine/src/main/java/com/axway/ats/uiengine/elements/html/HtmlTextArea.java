@@ -29,7 +29,7 @@ public abstract class HtmlTextArea extends UiTextArea {
     public HtmlTextArea( UiDriver uiDriver,
                          UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

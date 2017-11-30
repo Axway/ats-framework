@@ -48,7 +48,7 @@ public class MobileElementState {
 
         this.element = uiElement;
         this.elementProperties = uiElement.getElementProperties();
-        this.appiumDriver = ( AppiumDriver ) ( ( MobileDriver ) uiElement.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        this.appiumDriver = (AppiumDriver) ((MobileDriver) uiElement.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -58,12 +58,12 @@ public class MobileElementState {
     public void focus() {
 
         try {
-            MobileElement mobileElement = ( MobileElement ) MobileElementFinder.findElement( appiumDriver,
-                                                                                             element );
-            mobileElement.tap( 1, 100 );
-        } catch( Exception se ) {
-            throw new MobileOperationException( "Error trying to set the focus to " + getElementDescription(),
-                                                se );
+            MobileElement mobileElement = (MobileElement) MobileElementFinder.findElement(appiumDriver,
+                                                                                          element);
+            mobileElement.tap(1, 100);
+        } catch (Exception se) {
+            throw new MobileOperationException("Error trying to set the focus to " + getElementDescription(),
+                                               se);
         }
     }
 
@@ -76,9 +76,9 @@ public class MobileElementState {
     public void verifyExist() {
 
         boolean exists = isElementPresent();
-        if( !exists ) {
-            throw new VerificationException( getElementDescription()
-                                             + " does not exist while it is expected to exist" );
+        if (!exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " does not exist while it is expected to exist");
         }
     }
 
@@ -91,9 +91,9 @@ public class MobileElementState {
     public void verifyNotExist() {
 
         boolean exists = isElementPresent();
-        if( exists ) {
-            throw new VerificationException( getElementDescription()
-                                             + " exists while it is expected to not exist" );
+        if (exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " exists while it is expected to not exist");
         }
     }
 
@@ -106,7 +106,7 @@ public class MobileElementState {
     @PublicAtsApi
     public void waitToBecomeExisting() {
 
-        waitToBecomeExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -120,15 +120,15 @@ public class MobileElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementPresent() ) {
+            if (isElementPresent()) {
                 return;
             }
 
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element exist within " + millis + " ms"
-                                         + getElementDescription() );
+        throw new VerificationException("Failed to verify the element exist within " + millis + " ms"
+                                        + getElementDescription());
     }
 
     /**
@@ -140,7 +140,7 @@ public class MobileElementState {
     @PublicAtsApi
     public void waitToBecomeNotExisting() {
 
-        waitToBecomeNotExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeNotExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -154,15 +154,15 @@ public class MobileElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementPresent() ) {
+            if (!isElementPresent()) {
                 return;
             }
 
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element is not existing within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element is not existing within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -174,7 +174,7 @@ public class MobileElementState {
     @PublicAtsApi
     public void waitToBecomeDisplayed() {
 
-        waitToBecomeDisplayed( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeDisplayed(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -188,26 +188,26 @@ public class MobileElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementDisplayed() ) {
+            if (isElementDisplayed()) {
                 return;
             }
 
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become displayed within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become displayed within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     @PublicAtsApi
     public boolean isElementPresent() {
 
         try {
-            return MobileElementFinder.findElement( appiumDriver, element ) != null;
-        } catch( UnreachableBrowserException ube ) {
-            throw new MobileOperationException( "Check if there is connection to the target device and the Appium server is running",
-                                                ube );
-        } catch( Exception e ) {
+            return MobileElementFinder.findElement(appiumDriver, element) != null;
+        } catch (UnreachableBrowserException ube) {
+            throw new MobileOperationException("Check if there is connection to the target device and the Appium server is running",
+                                               ube);
+        } catch (Exception e) {
 
             // element is not present or got error checking if it is present
             return false;
@@ -218,11 +218,11 @@ public class MobileElementState {
     public boolean isElementDisplayed() {
 
         try {
-            return MobileElementFinder.findElement( appiumDriver, element ).isDisplayed();
-        } catch( UnreachableBrowserException ube ) {
-            throw new MobileOperationException( "Check if there is connection to the target device and the Appium server is running",
-                                                ube );
-        } catch( Exception e ) {
+            return MobileElementFinder.findElement(appiumDriver, element).isDisplayed();
+        } catch (UnreachableBrowserException ube) {
+            throw new MobileOperationException("Check if there is connection to the target device and the Appium server is running",
+                                               ube);
+        } catch (Exception e) {
 
             // element is not present or got error checking if it is present
             return false;
@@ -232,18 +232,18 @@ public class MobileElementState {
     private String getElementDescription() {
 
         StringBuilder desc = new StringBuilder();
-        desc.append( " '" );
-        if( element != null ) {
-            desc.append( element.toString() );
+        desc.append(" '");
+        if (element != null) {
+            desc.append(element.toString());
         } else {
-            desc.append( "Element " ).append( elementProperties.toString() );
+            desc.append("Element ").append(elementProperties.toString());
         }
 
         // append 'context' if not specified thru the element properties
-        if( elementProperties.getProperty( "context" ) == null ) {
-            desc.append( ", context=" + MobileElementFinder.defaultContext );
+        if (elementProperties.getProperty("context") == null) {
+            desc.append(", context=" + MobileElementFinder.defaultContext);
         }
-        desc.append( "'" );
+        desc.append("'");
         return desc.toString();
     }
 

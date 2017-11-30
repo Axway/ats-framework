@@ -29,7 +29,7 @@ public abstract class HtmlTree extends UiTree {
     public HtmlTree( UiDriver uiDriver,
                      UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

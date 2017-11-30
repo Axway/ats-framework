@@ -50,7 +50,6 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
     private static final String NOT_SUPPORTED_ACTION_MSG = "This action is not available for Hidden Browser";
 
-
     /**
      * @param uiElement the element of interest
      */
@@ -59,8 +58,8 @@ public class HiddenHtmlElementState implements IHtmlElementState {
         this.element = uiElement;
         this.elementProperties = uiElement.getElementProperties();
 
-        HiddenBrowserDriver browserDriver = ( HiddenBrowserDriver ) uiElement.getUiDriver();
-        webDriver = ( WebDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        HiddenBrowserDriver browserDriver = (HiddenBrowserDriver) uiElement.getUiDriver();
+        webDriver = (WebDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -72,9 +71,9 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     public void verifyExist() {
 
         boolean exists = isElementPresent();
-        if( !exists ) {
-            throw new VerificationException( getElementDescription()
-                                             + " does not exist while it is expected to exist" );
+        if (!exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " does not exist while it is expected to exist");
         }
     }
 
@@ -87,9 +86,9 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     public void verifyNotExist() {
 
         boolean exists = isElementPresent();
-        if( exists ) {
-            throw new VerificationException( getElementDescription()
-                                             + " exists while it is expected to not exist" );
+        if (exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " exists while it is expected to not exist");
         }
     }
 
@@ -102,7 +101,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeExisting() {
 
-        waitToBecomeExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -116,14 +115,15 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementPresent() ) {
+            if (isElementPresent()) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element exist within " + millis + " ms"
-                                         + getElementDescription()+".Please check your HTML page source.You may use HiddenHtmlEngine.getPageSource()." );
+        throw new VerificationException("Failed to verify the element exist within " + millis + " ms"
+                                        + getElementDescription()
+                                        + ".Please check your HTML page source.You may use HiddenHtmlEngine.getPageSource().");
     }
 
     /**
@@ -135,7 +135,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeNotExisting() {
 
-        waitToBecomeNotExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeNotExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -149,14 +149,14 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementPresent() ) {
+            if (!isElementPresent()) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element is not existing within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element is not existing within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -168,7 +168,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeDisplayed() {
 
-        waitToBecomeDisplayed( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeDisplayed(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -182,15 +182,15 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementDisplayed() ) {
+            if (isElementDisplayed()) {
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become displayed within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become displayed within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -202,7 +202,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeHidden() {
 
-        waitToBecomeHidden( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeHidden(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -216,15 +216,15 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementDisplayed() ) {
+            if (!isElementDisplayed()) {
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become hidden within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become hidden within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -236,7 +236,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeEnabled() {
 
-        waitToBecomeEnabled( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeEnabled(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -250,15 +250,15 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementEnabled() ) {
+            if (isElementEnabled()) {
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become enabled within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become enabled within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -270,7 +270,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeDisabled() {
 
-        waitToBecomeDisabled( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeDisabled(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -284,22 +284,23 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementEnabled() ) {
+            if (!isElementEnabled()) {
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become disabled within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become disabled within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     private String getElementDescription() {
 
-        return " '" + ( element != null
+        return " '" + (element != null
                                        ? element.toString()
-                                       : "Element " + elementProperties.toString() ) + "'";
+                                       : "Element " + elementProperties.toString())
+               + "'";
     }
 
     @Override
@@ -307,26 +308,26 @@ public class HiddenHtmlElementState implements IHtmlElementState {
 
         try {
 
-            if( ( element.getUiDriver() instanceof HiddenBrowserDriver )
-                && ( element instanceof UiAlert || element instanceof UiPrompt || element instanceof UiConfirm ) ) {
+            if ( (element.getUiDriver() instanceof HiddenBrowserDriver)
+                 && (element instanceof UiAlert || element instanceof UiPrompt || element instanceof UiConfirm)) {
                 return false;
             }
 
-            if( element instanceof UiAlert || element instanceof UiConfirm ) {
+            if (element instanceof UiAlert || element instanceof UiConfirm) {
                 Alert dialog = webDriver.switchTo().alert();
                 return dialog != null;
-            } else if( element instanceof UiPrompt ) {
+            } else if (element instanceof UiPrompt) {
 
                 Alert prompt = webDriver.switchTo().alert();
-                return prompt.getText() != null && !prompt.getText().equals( "false" );
+                return prompt.getText() != null && !prompt.getText().equals("false");
                 // return seleniumBrowser.isPromptPresent(); // Not implemented yet
             }
 
-            HiddenHtmlElementLocator.findElement( this.element, null, false );
+            HiddenHtmlElementLocator.findElement(this.element, null, false);
             return true;
-        } catch( NotFoundException nfe ) {
+        } catch (NotFoundException nfe) {
             return false;
-        } catch( ElementNotFoundException enfe ) {
+        } catch (ElementNotFoundException enfe) {
             return false;
         }
 
@@ -337,9 +338,9 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     public boolean isElementEnabled() {
 
         try {
-            HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this.element );
+            HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this.element);
             return element.isEnabled();
-        } catch( ElementNotFoundException nsee ) {
+        } catch (ElementNotFoundException nsee) {
             return false;
         }
     }
@@ -354,9 +355,9 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     public boolean isElementDisplayed() {
 
         try {
-            HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this.element );
+            HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this.element);
             return element.isDisplayed();
-        } catch( ElementNotFoundException nsee ) {
+        } catch (ElementNotFoundException nsee) {
             return false;
         }
     }
@@ -365,7 +366,7 @@ public class HiddenHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void focus() {
 
-        throw new NotSupportedOperationException( NOT_SUPPORTED_ACTION_MSG );
+        throw new NotSupportedOperationException(NOT_SUPPORTED_ACTION_MSG);
     }
 
     @Override

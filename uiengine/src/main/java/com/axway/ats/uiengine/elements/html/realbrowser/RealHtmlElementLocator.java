@@ -31,78 +31,78 @@ import com.axway.ats.uiengine.exceptions.ElementNotFoundException;
 import com.axway.ats.uiengine.internal.driver.InternalObjectsEnum;
 
 public class RealHtmlElementLocator {
-    private static Logger log = Logger.getLogger( RealHtmlElementLocator.class );
+    private static Logger log = Logger.getLogger(RealHtmlElementLocator.class);
 
     public static WebElement findElement( UiElement uiElement ) {
 
-        return findElement( uiElement, null, true );
+        return findElement(uiElement, null, true);
     }
 
     public static WebElement findElement( UiElement uiElement, String xpathSuffix, boolean verbose ) {
 
-        AbstractRealBrowserDriver browserDriver = ( AbstractRealBrowserDriver ) uiElement.getUiDriver();
-        WebDriver webDriver = ( WebDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
-        HtmlNavigator.getInstance().navigateToFrame( webDriver, uiElement );
+        AbstractRealBrowserDriver browserDriver = (AbstractRealBrowserDriver) uiElement.getUiDriver();
+        WebDriver webDriver = (WebDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
+        HtmlNavigator.getInstance().navigateToFrame(webDriver, uiElement);
 
         String xpath = uiElement.getElementProperties()
-                                .getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR );
+                                .getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR);
 
-        String css = uiElement.getElementProperty( "_css" );
+        String css = uiElement.getElementProperty("_css");
 
-        if( xpathSuffix != null ) {
+        if (xpathSuffix != null) {
             xpath += xpathSuffix;
         }
 
         List<WebElement> elements = null;
 
-        if( !StringUtils.isNullOrEmpty( css ) ) {
-            elements = webDriver.findElements( By.cssSelector( css ) );
+        if (!StringUtils.isNullOrEmpty(css)) {
+            elements = webDriver.findElements(By.cssSelector(css));
         } else {
-            elements = webDriver.findElements( By.xpath( xpath ) );
+            elements = webDriver.findElements(By.xpath(xpath));
         }
 
-        if( elements.size() == 0 ) {
-            throw new ElementNotFoundException( uiElement.toString() + " not found." );
-        } else if( elements.size() > 1 ) {
-            if( verbose ) {
+        if (elements.size() == 0) {
+            throw new ElementNotFoundException(uiElement.toString() + " not found.");
+        } else if (elements.size() > 1) {
+            if (verbose) {
 
-                log.warn( "More than one HTML elements were found having properties " + uiElement.toString()
-                          + ".Only the first HTML element will be used." );
+                log.warn("More than one HTML elements were found having properties " + uiElement.toString()
+                         + ".Only the first HTML element will be used.");
 
             }
         }
-        WebElement element = ( WebElement ) elements.get( 0 );
-        if( verbose ) {
+        WebElement element = (WebElement) elements.get(0);
+        if (verbose) {
 
-            log.debug( "Found element: " + element.toString() );
+            log.debug("Found element: " + element.toString());
         }
         return element;
     }
 
     public static List<WebElement> findElements( UiElement uiElement ) {
 
-        return findElements( uiElement, null, true );
+        return findElements(uiElement, null, true);
     }
 
     public static List<WebElement> findElements( UiElement uiElement, String xpathSuffix, boolean verbose ) {
 
-        AbstractRealBrowserDriver browserDriver = ( AbstractRealBrowserDriver ) uiElement.getUiDriver();
-        WebDriver webDriver = ( WebDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
-        HtmlNavigator.getInstance().navigateToFrame( webDriver, uiElement );
+        AbstractRealBrowserDriver browserDriver = (AbstractRealBrowserDriver) uiElement.getUiDriver();
+        WebDriver webDriver = (WebDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
+        HtmlNavigator.getInstance().navigateToFrame(webDriver, uiElement);
 
         String xpath = uiElement.getElementProperties()
-                                .getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR );
+                                .getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR);
 
-        String css = uiElement.getElementProperty( "_css" );
+        String css = uiElement.getElementProperty("_css");
 
-        if( xpathSuffix != null ) {
+        if (xpathSuffix != null) {
             xpath += xpathSuffix;
         }
 
-        if( !StringUtils.isNullOrEmpty( css ) ) {
-            return webDriver.findElements( By.cssSelector( css ) );
+        if (!StringUtils.isNullOrEmpty(css)) {
+            return webDriver.findElements(By.cssSelector(css));
         } else {
-            return webDriver.findElements( By.xpath( xpath ) );
+            return webDriver.findElements(By.xpath(xpath));
         }
 
     }

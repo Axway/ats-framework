@@ -45,27 +45,27 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingComponent extends UiElement {
 
     private static final String[] RULES = { "label,class",
-            "name,text,class,visible",
-            "name,text,class",
-            "name,class,visible",
-            "name,class",
-            "text,class,visible",
-            "text,class",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "index"                    };
+                                            "name,text,class,visible",
+                                            "name,text,class",
+                                            "name,class,visible",
+                                            "name,class",
+                                            "text,class,visible",
+                                            "text,class",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingComponent.class, Component.class );
+        SwingElementLocator.componentsMap.put(SwingComponent.class, Component.class);
     }
 
     public SwingComponent( UiDriver uiDriver,
                            UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -78,9 +78,9 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public Component getNativeComponent() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return SwingElementLocator.findFixture( this ).component();
+        return SwingElementLocator.findFixture(this).component();
     }
 
     /**
@@ -90,9 +90,9 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void click() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        click( MouseClickInfo.leftButton() );
+        click(MouseClickInfo.leftButton());
     }
 
     /**
@@ -102,9 +102,9 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void doubleClick() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        click( MouseClickInfo.leftButton().times( 2 ) );
+        click(MouseClickInfo.leftButton().times(2));
     }
 
     /**
@@ -114,9 +114,9 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void rightClick() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        click( MouseClickInfo.rightButton() );
+        click(MouseClickInfo.rightButton());
     }
 
     /**
@@ -126,9 +126,9 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void middleClick() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        click( MouseClickInfo.middleButton() );
+        click(MouseClickInfo.middleButton());
     }
 
     /**
@@ -138,11 +138,11 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void focus() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture( this );
+        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture(this);
 
-        componentFixture.robot.focus( componentFixture.target );
+        componentFixture.robot.focus(componentFixture.target);
     }
 
     /**
@@ -153,11 +153,11 @@ public class SwingComponent extends UiElement {
     private void click(
                         MouseClickInfo mouseClickInfo ) {
 
-        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture( this );
+        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture(this);
 
-        componentFixture.robot.click( componentFixture.target,
-                                      mouseClickInfo.button(),
-                                      mouseClickInfo.times() );
+        componentFixture.robot.click(componentFixture.target,
+                                     mouseClickInfo.button(),
+                                     mouseClickInfo.times());
 
     }
 
@@ -168,13 +168,13 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void drag() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture( this );
+        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture(this);
 
-        ComponentDragAndDrop componentDragAndDrop = new ComponentDragAndDrop( componentFixture.robot );
-        componentDragAndDrop.drag( componentFixture.target,
-                                   getComponentCenterLocation( componentFixture.target ) );
+        ComponentDragAndDrop componentDragAndDrop = new ComponentDragAndDrop(componentFixture.robot);
+        componentDragAndDrop.drag(componentFixture.target,
+                                  getComponentCenterLocation(componentFixture.target));
     }
 
     /**
@@ -184,13 +184,13 @@ public class SwingComponent extends UiElement {
     @PublicAtsApi
     public void drop() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture( this );
+        ComponentFixture<? extends Component> componentFixture = SwingElementLocator.findFixture(this);
 
-        ComponentDragAndDrop componentDragAndDrop = new ComponentDragAndDrop( componentFixture.robot );
-        componentDragAndDrop.drop( componentFixture.target,
-                                   getComponentCenterLocation( componentFixture.target ) );
+        ComponentDragAndDrop componentDragAndDrop = new ComponentDragAndDrop(componentFixture.robot);
+        componentDragAndDrop.drop(componentFixture.target,
+                                  getComponentCenterLocation(componentFixture.target));
     }
 
     /**
@@ -203,8 +203,8 @@ public class SwingComponent extends UiElement {
                                               Component component ) {
 
         Point centerPoint = new Point();
-        centerPoint.setLocation( component.getX() + component.getWidth() / 2,
-                                 component.getY() + component.getHeight() / 2 );
+        centerPoint.setLocation(component.getX() + component.getWidth() / 2,
+                                component.getY() + component.getHeight() / 2);
         return centerPoint;
     }
 

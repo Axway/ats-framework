@@ -36,18 +36,18 @@ public class HiddenHtmlLink extends HtmlLink {
     public HiddenHtmlLink( UiDriver uiDriver,
                            UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
         this.uiDriver = uiDriver;
 
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "href" },
-                                                                    "a" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "href" },
+                                                                   "a");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
     }
 
     /**
@@ -56,10 +56,10 @@ public class HiddenHtmlLink extends HtmlLink {
     @PublicAtsApi
     public void click() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HiddenHtmlElementUtils.mouseClick( HiddenHtmlElementLocator.findElement( this ) );
-        
+        HiddenHtmlElementUtils.mouseClick(HiddenHtmlElementLocator.findElement(this));
+
         UiEngineUtilities.sleep();
     }
 
@@ -69,11 +69,11 @@ public class HiddenHtmlLink extends HtmlLink {
     @PublicAtsApi
     public void clickAndDownloadFile() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        new HiddenHtmlElement( uiDriver,
-                               new UiElementProperties().addProperty( "xpath",
-                                                                      properties.getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR ) ) ).clickAndDownloadFile();
+        new HiddenHtmlElement(uiDriver,
+                              new UiElementProperties().addProperty("xpath",
+                                                                    properties.getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR))).clickAndDownloadFile();
         UiEngineUtilities.sleep();
     }
 }

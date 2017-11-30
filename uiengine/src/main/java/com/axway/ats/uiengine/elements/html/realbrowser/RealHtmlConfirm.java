@@ -36,16 +36,16 @@ public class RealHtmlConfirm extends HtmlConfirm {
 
     public RealHtmlConfirm( UiDriver uiDriver ) {
 
-        super( uiDriver );
-        driver = ( ( AbstractRealBrowserDriver ) super.getUiDriver() );
+        super(uiDriver);
+        driver = ((AbstractRealBrowserDriver) super.getUiDriver());
     }
 
     @Override
     @PublicAtsApi
     public void clickOk() {
 
-        expectedConfirm = new ExpectedConfirm( null, true );
-        driver.addExpectedPopup( expectedConfirm );
+        expectedConfirm = new ExpectedConfirm(null, true);
+        driver.addExpectedPopup(expectedConfirm);
     }
 
     @Override
@@ -53,23 +53,23 @@ public class RealHtmlConfirm extends HtmlConfirm {
     public void clickOk(
                          String expectedConfirmText ) {
 
-        expectedConfirm = new ExpectedConfirm( expectedConfirmText, true );
-        driver.addExpectedPopup( expectedConfirm );
+        expectedConfirm = new ExpectedConfirm(expectedConfirmText, true);
+        driver.addExpectedPopup(expectedConfirm);
     }
 
     @Override
     public void clickCancel() {
 
-        expectedConfirm = new ExpectedConfirm( null, false );
-        driver.addExpectedPopup( expectedConfirm );
+        expectedConfirm = new ExpectedConfirm(null, false);
+        driver.addExpectedPopup(expectedConfirm);
     }
 
     @Override
     public void clickCancel(
                              String expectedConfirmText ) {
 
-        expectedConfirm = new ExpectedConfirm( expectedConfirmText, false );
-        driver.addExpectedPopup( expectedConfirm );
+        expectedConfirm = new ExpectedConfirm(expectedConfirmText, false);
+        driver.addExpectedPopup(expectedConfirm);
     }
 
     @Override
@@ -79,13 +79,13 @@ public class RealHtmlConfirm extends HtmlConfirm {
         long millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !driver.containsExpectedPopup( expectedConfirm ) ) {
+            if (!driver.containsExpectedPopup(expectedConfirm)) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the Confirm is processed within " + millis + " ms" );
+        throw new VerificationException("Failed to verify the Confirm is processed within " + millis + " ms");
     }
 
 }

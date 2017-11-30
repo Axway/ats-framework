@@ -36,16 +36,16 @@ public class RealHtmlAlert extends HtmlAlert {
 
     public RealHtmlAlert( UiDriver uiDriver ) {
 
-        super( uiDriver );
-        driver = ( ( AbstractRealBrowserDriver ) super.getUiDriver() );
+        super(uiDriver);
+        driver = ((AbstractRealBrowserDriver) super.getUiDriver());
     }
 
     @Override
     @PublicAtsApi
     public void clickOk() {
 
-        expectedAlert = new ExpectedAlert( null );
-        driver.addExpectedPopup( expectedAlert );
+        expectedAlert = new ExpectedAlert(null);
+        driver.addExpectedPopup(expectedAlert);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class RealHtmlAlert extends HtmlAlert {
     public void clickOk(
                          String expectedAlertText ) {
 
-        expectedAlert = new ExpectedAlert( expectedAlertText );
-        driver.addExpectedPopup( expectedAlert );
+        expectedAlert = new ExpectedAlert(expectedAlertText);
+        driver.addExpectedPopup(expectedAlert);
     }
 
     @Override
@@ -64,13 +64,13 @@ public class RealHtmlAlert extends HtmlAlert {
         long millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !driver.containsExpectedPopup( expectedAlert ) ) {
+            if (!driver.containsExpectedPopup(expectedAlert)) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the Alert is processed within " + millis + " ms" );
+        throw new VerificationException("Failed to verify the Alert is processed within " + millis + " ms");
     }
 
 }

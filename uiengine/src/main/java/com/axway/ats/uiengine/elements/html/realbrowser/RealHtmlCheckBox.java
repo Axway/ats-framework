@@ -33,110 +33,110 @@ import com.axway.ats.uiengine.utilities.realbrowser.html.RealHtmlElementState;
 @PublicAtsApi
 public class RealHtmlCheckBox extends HtmlCheckBox {
 
-	// private WebDriver webDriver;
+    // private WebDriver webDriver;
 
     public RealHtmlCheckBox( UiDriver uiDriver,
                              UiElementProperties properties ) {
 
-		super(uiDriver, properties);
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-				RealHtmlElement.RULES_DUMMY);
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
-		// generate the element locator of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "checkbox" },
-                                                                    "input" );
-		properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
+        // generate the element locator of this HTML element
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "checkbox" },
+                                                                   "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
-	}
+    }
 
-	/**
-	 * Check the check box
-	 */
-	@Override
-	@PublicAtsApi
-	public void check() {
+    /**
+     * Check the check box
+     */
+    @Override
+    @PublicAtsApi
+    public void check() {
 
-		new RealHtmlElementState(this).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-		WebElement checkBoxElement = RealHtmlElementLocator.findElement(this);
-		if (!checkBoxElement.isEnabled()) {
-                throw new UnsupportedOperationException( "You may not check a disabled element."
-                                                         + toString() );
-		}
-		if (!checkBoxElement.isSelected()) {
-			checkBoxElement.click();
-		}
+        WebElement checkBoxElement = RealHtmlElementLocator.findElement(this);
+        if (!checkBoxElement.isEnabled()) {
+            throw new UnsupportedOperationException("You may not check a disabled element."
+                                                    + toString());
+        }
+        if (!checkBoxElement.isSelected()) {
+            checkBoxElement.click();
+        }
 
-		UiEngineUtilities.sleep();
-	}
+        UiEngineUtilities.sleep();
+    }
 
-	/**
-	 * Uncheck the check box
-	 */
-	@Override
-	@PublicAtsApi
-	public void unCheck() {
+    /**
+     * Uncheck the check box
+     */
+    @Override
+    @PublicAtsApi
+    public void unCheck() {
 
-		new RealHtmlElementState(this).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-		WebElement checkBoxElement = RealHtmlElementLocator.findElement(this);
-		if (!checkBoxElement.isEnabled()) {
-                throw new UnsupportedOperationException( "You may not uncheck a disabled element."
-                                                         + toString() );
-		}
-		if (checkBoxElement.isSelected()) {
-			checkBoxElement.click();
-		}
+        WebElement checkBoxElement = RealHtmlElementLocator.findElement(this);
+        if (!checkBoxElement.isEnabled()) {
+            throw new UnsupportedOperationException("You may not uncheck a disabled element."
+                                                    + toString());
+        }
+        if (checkBoxElement.isSelected()) {
+            checkBoxElement.click();
+        }
 
-		UiEngineUtilities.sleep();
-	}
+        UiEngineUtilities.sleep();
+    }
 
-	/**
-	 * Tells whether the check box is checked
-	 */
-	@Override
-	@PublicAtsApi
-	public boolean isChecked() {
+    /**
+     * Tells whether the check box is checked
+     */
+    @Override
+    @PublicAtsApi
+    public boolean isChecked() {
 
-		new RealHtmlElementState(this).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-		WebElement checkBoxElement = RealHtmlElementLocator.findElement(this);
-		return checkBoxElement.isSelected();
-	}
+        WebElement checkBoxElement = RealHtmlElementLocator.findElement(this);
+        return checkBoxElement.isSelected();
+    }
 
-	/**
-	 * Verify the check box is checked
-	 *
-	 * throws an error if verification fail
-	 */
-	@Override
-	@PublicAtsApi
-	public void verifyChecked() {
+    /**
+     * Verify the check box is checked
+     *
+     * throws an error if verification fail
+     */
+    @Override
+    @PublicAtsApi
+    public void verifyChecked() {
 
-		boolean isActuallyChecked = isChecked();
-		if (!isActuallyChecked) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " checked, but it is unchecked indeed" );
-		}
-	}
+        boolean isActuallyChecked = isChecked();
+        if (!isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " checked, but it is unchecked indeed");
+        }
+    }
 
-	/**
-	 * Verify the check box is not checked
-	 *
-	 * throws an error if verification fail
-	 */
-	@Override
-	@PublicAtsApi
-	public void verifyNotChecked() {
+    /**
+     * Verify the check box is not checked
+     *
+     * throws an error if verification fail
+     */
+    @Override
+    @PublicAtsApi
+    public void verifyNotChecked() {
 
-		boolean isActuallyChecked = isChecked();
-		if (isActuallyChecked) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " unchecked, but it is checked indeed" );
-		}
-	}
+        boolean isActuallyChecked = isChecked();
+        if (isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " unchecked, but it is checked indeed");
+        }
+    }
 }

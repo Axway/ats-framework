@@ -31,7 +31,7 @@ public class RobotElementsFactory extends AbstractElementsFactory {
 
     synchronized public static RobotElementsFactory getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new RobotElementsFactory();
         }
         return instance;

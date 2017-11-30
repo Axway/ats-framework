@@ -36,17 +36,17 @@ public class HiddenHtmlRadioList extends HtmlRadioList {
     public HiddenHtmlRadioList( UiDriver uiDriver,
                                 UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "radio" },
-                                                                    "input" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "radio" },
+                                                                   "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
     }
 
     /**
@@ -58,15 +58,15 @@ public class HiddenHtmlRadioList extends HtmlRadioList {
     public void select(
                         String value ) {
 
-        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this,
-                                                                           "[@value='" + value + "']",
-                                                                           true );
-        if( !element.isEnabled() ) {
+        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this,
+                                                                          "[@value='" + value + "']",
+                                                                          true);
+        if (!element.isEnabled()) {
 
-            throw new UnsupportedOperationException( "You may not select a disabled element." + toString() );
+            throw new UnsupportedOperationException("You may not select a disabled element." + toString());
         }
         element.click();
-        
+
         UiEngineUtilities.sleep();
     }
 
@@ -78,7 +78,7 @@ public class HiddenHtmlRadioList extends HtmlRadioList {
     public boolean isSelected(
                                String value ) {
 
-        return HiddenHtmlElementLocator.findElement( this, "[@value='" + value + "']", true ).isSelected();
+        return HiddenHtmlElementLocator.findElement(this, "[@value='" + value + "']", true).isSelected();
     }
 
     /**
@@ -90,8 +90,8 @@ public class HiddenHtmlRadioList extends HtmlRadioList {
     public void verifyValue(
                              String expectedValue ) {
 
-        if( !isSelected( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, this );
+        if (!isSelected(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, this);
         }
     }
 
@@ -104,8 +104,8 @@ public class HiddenHtmlRadioList extends HtmlRadioList {
     public void verifyNotValue(
                                 String notExpectedValue ) {
 
-        if( isSelected( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (isSelected(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

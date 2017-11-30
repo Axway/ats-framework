@@ -27,7 +27,7 @@ public abstract class UiRadioButton extends UiElement {
     public UiRadioButton( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

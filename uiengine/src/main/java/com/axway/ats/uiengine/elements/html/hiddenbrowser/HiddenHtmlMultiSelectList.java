@@ -44,17 +44,17 @@ public class HiddenHtmlMultiSelectList extends HtmlMultiSelectList {
     public HiddenHtmlMultiSelectList( UiDriver uiDriver,
                                       UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "select" },
-                                                                    "select" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "select" },
+                                                                   "select");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
     }
 
     /**
@@ -67,28 +67,28 @@ public class HiddenHtmlMultiSelectList extends HtmlMultiSelectList {
     public void setValue(
                           String value ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement( this );
-        if( selectElement.getAttribute( "multiple" ) == null ) {
-            throw new SeleniumOperationException( "Not a multi-select. You may only add a selection to a select that supports multiple selections. ("
-                                                  + this.toString() + ")" );
+        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement(this);
+        if (selectElement.getAttribute("multiple") == null) {
+            throw new SeleniumOperationException("Not a multi-select. You may only add a selection to a select that supports multiple selections. ("
+                                                 + this.toString() + ")");
         }
 
-        List<WebElement> optionElements = selectElement.findElements( By.tagName( "option" ) );
-        for( WebElement el : optionElements ) {
-            if( el.getText().equals( value ) ) {
-                if( !el.isSelected() ) {
-                    ( ( HtmlUnitWebElement ) el ).click();
-                    
+        List<WebElement> optionElements = selectElement.findElements(By.tagName("option"));
+        for (WebElement el : optionElements) {
+            if (el.getText().equals(value)) {
+                if (!el.isSelected()) {
+                    ((HtmlUnitWebElement) el).click();
+
                     UiEngineUtilities.sleep();
                 }
                 return;
             }
         }
 
-        throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
-                                              + this.toString() + ")" );
+        throw new SeleniumOperationException("Option with label '" + value + "' not found. ("
+                                             + this.toString() + ")");
     }
 
     /**
@@ -101,22 +101,22 @@ public class HiddenHtmlMultiSelectList extends HtmlMultiSelectList {
     public void unsetValue(
                             String value ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement( this );
-        List<WebElement> optionElements = selectElement.findElements( By.tagName( "option" ) );
-        for( WebElement el : optionElements ) {
-            if( el.getText().equals( value ) ) {
-                if( el.isSelected() ) {
-                    ( ( HtmlUnitWebElement ) el ).click();
-                    
+        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement(this);
+        List<WebElement> optionElements = selectElement.findElements(By.tagName("option"));
+        for (WebElement el : optionElements) {
+            if (el.getText().equals(value)) {
+                if (el.isSelected()) {
+                    ((HtmlUnitWebElement) el).click();
+
                     UiEngineUtilities.sleep();
                 }
                 return;
             }
         }
-        throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
-                                              + this.toString() + ")" );
+        throw new SeleniumOperationException("Option with label '" + value + "' not found. ("
+                                             + this.toString() + ")");
     }
 
     /**
@@ -126,21 +126,21 @@ public class HiddenHtmlMultiSelectList extends HtmlMultiSelectList {
     @PublicAtsApi
     public String[] getValues() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement( this );
+        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement(this);
         List<String> values = new ArrayList<String>();
-        List<WebElement> optionElements = selectElement.findElements( By.tagName( "option" ) );
-        for( WebElement element : optionElements ) {
-            if( element.isSelected() ) {
-                values.add( element.getText() );
+        List<WebElement> optionElements = selectElement.findElements(By.tagName("option"));
+        for (WebElement element : optionElements) {
+            if (element.isSelected()) {
+                values.add(element.getText());
             }
         }
-        if( values.isEmpty() ) {
+        if (values.isEmpty()) {
 
-            throw new SeleniumOperationException( "There is no selected 'option' in " + this.toString() );
+            throw new SeleniumOperationException("There is no selected 'option' in " + this.toString());
         }
-        return values.toArray( new String[0] );
+        return values.toArray(new String[0]);
     }
 
     /**
@@ -157,16 +157,16 @@ public class HiddenHtmlMultiSelectList extends HtmlMultiSelectList {
 
         expectedValue = expectedValue.trim();
         String[] selectedValues = getValues();
-        for( String selectedValue : selectedValues ) {
+        for (String selectedValue : selectedValues) {
             selectedValue = selectedValue.trim();
-            if( selectedValue.equals( expectedValue ) ) {
+            if (selectedValue.equals(expectedValue)) {
                 isSelected = true;
                 break;
             }
         }
 
-        if( !isSelected ) {
-            throw new VerifyEqualityException( expectedValue, Arrays.toString( selectedValues), this );
+        if (!isSelected) {
+            throw new VerifyEqualityException(expectedValue, Arrays.toString(selectedValues), this);
         }
     }
 
@@ -185,16 +185,16 @@ public class HiddenHtmlMultiSelectList extends HtmlMultiSelectList {
         notExpectedValue = notExpectedValue.trim();
 
         String[] selectedValues = getValues();
-        for( String selectedValue : selectedValues ) {
+        for (String selectedValue : selectedValues) {
             selectedValue = selectedValue.trim();
-            if( selectedValue.equals( notExpectedValue ) ) {
+            if (selectedValue.equals(notExpectedValue)) {
                 isSelected = true;
                 break;
             }
         }
 
-        if( isSelected ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (isSelected) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

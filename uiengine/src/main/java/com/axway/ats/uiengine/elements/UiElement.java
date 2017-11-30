@@ -45,7 +45,7 @@ public abstract class UiElement {
         this.uiDriver = uiDriver;
         this.properties = properties;
 
-        log = Logger.getLogger( this.getClass() );
+        log = Logger.getLogger(this.getClass());
     }
 
     public UiDriver getUiDriver() {
@@ -60,7 +60,7 @@ public abstract class UiElement {
 
     public String getElementProperty( String name ) {
 
-        return properties.getProperty( name );
+        return properties.getProperty(name);
     }
 
     /*
@@ -70,15 +70,15 @@ public abstract class UiElement {
     public String toString() {
 
         // Check if there are no properties - Alert,Prompt,Confirm elements for example
-        if( properties == null ) {
+        if (properties == null) {
             return "Element " + this.getClass().getSimpleName();
         }
 
         // get the properties in the form '{key1=value1, key2=value2}'
         String allProperties = properties.toString();
         // remove the leading and trailing brackets
-        allProperties = allProperties.substring( 1 );
-        allProperties = allProperties.substring( 0, allProperties.length() - 1 );
+        allProperties = allProperties.substring(1);
+        allProperties = allProperties.substring(0, allProperties.length() - 1);
 
         return "Element " + this.getClass().getSimpleName() + ": " + allProperties;
     }
@@ -87,24 +87,24 @@ public abstract class UiElement {
 
         String propertiesString = " ";
         // Check if there are no properties - Alert,Prompt,Confirm elements for example
-        if( properties != null ) {
-            if( properties.containsInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM ) ) {
+        if (properties != null) {
+            if (properties.containsInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM)) {
                 propertiesString = ElementsMap.ATT_ELEMENT_ID_EQ
-                                   + properties.getInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM );
+                                   + properties.getInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM);
             } else {
                 // get the properties in the form '{key1=value1, key2=value2}'
                 propertiesString = properties.toString();
                 // remove the leading and trailing brackets
-                propertiesString = propertiesString.substring( 1 );
-                propertiesString = propertiesString.substring( 0, propertiesString.length() - 1 );
+                propertiesString = propertiesString.substring(1);
+                propertiesString = propertiesString.substring(0, propertiesString.length() - 1);
             }
         }
         int stIndex = 2;
         String method = Thread.currentThread().getStackTrace()[stIndex].getMethodName();
-        while( method.indexOf( '$' ) > -1 ) {
+        while (method.indexOf('$') > -1) {
             method = Thread.currentThread().getStackTrace()[++stIndex].getMethodName();
         }
-        log.info( this.getClass().getSimpleName() + "[ " + propertiesString.trim() + " ]." + method + "()" );
+        log.info(this.getClass().getSimpleName() + "[ " + propertiesString.trim() + " ]." + method + "()");
     }
 
     public String[] getPropertyNamesToUseForMatch() {
@@ -120,11 +120,11 @@ public abstract class UiElement {
      */
     public void checkTypeAndRules( String userTypePrefix, String... rules ) throws ErrorMatchingElementRules {
 
-        this.propsToUseForMatch = getElementProperties().checkTypeAndRules( this.getClass().getSimpleName(),
-                                                                            userTypePrefix, rules );
-        if( log.isDebugEnabled() ) {
-            log.debug( "Rule with properties to use for element search: "
-                       + Arrays.toString( propsToUseForMatch ) );
+        this.propsToUseForMatch = getElementProperties().checkTypeAndRules(this.getClass().getSimpleName(),
+                                                                           userTypePrefix, rules);
+        if (log.isDebugEnabled()) {
+            log.debug("Rule with properties to use for element search: "
+                      + Arrays.toString(propsToUseForMatch));
         }
     }
 }

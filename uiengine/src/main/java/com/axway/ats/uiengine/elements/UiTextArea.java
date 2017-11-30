@@ -27,7 +27,7 @@ public abstract class UiTextArea extends UiElement {
     public UiTextArea( UiDriver uiDriver,
                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

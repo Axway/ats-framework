@@ -20,7 +20,7 @@ import java.util.Date;
 
 public class Cookie {
 
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat( "EEE, dd MMM yyyy hh:mm:ss z" );
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z");
 
     private String                        name;
     private String                        value;
@@ -88,21 +88,21 @@ public class Cookie {
     public boolean equals(
                            Object o ) {
 
-        if( this == o ) {
+        if (this == o) {
             return true;
         }
-        if( ! ( o instanceof Cookie ) ) {
+        if (! (o instanceof Cookie)) {
             return false;
         }
 
-        Cookie cookie = ( Cookie ) o;
+        Cookie cookie = (Cookie) o;
 
-        if( !name.equals( cookie.name ) ) {
+        if (!name.equals(cookie.name)) {
             return false;
         }
-        return ! ( value != null
-                                ? !value.equals( cookie.value )
-                                : cookie.value != null );
+        return ! (value != null
+                                ? !value.equals(cookie.value)
+                                : cookie.value != null);
     }
 
     @Override
@@ -114,17 +114,18 @@ public class Cookie {
     @Override
     public String toString() {
 
-        return name + "=" + value + ( expiry == null
+        return name + "=" + value + (expiry == null
                                                     ? ""
-                                                    : "; expires=" + DATE_FORMATTER.format( expiry ) )
-               + ( "".equals( path )
-                                    ? ""
-                                    : "; path=" + path ) + ( domain == null
-                                                                           ? ""
-                                                                           : "; domain=" + domain )
-               + ( isSecure
+                                                    : "; expires=" + DATE_FORMATTER.format(expiry))
+               + ("".equals(path)
+                                  ? ""
+                                  : "; path=" + path)
+               + (domain == null
+                                 ? ""
+                                 : "; domain=" + domain)
+               + (isSecure
                            ? ";secure;"
-                           : "" );
+                           : "");
     }
 
 }

@@ -30,7 +30,7 @@ public class HiddenHtmlElementsFactory extends AbstractElementsFactory {
 
     synchronized public static HiddenHtmlElementsFactory getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new HiddenHtmlElementsFactory();
         }
         return instance;
@@ -40,172 +40,172 @@ public class HiddenHtmlElementsFactory extends AbstractElementsFactory {
                                                  String mapId,
                                                  UiDriver uiDriver ) {
 
-        return getHiddenHtmlButton( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenHtmlButton(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlButton getHiddenHtmlButton(
                                                  UiElementProperties properties,
                                                  UiDriver uiDriver ) {
 
-        return new HiddenHtmlButton( uiDriver, properties );
+        return new HiddenHtmlButton(uiDriver, properties);
     }
 
     public HiddenHtmlTextBox getHiddenHtmlTextBox(
                                                    String mapId,
                                                    UiDriver uiDriver ) {
 
-        return getHiddenHtmlTextBox( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenHtmlTextBox(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlTextBox getHiddenHtmlTextBox(
                                                    UiElementProperties properties,
                                                    UiDriver uiDriver ) {
 
-        return new HiddenHtmlTextBox( uiDriver, properties );
+        return new HiddenHtmlTextBox(uiDriver, properties);
     }
 
     public HiddenHtmlCheckBox getHiddenHtmlCheckBox(
                                                      String mapId,
                                                      UiDriver uiDriver ) {
 
-        return getHiddenHtmlCheckBox( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenHtmlCheckBox(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlCheckBox getHiddenHtmlCheckBox(
                                                      UiElementProperties properties,
                                                      UiDriver uiDriver ) {
 
-        return new HiddenHtmlCheckBox( uiDriver, properties );
+        return new HiddenHtmlCheckBox(uiDriver, properties);
     }
 
     public HiddenHtmlSingleSelectList getHiddenSingleSelectList(
                                                                  String mapId,
                                                                  UiDriver uiDriver ) {
 
-        return getHiddenSingleSelectList( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenSingleSelectList(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlSingleSelectList getHiddenSingleSelectList(
                                                                  UiElementProperties properties,
                                                                  UiDriver uiDriver ) {
 
-        return new HiddenHtmlSingleSelectList( uiDriver, properties );
+        return new HiddenHtmlSingleSelectList(uiDriver, properties);
     }
 
     public HiddenHtmlFileBrowse getHiddenFileBrowse(
                                                      String mapId,
                                                      UiDriver uiDriver ) {
 
-        return getHiddenFileBrowse( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenFileBrowse(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlFileBrowse getHiddenFileBrowse(
                                                      UiElementProperties properties,
                                                      UiDriver uiDriver ) {
 
-        return new HiddenHtmlFileBrowse( uiDriver, properties );
+        return new HiddenHtmlFileBrowse(uiDriver, properties);
     }
 
     public HiddenHtmlTable getHiddenTable(
                                            String mapId,
                                            UiDriver uiDriver ) {
 
-        return getHiddenTable( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenTable(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlTable getHiddenTable(
                                            UiElementProperties properties,
                                            UiDriver uiDriver ) {
 
-        return new HiddenHtmlTable( uiDriver, properties );
+        return new HiddenHtmlTable(uiDriver, properties);
     }
 
     public HiddenHtmlLink getHiddenLink(
                                          String mapId,
                                          UiDriver uiDriver ) {
 
-        return getHiddenLink( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenLink(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlLink getHiddenLink(
                                          UiElementProperties properties,
                                          UiDriver uiDriver ) {
 
-        return new HiddenHtmlLink( uiDriver, properties );
+        return new HiddenHtmlLink(uiDriver, properties);
     }
 
     public HiddenHtmlMultiSelectList getHiddenMultiSelectList(
                                                                String mapId,
                                                                UiDriver uiDriver ) {
 
-        return getHiddenMultiSelectList( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenMultiSelectList(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlMultiSelectList getHiddenMultiSelectList(
                                                                UiElementProperties properties,
                                                                UiDriver uiDriver ) {
 
-        return new HiddenHtmlMultiSelectList( uiDriver, properties );
+        return new HiddenHtmlMultiSelectList(uiDriver, properties);
     }
 
     public HiddenHtmlRadioList getHiddenRadioList(
                                                    String mapId,
                                                    UiDriver uiDriver ) {
 
-        return getHiddenRadioList( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenRadioList(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlRadioList getHiddenRadioList(
                                                    UiElementProperties properties,
                                                    UiDriver uiDriver ) {
 
-        return new HiddenHtmlRadioList( uiDriver, properties );
+        return new HiddenHtmlRadioList(uiDriver, properties);
     }
 
     public HiddenHtmlTextArea getHiddenTextArea(
                                                  String mapId,
                                                  UiDriver uiDriver ) {
 
-        return getHiddenTextArea( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenTextArea(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlTextArea getHiddenTextArea(
                                                  UiElementProperties properties,
                                                  UiDriver uiDriver ) {
 
-        return new HiddenHtmlTextArea( uiDriver, properties );
+        return new HiddenHtmlTextArea(uiDriver, properties);
     }
 
     public HiddenHtmlElement getHiddenHtmlElement(
                                                    String mapId,
                                                    UiDriver uiDriver ) {
 
-        return getHiddenHtmlElement( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getHiddenHtmlElement(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public HiddenHtmlElement getHiddenHtmlElement(
                                                    UiElementProperties properties,
                                                    UiDriver uiDriver ) {
 
-        return new HiddenHtmlElement( uiDriver, properties );
+        return new HiddenHtmlElement(uiDriver, properties);
     }
 
     public HiddenHtmlAlert getHiddenHtmlAlert(
                                                UiDriver uiDriver ) {
 
-        return new HiddenHtmlAlert( uiDriver );
+        return new HiddenHtmlAlert(uiDriver);
     }
 
     public HiddenHtmlPrompt getHiddenHtmlPrompt(
                                                  UiDriver uiDriver ) {
 
-        return new HiddenHtmlPrompt( uiDriver );
+        return new HiddenHtmlPrompt(uiDriver);
     }
 
     public HiddenHtmlConfirm getHiddenHtmlConfirm(
                                                    UiDriver uiDriver ) {
 
-        return new HiddenHtmlConfirm( uiDriver );
+        return new HiddenHtmlConfirm(uiDriver);
     }
 
 }

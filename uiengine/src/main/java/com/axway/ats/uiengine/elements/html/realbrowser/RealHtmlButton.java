@@ -44,23 +44,23 @@ public class RealHtmlButton extends HtmlButton {
     public RealHtmlButton( UiDriver uiDriver,
                            UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
 
         // get rules used for finding html element
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "submit",
-                                                                                  "reset",
-                                                                                  "button" },
-                                                                    "button" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "submit",
+                                                                                 "reset",
+                                                                                 "button" },
+                                                                   "button");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
-        webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        webDriver = (WebDriver) ((AbstractRealBrowserDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -79,36 +79,36 @@ public class RealHtmlButton extends HtmlButton {
     @PublicAtsApi
     public void clickAndDownloadFile() {
 
-        log.info( "File will be downloaded in "
-                  + UiEngineConfigurator.getInstance().getBrowserDownloadDir() );
+        log.info("File will be downloaded in "
+                 + UiEngineConfigurator.getInstance().getBrowserDownloadDir());
 
         // Just calls click() method and the browser automatically will download the file
         doClick();
 
         UiEngineUtilities.sleep();
-        log.info( "File download has started. Please check for completion." );
+        log.info("File download has started. Please check for completion.");
     }
 
     private void doClick() {
 
         try {
-            new RealHtmlElementState( this ).waitToBecomeExisting();
-            WebElement element = RealHtmlElementLocator.findElement( this );
+            new RealHtmlElementState(this).waitToBecomeExisting();
+            WebElement element = RealHtmlElementLocator.findElement(this);
             try {
                 element.click();
-            } catch( ElementNotVisibleException enve ) {
-                if( !UiEngineConfigurator.getInstance().isWorkWithInvisibleElements() ) {
+            } catch (ElementNotVisibleException enve) {
+                if (!UiEngineConfigurator.getInstance().isWorkWithInvisibleElements()) {
                     throw enve;
                 }
-                ( ( JavascriptExecutor ) webDriver ).executeScript( "arguments[0].click()", element );
+                ((JavascriptExecutor) webDriver).executeScript("arguments[0].click()", element);
             }
-        } catch( Exception e ) {
-            ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).clearExpectedPopups();
-            throw new SeleniumOperationException( this, "click", e );
+        } catch (Exception e) {
+            ((AbstractRealBrowserDriver) super.getUiDriver()).clearExpectedPopups();
+            throw new SeleniumOperationException(this, "click", e);
         }
 
         UiEngineUtilities.sleep();
 
-        ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).handleExpectedPopups();
+        ((AbstractRealBrowserDriver) super.getUiDriver()).handleExpectedPopups();
     }
 }

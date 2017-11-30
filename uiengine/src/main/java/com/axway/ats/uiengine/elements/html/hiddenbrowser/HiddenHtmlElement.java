@@ -57,35 +57,35 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  */
 @PublicAtsApi
 public class HiddenHtmlElement extends HtmlElement {
-    
+
     /**
      *  used by all HiddenHtmlXYZ classes for passing it to UiElementProperties's method checkTypeAndRules()
      */
-    protected static final String[]      RULES_DUMMY = new String[]{};
+    protected static final String[] RULES_DUMMY               = new String[]{};
 
-    private static final Pattern urlFileNamePattern        = Pattern.compile( "^.*[\\/\\\\]+([^\\/\\\\]+\\.[\\w\\d\\$\\-]{1,8})$" );
-    private static final Pattern contentDispositionPattern = Pattern.compile( "^.*filename\\=\\\"?([^\\\"\\;]+)\\\"?\\;?$" );
-    private static final int     BUFFER_LENGTH             = 1024;
+    private static final Pattern    urlFileNamePattern        = Pattern.compile("^.*[\\/\\\\]+([^\\/\\\\]+\\.[\\w\\d\\$\\-]{1,8})$");
+    private static final Pattern    contentDispositionPattern = Pattern.compile("^.*filename\\=\\\"?([^\\\"\\;]+)\\\"?\\;?$");
+    private static final int        BUFFER_LENGTH             = 1024;
 
-    private HtmlUnitDriver       htmlUnitDriver;
+    private HtmlUnitDriver          htmlUnitDriver;
 
     public HiddenHtmlElement( UiDriver uiDriver,
                               UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{},
-                                                                    "*" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{},
+                                                                   "*");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
-        HiddenBrowserDriver browserDriver = ( HiddenBrowserDriver ) uiDriver;
-        htmlUnitDriver = ( HtmlUnitDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        HiddenBrowserDriver browserDriver = (HiddenBrowserDriver) uiDriver;
+        htmlUnitDriver = (HtmlUnitDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -97,9 +97,9 @@ public class HiddenHtmlElement extends HtmlElement {
     public String getAttributeValue(
                                      String attribute ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        return HiddenHtmlElementLocator.findElement( this ).getAttribute( attribute );
+        return HiddenHtmlElementLocator.findElement(this).getAttribute(attribute);
     }
 
     /**
@@ -112,9 +112,9 @@ public class HiddenHtmlElement extends HtmlElement {
     public String getCssPropertyValue(
                                        String propertyName ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        return HiddenHtmlElementLocator.findElement( this ).getCssValue( propertyName );
+        return HiddenHtmlElementLocator.findElement(this).getCssValue(propertyName);
     }
 
     /**
@@ -126,9 +126,9 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public String getTextContent() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        return HiddenHtmlElementLocator.findElement( this ).getText();
+        return HiddenHtmlElementLocator.findElement(this).getText();
     }
 
     /**
@@ -139,10 +139,10 @@ public class HiddenHtmlElement extends HtmlElement {
     public void setTextContent(
                                 String content ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
-        new Actions( htmlUnitDriver ).sendKeys( element, content ).perform();
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
+        new Actions(htmlUnitDriver).sendKeys(element, content).perform();
     }
 
     /**
@@ -154,75 +154,75 @@ public class HiddenHtmlElement extends HtmlElement {
         Field currentWindowField = null;
         boolean fieldAccessibleState = false;
         try {
-            currentWindowField = htmlUnitDriver.getClass().getDeclaredField( "currentWindow" );
+            currentWindowField = htmlUnitDriver.getClass().getDeclaredField("currentWindow");
             fieldAccessibleState = currentWindowField.isAccessible();
-            currentWindowField.setAccessible( true );
-            currentWindow = ( WebWindow ) currentWindowField.get( htmlUnitDriver );
-        } catch( Exception e ) {
+            currentWindowField.setAccessible(true);
+            currentWindow = (WebWindow) currentWindowField.get(htmlUnitDriver);
+        } catch (Exception e) {
 
-            throw new SeleniumOperationException( "Error retrieving internal Selenium web client", e );
+            throw new SeleniumOperationException("Error retrieving internal Selenium web client", e);
         } finally {
-            if( currentWindowField != null ) {
-                currentWindowField.setAccessible( fieldAccessibleState );
+            if (currentWindowField != null) {
+                currentWindowField.setAccessible(fieldAccessibleState);
             }
         }
 
-        String elementXPath = properties.getProperty( "xpath" );
+        String elementXPath = properties.getProperty("xpath");
         // find element and download the file
-        HtmlPage page = ( HtmlPage ) currentWindow.getEnclosedPage();
-        List<?> foundElementsList = page.getByXPath( elementXPath );
-        if( foundElementsList != null && !foundElementsList.isEmpty() ) {
+        HtmlPage page = (HtmlPage) currentWindow.getEnclosedPage();
+        List<?> foundElementsList = page.getByXPath(elementXPath);
+        if (foundElementsList != null && !foundElementsList.isEmpty()) {
 
             InputStream in = null;
             FileOutputStream fos = null;
             try {
-                com.gargoylesoftware.htmlunit.html.HtmlElement element = ( com.gargoylesoftware.htmlunit.html.HtmlElement ) foundElementsList.get( 0 );
+                com.gargoylesoftware.htmlunit.html.HtmlElement element = (com.gargoylesoftware.htmlunit.html.HtmlElement) foundElementsList.get(0);
                 Page result = element.click(); // Use generic Page. Exact page type returned depends on the MIME type set in response header
 
                 String fileName = null;
                 String contentDisposition = result.getWebResponse()
-                                                  .getResponseHeaderValue( "Content-Disposition" );
-                if( contentDisposition != null ) {
-                    Matcher m = contentDispositionPattern.matcher( contentDisposition );
-                    if( m.matches() ) {
-                        fileName = m.group( 1 );
-                        log.debug( "Download file name extracted from the 'Content-Disposition' header is "
-                                   + fileName );
+                                                  .getResponseHeaderValue("Content-Disposition");
+                if (contentDisposition != null) {
+                    Matcher m = contentDispositionPattern.matcher(contentDisposition);
+                    if (m.matches()) {
+                        fileName = m.group(1);
+                        log.debug("Download file name extracted from the 'Content-Disposition' header is "
+                                  + fileName);
                     }
                 }
-                if( fileName == null ) {
+                if (fileName == null) {
                     String url = result.getWebResponse().getWebRequest().getUrl().getFile().trim();
-                    Matcher m = urlFileNamePattern.matcher( url );
-                    if( m.matches() ) {
-                        fileName = m.group( 1 );
-                        log.debug( "Download file name extracted from the request URL is " + fileName );
+                    Matcher m = urlFileNamePattern.matcher(url);
+                    if (m.matches()) {
+                        fileName = m.group(1);
+                        log.debug("Download file name extracted from the request URL is " + fileName);
                     } else {
-                        fileName = String.valueOf( new Date().getTime() ) + ".bin";
-                        log.debug( "Downloaded file name constructed the current timestamp is " + fileName );
+                        fileName = String.valueOf(new Date().getTime()) + ".bin";
+                        log.debug("Downloaded file name constructed the current timestamp is " + fileName);
                     }
                 }
                 in = result.getWebResponse().getContentAsStream();
                 String fileAbsPath = UiEngineConfigurator.getInstance().getBrowserDownloadDir() + fileName;
-                fos = new FileOutputStream( new File( fileAbsPath ), false );
+                fos = new FileOutputStream(new File(fileAbsPath), false);
                 byte[] buff = new byte[BUFFER_LENGTH];
                 int len;
-                while( ( len = in.read( buff ) ) != -1 ) {
-                    fos.write( buff, 0, len );
+                while ( (len = in.read(buff)) != -1) {
+                    fos.write(buff, 0, len);
                 }
                 fos.flush();
-                log.info( "Downloaded file: " + fileAbsPath );
+                log.info("Downloaded file: " + fileAbsPath);
 
-            } catch( IOException e ) {
+            } catch (IOException e) {
 
-                throw new SeleniumOperationException( "Error downloading file", e );
+                throw new SeleniumOperationException("Error downloading file", e);
             } finally {
 
-                IoUtils.closeStream( fos );
-                IoUtils.closeStream( in );
+                IoUtils.closeStream(fos);
+                IoUtils.closeStream(in);
             }
         } else {
 
-            throw new ElementNotFoundException( "Can't find element by XPath: " + elementXPath );
+            throw new ElementNotFoundException("Can't find element by XPath: " + elementXPath);
         }
     }
 
@@ -233,9 +233,9 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void click() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HiddenHtmlElementUtils.mouseClick( HiddenHtmlElementLocator.findElement( this ) );
+        HiddenHtmlElementUtils.mouseClick(HiddenHtmlElementLocator.findElement(this));
     }
 
     /**
@@ -245,11 +245,11 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void doubleClick() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
 
-        new Actions( htmlUnitDriver ).doubleClick( element ).perform();
+        new Actions(htmlUnitDriver).doubleClick(element).perform();
     }
 
     /**
@@ -259,11 +259,11 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void rightClick() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
 
-        new Actions( htmlUnitDriver ).contextClick( element ).perform();
+        new Actions(htmlUnitDriver).contextClick(element).perform();
     }
 
     /**
@@ -273,11 +273,11 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void mouseOver() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
-        new Actions( htmlUnitDriver ).moveToElement( element ).perform();
-        
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
+        new Actions(htmlUnitDriver).moveToElement(element).perform();
+
         UiEngineUtilities.sleep();
     }
 
@@ -288,10 +288,10 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressEnterKey() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
-        new Actions( htmlUnitDriver ).sendKeys( element, "\r" ).perform();
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
+        new Actions(htmlUnitDriver).sendKeys(element, "\r").perform();
         //        new Actions( htmlUnitDriver ).sendKeys( element, Keys.RETURN ).perform();
     }
 
@@ -302,10 +302,10 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressSpaceKey() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
-        new Actions( htmlUnitDriver ).sendKeys( element, Keys.SPACE ).perform();
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
+        new Actions(htmlUnitDriver).sendKeys(element, Keys.SPACE).perform();
     }
 
     /**
@@ -315,10 +315,10 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressTabKey() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
-        new Actions( htmlUnitDriver ).sendKeys( element, Keys.TAB ).perform();
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
+        new Actions(htmlUnitDriver).sendKeys(element, Keys.TAB).perform();
     }
 
     /**
@@ -328,10 +328,10 @@ public class HiddenHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressEscapeKey() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = HiddenHtmlElementLocator.findElement( this );
-        new Actions( htmlUnitDriver ).sendKeys( element, Keys.ESCAPE ).perform();
+        WebElement element = HiddenHtmlElementLocator.findElement(this);
+        new Actions(htmlUnitDriver).sendKeys(element, Keys.ESCAPE).perform();
     }
 
     /**
@@ -343,15 +343,15 @@ public class HiddenHtmlElement extends HtmlElement {
     public void dragAndDropTo(
                                HtmlElement targetElement ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement source = HiddenHtmlElementLocator.findElement( this );
-        WebElement target = HiddenHtmlElementLocator.findElement( targetElement );
+        WebElement source = HiddenHtmlElementLocator.findElement(this);
+        WebElement target = HiddenHtmlElementLocator.findElement(targetElement);
 
-        Actions actionBuilder = new Actions( htmlUnitDriver );
-        Action dragAndDropAction = actionBuilder.clickAndHold( source )
-                                                .moveToElement( target, 1, 1 )
-                                                .release( target )
+        Actions actionBuilder = new Actions(htmlUnitDriver);
+        Action dragAndDropAction = actionBuilder.clickAndHold(source)
+                                                .moveToElement(target, 1, 1)
+                                                .release(target)
                                                 .build();
         dragAndDropAction.perform();
 

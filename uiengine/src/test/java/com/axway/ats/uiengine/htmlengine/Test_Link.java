@@ -33,7 +33,7 @@ import com.axway.ats.uiengine.exceptions.ErrorMatchingElementRules;
 */
 public class Test_Link extends HtmlEngineBaseTest {
 
-    @DataProvider(name = "links")
+    @DataProvider( name = "links")
     public Object[][] provideElementIds() {
 
         // The commented links do not work as they have href only and
@@ -53,61 +53,61 @@ public class Test_Link extends HtmlEngineBaseTest {
                                { "linkTitle5" }, };
     }
 
-    @Parameters({ "browser", "testFilesLocation" })
+    @Parameters( { "browser", "testFilesLocation" })
     @BeforeMethod
     public void beforeMethod(
-                              @Optional("FF") String browser,
-                              @Optional("") String testFilesLocation ) {
+                              @Optional( "FF") String browser,
+                              @Optional( "") String testFilesLocation ) {
 
-        setTestPage( "link.htm", "link", browser, testFilesLocation );
+        setTestPage("link.htm", "link", browser, testFilesLocation);
     }
 
-    @Test(dataProvider = "links")
+    @Test( dataProvider = "links")
     public void testAllMethods(
                                 String linkMapId ) throws Exception {
 
-        UiLink link = webEngine.getLink( linkMapId );
+        UiLink link = webEngine.getLink(linkMapId);
         link.click();
     }
 
     @Test
     public void notExistingElement() throws Exception {
 
-        UiLink link = webEngine.getLink( "link40" );
-        webEngine.getUtilsElementState( link ).verifyNotExist();
+        UiLink link = webEngine.getLink("link40");
+        webEngine.getUtilsElementState(link).verifyNotExist();
     }
 
     @Test
     public void redirectToAnotherPage() throws Exception {
 
         String pageSource = webEngine.getPageSource();
-        Logger log = Logger.getLogger( this.getClass() );
-        log.info( "Current page source: " + pageSource );
+        Logger log = Logger.getLogger(this.getClass());
+        log.info("Current page source: " + pageSource);
 
-        UiLink linkOnInitialPage = webEngine.getLink( "link2" );
+        UiLink linkOnInitialPage = webEngine.getLink("link2");
         linkOnInitialPage.click();
 
         // verify we left the initial page
-        webEngine.getUtilsElementState( linkOnInitialPage ).verifyNotExist();
+        webEngine.getUtilsElementState(linkOnInitialPage).verifyNotExist();
 
         // go back to the initial page
-        UiLink linkOnNewPage = webEngine.getLink( "link" );
+        UiLink linkOnNewPage = webEngine.getLink("link");
         linkOnNewPage.click();
 
         // verify we are back at the initial page
-        webEngine.getUtilsElementState( linkOnInitialPage ).verifyExist();
+        webEngine.getUtilsElementState(linkOnInitialPage).verifyExist();
     }
 
-    @Test(expectedExceptions = ErrorMatchingElementRules.class)
+    @Test( expectedExceptions = ErrorMatchingElementRules.class)
     public void badRules() throws Exception {
 
-        webEngine.getLink( "link50" );
+        webEngine.getLink("link50");
     }
 
-    @Test(expectedExceptions = BadUiElementPropertyException.class, expectedExceptionsMessageRegExp = "You can not construct a .*HtmlLink.*")
+    @Test( expectedExceptions = BadUiElementPropertyException.class, expectedExceptionsMessageRegExp = "You can not construct a .*HtmlLink.*")
     public void wrongType() throws Exception {
 
-        webEngine.getLink( "link60" );
+        webEngine.getLink("link60");
     }
 
 }

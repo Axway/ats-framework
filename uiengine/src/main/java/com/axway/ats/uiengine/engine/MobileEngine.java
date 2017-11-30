@@ -58,8 +58,8 @@ public class MobileEngine extends AbstractEngine {
     public MobileEngine( UiDriver uiDriver,
                          MobileDeviceUtils mobileDeviceUtils ) {
 
-        this( uiDriver, MobileElementsFactory.getInstance() );
-        this.mobileElementsFactory = ( MobileElementsFactory ) elementsFactory;
+        this(uiDriver, MobileElementsFactory.getInstance());
+        this.mobileElementsFactory = (MobileElementsFactory) elementsFactory;
         this.mobileDeviceUtils = mobileDeviceUtils;
         this.device = new Device();
     }
@@ -67,10 +67,10 @@ public class MobileEngine extends AbstractEngine {
     public MobileEngine( UiDriver uiDriver,
                          AbstractElementsFactory elementsFactory ) {
 
-        super( uiDriver, elementsFactory );
+        super(uiDriver, elementsFactory);
 
-        MobileDriver mobileDriver = ( MobileDriver ) uiDriver;
-        appiumDriver = ( AppiumDriver<?> ) mobileDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        MobileDriver mobileDriver = (MobileDriver) uiDriver;
+        appiumDriver = (AppiumDriver<?>) mobileDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -79,8 +79,8 @@ public class MobileEngine extends AbstractEngine {
     @PublicAtsApi
     public String getApplicationName() {
 
-        if( appiumDriver instanceof AndroidDriver ) {
-            return ( ( AndroidDriver<?> ) appiumDriver ).currentActivity();
+        if (appiumDriver instanceof AndroidDriver) {
+            return ((AndroidDriver<?>) appiumDriver).currentActivity();
         }
         return ""; //TODO: return the current activity/bundleId for IOSDriver too
     }
@@ -94,7 +94,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileButton getButton(
                                    String mapId ) {
 
-        return this.mobileElementsFactory.getMobileButton( mapId, uiDriver );
+        return this.mobileElementsFactory.getMobileButton(mapId, uiDriver);
     }
 
     /**
@@ -106,7 +106,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileButton getButton(
                                    UiElementProperties properties ) {
 
-        return this.mobileElementsFactory.getMobileButton( properties, uiDriver );
+        return this.mobileElementsFactory.getMobileButton(properties, uiDriver);
     }
 
     /**
@@ -118,7 +118,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileTextBox getTextBox(
                                      String mapId ) {
 
-        return mobileElementsFactory.getMobileTextBox( mapId, uiDriver );
+        return mobileElementsFactory.getMobileTextBox(mapId, uiDriver);
     }
 
     /**
@@ -130,7 +130,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileTextBox getTextBox(
                                      UiElementProperties properties ) {
 
-        return mobileElementsFactory.getMobileTextBox( properties, uiDriver );
+        return mobileElementsFactory.getMobileTextBox(properties, uiDriver);
     }
 
     /**
@@ -142,7 +142,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileLabel getLabel(
                                  String mapId ) {
 
-        return mobileElementsFactory.getMobileLabel( mapId, uiDriver );
+        return mobileElementsFactory.getMobileLabel(mapId, uiDriver);
     }
 
     /**
@@ -154,7 +154,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileLabel getLabel(
                                  UiElementProperties properties ) {
 
-        return mobileElementsFactory.getMobileLabel( properties, uiDriver );
+        return mobileElementsFactory.getMobileLabel(properties, uiDriver);
     }
 
     /**
@@ -166,7 +166,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileCheckBox getCheckBox(
                                        String mapId ) {
 
-        return mobileElementsFactory.getMobileCheckBox( mapId, uiDriver );
+        return mobileElementsFactory.getMobileCheckBox(mapId, uiDriver);
     }
 
     /**
@@ -178,7 +178,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileCheckBox getCheckBox(
                                        UiElementProperties properties ) {
 
-        return mobileElementsFactory.getMobileCheckBox( properties, uiDriver );
+        return mobileElementsFactory.getMobileCheckBox(properties, uiDriver);
     }
 
     /**
@@ -190,7 +190,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileLink getLink(
                                String mapId ) {
 
-        return mobileElementsFactory.getMobileLink( mapId, uiDriver );
+        return mobileElementsFactory.getMobileLink(mapId, uiDriver);
     }
 
     /**
@@ -202,7 +202,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileLink getLink(
                                UiElementProperties properties ) {
 
-        return mobileElementsFactory.getMobileLink( properties, uiDriver );
+        return mobileElementsFactory.getMobileLink(properties, uiDriver);
     }
 
     /**
@@ -214,7 +214,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileElement<?> getElement(
                                         String mapId ) {
 
-        return mobileElementsFactory.getMobileElement( mapId, uiDriver );
+        return mobileElementsFactory.getMobileElement(mapId, uiDriver);
     }
 
     /**
@@ -226,7 +226,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileElement<?> getElement(
                                         UiElementProperties properties ) {
 
-        return mobileElementsFactory.getMobileElement( properties, uiDriver );
+        return mobileElementsFactory.getMobileElement(properties, uiDriver);
     }
 
     /**
@@ -238,7 +238,7 @@ public class MobileEngine extends AbstractEngine {
     public MobileElementState getUtilsElementState(
                                                     UiElement uiElement ) {
 
-        return new MobileElementState( uiElement );
+        return new MobileElementState(uiElement);
     }
 
     @PublicAtsApi
@@ -246,7 +246,7 @@ public class MobileEngine extends AbstractEngine {
                                           String method,
                                           Object... args ) {
 
-        return ( String ) this.appiumDriver.executeScript( method, args );
+        return (String) this.appiumDriver.executeScript(method, args);
     }
 
     @PublicAtsApi
@@ -254,7 +254,7 @@ public class MobileEngine extends AbstractEngine {
                                String method,
                                Object... args ) {
 
-        this.appiumDriver.executeAsyncScript( method, args );
+        this.appiumDriver.executeAsyncScript(method, args);
     }
 
     /**
@@ -284,9 +284,9 @@ public class MobileEngine extends AbstractEngine {
     @PublicAtsApi
     public String[] getAvailableContexts() {
 
-        return ( String[] ) this.appiumDriver.getContextHandles()
-                                             .toArray( new String[this.appiumDriver.getContextHandles()
-                                                                                   .size()] );
+        return (String[]) this.appiumDriver.getContextHandles()
+                                           .toArray(new String[this.appiumDriver.getContextHandles()
+                                                                                .size()]);
     }
 
     @PublicAtsApi
@@ -308,7 +308,7 @@ public class MobileEngine extends AbstractEngine {
         public void installApp(
                                 String appPath ) {
 
-            appiumDriver.installApp( appPath );
+            appiumDriver.installApp(appPath);
         }
 
         /**
@@ -321,7 +321,7 @@ public class MobileEngine extends AbstractEngine {
         public boolean isAppInstalled(
                                        String appName ) {
 
-            return appiumDriver.isAppInstalled( appName );
+            return appiumDriver.isAppInstalled(appName);
         }
 
         /**
@@ -333,7 +333,7 @@ public class MobileEngine extends AbstractEngine {
         public void removeApp(
                                String appName ) {
 
-            appiumDriver.removeApp( appName );
+            appiumDriver.removeApp(appName);
         }
 
         @PublicAtsApi
@@ -351,12 +351,12 @@ public class MobileEngine extends AbstractEngine {
         @PublicAtsApi
         public void pressHWButtonHome() {
 
-            if( appiumDriver instanceof AndroidDriver ) {
+            if (appiumDriver instanceof AndroidDriver) {
 
-                ( ( AndroidDriver<?> ) appiumDriver ).sendKeyEvent( AndroidKeyCode.HOME );
+                ((AndroidDriver<?>) appiumDriver).sendKeyEvent(AndroidKeyCode.HOME);
             } else {
                 // The automation API that Appium uses (Apple's UIAutomation JS library) limits to only automating a single application at a time
-                throw new NotSupportedOperationException( "Currently, Appium cannot press the home button for iOS" );
+                throw new NotSupportedOperationException("Currently, Appium cannot press the home button for iOS");
             }
         }
 
@@ -371,7 +371,7 @@ public class MobileEngine extends AbstractEngine {
         public void runAppInBackground(
                                         int seconds ) {
 
-            appiumDriver.runAppInBackground( seconds );
+            appiumDriver.runAppInBackground(seconds);
         }
 
         /**
@@ -389,18 +389,18 @@ public class MobileEngine extends AbstractEngine {
                                         int seconds,
                                         String appName ) {
 
-            if( appiumDriver instanceof AndroidDriver ) {
+            if (appiumDriver instanceof AndroidDriver) {
 
                 // we can get the current activity, but not its package
                 //String currentActivity = ( ( AndroidDriver<?> ) appiumDriver ).currentActivity();
                 pressHWButtonHome();
-                UiEngineUtilities.sleep( seconds * 1000 );
+                UiEngineUtilities.sleep(seconds * 1000);
 
                 // bring application to foreground
-                mobileDeviceUtils.executeAdbCommand( new String[]{ "shell", "am", "start", "-n", appName },
-                                                     true );
+                mobileDeviceUtils.executeAdbCommand(new String[]{ "shell", "am", "start", "-n", appName },
+                                                    true);
             } else {
-                appiumDriver.runAppInBackground( seconds );
+                appiumDriver.runAppInBackground(seconds);
             }
         }
 
@@ -422,7 +422,7 @@ public class MobileEngine extends AbstractEngine {
         public String getMD5Sum(
                                  String filePath ) {
 
-            return mobileDeviceUtils.getMD5Sum( filePath );
+            return mobileDeviceUtils.getMD5Sum(filePath);
         }
 
         /**
@@ -443,7 +443,7 @@ public class MobileEngine extends AbstractEngine {
         public FileInfo[] listFiles(
                                      String path ) {
 
-            return mobileDeviceUtils.listFiles( path );
+            return mobileDeviceUtils.listFiles(path);
         }
 
         /**
@@ -464,7 +464,7 @@ public class MobileEngine extends AbstractEngine {
                                      String directoryPath,
                                      boolean recursively ) {
 
-            mobileDeviceUtils.deleteDirectory( directoryPath, recursively );
+            mobileDeviceUtils.deleteDirectory(directoryPath, recursively);
         }
 
         /**
@@ -483,7 +483,7 @@ public class MobileEngine extends AbstractEngine {
         public void deleteFile(
                                 String filePath ) {
 
-            mobileDeviceUtils.deleteFile( filePath );
+            mobileDeviceUtils.deleteFile(filePath);
         }
 
         /**
@@ -495,7 +495,7 @@ public class MobileEngine extends AbstractEngine {
         public void createDirectory(
                                      String directoryPath ) {
 
-            mobileDeviceUtils.createDirectory( directoryPath );
+            mobileDeviceUtils.createDirectory(directoryPath);
         }
 
         /**
@@ -509,7 +509,7 @@ public class MobileEngine extends AbstractEngine {
                                 String localFilePath,
                                 String deviceFilePath ) {
 
-            mobileDeviceUtils.copyFileTo( localFilePath, deviceFilePath );
+            mobileDeviceUtils.copyFileTo(localFilePath, deviceFilePath);
         }
 
         /**
@@ -523,7 +523,7 @@ public class MobileEngine extends AbstractEngine {
                                   String deviceFilePath,
                                   String localFilePath ) {
 
-            mobileDeviceUtils.copyFileFrom( deviceFilePath, localFilePath );
+            mobileDeviceUtils.copyFileFrom(deviceFilePath, localFilePath);
         }
     }
 }

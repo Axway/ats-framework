@@ -23,12 +23,12 @@ public class UiElementException extends RuntimeException {
 
     public UiElementException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public UiElementException( String message,
                                UiElement uiElement ) {
 
-        super( message + "\n" + uiElement.toString() );
+        super(message + "\n" + uiElement.toString());
     }
 }

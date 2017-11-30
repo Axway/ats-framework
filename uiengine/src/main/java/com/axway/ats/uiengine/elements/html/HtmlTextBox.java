@@ -29,7 +29,7 @@ public abstract class HtmlTextBox extends UiTextBox {
     public HtmlTextBox( UiDriver uiDriver,
                         UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

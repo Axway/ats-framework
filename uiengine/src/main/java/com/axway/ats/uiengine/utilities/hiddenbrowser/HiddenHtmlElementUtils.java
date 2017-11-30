@@ -35,7 +35,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 @PublicAtsApi
 public class HiddenHtmlElementUtils {
 
-    private static Logger log = Logger.getLogger( HiddenHtmlElementUtils.class );
+    private static Logger log = Logger.getLogger(HiddenHtmlElementUtils.class);
 
     @PublicAtsApi
     public static void mouseClick(
@@ -49,71 +49,71 @@ public class HiddenHtmlElementUtils {
         boolean updateActiveElementMethodAccessible = false;
         try {
             // change access modifiers of some methods
-            getElementForOperationMethod = HtmlUnitMouse.class.getDeclaredMethod( "getElementForOperation",
-                                                                                  Coordinates.class );
+            getElementForOperationMethod = HtmlUnitMouse.class.getDeclaredMethod("getElementForOperation",
+                                                                                 Coordinates.class);
             getElementForOperationMethodAccessible = getElementForOperationMethod.isAccessible();
-            getElementForOperationMethod.setAccessible( true );
+            getElementForOperationMethod.setAccessible(true);
 
-            moveOutIfNeededMethod = HtmlUnitMouse.class.getDeclaredMethod( "moveOutIfNeeded",
-                                                                           DomElement.class );
+            moveOutIfNeededMethod = HtmlUnitMouse.class.getDeclaredMethod("moveOutIfNeeded",
+                                                                          DomElement.class);
             moveOutIfNeededMethodAccessible = moveOutIfNeededMethod.isAccessible();
-            moveOutIfNeededMethod.setAccessible( true );
+            moveOutIfNeededMethod.setAccessible(true);
 
-            updateActiveElementMethod = HtmlUnitMouse.class.getDeclaredMethod( "updateActiveElement",
-                                                                               DomElement.class );
+            updateActiveElementMethod = HtmlUnitMouse.class.getDeclaredMethod("updateActiveElement",
+                                                                              DomElement.class);
             updateActiveElementMethodAccessible = updateActiveElementMethod.isAccessible();
-            updateActiveElementMethod.setAccessible( true );
+            updateActiveElementMethod.setAccessible(true);
 
             // get the target element
-            HtmlUnitDriver htmlUnitDriver = ( HtmlUnitDriver ) webElement.getWrappedDriver();
-            HtmlUnitMouse mouse = ( HtmlUnitMouse ) htmlUnitDriver.getMouse();
-            HtmlElement element = ( HtmlElement ) getElementForOperationMethod.invoke( mouse,
-                                                                                       webElement.getCoordinates() );
-            moveOutIfNeededMethod.invoke( mouse, element );
+            HtmlUnitDriver htmlUnitDriver = (HtmlUnitDriver) webElement.getWrappedDriver();
+            HtmlUnitMouse mouse = (HtmlUnitMouse) htmlUnitDriver.getMouse();
+            HtmlElement element = (HtmlElement) getElementForOperationMethod.invoke(mouse,
+                                                                                    webElement.getCoordinates());
+            moveOutIfNeededMethod.invoke(mouse, element);
 
-            if( htmlUnitDriver.isJavascriptEnabled() ) {
-                if( ! ( element instanceof HtmlInput ) ) {
+            if (htmlUnitDriver.isJavascriptEnabled()) {
+                if (! (element instanceof HtmlInput)) {
                     element.focus();
                 }
                 element.mouseOver();
                 element.mouseMove();
             }
-            HtmlUnitKeyboard keyboard = ( HtmlUnitKeyboard ) htmlUnitDriver.getKeyboard();
-            element.click( keyboard.isShiftPressed(), keyboard.isCtrlPressed(), keyboard.isAltPressed() );
+            HtmlUnitKeyboard keyboard = (HtmlUnitKeyboard) htmlUnitDriver.getKeyboard();
+            element.click(keyboard.isShiftPressed(), keyboard.isCtrlPressed(), keyboard.isAltPressed());
 
-            updateActiveElementMethod.invoke( mouse, element );
+            updateActiveElementMethod.invoke(mouse, element);
 
-        } catch( IOException ioe ) {
+        } catch (IOException ioe) {
 
-            throw new WebDriverException( ioe );
-        } catch( ScriptException e ) {
+            throw new WebDriverException(ioe);
+        } catch (ScriptException e) {
 
             // we need only our exception if such exists
             Throwable uiEngineException = e.getCause();
-            while( uiEngineException != null
-                   && !uiEngineException.getClass().getName().toLowerCase().contains( "com.axway.ats" ) ) {
+            while (uiEngineException != null
+                   && !uiEngineException.getClass().getName().toLowerCase().contains("com.axway.ats")) {
                 uiEngineException = uiEngineException.getCause();
             }
-            if( uiEngineException != null ) {
-                throw ( RuntimeException ) uiEngineException;
+            if (uiEngineException != null) {
+                throw(RuntimeException) uiEngineException;
             }
 
             // Log the exception with level WARN, because in the main Selenium implementation
             // (HtmlUnitMouse.click(coordinates)) the exception is even skipped
-            log.warn( "Script error while clicking web element. " + webElement.toString(), e );
-        } catch( Exception e ) {
+            log.warn("Script error while clicking web element. " + webElement.toString(), e);
+        } catch (Exception e) {
 
-            throw new RuntimeException( e );
+            throw new RuntimeException(e);
         } finally {
 
-            if( getElementForOperationMethod != null ) {
-                getElementForOperationMethod.setAccessible( getElementForOperationMethodAccessible );
+            if (getElementForOperationMethod != null) {
+                getElementForOperationMethod.setAccessible(getElementForOperationMethodAccessible);
             }
-            if( moveOutIfNeededMethod != null ) {
-                moveOutIfNeededMethod.setAccessible( moveOutIfNeededMethodAccessible );
+            if (moveOutIfNeededMethod != null) {
+                moveOutIfNeededMethod.setAccessible(moveOutIfNeededMethodAccessible);
             }
-            if( updateActiveElementMethod != null ) {
-                updateActiveElementMethod.setAccessible( updateActiveElementMethodAccessible );
+            if (updateActiveElementMethod != null) {
+                updateActiveElementMethod.setAccessible(updateActiveElementMethodAccessible);
             }
         }
     }

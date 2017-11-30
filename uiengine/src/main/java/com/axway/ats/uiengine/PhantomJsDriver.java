@@ -35,7 +35,7 @@ import com.axway.ats.core.utils.IoUtils;
 @PublicAtsApi
 public class PhantomJsDriver extends AbstractRealBrowserDriver {
 
-    private static Logger         log                        = Logger.getLogger( PhantomJsDriver.class );
+    private static Logger         log                        = Logger.getLogger(PhantomJsDriver.class);
 
     /**
      * <pre>
@@ -79,47 +79,47 @@ public class PhantomJsDriver extends AbstractRealBrowserDriver {
     protected PhantomJsDriver( String url,
                                String browserPath ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.PhantomJS, url, browserPath );
+        super(AbstractRealBrowserDriver.BrowserType.PhantomJS, url, browserPath);
     }
 
     public static List<Cookie> getHttpOnlyCookies() {
 
         List<Cookie> cookies = new ArrayList<Cookie>();
-        if( System.getProperty( PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY ) != null ) {
+        if (System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
 
-            String[] cookieNames = System.getProperty( PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY )
-                                         .split( "," );
+            String[] cookieNames = System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY)
+                                         .split(",");
             try {
-                String cookiesFileContent = IoUtils.streamToString( IoUtils.readFile( PhantomJsDriver.cookiesFile ) );
-                for( String cookieName : cookieNames ) {
-                    int cookieIndex = cookiesFileContent.indexOf( cookieName + "=" );
-                    if( cookieIndex >= 0 ) {
+                String cookiesFileContent = IoUtils.streamToString(IoUtils.readFile(PhantomJsDriver.cookiesFile));
+                for (String cookieName : cookieNames) {
+                    int cookieIndex = cookiesFileContent.indexOf(cookieName + "=");
+                    if (cookieIndex >= 0) {
 
-                        int endIndex = cookiesFileContent.indexOf( "\\0", cookieIndex );
-                        if( endIndex < 0 ) {
-                            endIndex = cookiesFileContent.indexOf( ')', cookieIndex );
+                        int endIndex = cookiesFileContent.indexOf("\\0", cookieIndex);
+                        if (endIndex < 0) {
+                            endIndex = cookiesFileContent.indexOf(')', cookieIndex);
                         }
-                        String wholeCookieData = cookiesFileContent.substring( cookieIndex, endIndex );
-                        String[] cookieParts = wholeCookieData.split( ";\\s+" );
+                        String wholeCookieData = cookiesFileContent.substring(cookieIndex, endIndex);
+                        String[] cookieParts = wholeCookieData.split(";\\s+");
 
-                        String value = cookieParts[0].substring( cookieParts[0].indexOf( '=' ) + 1 );
+                        String value = cookieParts[0].substring(cookieParts[0].indexOf('=') + 1);
                         String path = null;
                         String domain = null;
                         boolean isSecure = false;
-                        for( String cp : cookieParts ) {
-                            if( "secure".equalsIgnoreCase( cp ) ) {
+                        for (String cp : cookieParts) {
+                            if ("secure".equalsIgnoreCase(cp)) {
                                 isSecure = true;
-                            } else if( cp.startsWith( "path=" ) ) {
-                                path = cp.substring( cp.indexOf( '=' ) + 1 );
-                            } else if( cp.startsWith( "domain=" ) ) {
-                                domain = cp.substring( cp.indexOf( '=' ) + 1 );
+                            } else if (cp.startsWith("path=")) {
+                                path = cp.substring(cp.indexOf('=') + 1);
+                            } else if (cp.startsWith("domain=")) {
+                                domain = cp.substring(cp.indexOf('=') + 1);
                             }
                         }
-                        cookies.add( new Cookie( cookieName, value, domain, path, null, isSecure ) );
+                        cookies.add(new Cookie(cookieName, value, domain, path, null, isSecure));
                     }
                 }
-            } catch( Exception e ) {
-                log.error( "Couldn't parse HttpOnly cookeis, from the temp file: " + cookiesFile, e );
+            } catch (Exception e) {
+                log.error("Couldn't parse HttpOnly cookeis, from the temp file: " + cookiesFile, e);
             }
         }
         return cookies;

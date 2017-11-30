@@ -66,7 +66,7 @@ public class SwingDriver extends UiDriver {
     */
     protected SwingDriver( String windowTitile ) {
 
-        this( null, windowTitile );
+        this(null, windowTitile);
     }
 
     /**
@@ -75,7 +75,7 @@ public class SwingDriver extends UiDriver {
      */
     protected SwingDriver( Class<?> mainClassOfTestedApplication ) {
 
-        this( mainClassOfTestedApplication, null );
+        this(mainClassOfTestedApplication, null);
     }
 
     /**
@@ -104,48 +104,48 @@ public class SwingDriver extends UiDriver {
     @PublicAtsApi
     public void start() {
 
-        if( !StringUtils.isNullOrEmpty( jnlpLocation ) ) {
+        if (!StringUtils.isNullOrEmpty(jnlpLocation)) {
 
             Launcher jnlpLauncher = new Launcher();
 
             // if it's "true" the JNLP application is started in a sandboxed environment and FEST API is unable to locate it
-            jnlpLauncher.setCreateAppContext( false );
+            jnlpLauncher.setCreateAppContext(false);
 
             UpdatePolicy updatePolicy = UpdatePolicy.NEVER;
-            if( !isJnlpCached ) {
+            if (!isJnlpCached) {
                 updatePolicy = UpdatePolicy.ALWAYS;
             }
-            jnlpLauncher.setUpdatePolicy( updatePolicy );
+            jnlpLauncher.setUpdatePolicy(updatePolicy);
 
             try {
-                if( jnlpLocation.toLowerCase().startsWith( "http" ) ) {
-                    jnlpAppInstance = jnlpLauncher.launch( new URL( jnlpLocation ) );
+                if (jnlpLocation.toLowerCase().startsWith("http")) {
+                    jnlpAppInstance = jnlpLauncher.launch(new URL(jnlpLocation));
                 } else {
-                    JNLPFile jnlpFile = new JNLPFile( new URL( jnlpLocation ) );
-                    jnlpAppInstance = jnlpLauncher.launch( jnlpFile );
+                    JNLPFile jnlpFile = new JNLPFile(new URL(jnlpLocation));
+                    jnlpAppInstance = jnlpLauncher.launch(jnlpFile);
                 }
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
-                throw new SwingException( "Couldn't load JNLP from '" + jnlpLocation + "'", e );
+                throw new SwingException("Couldn't load JNLP from '" + jnlpLocation + "'", e);
             }
 
             this.windowTitle = jnlpAppInstance.getTitle();
         }
 
         BasicRobot.robotWithCurrentAwtHierarchy().cleanUpWithoutDisposingWindows();
-        if( this.mainClassOfTestedApplication != null ) {
+        if (this.mainClassOfTestedApplication != null) {
 
-            ApplicationLauncher.application( this.mainClassOfTestedApplication ).start();
+            ApplicationLauncher.application(this.mainClassOfTestedApplication).start();
         }
 
         // FailOnThreadViolationRepaintManager class forces a test failure if access to Swing components is not performed on the EDT.
         //   FailOnThreadViolationRepaintManager.install();
 
-        getSwingEngine().goToWindow( this.windowTitle, false ); // also initializes windowFixture
+        getSwingEngine().goToWindow(this.windowTitle, false); // also initializes windowFixture
 
         // configure the robot
         windowFixture.robot.settings()
-                           .delayBetweenEvents( UiEngineConfigurator.getInstance().getCommandDelay() );
+                           .delayBetweenEvents(UiEngineConfigurator.getInstance().getCommandDelay());
     }
 
     @Override
@@ -154,12 +154,12 @@ public class SwingDriver extends UiDriver {
 
         try {
             windowFixture.close();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             // if the current window is already closed
         }
         windowFixture.robot.cleanUpWithoutDisposingWindows();
 
-        if( jnlpAppInstance != null && jnlpAppInstance.isRunning() ) {
+        if (jnlpAppInstance != null && jnlpAppInstance.isRunning()) {
             jnlpAppInstance.destroy();
         }
     }
@@ -174,11 +174,11 @@ public class SwingDriver extends UiDriver {
 
         try {
             windowFixture.close();
-        } catch( Exception e ) {
+        } catch (Exception e) {
             // if the current window is already closed
         }
 
-        if( cleanResources ) {
+        if (cleanResources) {
             windowFixture.robot.cleanUp();
         } else {
             windowFixture.robot.cleanUpWithoutDisposingWindows();
@@ -192,7 +192,7 @@ public class SwingDriver extends UiDriver {
     @PublicAtsApi
     public SwingEngine getSwingEngine() {
 
-        return new SwingEngine( this );
+        return new SwingEngine(this);
     }
 
     /**
@@ -204,9 +204,9 @@ public class SwingDriver extends UiDriver {
     @PublicAtsApi
     public void setCommandDelay( int commandDelay ) {
 
-        UiEngineConfigurator.getInstance().setCommandDelay( commandDelay );
-        if( windowFixture != null ) { // configure the robot - start() already invoked
-            windowFixture.robot.settings().delayBetweenEvents( commandDelay );
+        UiEngineConfigurator.getInstance().setCommandDelay(commandDelay);
+        if (windowFixture != null) { // configure the robot - start() already invoked
+            windowFixture.robot.settings().delayBetweenEvents(commandDelay);
         }
     }
 }

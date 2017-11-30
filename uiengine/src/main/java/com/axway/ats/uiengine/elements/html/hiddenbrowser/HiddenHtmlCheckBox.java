@@ -36,17 +36,17 @@ public class HiddenHtmlCheckBox extends HtmlCheckBox {
     public HiddenHtmlCheckBox( UiDriver uiDriver,
                                UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
 
         // generate the element locator of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "checkbox" },
-                                                                    "input" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "checkbox" },
+                                                                   "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
     }
 
     /**
@@ -56,17 +56,17 @@ public class HiddenHtmlCheckBox extends HtmlCheckBox {
     @PublicAtsApi
     public void check() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this );
-        if( !element.isEnabled() ) {
-            throw new UnsupportedOperationException( "You may not check a disabled element." + toString() );
+        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this);
+        if (!element.isEnabled()) {
+            throw new UnsupportedOperationException("You may not check a disabled element." + toString());
         }
-        if( !element.isSelected() ) {
+        if (!element.isSelected()) {
 
             element.click();
         }
-        
+
         UiEngineUtilities.sleep();
     }
 
@@ -77,17 +77,17 @@ public class HiddenHtmlCheckBox extends HtmlCheckBox {
     @PublicAtsApi
     public void unCheck() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this );
-        if( !element.isEnabled() ) {
-            throw new UnsupportedOperationException( "You may not uncheck a disabled element." + toString() );
+        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this);
+        if (!element.isEnabled()) {
+            throw new UnsupportedOperationException("You may not uncheck a disabled element." + toString());
         }
-        if( element.isSelected() ) {
+        if (element.isSelected()) {
 
             element.click();
         }
-        
+
         UiEngineUtilities.sleep();
     }
 
@@ -98,9 +98,9 @@ public class HiddenHtmlCheckBox extends HtmlCheckBox {
     @PublicAtsApi
     public boolean isChecked() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        return HiddenHtmlElementLocator.findElement( this ).isSelected();
+        return HiddenHtmlElementLocator.findElement(this).isSelected();
     }
 
     /**
@@ -113,9 +113,9 @@ public class HiddenHtmlCheckBox extends HtmlCheckBox {
     public void verifyChecked() {
 
         boolean isActuallyChecked = isChecked();
-        if( !isActuallyChecked ) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " checked, but it is unchecked indeed" );
+        if (!isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " checked, but it is unchecked indeed");
         }
     }
 
@@ -129,9 +129,9 @@ public class HiddenHtmlCheckBox extends HtmlCheckBox {
     public void verifyNotChecked() {
 
         boolean isActuallyChecked = isChecked();
-        if( isActuallyChecked ) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " unchecked, but it is checked indeed" );
+        if (isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " unchecked, but it is checked indeed");
         }
     }
 }

@@ -26,7 +26,7 @@ public abstract class UiAlert extends UiElement {
 
     public UiAlert( UiDriver uiDriver ) {
 
-        super( uiDriver, null );
+        super(uiDriver, null);
     }
 
     @PublicAtsApi

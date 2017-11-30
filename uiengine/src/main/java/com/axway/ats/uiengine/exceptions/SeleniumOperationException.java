@@ -27,7 +27,7 @@ public class SeleniumOperationException extends RuntimeException {
      */
     public SeleniumOperationException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -38,14 +38,14 @@ public class SeleniumOperationException extends RuntimeException {
     public SeleniumOperationException( String message,
                                        Throwable t ) {
 
-        super( message, t );
+        super(message, t);
     }
 
     public SeleniumOperationException( UiElement uiElement,
                                        String failedCommand,
                                        Exception internalSeleniumException ) {
 
-        super( "'" + failedCommand + "' command failed on " + uiElement.toString()
-               + "\nInternal error message is '" + internalSeleniumException.getMessage() + "'" );
+        super("'" + failedCommand + "' command failed on " + uiElement.toString()
+              + "\nInternal error message is '" + internalSeleniumException.getMessage() + "'");
     }
 }

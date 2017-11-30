@@ -38,7 +38,7 @@ public class RobotDriver extends UiDriver {
     @PublicAtsApi
     public RobotEngine getRobotEngine() {
 
-        return new RobotEngine( this );
+        return new RobotEngine(this);
     }
 
     @Override

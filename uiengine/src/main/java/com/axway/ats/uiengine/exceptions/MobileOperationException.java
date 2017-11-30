@@ -28,7 +28,7 @@ public class MobileOperationException extends RuntimeException {
      */
     public MobileOperationException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -39,15 +39,15 @@ public class MobileOperationException extends RuntimeException {
     public MobileOperationException( String message,
                                      Throwable t ) {
 
-        super( message, t );
+        super(message, t);
     }
 
     public MobileOperationException( UiElement uiElement,
                                      String failedCommand,
                                      Exception internalException ) {
 
-        super( "'" + failedCommand + "' command failed on " + uiElement.toString() + " (context="
-               + MobileElementFinder.getElementContext( uiElement ) + ")\nInternal error message is '"
-               + internalException.getMessage() + "'", internalException );
+        super("'" + failedCommand + "' command failed on " + uiElement.toString() + " (context="
+              + MobileElementFinder.getElementContext(uiElement) + ")\nInternal error message is '"
+              + internalException.getMessage() + "'", internalException);
     }
 }

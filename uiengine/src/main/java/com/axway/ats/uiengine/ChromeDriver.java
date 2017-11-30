@@ -27,7 +27,7 @@ public class ChromeDriver extends AbstractRealBrowserDriver {
      */
     protected ChromeDriver( String url ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.Chrome, url, null );
+        super(AbstractRealBrowserDriver.BrowserType.Chrome, url, null);
     }
 
     /**
@@ -39,6 +39,6 @@ public class ChromeDriver extends AbstractRealBrowserDriver {
     protected ChromeDriver( String url,
                             String remoteSeleniumURL ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.Chrome, url, null, remoteSeleniumURL );
+        super(AbstractRealBrowserDriver.BrowserType.Chrome, url, null, remoteSeleniumURL);
     }
 }

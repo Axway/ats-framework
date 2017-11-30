@@ -25,7 +25,7 @@ public class EdgeDriver extends AbstractRealBrowserDriver {
      */
     protected EdgeDriver( String url ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.Edge, url, null );
+        super(AbstractRealBrowserDriver.BrowserType.Edge, url, null);
     }
 
     /**
@@ -37,6 +37,6 @@ public class EdgeDriver extends AbstractRealBrowserDriver {
     protected EdgeDriver( String url,
                           String remoteSeleniumURL ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.Edge, url, null, remoteSeleniumURL );
+        super(AbstractRealBrowserDriver.BrowserType.Edge, url, null, remoteSeleniumURL);
     }
 }

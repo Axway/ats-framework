@@ -31,7 +31,7 @@ public abstract class HtmlSingleSelectList extends UiSingleSelectList {
     public HtmlSingleSelectList( UiDriver uiDriver,
                                  UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     @PublicAtsApi

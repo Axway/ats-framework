@@ -39,24 +39,24 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingCheckBox extends UiCheckBox {
 
     private static final String[] RULES = { "label,visible",
-            "label",
-            "name,text,visible",
-            "name,text",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "index"                    };
+                                            "label",
+                                            "name,text,visible",
+                                            "name,text",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingCheckBox.class, JCheckBox.class );
+        SwingElementLocator.componentsMap.put(SwingCheckBox.class, JCheckBox.class);
     }
 
     public SwingCheckBox( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -67,9 +67,9 @@ public class SwingCheckBox extends UiCheckBox {
     @PublicAtsApi
     public void check() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JCheckBoxFixture ) SwingElementLocator.findFixture( this ) ).check();
+        ((JCheckBoxFixture) SwingElementLocator.findFixture(this)).check();
     }
 
     /**
@@ -80,9 +80,9 @@ public class SwingCheckBox extends UiCheckBox {
     @PublicAtsApi
     public boolean isChecked() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JCheckBoxFixture ) SwingElementLocator.findFixture( this ) ).component().isSelected();
+        return ((JCheckBoxFixture) SwingElementLocator.findFixture(this)).component().isSelected();
     }
 
     /**
@@ -93,9 +93,9 @@ public class SwingCheckBox extends UiCheckBox {
     @PublicAtsApi
     public void unCheck() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JCheckBoxFixture ) SwingElementLocator.findFixture( this ) ).uncheck();
+        ((JCheckBoxFixture) SwingElementLocator.findFixture(this)).uncheck();
     }
 
     /**
@@ -108,9 +108,9 @@ public class SwingCheckBox extends UiCheckBox {
     public void verifyChecked() {
 
         boolean isActuallyChecked = isChecked();
-        if( !isActuallyChecked ) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " checked, but it is unchecked indeed" );
+        if (!isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " checked, but it is unchecked indeed");
         }
     }
 
@@ -124,9 +124,9 @@ public class SwingCheckBox extends UiCheckBox {
     public void verifyNotChecked() {
 
         boolean isActuallyChecked = isChecked();
-        if( isActuallyChecked ) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " unchecked, but it is checked indeed" );
+        if (isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " unchecked, but it is checked indeed");
         }
     }
 

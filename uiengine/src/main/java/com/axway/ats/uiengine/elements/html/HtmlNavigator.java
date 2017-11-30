@@ -28,7 +28,7 @@ import com.axway.ats.uiengine.exceptions.ElementNotFoundException;
 @PublicAtsApi
 public class HtmlNavigator {
 
-    private static Logger        log                = Logger.getLogger( HtmlNavigator.class );
+    private static Logger        log                = Logger.getLogger(HtmlNavigator.class);
 
     private static HtmlNavigator instance;
 
@@ -42,7 +42,7 @@ public class HtmlNavigator {
 
     public static synchronized HtmlNavigator getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new HtmlNavigator();
         }
         return instance;
@@ -52,7 +52,7 @@ public class HtmlNavigator {
     public void navigateToTopFrame(
                                     WebDriver webDriver ) {
 
-        navigateToFrame( webDriver, null );
+        navigateToFrame(webDriver, null);
     }
 
     @PublicAtsApi
@@ -60,50 +60,51 @@ public class HtmlNavigator {
                                  WebDriver webDriver,
                                  UiElement element ) {
 
-        if( lastWebDriver != webDriver ) {
+        if (lastWebDriver != webDriver) {
             // this is a new WebDriver instance
             lastWebDriver = webDriver;
             lastFramesLocation = "";
         }
 
         String newFramesLocationProperty = element != null
-                                                          ? element.getElementProperty( "frame" )
-                                                          : null;
+                                                           ? element.getElementProperty("frame")
+                                                           : null;
         try {
-            if( newFramesLocationProperty == null ) {
+            if (newFramesLocationProperty == null) {
                 // No frame selection. Go to top frame if not there yet
-                if( !"".equals( lastFramesLocation ) ) {
-                    log.debug( "Go to TOP frame" );
+                if (!"".equals(lastFramesLocation)) {
+                    log.debug("Go to TOP frame");
                     webDriver.switchTo().defaultContent();
                     lastFramesLocation = "";
                 }
             } else {
                 lastFramesLocation = newFramesLocationProperty;
-                log.debug( "Go to frame: " + newFramesLocationProperty );
+                log.debug("Go to frame: " + newFramesLocationProperty);
 
-                String[] newFramesLocation = newFramesLocationProperty.split( "\\->" );
+                String[] newFramesLocation = newFramesLocationProperty.split("\\->");
                 webDriver.switchTo().defaultContent();
 
-                for( String frame : newFramesLocation ) {
+                for (String frame : newFramesLocation) {
 
-                    if( frame.startsWith( "/" ) || frame.startsWith( "(/" ) ) {
+                    if (frame.startsWith("/") || frame.startsWith("(/")) {
 
-                        WebElement frameElement = webDriver.findElement( By.xpath( frame.trim() ) );
-                        webDriver.switchTo().frame( frameElement );
+                        WebElement frameElement = webDriver.findElement(By.xpath(frame.trim()));
+                        webDriver.switchTo().frame(frameElement);
                     } else {
 
-                        webDriver.switchTo().frame( frame.trim() );
+                        webDriver.switchTo().frame(frame.trim());
                     }
                 }
             }
-        } catch( NotFoundException nfe ) {
+        } catch (NotFoundException nfe) {
 
             String msg = "Frame not found. Searched by: '"
-                         + ( element != null
-                                            ? element.getElementProperty( "frame" )
-                                            : "" ) + "'";
-            log.debug( msg );
-            throw new ElementNotFoundException( msg, nfe );
+                         + (element != null
+                                            ? element.getElementProperty("frame")
+                                            : "")
+                         + "'";
+            log.debug(msg);
+            throw new ElementNotFoundException(msg, nfe);
         }
     }
 

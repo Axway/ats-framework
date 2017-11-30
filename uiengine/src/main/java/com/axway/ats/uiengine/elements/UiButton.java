@@ -27,7 +27,7 @@ public abstract class UiButton extends UiElement {
     public UiButton( UiDriver uiDriver,
                      UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

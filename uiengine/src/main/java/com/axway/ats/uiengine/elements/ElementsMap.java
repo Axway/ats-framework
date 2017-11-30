@@ -37,7 +37,7 @@ import com.axway.ats.uiengine.exceptions.ElementsMapException;
 
 public class ElementsMap {
 
-    private Logger             log                  = Logger.getLogger( ElementsMap.class );
+    private Logger             log                  = Logger.getLogger(ElementsMap.class);
 
     /**
      * The singleton instance.
@@ -72,7 +72,7 @@ public class ElementsMap {
 
     public static ElementsMap getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
 
             instance = new ElementsMap();
         }
@@ -81,74 +81,74 @@ public class ElementsMap {
 
     public void loadMapFile( String mapFile, String mapSection ) {
 
-        if( StringUtils.isNullOrEmpty( mapFile ) ) {
-            throw new ElementsMapException( "Error loading elements map file. Provided null/empty map file argument" );
+        if (StringUtils.isNullOrEmpty(mapFile)) {
+            throw new ElementsMapException("Error loading elements map file. Provided null/empty map file argument");
         }
 
-        if( new File( mapFile ).isAbsolute() ) {
+        if (new File(mapFile).isAbsolute()) {
             mapFileDocument = mapFile;
         } else {
-            mapFileDocument = IoUtils.normalizeUnixDir( UiEngineConfigurator.getInstance()
-                                                                          .getMapFilesBaseDir() )
-                          + mapFile;
+            mapFileDocument = IoUtils.normalizeUnixDir(UiEngineConfigurator.getInstance()
+                                                                           .getMapFilesBaseDir())
+                              + mapFile;
         }
-        mapFileDocument = IoUtils.normalizeUnixFile( mapFileDocument );
+        mapFileDocument = IoUtils.normalizeUnixFile(mapFileDocument);
 
         try {
-            if( new File( mapFileDocument ).exists() ) {
+            if (new File(mapFileDocument).exists()) {
 
                 document = DocumentBuilderFactory.newInstance()
                                                  .newDocumentBuilder()
-                                                 .parse( new File( mapFileDocument ) );
+                                                 .parse(new File(mapFileDocument));
 
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Successfully loaded map file '" + new File( mapFileDocument ).getAbsolutePath()
-                               + "'" );
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully loaded map file '" + new File(mapFileDocument).getAbsolutePath()
+                              + "'");
                 }
             } else {
-                InputStream mapFileIS = getClass().getClassLoader().getResourceAsStream( mapFileDocument );
-                if( mapFileIS == null ) {
-                    throw new ElementsMapException( "Map file '" + mapFileDocument
-                                                    + "' doesn't exist neither on filesystem nor in classpath" );
+                InputStream mapFileIS = getClass().getClassLoader().getResourceAsStream(mapFileDocument);
+                if (mapFileIS == null) {
+                    throw new ElementsMapException("Map file '" + mapFileDocument
+                                                   + "' doesn't exist neither on filesystem nor in classpath");
                 }
-                document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( mapFileIS );
-                if( log.isDebugEnabled() ) {
-                    log.debug( "Successfully loaded map file '" + mapFileDocument + "' from the classpath" );
+                document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(mapFileIS);
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully loaded map file '" + mapFileDocument + "' from the classpath");
                 }
             }
-        } catch( Exception e ) {
-            throw new ElementsMapException( "Error loading elements map file", e );
+        } catch (Exception e) {
+            throw new ElementsMapException("Error loading elements map file", e);
         }
 
-        setMapSection( mapSection );
+        setMapSection(mapSection);
     }
 
     public void setMapSection( String mapSection ) {
 
-        if( StringUtils.isNullOrEmpty( mapSection ) ) {
-            throw new ElementsMapException( "Error loading elements map section. Provided null/empty map section argument" );
+        if (StringUtils.isNullOrEmpty(mapSection)) {
+            throw new ElementsMapException("Error loading elements map section. Provided null/empty map section argument");
         }
 
         // load the section
-        sectionNode = getSectionNode( mapSection );
+        sectionNode = getSectionNode(mapSection);
 
         checkForDuplicatedMapIds();
     }
 
     private Node getSectionNode( String mapSection ) {
 
-        NodeList nodeList = document.getElementsByTagName( "Section" );
-        for( int i = 0; i < nodeList.getLength(); i++ ) {
-            String attName = nodeList.item( i )
+        NodeList nodeList = document.getElementsByTagName("Section");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            String attName = nodeList.item(i)
                                      .getAttributes()
-                                     .getNamedItem( ATT_ELEMENT_NAME )
+                                     .getNamedItem(ATT_ELEMENT_NAME)
                                      .getNodeValue();
-            if( mapSection.equalsIgnoreCase( attName ) ) {
-                return nodeList.item( i );
+            if (mapSection.equalsIgnoreCase(attName)) {
+                return nodeList.item(i);
             }
         }
 
-        throw new ElementsMapException( "Node section \"" + mapSection + "\" not found!" );
+        throw new ElementsMapException("Node section \"" + mapSection + "\" not found!");
     }
 
     private void checkForDuplicatedMapIds() {
@@ -156,82 +156,82 @@ public class ElementsMap {
         // load all elements for this section
         NodeList childNodes = sectionNode.getChildNodes();
         List<String> childNodeMapIds = new ArrayList<String>();
-        for( int i = 0; i < childNodes.getLength(); i++ ) {
-            if( childNodes.item( i ) instanceof Element ) {
-                Element element = ( ( Element ) childNodes.item( i ) );
-                String elementMapId = element.getAttribute( ATT_ELEMENT_MAP_ID );
-                if( StringUtils.isNullOrEmpty( elementMapId ) ) {
-                    throw new ElementsMapException( "Error reading " + ATT_ELEMENT_MAP_ID + " for element '"
-                                                    + sectionNode.getNodeName() + "\\" + element.getNodeName()
-                                                    + "'" );
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            if (childNodes.item(i) instanceof Element) {
+                Element element = ((Element) childNodes.item(i));
+                String elementMapId = element.getAttribute(ATT_ELEMENT_MAP_ID);
+                if (StringUtils.isNullOrEmpty(elementMapId)) {
+                    throw new ElementsMapException("Error reading " + ATT_ELEMENT_MAP_ID + " for element '"
+                                                   + sectionNode.getNodeName() + "\\" + element.getNodeName()
+                                                   + "'");
                 }
-                if( childNodeMapIds.contains( elementMapId ) ) {
-                    throw new ElementsMapException( "Map section '"
-                                                    + ( ( Element ) sectionNode ).getAttribute( "name" )
-                                                    + "' already contains element with the same mapId '"
-                                                    + elementMapId + "'" );
+                if (childNodeMapIds.contains(elementMapId)) {
+                    throw new ElementsMapException("Map section '"
+                                                   + ((Element) sectionNode).getAttribute("name")
+                                                   + "' already contains element with the same mapId '"
+                                                   + elementMapId + "'");
                 }
-                childNodeMapIds.add( elementMapId );
+                childNodeMapIds.add(elementMapId);
             }
         }
     }
 
     public String getMapSection() {
 
-        if( sectionNode != null ) {
-            String mapSec = sectionNode.getAttributes().getNamedItem( ATT_ELEMENT_NAME ).getNodeValue();
-            if( !StringUtils.isNullOrEmpty( mapSec ) ) {
+        if (sectionNode != null) {
+            String mapSec = sectionNode.getAttributes().getNamedItem(ATT_ELEMENT_NAME).getNodeValue();
+            if (!StringUtils.isNullOrEmpty(mapSec)) {
                 return mapSec;
             }
         }
-        log.error( "No map section is set, no attribute of the current section can be get!" );
+        log.error("No map section is set, no attribute of the current section can be get!");
         return null;
     }
 
     public UiElementProperties getElementProperties( String mapId ) {
 
-        if( document == null ) {
-            throw new ElementsMapException( "Error loading '" + mapId
-                                            + "' element from map. No map file is loaded!" );
+        if (document == null) {
+            throw new ElementsMapException("Error loading '" + mapId
+                                           + "' element from map. No map file is loaded!");
         }
 
-        Element elementNode = getElement( sectionNode, mapId );
+        Element elementNode = getElement(sectionNode, mapId);
 
         // load the element properties
-        UiElementProperties elementProperties = collectElementProperties( elementNode, mapId );
-        elementProperties.addInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM, mapId );
+        UiElementProperties elementProperties = collectElementProperties(elementNode, mapId);
+        elementProperties.addInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM, mapId);
         return elementProperties;
     }
 
     public UiElementProperties getSubElementProperties( String elementMapId, String subElementMapId ) {
 
-        if( document == null ) {
-            throw new ElementsMapException( "Error loading '" + subElementMapId
-                                            + "' sub-element from map. No map file is loaded!" );
+        if (document == null) {
+            throw new ElementsMapException("Error loading '" + subElementMapId
+                                           + "' sub-element from map. No map file is loaded!");
         }
 
-        Node elementNode = getElement( sectionNode, elementMapId );
-        Element subElementNode = getElement( elementNode, subElementMapId );
+        Node elementNode = getElement(sectionNode, elementMapId);
+        Element subElementNode = getElement(elementNode, subElementMapId);
 
         // load the element properties
-        UiElementProperties elementProperties = collectElementProperties( subElementNode, subElementMapId );
-        elementProperties.addInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM, subElementMapId );
+        UiElementProperties elementProperties = collectElementProperties(subElementNode, subElementMapId);
+        elementProperties.addInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM, subElementMapId);
         return elementProperties;
     }
 
     private Element getElement( Node node, String mapId ) {
 
         NodeList childNodes = node.getChildNodes();
-        for( int i = 0; i < childNodes.getLength(); i++ ) {
-            if( childNodes.item( i ) instanceof Element ) {
-                Element element = ( ( Element ) childNodes.item( i ) );
-                if( mapId.equalsIgnoreCase( element.getAttribute( ATT_ELEMENT_MAP_ID ) ) ) {
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            if (childNodes.item(i) instanceof Element) {
+                Element element = ((Element) childNodes.item(i));
+                if (mapId.equalsIgnoreCase(element.getAttribute(ATT_ELEMENT_MAP_ID))) {
                     return element;
                 }
             }
         }
-        throw new ElementsMapException( "Error searching for '" + mapId + "' element in '" + getMapSection()
-                                        + "' section in '" + mapFileDocument + "' file" );
+        throw new ElementsMapException("Error searching for '" + mapId + "' element in '" + getMapSection()
+                                       + "' section in '" + mapFileDocument + "' file");
 
     }
 
@@ -239,18 +239,18 @@ public class ElementsMap {
 
         UiElementProperties elementProperties = new UiElementProperties();
 
-        NamedNodeMap nodeAttributes = ( elementNode ).getAttributes();
-        for( int i = 0; i < nodeAttributes.getLength(); i++ ) {
-            Node node = nodeAttributes.item( i );
-            if( StringUtils.isNullOrEmpty( node.getNodeValue() ) ) {
-                throw new ElementsMapException( "Error loading '" + mapId + "' element from map. '"
-                                                + node.getNodeName() + "' contains an empty value" );
+        NamedNodeMap nodeAttributes = (elementNode).getAttributes();
+        for (int i = 0; i < nodeAttributes.getLength(); i++) {
+            Node node = nodeAttributes.item(i);
+            if (StringUtils.isNullOrEmpty(node.getNodeValue())) {
+                throw new ElementsMapException("Error loading '" + mapId + "' element from map. '"
+                                               + node.getNodeName() + "' contains an empty value");
             }
-            if( StringUtils.isNullOrEmpty( node.getNodeName() ) ) {
-                throw new ElementsMapException( "Error loading '" + mapId + "' element from map. '"
-                                                + node.getNodeValue() + "' contains an empty key" );
+            if (StringUtils.isNullOrEmpty(node.getNodeName())) {
+                throw new ElementsMapException("Error loading '" + mapId + "' element from map. '"
+                                               + node.getNodeValue() + "' contains an empty key");
             }
-            elementProperties.addProperty( node.getNodeName(), node.getNodeValue() );
+            elementProperties.addProperty(node.getNodeName(), node.getNodeValue());
         }
 
         return elementProperties;

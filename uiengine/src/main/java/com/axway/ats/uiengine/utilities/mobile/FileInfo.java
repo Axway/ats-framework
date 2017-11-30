@@ -74,14 +74,16 @@ public class FileInfo {
     @Override
     public String toString() {
 
-        return ( isDirectory
+        return (isDirectory
                             ? "Directory: "
-                            : "File: " ) + name + ( size > -1l
-                                                              ? ", Size: " + size
-                                                              : "" )
-               + ( modificationDate != null
+                            : "File: ")
+               + name + (size > -1l
+                                    ? ", Size: " + size
+                                    : "")
+               + (modificationDate != null
                                            ? ", Mod.Date: " + modificationDate
-                                           : "" ) + ", Path: " + path;
+                                           : "")
+               + ", Path: " + path;
     }
 
 }

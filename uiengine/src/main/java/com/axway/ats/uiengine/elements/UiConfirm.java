@@ -26,7 +26,7 @@ public abstract class UiConfirm extends UiElement {
 
     public UiConfirm( UiDriver uiDriver ) {
 
-        super( uiDriver, null );
+        super(uiDriver, null);
     }
 
     /**

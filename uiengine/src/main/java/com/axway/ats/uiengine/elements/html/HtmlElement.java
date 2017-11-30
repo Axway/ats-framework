@@ -40,7 +40,7 @@ public abstract class HtmlElement extends UiElement {
     public HtmlElement( UiDriver uiDriver,
                         UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

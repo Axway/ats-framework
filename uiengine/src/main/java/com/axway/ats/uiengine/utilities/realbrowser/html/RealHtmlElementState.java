@@ -57,7 +57,7 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         this.element = uiElement;
         this.elementProperties = uiElement.getElementProperties();
-        this.webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) uiElement.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        this.webDriver = (WebDriver) ((AbstractRealBrowserDriver) uiElement.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -68,15 +68,15 @@ public class RealHtmlElementState implements IHtmlElementState {
      */
     @PublicAtsApi
     public void focus() {
-            
+
         // retrieve browser focus
-        webDriver.switchTo().window( webDriver.getWindowHandle() );
+        webDriver.switchTo().window(webDriver.getWindowHandle());
         // now focus the target element
-        WebElement webElement = RealHtmlElementLocator.findElement( element );
-        if( "input".equals( webElement.getTagName() ) ) {
-            webElement.sendKeys( "" );
+        WebElement webElement = RealHtmlElementLocator.findElement(element);
+        if ("input".equals(webElement.getTagName())) {
+            webElement.sendKeys("");
         } else {
-            new Actions( webDriver ).moveToElement( webElement ).perform();
+            new Actions(webDriver).moveToElement(webElement).perform();
         }
     }
 
@@ -89,9 +89,9 @@ public class RealHtmlElementState implements IHtmlElementState {
     public void verifyExist() {
 
         boolean exists = isElementPresent();
-        if( !exists ) {
-            throw new VerificationException( getElementDescription()
-                                             + " does not exist while it is expected to exist" );
+        if (!exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " does not exist while it is expected to exist");
         }
     }
 
@@ -104,9 +104,9 @@ public class RealHtmlElementState implements IHtmlElementState {
     public void verifyNotExist() {
 
         boolean exists = isElementPresent();
-        if( exists ) {
-            throw new VerificationException( getElementDescription()
-                                             + " exists while it is expected to not exist" );
+        if (exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " exists while it is expected to not exist");
         }
     }
 
@@ -119,7 +119,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeExisting() {
 
-        waitToBecomeExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -133,19 +133,19 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementPresent() ) {
-                highlightElement( false );
+            if (isElementPresent()) {
+                highlightElement(false);
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element exist within "
-                                         + millis
-                                         + " ms"
-                                         + getElementDescription()
-                                         + ".Please check your HTML page source.You may use RealHtmlEngine.getPageSource()." );
+        throw new VerificationException("Failed to verify the element exist within "
+                                        + millis
+                                        + " ms"
+                                        + getElementDescription()
+                                        + ".Please check your HTML page source.You may use RealHtmlEngine.getPageSource().");
     }
 
     /**
@@ -157,7 +157,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeNotExisting() {
 
-        waitToBecomeNotExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeNotExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -169,19 +169,19 @@ public class RealHtmlElementState implements IHtmlElementState {
     public void waitToBecomeNotExisting(
                                          int millis ) {
 
-        highlightElement( false );
+        highlightElement(false);
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementPresent() ) {
+            if (!isElementPresent()) {
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element is not existing within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element is not existing within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -193,7 +193,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeDisplayed() {
 
-        waitToBecomeDisplayed( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeDisplayed(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -207,16 +207,16 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementDisplayed() ) {
-                highlightElement( false );
+            if (isElementDisplayed()) {
+                highlightElement(false);
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become displayed within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become displayed within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -228,7 +228,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeHidden() {
 
-        waitToBecomeHidden( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeHidden(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -242,16 +242,16 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementDisplayed() ) {
-                highlightElement( false );
+            if (!isElementDisplayed()) {
+                highlightElement(false);
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become hidden within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become hidden within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -263,7 +263,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeEnabled() {
 
-        waitToBecomeEnabled( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeEnabled(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -277,16 +277,16 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementEnabled() ) {
-                highlightElement( false );
+            if (isElementEnabled()) {
+                highlightElement(false);
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become enabled within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become enabled within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -298,7 +298,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void waitToBecomeDisabled() {
 
-        waitToBecomeDisabled( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeDisabled(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -312,16 +312,16 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementEnabled() ) {
-                highlightElement( false );
+            if (!isElementEnabled()) {
+                highlightElement(false);
                 return;
             }
 
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element become disabled within " + millis
-                                         + " ms" + getElementDescription() );
+        throw new VerificationException("Failed to verify the element become disabled within " + millis
+                                        + " ms" + getElementDescription());
     }
 
     /**
@@ -331,32 +331,32 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public void highlightElement() {
 
-        highlightElement( true );
+        highlightElement(true);
     }
 
     private void highlightElement(
                                    boolean disregardConfiguration ) {
 
-        if( webDriver instanceof PhantomJSDriver ) {
+        if (webDriver instanceof PhantomJSDriver) {
             // it is headless browser
             return;
         }
 
-        if( disregardConfiguration || UiEngineConfigurator.getInstance().getHighlightElements() ) {
+        if (disregardConfiguration || UiEngineConfigurator.getInstance().getHighlightElements()) {
 
             try {
-                WebElement webElement = RealHtmlElementLocator.findElement( element );
-                String styleAttrValue = webElement.getAttribute( "style" );
+                WebElement webElement = RealHtmlElementLocator.findElement(element);
+                String styleAttrValue = webElement.getAttribute("style");
 
-                JavascriptExecutor js = ( JavascriptExecutor ) webDriver;
-                js.executeScript( "arguments[0].setAttribute('style', arguments[1]);",
-                                  webElement,
-                                  "background-color: #ff9; border: 1px solid yellow; box-shadow: 0px 0px 10px #fa0;" ); // to change text use: "color: yellow; text-shadow: 0 0 2px #f00;"
-                Thread.sleep( 500 );
-                js.executeScript( "arguments[0].setAttribute('style', arguments[1]);",
-                                  webElement,
-                                  styleAttrValue );
-            } catch( Exception e ) {
+                JavascriptExecutor js = (JavascriptExecutor) webDriver;
+                js.executeScript("arguments[0].setAttribute('style', arguments[1]);",
+                                 webElement,
+                                 "background-color: #ff9; border: 1px solid yellow; box-shadow: 0px 0px 10px #fa0;"); // to change text use: "color: yellow; text-shadow: 0 0 2px #f00;"
+                Thread.sleep(500);
+                js.executeScript("arguments[0].setAttribute('style', arguments[1]);",
+                                 webElement,
+                                 styleAttrValue);
+            } catch (Exception e) {
                 // swallow this error as highlighting is not critical
             }
         }
@@ -364,9 +364,10 @@ public class RealHtmlElementState implements IHtmlElementState {
 
     private String getElementDescription() {
 
-        return " '" + ( element != null
+        return " '" + (element != null
                                        ? element.toString()
-                                       : "Element " + elementProperties.toString() ) + "'";
+                                       : "Element " + elementProperties.toString())
+               + "'";
     }
 
     @PublicAtsApi
@@ -374,22 +375,22 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         // with the current Selenium implementation we do not know whether the opened modal dialog
         // is alert, prompt or confirmation
-        if( element instanceof UiAlert ) {
+        if (element instanceof UiAlert) {
 
             return getAlert() != null;
-        } else if( element instanceof UiPrompt ) {
+        } else if (element instanceof UiPrompt) {
 
             Alert prompt = getAlert();
             return prompt != null && prompt.getText() != null;
-        } else if( element instanceof UiConfirm ) {
+        } else if (element instanceof UiConfirm) {
 
             Alert confirm = getAlert();
             return confirm != null && confirm.getText() != null;
         }
 
-        HtmlNavigator.getInstance().navigateToFrame( webDriver, element );
+        HtmlNavigator.getInstance().navigateToFrame(webDriver, element);
 
-        return RealHtmlElementLocator.findElements( element ).size() > 0;
+        return RealHtmlElementLocator.findElements(element).size() > 0;
     }
 
     /**
@@ -400,7 +401,7 @@ public class RealHtmlElementState implements IHtmlElementState {
 
         try {
             return this.webDriver.switchTo().alert();
-        } catch( NoAlertPresentException e ) {
+        } catch (NoAlertPresentException e) {
             return null;
         }
     }
@@ -413,7 +414,7 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public boolean isElementEnabled() {
 
-        return RealHtmlElementLocator.findElement( element ).isEnabled();
+        return RealHtmlElementLocator.findElement(element).isEnabled();
     }
 
     /**
@@ -425,6 +426,6 @@ public class RealHtmlElementState implements IHtmlElementState {
     @PublicAtsApi
     public boolean isElementDisplayed() {
 
-        return RealHtmlElementLocator.findElement( element ).isDisplayed();
+        return RealHtmlElementLocator.findElement(element).isDisplayed();
     }
 }

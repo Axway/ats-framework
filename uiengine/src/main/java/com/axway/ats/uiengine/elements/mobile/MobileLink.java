@@ -41,8 +41,8 @@ public class MobileLink extends MobileElement<MobileLink> {
     public MobileLink( UiDriver uiDriver,
                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        properties.checkTypeAndRules( this.getClass().getSimpleName(), "Mobile", RULES );
+        super(uiDriver, properties);
+        properties.checkTypeAndRules(this.getClass().getSimpleName(), "Mobile", RULES);
     }
 
 }

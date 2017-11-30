@@ -39,8 +39,8 @@ public class MobileLabel extends MobileElement<MobileLabel> {
     public MobileLabel( UiDriver uiDriver,
                         UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        properties.checkTypeAndRules( this.getClass().getSimpleName(), "Mobile", RULES );
+        super(uiDriver, properties);
+        properties.checkTypeAndRules(this.getClass().getSimpleName(), "Mobile", RULES);
     }
 
 }

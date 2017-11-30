@@ -27,7 +27,7 @@ public abstract class HtmlAlert extends UiAlert {
 
     public HtmlAlert( UiDriver uiDriver ) {
 
-        super( uiDriver );
+        super(uiDriver);
     }
 
     @PublicAtsApi

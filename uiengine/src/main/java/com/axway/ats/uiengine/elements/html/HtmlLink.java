@@ -29,7 +29,7 @@ public abstract class HtmlLink extends UiLink {
     public HtmlLink( UiDriver uiDriver,
                      UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

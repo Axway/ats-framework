@@ -39,25 +39,25 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingRadioButton extends UiElement {
 
     private static final String[] RULES = { // the order here is important in order to find the largest set of properties matching properties in map file
-            "label,visible" /* used for labelFor */,
-            "label" /* used for labelFor */,
-            "name,text,visible",
-            "name,text",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "index"                    };
+                                            "label,visible" /* used for labelFor */,
+                                            "label" /* used for labelFor */,
+                                            "name,text,visible",
+                                            "name,text",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingRadioButton.class, JRadioButton.class );
+        SwingElementLocator.componentsMap.put(SwingRadioButton.class, JRadioButton.class);
     }
 
     public SwingRadioButton( UiDriver uiDriver,
                              UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -69,9 +69,9 @@ public class SwingRadioButton extends UiElement {
     @PublicAtsApi
     public boolean isSelected() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JRadioButtonFixture ) SwingElementLocator.findFixture( this ) ).component().isSelected();
+        return ((JRadioButtonFixture) SwingElementLocator.findFixture(this)).component().isSelected();
     }
 
     /**
@@ -82,9 +82,9 @@ public class SwingRadioButton extends UiElement {
     @PublicAtsApi
     public void select() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JRadioButtonFixture ) SwingElementLocator.findFixture( this ) ).check();
+        ((JRadioButtonFixture) SwingElementLocator.findFixture(this)).check();
     }
 
     /**
@@ -96,8 +96,8 @@ public class SwingRadioButton extends UiElement {
     @PublicAtsApi
     public void verifySelected() {
 
-        if( !isSelected() ) {
-            throw new VerificationException( toString() + " is NOT selected." );
+        if (!isSelected()) {
+            throw new VerificationException(toString() + " is NOT selected.");
         }
     }
 
@@ -110,8 +110,8 @@ public class SwingRadioButton extends UiElement {
     @PublicAtsApi
     public void verifyNotSelected() {
 
-        if( isSelected() ) {
-            throw new VerificationException( toString() + " is selected." );
+        if (isSelected()) {
+            throw new VerificationException(toString() + " is selected.");
         }
     }
 

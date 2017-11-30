@@ -39,17 +39,17 @@ public class RealHtmlRadioList extends HtmlRadioList {
     public RealHtmlRadioList( UiDriver uiDriver,
                               UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "radio" },
-                                                                    "input" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "radio" },
+                                                                   "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
     }
@@ -63,11 +63,11 @@ public class RealHtmlRadioList extends HtmlRadioList {
     public void select(
                         String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this, "[@value='" + value + "']", true );
-        if( !element.isEnabled() ) {
-            throw new UnsupportedOperationException( "You may not select a disabled element." + toString() );
+        WebElement element = RealHtmlElementLocator.findElement(this, "[@value='" + value + "']", true);
+        if (!element.isEnabled()) {
+            throw new UnsupportedOperationException("You may not select a disabled element." + toString());
         }
         element.click();
 
@@ -81,9 +81,9 @@ public class RealHtmlRadioList extends HtmlRadioList {
     public boolean isSelected(
                                String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        return RealHtmlElementLocator.findElement( this, "[@value='" + value + "']", true ).isSelected();
+        return RealHtmlElementLocator.findElement(this, "[@value='" + value + "']", true).isSelected();
     }
 
     /**
@@ -95,8 +95,8 @@ public class RealHtmlRadioList extends HtmlRadioList {
     public void verifyValue(
                              String expectedValue ) {
 
-        if( !isSelected( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, this );
+        if (!isSelected(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, this);
         }
     }
 
@@ -109,8 +109,8 @@ public class RealHtmlRadioList extends HtmlRadioList {
     public void verifyNotValue(
                                 String notExpectedValue ) {
 
-        if( isSelected( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (isSelected(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

@@ -27,7 +27,7 @@ public class RmiException extends RuntimeException {
      */
     public RmiException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -36,6 +36,6 @@ public class RmiException extends RuntimeException {
     public RmiException( String message,
                          Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

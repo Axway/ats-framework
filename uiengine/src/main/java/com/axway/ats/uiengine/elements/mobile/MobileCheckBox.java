@@ -55,10 +55,10 @@ public class MobileCheckBox extends UiCheckBox {
     public MobileCheckBox( UiDriver uiDriver,
                            UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        properties.checkTypeAndRules( this.getClass().getSimpleName(), "Mobile", RULES );
+        super(uiDriver, properties);
+        properties.checkTypeAndRules(this.getClass().getSimpleName(), "Mobile", RULES);
 
-        appiumDriver = ( AppiumDriver<?> ) ( ( MobileDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        appiumDriver = (AppiumDriver<?>) ((MobileDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -68,22 +68,22 @@ public class MobileCheckBox extends UiCheckBox {
     @PublicAtsApi
     public void check() {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement checkboxElement = MobileElementFinder.findElement( appiumDriver, this );
-            if( !checkboxElement.isSelected() ) {
-                if( appiumDriver instanceof AndroidDriver ) {
+            WebElement checkboxElement = MobileElementFinder.findElement(appiumDriver, this);
+            if (!checkboxElement.isSelected()) {
+                if (appiumDriver instanceof AndroidDriver) {
 
                     // checkboxElement.click(); // throwing exception (on Android) with message: Element is not clickable at point (x,y). Other element would receive the click
-                    new Actions( appiumDriver ).moveToElement( checkboxElement ).click().perform();
+                    new Actions(appiumDriver).moveToElement(checkboxElement).click().perform();
                 } else {
 
                     checkboxElement.click();
                 }
             }
-        } catch( Exception se ) {
-            throw new MobileOperationException( this, "check", se );
+        } catch (Exception se) {
+            throw new MobileOperationException(this, "check", se);
         }
 
         UiEngineUtilities.sleep();
@@ -96,22 +96,22 @@ public class MobileCheckBox extends UiCheckBox {
     @PublicAtsApi
     public void unCheck() {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement checkboxElement = MobileElementFinder.findElement( appiumDriver, this );
-            if( checkboxElement.isSelected() ) {
-                if( appiumDriver instanceof AndroidDriver ) {
+            WebElement checkboxElement = MobileElementFinder.findElement(appiumDriver, this);
+            if (checkboxElement.isSelected()) {
+                if (appiumDriver instanceof AndroidDriver) {
 
                     // checkboxElement.click(); // throwing exception (on Android) with message: Element is not clickable at point (x,y). Other element would receive the click
-                    new Actions( appiumDriver ).moveToElement( checkboxElement ).click().perform();
+                    new Actions(appiumDriver).moveToElement(checkboxElement).click().perform();
                 } else {
 
                     checkboxElement.click();
                 }
             }
-        } catch( Exception se ) {
-            throw new MobileOperationException( this, "unCheck", se );
+        } catch (Exception se) {
+            throw new MobileOperationException(this, "unCheck", se);
         }
 
         UiEngineUtilities.sleep();
@@ -124,12 +124,12 @@ public class MobileCheckBox extends UiCheckBox {
     @PublicAtsApi
     public boolean isChecked() {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            return MobileElementFinder.findElement( appiumDriver, this ).isSelected();
-        } catch( Exception se ) {
-            throw new MobileOperationException( this, "isChecked", se );
+            return MobileElementFinder.findElement(appiumDriver, this).isSelected();
+        } catch (Exception se) {
+            throw new MobileOperationException(this, "isChecked", se);
         }
     }
 
@@ -143,9 +143,9 @@ public class MobileCheckBox extends UiCheckBox {
     public void verifyChecked() {
 
         boolean isActuallyChecked = isChecked();
-        if( !isActuallyChecked ) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " checked, but it is unchecked indeed" );
+        if (!isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " checked, but it is unchecked indeed");
         }
     }
 
@@ -159,9 +159,9 @@ public class MobileCheckBox extends UiCheckBox {
     public void verifyNotChecked() {
 
         boolean isActuallyChecked = isChecked();
-        if( isActuallyChecked ) {
-            throw new VerificationException( "It was expected to have " + this.toString()
-                                             + " unchecked, but it is checked indeed" );
+        if (isActuallyChecked) {
+            throw new VerificationException("It was expected to have " + this.toString()
+                                            + " unchecked, but it is checked indeed");
         }
     }
 }

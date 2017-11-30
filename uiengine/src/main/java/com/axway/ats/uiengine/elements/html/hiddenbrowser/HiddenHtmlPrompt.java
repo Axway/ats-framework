@@ -45,27 +45,27 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
 
     public HiddenHtmlPrompt( UiDriver uiDriver ) {
 
-        super( uiDriver );
+        super(uiDriver);
 
-        HiddenBrowserDriver browserDriver = ( HiddenBrowserDriver ) uiDriver;
-        HtmlUnitDriver driver = ( HtmlUnitDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        HiddenBrowserDriver browserDriver = (HiddenBrowserDriver) uiDriver;
+        HtmlUnitDriver driver = (HtmlUnitDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
         Field webClientField = null;
         boolean fieldAccessibleState = false;
         try {
 
             TargetLocator targetLocator = driver.switchTo();
-            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField( "webClient" );
+            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField("webClient");
             fieldAccessibleState = webClientField.isAccessible();
-            webClientField.setAccessible( true );
-            webClient = ( WebClient ) webClientField.get( targetLocator.defaultContent() );
+            webClientField.setAccessible(true);
+            webClient = (WebClient) webClientField.get(targetLocator.defaultContent());
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new SeleniumOperationException( "Error retrieving internal Selenium web client", e );
+            throw new SeleniumOperationException("Error retrieving internal Selenium web client", e);
         } finally {
 
-            if( webClientField != null ) {
-                webClientField.setAccessible( fieldAccessibleState );
+            if (webClientField != null) {
+                webClientField.setAccessible(fieldAccessibleState);
             }
         }
     }
@@ -76,18 +76,18 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
                          final String promptValue ) {
 
         isProcessed = false;
-        webClient.setPromptHandler( new PromptHandler() {
+        webClient.setPromptHandler(new PromptHandler() {
 
             @Override
             public String handlePrompt(
                                         Page currentPage,
                                         String promptText,
-                                        String defaultValue) {
+                                        String defaultValue ) {
 
                 isProcessed = true;
                 return promptValue;
             }
-        } );
+        });
     }
 
     @Override
@@ -97,7 +97,7 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
                          final String promptValue ) {
 
         isProcessed = false;
-        webClient.setPromptHandler( new PromptHandler() {
+        webClient.setPromptHandler(new PromptHandler() {
 
             @Override
             public String handlePrompt(
@@ -106,14 +106,14 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
                                         String defaultValue ) {
 
                 isProcessed = true;
-                if( !promptText.equals( expectedText ) ) {
+                if (!promptText.equals(expectedText)) {
 
-                    throw new VerificationException( "The expected prompt text was: '" + expectedText
-                                                     + "', but actually it is: '" + promptText + "'" );
+                    throw new VerificationException("The expected prompt text was: '" + expectedText
+                                                    + "', but actually it is: '" + promptText + "'");
                 }
                 return promptValue;
             }
-        } );
+        });
     }
 
     @Override
@@ -121,7 +121,7 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
     public void clickCancel() {
 
         isProcessed = false;
-        webClient.setPromptHandler( new PromptHandler() {
+        webClient.setPromptHandler(new PromptHandler() {
 
             @Override
             public String handlePrompt(
@@ -132,7 +132,7 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
                 isProcessed = true;
                 return null;
             }
-        } );
+        });
     }
 
     @Override
@@ -141,7 +141,7 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
                              final String expectedText ) {
 
         isProcessed = false;
-        webClient.setPromptHandler( new PromptHandler() {
+        webClient.setPromptHandler(new PromptHandler() {
 
             @Override
             public String handlePrompt(
@@ -150,14 +150,14 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
                                         String defaultValue ) {
 
                 isProcessed = true;
-                if( !promptText.equals( expectedText ) ) {
+                if (!promptText.equals(expectedText)) {
 
-                    throw new VerificationException( "The expected prompt text was: '" + expectedText
-                                                     + "', but actually it is: '" + promptText + "'" );
+                    throw new VerificationException("The expected prompt text was: '" + expectedText
+                                                    + "', but actually it is: '" + promptText + "'");
                 }
                 return null;
             }
-        } );
+        });
     }
 
     @Override
@@ -167,13 +167,13 @@ public class HiddenHtmlPrompt extends HtmlPrompt {
         long millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isProcessed ) {
+            if (isProcessed) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the Prompt is processed within " + millis + " ms" );
+        throw new VerificationException("Failed to verify the Prompt is processed within " + millis + " ms");
     }
 
 }

@@ -48,16 +48,16 @@ public class RealHtmlTable extends HtmlTable {
 
     public RealHtmlTable( UiDriver uiDriver, UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(), "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(), "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the element locator of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules, properties, new String[]{},
-                                                                    "table" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules, properties, new String[]{},
+                                                                   "table");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
-        webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        webDriver = (WebDriver) ((AbstractRealBrowserDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -71,18 +71,18 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public String getFieldValue( int row, int column ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement table = RealHtmlElementLocator.findElement( this );
+        WebElement table = RealHtmlElementLocator.findElement(this);
 
         String script = "var table = arguments[0]; var row = arguments[1]; var col = arguments[2];"
                         + "if (row > table.rows.length) { return \"Cannot access row \" + row + \" - table has \" + table.rows.length + \" rows\"; }"
                         + "if (col > table.rows[row].cells.length) { return \"Cannot access column \" + col + \" - table row has \" + table.rows[row].cells.length + \" columns\"; }"
                         + "return table.rows[row].cells[col];";
 
-        Object value = ( ( JavascriptExecutor ) webDriver ).executeScript( script, table, row, column );
-        if( value instanceof WebElement ) {
-            return ( ( WebElement ) value ).getText().trim();
+        Object value = ((JavascriptExecutor) webDriver).executeScript(script, table, row, column);
+        if (value instanceof WebElement) {
+            return ((WebElement) value).getText().trim();
         }
         return null;
     }
@@ -97,57 +97,57 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public String[][] getAllValues() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement table = RealHtmlElementLocator.findElement( this );
+        WebElement table = RealHtmlElementLocator.findElement(this);
 
-        String scriptForHtml = generateScriptForGettingTableContent( ".innerHTML" );
-        Object returnedHtmlValue = ( ( JavascriptExecutor ) webDriver ).executeScript( scriptForHtml, table );
+        String scriptForHtml = generateScriptForGettingTableContent(".innerHTML");
+        Object returnedHtmlValue = ((JavascriptExecutor) webDriver).executeScript(scriptForHtml, table);
 
-        String scriptForObjects = generateScriptForGettingTableContent( "" );
-        Object returnedObjectsValue = ( ( JavascriptExecutor ) webDriver ).executeScript( scriptForObjects,
-                                                                                          table );
+        String scriptForObjects = generateScriptForGettingTableContent("");
+        Object returnedObjectsValue = ((JavascriptExecutor) webDriver).executeScript(scriptForObjects,
+                                                                                     table);
 
         String[][] tableData = null;
-        if( returnedHtmlValue != null && returnedHtmlValue instanceof List && returnedObjectsValue != null
-            && returnedObjectsValue instanceof List ) {
-            List<?> htmlTable = ( List<?> ) returnedHtmlValue;
-            List<?> objectsTable = ( List<?> ) returnedObjectsValue;
+        if (returnedHtmlValue != null && returnedHtmlValue instanceof List && returnedObjectsValue != null
+            && returnedObjectsValue instanceof List) {
+            List<?> htmlTable = (List<?>) returnedHtmlValue;
+            List<?> objectsTable = (List<?>) returnedObjectsValue;
 
             // allocate space for a number of rows
             tableData = new String[htmlTable.size()][];
-            for( int iRow = 0; iRow < htmlTable.size(); iRow++ ) {
-                if( htmlTable.get( iRow ) instanceof List ) {
-                    List<?> htmlRow = ( List<?> ) htmlTable.get( iRow );
-                    List<?> objectsRow = ( List<?> ) objectsTable.get( iRow );
+            for (int iRow = 0; iRow < htmlTable.size(); iRow++) {
+                if (htmlTable.get(iRow) instanceof List) {
+                    List<?> htmlRow = (List<?>) htmlTable.get(iRow);
+                    List<?> objectsRow = (List<?>) objectsTable.get(iRow);
 
                     // allocate space for the cells of the current row
                     tableData[iRow] = new String[htmlRow.size()];
-                    for( int iColumn = 0; iColumn < htmlRow.size(); iColumn++ ) {
+                    for (int iColumn = 0; iColumn < htmlRow.size(); iColumn++) {
 
-                        Object htmlWebElement = htmlRow.get( iColumn );
-                        Object objectWebElement = objectsRow.get( iColumn );
+                        Object htmlWebElement = htmlRow.get(iColumn);
+                        Object objectWebElement = objectsRow.get(iColumn);
 
                         // some data cannot be presented in textual way - for example a checkbox 
                         String htmlValueString = htmlWebElement.toString()
                                                                .toLowerCase()
-                                                               .replace( "\r", "" )
-                                                               .replace( "\n", "" );
-                        if( htmlValueString.matches( ".*<input.*type=.*[\"|']checkbox[\"|'].*>.*" ) ) {
+                                                               .replace("\r", "")
+                                                               .replace("\n", "");
+                        if (htmlValueString.matches(".*<input.*type=.*[\"|']checkbox[\"|'].*>.*")) {
                             // We assume this is a checkbox inside a table cell.
                             // We will return either 'checked' or 'notchecked'
-                            tableData[iRow][iColumn] = htmlValueString.contains( "checked" )
-                                                                                             ? "checked"
-                                                                                             : "notchecked";
+                            tableData[iRow][iColumn] = htmlValueString.contains("checked")
+                                                                                           ? "checked"
+                                                                                           : "notchecked";
                         } else {
                             // proceed in the regular way by returning the data visible to the user
-                            tableData[iRow][iColumn] = ( ( RemoteWebElement ) objectWebElement ).getText();
+                            tableData[iRow][iColumn] = ((RemoteWebElement) objectWebElement).getText();
                         }
                     }
                 }
             }
         } else {
-            log.warn( "We could not get the content of table declared as: " + this.toString() );
+            log.warn("We could not get the content of table declared as: " + this.toString());
         }
 
         return tableData;
@@ -165,16 +165,16 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public void setFieldValue( String value, int row, int column ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement table = RealHtmlElementLocator.findElement( this );
+        WebElement table = RealHtmlElementLocator.findElement(this);
 
         String script = "var table = arguments[0]; var row = arguments[1]; var col = arguments[2];"
                         + "if (row > table.rows.length) { return \"Cannot access row \" + row + \" - table has \" + table.rows.length + \" rows\"; }"
                         + "if (col > table.rows[row].cells.length) { return \"Cannot access column \" + col + \" - table row has \" + table.rows[row].cells.length + \" columns\"; }"
                         + "table.rows[row].cells[col].textContent = '" + value + "';";
 
-        ( ( JavascriptExecutor ) webDriver ).executeScript( script, table, row, column );
+        ((JavascriptExecutor) webDriver).executeScript(script, table, row, column);
     }
 
     /**
@@ -184,21 +184,21 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public int getRowCount() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        String css = this.getElementProperty( "_css" );
+        String css = this.getElementProperty("_css");
 
         List<WebElement> elements = null;
 
-        if( !StringUtils.isNullOrEmpty( css ) ) {
+        if (!StringUtils.isNullOrEmpty(css)) {
             css += " tr";
-            elements = webDriver.findElements( By.cssSelector( css ) );
+            elements = webDriver.findElements(By.cssSelector(css));
         } else {
             // get elements matching the following xpath
-            elements = webDriver.findElements( By.xpath( properties.getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR )
-                                                         + "/tr | "
-                                                         + properties.getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR )
-                                                         + "/*/tr" ) );
+            elements = webDriver.findElements(By.xpath(properties.getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR)
+                                                       + "/tr | "
+                                                       + properties.getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR)
+                                                       + "/*/tr"));
         }
 
         return elements.size();
@@ -210,28 +210,28 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public int getColumnCount() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        String css = this.getElementProperty( "_css" );
+        String css = this.getElementProperty("_css");
 
         try {
-            if( !StringUtils.isNullOrEmpty( css ) ) {
-                StringBuilder sb = new StringBuilder( css );
-                sb.append( " tr:nth-child(1) td" );
-                int count = webDriver.findElements( By.cssSelector( sb.toString() ) ).size();
-                sb = new StringBuilder( css );
-                sb.append( " tr:nth-child(1) th" );
-                count += webDriver.findElements( By.cssSelector( sb.toString() ) ).size();
+            if (!StringUtils.isNullOrEmpty(css)) {
+                StringBuilder sb = new StringBuilder(css);
+                sb.append(" tr:nth-child(1) td");
+                int count = webDriver.findElements(By.cssSelector(sb.toString())).size();
+                sb = new StringBuilder(css);
+                sb.append(" tr:nth-child(1) th");
+                count += webDriver.findElements(By.cssSelector(sb.toString())).size();
                 return count;
             } else {
                 // get elements matching the following xpath
-                return this.webDriver.findElements( By.xpath( "("
-                                                              + properties.getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR )
-                                                              + "//tr[th or td])[1]/*" ) )
+                return this.webDriver.findElements(By.xpath("("
+                                                            + properties.getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR)
+                                                            + "//tr[th or td])[1]/*"))
                                      .size();
             }
-        } catch( Exception e ) {
-            throw new SeleniumOperationException( this, "getColumnsCount", e );
+        } catch (Exception e) {
+            throw new SeleniumOperationException(this, "getColumnsCount", e);
         }
     }
 
@@ -245,10 +245,10 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public void verifyFieldValue( String expectedValue, int row, int column ) {
 
-        String actualValue = getFieldValue( row, column );
+        String actualValue = getFieldValue(row, column);
 
-        if( !actualValue.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualValue, this );
+        if (!actualValue.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualValue, this);
         }
     }
 
@@ -262,10 +262,10 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public void verifyNotFieldValue( String notExpectedValue, int row, int column ) {
 
-        String actualValue = getFieldValue( row, column );
+        String actualValue = getFieldValue(row, column);
 
-        if( actualValue.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualValue.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 
@@ -279,10 +279,10 @@ public class RealHtmlTable extends HtmlTable {
     @PublicAtsApi
     public void verifyFieldValueRegex( String expectedValueRegex, int row, int column ) {
 
-        String actualValue = getFieldValue( row, column );
+        String actualValue = getFieldValue(row, column);
 
-        if( !Pattern.matches( expectedValueRegex, actualValue ) ) {
-            throw new VerifyEqualityException( expectedValueRegex, actualValue, this );
+        if (!Pattern.matches(expectedValueRegex, actualValue)) {
+            throw new VerifyEqualityException(expectedValueRegex, actualValue, this);
         }
     }
 }

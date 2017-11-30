@@ -35,13 +35,13 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingFileBrowse extends UiFileBrowse {
 
     static {
-        SwingElementLocator.componentsMap.put( SwingFileBrowse.class, JFileChooser.class );
+        SwingElementLocator.componentsMap.put(SwingFileBrowse.class, JFileChooser.class);
     }
 
     public SwingFileBrowse( UiDriver uiDriver,
                             UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
         // TODO - checkTypeAndRules( "Swing", RULES );
     }
 
@@ -54,9 +54,9 @@ public class SwingFileBrowse extends UiFileBrowse {
     @PublicAtsApi
     public void clickApprove() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JFileChooserFixture ) SwingElementLocator.findFixture( this ) ).approve();
+        ((JFileChooserFixture) SwingElementLocator.findFixture(this)).approve();
     }
 
     /**
@@ -67,9 +67,9 @@ public class SwingFileBrowse extends UiFileBrowse {
     @PublicAtsApi
     public void clickCancel() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JFileChooserFixture ) SwingElementLocator.findFixture( this ) ).cancel();
+        ((JFileChooserFixture) SwingElementLocator.findFixture(this)).cancel();
     }
 
     /**
@@ -82,9 +82,9 @@ public class SwingFileBrowse extends UiFileBrowse {
     public void setValue(
                           String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JFileChooserFixture ) SwingElementLocator.findFixture( this ) ).fileNameTextBox().setText( value );
+        ((JFileChooserFixture) SwingElementLocator.findFixture(this)).fileNameTextBox().setText(value);
     }
 
     /**
@@ -96,9 +96,9 @@ public class SwingFileBrowse extends UiFileBrowse {
     @PublicAtsApi
     public String getValue() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JFileChooserFixture ) SwingElementLocator.findFixture( this ) ).fileNameTextBox().text();
+        return ((JFileChooserFixture) SwingElementLocator.findFixture(this)).fileNameTextBox().text();
     }
 
     /**
@@ -113,8 +113,8 @@ public class SwingFileBrowse extends UiFileBrowse {
                              String expectedValue ) {
 
         String actualText = getValue();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -130,8 +130,8 @@ public class SwingFileBrowse extends UiFileBrowse {
                                 String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

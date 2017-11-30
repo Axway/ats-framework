@@ -40,25 +40,25 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingMenuItem extends UiButton {
 
     private static final String[] RULES = { "label,visible",
-            "label",
-            "name,text,visible",
-            "name,text",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "path",
-            "index"                    };
+                                            "label",
+                                            "name,text,visible",
+                                            "name,text",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "path",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingMenuItem.class, JMenuItem.class );
+        SwingElementLocator.componentsMap.put(SwingMenuItem.class, JMenuItem.class);
     }
 
     public SwingMenuItem( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -69,9 +69,9 @@ public class SwingMenuItem extends UiButton {
     @PublicAtsApi
     public void click() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JMenuItemFixture ) SwingElementLocator.findFixture( this ) ).click();
+        ((JMenuItemFixture) SwingElementLocator.findFixture(this)).click();
     }
 
 }

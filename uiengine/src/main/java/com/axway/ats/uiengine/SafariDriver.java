@@ -27,7 +27,7 @@ public class SafariDriver extends AbstractRealBrowserDriver {
      */
     protected SafariDriver( String url ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.Safari, url, null );
+        super(AbstractRealBrowserDriver.BrowserType.Safari, url, null);
     }
 
     /**
@@ -39,6 +39,6 @@ public class SafariDriver extends AbstractRealBrowserDriver {
     protected SafariDriver( String url,
                             String remoteSeleniumURL ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.Safari, url, null, remoteSeleniumURL );
+        super(AbstractRealBrowserDriver.BrowserType.Safari, url, null, remoteSeleniumURL);
     }
 }

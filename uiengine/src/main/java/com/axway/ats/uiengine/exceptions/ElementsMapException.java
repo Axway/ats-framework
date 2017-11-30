@@ -21,12 +21,12 @@ public class ElementsMapException extends RuntimeException {
 
     public ElementsMapException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public ElementsMapException( String message,
                                  Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

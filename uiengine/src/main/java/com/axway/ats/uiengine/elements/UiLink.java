@@ -27,7 +27,7 @@ public abstract class UiLink extends UiElement {
     public UiLink( UiDriver uiDriver,
                    UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

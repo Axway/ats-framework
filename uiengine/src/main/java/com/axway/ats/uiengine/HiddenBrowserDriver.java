@@ -50,7 +50,7 @@ import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 @PublicAtsApi
 public class HiddenBrowserDriver extends AbstractHtmlDriver {
 
-    private static Logger      log                    = Logger.getLogger( HiddenBrowserDriver.class );
+    private static Logger      log                    = Logger.getLogger(HiddenBrowserDriver.class);
 
     public static final String ALLOW_META_REFRESH_TAG = "htmlunit.allow.meta.refresh.tag";
 
@@ -80,34 +80,34 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
     @PublicAtsApi
     public HiddenHtmlEngine getHtmlEngine() {
 
-        if( webDriver == null ) {
-            throw new IllegalStateException( "Browser driver in not initialized. Either start() method is not invoked or browser initialization had failed." );
+        if (webDriver == null) {
+            throw new IllegalStateException("Browser driver in not initialized. Either start() method is not invoked or browser initialization had failed.");
         }
 
-        return new HiddenHtmlEngine( this );
+        return new HiddenHtmlEngine(this);
     }
 
     @Override
     @PublicAtsApi
     public void start() {
 
-        webDriver = new HtmlUnitDriver( this.browserVersion );
-        webDriver.setJavascriptEnabled( true );
+        webDriver = new HtmlUnitDriver(this.browserVersion);
+        webDriver.setJavascriptEnabled(true);
 
         setProxyIfAvailable();
 
         fixHtmlUnitBehaviour();
 
-        log.info( "Openning URL: " + url );
-        webDriver.get( url );
+        log.info("Openning URL: " + url);
+        webDriver.get(url);
     }
 
     private void setProxyIfAvailable() {
 
-        if( !StringUtils.isNullOrEmpty( AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST )
-            && !StringUtils.isNullOrEmpty( AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT ) ) {
-            webDriver.setProxy( AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST,
-                                Integer.parseInt( AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT ) );
+        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
+            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
+            webDriver.setProxy(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST,
+                               Integer.parseInt(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
         }
     }
 
@@ -115,8 +115,8 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
     @PublicAtsApi
     public void stop() {
 
-        if( webDriver == null ) {
-            log.warn( "Invoked HiddenBrowserDriver.stop() before start()" );
+        if (webDriver == null) {
+            log.warn("Invoked HiddenBrowserDriver.stop() before start()");
         } else {
             webDriver.quit();
         }
@@ -132,7 +132,7 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
         // NOTE: we use a String argument 'objectName' not directly an InternalObjectsEnum object, because we want to
         // hide from the end users this method and his usage
 
-        switch( InternalObjectsEnum.getEnum( objectName ) ){
+        switch (InternalObjectsEnum.getEnum(objectName)) {
 
             case WebDriver:
 
@@ -156,29 +156,29 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
         boolean fieldAccessibleState = false;
         try {
             TargetLocator targetLocator = webDriver.switchTo();
-            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField( "webClient" );
+            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField("webClient");
             fieldAccessibleState = webClientField.isAccessible();
-            webClientField.setAccessible( true );
-            final WebClient webClient = ( WebClient ) webClientField.get( targetLocator.defaultContent() );
+            webClientField.setAccessible(true);
+            final WebClient webClient = (WebClient) webClientField.get(targetLocator.defaultContent());
 
             // Allowing connections to any host, regardless of whether they have valid certificates or not
-            webClient.getOptions().setUseInsecureSSL( true );
+            webClient.getOptions().setUseInsecureSSL(true);
 
             // Set Http connection timeout (in milliseconds). The default value is 90 seconds, because in Firefox >= 16
             // the "network.http.connection-timeout" property is 90. But this value is not enough for some cases.
             // NOTE: use 0 for infinite timeout
-            webClient.getOptions().setTimeout( 5 * 60 * 1000 );
+            webClient.getOptions().setTimeout(5 * 60 * 1000);
 
-            webClient.getOptions().setRedirectEnabled( true );
-            webClient.getOptions().setJavaScriptEnabled( true );
-            webClient.getOptions().setThrowExceptionOnScriptError( true );
-            webClient.getOptions().setPrintContentOnFailingStatusCode( true );
+            webClient.getOptions().setRedirectEnabled(true);
+            webClient.getOptions().setJavaScriptEnabled(true);
+            webClient.getOptions().setThrowExceptionOnScriptError(true);
+            webClient.getOptions().setPrintContentOnFailingStatusCode(true);
 
             // Hide CSS Warnings
-            webClient.setCssErrorHandler( new SilentCssErrorHandler() );
+            webClient.setCssErrorHandler(new SilentCssErrorHandler());
 
             // Suppress warnings like: "Expected content type ... but got ..."
-            webClient.setIncorrectnessListener( new IncorrectnessListener() {
+            webClient.setIncorrectnessListener(new IncorrectnessListener() {
 
                 //                private final Log log = LogFactory.getLog( this.getClass() );
 
@@ -187,9 +187,9 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
 
                     //                    log.warn( message );
                 }
-            } );
+            });
 
-            if( !Boolean.parseBoolean( System.getProperty( ALLOW_META_REFRESH_TAG ) ) ) {
+            if (!Boolean.parseBoolean(System.getProperty(ALLOW_META_REFRESH_TAG))) {
 
                 /*
                  * Fix for refresh meta tags eg. "<meta http-equiv="refresh" content="300">"
@@ -197,13 +197,13 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
                      *
                      * Maybe we should check and test this handler: webClient.setRefreshHandler( new ThreadedRefreshHandler() );
                  */
-                webClient.setRefreshHandler( new RefreshHandler() {
+                webClient.setRefreshHandler(new RefreshHandler() {
 
                     @Override
                     public void handleRefresh( Page page, URL url, int seconds ) throws IOException {
 
                     }
-                } );
+                });
             }
 
             /*
@@ -212,31 +212,31 @@ public class HiddenBrowserDriver extends AbstractHtmlDriver {
 
             // WebConnectionWrapper constructs a WebConnection object wrapping the connection of the WebClient
             // and places itself (in the constructor) as connection of the WebClient.
-            new WebConnectionWrapper( webClient ) {
+            new WebConnectionWrapper(webClient) {
 
                 public WebResponse getResponse( WebRequest request ) throws IOException {
 
-                    Cookie jsCookie = webClient.getCookieManager().getCookie( "JSESSIONID" );
-                    if( jsCookie != null && ( !jsCookie.getValue().startsWith( "\"" )
-                                              && !jsCookie.getValue().endsWith( "\"" ) ) ) {
+                    Cookie jsCookie = webClient.getCookieManager().getCookie("JSESSIONID");
+                    if (jsCookie != null && (!jsCookie.getValue().startsWith("\"")
+                                             && !jsCookie.getValue().endsWith("\""))) {
 
-                        Cookie newCookie = new Cookie( jsCookie.getDomain(), jsCookie.getName(),
-                                                       "\"" + jsCookie.getValue() + "\"", jsCookie.getPath(),
-                                                       jsCookie.getExpires(), jsCookie.isSecure() );
+                        Cookie newCookie = new Cookie(jsCookie.getDomain(), jsCookie.getName(),
+                                                      "\"" + jsCookie.getValue() + "\"", jsCookie.getPath(),
+                                                      jsCookie.getExpires(), jsCookie.isSecure());
 
-                        webClient.getCookieManager().removeCookie( jsCookie );
-                        webClient.getCookieManager().addCookie( newCookie );
+                        webClient.getCookieManager().removeCookie(jsCookie);
+                        webClient.getCookieManager().addCookie(newCookie);
                     }
-                    return super.getResponse( request );
+                    return super.getResponse(request);
                 }
             };
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new SeleniumOperationException( "Error retrieving internal Selenium web client", e );
+            throw new SeleniumOperationException("Error retrieving internal Selenium web client", e);
         } finally {
 
-            if( webClientField != null ) {
-                webClientField.setAccessible( fieldAccessibleState );
+            if (webClientField != null) {
+                webClientField.setAccessible(fieldAccessibleState);
             }
         }
     }

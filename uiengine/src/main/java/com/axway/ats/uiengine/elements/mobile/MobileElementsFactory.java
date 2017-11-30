@@ -33,7 +33,7 @@ public class MobileElementsFactory extends AbstractElementsFactory {
 
     synchronized public static MobileElementsFactory getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new MobileElementsFactory();
         }
         return instance;
@@ -43,84 +43,84 @@ public class MobileElementsFactory extends AbstractElementsFactory {
                                          String mapId,
                                          UiDriver uiDriver ) {
 
-        return getMobileButton( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getMobileButton(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public MobileButton getMobileButton(
                                          UiElementProperties properties,
                                          UiDriver uiDriver ) {
 
-        return new MobileButton( uiDriver, properties );
+        return new MobileButton(uiDriver, properties);
     }
 
     public MobileTextBox getMobileTextBox(
                                            String mapId,
                                            UiDriver uiDriver ) {
 
-        return getMobileTextBox( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getMobileTextBox(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public MobileTextBox getMobileTextBox(
                                            UiElementProperties properties,
                                            UiDriver uiDriver ) {
 
-        return new MobileTextBox( uiDriver, properties );
+        return new MobileTextBox(uiDriver, properties);
     }
 
     public MobileCheckBox getMobileCheckBox(
                                              String mapId,
                                              UiDriver uiDriver ) {
 
-        return getMobileCheckBox( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getMobileCheckBox(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public MobileCheckBox getMobileCheckBox(
                                              UiElementProperties properties,
                                              UiDriver uiDriver ) {
 
-        return new MobileCheckBox( uiDriver, properties );
+        return new MobileCheckBox(uiDriver, properties);
     }
 
     public MobileLink getMobileLink(
                                      String mapId,
                                      UiDriver uiDriver ) {
 
-        return getMobileLink( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getMobileLink(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public MobileLink getMobileLink(
                                      UiElementProperties properties,
                                      UiDriver uiDriver ) {
 
-        return new MobileLink( uiDriver, properties );
+        return new MobileLink(uiDriver, properties);
     }
 
     public MobileLabel getMobileLabel(
                                        String mapId,
                                        UiDriver uiDriver ) {
 
-        return getMobileLabel( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getMobileLabel(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public MobileLabel getMobileLabel(
                                        UiElementProperties properties,
                                        UiDriver uiDriver ) {
 
-        return new MobileLabel( uiDriver, properties );
+        return new MobileLabel(uiDriver, properties);
     }
 
     public MobileElement<?> getMobileElement(
                                               String mapId,
                                               UiDriver uiDriver ) {
 
-        return getMobileElement( elementsMap.getElementProperties( mapId ), uiDriver );
+        return getMobileElement(elementsMap.getElementProperties(mapId), uiDriver);
     }
 
     public MobileElement<?> getMobileElement(
                                               UiElementProperties properties,
                                               UiDriver uiDriver ) {
 
-        return new MobileElement<MobileElement<?>>( uiDriver, properties );
+        return new MobileElement<MobileElement<?>>(uiDriver, properties);
     }
 
 }

@@ -33,7 +33,7 @@ import com.axway.ats.uiengine.internal.driver.InternalObjectsEnum;
 
 public class HtmlFileDownloader {
 
-    private static final Logger log                             = Logger.getLogger( HtmlFileDownloader.class );
+    private static final Logger log                             = Logger.getLogger(HtmlFileDownloader.class);
 
     private WebDriver           webDriver;
     private String              downloadDir                     = UiEngineConfigurator.getInstance()
@@ -44,7 +44,7 @@ public class HtmlFileDownloader {
 
     public HtmlFileDownloader( AbstractHtmlDriver browserDriver ) {
 
-        this( ( WebDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() ) );
+        this((WebDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name()));
     }
 
     public HtmlFileDownloader( WebDriver driverObject ) {
@@ -67,7 +67,7 @@ public class HtmlFileDownloader {
      */
     public void setDownloadDir( String downloadDir ) {
 
-        this.downloadDir = IoUtils.normalizeDirPath( downloadDir );
+        this.downloadDir = IoUtils.normalizeDirPath(downloadDir);
     }
 
     /**
@@ -79,13 +79,13 @@ public class HtmlFileDownloader {
      */
     public String downloadFileFromLink( String pageUrl, HtmlElement linkElement ) throws Exception {
 
-        if( pageUrl != null ) {
-            URL url = new URL( pageUrl );
-            return downloadFile( url.getProtocol() + "://" + url.getHost()
-                                 + linkElement.getAttributeValue( "href" ) );
+        if (pageUrl != null) {
+            URL url = new URL(pageUrl);
+            return downloadFile(url.getProtocol() + "://" + url.getHost()
+                                + linkElement.getAttributeValue("href"));
         }
 
-        return downloadFile( linkElement.getAttributeValue( "href" ) );
+        return downloadFile(linkElement.getAttributeValue("href"));
     }
 
     /**
@@ -120,44 +120,44 @@ public class HtmlFileDownloader {
      */
     public String downloadFile( String downloadUrl ) throws IOException {
 
-        if( StringUtils.isNullOrEmpty( downloadUrl ) ) {
-            throw new UiElementException( "The element you have specified does not link to anything!" );
+        if (StringUtils.isNullOrEmpty(downloadUrl)) {
+            throw new UiElementException("The element you have specified does not link to anything!");
         }
 
-        URL url = new URL( downloadUrl );
+        URL url = new URL(downloadUrl);
         String fileName = url.getPath();
-        if( fileName.indexOf( '/' ) > -1 ) {
-            fileName = fileName.substring( fileName.lastIndexOf( '/' ) + 1 );
+        if (fileName.indexOf('/') > -1) {
+            fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
         }
 
         HttpsClient httpsClient = new HttpsClient();
-        httpsClient.connect( url.getHost() );
+        httpsClient.connect(url.getHost());
 
-        if( this.mimicWebDriverCookieState ) {
+        if (this.mimicWebDriverCookieState) {
 
-            for( org.openqa.selenium.Cookie cookie : this.webDriver.manage().getCookies() ) {
+            for (org.openqa.selenium.Cookie cookie : this.webDriver.manage().getCookies()) {
 
-                httpsClient.addCookie( cookie.getName(), cookie.getValue(), cookie.getDomain(),
-                                       cookie.getPath(), cookie.getExpiry(), cookie.isSecure() );
+                httpsClient.addCookie(cookie.getName(), cookie.getValue(), cookie.getDomain(),
+                                      cookie.getPath(), cookie.getExpiry(), cookie.isSecure());
             }
-            if( this.webDriver instanceof org.openqa.selenium.phantomjs.PhantomJSDriver
-                && System.getProperty( PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY ) != null ) {
+            if (this.webDriver instanceof org.openqa.selenium.phantomjs.PhantomJSDriver
+                && System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
 
-                for( org.openqa.selenium.Cookie cookie : PhantomJsDriver.getHttpOnlyCookies() ) {
+                for (org.openqa.selenium.Cookie cookie : PhantomJsDriver.getHttpOnlyCookies()) {
 
-                    httpsClient.addCookie( cookie.getName(), cookie.getValue(), cookie.getDomain(),
-                                           cookie.getPath(), cookie.getExpiry(), cookie.isSecure() );
+                    httpsClient.addCookie(cookie.getName(), cookie.getValue(), cookie.getDomain(),
+                                          cookie.getPath(), cookie.getExpiry(), cookie.isSecure());
                 }
             }
         }
 
-        File downloadedFile = new File( this.downloadDir + fileName );
-        log.debug( "Downloading file: " + downloadedFile.getName() );
-        org.apache.commons.io.FileUtils.copyInputStreamToFile( httpsClient.performGetRequest( url.getFile() ),
-                                                               downloadedFile );
+        File downloadedFile = new File(this.downloadDir + fileName);
+        log.debug("Downloading file: " + downloadedFile.getName());
+        org.apache.commons.io.FileUtils.copyInputStreamToFile(httpsClient.performGetRequest(url.getFile()),
+                                                              downloadedFile);
 
         String downloadedFileAbsolutePath = downloadedFile.getAbsolutePath();
-        log.debug( "File downloaded to '" + downloadedFileAbsolutePath + "'" );
+        log.debug("File downloaded to '" + downloadedFileAbsolutePath + "'");
 
         return downloadedFileAbsolutePath;
     }

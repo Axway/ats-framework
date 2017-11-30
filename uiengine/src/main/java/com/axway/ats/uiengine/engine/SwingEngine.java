@@ -53,13 +53,13 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 @PublicAtsApi
 public class SwingEngine extends AbstractEngine {
 
-    private static final Logger  log = Logger.getLogger( SwingEngine.class );
+    private static final Logger  log = Logger.getLogger(SwingEngine.class);
     private SwingElementsFactory swingElementsFactory;
 
     public SwingEngine( UiDriver uiDriver ) {
 
-        super( uiDriver, SwingElementsFactory.getInstance() );
-        this.swingElementsFactory = ( SwingElementsFactory ) elementsFactory;
+        super(uiDriver, SwingElementsFactory.getInstance());
+        this.swingElementsFactory = (SwingElementsFactory) elementsFactory;
     }
 
     /**
@@ -71,7 +71,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingElementState getUtilsElementState(
                                                    UiElement uiElement ) {
 
-        return new SwingElementState( uiElement );
+        return new SwingElementState(uiElement);
     }
 
     /**
@@ -82,7 +82,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingButton getButton(
                                   String mapId ) {
 
-        return this.swingElementsFactory.getSwingButton( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingButton(mapId, uiDriver);
     }
 
     /**
@@ -93,7 +93,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingButton getButton(
                                   UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingButton( properties, uiDriver );
+        return this.swingElementsFactory.getSwingButton(properties, uiDriver);
     }
 
     /**
@@ -104,7 +104,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingMenuItem getMenuItem(
                                       String mapId ) {
 
-        return this.swingElementsFactory.getSwingMenuItem( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingMenuItem(mapId, uiDriver);
     }
 
     /**
@@ -115,7 +115,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingMenuItem getMenuItem(
                                       UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingMenuItem( properties, uiDriver );
+        return this.swingElementsFactory.getSwingMenuItem(properties, uiDriver);
     }
 
     /**
@@ -126,7 +126,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingPopupMenu getPopupMenu(
                                         String mapId ) {
 
-        return this.swingElementsFactory.getSwingPopupMenu( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingPopupMenu(mapId, uiDriver);
     }
 
     /**
@@ -137,7 +137,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingPopupMenu getPopupMenu(
                                         UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingPopupMenu( properties, uiDriver );
+        return this.swingElementsFactory.getSwingPopupMenu(properties, uiDriver);
     }
 
     /**
@@ -148,7 +148,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTextArea getTextArea(
                                       String mapId ) {
 
-        return this.swingElementsFactory.getSwingTextArea( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingTextArea(mapId, uiDriver);
     }
 
     /**
@@ -159,7 +159,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTextArea getTextArea(
                                       UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingTextArea( properties, uiDriver );
+        return this.swingElementsFactory.getSwingTextArea(properties, uiDriver);
     }
 
     /**
@@ -170,7 +170,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTree getTree(
                               String mapId ) {
 
-        return this.swingElementsFactory.getSwingTree( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingTree(mapId, uiDriver);
     }
 
     /**
@@ -181,7 +181,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTree getTree(
                               UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingTree( properties, uiDriver );
+        return this.swingElementsFactory.getSwingTree(properties, uiDriver);
     }
 
     /**
@@ -192,7 +192,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingSingleSelectList getSingleSelectList(
                                                       String mapId ) {
 
-        return this.swingElementsFactory.getSwingSingleSelectList( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingSingleSelectList(mapId, uiDriver);
     }
 
     /**
@@ -203,7 +203,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingSingleSelectList getSingleSelectList(
                                                       UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingSingleSelectList( properties, uiDriver );
+        return this.swingElementsFactory.getSwingSingleSelectList(properties, uiDriver);
     }
 
     /**
@@ -214,7 +214,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingMultiSelectList getMultiSelectList(
                                                     String mapId ) {
 
-        return this.swingElementsFactory.getSwingMultiSelectList( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingMultiSelectList(mapId, uiDriver);
     }
 
     /**
@@ -225,7 +225,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingMultiSelectList getMultiSelectList(
                                                     UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingMultiSelectList( properties, uiDriver );
+        return this.swingElementsFactory.getSwingMultiSelectList(properties, uiDriver);
     }
 
     /**
@@ -236,7 +236,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingComboBox getComboBox(
                                       String mapId ) {
 
-        return this.swingElementsFactory.getSwingComboBox( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingComboBox(mapId, uiDriver);
     }
 
     /**
@@ -247,7 +247,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingComboBox getComboBox(
                                       UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingComboBox( properties, uiDriver );
+        return this.swingElementsFactory.getSwingComboBox(properties, uiDriver);
     }
 
     /**
@@ -259,7 +259,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingComponent getComponent(
                                         String mapId ) {
 
-        return this.swingElementsFactory.getSwingComponent( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingComponent(mapId, uiDriver);
     }
 
     /**
@@ -271,7 +271,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingComponent getComponent(
                                         UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingComponent( properties, uiDriver );
+        return this.swingElementsFactory.getSwingComponent(properties, uiDriver);
     }
 
     /**
@@ -281,7 +281,7 @@ public class SwingEngine extends AbstractEngine {
     @PublicAtsApi
     public SwingOptionPane getOptionPane() {
 
-        return this.swingElementsFactory.getSwingOptionPane( uiDriver );
+        return this.swingElementsFactory.getSwingOptionPane(uiDriver);
     }
 
     /**
@@ -291,7 +291,7 @@ public class SwingEngine extends AbstractEngine {
     @PublicAtsApi
     public SwingFileBrowse getFileBrowse() {
 
-        return this.swingElementsFactory.getSwingFileBrowse( uiDriver );
+        return this.swingElementsFactory.getSwingFileBrowse(uiDriver);
     }
 
     /**
@@ -302,7 +302,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingCheckBox getCheckBox(
                                       String mapId ) {
 
-        return this.swingElementsFactory.getSwingCheckBox( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingCheckBox(mapId, uiDriver);
     }
 
     /**
@@ -313,7 +313,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingCheckBox getCheckBox(
                                       UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingCheckBox( properties, uiDriver );
+        return this.swingElementsFactory.getSwingCheckBox(properties, uiDriver);
     }
 
     /**
@@ -324,7 +324,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingToggleButton getToggleButton(
                                               String mapId ) {
 
-        return this.swingElementsFactory.getSwingToggleButton( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingToggleButton(mapId, uiDriver);
     }
 
     /**
@@ -335,7 +335,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingToggleButton getToggleButton(
                                               UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingToggleButton( properties, uiDriver );
+        return this.swingElementsFactory.getSwingToggleButton(properties, uiDriver);
     }
 
     /**
@@ -346,7 +346,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingRadioButton getRadioButton(
                                             String mapId ) {
 
-        return this.swingElementsFactory.getSwingRadioButton( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingRadioButton(mapId, uiDriver);
     }
 
     /**
@@ -357,7 +357,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingRadioButton getRadioButton(
                                             UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingRadioButton( properties, uiDriver );
+        return this.swingElementsFactory.getSwingRadioButton(properties, uiDriver);
     }
 
     /**
@@ -368,7 +368,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTable getTable(
                                 String mapId ) {
 
-        return this.swingElementsFactory.getSwingTable( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingTable(mapId, uiDriver);
     }
 
     /**
@@ -379,7 +379,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTable getTable(
                                 UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingTable( properties, uiDriver );
+        return this.swingElementsFactory.getSwingTable(properties, uiDriver);
     }
 
     /**
@@ -390,7 +390,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingLabel getLabel(
                                 String mapId ) {
 
-        return this.swingElementsFactory.getSwingLabel( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingLabel(mapId, uiDriver);
     }
 
     /**
@@ -401,7 +401,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingLabel getLabel(
                                 UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingLabel( properties, uiDriver );
+        return this.swingElementsFactory.getSwingLabel(properties, uiDriver);
     }
 
     /**
@@ -412,7 +412,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingSpinner getSpinner(
                                     String mapId ) {
 
-        return this.swingElementsFactory.getSwingSpinner( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingSpinner(mapId, uiDriver);
     }
 
     /**
@@ -423,7 +423,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingSpinner getSpinner(
                                     UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingSpinner( properties, uiDriver );
+        return this.swingElementsFactory.getSwingSpinner(properties, uiDriver);
     }
 
     /**
@@ -435,7 +435,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTabbedPane getTabbedPane(
                                           String mapId ) {
 
-        return this.swingElementsFactory.getSwingTabbedPane( mapId, uiDriver );
+        return this.swingElementsFactory.getSwingTabbedPane(mapId, uiDriver);
     }
 
     /**
@@ -446,7 +446,7 @@ public class SwingEngine extends AbstractEngine {
     public SwingTabbedPane getTabbedPane(
                                           UiElementProperties properties ) {
 
-        return this.swingElementsFactory.getSwingTabbedPane( properties, uiDriver );
+        return this.swingElementsFactory.getSwingTabbedPane(properties, uiDriver);
     }
 
     /**
@@ -457,7 +457,7 @@ public class SwingEngine extends AbstractEngine {
     @PublicAtsApi
     public void goToMainWindow() {
 
-        goToWindow( ( ( SwingDriverInternal ) uiDriver ).getMainWindowTitle(), false );
+        goToWindow( ((SwingDriverInternal) uiDriver).getMainWindowTitle(), false);
     }
 
     /**
@@ -471,16 +471,16 @@ public class SwingEngine extends AbstractEngine {
                             final String windowTitle,
                             boolean isDialog ) throws ElementNotFoundException {
 
-        WindowFixture<?> newWindowFixture = SwingElementLocator.getWindowFixture( ( SwingDriverInternal ) uiDriver,
-                                                                                  windowTitle,
-                                                                                  isDialog );
+        WindowFixture<?> newWindowFixture = SwingElementLocator.getWindowFixture((SwingDriverInternal) uiDriver,
+                                                                                 windowTitle,
+                                                                                 isDialog);
         // there is about 10sec. delay on focus set. Added traces to investigate on other machines
-        if( !isDialog ) {
-            log.debug( "Windows fixture found. About to get focus on it ..." );
+        if (!isDialog) {
+            log.debug("Windows fixture found. About to get focus on it ...");
             newWindowFixture.focus();
-            log.debug( "  ... window focus changed" );
+            log.debug("  ... window focus changed");
         }
-        ( ( SwingDriverInternal ) uiDriver ).setWindowFixture( newWindowFixture ); // changes active container too
+        ((SwingDriverInternal) uiDriver).setWindowFixture(newWindowFixture); // changes active container too
     }
 
     /**
@@ -498,11 +498,11 @@ public class SwingEngine extends AbstractEngine {
 
         // in getWindowFixture() method we are using ElementStateChangeDelay as a timeout, so now we will change this value
         int stateChangeDelay = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
-        UiEngineConfigurator.getInstance().setElementStateChangeDelay( timeout );
+        UiEngineConfigurator.getInstance().setElementStateChangeDelay(timeout);
         try {
-            goToWindow( windowTitle, isDialog );
+            goToWindow(windowTitle, isDialog);
         } finally {
-            UiEngineConfigurator.getInstance().setElementStateChangeDelay( stateChangeDelay );
+            UiEngineConfigurator.getInstance().setElementStateChangeDelay(stateChangeDelay);
         }
     }
 
@@ -516,9 +516,9 @@ public class SwingEngine extends AbstractEngine {
     public void goToContainer(
                                UiElementProperties containerProperties ) {
 
-        ContainerFixture<?> newContainerFixture = SwingElementLocator.getContainerFixture( ( SwingDriverInternal ) uiDriver,
-                                                                                           containerProperties );
-        ( ( SwingDriverInternal ) uiDriver ).setActiveContainerFixture( newContainerFixture );
+        ContainerFixture<?> newContainerFixture = SwingElementLocator.getContainerFixture((SwingDriverInternal) uiDriver,
+                                                                                          containerProperties);
+        ((SwingDriverInternal) uiDriver).setActiveContainerFixture(newContainerFixture);
     }
 
     /**
@@ -532,8 +532,8 @@ public class SwingEngine extends AbstractEngine {
                                String containerMapId ) {
 
         UiElementProperties containerProperties = ElementsMap.getInstance()
-                                                             .getElementProperties( containerMapId );
-        goToContainer( containerProperties );
+                                                             .getElementProperties(containerMapId);
+        goToContainer(containerProperties);
     }
 
     /**
@@ -542,8 +542,8 @@ public class SwingEngine extends AbstractEngine {
     @PublicAtsApi
     public void goToMainContainer() {
 
-        WindowFixture<?> winFixture = ( ( SwingDriverInternal ) uiDriver ).getWindowFixture();
-        ( ( SwingDriverInternal ) uiDriver ).setActiveContainerFixture( winFixture );
+        WindowFixture<?> winFixture = ((SwingDriverInternal) uiDriver).getWindowFixture();
+        ((SwingDriverInternal) uiDriver).setActiveContainerFixture(winFixture);
     }
 
     /**
@@ -553,7 +553,7 @@ public class SwingEngine extends AbstractEngine {
     @PublicAtsApi
     public String getComponentHierarchy() {
 
-        return SwingElementLocator.getComponentHierarchy( ( SwingDriverInternal ) uiDriver );
+        return SwingElementLocator.getComponentHierarchy((SwingDriverInternal) uiDriver);
     }
 
     /**
@@ -566,7 +566,7 @@ public class SwingEngine extends AbstractEngine {
     @PublicAtsApi
     public void useComponentInspector() {
 
-        SwingElementLocator.useComponentInspector( ( SwingDriverInternal ) uiDriver );
+        SwingElementLocator.useComponentInspector((SwingDriverInternal) uiDriver);
     }
 
 }

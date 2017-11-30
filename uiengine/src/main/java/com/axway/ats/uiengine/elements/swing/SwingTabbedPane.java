@@ -44,14 +44,14 @@ public class SwingTabbedPane extends UiElement {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingTabbedPane.class, JTabbedPane.class );
+        SwingElementLocator.componentsMap.put(SwingTabbedPane.class, JTabbedPane.class);
     }
 
     public SwingTabbedPane( UiDriver uiDriver,
                             UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -64,14 +64,14 @@ public class SwingTabbedPane extends UiElement {
     public void selectTab(
                            int index ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
 
-            ( ( JTabbedPaneFixture ) SwingElementLocator.findFixture( this ) ).selectTab( index );
-        } catch( Exception e ) {
+            ((JTabbedPaneFixture) SwingElementLocator.findFixture(this)).selectTab(index);
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -85,14 +85,14 @@ public class SwingTabbedPane extends UiElement {
     public void selectTab(
                            String title ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
 
-            ( ( JTabbedPaneFixture ) SwingElementLocator.findFixture( this ) ).selectTab( title );
-        } catch( Exception e ) {
+            ((JTabbedPaneFixture) SwingElementLocator.findFixture(this)).selectTab(title);
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -106,14 +106,14 @@ public class SwingTabbedPane extends UiElement {
     public void selectTabByRegex(
                                   String regex ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
 
-            ( ( JTabbedPaneFixture ) SwingElementLocator.findFixture( this ) ).selectTab( Pattern.compile( regex ) );
-        } catch( Exception e ) {
+            ((JTabbedPaneFixture) SwingElementLocator.findFixture(this)).selectTab(Pattern.compile(regex));
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -127,20 +127,20 @@ public class SwingTabbedPane extends UiElement {
     public void selectTabUsingSubElement(
                                           UiElementProperties elementProperties ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
 
-            String tabTitle = elementProperties.getProperty( "title" );
-            if( tabTitle == null ) {
-                throw new UiElementException( "The Sub-Element doesn't have 'title' attribute, "
-                                              + "which is required for tab selection.", this );
+            String tabTitle = elementProperties.getProperty("title");
+            if (tabTitle == null) {
+                throw new UiElementException("The Sub-Element doesn't have 'title' attribute, "
+                                             + "which is required for tab selection.", this);
             }
 
-            ( ( JTabbedPaneFixture ) SwingElementLocator.findFixture( this ) ).selectTab( tabTitle );
-        } catch( Exception e ) {
+            ((JTabbedPaneFixture) SwingElementLocator.findFixture(this)).selectTab(tabTitle);
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -154,27 +154,27 @@ public class SwingTabbedPane extends UiElement {
     public void selectTabUsingSubElement(
                                           String mapId ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
 
-            String elementMapId = properties.getInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM );
-            if( elementMapId == null ) {
-                throw new UiElementException( "The element must be in the MAP file", this );
+            String elementMapId = properties.getInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM);
+            if (elementMapId == null) {
+                throw new UiElementException("The element must be in the MAP file", this);
             }
             UiElementProperties elProperties = ElementsMap.getInstance()
-                                                          .getSubElementProperties( elementMapId, mapId );
+                                                          .getSubElementProperties(elementMapId, mapId);
 
-            String tabTitle = elProperties.getProperty( "title" );
-            if( tabTitle == null ) {
-                throw new UiElementException( "The Sub-Element doesn't have 'title' attribute, "
-                                              + "which is required for tab selection.", this );
+            String tabTitle = elProperties.getProperty("title");
+            if (tabTitle == null) {
+                throw new UiElementException("The Sub-Element doesn't have 'title' attribute, "
+                                             + "which is required for tab selection.", this);
             }
 
-            ( ( JTabbedPaneFixture ) SwingElementLocator.findFixture( this ) ).selectTab( tabTitle );
-        } catch( Exception e ) {
+            ((JTabbedPaneFixture) SwingElementLocator.findFixture(this)).selectTab(tabTitle);
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -199,9 +199,9 @@ public class SwingTabbedPane extends UiElement {
     @PublicAtsApi
     public String[] getTabTitles() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JTabbedPaneFixture ) SwingElementLocator.findFixture( this ) ).tabTitles();
+        return ((JTabbedPaneFixture) SwingElementLocator.findFixture(this)).tabTitles();
     }
 
 }

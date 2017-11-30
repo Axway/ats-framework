@@ -46,17 +46,17 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
     public RealHtmlSingleSelectList( UiDriver uiDriver,
                                      UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "select" },
-                                                                    "select" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "select" },
+                                                                   "select");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
     }
@@ -71,15 +71,15 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
     public void setValue(
                           String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement element = RealHtmlElementLocator.findElement( this );
-            Select select = new Select( element );
-            select.selectByVisibleText( value );
-        } catch( NoSuchElementException nsee ) {
-            throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
-                                                  + this.toString() + ")" );
+            WebElement element = RealHtmlElementLocator.findElement(this);
+            Select select = new Select(element);
+            select.selectByVisibleText(value);
+        } catch (NoSuchElementException nsee) {
+            throw new SeleniumOperationException("Option with label '" + value + "' not found. ("
+                                                 + this.toString() + ")");
         }
         UiEngineUtilities.sleep();
     }
@@ -91,14 +91,14 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
     @PublicAtsApi
     public String getValue() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        Select select = new Select( element );
-        if( !select.getAllSelectedOptions().isEmpty() ) {
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        Select select = new Select(element);
+        if (!select.getAllSelectedOptions().isEmpty()) {
             return select.getFirstSelectedOption().getText();
         }
-        throw new SeleniumOperationException( "There is no selected 'option' in " + this.toString() );
+        throw new SeleniumOperationException("There is no selected 'option' in " + this.toString());
     }
 
     /**
@@ -109,19 +109,19 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
     public List<String> getAllPossibleValues() {
 
         List<String> values = new ArrayList<String>();
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        Select select = new Select( element );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        Select select = new Select(element);
         Iterator<WebElement> iterator = select.getOptions().iterator();
 
-        if( !select.getAllSelectedOptions().isEmpty() ) {
-            while( iterator.hasNext() ) {
-                values.add( iterator.next().getText() );
+        if (!select.getAllSelectedOptions().isEmpty()) {
+            while (iterator.hasNext()) {
+                values.add(iterator.next().getText());
             }
             return values;
         }
-        throw new SeleniumOperationException( "There is no selectable 'option' in " + this.toString() );
+        throw new SeleniumOperationException("There is no selectable 'option' in " + this.toString());
     }
 
     /**
@@ -137,8 +137,8 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
         expectedValue = expectedValue.trim();
 
         String actualText = getValue().trim();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -155,8 +155,8 @@ public class RealHtmlSingleSelectList extends HtmlSingleSelectList {
         notExpectedValue = notExpectedValue.trim();
 
         String actualText = getValue().trim();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

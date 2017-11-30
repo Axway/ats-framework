@@ -57,10 +57,10 @@ public class MobileElement<T> extends UiElement {
     public MobileElement( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        properties.checkTypeAndRules( this.getClass().getSimpleName(), "Mobile", RULES );
+        super(uiDriver, properties);
+        properties.checkTypeAndRules(this.getClass().getSimpleName(), "Mobile", RULES);
 
-        appiumDriver = ( AppiumDriver<?> ) ( ( MobileDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        appiumDriver = (AppiumDriver<?>) ((MobileDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -72,12 +72,12 @@ public class MobileElement<T> extends UiElement {
     public String getAttributeValue(
                                      String attribute ) {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            return MobileElementFinder.findElement( appiumDriver, this ).getAttribute( attribute );
-        } catch( Exception e ) {
-            throw new MobileOperationException( this, "getAttributeValue", e );
+            return MobileElementFinder.findElement(appiumDriver, this).getAttribute(attribute);
+        } catch (Exception e) {
+            throw new MobileOperationException(this, "getAttributeValue", e);
         }
     }
 
@@ -88,12 +88,12 @@ public class MobileElement<T> extends UiElement {
     @PublicAtsApi
     public String getTextContent() {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            return MobileElementFinder.findElement( appiumDriver, this ).getText();
-        } catch( Exception e ) {
-            throw new MobileOperationException( this, "getTextContent", e );
+            return MobileElementFinder.findElement(appiumDriver, this).getText();
+        } catch (Exception e) {
+            throw new MobileOperationException(this, "getTextContent", e);
         }
     }
 
@@ -101,30 +101,30 @@ public class MobileElement<T> extends UiElement {
      * Simulate tap/click action
      * @return this mobile element so allows chained actions like element.click().getTextContent()
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     @PublicAtsApi
     public T click() {
 
         long endTime = System.currentTimeMillis()
                        + UiEngineConfigurator.getInstance().getElementStateChangeDelay();
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
             // the element exists but may be still not clickable (in some cases waitToBecomeDisplayed() is not working and returns true, but it is not visible)
-            while( true ) {
+            while (true) {
                 try {
-                    MobileElementFinder.findElement( appiumDriver, this ).click();
-                    return ( T ) this;
-                } catch( Exception e ) {
-                    if( endTime - System.currentTimeMillis() < 0 ) {
+                    MobileElementFinder.findElement(appiumDriver, this).click();
+                    return (T) this;
+                } catch (Exception e) {
+                    if (endTime - System.currentTimeMillis() < 0) {
                         throw e;
                     }
                 }
-                UiEngineUtilities.sleep( 500 );
+                UiEngineUtilities.sleep(500);
             }
-        } catch( Exception e ) {
-            throw new MobileOperationException( this, "click", e );
+        } catch (Exception e) {
+            throw new MobileOperationException(this, "click", e);
         }
     }
 
@@ -157,26 +157,26 @@ public class MobileElement<T> extends UiElement {
 
         int currentStateChangeDelay = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         try {
-            UiEngineConfigurator.getInstance().setElementStateChangeDelay( waitingTimeout );
-            appiumDriver.manage().timeouts().implicitlyWait( waitingTimeout, TimeUnit.MILLISECONDS );
+            UiEngineConfigurator.getInstance().setElementStateChangeDelay(waitingTimeout);
+            appiumDriver.manage().timeouts().implicitlyWait(waitingTimeout, TimeUnit.MILLISECONDS);
 
             long endTime = System.currentTimeMillis() + waitingTimeout;
-            new MobileElementState( this ).waitToBecomeExisting();
+            new MobileElementState(this).waitToBecomeExisting();
 
             // the element exists but may be still not clickable
             do {
                 try {
-                    MobileElementFinder.findElement( appiumDriver, this ).click();
+                    MobileElementFinder.findElement(appiumDriver, this).click();
                     return true;
-                } catch( Exception e ) {}
-                UiEngineUtilities.sleep( 500 );
-            } while( endTime - System.currentTimeMillis() > 0 );
+                } catch (Exception e) {}
+                UiEngineUtilities.sleep(500);
+            } while (endTime - System.currentTimeMillis() > 0);
 
-        } catch( VerificationException ve ) {
+        } catch (VerificationException ve) {
             // do nothing, the element doesn't exist
         } finally {
-            UiEngineConfigurator.getInstance().setElementStateChangeDelay( currentStateChangeDelay );
-            appiumDriver.manage().timeouts().implicitlyWait( currentStateChangeDelay, TimeUnit.MILLISECONDS );
+            UiEngineConfigurator.getInstance().setElementStateChangeDelay(currentStateChangeDelay);
+            appiumDriver.manage().timeouts().implicitlyWait(currentStateChangeDelay, TimeUnit.MILLISECONDS);
         }
         return false;
     }
@@ -186,25 +186,25 @@ public class MobileElement<T> extends UiElement {
      *
      * @return this mobile element which allows chained actions
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     @PublicAtsApi
     public T scrollTo() {
 
         try {
 
-            if( MobileElementFinder.getElementContext( this ).toUpperCase().startsWith( "WEBVIEW" ) ) {
+            if (MobileElementFinder.getElementContext(this).toUpperCase().startsWith("WEBVIEW")) {
 
                 // in WEBVIEWs the target element exists, while in the NATIVE context it doesn't until we scroll to it
-                new MobileElementState( this ).waitToBecomeExisting();
+                new MobileElementState(this).waitToBecomeExisting();
 
-                Dimension screenDimensions = ( ( MobileDriver ) getUiDriver() ).getScreenDimensions();
-                WebElement element = MobileElementFinder.findElement( appiumDriver, this );
+                Dimension screenDimensions = ((MobileDriver) getUiDriver()).getScreenDimensions();
+                WebElement element = MobileElementFinder.findElement(appiumDriver, this);
 
                 // window.scrollTo(0, element.getLocation().y);    -->  will scroll the element to top-left
 
                 int scrollToY = 0;
                 int screenCenter = screenDimensions.getHeight() / 2 + element.getSize().height / 2;
-                if( element.getLocation().y < screenCenter ) {
+                if (element.getLocation().y < screenCenter) {
                     // the element is located after the screen center if we scroll to (0, element.getLocation().y)
                     // because it is near the bottom of the application => we can't center it, but it is OK on that position
                     scrollToY = element.getLocation().y;
@@ -212,17 +212,17 @@ public class MobileElement<T> extends UiElement {
                     scrollToY = element.getLocation().y - screenCenter;
                 }
 
-                ( ( JavascriptExecutor ) appiumDriver ).executeScript( "window.scrollTo(0," + scrollToY + ")" );
+                ((JavascriptExecutor) appiumDriver).executeScript("window.scrollTo(0," + scrollToY + ")");
             } else {
 
-                if( getElementProperty( "name" ) != null ) {
-                    appiumDriver.scrollTo( getElementProperty( "name" ) ); // only works for NATIVE context
+                if (getElementProperty("name") != null) {
+                    appiumDriver.scrollTo(getElementProperty("name")); // only works for NATIVE context
                 }
             }
 
-            return ( T ) this;
-        } catch( Exception e ) {
-            throw new MobileOperationException( this, "scrollTo", e );
+            return (T) this;
+        } catch (Exception e) {
+            throw new MobileOperationException(this, "scrollTo", e);
         }
     }
 }

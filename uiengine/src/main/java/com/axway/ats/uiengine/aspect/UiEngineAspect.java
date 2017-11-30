@@ -29,87 +29,87 @@ import com.axway.ats.uiengine.elements.UiElementProperties;
 @Aspect
 public class UiEngineAspect {
 
-    @Before("(execution(* com.axway.ats.uiengine.elements.html.realbrowser..*.*(..)) "
-            + "|| execution(* com.axway.ats.uiengine.elements.html.hiddenbrowser..*.*(..)) "
-            + "|| execution(* com.axway.ats.uiengine.elements.mobile..*.*(..)) "
-            + "|| execution(* com.axway.ats.uiengine.elements.swing..*.*(..)) "
-            + ") && @annotation(com.axway.ats.common.PublicAtsApi)")
+    @Before( "(execution(* com.axway.ats.uiengine.elements.html.realbrowser..*.*(..)) "
+             + "|| execution(* com.axway.ats.uiengine.elements.html.hiddenbrowser..*.*(..)) "
+             + "|| execution(* com.axway.ats.uiengine.elements.mobile..*.*(..)) "
+             + "|| execution(* com.axway.ats.uiengine.elements.swing..*.*(..)) "
+             + ") && @annotation(com.axway.ats.common.PublicAtsApi)")
     public void logAction(
                            JoinPoint point ) throws Throwable {
 
         // initialize logger
         Logger log = null;
-        if( point.getThis() != null ) {
-            log = Logger.getLogger( point.getThis().getClass() ); // not a static method
+        if (point.getThis() != null) {
+            log = Logger.getLogger(point.getThis().getClass()); // not a static method
         } else {
             // in case of MobileButton.click() this method will return MobileElement.class, but not MobileButton.class
             // that is why it is better to use point.getThis().getClass(), but if the method is static point.getThis() is null
-            log = Logger.getLogger( point.getSignature().getDeclaringType() );
+            log = Logger.getLogger(point.getSignature().getDeclaringType());
         }
 
         String methodName = point.getSignature().getName();
 
         String propertiesString = " ";
-        if( point.getThis() != null ) { // not a static method
+        if (point.getThis() != null) { // not a static method
 
-            UiElementProperties properties = ( ( UiElement ) point.getThis() ).getElementProperties();
-            if( properties != null ) { // has element properties
+            UiElementProperties properties = ((UiElement) point.getThis()).getElementProperties();
+            if (properties != null) { // has element properties
 
-                if( properties.containsInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM ) ) {
-                    propertiesString = properties.getInternalProperty( UiElementProperties.MAP_ID_INTERNAL_PARAM );
+                if (properties.containsInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM)) {
+                    propertiesString = properties.getInternalProperty(UiElementProperties.MAP_ID_INTERNAL_PARAM);
                 } else {
                     // get the properties in the form '{key1=value1, key2=value2}'
                     propertiesString = properties.toString();
                     // remove the leading and trailing brackets
-                    propertiesString = propertiesString.substring( 1 );
-                    propertiesString = propertiesString.substring( 0, propertiesString.length() - 1 );
+                    propertiesString = propertiesString.substring(1);
+                    propertiesString = propertiesString.substring(0, propertiesString.length() - 1);
                 }
             }
         }
 
         StringBuilder message = new StringBuilder();
         Object[] args = point.getArgs();
-        if( args.length > 0 ) {
+        if (args.length > 0) {
 
-            message.append( methodName + "( " );
-            for( Object o : args ) {
-                if( o instanceof String ) {
-                    message.append( "\"" + o + "\" ," );
-                } else if( o != null && o.getClass().isArray() ) {
-                    if( o instanceof Object[] ) {
-                        message.append( Arrays.asList( ( Object[] ) o ) + " ," );
+            message.append(methodName + "( ");
+            for (Object o : args) {
+                if (o instanceof String) {
+                    message.append("\"" + o + "\" ,");
+                } else if (o != null && o.getClass().isArray()) {
+                    if (o instanceof Object[]) {
+                        message.append(Arrays.asList((Object[]) o) + " ,");
                     } else {
-                        message.append( "[" );
-                        int length = Array.getLength( o );
-                        for( int i = 0; i < length; i++ ) {
-                            message.append( Array.get( o, i ) + " ," );
+                        message.append("[");
+                        int length = Array.getLength(o);
+                        for (int i = 0; i < length; i++) {
+                            message.append(Array.get(o, i) + " ,");
                         }
-                        message.delete( message.length() - 2, message.length() );
-                        message.append( "]  " );
+                        message.delete(message.length() - 2, message.length());
+                        message.append("]  ");
                     }
                 } else {
-                    message.append( o + " ," );
+                    message.append(o + " ,");
                 }
             }
 
-            message.deleteCharAt( message.length() - 1 );
-            message.append( ") " );
+            message.deleteCharAt(message.length() - 1);
+            message.append(") ");
 
-            if( point.getThis() != null ) {
-                if( propertiesString.trim().isEmpty() ) {
-                    message.insert( 0, "[  ]." );
+            if (point.getThis() != null) {
+                if (propertiesString.trim().isEmpty()) {
+                    message.insert(0, "[  ].");
                 } else {
-                    message.insert( 0, "[ \"" + propertiesString + "\" ]." );
+                    message.insert(0, "[ \"" + propertiesString + "\" ].");
                 }
             }
-        } else if( point.getThis() == null ) { // a static method
-            message.insert( message.length(), "()" );
-        } else if( propertiesString.trim().isEmpty() ) {
-            message.insert( 0, "[  ]." + methodName );
+        } else if (point.getThis() == null) { // a static method
+            message.insert(message.length(), "()");
+        } else if (propertiesString.trim().isEmpty()) {
+            message.insert(0, "[  ]." + methodName);
         } else {
-            message.insert( 0, "[ \"" + propertiesString + "\" ]." + methodName );
-            message.insert( message.length(), "()" );
+            message.insert(0, "[ \"" + propertiesString + "\" ]." + methodName);
+            message.insert(message.length(), "()");
         }
-        log.info( message );
+        log.info(message);
     }
 }

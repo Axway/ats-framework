@@ -45,26 +45,26 @@ public class HiddenHtmlAlert extends HtmlAlert {
 
     public HiddenHtmlAlert( UiDriver uiDriver ) {
 
-        super( uiDriver );
+        super(uiDriver);
 
-        HiddenBrowserDriver browserDriver = ( HiddenBrowserDriver ) uiDriver;
-        HtmlUnitDriver driver = ( HtmlUnitDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        HiddenBrowserDriver browserDriver = (HiddenBrowserDriver) uiDriver;
+        HtmlUnitDriver driver = (HtmlUnitDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
         Field webClientField = null;
         boolean fieldAccessibleState = false;
         try {
 
             TargetLocator targetLocator = driver.switchTo();
-            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField( "webClient" );
+            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField("webClient");
             fieldAccessibleState = webClientField.isAccessible();
-            webClientField.setAccessible( true );
-            webClient = ( WebClient ) webClientField.get( targetLocator.defaultContent() );
-        } catch( Exception e ) {
+            webClientField.setAccessible(true);
+            webClient = (WebClient) webClientField.get(targetLocator.defaultContent());
+        } catch (Exception e) {
 
-            throw new SeleniumOperationException( "Error retrieving internal Selenium web client", e );
+            throw new SeleniumOperationException("Error retrieving internal Selenium web client", e);
         } finally {
 
-            if( webClientField != null ) {
-                webClientField.setAccessible( fieldAccessibleState );
+            if (webClientField != null) {
+                webClientField.setAccessible(fieldAccessibleState);
             }
         }
     }
@@ -74,7 +74,7 @@ public class HiddenHtmlAlert extends HtmlAlert {
     public void clickOk() {
 
         isProcessed = false;
-        webClient.setAlertHandler( new AlertHandler() {
+        webClient.setAlertHandler(new AlertHandler() {
 
             @Override
             public void handleAlert(
@@ -84,7 +84,7 @@ public class HiddenHtmlAlert extends HtmlAlert {
                 isProcessed = true;
                 //do nothing, by default it clicks the OK button
             }
-        } );
+        });
     }
 
     @Override
@@ -93,7 +93,7 @@ public class HiddenHtmlAlert extends HtmlAlert {
                          final String expectedAlertText ) {
 
         isProcessed = false;
-        webClient.setAlertHandler( new AlertHandler() {
+        webClient.setAlertHandler(new AlertHandler() {
 
             @Override
             public void handleAlert(
@@ -101,13 +101,13 @@ public class HiddenHtmlAlert extends HtmlAlert {
                                      String alertText ) {
 
                 isProcessed = true;
-                if( !alertText.equals( expectedAlertText ) ) {
+                if (!alertText.equals(expectedAlertText)) {
 
-                    throw new VerificationException( "The expected alert message was: '" + expectedAlertText
-                                                     + "', but actually it is: '" + alertText + "'" );
+                    throw new VerificationException("The expected alert message was: '" + expectedAlertText
+                                                    + "', but actually it is: '" + alertText + "'");
                 }
             }
-        } );
+        });
     }
 
     @Override
@@ -117,13 +117,13 @@ public class HiddenHtmlAlert extends HtmlAlert {
         long millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isProcessed ) {
+            if (isProcessed) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the Alert is processed within " + millis + " ms" );
+        throw new VerificationException("Failed to verify the Alert is processed within " + millis + " ms");
     }
 
 }

@@ -29,7 +29,7 @@ public abstract class HtmlButton extends UiButton {
     public HtmlButton( UiDriver uiDriver,
                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

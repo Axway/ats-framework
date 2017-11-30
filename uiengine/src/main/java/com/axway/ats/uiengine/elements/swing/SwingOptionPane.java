@@ -35,13 +35,13 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingOptionPane extends UiElement {
 
     static {
-        SwingElementLocator.componentsMap.put( SwingOptionPane.class, JOptionPane.class );
+        SwingElementLocator.componentsMap.put(SwingOptionPane.class, JOptionPane.class);
     }
 
     public SwingOptionPane( UiDriver uiDriver,
                             UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**
@@ -53,12 +53,12 @@ public class SwingOptionPane extends UiElement {
     public void clickButtonByText(
                                    String text ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
-            ( ( JOptionPaneFixture ) SwingElementLocator.findFixture( this ) ).buttonWithText( text ).click();
-        } catch( ComponentLookupException cle ) {
-            throw new ElementNotFoundException( cle.getMessage() );
+            ((JOptionPaneFixture) SwingElementLocator.findFixture(this)).buttonWithText(text).click();
+        } catch (ComponentLookupException cle) {
+            throw new ElementNotFoundException(cle.getMessage());
         }
     }
 
@@ -71,12 +71,12 @@ public class SwingOptionPane extends UiElement {
     public void setText(
                          String text ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
-            ( ( JOptionPaneFixture ) SwingElementLocator.findFixture( this ) ).textBox().setText( text );
-        } catch( ComponentLookupException cle ) {
-            throw new ElementNotFoundException( cle.getMessage() );
+            ((JOptionPaneFixture) SwingElementLocator.findFixture(this)).textBox().setText(text);
+        } catch (ComponentLookupException cle) {
+            throw new ElementNotFoundException(cle.getMessage());
         }
     }
 
@@ -88,12 +88,12 @@ public class SwingOptionPane extends UiElement {
     @PublicAtsApi
     public String getText() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
-            return ( ( JOptionPaneFixture ) SwingElementLocator.findFixture( this ) ).textBox().text();
-        } catch( ComponentLookupException cle ) {
-            throw new ElementNotFoundException( cle.getMessage() );
+            return ((JOptionPaneFixture) SwingElementLocator.findFixture(this)).textBox().text();
+        } catch (ComponentLookupException cle) {
+            throw new ElementNotFoundException(cle.getMessage());
         }
     }
 

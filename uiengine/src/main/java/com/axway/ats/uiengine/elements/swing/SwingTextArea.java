@@ -42,14 +42,14 @@ public class SwingTextArea extends UiTextArea {
     private static final String[] RULES = { "name", "label", "index", "class" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingTextArea.class, JTextComponent.class );
+        SwingElementLocator.componentsMap.put(SwingTextArea.class, JTextComponent.class);
     }
 
     public SwingTextArea( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -61,9 +61,9 @@ public class SwingTextArea extends UiTextArea {
     @PublicAtsApi
     public String getValue() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JTextComponentFixture ) SwingElementLocator.findFixture( this ) ).text();
+        return ((JTextComponentFixture) SwingElementLocator.findFixture(this)).text();
     }
 
     /**
@@ -77,9 +77,9 @@ public class SwingTextArea extends UiTextArea {
     public void setValue(
                           String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTextComponentFixture ) SwingElementLocator.findFixture( this ) ).setText( value );
+        ((JTextComponentFixture) SwingElementLocator.findFixture(this)).setText(value);
     }
 
     /**
@@ -92,9 +92,9 @@ public class SwingTextArea extends UiTextArea {
     public void appendValue(
                              String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTextComponentFixture ) SwingElementLocator.findFixture( this ) ).setText( value );
+        ((JTextComponentFixture) SwingElementLocator.findFixture(this)).setText(value);
     }
 
     /**
@@ -109,11 +109,11 @@ public class SwingTextArea extends UiTextArea {
     public void verifyValue(
                              String expectedValue ) {
 
-        expectedValue = normalizeText( expectedValue );
+        expectedValue = normalizeText(expectedValue);
 
-        String actualText = normalizeText( getValue() );
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        String actualText = normalizeText(getValue());
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -129,18 +129,18 @@ public class SwingTextArea extends UiTextArea {
     public void verifyNotValue(
                                 String notExpectedValue ) {
 
-        notExpectedValue = normalizeText( notExpectedValue );
+        notExpectedValue = normalizeText(notExpectedValue);
 
-        String actualText = normalizeText( getValue() );
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        String actualText = normalizeText(getValue());
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 
     private String normalizeText(
                                   String src ) {
 
-        return src.replace( "\r\n", "\n" ).trim();
+        return src.replace("\r\n", "\n").trim();
     }
 
 }

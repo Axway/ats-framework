@@ -39,7 +39,7 @@ import io.appium.java_client.AppiumDriver;
 @PublicAtsApi
 public class UiEngineUtilities {
 
-    private static final Logger log = Logger.getLogger( UiEngineUtilities.class );
+    private static final Logger log = Logger.getLogger(UiEngineUtilities.class);
 
     /**
      * Sleep for period equal to the UI commands delay as defined in the UI Engine configuration
@@ -47,7 +47,7 @@ public class UiEngineUtilities {
     @PublicAtsApi
     public static void sleep() {
 
-        sleep( UiEngineConfigurator.getInstance().getCommandDelay() );
+        sleep(UiEngineConfigurator.getInstance().getCommandDelay());
     }
 
     /**
@@ -58,10 +58,10 @@ public class UiEngineUtilities {
     public static void sleep(
                               int millis ) {
 
-        if( millis > 0 ) {
+        if (millis > 0) {
             try {
-                Thread.sleep( millis );
-            } catch( InterruptedException e ) {
+                Thread.sleep(millis);
+            } catch (InterruptedException e) {
                 // swallow this error
             }
         }
@@ -98,38 +98,38 @@ public class UiEngineUtilities {
                                          UiDriver uiDriver ) {
 
         WebDriver webDriver = null;
-        if( uiDriver instanceof AbstractRealBrowserDriver ) {
+        if (uiDriver instanceof AbstractRealBrowserDriver) {
 
-            AbstractRealBrowserDriver browserDriver = ( AbstractRealBrowserDriver ) uiDriver;
-            webDriver = ( WebDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.toString() );
-        } else if( uiDriver instanceof MobileDriver ) {
+            AbstractRealBrowserDriver browserDriver = (AbstractRealBrowserDriver) uiDriver;
+            webDriver = (WebDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.toString());
+        } else if (uiDriver instanceof MobileDriver) {
 
-            MobileDriver mobileDriver = ( MobileDriver ) uiDriver;
-            webDriver = ( WebDriver ) mobileDriver.getInternalObject( InternalObjectsEnum.WebDriver.toString() );
-            ( ( AppiumDriver ) webDriver ).context( MobileDriver.NATIVE_CONTEXT );
+            MobileDriver mobileDriver = (MobileDriver) uiDriver;
+            webDriver = (WebDriver) mobileDriver.getInternalObject(InternalObjectsEnum.WebDriver.toString());
+            ((AppiumDriver) webDriver).context(MobileDriver.NATIVE_CONTEXT);
         } else {
 
-            throw new NotSupportedOperationException( "Currently it is not possible to create a screenshot with driver: "
-                                                      + uiDriver.getClass().getSimpleName() );
+            throw new NotSupportedOperationException("Currently it is not possible to create a screenshot with driver: "
+                                                     + uiDriver.getClass().getSimpleName());
         }
-        File scrTmpFile = ( ( TakesScreenshot ) webDriver ).getScreenshotAs( OutputType.FILE );
-        File scrFile = new File( filePath );
-        if( scrFile.exists() && !scrFile.delete() ) {
+        File scrTmpFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
+        File scrFile = new File(filePath);
+        if (scrFile.exists() && !scrFile.delete()) {
 
-            log.warn( "The Screenshot image file '"
-                      + filePath
-                      + "' already exists, but couldn't be deleted. You can find the current Screenshot image here: "
-                      + scrTmpFile.getAbsolutePath() );
-        } else if( !scrTmpFile.renameTo( scrFile ) ) {
+            log.warn("The Screenshot image file '"
+                     + filePath
+                     + "' already exists, but couldn't be deleted. You can find the current Screenshot image here: "
+                     + scrTmpFile.getAbsolutePath());
+        } else if (!scrTmpFile.renameTo(scrFile)) {
 
             // if renameTo() fails we will try to copy the file
             try {
-                new LocalFileSystemOperations().copyFile( scrTmpFile.getCanonicalPath(),
-                                                          scrFile.getCanonicalPath(),
-                                                          true);
+                new LocalFileSystemOperations().copyFile(scrTmpFile.getCanonicalPath(),
+                                                         scrFile.getCanonicalPath(),
+                                                         true);
                 scrTmpFile.delete();
-            } catch( Exception e ) {
-                log.warn( "Unable to create Screenshot image file: " + filePath );
+            } catch (Exception e) {
+                log.warn("Unable to create Screenshot image file: " + filePath);
             }
         }
 

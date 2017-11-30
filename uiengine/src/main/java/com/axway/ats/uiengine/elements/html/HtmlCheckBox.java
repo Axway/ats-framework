@@ -29,7 +29,7 @@ public abstract class HtmlCheckBox extends UiCheckBox {
     public HtmlCheckBox( UiDriver uiDriver,
                          UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

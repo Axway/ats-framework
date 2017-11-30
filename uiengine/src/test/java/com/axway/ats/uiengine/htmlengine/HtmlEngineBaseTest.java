@@ -39,38 +39,38 @@ public class HtmlEngineBaseTest extends BaseTest {
                                        String browser,
                                        String testFilesLocation ) {
 
-        if( testFilesLocation.equals( "" ) ) {
+        if (testFilesLocation.equals("")) {
             HtmlEngineBaseTest.testPage = "file:///" + getResourcesFolder() + "htmlfiles/" + testPage;
         } else {
             HtmlEngineBaseTest.testPage = testFilesLocation + "htmlfiles/" + testPage;
         }
 
-        if( !lastBrowser.equals( browser ) ) {
+        if (!lastBrowser.equals(browser)) {
 
-            if( browserDriver != null ) {
+            if (browserDriver != null) {
                 browserDriver.stop();
             }
-            if( browser.equalsIgnoreCase( "FF" ) ) {
+            if (browser.equalsIgnoreCase("FF")) {
 
-                browserDriver = UiDriver.getFirefoxDriver( HtmlEngineBaseTest.testPage );
-            } else if( browser.equalsIgnoreCase( "IE" ) ) {
+                browserDriver = UiDriver.getFirefoxDriver(HtmlEngineBaseTest.testPage);
+            } else if (browser.equalsIgnoreCase("IE")) {
 
-                browserDriver = UiDriver.getInternetExplorerDriver( HtmlEngineBaseTest.testPage );
-            } else if( browser.equalsIgnoreCase( "HIDDEN" ) ) {
+                browserDriver = UiDriver.getInternetExplorerDriver(HtmlEngineBaseTest.testPage);
+            } else if (browser.equalsIgnoreCase("HIDDEN")) {
 
-                browserDriver = UiDriver.getHiddenBrowserDriver( HtmlEngineBaseTest.testPage );
+                browserDriver = UiDriver.getHiddenBrowserDriver(HtmlEngineBaseTest.testPage);
             } else {
 
-                throw new RuntimeException( "Unknown browser '" + browser + "'" );
+                throw new RuntimeException("Unknown browser '" + browser + "'");
             }
             browserDriver.start();
             webEngine = browserDriver.getHtmlEngine();
         }
 
-        webEngine.goToPage( HtmlEngineBaseTest.testPage );
+        webEngine.goToPage(HtmlEngineBaseTest.testPage);
 
-        if( mapSection != null && !lastMapSection.equals( mapSection ) ) {
-            webEngine.loadMapFile( "HtmlEngineElements.map", mapSection );
+        if (mapSection != null && !lastMapSection.equals(mapSection)) {
+            webEngine.loadMapFile("HtmlEngineElements.map", mapSection);
             lastMapSection = mapSection;
         }
         lastBrowser = browser;
@@ -85,9 +85,9 @@ public class HtmlEngineBaseTest extends BaseTest {
         // configurator.setMapFilesBaseDir( "resources/com/axway/ats/uiengine/maps" );
 
         // overwrite some configuration properties for faster test execution
-        configurator.setCommandDelay( -1 );
-        configurator.setElementStateChangeDelay( 2000 );
-        configurator.setHighlightElements( false );
+        configurator.setCommandDelay(-1);
+        configurator.setElementStateChangeDelay(2000);
+        configurator.setHighlightElements(false);
     }
 
     @AfterSuite

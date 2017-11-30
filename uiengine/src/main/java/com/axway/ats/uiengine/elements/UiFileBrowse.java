@@ -27,7 +27,7 @@ public abstract class UiFileBrowse extends UiElement {
     public UiFileBrowse( UiDriver uiDriver,
                          UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

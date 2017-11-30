@@ -41,17 +41,17 @@ public class RealHtmlLink extends HtmlLink {
     public RealHtmlLink( UiDriver uiDriver,
                          UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "href" },
-                                                                    "a" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "href" },
+                                                                   "a");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
     }
@@ -72,19 +72,19 @@ public class RealHtmlLink extends HtmlLink {
     @PublicAtsApi
     public void clickAndDownloadFile() {
 
-        log.info( "File will be downloaded in "
-                  + UiEngineConfigurator.getInstance().getBrowserDownloadDir() );
+        log.info("File will be downloaded in "
+                 + UiEngineConfigurator.getInstance().getBrowserDownloadDir());
 
-        if( getUiDriver() instanceof PhantomJsDriver ) {
+        if (getUiDriver() instanceof PhantomJsDriver) {
 
             try {
-                HtmlFileDownloader fileDownloader = new HtmlFileDownloader( ( PhantomJsDriver ) getUiDriver() );
-                RealHtmlEngine htmlEngine = ( ( PhantomJsDriver ) getUiDriver() ).getHtmlEngine();
-                fileDownloader.downloadFileFromLink( htmlEngine.getCurrentUrl(),
-                                                     htmlEngine.getElement( getElementProperties() ) );
-            } catch( Exception e ) {
+                HtmlFileDownloader fileDownloader = new HtmlFileDownloader((PhantomJsDriver) getUiDriver());
+                RealHtmlEngine htmlEngine = ((PhantomJsDriver) getUiDriver()).getHtmlEngine();
+                fileDownloader.downloadFileFromLink(htmlEngine.getCurrentUrl(),
+                                                    htmlEngine.getElement(getElementProperties()));
+            } catch (Exception e) {
 
-                throw new SeleniumOperationException( this, "downloadFile", e );
+                throw new SeleniumOperationException(this, "downloadFile", e);
             }
         } else {
 
@@ -93,16 +93,16 @@ public class RealHtmlLink extends HtmlLink {
         }
 
         UiEngineUtilities.sleep();
-        log.info( "File download has started. Please check for completion." );
+        log.info("File download has started. Please check for completion.");
     }
 
     private void doClick() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
-        RealHtmlElementLocator.findElement( this ).click();
+        new RealHtmlElementState(this).waitToBecomeExisting();
+        RealHtmlElementLocator.findElement(this).click();
 
         UiEngineUtilities.sleep();
 
-        ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).handleExpectedPopups();
+        ((AbstractRealBrowserDriver) super.getUiDriver()).handleExpectedPopups();
     }
 }

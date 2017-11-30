@@ -29,7 +29,7 @@ public abstract class HtmlMultiSelectList extends UiMultiSelectList {
     public HtmlMultiSelectList( UiDriver uiDriver,
                                 UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

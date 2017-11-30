@@ -49,7 +49,7 @@ import io.appium.java_client.ios.IOSDriver;
 @PublicAtsApi
 public class MobileDriver extends UiDriver {
 
-    private static final Logger      log                     = Logger.getLogger( MobileDriver.class );
+    private static final Logger      log                     = Logger.getLogger(MobileDriver.class);
 
     @PublicAtsApi
     public static final String       DEVICE_ANDROID_EMULATOR = "Android Emulator";
@@ -84,12 +84,12 @@ public class MobileDriver extends UiDriver {
 
     public MobileDriver( String deviceName, String platformVersion, String udid ) {
 
-        this( deviceName, platformVersion, udid, null, DEFAULT_APPIUM_PORT );
+        this(deviceName, platformVersion, udid, null, DEFAULT_APPIUM_PORT);
     }
 
     public MobileDriver( String deviceName, String platformVersion, String udid, String host ) {
 
-        this( deviceName, platformVersion, udid, host, DEFAULT_APPIUM_PORT );
+        this(deviceName, platformVersion, udid, host, DEFAULT_APPIUM_PORT);
     }
 
     public MobileDriver( String deviceName, String platformVersion, String udid, String host, int port ) {
@@ -99,14 +99,14 @@ public class MobileDriver extends UiDriver {
         this.port = port;
         this.udid = udid;
 
-        if( host == null ) {
+        if (host == null) {
             this.host = HostUtils.LOCAL_HOST_IPv4;
         } else {
             this.host = host;
-            this.isWorkingRemotely = !HostUtils.isLocalHost( host );
+            this.isWorkingRemotely = !HostUtils.isLocalHost(host);
         }
-        this.isAndroidAgent = deviceName.toLowerCase().contains( "android" );
-        this.mobileDeviceUtils = new MobileDeviceUtils( this );
+        this.isAndroidAgent = deviceName.toLowerCase().contains("android");
+        this.mobileDeviceUtils = new MobileDeviceUtils(this);
     }
 
     /**
@@ -135,17 +135,17 @@ public class MobileDriver extends UiDriver {
     @PublicAtsApi
     public void setAndroidHome( String androidHome ) {
 
-        if( androidHome != null ) {
+        if (androidHome != null) {
 
             this.androidHome = androidHome;
-            this.adbLocation = IoUtils.normalizeDirPath( this.androidHome ) + "platform-tools/";
+            this.adbLocation = IoUtils.normalizeDirPath(this.androidHome) + "platform-tools/";
             String pathToADBExecutable = null;
-            if( this.mobileDeviceUtils.isAdbOnWindows() ) {
+            if (this.mobileDeviceUtils.isAdbOnWindows()) {
                 pathToADBExecutable = this.adbLocation + "adb.exe";
             } else {
                 pathToADBExecutable = this.adbLocation + "adb";
             }
-            if( !isWorkingRemotely && !new File( pathToADBExecutable ).exists() ) {
+            if (!isWorkingRemotely && !new File(pathToADBExecutable).exists()) {
                 this.adbLocation = null;
             }
         }
@@ -172,71 +172,71 @@ public class MobileDriver extends UiDriver {
     @PublicAtsApi
     public void start( String appPath ) {
 
-        log.info( "Starting mobile testing session to device: " + getDeviceDescription() );
+        log.info("Starting mobile testing session to device: " + getDeviceDescription());
         try {
             // http://appium.io/slate/en/master/?java#appium-server-capabilities
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-            desiredCapabilities.setCapability( "automationName", "Appium" );
-            if( isAndroidAgent ) {
+            desiredCapabilities.setCapability("automationName", "Appium");
+            if (isAndroidAgent) {
 
                 // start emulator:          .../sdk/tools/emulator -avd vmname
                 // install application:     .../sdk/platform-tools/adb install /usr/local/apps/SecureTransportMobile.apk
 
-                if( this.adbLocation == null ) {
+                if (this.adbLocation == null) {
                     // try to set Android home and adb location from the ANDROID_HOME environment variable
                     readAndroidHomeFromEnvironment();
-                    if( this.adbLocation == null ) {
-                        throw new MobileOperationException( "You must specify a valid Android home location or define "
-                                                            + ANDROID_HOME_ENV_VAR
-                                                            + " environment variable. The ADB executable must be located in a 'platform-tools/' subfolder" );
+                    if (this.adbLocation == null) {
+                        throw new MobileOperationException("You must specify a valid Android home location or define "
+                                                           + ANDROID_HOME_ENV_VAR
+                                                           + " environment variable. The ADB executable must be located in a 'platform-tools/' subfolder");
                     }
                 }
-                desiredCapabilities.setCapability( "platformName", "Android" );
+                desiredCapabilities.setCapability("platformName", "Android");
             } else {
 
-                desiredCapabilities.setCapability( "platformName", "iOS" );
+                desiredCapabilities.setCapability("platformName", "iOS");
             }
-            desiredCapabilities.setCapability( "deviceName", deviceName );
-            desiredCapabilities.setCapability( "platformVersion", this.platformVersion );
-            if( !StringUtils.isNullOrEmpty( this.udid ) ) {
-                desiredCapabilities.setCapability( "udid", this.udid );
+            desiredCapabilities.setCapability("deviceName", deviceName);
+            desiredCapabilities.setCapability("platformVersion", this.platformVersion);
+            if (!StringUtils.isNullOrEmpty(this.udid)) {
+                desiredCapabilities.setCapability("udid", this.udid);
             }
-            desiredCapabilities.setCapability( "app", appPath );
-            desiredCapabilities.setCapability( "autoLaunch", true );
-            desiredCapabilities.setCapability( "newCommandTimeout", 30 * 60 );
-            desiredCapabilities.setCapability( "noReset", true ); // don’t reset settings and app state before this session
+            desiredCapabilities.setCapability("app", appPath);
+            desiredCapabilities.setCapability("autoLaunch", true);
+            desiredCapabilities.setCapability("newCommandTimeout", 30 * 60);
+            desiredCapabilities.setCapability("noReset", true); // don’t reset settings and app state before this session
             // desiredCapabilities.setCapability( "fullReset", true ); // clean all Android/iOS settings (iCloud settings), close and uninstall the app
 
-            URL url = new URL( "http://" + this.host + ":" + this.port + "/wd/hub" );
-            if( isAndroidAgent ) {
-                driver = new AndroidDriver<WebElement>( url, desiredCapabilities );
+            URL url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
+            if (isAndroidAgent) {
+                driver = new AndroidDriver<WebElement>(url, desiredCapabilities);
             } else {
-                driver = new IOSDriver<WebElement>( url, desiredCapabilities );
+                driver = new IOSDriver<WebElement>(url, desiredCapabilities);
             }
-            driver.setLogLevel( Level.ALL );
+            driver.setLogLevel(Level.ALL);
 
             // the following timeout only works for NATIVE context, but we will handle it in MobileElementState.
             // Also there is a problem when != 0. In some reason, for iOS only(maybe), this timeout acts as session timeout ?!?
-            driver.manage().timeouts().implicitlyWait( 0, TimeUnit.MILLISECONDS );
+            driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
 
             // driver.manage().timeouts().pageLoadTimeout( 30000, TimeUnit.MILLISECONDS ); // UnsupportedCommandException
             // driver.manage().timeouts().setScriptTimeout( 10000, TimeUnit.MILLISECONDS ); // WebDriverException: Not yet implemented
 
-            driver.context( NATIVE_CONTEXT );
+            driver.context(NATIVE_CONTEXT);
             this.screenDimensions = driver.manage().window().getSize(); // must be called in NATIVE context
 
-            mobileEngine = new MobileEngine( this, this.mobileDeviceUtils );
-        } catch( Exception e ) {
-            throw new MobileOperationException( "Error starting connection to device and application under test."
-                                                + " Check if there is connection to device and the Appium server is running.",
-                                                e );
+            mobileEngine = new MobileEngine(this, this.mobileDeviceUtils);
+        } catch (Exception e) {
+            throw new MobileOperationException("Error starting connection to device and application under test."
+                                               + " Check if there is connection to device and the Appium server is running.",
+                                               e);
         }
     }
 
     @Override
     public void stop() {
 
-        log.info( "Stopping mobile testing session to device: " + getDeviceDescription() );
+        log.info("Stopping mobile testing session to device: " + getDeviceDescription());
 
         driver.quit();
     }
@@ -262,53 +262,53 @@ public class MobileDriver extends UiDriver {
     @PublicAtsApi
     public void clearAppCache( String applicationPackage ) {
 
-        if( isAndroidAgent ) {
+        if (isAndroidAgent) {
 
             // Clear application cache using ADB command: ./adb shell pm clear &lt;PACKAGE&gt;<br/>
             // for example: ./adb shell pm clear com.axway.st.mobile
 
-            if( this.adbLocation == null ) {
-                throw new MobileOperationException( "You must specify a valid Android home location or define "
-                                                    + ANDROID_HOME_ENV_VAR
-                                                    + " environment variable. The ADB executable must be located in a 'platform-tools/' subfolder" );
+            if (this.adbLocation == null) {
+                throw new MobileOperationException("You must specify a valid Android home location or define "
+                                                   + ANDROID_HOME_ENV_VAR
+                                                   + " environment variable. The ADB executable must be located in a 'platform-tools/' subfolder");
             }
             String[] commandArguments = new String[]{ "shell", "pm", "clear", applicationPackage };
             IProcessExecutor pe = null;
             int numRetries = 0;
-            while( numRetries <= MAX_ADB_RELATED_RETRIES ) {
-                if( numRetries > 0 ) {
-                    log.warn( "Retrying to start application action as previous try failed" );
+            while (numRetries <= MAX_ADB_RELATED_RETRIES) {
+                if (numRetries > 0) {
+                    log.warn("Retrying to start application action as previous try failed");
                 }
                 try {
-                    pe = this.mobileDeviceUtils.executeAdbCommand( commandArguments, false );
-                } catch( Exception e ) {
-                    throw new MobileOperationException( "Unable to clear application cache of '"
-                                                        + applicationPackage + "'", e );
+                    pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
+                } catch (Exception e) {
+                    throw new MobileOperationException("Unable to clear application cache of '"
+                                                       + applicationPackage + "'", e);
                 }
                 numRetries++;
-                if( pe.getExitCode() == 0 ) {
+                if (pe.getExitCode() == 0) {
                     break;
                 } else {
-                    if( numRetries <= MAX_ADB_RELATED_RETRIES ) {
-                        log.error( "Unable to clear application cache of '" + applicationPackage
-                                   + "'. Start command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                                   + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')" );
+                    if (numRetries <= MAX_ADB_RELATED_RETRIES) {
+                        log.error("Unable to clear application cache of '" + applicationPackage
+                                  + "'. Start command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
+                                  + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
                         //try to kill ADB and issue start again
                         killAdbServer();
                     } else {
-                        throw new MobileOperationException( "Unable to clear application cache of '"
-                                                            + applicationPackage
-                                                            + "'. Clear cache command failed (Exit code: "
-                                                            + pe.getExitCode() + ", STDOUT: '"
-                                                            + pe.getStandardOutput() + "', STDERR: '"
-                                                            + pe.getErrorOutput() + "')" );
+                        throw new MobileOperationException("Unable to clear application cache of '"
+                                                           + applicationPackage
+                                                           + "'. Clear cache command failed (Exit code: "
+                                                           + pe.getExitCode() + ", STDOUT: '"
+                                                           + pe.getStandardOutput() + "', STDERR: '"
+                                                           + pe.getErrorOutput() + "')");
                     }
                 }
             }
         } else {
 
             //TODO: Find solution. Note that "this.driver.resetApp();" doesn't reset app cache.
-            throw new NotSupportedOperationException( "Currently clear application cache operation for iOS is not implemented" );
+            throw new NotSupportedOperationException("Currently clear application cache operation for iOS is not implemented");
         }
     }
 
@@ -328,7 +328,7 @@ public class MobileDriver extends UiDriver {
         //NOTE: we use a String argument 'objectName' not directly an InternalObjectsEnum object, because we want to
         // hide from the end users this method and his usage
 
-        switch( InternalObjectsEnum.getEnum( objectName ) ){
+        switch (InternalObjectsEnum.getEnum(objectName)) {
 
             case WebDriver:
                 //returns instance of Appium driver operating over Native/HTML elements
@@ -365,7 +365,7 @@ public class MobileDriver extends UiDriver {
 
         // driver.setScreenshotOnError( screenshotOnError );
         // TODO: implement it
-        throw new NotSupportedOperationException( "Not implemented" );
+        throw new NotSupportedOperationException("Not implemented");
     }
 
     public Dimension getScreenDimensions() {
@@ -379,10 +379,10 @@ public class MobileDriver extends UiDriver {
     private void readAndroidHomeFromEnvironment() {
 
         try {
-            setAndroidHome( System.getenv( ANDROID_HOME_ENV_VAR ) );
-        } catch( SecurityException se ) {
-            log.warn( "No access to the process environment. Unable to read environment variable '"
-                      + ANDROID_HOME_ENV_VAR + "'" );
+            setAndroidHome(System.getenv(ANDROID_HOME_ENV_VAR));
+        } catch (SecurityException se) {
+            log.warn("No access to the process environment. Unable to read environment variable '"
+                     + ANDROID_HOME_ENV_VAR + "'");
         }
     }
 
@@ -394,37 +394,37 @@ public class MobileDriver extends UiDriver {
      */
     private void startAndroidApplication( String activity ) {
 
-        log.info( "Starting application with activity '" + activity + "' on device: "
-                  + getDeviceDescription() );
+        log.info("Starting application with activity '" + activity + "' on device: "
+                 + getDeviceDescription());
 
         String[] commandArguments = new String[]{ "shell", "am", "start", "-W", "-S", "-n", activity };
         int numRetries = 0;
         IProcessExecutor pe = null;
-        while( numRetries <= MAX_ADB_RELATED_RETRIES ) {
-            if( numRetries > 0 ) {
-                log.info( "Retrying to start application action as previous try failed" );
+        while (numRetries <= MAX_ADB_RELATED_RETRIES) {
+            if (numRetries > 0) {
+                log.info("Retrying to start application action as previous try failed");
             }
             try {
-                pe = this.mobileDeviceUtils.executeAdbCommand( commandArguments, false );
-            } catch( Exception e ) {
-                throw new MobileOperationException( "Unable to start Android application with activity '"
-                                                    + activity + "'", e );
+                pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
+            } catch (Exception e) {
+                throw new MobileOperationException("Unable to start Android application with activity '"
+                                                   + activity + "'", e);
             }
             numRetries++;
-            if( pe.getExitCode() == 0 ) {
+            if (pe.getExitCode() == 0) {
                 break;
             } else {
-                if( numRetries <= MAX_ADB_RELATED_RETRIES ) {
-                    log.error( "Unable to start Android application with activity '" + activity
-                               + "'. Start command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                               + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')" );
+                if (numRetries <= MAX_ADB_RELATED_RETRIES) {
+                    log.error("Unable to start Android application with activity '" + activity
+                              + "'. Start command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
+                              + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
                     //try to kill ADB and issue start again
                     killAdbServer();
                 } else {
-                    throw new MobileOperationException( "Unable to start Android application with activity '"
-                                                        + activity + "'. Start command failed (STDOUT: '"
-                                                        + pe.getStandardOutput() + "', STDERR: '"
-                                                        + pe.getErrorOutput() + "')" );
+                    throw new MobileOperationException("Unable to start Android application with activity '"
+                                                       + activity + "'. Start command failed (STDOUT: '"
+                                                       + pe.getStandardOutput() + "', STDERR: '"
+                                                       + pe.getErrorOutput() + "')");
                 }
             }
         }
@@ -438,38 +438,38 @@ public class MobileDriver extends UiDriver {
      */
     private void stopAndroidApplication( String applicationPackage ) {
 
-        log.info( "Stopping application '" + applicationPackage + "' on device: " + getDeviceDescription() );
+        log.info("Stopping application '" + applicationPackage + "' on device: " + getDeviceDescription());
 
         String[] commandArguments = new String[]{ "shell", "am", "force-stop", applicationPackage };
         IProcessExecutor pe = null;
         int numRetries = 0;
-        while( numRetries <= MAX_ADB_RELATED_RETRIES ) {
-            if( numRetries > 0 ) {
-                log.warn( "Retrying to start application action as previous try failed" );
+        while (numRetries <= MAX_ADB_RELATED_RETRIES) {
+            if (numRetries > 0) {
+                log.warn("Retrying to start application action as previous try failed");
             }
             try {
-                pe = this.mobileDeviceUtils.executeAdbCommand( commandArguments, false );
-            } catch( Exception e ) {
-                throw new MobileOperationException( "Unable to stop Android application with package '"
-                                                    + applicationPackage + "'", e );
+                pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
+            } catch (Exception e) {
+                throw new MobileOperationException("Unable to stop Android application with package '"
+                                                   + applicationPackage + "'", e);
             }
             numRetries++;
-            if( pe.getExitCode() == 0 ) {
+            if (pe.getExitCode() == 0) {
                 break;
             } else {
-                if( numRetries <= MAX_ADB_RELATED_RETRIES ) {
-                    log.error( "Unable to stop Android application with package '" + applicationPackage
-                               + "'. Stop command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                               + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')" );
+                if (numRetries <= MAX_ADB_RELATED_RETRIES) {
+                    log.error("Unable to stop Android application with package '" + applicationPackage
+                              + "'. Stop command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
+                              + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
                     // try to kill ADB and issue stop again
                     killAdbServer();
                 } else {
-                    throw new MobileOperationException( "Unable to stop Android application with package '"
-                                                        + applicationPackage
-                                                        + "'. Stop command failed (Exit code: "
-                                                        + pe.getExitCode() + ", STDOUT: '"
-                                                        + pe.getStandardOutput() + "', STDERR: '"
-                                                        + pe.getErrorOutput() + "')" );
+                    throw new MobileOperationException("Unable to stop Android application with package '"
+                                                       + applicationPackage
+                                                       + "'. Stop command failed (Exit code: "
+                                                       + pe.getExitCode() + ", STDOUT: '"
+                                                       + pe.getStandardOutput() + "', STDERR: '"
+                                                       + pe.getErrorOutput() + "')");
                 }
             }
         } // while
@@ -488,21 +488,21 @@ public class MobileDriver extends UiDriver {
      */
     private void startIOSApplication( String appPath ) {
 
-        log.info( "Starting application '" + appPath + "' on device: " + getDeviceDescription() );
+        log.info("Starting application '" + appPath + "' on device: " + getDeviceDescription());
 
         String[] commandArguments = new String[]{ "launch", appPath, "--timeout", "60", "--exit" };
         IProcessExecutor pe = null;
         try {
-            pe = getProcessExecutorImpl( "ios-sim", commandArguments );
+            pe = getProcessExecutorImpl("ios-sim", commandArguments);
             pe.execute();
-        } catch( Exception e ) {
-            throw new MobileOperationException( "Unable to start iOS application '" + appPath + "'", e );
+        } catch (Exception e) {
+            throw new MobileOperationException("Unable to start iOS application '" + appPath + "'", e);
         }
-        if( pe.getExitCode() != 0 ) {
-            throw new MobileOperationException( "Unable to start iOS application '" + appPath
-                                                + "'. Start command failed (STDOUT: '"
-                                                + pe.getStandardOutput() + "', STDERR: '"
-                                                + pe.getErrorOutput() + "')" );
+        if (pe.getExitCode() != 0) {
+            throw new MobileOperationException("Unable to start iOS application '" + appPath
+                                               + "'. Start command failed (STDOUT: '"
+                                               + pe.getStandardOutput() + "', STDERR: '"
+                                               + pe.getErrorOutput() + "')");
         }
     }
 
@@ -512,20 +512,20 @@ public class MobileDriver extends UiDriver {
     @PublicAtsApi
     public void stopIOSSimulator() {
 
-        log.info( "Stopping simulator on: " + getDeviceDescription() );
+        log.info("Stopping simulator on: " + getDeviceDescription());
 
         IProcessExecutor pe = null;
         try {
             // the simulator window was named "iPhone Simulator" till Xcode 6, now it is "iOS Simulator"
-            pe = getProcessExecutorImpl( "killall", new String[]{ "iPhone Simulator", "iOS Simulator" } );
+            pe = getProcessExecutorImpl("killall", new String[]{ "iPhone Simulator", "iOS Simulator" });
             pe.execute();
-        } catch( Exception e ) {
-            throw new MobileOperationException( "Unable to stop iOS Simulator", e );
+        } catch (Exception e) {
+            throw new MobileOperationException("Unable to stop iOS Simulator", e);
         }
-        if( pe.getExitCode() != 0 ) {
-            throw new MobileOperationException( "Unable to stop iOS Simulator. Stop command failed (STDOUT: '"
-                                                + pe.getStandardOutput() + "', STDERR: '"
-                                                + pe.getErrorOutput() + "')" );
+        if (pe.getExitCode() != 0) {
+            throw new MobileOperationException("Unable to stop iOS Simulator. Stop command failed (STDOUT: '"
+                                               + pe.getStandardOutput() + "', STDERR: '"
+                                               + pe.getErrorOutput() + "')");
         }
     }
 
@@ -537,20 +537,20 @@ public class MobileDriver extends UiDriver {
      */
     private IProcessExecutor getProcessExecutorImpl( String command, String[] commandArguments ) {
 
-        if( isWorkingRemotely ) {
+        if (isWorkingRemotely) {
             String remoteProcessExecutorClassName = "com.axway.ats.action.processes.RemoteProcessExecutor";
             try {
-                Class<?> remotePEClass = Class.forName( remoteProcessExecutorClassName );
+                Class<?> remotePEClass = Class.forName(remoteProcessExecutorClassName);
                 Constructor<?> constructor = remotePEClass.getDeclaredConstructors()[0];
-                return ( IProcessExecutor ) constructor.newInstance( host, command, commandArguments );
-            } catch( Exception e ) {
-                throw new RuntimeException( "Unable to instantiate RemoteProcessExecutor. Check whether ATS Action "
-                                            + "library and ATS Agent client are added as dependencies in classpath. "
-                                            + "They are needed in order to invoke code on remote machine.",
-                                            e );
+                return (IProcessExecutor) constructor.newInstance(host, command, commandArguments);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to instantiate RemoteProcessExecutor. Check whether ATS Action "
+                                           + "library and ATS Agent client are added as dependencies in classpath. "
+                                           + "They are needed in order to invoke code on remote machine.",
+                                           e);
             }
         }
-        return new LocalProcessExecutor( HostUtils.LOCAL_HOST_NAME, command, commandArguments );
+        return new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, command, commandArguments);
     }
 
     /**
@@ -559,12 +559,12 @@ public class MobileDriver extends UiDriver {
      */
     private String getDeviceDescription() {
 
-        return deviceName + ( host != null
-                                           ? ", host: " + host
-                                           : "" )
-               + ( port > 0
-                            ? ", port: " + port
-                            : "" );
+        return deviceName + (host != null
+                                          ? ", host: " + host
+                                          : "")
+               + (port > 0
+                           ? ", port: " + port
+                           : "");
     }
 
     /**
@@ -573,41 +573,41 @@ public class MobileDriver extends UiDriver {
      */
     private void killAdbServer() {
 
-        log.info( "Trying to restart ADB server on device: " + getDeviceDescription() );
+        log.info("Trying to restart ADB server on device: " + getDeviceDescription());
 
         String[] commandArguments = new String[]{ "kill-server" };
         IProcessExecutor pe = null;
         try {
-            pe = this.mobileDeviceUtils.executeAdbCommand( commandArguments, false );
-        } catch( Exception e ) {
-            throw new MobileOperationException( "Unable to stop ADB server. 'adb kill-server' failed", e );
+            pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
+        } catch (Exception e) {
+            throw new MobileOperationException("Unable to stop ADB server. 'adb kill-server' failed", e);
         }
-        if( pe.getExitCode() != 0 ) {
-            log.warn( "Unable to stop gracefully the ADB server. Command failed (Exit code: "
-                      + pe.getExitCode() + ", STDOUT: '" + pe.getStandardOutput() + "', STDERR: '"
-                      + pe.getErrorOutput() + "')" );
-            log.info( "Trying to forcefully terminate ADB process" );
+        if (pe.getExitCode() != 0) {
+            log.warn("Unable to stop gracefully the ADB server. Command failed (Exit code: "
+                     + pe.getExitCode() + ", STDOUT: '" + pe.getStandardOutput() + "', STDERR: '"
+                     + pe.getErrorOutput() + "')");
+            log.info("Trying to forcefully terminate ADB process");
             // fallback to taskkill
             try {
-                if( OperatingSystemType.getCurrentOsType().isWindows() ) {
-                    pe = new LocalProcessExecutor( HostUtils.LOCAL_HOST_NAME, "taskkill.exe",
-                                                   new String[]{ "/IM", "adb.exe", "/F", "/T" } );
+                if (OperatingSystemType.getCurrentOsType().isWindows()) {
+                    pe = new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, "taskkill.exe",
+                                                  new String[]{ "/IM", "adb.exe", "/F", "/T" });
                 } else {
-                    pe = new LocalProcessExecutor( HostUtils.LOCAL_HOST_NAME, "killall",
-                                                   new String[]{ "adb" } );
+                    pe = new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, "killall",
+                                                  new String[]{ "adb" });
                 }
                 pe.execute();
-            } catch( Exception e ) {
-                log.info( "Unable to kill ADB server. Command failed (Exit code: " + pe.getExitCode()
-                          + ", STDOUT: '" + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput()
-                          + "')" );
-                throw new MobileOperationException( "Unable to stop ADB server with taskkill/killall", e );
+            } catch (Exception e) {
+                log.info("Unable to kill ADB server. Command failed (Exit code: " + pe.getExitCode()
+                         + ", STDOUT: '" + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput()
+                         + "')");
+                throw new MobileOperationException("Unable to stop ADB server with taskkill/killall", e);
             }
-            if( pe.getExitCode() != 0 ) {
+            if (pe.getExitCode() != 0) {
                 // TODO - research possible error codes for non-existing process to kill
-                log.error( "Unable to kill ADB server. Command failed (Exit code: " + pe.getExitCode()
-                           + ", STDOUT: '" + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput()
-                           + "')" );
+                log.error("Unable to kill ADB server. Command failed (Exit code: " + pe.getExitCode()
+                          + ", STDOUT: '" + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput()
+                          + "')");
             }
 
         }

@@ -39,27 +39,27 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingButton extends UiButton {
 
     private static final String[] RULES = { // the order here is important in order to find the largest set of properties matching properties in map file
-            "label,visible" /* used for labelFor */,
-            "label" /* used for labelFor */,
-            "name,text,visible",
-            "name,text",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "tooltip,index",
-            "tooltip",
-            "index"                    };
+                                            "label,visible" /* used for labelFor */,
+                                            "label" /* used for labelFor */,
+                                            "name,text,visible",
+                                            "name,text",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "tooltip,index",
+                                            "tooltip",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingButton.class, JButton.class );
+        SwingElementLocator.componentsMap.put(SwingButton.class, JButton.class);
     }
 
     public SwingButton( UiDriver uiDriver,
                         UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -70,9 +70,9 @@ public class SwingButton extends UiButton {
     @PublicAtsApi
     public void click() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JButtonFixture ) SwingElementLocator.findFixture( this ) ).click();
+        ((JButtonFixture) SwingElementLocator.findFixture(this)).click();
     }
 
     /**
@@ -82,9 +82,9 @@ public class SwingButton extends UiButton {
     @PublicAtsApi
     public boolean isEnabled() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JButtonFixture ) SwingElementLocator.findFixture( this ) ).target.isEnabled();
+        return ((JButtonFixture) SwingElementLocator.findFixture(this)).target.isEnabled();
     }
 
 }

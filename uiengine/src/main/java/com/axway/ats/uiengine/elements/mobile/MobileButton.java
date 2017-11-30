@@ -40,8 +40,8 @@ public class MobileButton extends MobileElement<MobileButton> {
     public MobileButton( UiDriver uiDriver,
                          UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        properties.checkTypeAndRules( this.getClass().getSimpleName(), "Mobile", RULES );
+        super(uiDriver, properties);
+        properties.checkTypeAndRules(this.getClass().getSimpleName(), "Mobile", RULES);
     }
 
 }

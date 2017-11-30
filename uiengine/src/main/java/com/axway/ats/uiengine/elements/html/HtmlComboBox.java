@@ -27,7 +27,7 @@ public abstract class HtmlComboBox extends UiComboBox {
     public HtmlComboBox( UiDriver uiDriver,
                          UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

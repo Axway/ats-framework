@@ -62,7 +62,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 @PublicAtsApi
 public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtmlEngine {
 
-    private static Logger log = Logger.getLogger( AbstractHtmlEngine.class );
+    private static Logger log = Logger.getLogger(AbstractHtmlEngine.class);
 
     private WebDriver     webDriver;
 
@@ -71,10 +71,10 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     public AbstractHtmlEngine( UiDriver uiDriver,
                                AbstractElementsFactory elementsFactory ) {
 
-        super( uiDriver, elementsFactory );
+        super(uiDriver, elementsFactory);
 
-        AbstractHtmlDriver htmlDriver = ( AbstractHtmlDriver ) uiDriver;
-        webDriver = ( WebDriver ) htmlDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        AbstractHtmlDriver htmlDriver = (AbstractHtmlDriver) uiDriver;
+        webDriver = (WebDriver) htmlDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
         mainWindowHandle = webDriver.getWindowHandle();
     }
 
@@ -89,20 +89,20 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
         AbstractRealBrowserDriver abstractUiDriver = null;
         // only from the main window we have to go to another pages
         goToMainWindow();
-        HtmlNavigator.getInstance().navigateToTopFrame( webDriver );
+        HtmlNavigator.getInstance().navigateToTopFrame(webDriver);
 
-        log.info( "Go to URL: " + url );
+        log.info("Go to URL: " + url);
         try {
-            webDriver.get( url );
-            if( this.uiDriver instanceof AbstractRealBrowserDriver ) {
-                abstractUiDriver = ( AbstractRealBrowserDriver ) uiDriver;
+            webDriver.get(url);
+            if (this.uiDriver instanceof AbstractRealBrowserDriver) {
+                abstractUiDriver = (AbstractRealBrowserDriver) uiDriver;
                 abstractUiDriver.handleExpectedPopups();
-                abstractUiDriver.waitForPageLoaded( webDriver,
-                                                    UiEngineConfigurator.getInstance()
-                                                                        .getWaitPageToLoadTimeout() );
+                abstractUiDriver.waitForPageLoaded(webDriver,
+                                                   UiEngineConfigurator.getInstance()
+                                                                       .getWaitPageToLoadTimeout());
             }
         } finally {
-            if( abstractUiDriver != null )
+            if (abstractUiDriver != null)
                 abstractUiDriver.clearExpectedPopups();
         }
     }
@@ -114,7 +114,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     @PublicAtsApi
     public String getCurrentUrl() {
 
-        if( webDriver == null ) {
+        if (webDriver == null) {
             return null;
         }
         return webDriver.getCurrentUrl();
@@ -128,7 +128,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     @PublicAtsApi
     public String getPageSource() {
 
-        if( webDriver == null ) {
+        if (webDriver == null) {
             return "";
         }
         return webDriver.getPageSource();
@@ -143,13 +143,13 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
 
         Set<String> availableWindows = webDriver.getWindowHandles();
         String[] windowTitles = new String[availableWindows.size()];
-        if( !availableWindows.isEmpty() ) {
+        if (!availableWindows.isEmpty()) {
             String currentWindowHandle = webDriver.getWindowHandle();
             int i = 0;
-            for( String windowHandle : availableWindows ) {
-                windowTitles[i++] = webDriver.switchTo().window( windowHandle ).getTitle();
+            for (String windowHandle : availableWindows) {
+                windowTitles[i++] = webDriver.switchTo().window(windowHandle).getTitle();
             }
-            webDriver.switchTo().window( currentWindowHandle );
+            webDriver.switchTo().window(currentWindowHandle);
         }
         return windowTitles;
     }
@@ -162,7 +162,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     public void goToWindow(
                             String windowTitle ) {
 
-        goToWindow( windowTitle, UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        goToWindow(windowTitle, UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -175,14 +175,14 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
                             final String windowTitle,
                             long timeoutInSeconds ) {
 
-        if( windowTitle == null ) {
-            log.info( "Go to main window/tab" );
+        if (windowTitle == null) {
+            log.info("Go to main window/tab");
 
             goToMainWindow();
         } else {
 
-            log.info( "Go to window/tab with title/name '" + windowTitle + "'" );
-            switchToWindowByTitle( windowTitle, timeoutInSeconds );
+            log.info("Go to window/tab with title/name '" + windowTitle + "'");
+            switchToWindowByTitle(windowTitle, timeoutInSeconds);
         }
     }
 
@@ -192,7 +192,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     @PublicAtsApi
     public void goToMainWindow() {
 
-        webDriver.switchTo().window( mainWindowHandle );
+        webDriver.switchTo().window(mainWindowHandle);
     }
 
     /**
@@ -201,7 +201,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     @PublicAtsApi
     public void goToFirstWindowWithoutTitle() {
 
-        switchToWindowByTitle( "", UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        switchToWindowByTitle("", UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     private void switchToWindowByTitle(
@@ -212,15 +212,15 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
             public Boolean apply(
                                   WebDriver driver ) {
 
-                return switchToWindowByTitle( windowTitle );
+                return switchToWindowByTitle(windowTitle);
             }
         };
-        Wait<WebDriver> wait = new WebDriverWait( webDriver, timeoutInSeconds );
+        Wait<WebDriver> wait = new WebDriverWait(webDriver, timeoutInSeconds);
         try {
-            wait.until( expectation );
-        } catch( Exception e ) {
-            throw new SeleniumOperationException( "Timeout waiting for Window with title '" + windowTitle
-                                                  + "' to appear.", e );
+            wait.until(expectation);
+        } catch (Exception e) {
+            throw new SeleniumOperationException("Timeout waiting for Window with title '" + windowTitle
+                                                 + "' to appear.", e);
         }
     }
 
@@ -229,7 +229,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
 
         String currentWindow = webDriver.getWindowHandle();
         Set<String> availableWindows = webDriver.getWindowHandles();
-        if( !availableWindows.isEmpty() ) {
+        if (!availableWindows.isEmpty()) {
             /*
              * Some people are complaining this code would not work as it throws errors when traversing all the windows. 
              * Unfortunately we cannot point directly to the window we want, but have to first switch to the next one, 
@@ -240,16 +240,16 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
              * 
              * The returned Set by Selenium is an actual LinkedHashSet<String> so it is ordered indeed.
              */
-            String[] availableWindowsArray = availableWindows.toArray( new String[availableWindows.size()] );
+            String[] availableWindowsArray = availableWindows.toArray(new String[availableWindows.size()]);
 
-            for( int i = availableWindowsArray.length - 1; i >= 0; i-- ) {
+            for (int i = availableWindowsArray.length - 1; i >= 0; i--) {
                 String windowId = availableWindowsArray[i];
-                String windowTitle = webDriver.switchTo().window( windowId ).getTitle();
-                if( ( windowTitle == null && ( title == null || title.isEmpty() ) )
-                    || ( windowTitle != null && windowTitle.trim().equalsIgnoreCase( title.trim() ) ) ) {
+                String windowTitle = webDriver.switchTo().window(windowId).getTitle();
+                if ( (windowTitle == null && (title == null || title.isEmpty()))
+                     || (windowTitle != null && windowTitle.trim().equalsIgnoreCase(title.trim()))) {
                     return true;
                 } else {
-                    webDriver.switchTo().window( currentWindow );
+                    webDriver.switchTo().window(currentWindow);
                 }
             }
         }
@@ -276,18 +276,18 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
                            UiElement element,
                            String eventName ) {
 
-        HtmlNavigator.getInstance().navigateToFrame( webDriver, element );
+        HtmlNavigator.getInstance().navigateToFrame(webDriver, element);
 
         String xpath = element.getElementProperties()
-                              .getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR );
+                              .getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR);
 
-        String css = element.getElementProperty( "_css" );
+        String css = element.getElementProperty("_css");
 
         WebElement webElement = null;
-        if( !StringUtils.isNullOrEmpty( css ) ) {
-            webElement = webDriver.findElement( By.cssSelector( css ) );
+        if (!StringUtils.isNullOrEmpty(css)) {
+            webElement = webDriver.findElement(By.cssSelector(css));
         } else {
-            webElement = webDriver.findElement( By.xpath( xpath ) );
+            webElement = webDriver.findElement(By.xpath(xpath));
         }
 
         StringBuilder builder = new StringBuilder();
@@ -306,91 +306,91 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
                         + "            evt.initEvent(eventType, canBubble, true);\n"
                         + "            element.dispatchEvent(evt);\n" + "        }\n" + "    }\n" );
         // @formatter:on
-        builder.append( "triggerEvent(arguments[0],'" ).append( eventName ).append( "',false);" );
+        builder.append("triggerEvent(arguments[0],'").append(eventName).append("',false);");
 
-        ( ( JavascriptExecutor ) webDriver ).executeScript( builder.toString(), webElement );
+        ((JavascriptExecutor) webDriver).executeScript(builder.toString(), webElement);
     }
 
     @PublicAtsApi
     public void reloadFrames() {
 
         // real browsers reloads the frames automatically
-        if( webDriver instanceof HtmlUnitDriver ) {
+        if (webDriver instanceof HtmlUnitDriver) {
 
             Field webClientField = null;
             boolean fieldAccessibleState = false;
             try {
                 // Retrieve current WebClient instance (with the current page) from the Selenium WebDriver
                 TargetLocator targetLocator = webDriver.switchTo();
-                webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField( "webClient" );
+                webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField("webClient");
                 fieldAccessibleState = webClientField.isAccessible();
-                webClientField.setAccessible( true );
-                WebClient webClient = ( WebClient ) webClientField.get( targetLocator.defaultContent() );
-                HtmlPage page = ( HtmlPage ) webClient.getCurrentWindow().getEnclosedPage();
+                webClientField.setAccessible(true);
+                WebClient webClient = (WebClient) webClientField.get(targetLocator.defaultContent());
+                HtmlPage page = (HtmlPage) webClient.getCurrentWindow().getEnclosedPage();
 
-                for( final FrameWindow frameWindow : page.getFrames() ) {
+                for (final FrameWindow frameWindow : page.getFrames()) {
 
                     final BaseFrameElement frame = frameWindow.getFrameElement();
 
                     // if a script has already changed its content, it should be skipped
                     // use == and not equals(...) to identify initial content (versus URL set to "about:blank")
-                    if( frame.getEnclosedPage()
+                    if (frame.getEnclosedPage()
                              .getWebResponse()
                              .getWebRequest()
-                             .getUrl() == WebClient.URL_ABOUT_BLANK ) {
+                             .getUrl() == WebClient.URL_ABOUT_BLANK) {
 
                         String src = frame.getSrcAttribute();
-                        if( src != null && !src.isEmpty() ) {
+                        if (src != null && !src.isEmpty()) {
                             final URL url;
                             try {
-                                url = ( ( HtmlPage ) frame.getEnclosedPage() ).getFullyQualifiedUrl( src );
-                            } catch( final MalformedURLException e ) {
+                                url = ((HtmlPage) frame.getEnclosedPage()).getFullyQualifiedUrl(src);
+                            } catch (final MalformedURLException e) {
                                 String message = "Invalid src attribute of " + frame.getTagName() + ": url=["
                                                  + src + "]. Ignored.";
                                 final IncorrectnessListener incorrectnessListener = webClient.getIncorrectnessListener();
-                                incorrectnessListener.notify( message, this );
+                                incorrectnessListener.notify(message, this);
                                 return;
                             }
-                            if( isAlreadyLoadedByAncestor( url, ( ( HtmlPage ) frame.getEnclosedPage() ) ) ) {
+                            if (isAlreadyLoadedByAncestor(url, ((HtmlPage) frame.getEnclosedPage()))) {
                                 String message = "Recursive src attribute of " + frame.getTagName()
                                                  + ": url=[" + src + "]. Ignored.";
                                 final IncorrectnessListener incorrectnessListener = webClient.getIncorrectnessListener();
-                                incorrectnessListener.notify( message, this );
+                                incorrectnessListener.notify(message, this);
 
-                                log.info( "Frame already loaded: " + frame.toString() );
+                                log.info("Frame already loaded: " + frame.toString());
                                 return;
                             }
                             try {
-                                final WebRequest request = new WebRequest( url );
-                                request.setAdditionalHeader( "Accept",
-                                                             "text/html,application/xhtml+xml,application/xml;q=0.9, text/*;q=0.7, */*;q=0.5" );
+                                final WebRequest request = new WebRequest(url);
+                                request.setAdditionalHeader("Accept",
+                                                            "text/html,application/xhtml+xml,application/xml;q=0.9, text/*;q=0.7, */*;q=0.5");
 
-                                if( frameWindow.getName() == null || frameWindow.getName().isEmpty() ) {
-                                    frameWindow.setName( "frame_" + page.getFrames().indexOf( frameWindow ) );
+                                if (frameWindow.getName() == null || frameWindow.getName().isEmpty()) {
+                                    frameWindow.setName("frame_" + page.getFrames().indexOf(frameWindow));
                                 }
-                                webClient.loadWebResponseInto( webClient.loadWebResponse( request ),
-                                                               frameWindow );
-                                log.info( "Frame loaded: " + frame.toString() );
+                                webClient.loadWebResponseInto(webClient.loadWebResponse(request),
+                                                              frameWindow);
+                                log.info("Frame loaded: " + frame.toString());
 
-                            } catch( IOException e ) {
+                            } catch (IOException e) {
 
-                                log.error( "Error when getting content for " + frame.getTagName()
-                                           + " with src=" + url, e );
+                                log.error("Error when getting content for " + frame.getTagName()
+                                          + " with src=" + url, e);
                             }
                         }
                     } else {
 
-                        log.info( "Frame already loaded: " + frame.toString() );
+                        log.info("Frame already loaded: " + frame.toString());
                     }
                 }
 
-            } catch( Exception e ) {
+            } catch (Exception e) {
 
-                throw new SeleniumOperationException( "Error retrieving internal Selenium web client", e );
+                throw new SeleniumOperationException("Error retrieving internal Selenium web client", e);
             } finally {
 
-                if( webClientField != null ) {
-                    webClientField.setAccessible( fieldAccessibleState );
+                if (webClientField != null) {
+                    webClientField.setAccessible(fieldAccessibleState);
                 }
             }
         }
@@ -401,11 +401,11 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
                                                HtmlPage page ) {
 
         WebWindow window = page.getEnclosingWindow();
-        while( window != null ) {
-            if( url.sameFile( window.getEnclosedPage().getWebResponse().getWebRequest().getUrl() ) ) {
+        while (window != null) {
+            if (url.sameFile(window.getEnclosedPage().getWebResponse().getWebRequest().getUrl())) {
                 return true;
             }
-            if( window == window.getParentWindow() ) {
+            if (window == window.getParentWindow()) {
                 window = null;
             } else {
                 window = window.getParentWindow();
@@ -421,7 +421,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     @PublicAtsApi
     public void retrieveBrowserFocus() {
 
-        webDriver.switchTo().window( webDriver.getWindowHandle() );
+        webDriver.switchTo().window(webDriver.getWindowHandle());
     }
 
     /**
@@ -443,12 +443,12 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     public String executeJavaScript(
                                      String javaScriptCommand ) {
 
-        if( !StringUtils.isNullOrEmpty( javaScriptCommand ) ) {
+        if (!StringUtils.isNullOrEmpty(javaScriptCommand)) {
             try {
-                return String.valueOf( ( ( JavascriptExecutor ) webDriver ).executeScript( javaScriptCommand ) );
-            } catch( Exception e ) {
-                throw new SeleniumOperationException( "Failed to execute JavaScript command: \""
-                                                      + javaScriptCommand + "\"", e );
+                return String.valueOf( ((JavascriptExecutor) webDriver).executeScript(javaScriptCommand));
+            } catch (Exception e) {
+                throw new SeleniumOperationException("Failed to execute JavaScript command: \""
+                                                     + javaScriptCommand + "\"", e);
             }
         }
         return null;
@@ -465,12 +465,12 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     public int countElements(
                               String xpath ) {
 
-        if( !StringUtils.isNullOrEmpty( xpath ) ) {
+        if (!StringUtils.isNullOrEmpty(xpath)) {
             try {
-                return webDriver.findElements( By.xpath( xpath ) ).size();
-            } catch( Exception e ) {
-                throw new SeleniumOperationException( "Failed to count elements by XPATH \"" + xpath + "\"",
-                                                      e );
+                return webDriver.findElements(By.xpath(xpath)).size();
+            } catch (Exception e) {
+                throw new SeleniumOperationException("Failed to count elements by XPATH \"" + xpath + "\"",
+                                                     e);
             }
         }
         return 0;
@@ -487,13 +487,13 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     public int countElementsByCssSelector(
                                            String cssSelector ) {
 
-        if( !StringUtils.isNullOrEmpty( cssSelector ) ) {
+        if (!StringUtils.isNullOrEmpty(cssSelector)) {
             try {
-                return webDriver.findElements( By.cssSelector( cssSelector ) ).size();
+                return webDriver.findElements(By.cssSelector(cssSelector)).size();
 
-            } catch( Exception e ) {
-                throw new SeleniumOperationException( "Failed to count elements by CSS Selector \""
-                                                      + cssSelector + "\"", e );
+            } catch (Exception e) {
+                throw new SeleniumOperationException("Failed to count elements by CSS Selector \""
+                                                     + cssSelector + "\"", e);
             }
         }
         return 0;
@@ -509,8 +509,8 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
                            String cookieName,
                            String cookieValue ) {
 
-        Cookie cookie = new Cookie( cookieName, cookieValue );
-        webDriver.manage().addCookie( cookie );
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+        webDriver.manage().addCookie(cookie);
     }
 
     /**
@@ -532,8 +532,8 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
                            Date expiry,
                            boolean isSecure ) {
 
-        Cookie cookie = new Cookie( name, value, domain, path, expiry, isSecure );
-        webDriver.manage().addCookie( cookie );
+        Cookie cookie = new Cookie(name, value, domain, path, expiry, isSecure);
+        webDriver.manage().addCookie(cookie);
     }
 
     /**
@@ -547,13 +547,13 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
         Set<Cookie> cookies = webDriver.manage().getCookies();
         com.axway.ats.uiengine.elements.html.Cookie[] cookiesArr = new com.axway.ats.uiengine.elements.html.Cookie[cookies.size()];
         int i = 0;
-        for( Cookie c : cookies ) {
-            cookiesArr[i++] = new com.axway.ats.uiengine.elements.html.Cookie( c.getName(),
-                                                                                           c.getValue(),
-                                                                                           c.getDomain(),
-                                                                                           c.getPath(),
-                                                                                           c.getExpiry(),
-                                                                                           c.isSecure() );
+        for (Cookie c : cookies) {
+            cookiesArr[i++] = new com.axway.ats.uiengine.elements.html.Cookie(c.getName(),
+                                                                              c.getValue(),
+                                                                              c.getDomain(),
+                                                                              c.getPath(),
+                                                                              c.getExpiry(),
+                                                                              c.isSecure());
         }
         return cookiesArr;
     }
@@ -568,7 +568,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     public void deleteCookieNamed(
                                    String cookieName ) {
 
-        webDriver.manage().deleteCookieNamed( cookieName );
+        webDriver.manage().deleteCookieNamed(cookieName);
     }
 
     /**

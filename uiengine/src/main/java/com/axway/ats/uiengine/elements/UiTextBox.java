@@ -27,7 +27,7 @@ public abstract class UiTextBox extends UiElement {
     public UiTextBox( UiDriver uiDriver,
                       UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class UiTextBox extends UiElement {
     @PublicAtsApi
     public abstract void appendValue(
                                       String value );
-    
+
     /**
      * Verify the Text Box value is as specified
      *

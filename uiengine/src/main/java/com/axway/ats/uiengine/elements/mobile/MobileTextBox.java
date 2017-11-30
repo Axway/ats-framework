@@ -53,10 +53,10 @@ public class MobileTextBox extends MobileElement<MobileTextBox> {
     public MobileTextBox( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        properties.checkTypeAndRules( this.getClass().getSimpleName(), "Mobile", RULES );
+        super(uiDriver, properties);
+        properties.checkTypeAndRules(this.getClass().getSimpleName(), "Mobile", RULES);
 
-        appiumDriver = ( AppiumDriver<?> ) ( ( MobileDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        appiumDriver = (AppiumDriver<?>) ((MobileDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -66,12 +66,12 @@ public class MobileTextBox extends MobileElement<MobileTextBox> {
     @PublicAtsApi
     public String getValue() {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            return MobileElementFinder.findElement( appiumDriver, this ).getAttribute( "value" );
-        } catch( Exception se ) {
-            throw new MobileOperationException( this, "getValue", se );
+            return MobileElementFinder.findElement(appiumDriver, this).getAttribute("value");
+        } catch (Exception se) {
+            throw new MobileOperationException(this, "getValue", se);
         }
     }
 
@@ -84,14 +84,14 @@ public class MobileTextBox extends MobileElement<MobileTextBox> {
     public MobileTextBox setValue(
                                    String value ) {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement textElement = MobileElementFinder.findElement( appiumDriver, this );
+            WebElement textElement = MobileElementFinder.findElement(appiumDriver, this);
             textElement.clear();
-            textElement.sendKeys( value );
-        } catch( Exception se ) {
-            throw new MobileOperationException( this, "setValue", se );
+            textElement.sendKeys(value);
+        } catch (Exception se) {
+            throw new MobileOperationException(this, "setValue", se);
         }
 
         UiEngineUtilities.sleep(); // think time
@@ -101,13 +101,13 @@ public class MobileTextBox extends MobileElement<MobileTextBox> {
     @PublicAtsApi
     public void pressEnterKey() {
 
-        new MobileElementState( this ).waitToBecomeExisting();
+        new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement textElement = MobileElementFinder.findElement( appiumDriver, this );
-            textElement.sendKeys( "\n" );
-        } catch( Exception se ) {
-            throw new MobileOperationException( this, "pressEnterKey", se );
+            WebElement textElement = MobileElementFinder.findElement(appiumDriver, this);
+            textElement.sendKeys("\n");
+        } catch (Exception se) {
+            throw new MobileOperationException(this, "pressEnterKey", se);
         }
 
         UiEngineUtilities.sleep(); // think time
@@ -125,8 +125,8 @@ public class MobileTextBox extends MobileElement<MobileTextBox> {
         expectedValue = expectedValue.trim();
 
         String actualText = getValue().trim();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -140,8 +140,8 @@ public class MobileTextBox extends MobileElement<MobileTextBox> {
                                 String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

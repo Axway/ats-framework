@@ -38,7 +38,7 @@ public abstract class HtmlFileBrowse extends UiFileBrowse {
 
     public HtmlFileBrowse( UiDriver uiDriver, UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**
@@ -49,42 +49,42 @@ public abstract class HtmlFileBrowse extends UiFileBrowse {
     protected void setFileInputValue( WebDriver webDriver, String value ) {
 
         String locator = this.getElementProperties()
-                             .getInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR );
+                             .getInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR);
 
-        String css = this.getElementProperty( "_css" );
+        String css = this.getElementProperty("_css");
 
         WebElement element = null;
 
-        if( !StringUtils.isNullOrEmpty( css ) ) {
-            element = webDriver.findElement( By.cssSelector( css ) );
+        if (!StringUtils.isNullOrEmpty(css)) {
+            element = webDriver.findElement(By.cssSelector(css));
         } else {
-            element = webDriver.findElement( By.xpath( locator ) );
+            element = webDriver.findElement(By.xpath(locator));
         }
 
         try {
-            element.sendKeys( value );
-        } catch( ElementNotVisibleException enve ) {
+            element.sendKeys(value);
+        } catch (ElementNotVisibleException enve) {
 
-            if( !UiEngineConfigurator.getInstance().isWorkWithInvisibleElements() ) {
+            if (!UiEngineConfigurator.getInstance().isWorkWithInvisibleElements()) {
                 throw enve;
             }
             // try to make the element visible overriding some CSS properties
             // but keep in mind that it can be still invisible using another CSS and/or JavaScript techniques
-            String styleAttrValue = element.getAttribute( "style" );
-            JavascriptExecutor jsExec = ( JavascriptExecutor ) webDriver;
+            String styleAttrValue = element.getAttribute("style");
+            JavascriptExecutor jsExec = (JavascriptExecutor) webDriver;
             try {
-                jsExec.executeScript( "arguments[0].setAttribute('style', arguments[1]);",
-                                      element,
-                                      "display:'block'; visibility:'visible'; top:'auto'; left:'auto'; z-index:999;"
-                                               + "height:'auto'; width:'auto';" );
-                element.sendKeys( value );
+                jsExec.executeScript("arguments[0].setAttribute('style', arguments[1]);",
+                                     element,
+                                     "display:'block'; visibility:'visible'; top:'auto'; left:'auto'; z-index:999;"
+                                              + "height:'auto'; width:'auto';");
+                element.sendKeys(value);
             } finally {
-                jsExec.executeScript( "arguments[0].setAttribute('style', arguments[1]);", element,
-                                      styleAttrValue );
+                jsExec.executeScript("arguments[0].setAttribute('style', arguments[1]);", element,
+                                     styleAttrValue);
             }
 
-        } catch( InvalidElementStateException e ) {
-            throw new SeleniumOperationException( e.getMessage(), e );
+        } catch (InvalidElementStateException e) {
+            throw new SeleniumOperationException(e.getMessage(), e);
         }
     }
 

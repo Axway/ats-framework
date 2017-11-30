@@ -45,14 +45,14 @@ public class SwingTree extends UiTree {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingTree.class, JTree.class );
+        SwingElementLocator.componentsMap.put(SwingTree.class, JTree.class);
     }
 
     public SwingTree( UiDriver uiDriver,
                       UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -66,9 +66,9 @@ public class SwingTree extends UiTree {
     public void select(
                         int rowIndex ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTreeFixture ) SwingElementLocator.findFixture( this ) ).selectRow( rowIndex );
+        ((JTreeFixture) SwingElementLocator.findFixture(this)).selectRow(rowIndex);
     }
 
     /**
@@ -82,50 +82,50 @@ public class SwingTree extends UiTree {
     public void select(
                         String... labels ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTreeFixture treeFixture = ( JTreeFixture ) SwingElementLocator.findFixture( this );
-        expandTree( treeFixture, labels ); // sometimes it is necessary
-        treeFixture.selectPath( buildPath( labels ) );
+        JTreeFixture treeFixture = (JTreeFixture) SwingElementLocator.findFixture(this);
+        expandTree(treeFixture, labels); // sometimes it is necessary
+        treeFixture.selectPath(buildPath(labels));
     }
 
     @PublicAtsApi
     public void expand(
                         String... labels ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTreeFixture treeFixture = ( JTreeFixture ) SwingElementLocator.findFixture( this );
-        expandTree( treeFixture, labels );
+        JTreeFixture treeFixture = (JTreeFixture) SwingElementLocator.findFixture(this);
+        expandTree(treeFixture, labels);
     }
 
     @PublicAtsApi
     public void expand(
                         int rowIndex ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTreeFixture ) SwingElementLocator.findFixture( this ) ).expandRow( rowIndex );
+        ((JTreeFixture) SwingElementLocator.findFixture(this)).expandRow(rowIndex);
     }
 
     @PublicAtsApi
     public void click(
                        String... labels ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTreeFixture treeFixture = ( JTreeFixture ) SwingElementLocator.findFixture( this );
-        expandTree( treeFixture, labels ); // sometimes it is necessary
-        treeFixture.clickPath( buildPath( labels ) );
+        JTreeFixture treeFixture = (JTreeFixture) SwingElementLocator.findFixture(this);
+        expandTree(treeFixture, labels); // sometimes it is necessary
+        treeFixture.clickPath(buildPath(labels));
     }
 
     @PublicAtsApi
     public void click(
                        int rowIndex ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTreeFixture ) SwingElementLocator.findFixture( this ) ).clickRow( rowIndex );
+        ((JTreeFixture) SwingElementLocator.findFixture(this)).clickRow(rowIndex);
     }
 
     @PublicAtsApi
@@ -133,11 +133,11 @@ public class SwingTree extends UiTree {
                             int rowIndex,
                             String... contextMenuItems ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTreeFixture treeFixture = ( JTreeFixture ) SwingElementLocator.findFixture( this );
-        JPopupMenuFixture popUpMenu = treeFixture.showPopupMenuAt( rowIndex );
-        popUpMenu.menuItemWithPath( contextMenuItems ).click();
+        JTreeFixture treeFixture = (JTreeFixture) SwingElementLocator.findFixture(this);
+        JPopupMenuFixture popUpMenu = treeFixture.showPopupMenuAt(rowIndex);
+        popUpMenu.menuItemWithPath(contextMenuItems).click();
     }
 
     @PublicAtsApi
@@ -145,12 +145,12 @@ public class SwingTree extends UiTree {
                             String[] path,
                             String... contextMenuItems ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTreeFixture treeFixture = ( JTreeFixture ) SwingElementLocator.findFixture( this );
-        expandTree( treeFixture, path ); // sometimes it is necessary
-        JPopupMenuFixture popUpMenu = treeFixture.showPopupMenuAt( buildPath( path ) );
-        popUpMenu.menuItemWithPath( contextMenuItems ).click();
+        JTreeFixture treeFixture = (JTreeFixture) SwingElementLocator.findFixture(this);
+        expandTree(treeFixture, path); // sometimes it is necessary
+        JPopupMenuFixture popUpMenu = treeFixture.showPopupMenuAt(buildPath(path));
+        popUpMenu.menuItemWithPath(contextMenuItems).click();
     }
 
     private void expandTree(
@@ -159,14 +159,14 @@ public class SwingTree extends UiTree {
 
         List<String> path = new ArrayList<String>();
         try {
-            for( String treeItem : treeItems ) {
+            for (String treeItem : treeItems) {
 
-                path.add( treeItem );
-                treeFixture.expandPath( buildPath( path.toArray( new String[0] ) ) );
+                path.add(treeItem);
+                treeFixture.expandPath(buildPath(path.toArray(new String[0])));
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -174,10 +174,10 @@ public class SwingTree extends UiTree {
                               String... nodes ) {
 
         StringBuilder sb = new StringBuilder();
-        for( int i = 0; i < nodes.length; i++ ) {
-            sb.append( nodes[i] );
-            if( i < nodes.length - 1 ) {
-                sb.append( "/" );
+        for (int i = 0; i < nodes.length; i++) {
+            sb.append(nodes[i]);
+            if (i < nodes.length - 1) {
+                sb.append("/");
             }
         }
         return sb.toString();

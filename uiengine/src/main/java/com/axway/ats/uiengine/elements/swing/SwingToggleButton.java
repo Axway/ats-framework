@@ -39,25 +39,25 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingToggleButton extends UiElement {
 
     private static final String[] RULES = { // the order here is important in order to find the largest set of properties matching properties in map file
-            "label,visible" /* used for labelFor */,
-            "label" /* used for labelFor */,
-            "name,text,visible",
-            "name,text",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "index"                    };
+                                            "label,visible" /* used for labelFor */,
+                                            "label" /* used for labelFor */,
+                                            "name,text,visible",
+                                            "name,text",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingToggleButton.class, JToggleButton.class );
+        SwingElementLocator.componentsMap.put(SwingToggleButton.class, JToggleButton.class);
     }
 
     public SwingToggleButton( UiDriver uiDriver,
                               UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -68,9 +68,9 @@ public class SwingToggleButton extends UiElement {
     @PublicAtsApi
     public void click() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JToggleButtonFixture ) SwingElementLocator.findFixture( this ) ).click();
+        ((JToggleButtonFixture) SwingElementLocator.findFixture(this)).click();
     }
 
     /**
@@ -82,9 +82,9 @@ public class SwingToggleButton extends UiElement {
     @PublicAtsApi
     public boolean isSelected() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JToggleButtonFixture ) SwingElementLocator.findFixture( this ) ).component().isSelected();
+        return ((JToggleButtonFixture) SwingElementLocator.findFixture(this)).component().isSelected();
     }
 
 }

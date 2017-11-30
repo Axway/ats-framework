@@ -35,13 +35,13 @@ public class RobotEngine extends AbstractEngine {
 
     public RobotEngine( RobotDriver robotDriver ) {
 
-        super( robotDriver, RobotElementsFactory.getInstance() );
+        super(robotDriver, RobotElementsFactory.getInstance());
 
         try {
             this.systemOperations = new LocalSystemOperations();
-        } catch( SystemOperationException soe ) {
+        } catch (SystemOperationException soe) {
 
-            throw new RobotException( "Error initializing RobotEngine", soe );
+            throw new RobotException("Error initializing RobotEngine", soe);
         }
     }
 
@@ -56,7 +56,7 @@ public class RobotEngine extends AbstractEngine {
                          int x,
                          int y ) {
 
-        systemOperations.getInputOperations().clickAt( x, y );
+        systemOperations.getInputOperations().clickAt(x, y);
     }
 
     /**
@@ -68,7 +68,7 @@ public class RobotEngine extends AbstractEngine {
     public void type(
                       String text ) {
 
-        systemOperations.getInputOperations().type( text );
+        systemOperations.getInputOperations().type(text);
     }
 
     /**
@@ -79,7 +79,7 @@ public class RobotEngine extends AbstractEngine {
     public void type(
                       int... keyCodes ) {
 
-        systemOperations.getInputOperations().type( keyCodes );
+        systemOperations.getInputOperations().type(keyCodes);
     }
 
     /**
@@ -96,7 +96,7 @@ public class RobotEngine extends AbstractEngine {
                       String text,
                       int... keyCodes ) {
 
-        systemOperations.getInputOperations().type( text, keyCodes );
+        systemOperations.getInputOperations().type(text, keyCodes);
     }
 
     /**
@@ -116,7 +116,7 @@ public class RobotEngine extends AbstractEngine {
     public void typeTab(
                          int numberOfTabs ) {
 
-        for( int i = 0; i < numberOfTabs; i++ ) {
+        for (int i = 0; i < numberOfTabs; i++) {
             typeTab();
         }
     }
@@ -166,7 +166,7 @@ public class RobotEngine extends AbstractEngine {
     public void keyPress(
                           int keyCode ) {
 
-        systemOperations.getInputOperations().keyPress( keyCode );
+        systemOperations.getInputOperations().keyPress(keyCode);
     }
 
     /**
@@ -178,7 +178,7 @@ public class RobotEngine extends AbstractEngine {
     public void keyRelease(
                             int keyCode ) {
 
-        systemOperations.getInputOperations().keyRelease( keyCode );
+        systemOperations.getInputOperations().keyRelease(keyCode);
     }
 
 }

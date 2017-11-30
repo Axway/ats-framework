@@ -39,24 +39,24 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 public class SwingLabel extends UiElement {
 
     private static final String[] RULES = { "label,visible",
-            "label",
-            "name,text,visible",
-            "name,text",
-            "name,visible",
-            "name",
-            "text,visible",
-            "text",
-            "index"                    };
+                                            "label",
+                                            "name,text,visible",
+                                            "name,text",
+                                            "name,visible",
+                                            "name",
+                                            "text,visible",
+                                            "text",
+                                            "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingLabel.class, JLabel.class );
+        SwingElementLocator.componentsMap.put(SwingLabel.class, JLabel.class);
     }
 
     public SwingLabel( UiDriver uiDriver,
                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -66,9 +66,9 @@ public class SwingLabel extends UiElement {
     @PublicAtsApi
     public String getText() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JLabelFixture ) SwingElementLocator.findFixture( this ) ).text();
+        return ((JLabelFixture) SwingElementLocator.findFixture(this)).text();
     }
 
 }

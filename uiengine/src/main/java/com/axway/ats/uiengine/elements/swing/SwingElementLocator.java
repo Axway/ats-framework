@@ -86,194 +86,194 @@ import com.axway.ats.uiengine.internal.driver.SwingDriverInternal;
 
 public class SwingElementLocator {
 
-    private static final Logger                                               log           = Logger.getLogger( SwingElementLocator.class );
+    private static final Logger                                               log           = Logger.getLogger(SwingElementLocator.class);
 
     public static Map<Class<? extends UiElement>, Class<? extends Component>> componentsMap = new HashMap<Class<? extends UiElement>, Class<? extends Component>>();
 
     public static ComponentFixture<? extends Component> findFixture(
                                                                      UiElement uiElement ) {
 
-        SwingDriverInternal driver = ( SwingDriverInternal ) uiElement.getUiDriver();
-        ContainerFixture<?> containerFixture = ( ContainerFixture<?> ) driver.getActiveContainerFixture();
+        SwingDriverInternal driver = (SwingDriverInternal) uiElement.getUiDriver();
+        ContainerFixture<?> containerFixture = (ContainerFixture<?>) driver.getActiveContainerFixture();
 
-        Class<? extends Component> componentClass = componentsMap.get( uiElement.getClass() );
+        Class<? extends Component> componentClass = componentsMap.get(uiElement.getClass());
 
         try {
 
-            if( componentClass.equals( JButton.class ) ) {
+            if (componentClass.equals(JButton.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JButtonFixture( containerFixture.robot,
-                                                                                     ( JButton ) findElement( uiElement ) );
-            } else if( componentClass.equals( JTextComponent.class ) ) {
+                return (ComponentFixture<? extends Component>) new JButtonFixture(containerFixture.robot,
+                                                                                  (JButton) findElement(uiElement));
+            } else if (componentClass.equals(JTextComponent.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JTextComponentFixture( containerFixture.robot,
-                                                                                            ( JTextComponent ) findElement( uiElement ) );
-            } else if( componentClass.equals( JMenuItem.class ) ) {
+                return (ComponentFixture<? extends Component>) new JTextComponentFixture(containerFixture.robot,
+                                                                                         (JTextComponent) findElement(uiElement));
+            } else if (componentClass.equals(JMenuItem.class)) {
 
-                if( uiElement.getElementProperty( "path" ) != null ) {
+                if (uiElement.getElementProperty("path") != null) {
 
-                    return containerFixture.menuItemWithPath( uiElement.getElementProperty( "path" )
-                                                                       .split( "[\\,\\/]+" ) );
+                    return containerFixture.menuItemWithPath(uiElement.getElementProperty("path")
+                                                                      .split("[\\,\\/]+"));
                 } else {
 
-                    return ( ComponentFixture<? extends Component> ) new JMenuItemFixture( containerFixture.robot,
-                                                                                           ( JMenuItem ) findElement( uiElement ) );
+                    return (ComponentFixture<? extends Component>) new JMenuItemFixture(containerFixture.robot,
+                                                                                        (JMenuItem) findElement(uiElement));
                 }
-            } else if( componentClass.equals( JPopupMenu.class ) ) {
+            } else if (componentClass.equals(JPopupMenu.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JPopupMenuFixture( containerFixture.robot,
-                                                                                        ( JPopupMenu ) findElement( uiElement ) );
-            } else if( componentClass.equals( JTree.class ) ) {
+                return (ComponentFixture<? extends Component>) new JPopupMenuFixture(containerFixture.robot,
+                                                                                     (JPopupMenu) findElement(uiElement));
+            } else if (componentClass.equals(JTree.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JTreeFixture( containerFixture.robot,
-                                                                                   ( JTree ) findElement( uiElement ) );
-            } else if( componentClass.equals( JList.class ) ) {
+                return (ComponentFixture<? extends Component>) new JTreeFixture(containerFixture.robot,
+                                                                                (JTree) findElement(uiElement));
+            } else if (componentClass.equals(JList.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JListFixture( containerFixture.robot,
-                                                                                   ( JList ) findElement( uiElement ) );
-            } else if( componentClass.equals( JCheckBox.class ) ) {
+                return (ComponentFixture<? extends Component>) new JListFixture(containerFixture.robot,
+                                                                                (JList) findElement(uiElement));
+            } else if (componentClass.equals(JCheckBox.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JCheckBoxFixture( containerFixture.robot,
-                                                                                       ( JCheckBox ) findElement( uiElement ) );
-            } else if( componentClass.equals( JToggleButton.class ) ) {
+                return (ComponentFixture<? extends Component>) new JCheckBoxFixture(containerFixture.robot,
+                                                                                    (JCheckBox) findElement(uiElement));
+            } else if (componentClass.equals(JToggleButton.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JToggleButtonFixture( containerFixture.robot,
-                                                                                           ( JToggleButton ) findElement( uiElement ) );
-            } else if( componentClass.equals( JComboBox.class ) ) {
+                return (ComponentFixture<? extends Component>) new JToggleButtonFixture(containerFixture.robot,
+                                                                                        (JToggleButton) findElement(uiElement));
+            } else if (componentClass.equals(JComboBox.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JComboBoxFixture( containerFixture.robot,
-                                                                                       ( JComboBox ) findElement( uiElement ) );
-            } else if( componentClass.equals( JRadioButton.class ) ) {
+                return (ComponentFixture<? extends Component>) new JComboBoxFixture(containerFixture.robot,
+                                                                                    (JComboBox) findElement(uiElement));
+            } else if (componentClass.equals(JRadioButton.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JRadioButtonFixture( containerFixture.robot,
-                                                                                          ( JRadioButton ) findElement( uiElement ) );
-            } else if( componentClass.equals( JTable.class ) ) {
+                return (ComponentFixture<? extends Component>) new JRadioButtonFixture(containerFixture.robot,
+                                                                                       (JRadioButton) findElement(uiElement));
+            } else if (componentClass.equals(JTable.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JTableFixture( containerFixture.robot,
-                                                                                    ( JTable ) findElement( uiElement ) );
-            } else if( componentClass.equals( JSpinner.class ) ) {
+                return (ComponentFixture<? extends Component>) new JTableFixture(containerFixture.robot,
+                                                                                 (JTable) findElement(uiElement));
+            } else if (componentClass.equals(JSpinner.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JSpinnerFixture( containerFixture.robot,
-                                                                                      ( JSpinner ) findElement( uiElement ) );
-            } else if( componentClass.equals( JTabbedPane.class ) ) {
+                return (ComponentFixture<? extends Component>) new JSpinnerFixture(containerFixture.robot,
+                                                                                   (JSpinner) findElement(uiElement));
+            } else if (componentClass.equals(JTabbedPane.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JTabbedPaneFixture( containerFixture.robot,
-                                                                                         ( JTabbedPane ) findElement( uiElement ) );
-            } else if( componentClass.equals( JOptionPane.class ) ) {
+                return (ComponentFixture<? extends Component>) new JTabbedPaneFixture(containerFixture.robot,
+                                                                                      (JTabbedPane) findElement(uiElement));
+            } else if (componentClass.equals(JOptionPane.class)) {
 
-                return ( ComponentFixture<? extends Component> ) containerFixture.optionPane();
-            } else if( componentClass.equals( JLabel.class ) ) {
+                return (ComponentFixture<? extends Component>) containerFixture.optionPane();
+            } else if (componentClass.equals(JLabel.class)) {
 
-                return ( ComponentFixture<? extends Component> ) new JLabelFixture( containerFixture.robot,
-                                                                                    ( JLabel ) findElement( uiElement ) );
-            } else if( componentClass.equals( Component.class ) ) {
+                return (ComponentFixture<? extends Component>) new JLabelFixture(containerFixture.robot,
+                                                                                 (JLabel) findElement(uiElement));
+            } else if (componentClass.equals(Component.class)) {
 
-                return new ComponentFixture<Component>( containerFixture.robot, findElement( uiElement ) ) {};
-            } else if( componentClass.equals( JFileChooser.class ) ) {
+                return new ComponentFixture<Component>(containerFixture.robot, findElement(uiElement)) {};
+            } else if (componentClass.equals(JFileChooser.class)) {
 
                 // TODO - might be searched by name too
-                return containerFixture.fileChooser( Timeout.timeout( UiEngineConfigurator.getInstance()
-                                                                                          .getElementStateChangeDelay() ) );
+                return containerFixture.fileChooser(Timeout.timeout(UiEngineConfigurator.getInstance()
+                                                                                        .getElementStateChangeDelay()));
             } else {
 
-                throw new ElementNotFoundException( uiElement.toString() + " not found. No such Fixture" );
+                throw new ElementNotFoundException(uiElement.toString() + " not found. No such Fixture");
             }
 
-        } catch( ComponentLookupException cle ) {
-            throw new ElementNotFoundException( uiElement.toString() + " not found.", cle );
-        } catch( WaitTimedOutError exc ) { // thrown for OptionPane search, wait for Window (BasicRobot.waitForWindow), AbstractJTableCellWriter, JTreeDriver.waitForChildrenToShowUp, each Pause wait
-            throw new ElementNotFoundException( uiElement.toString() + " not found.", exc );
+        } catch (ComponentLookupException cle) {
+            throw new ElementNotFoundException(uiElement.toString() + " not found.", cle);
+        } catch (WaitTimedOutError exc) { // thrown for OptionPane search, wait for Window (BasicRobot.waitForWindow), AbstractJTableCellWriter, JTreeDriver.waitForChildrenToShowUp, each Pause wait
+            throw new ElementNotFoundException(uiElement.toString() + " not found.", exc);
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     private static <T extends Component> T findElement(
                                                         UiElement uiElement ) {
 
-        SwingDriverInternal driver = ( SwingDriverInternal ) uiElement.getUiDriver();
+        SwingDriverInternal driver = (SwingDriverInternal) uiElement.getUiDriver();
         ContainerFixture<? extends Container> containerFixture = driver.getActiveContainerFixture();
 
         Class<? extends Component> componentClass = null;
-        String exactClassName = uiElement.getElementProperties().getProperty( "class" );
-        if( exactClassName != null ) {
+        String exactClassName = uiElement.getElementProperties().getProperty("class");
+        if (exactClassName != null) {
 
             try {
-                componentClass = ( Class<? extends Component> ) SwingElementLocator.class.getClassLoader()
-                                                                                         .loadClass( exactClassName );
-            } catch( ClassNotFoundException ex ) {
-                throw new ElementNotFoundException( "Could not load UI Component class named "
-                                                            + exactClassName
-                                                            + ". Probably it is not in the classpath or the name is invalid. Cause message: "
-                                                            + ex.getMessage(),
-                                                    ex );
+                componentClass = (Class<? extends Component>) SwingElementLocator.class.getClassLoader()
+                                                                                       .loadClass(exactClassName);
+            } catch (ClassNotFoundException ex) {
+                throw new ElementNotFoundException("Could not load UI Component class named "
+                                                   + exactClassName
+                                                   + ". Probably it is not in the classpath or the name is invalid. Cause message: "
+                                                   + ex.getMessage(),
+                                                   ex);
             }
         } else {
 
-            componentClass = componentsMap.get( uiElement.getClass() );
+            componentClass = componentsMap.get(uiElement.getClass());
         }
 
         try {
 
             boolean requireVisible = true;
-            if( uiElement.getElementProperty( "visible" ) != null ) {
+            if (uiElement.getElementProperty("visible") != null) {
 
-                requireVisible = Boolean.parseBoolean( uiElement.getElementProperty( "visible" ).trim() );
+                requireVisible = Boolean.parseBoolean(uiElement.getElementProperty("visible").trim());
             }
 
             // Finding components by their associated labels ( someJLabel.setLabelFor( someComponent ) )
-            if( uiElement.getElementProperty( "label" ) != null ) {
+            if (uiElement.getElementProperty("label") != null) {
 
-                return ( T ) containerFixture.robot.finder()
-                                                   .findByLabel( containerFixture.component(),
-                                                                 uiElement.getElementProperty( "label" ),
-                                                                 componentClass,
-                                                                 requireVisible );
+                return (T) containerFixture.robot.finder()
+                                                 .findByLabel(containerFixture.component(),
+                                                              uiElement.getElementProperty("label"),
+                                                              componentClass,
+                                                              requireVisible);
             }
-            return ( T ) SwingElementFinder.find( containerFixture.robot,
-                                                  containerFixture.component(),
-                                                  buildLocator( componentClass,
-                                                                uiElement.getElementProperties(),
-                                                                requireVisible,
-                                                                uiElement.getPropertyNamesToUseForMatch() ) );
-        } catch( ComponentLookupException cle ) {
+            return (T) SwingElementFinder.find(containerFixture.robot,
+                                               containerFixture.component(),
+                                               buildLocator(componentClass,
+                                                            uiElement.getElementProperties(),
+                                                            requireVisible,
+                                                            uiElement.getPropertyNamesToUseForMatch()));
+        } catch (ComponentLookupException cle) {
 
-            if( cle.getMessage().startsWith( "Found more than one " ) ) {
+            if (cle.getMessage().startsWith("Found more than one ")) {
 
-                throw new MoreThanOneSuchElementException( cle.getMessage() + "\n" + uiElement.toString(),
-                                                           cle );
+                throw new MoreThanOneSuchElementException(cle.getMessage() + "\n" + uiElement.toString(),
+                                                          cle);
             }
             Window win = driver.getWindowFixture().component();
             Container currentContainer = containerFixture.component();
 
             String winTitle;
-            if( win instanceof Dialog ) {
-                winTitle = "'" + ( ( Dialog ) win ).getTitle() + "'";
-            } else if( win instanceof Frame ) {
-                winTitle = "'" + ( ( Frame ) win ).getTitle() + "'";
+            if (win instanceof Dialog) {
+                winTitle = "'" + ((Dialog) win).getTitle() + "'";
+            } else if (win instanceof Frame) {
+                winTitle = "'" + ((Frame) win).getTitle() + "'";
             } else {
                 winTitle = "N/A";
             }
             String containerMsg = null;
-            if( win.equals( currentContainer ) ) {
+            if (win.equals(currentContainer)) {
                 containerMsg = "[same as window]";
             }
-            if( log.isDebugEnabled() ) {
+            if (log.isDebugEnabled()) {
                 // more verbose trace
-                throw new ElementNotFoundException( uiElement.toString() + " not found.\n"
-                                                    + "Current container: "
-                                                    + ( containerMsg != null
-                                                                            ? containerMsg
-                                                                            : currentContainer.toString() )
-                                                    + "\n" + "Current window: window title " + winTitle
-                                                    + "( details: " + win.toString() + ")", cle );
+                throw new ElementNotFoundException(uiElement.toString() + " not found.\n"
+                                                   + "Current container: "
+                                                   + (containerMsg != null
+                                                                           ? containerMsg
+                                                                           : currentContainer.toString())
+                                                   + "\n" + "Current window: window title " + winTitle
+                                                   + "( details: " + win.toString() + ")", cle);
             } else {
                 // /light message
-                throw new ElementNotFoundException( uiElement.toString() + " not found.\n"
-                                                    + "Current container name: "
-                                                    + ( containerMsg != null
-                                                                            ? containerMsg
-                                                                            : currentContainer.getName() )
-                                                    + "\n" + "Current window: window title " + winTitle, cle );
+                throw new ElementNotFoundException(uiElement.toString() + " not found.\n"
+                                                   + "Current container name: "
+                                                   + (containerMsg != null
+                                                                           ? containerMsg
+                                                                           : currentContainer.getName())
+                                                   + "\n" + "Current window: window title " + winTitle, cle);
             }
         }
     }
@@ -292,7 +292,7 @@ public class SwingElementLocator {
             public MyGenericTypeMatcher( Class<Type1> componentClass,
                                          boolean requireVisible ) {
 
-                super( componentClass, requireVisible );
+                super(componentClass, requireVisible);
             }
 
             /**
@@ -311,123 +311,123 @@ public class SwingElementLocator {
                 int propertiesMatching = 0;
 
                 int currentPropIdxToProcess = 0;
-                for( currentPropIdxToProcess = 0; currentPropIdxToProcess < propertyNamesToUseForMatch.length; currentPropIdxToProcess++ ) {
+                for (currentPropIdxToProcess = 0; currentPropIdxToProcess < propertyNamesToUseForMatch.length; currentPropIdxToProcess++) {
                     String keyName = propertyNamesToUseForMatch[currentPropIdxToProcess];
-                    if( "visible".equals( keyName ) || "class".equals( keyName ) ) { // already considered as parameter in search
+                    if ("visible".equals(keyName) || "class".equals(keyName)) { // already considered as parameter in search
                         propertiesMatching++;
                         continue;
                     }
 
-                    String propertyValue = properties.getProperty( keyName );
-                    if( propertyValue != null ) {
+                    String propertyValue = properties.getProperty(keyName);
+                    if (propertyValue != null) {
 
-                        if( "name".equals( keyName ) ) {
+                        if ("name".equals(keyName)) {
 
-                            if( propertyValue.equals( component.getName() ) ) {
+                            if (propertyValue.equals(component.getName())) {
                                 propertiesMatching++;
-                                log.debug( "Found element with 'name' property: " + component );
+                                log.debug("Found element with 'name' property: " + component);
                                 continue;
                             } else {
                                 return false;
                             }
-                        } else if( "text".equals( keyName ) ) {
+                        } else if ("text".equals(keyName)) {
 
                             // Search by specific component properties
-                            if( component instanceof JButton ) {
-                                JButton button = ( JButton ) component;
-                                if( propertyValue.equals( button.getText() ) ) {
+                            if (component instanceof JButton) {
+                                JButton button = (JButton) component;
+                                if (propertyValue.equals(button.getText())) {
                                     propertiesMatching++;
-                                    log.debug( "Found element by 'text' property: " + button );
+                                    log.debug("Found element by 'text' property: " + button);
                                     continue;
                                 } else {
                                     return false;
                                 }
-                            } else if( component instanceof JMenuItem ) {
-                                JMenuItem menuItem = ( JMenuItem ) component;
-                                if( propertyValue.equals( menuItem.getText() ) ) {
-                                    log.debug( "Found element by 'text' property: " + menuItem );
-                                    propertiesMatching++;
-                                    continue;
-                                } else {
-                                    return false;
-                                }
-                            } else if( component instanceof JPopupMenu ) {
-                                JPopupMenu popupMenu = ( JPopupMenu ) component;
-                                if( propertyValue.equals( popupMenu.getLabel() ) ) {
-                                    log.debug( "Found element by 'text' property: " + popupMenu );
+                            } else if (component instanceof JMenuItem) {
+                                JMenuItem menuItem = (JMenuItem) component;
+                                if (propertyValue.equals(menuItem.getText())) {
+                                    log.debug("Found element by 'text' property: " + menuItem);
                                     propertiesMatching++;
                                     continue;
                                 } else {
                                     return false;
                                 }
-                            } else if( component instanceof JToggleButton ) {
-
-                                JToggleButton toggleButton = ( JToggleButton ) component;
-                                if( propertyValue.equals( toggleButton.getText() ) ) {
-                                    log.debug( "Found element by 'text' property: " + toggleButton );
+                            } else if (component instanceof JPopupMenu) {
+                                JPopupMenu popupMenu = (JPopupMenu) component;
+                                if (propertyValue.equals(popupMenu.getLabel())) {
+                                    log.debug("Found element by 'text' property: " + popupMenu);
                                     propertiesMatching++;
                                     continue;
                                 } else {
                                     return false;
                                 }
-                            } else if( component instanceof JTextComponent ) {
+                            } else if (component instanceof JToggleButton) {
 
-                                JTextComponent textComponent = ( JTextComponent ) component;
-                                if( propertyValue.equals( textComponent.getText() ) ) {
-
-                                    log.debug( "Found element by 'text' property: " + textComponent );
+                                JToggleButton toggleButton = (JToggleButton) component;
+                                if (propertyValue.equals(toggleButton.getText())) {
+                                    log.debug("Found element by 'text' property: " + toggleButton);
                                     propertiesMatching++;
                                     continue;
                                 } else {
                                     return false;
                                 }
-                            } else if( component instanceof JLabel ) {
+                            } else if (component instanceof JTextComponent) {
 
-                                JLabel label = ( JLabel ) component;
-                                if( propertyValue.equals( label.getText() ) ) {
+                                JTextComponent textComponent = (JTextComponent) component;
+                                if (propertyValue.equals(textComponent.getText())) {
 
-                                    log.debug( "Found element by 'text' property: " + label );
+                                    log.debug("Found element by 'text' property: " + textComponent);
+                                    propertiesMatching++;
+                                    continue;
+                                } else {
+                                    return false;
+                                }
+                            } else if (component instanceof JLabel) {
+
+                                JLabel label = (JLabel) component;
+                                if (propertyValue.equals(label.getText())) {
+
+                                    log.debug("Found element by 'text' property: " + label);
                                     propertiesMatching++;
                                     continue;
                                 }
                             }
                             // Attempt to search for 'text' for unsupported component type
                             return false;
-                        } else if( "tooltip".equals( keyName ) ) {
+                        } else if ("tooltip".equals(keyName)) {
 
                             // Search by specific component properties
-                            if( component instanceof JButton ) {
-                                JButton button = ( JButton ) component;
-                                if( propertyValue.equals( button.getToolTipText() ) ) {
+                            if (component instanceof JButton) {
+                                JButton button = (JButton) component;
+                                if (propertyValue.equals(button.getToolTipText())) {
                                     propertiesMatching++;
-                                    log.debug( "Found element by 'tooltip' property: " + button );
+                                    log.debug("Found element by 'tooltip' property: " + button);
                                     continue;
                                 } else {
                                     return false;
                                 }
                             }
-                        } else if( "index".equals( keyName ) ) {
+                        } else if ("index".equals(keyName)) {
 
-                            if( Integer.parseInt( propertyValue ) == currentIndex++ ) {
+                            if (Integer.parseInt(propertyValue) == currentIndex++) {
 
                                 propertiesMatching++;
                                 continue;
                             }
                         } else {
 
-                            throw new IllegalStateException( "Attempt to search for not supported property: "
-                                                             + keyName + ", component: " + component );
+                            throw new IllegalStateException("Attempt to search for not supported property: "
+                                                            + keyName + ", component: " + component);
                         }
                     } // if property != null
 
                 }
-                if( propertyNamesToUseForMatch.length == propertiesMatching ) {
+                if (propertyNamesToUseForMatch.length == propertiesMatching) {
                     return true;
                 } else {
-                    if( propertiesMatching > 0 && log.isDebugEnabled() ) {
+                    if (propertiesMatching > 0 && log.isDebugEnabled()) {
 
-                        log.debug( "Not all properties matched. Only " + propertiesMatching + " instead of "
-                                   + properties.getPropertiesSize() );
+                        log.debug("Not all properties matched. Only " + propertiesMatching + " instead of "
+                                  + properties.getPropertiesSize());
                     }
                     return false;
                 }
@@ -435,7 +435,7 @@ public class SwingElementLocator {
 
         }
 
-        return new MyGenericTypeMatcher<T>( componentClass, requireVisible );
+        return new MyGenericTypeMatcher<T>(componentClass, requireVisible);
     }
 
     /**
@@ -449,67 +449,67 @@ public class SwingElementLocator {
                                                            SwingDriverInternal driver,
                                                            UiElementProperties containerProperties ) {
 
-        String containerName = containerProperties.getProperty( "name" );
-        final String containerTitle = containerProperties.getProperty( "title" );
+        String containerName = containerProperties.getProperty("name");
+        final String containerTitle = containerProperties.getProperty("title");
 
-        if( StringUtils.isNullOrEmpty( containerName ) && StringUtils.isNullOrEmpty( containerTitle ) ) {
-            throw new IllegalArgumentException( "Illegal name/title (empty/null string) passed to search for container" );
+        if (StringUtils.isNullOrEmpty(containerName) && StringUtils.isNullOrEmpty(containerTitle)) {
+            throw new IllegalArgumentException("Illegal name/title (empty/null string) passed to search for container");
         }
 
         ContainerFixture<?> containerFixture = driver.getActiveContainerFixture();
         ContainerFixture<?> windowsFixture = driver.getWindowFixture();
         Robot robot = null;
-        if( containerFixture != null ) {
+        if (containerFixture != null) {
             // use the current robot instance
             robot = containerFixture.robot;
         } else {
             robot = BasicRobot.robotWithCurrentAwtHierarchy();
         }
 
-        if( !StringUtils.isNullOrEmpty( containerName ) ) {
+        if (!StringUtils.isNullOrEmpty(containerName)) {
 
             try {
                 Container cont = BasicComponentFinder.finderWithCurrentAwtHierarchy()
-                                                     .findByName( windowsFixture.component(),
-                                                                  containerName,
-                                                                  Container.class );
-                return new ContainerFixture<Container>( robot, cont ) {};
-            } catch( WaitTimedOutError wtoe ) {
+                                                     .findByName(windowsFixture.component(),
+                                                                 containerName,
+                                                                 Container.class);
+                return new ContainerFixture<Container>(robot, cont) {};
+            } catch (WaitTimedOutError wtoe) {
 
-                throw new ElementNotFoundException( "Unable to find container with name '"
-                                                    + containerName
-                                                    + "' under current window/dialog. If needed change current window first with swingEngineInstance.setActiveWindow()" );
+                throw new ElementNotFoundException("Unable to find container with name '"
+                                                   + containerName
+                                                   + "' under current window/dialog. If needed change current window first with swingEngineInstance.setActiveWindow()");
             }
         } else {
 
             try {
                 Container cont = BasicComponentFinder.finderWithCurrentAwtHierarchy()
-                                                     .find( windowsFixture.component(),
-                                                            new GenericTypeMatcher<Container>( Container.class,
-                                                                                               true ) {
-                                                                @Override
-                                                                protected boolean isMatching(
-                                                                                              Container component ) {
+                                                     .find(windowsFixture.component(),
+                                                           new GenericTypeMatcher<Container>(Container.class,
+                                                                                             true) {
+                                                               @Override
+                                                               protected boolean isMatching(
+                                                                                             Container component ) {
 
-                                                                    if( component instanceof Dialog ) {
-                                                                        return ( ( Dialog ) component ).getTitle()
-                                                                                                       .equals( containerTitle );
-                                                                    } else if( component instanceof Frame ) {
-                                                                        return ( ( Frame ) component ).getTitle()
-                                                                                                      .equals( containerTitle );
-                                                                    } else if( component instanceof JInternalFrame ) {
-                                                                        return ( ( JInternalFrame ) component ).getTitle()
-                                                                                                               .equals( containerTitle );
-                                                                    }
-                                                                    return false;
-                                                                }
-                                                            } );
-                return new ContainerFixture<Container>( robot, cont ) {};
-            } catch( WaitTimedOutError wtoe ) {
+                                                                   if (component instanceof Dialog) {
+                                                                       return ((Dialog) component).getTitle()
+                                                                                                  .equals(containerTitle);
+                                                                   } else if (component instanceof Frame) {
+                                                                       return ((Frame) component).getTitle()
+                                                                                                 .equals(containerTitle);
+                                                                   } else if (component instanceof JInternalFrame) {
+                                                                       return ((JInternalFrame) component).getTitle()
+                                                                                                          .equals(containerTitle);
+                                                                   }
+                                                                   return false;
+                                                               }
+                                                           });
+                return new ContainerFixture<Container>(robot, cont) {};
+            } catch (WaitTimedOutError wtoe) {
 
-                throw new ElementNotFoundException( "Unable to find container with title '"
-                                                    + containerName
-                                                    + "' under current window/dialog. If needed change current window first with swingEngineInstance.setActiveWindow()" );
+                throw new ElementNotFoundException("Unable to find container with title '"
+                                                   + containerName
+                                                   + "' under current window/dialog. If needed change current window first with swingEngineInstance.setActiveWindow()");
             }
         }
     }
@@ -529,7 +529,7 @@ public class SwingElementLocator {
 
         WindowFixture<?> windowFixture = driver.getWindowFixture();
         Robot robot = null;
-        if( windowFixture != null ) {
+        if (windowFixture != null) {
             // use the current robot instance
             robot = windowFixture.robot;
         } else {
@@ -537,70 +537,70 @@ public class SwingElementLocator {
         }
 
         try {
-            if( windowTitle != null ) {
-                if( isDialog ) {
-                    windowFixture = WindowFinder.findDialog( new GenericTypeMatcher<Dialog>( Dialog.class ) {
+            if (windowTitle != null) {
+                if (isDialog) {
+                    windowFixture = WindowFinder.findDialog(new GenericTypeMatcher<Dialog>(Dialog.class) {
                         protected boolean isMatching(
                                                       Dialog dialog ) {
 
-                            return windowTitle.equals( dialog.getTitle() ) && dialog.isShowing();
+                            return windowTitle.equals(dialog.getTitle()) && dialog.isShowing();
                         }
-                    } )
-                                                .withTimeout( UiEngineConfigurator.getInstance()
-                                                                                  .getElementStateChangeDelay() )
-                                                .using( robot );
+                    })
+                                                .withTimeout(UiEngineConfigurator.getInstance()
+                                                                                 .getElementStateChangeDelay())
+                                                .using(robot);
                 } else {
-                    windowFixture = WindowFinder.findFrame( new GenericTypeMatcher<Frame>( Frame.class ) {
+                    windowFixture = WindowFinder.findFrame(new GenericTypeMatcher<Frame>(Frame.class) {
                         protected boolean isMatching(
                                                       Frame frame ) {
 
-                            return windowTitle.equals( frame.getTitle() ) && frame.isShowing();
+                            return windowTitle.equals(frame.getTitle()) && frame.isShowing();
                         }
-                    } )
-                                                .withTimeout( UiEngineConfigurator.getInstance()
-                                                                                  .getElementStateChangeDelay() )
-                                                .using( robot );
+                    })
+                                                .withTimeout(UiEngineConfigurator.getInstance()
+                                                                                 .getElementStateChangeDelay())
+                                                .using(robot);
                 }
             } else {
-                if( isDialog ) {
-                    windowFixture = WindowFinder.findDialog( new GenericTypeMatcher<Dialog>( Dialog.class ) {
+                if (isDialog) {
+                    windowFixture = WindowFinder.findDialog(new GenericTypeMatcher<Dialog>(Dialog.class) {
                         protected boolean isMatching(
                                                       Dialog dialog ) {
 
                             return dialog.isShowing();
                         }
-                    } )
-                                                .withTimeout( UiEngineConfigurator.getInstance()
-                                                                                  .getElementStateChangeDelay() )
-                                                .using( robot );
+                    })
+                                                .withTimeout(UiEngineConfigurator.getInstance()
+                                                                                 .getElementStateChangeDelay())
+                                                .using(robot);
                 } else {
-                    windowFixture = WindowFinder.findFrame( new GenericTypeMatcher<Frame>( Frame.class ) {
+                    windowFixture = WindowFinder.findFrame(new GenericTypeMatcher<Frame>(Frame.class) {
                         protected boolean isMatching(
                                                       Frame frame ) {
 
-                            if( log.isTraceEnabled() ) {
-                                log.trace( "WindowFinder isMatching(): Title: " + frame.getTitle()
-                                           + ", Frame + " + frame + ", Owner: " + frame.getOwner() );
+                            if (log.isTraceEnabled()) {
+                                log.trace("WindowFinder isMatching(): Title: " + frame.getTitle()
+                                          + ", Frame + " + frame + ", Owner: " + frame.getOwner());
                             }
                             return frame.isShowing() && frame.getOwner() == null; // owner == null - top frame. Two independent frames are both considered a top ones
                         }
-                    } )
-                                                .withTimeout( UiEngineConfigurator.getInstance()
-                                                                                  .getElementStateChangeDelay() )
-                                                .using( robot );
+                    })
+                                                .withTimeout(UiEngineConfigurator.getInstance()
+                                                                                 .getElementStateChangeDelay())
+                                                .using(robot);
                 }
             }
             return windowFixture;
-        } catch( WaitTimedOutError wtoe ) {
-            throw new ElementNotFoundException( "Unable to find "
-                                                        + ( isDialog
-                                                                    ? "dialog"
-                                                                    : "frame" )
-                                                        + ( windowTitle != null
-                                                                               ? " with title '"
-                                                                                 + windowTitle + "'"
-                                                                               : " without title specified (null passed)" ),
-                                                wtoe );
+        } catch (WaitTimedOutError wtoe) {
+            throw new ElementNotFoundException("Unable to find "
+                                               + (isDialog
+                                                           ? "dialog"
+                                                           : "frame")
+                                               + (windowTitle != null
+                                                                      ? " with title '"
+                                                                        + windowTitle + "'"
+                                                                      : " without title specified (null passed)"),
+                                               wtoe);
         }
     }
 
@@ -614,7 +614,7 @@ public class SwingElementLocator {
 
         ContainerFixture<?> containerFixture = driver.getActiveContainerFixture();
         Robot robot = null;
-        if( containerFixture != null ) {
+        if (containerFixture != null) {
             // use the current robot instance
             robot = containerFixture.robot;
         } else {
@@ -622,9 +622,9 @@ public class SwingElementLocator {
         }
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        robot.printer().printComponents( new PrintStream( outputStream ), ( ( containerFixture != null )
-                                                                                                         ? containerFixture.component()
-                                                                                                         : null ) );
+        robot.printer().printComponents(new PrintStream(outputStream), ( (containerFixture != null)
+                                                                                                    ? containerFixture.component()
+                                                                                                    : null));
 
         return outputStream.toString();
     }
@@ -639,40 +639,40 @@ public class SwingElementLocator {
 
         // long eventMask = AWTEvent.MOUSE_MOTION_EVENT_MASK + AWTEvent.MOUSE_EVENT_MASK;
         long eventMask = AWTEvent.MOUSE_EVENT_MASK;
-        Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener() {
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
 
             public void eventDispatched(
                                          AWTEvent e ) {
 
-                if( e.getID() == MouseEvent.MOUSE_PRESSED && e.getSource() instanceof Component ) {
+                if (e.getID() == MouseEvent.MOUSE_PRESSED && e.getSource() instanceof Component) {
 
-                    Component component = ( Component ) e.getSource();
-                    Class<?> swingClass = findSwingClass( component.getClass() );
-                    if( swingClass == null ) {
+                    Component component = (Component) e.getSource();
+                    Class<?> swingClass = findSwingClass(component.getClass());
+                    if (swingClass == null) {
                         swingClass = component.getClass();
-                        log.warn( "Can't find swing class of type \"" + swingClass.getName() + "\"" );
+                        log.warn("Can't find swing class of type \"" + swingClass.getName() + "\"");
                     }
                     String logEntry = "\t[INSPECTOR] "
-                                      + getProperties( component ).replaceFirst( "\\[", " [" ) + " index="
-                                      + calculateIndex( component, swingClass );
-                    if( !component.getClass().getName().equals( swingClass.getName() ) ) {
+                                      + getProperties(component).replaceFirst("\\[", " [") + " index="
+                                      + calculateIndex(component, swingClass);
+                    if (!component.getClass().getName().equals(swingClass.getName())) {
                         logEntry += "\t(extends " + swingClass.getName() + ")";
                     }
-                    System.out.println( logEntry );
+                    System.out.println(logEntry);
                 }
             }
 
             private String getProperties(
                                           Component c ) {
 
-                String properties = Formatting.inEdtFormat( c );
-                if( c instanceof JButton ) {
-                    String tooltip = ( ( JButton ) c ).getToolTipText();
-                    if( !StringUtils.isNullOrEmpty( tooltip ) ) {
-                        int lastBrIndex = properties.lastIndexOf( ']' );
-                        if( lastBrIndex > 0 ) {
-                            properties = properties.substring( 0, lastBrIndex ) + ", tooltip='" + tooltip
-                                         + "'" + properties.substring( lastBrIndex );
+                String properties = Formatting.inEdtFormat(c);
+                if (c instanceof JButton) {
+                    String tooltip = ((JButton) c).getToolTipText();
+                    if (!StringUtils.isNullOrEmpty(tooltip)) {
+                        int lastBrIndex = properties.lastIndexOf(']');
+                        if (lastBrIndex > 0) {
+                            properties = properties.substring(0, lastBrIndex) + ", tooltip='" + tooltip
+                                         + "'" + properties.substring(lastBrIndex);
                         } else {
                             return c.getClass().getName() + " [tooltip='" + tooltip + "']";
                         }
@@ -685,48 +685,48 @@ public class SwingElementLocator {
             private Class<?> findSwingClass(
                                              Class<?> clazz ) {
 
-                if( clazz == null ) {
+                if (clazz == null) {
                     return null;
                 }
-                if( clazz.getName().startsWith( "javax.swing" ) ) {
+                if (clazz.getName().startsWith("javax.swing")) {
                     return clazz;
                 }
-                return findSwingClass( clazz.getSuperclass() );
+                return findSwingClass(clazz.getSuperclass());
             }
 
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings( "unchecked")
             private int calculateIndex(
                                         final Component component,
                                         Class<?> swingClass ) {
 
                 ContainerFixture<?> containerFixture = driver.getActiveContainerFixture();
                 Robot robot = null;
-                if( containerFixture != null ) {
+                if (containerFixture != null) {
                     // use the current robot instance
                     robot = containerFixture.robot;
                 } else {
                     robot = BasicRobot.robotWithCurrentAwtHierarchy();
                 }
 
-                List<Component> found = SwingElementFinder.find( robot.hierarchy(),
-                                                                 ( ( containerFixture != null )
-                                                                                                ? containerFixture.component()
-                                                                                                : null ),
-                                                                 new GenericTypeMatcher<Component>( ( Class<Component> ) swingClass,
-                                                                                                    true ) {
+                List<Component> found = SwingElementFinder.find(robot.hierarchy(),
+                                                                ( (containerFixture != null)
+                                                                                             ? containerFixture.component()
+                                                                                             : null),
+                                                                new GenericTypeMatcher<Component>((Class<Component>) swingClass,
+                                                                                                  true) {
 
-                                                                     @Override
-                                                                     protected boolean isMatching(
-                                                                                                   Component c ) {
+                                                                    @Override
+                                                                    protected boolean isMatching(
+                                                                                                  Component c ) {
 
-                                                                         return true;
-                                                                     }
-                                                                 } );
-                return found.indexOf( component );
+                                                                        return true;
+                                                                    }
+                                                                });
+                return found.indexOf(component);
             }
 
         },
-                                                         eventMask );
+                                                        eventMask);
     }
 
 }

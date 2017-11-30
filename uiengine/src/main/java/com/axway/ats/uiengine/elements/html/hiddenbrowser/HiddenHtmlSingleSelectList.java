@@ -43,17 +43,17 @@ public class HiddenHtmlSingleSelectList extends HtmlSingleSelectList {
     public HiddenHtmlSingleSelectList( UiDriver uiDriver,
                                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "select" },
-                                                                    "select" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "select" },
+                                                                   "select");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
     }
 
     /**
@@ -66,20 +66,20 @@ public class HiddenHtmlSingleSelectList extends HtmlSingleSelectList {
     public void setValue(
                           String value ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement( this );
-        List<WebElement> optionElements = selectElement.findElements( By.tagName( "option" ) );
-        for( WebElement el : optionElements ) {
-            if( el.getText().equals( value ) ) {
-                ( ( HtmlUnitWebElement ) el ).click();
+        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement(this);
+        List<WebElement> optionElements = selectElement.findElements(By.tagName("option"));
+        for (WebElement el : optionElements) {
+            if (el.getText().equals(value)) {
+                ((HtmlUnitWebElement) el).click();
                 UiEngineUtilities.sleep();
                 return;
             }
         }
 
-        throw new SeleniumOperationException( "Option with label '" + value + "' not found. ("
-                                              + this.toString() + ")" );
+        throw new SeleniumOperationException("Option with label '" + value + "' not found. ("
+                                             + this.toString() + ")");
     }
 
     /**
@@ -89,16 +89,16 @@ public class HiddenHtmlSingleSelectList extends HtmlSingleSelectList {
     @PublicAtsApi
     public String getValue() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement( this );
-        List<WebElement> optionElements = selectElement.findElements( By.tagName( "option" ) );
-        for( WebElement element : optionElements ) {
-            if( element.isSelected() ) {
+        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement(this);
+        List<WebElement> optionElements = selectElement.findElements(By.tagName("option"));
+        for (WebElement element : optionElements) {
+            if (element.isSelected()) {
                 return element.getText();
             }
         }
-        throw new SeleniumOperationException( "There is no selected 'option' in " + this.toString() );
+        throw new SeleniumOperationException("There is no selected 'option' in " + this.toString());
     }
 
     /**
@@ -109,19 +109,19 @@ public class HiddenHtmlSingleSelectList extends HtmlSingleSelectList {
     public List<String> getAllPossibleValues() {
 
         List<String> values = new ArrayList<String>();
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement( this );
-        List<WebElement> optionElements = selectElement.findElements( By.tagName( "option" ) );
+        HtmlUnitWebElement selectElement = HiddenHtmlElementLocator.findElement(this);
+        List<WebElement> optionElements = selectElement.findElements(By.tagName("option"));
 
-        if( optionElements.size() > 0 ) {
-            for( WebElement element : optionElements ) {
-                values.add( element.getText() );
+        if (optionElements.size() > 0) {
+            for (WebElement element : optionElements) {
+                values.add(element.getText());
             }
             return values;
 
         }
-        throw new SeleniumOperationException( "There is no selectable 'option' in " + this.toString() );
+        throw new SeleniumOperationException("There is no selectable 'option' in " + this.toString());
     }
 
     /**
@@ -136,9 +136,9 @@ public class HiddenHtmlSingleSelectList extends HtmlSingleSelectList {
 
         expectedValue = expectedValue.trim();
         String actualText = getValue().trim();
-        if( !actualText.equals( expectedValue ) ) {
+        if (!actualText.equals(expectedValue)) {
 
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -154,9 +154,9 @@ public class HiddenHtmlSingleSelectList extends HtmlSingleSelectList {
 
         notExpectedValue = notExpectedValue.trim();
         String actualText = getValue().trim();
-        if( actualText.equals( notExpectedValue ) ) {
+        if (actualText.equals(notExpectedValue)) {
 
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

@@ -26,11 +26,11 @@ import com.axway.ats.uiengine.exceptions.ErrorMatchingElementRules;
 @PublicAtsApi
 public class UiElementProperties {
 
-    private Properties          properties            = new Properties();
+    private Properties         properties            = new Properties();
 
-    private Properties          internalProperties    = new Properties();
+    private Properties         internalProperties    = new Properties();
 
-    public static final String  MAP_ID_INTERNAL_PARAM = "mapID";
+    public static final String MAP_ID_INTERNAL_PARAM = "mapID";
 
     @PublicAtsApi
     public UiElementProperties() {
@@ -41,17 +41,17 @@ public class UiElementProperties {
                                      String name,
                                      String value ) {
 
-        internalProperties.put( name, value );
+        internalProperties.put(name, value);
     }
 
     public String getInternalProperty(
                                        String name ) {
 
-        String internalPropertyValue = internalProperties.getProperty( name );
-        if( internalPropertyValue == null ) {
-            throw new BadUiElementPropertyException( "The needed internal property '" + name
-                                                     + "' is not found for element with user properties: "
-                                                     + toString() );
+        String internalPropertyValue = internalProperties.getProperty(name);
+        if (internalPropertyValue == null) {
+            throw new BadUiElementPropertyException("The needed internal property '" + name
+                                                    + "' is not found for element with user properties: "
+                                                    + toString());
         }
         return internalPropertyValue;
     }
@@ -59,7 +59,7 @@ public class UiElementProperties {
     public boolean containsInternalProperty(
                                              String name ) {
 
-        return internalProperties.containsKey( name );
+        return internalProperties.containsKey(name);
     }
 
     @PublicAtsApi
@@ -67,15 +67,15 @@ public class UiElementProperties {
                                             String name,
                                             String value ) {
 
-        if( name == null || name.trim().length() == 0 ) {
-            throw new BadUiElementPropertyException( "Bad property name '" + name + "'" );
+        if (name == null || name.trim().length() == 0) {
+            throw new BadUiElementPropertyException("Bad property name '" + name + "'");
         }
 
-        if( value == null || value.trim().length() == 0 ) {
-            throw new BadUiElementPropertyException( "Bad value for property " + name + ": '" + value + "'" );
+        if (value == null || value.trim().length() == 0) {
+            throw new BadUiElementPropertyException("Bad value for property " + name + ": '" + value + "'");
         }
 
-        properties.put( name, value );
+        properties.put(name, value);
         return this;
     }
 
@@ -83,7 +83,7 @@ public class UiElementProperties {
     public String getProperty(
                                String name ) {
 
-        return properties.getProperty( name );
+        return properties.getProperty(name);
     }
 
     /**
@@ -106,7 +106,7 @@ public class UiElementProperties {
 
     public Properties getPropertiesCopy() {
 
-        return ( Properties ) properties.clone();
+        return (Properties) properties.clone();
     }
 
     /**
@@ -122,55 +122,55 @@ public class UiElementProperties {
                                        String... rules ) throws BadUiElementPropertyException,
                                                          ErrorMatchingElementRules {
 
-        ArrayList<String> matchingRules = new ArrayList<>( 1 );
+        ArrayList<String> matchingRules = new ArrayList<>(1);
 
         // 1. Check the type if provided by the user
-        String providedType = properties.getProperty( "type" );
-        if( providedType != null ) {
-            if( !userType.substring( userTypePrefix.length() ).equalsIgnoreCase( providedType ) ) {
-                throw new BadUiElementPropertyException( "You can not construct a " + userType + " from "
-                                                         + toString() );
+        String providedType = properties.getProperty("type");
+        if (providedType != null) {
+            if (!userType.substring(userTypePrefix.length()).equalsIgnoreCase(providedType)) {
+                throw new BadUiElementPropertyException("You can not construct a " + userType + " from "
+                                                        + toString());
             }
         }
 
         Set<Object> keys = properties.keySet();
-        String[] _rules = keys.toArray( new String[keys.size()] );
+        String[] _rules = keys.toArray(new String[keys.size()]);
 
-        for( String rule : _rules ) {
+        for (String rule : _rules) {
             // exclude these rules from the matching rules
-            if( rule.equalsIgnoreCase( UiElementProperties.MAP_ID_INTERNAL_PARAM ) ) {
+            if (rule.equalsIgnoreCase(UiElementProperties.MAP_ID_INTERNAL_PARAM)) {
                 continue;
             }
-            if( rule.equalsIgnoreCase( ElementsMap.ATT_ELEMENT_TYPE ) ) {
+            if (rule.equalsIgnoreCase(ElementsMap.ATT_ELEMENT_TYPE)) {
                 continue;
             }
-            if( rule.equalsIgnoreCase( ElementsMap.ATT_ELEMENT_FORMID ) ) {
+            if (rule.equalsIgnoreCase(ElementsMap.ATT_ELEMENT_FORMID)) {
                 continue;
             }
-            if( rule.equalsIgnoreCase( ElementsMap.ATT_ELEMENT_FORMNAME ) ) {
+            if (rule.equalsIgnoreCase(ElementsMap.ATT_ELEMENT_FORMNAME)) {
                 continue;
             }
-            if( rule.equalsIgnoreCase( ElementsMap.ATT_ELEMENT_FRAME ) ) {
+            if (rule.equalsIgnoreCase(ElementsMap.ATT_ELEMENT_FRAME)) {
                 continue;
             }
-            String[] ruleElements = rule.split( "[\\s,]+" );
-            if( hasAllProperties( ruleElements ) ) {
-                for( String ruleElement : ruleElements ) {
+            String[] ruleElements = rule.split("[\\s,]+");
+            if (hasAllProperties(ruleElements)) {
+                for (String ruleElement : ruleElements) {
                     // log found rules
                     //log.info( "rule: " + ruleElement );
-                    matchingRules.add( ruleElement );
+                    matchingRules.add(ruleElement);
                 }
 
             }
         }
 
-        if( matchingRules.size() >= 1 ) {
+        if (matchingRules.size() >= 1) {
 
-            return matchingRules.toArray( new String[matchingRules.size()] );
+            return matchingRules.toArray(new String[matchingRules.size()]);
         } else {
 
-            throw new ErrorMatchingElementRules( "No html attributes specified for " + userType
-                                                 + " element." );
+            throw new ErrorMatchingElementRules("No html attributes specified for " + userType
+                                                + " element.");
         }
     }
 
@@ -183,8 +183,8 @@ public class UiElementProperties {
     private boolean hasAllProperties(
                                       String[] ruleWithPropertiesNames ) {
 
-        for( String propertyName : ruleWithPropertiesNames ) {
-            if( this.getProperty( propertyName ) == null ) {
+        for (String propertyName : ruleWithPropertiesNames) {
+            if (this.getProperty(propertyName) == null) {
                 return false;
             }
         }

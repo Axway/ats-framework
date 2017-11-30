@@ -28,18 +28,18 @@ public class MoreThanOneSuchElementException extends RuntimeException {
     }
 
     public MoreThanOneSuchElementException( String message,
-                                   Throwable cause ) {
+                                            Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     public MoreThanOneSuchElementException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public MoreThanOneSuchElementException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 }

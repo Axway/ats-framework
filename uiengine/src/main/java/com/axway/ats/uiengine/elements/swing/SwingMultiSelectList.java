@@ -47,13 +47,13 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingMultiSelectList.class, JList.class );
+        SwingElementLocator.componentsMap.put(SwingMultiSelectList.class, JList.class);
     }
 
     public SwingMultiSelectList( UiDriver uiDriver, UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -65,9 +65,9 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public String[] getValues() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).selection();
+        return ((JListFixture) SwingElementLocator.findFixture(this)).selection();
     }
 
     /**
@@ -80,14 +80,14 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public void setValue( String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JListFixture listFixture = ( ( JListFixture ) SwingElementLocator.findFixture( this ) );
-        listFixture.pressKey( KeyEvent.VK_CONTROL );
+        JListFixture listFixture = ((JListFixture) SwingElementLocator.findFixture(this));
+        listFixture.pressKey(KeyEvent.VK_CONTROL);
         try {
-            listFixture.selectItem( value );
+            listFixture.selectItem(value);
         } finally {
-            listFixture.releaseKey( KeyEvent.VK_CONTROL );
+            listFixture.releaseKey(KeyEvent.VK_CONTROL);
         }
     }
 
@@ -99,14 +99,14 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public void unsetValue( String value ) {
 
-        if( Arrays.asList( getValues() ).contains( value ) ) {
+        if (Arrays.asList(getValues()).contains(value)) {
 
-            JListFixture listFixture = ( ( JListFixture ) SwingElementLocator.findFixture( this ) );
-            listFixture.pressKey( KeyEvent.VK_CONTROL );
+            JListFixture listFixture = ((JListFixture) SwingElementLocator.findFixture(this));
+            listFixture.pressKey(KeyEvent.VK_CONTROL);
             try {
-                listFixture.clickItem( value );
+                listFixture.clickItem(value);
             } finally {
-                listFixture.releaseKey( KeyEvent.VK_CONTROL );
+                listFixture.releaseKey(KeyEvent.VK_CONTROL);
             }
         }
 
@@ -121,9 +121,9 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public String[] getAvailableValues() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).contents();
+        return ((JListFixture) SwingElementLocator.findFixture(this)).contents();
     }
 
     /**
@@ -134,9 +134,9 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public void clearSelections() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).clearSelection();
+        ((JListFixture) SwingElementLocator.findFixture(this)).clearSelection();
     }
 
     /**
@@ -146,11 +146,11 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public void rightClick( String... contextMenuItems ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JListFixture listFixture = ( ( JListFixture ) SwingElementLocator.findFixture( this ) );
+        JListFixture listFixture = ((JListFixture) SwingElementLocator.findFixture(this));
         JPopupMenuFixture popUpMenu = listFixture.showPopupMenu();
-        popUpMenu.menuItemWithPath( contextMenuItems ).click();
+        popUpMenu.menuItemWithPath(contextMenuItems).click();
     }
 
     /**
@@ -167,14 +167,14 @@ public class SwingMultiSelectList extends UiMultiSelectList {
         boolean isSelected = false;
 
         String[] selectedValues = getValues();
-        for( String selectedValue : selectedValues ) {
-            if( selectedValue.equals( expectedValue ) ) {
+        for (String selectedValue : selectedValues) {
+            if (selectedValue.equals(expectedValue)) {
                 isSelected = true;
                 break;
             }
         }
-        if( !isSelected && expectedValue != null ) {
-            throw new VerifyEqualityException( expectedValue, Arrays.toString( selectedValues ), this );
+        if (!isSelected && expectedValue != null) {
+            throw new VerifyEqualityException(expectedValue, Arrays.toString(selectedValues), this);
         }
     }
 
@@ -189,15 +189,15 @@ public class SwingMultiSelectList extends UiMultiSelectList {
     @PublicAtsApi
     public void verifyNotValue( String notExpectedValue ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JListFixture listFixture = ( ( JListFixture ) SwingElementLocator.findFixture( this ) );
-        String selectedValue = ( String ) listFixture.component().getSelectedValue();
+        JListFixture listFixture = ((JListFixture) SwingElementLocator.findFixture(this));
+        String selectedValue = (String) listFixture.component().getSelectedValue();
 
-        if( ( notExpectedValue == null && selectedValue == null )
-            || ( StringUtils.isNotNullAndEquals( selectedValue, notExpectedValue ) ) ) {
+        if ( (notExpectedValue == null && selectedValue == null)
+             || (StringUtils.isNotNullAndEquals(selectedValue, notExpectedValue))) {
 
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

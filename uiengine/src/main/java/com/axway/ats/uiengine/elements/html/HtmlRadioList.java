@@ -29,7 +29,7 @@ public abstract class HtmlRadioList extends UiRadioList {
     public HtmlRadioList( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
 }

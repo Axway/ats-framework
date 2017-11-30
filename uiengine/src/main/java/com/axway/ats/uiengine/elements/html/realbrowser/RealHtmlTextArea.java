@@ -41,17 +41,17 @@ public class RealHtmlTextArea extends HtmlTextArea {
     public RealHtmlTextArea( UiDriver uiDriver,
                              UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{},
-                                                                    "textarea" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{},
+                                                                   "textarea");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
     }
@@ -64,10 +64,10 @@ public class RealHtmlTextArea extends HtmlTextArea {
     @PublicAtsApi
     public String getValue() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        return normalizeText( element.getAttribute( "value" ) );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        return normalizeText(element.getAttribute("value"));
     }
 
     /**
@@ -80,11 +80,11 @@ public class RealHtmlTextArea extends HtmlTextArea {
     public void setValue(
                           String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
+        WebElement element = RealHtmlElementLocator.findElement(this);
         element.clear();
-        element.sendKeys( normalizeText( value ) );
+        element.sendKeys(normalizeText(value));
 
         UiEngineUtilities.sleep();
     }
@@ -99,10 +99,10 @@ public class RealHtmlTextArea extends HtmlTextArea {
     public void appendValue(
                              String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( normalizeText( value ) );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        element.sendKeys(normalizeText(value));
 
         UiEngineUtilities.sleep();
     }
@@ -117,11 +117,11 @@ public class RealHtmlTextArea extends HtmlTextArea {
     public void verifyValue(
                              String expectedValue ) {
 
-        expectedValue = normalizeText( expectedValue );
+        expectedValue = normalizeText(expectedValue);
 
         String actualText = getValue();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -135,17 +135,17 @@ public class RealHtmlTextArea extends HtmlTextArea {
     public void verifyNotValue(
                                 String notExpectedValue ) {
 
-        notExpectedValue = normalizeText( notExpectedValue );
+        notExpectedValue = normalizeText(notExpectedValue);
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 
     private String normalizeText(
                                   String src ) {
 
-        return src.replace( "\r\n", "\n" ).trim();
+        return src.replace("\r\n", "\n").trim();
     }
 }

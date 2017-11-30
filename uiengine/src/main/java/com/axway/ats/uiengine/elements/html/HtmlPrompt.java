@@ -27,7 +27,7 @@ public abstract class HtmlPrompt extends UiPrompt {
 
     public HtmlPrompt( UiDriver uiDriver ) {
 
-        super( uiDriver );
+        super(uiDriver);
     }
 
     @PublicAtsApi

@@ -42,13 +42,13 @@ public class SwingSpinner extends UiElement {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingSpinner.class, JSpinner.class );
+        SwingElementLocator.componentsMap.put(SwingSpinner.class, JSpinner.class);
     }
 
     public SwingSpinner( UiDriver uiDriver, UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -58,30 +58,30 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public void setValue( String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JSpinnerFixture spinnerFixture = ( JSpinnerFixture ) SwingElementLocator.findFixture( this );
+        JSpinnerFixture spinnerFixture = (JSpinnerFixture) SwingElementLocator.findFixture(this);
 
         int delayBetweenEvents = spinnerFixture.robot.settings().delayBetweenEvents();
         try {
             // enterTextAndCommit() method sets the text value using the Robot, so we will speed it up
-            String delay = AtsSystemProperties.getPropertyAsString( AtsSystemProperties.UI_ENGINE__SWING_ROBOT_DELAY_BETWEEN_EVENTS );
-            if( delay != null ) {
+            String delay = AtsSystemProperties.getPropertyAsString(AtsSystemProperties.UI_ENGINE__SWING_ROBOT_DELAY_BETWEEN_EVENTS);
+            if (delay != null) {
                 int ms = -1;
                 try {
-                    ms = Integer.parseInt( delay );
-                } catch( NumberFormatException ex ) {
-                    log.error( "Illegal robot dealy between events specified! Will be used default one", ex );
+                    ms = Integer.parseInt(delay);
+                } catch (NumberFormatException ex) {
+                    log.error("Illegal robot dealy between events specified! Will be used default one", ex);
                 }
-                if( ms >= 0 ) {
-                    spinnerFixture.robot.settings().delayBetweenEvents( ms );
+                if (ms >= 0) {
+                    spinnerFixture.robot.settings().delayBetweenEvents(ms);
                 }
             } else {
-                spinnerFixture.robot.settings().delayBetweenEvents( 100 ); // hardcode to 100ms
+                spinnerFixture.robot.settings().delayBetweenEvents(100); // hardcode to 100ms
             }
-            spinnerFixture.enterTextAndCommit( value );
+            spinnerFixture.enterTextAndCommit(value);
         } finally {
-            spinnerFixture.robot.settings().delayBetweenEvents( delayBetweenEvents );
+            spinnerFixture.robot.settings().delayBetweenEvents(delayBetweenEvents);
         }
     }
 
@@ -92,9 +92,9 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public String getValue() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JSpinnerFixture ) SwingElementLocator.findFixture( this ) ).text();
+        return ((JSpinnerFixture) SwingElementLocator.findFixture(this)).text();
     }
 
     /**
@@ -104,17 +104,17 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public void enterText( String text ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JSpinnerFixture spinnerFixture = ( JSpinnerFixture ) SwingElementLocator.findFixture( this );
+        JSpinnerFixture spinnerFixture = (JSpinnerFixture) SwingElementLocator.findFixture(this);
 
         int delayBetweenEvents = spinnerFixture.robot.settings().delayBetweenEvents();
         try {
             // enterText() method sets the text value using the Robot, so we will speed it up
-            spinnerFixture.robot.settings().delayBetweenEvents( 10 );
-            spinnerFixture.enterText( text );
+            spinnerFixture.robot.settings().delayBetweenEvents(10);
+            spinnerFixture.enterText(text);
         } finally {
-            spinnerFixture.robot.settings().delayBetweenEvents( delayBetweenEvents );
+            spinnerFixture.robot.settings().delayBetweenEvents(delayBetweenEvents);
         }
     }
 
@@ -125,7 +125,7 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public void clickNext() {
 
-        clickNext( 1 );
+        clickNext(1);
     }
 
     /**
@@ -136,14 +136,14 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public void clickNext( int times ) {
 
-        if( times <= 0 ) {
+        if (times <= 0) {
 
-            throw new UiElementException( "The number of times to click must be greater than 0", this );
+            throw new UiElementException("The number of times to click must be greater than 0", this);
         }
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JSpinnerFixture ) SwingElementLocator.findFixture( this ) ).increment( times );
+        ((JSpinnerFixture) SwingElementLocator.findFixture(this)).increment(times);
     }
 
     /**
@@ -153,7 +153,7 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public void clickPrevious() {
 
-        clickPrevious( 1 );
+        clickPrevious(1);
     }
 
     /**
@@ -164,14 +164,14 @@ public class SwingSpinner extends UiElement {
     @PublicAtsApi
     public void clickPrevious( int times ) {
 
-        if( times <= 0 ) {
+        if (times <= 0) {
 
-            throw new UiElementException( "The number of times to click must be greater than 0", this );
+            throw new UiElementException("The number of times to click must be greater than 0", this);
         }
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JSpinnerFixture ) SwingElementLocator.findFixture( this ) ).decrement( times );
+        ((JSpinnerFixture) SwingElementLocator.findFixture(this)).decrement(times);
     }
 
 }

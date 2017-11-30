@@ -32,27 +32,27 @@ public class MobileElementFinder {
                                           UiElement uiElement ) {
 
         // switch the context if needed
-        String context = getElementContext( uiElement );
-        if( context != null && !context.equals( driver.getContext() ) ) {
-            driver.context( context );
+        String context = getElementContext(uiElement);
+        if (context != null && !context.equals(driver.getContext())) {
+            driver.context(context);
         }
 
         // find the element
-        if( uiElement.getElementProperty( "xpath" ) != null ) {
+        if (uiElement.getElementProperty("xpath") != null) {
 
-            return driver.findElement( By.xpath( uiElement.getElementProperty( "xpath" ) ) );
-        } else if( uiElement.getElementProperty( "id" ) != null ) {
+            return driver.findElement(By.xpath(uiElement.getElementProperty("xpath")));
+        } else if (uiElement.getElementProperty("id") != null) {
 
-            return driver.findElement( By.id( uiElement.getElementProperty( "id" ) ) );
-        } else if( uiElement.getElementProperty( "name" ) != null ) {
+            return driver.findElement(By.id(uiElement.getElementProperty("id")));
+        } else if (uiElement.getElementProperty("name") != null) {
 
-            return driver.findElement( By.name( uiElement.getElementProperty( "name" ) ) );
-        } else if( uiElement.getElementProperty( "text" ) != null ) {
+            return driver.findElement(By.name(uiElement.getElementProperty("name")));
+        } else if (uiElement.getElementProperty("text") != null) {
 
-            return driver.findElement( By.linkText( uiElement.getElementProperty( "text" ) ) );
-        } else if( uiElement.getElementProperty( "partialText" ) != null ) {
+            return driver.findElement(By.linkText(uiElement.getElementProperty("text")));
+        } else if (uiElement.getElementProperty("partialText") != null) {
 
-            return driver.findElement( By.partialLinkText( uiElement.getElementProperty( "partialText" ) ) );
+            return driver.findElement(By.partialLinkText(uiElement.getElementProperty("partialText")));
         }
         return null;
     }
@@ -61,8 +61,8 @@ public class MobileElementFinder {
                                             UiElement uiElement ) {
 
         // switch the context if needed
-        String context = uiElement.getElementProperty( "context" );
-        if( context == null ) {
+        String context = uiElement.getElementProperty("context");
+        if (context == null) {
             context = defaultContext;
         }
         return context;

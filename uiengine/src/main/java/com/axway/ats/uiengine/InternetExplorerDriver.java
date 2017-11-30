@@ -29,7 +29,7 @@ public class InternetExplorerDriver extends AbstractRealBrowserDriver {
      */
     protected InternetExplorerDriver( String url ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.InternetExplorer, url, null );
+        super(AbstractRealBrowserDriver.BrowserType.InternetExplorer, url, null);
     }
 
     /**
@@ -41,6 +41,6 @@ public class InternetExplorerDriver extends AbstractRealBrowserDriver {
     protected InternetExplorerDriver( String url,
                                       String remoteSeleniumURL ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.InternetExplorer, url, null, remoteSeleniumURL );
+        super(AbstractRealBrowserDriver.BrowserType.InternetExplorer, url, null, remoteSeleniumURL);
     }
 }

@@ -27,7 +27,7 @@ public abstract class UiTable extends UiElement {
     public UiTable( UiDriver uiDriver,
                     UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

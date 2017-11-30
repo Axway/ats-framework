@@ -42,14 +42,14 @@ public class SwingSingleSelectList extends UiSingleSelectList {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingSingleSelectList.class, JList.class );
+        SwingElementLocator.componentsMap.put(SwingSingleSelectList.class, JList.class);
     }
 
     public SwingSingleSelectList( UiDriver uiDriver,
                                   UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -61,10 +61,10 @@ public class SwingSingleSelectList extends UiSingleSelectList {
     @PublicAtsApi
     public String getValue() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        String[] selections = ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).selection();
-        if( selections.length > 0 ) {
+        String[] selections = ((JListFixture) SwingElementLocator.findFixture(this)).selection();
+        if (selections.length > 0) {
             return selections[0];
         }
         return "";
@@ -81,9 +81,9 @@ public class SwingSingleSelectList extends UiSingleSelectList {
     public void setValue(
                           String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).selectItem( value );
+        ((JListFixture) SwingElementLocator.findFixture(this)).selectItem(value);
     }
 
     /**
@@ -95,9 +95,9 @@ public class SwingSingleSelectList extends UiSingleSelectList {
     @PublicAtsApi
     public String[] getAvailableValues() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).contents();
+        return ((JListFixture) SwingElementLocator.findFixture(this)).contents();
     }
 
     /**
@@ -108,9 +108,9 @@ public class SwingSingleSelectList extends UiSingleSelectList {
     @PublicAtsApi
     public void clearSelection() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JListFixture ) SwingElementLocator.findFixture( this ) ).clearSelection();
+        ((JListFixture) SwingElementLocator.findFixture(this)).clearSelection();
     }
 
     /**
@@ -126,9 +126,9 @@ public class SwingSingleSelectList extends UiSingleSelectList {
                              String expectedValue ) {
 
         String actualText = getValue();
-        if( !actualText.equals( expectedValue ) ) {
+        if (!actualText.equals(expectedValue)) {
 
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -145,9 +145,9 @@ public class SwingSingleSelectList extends UiSingleSelectList {
                                 String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
+        if (actualText.equals(notExpectedValue)) {
 
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

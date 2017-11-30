@@ -61,19 +61,19 @@ public class SwingElementFinder {
 
         ComponentHierarchy hierarchy = robot.hierarchy();
         List<Component> found = null;
-        if( root == null ) {
-            found = find( hierarchy, m );
+        if (root == null) {
+            found = find(hierarchy, m);
         } else {
-            found = find( new SingleComponentHierarchy( root, hierarchy ), m );
+            found = find(new SingleComponentHierarchy(root, hierarchy), m);
         }
-        if( found.isEmpty() ) {
-            throw componentNotFound( robot, hierarchy, m );
+        if (found.isEmpty()) {
+            throw componentNotFound(robot, hierarchy, m);
         }
-        if( found.size() > 1 ) {
-            throw multipleComponentsFound( found, m );
+        if (found.size() > 1) {
+            throw multipleComponentsFound(found, m);
         }
         Component component = found.iterator().next();
-        return m.supportedType().cast( component );
+        return m.supportedType().cast(component);
     }
 
     public static List<Component> find(
@@ -82,10 +82,10 @@ public class SwingElementFinder {
                                         GenericTypeMatcher<Component> m ) {
 
         List<Component> found = null;
-        if( root == null ) {
-            found = find( hierarchy, m );
+        if (root == null) {
+            found = find(hierarchy, m);
         } else {
-            found = find( new SingleComponentHierarchy( root, hierarchy ), m );
+            found = find(new SingleComponentHierarchy(root, hierarchy), m);
         }
         return found;
     }
@@ -95,11 +95,11 @@ public class SwingElementFinder {
                                                      Container root,
                                                      String... path ) {
 
-        ComponentMatcher m = new JMenuItemMatcher( path );
-        Component item = robot.finder().find( root, m );
-        assertThat( item ).as( format( item ) ).isInstanceOf( JMenuItem.class );
+        ComponentMatcher m = new JMenuItemMatcher(path);
+        Component item = robot.finder().find(root, m);
+        assertThat(item).as(format(item)).isInstanceOf(JMenuItem.class);
 
-        return new JMenuItemFixture( robot, ( JMenuItem ) item );
+        return new JMenuItemFixture(robot, (JMenuItem) item);
     }
 
     private static ComponentLookupException componentNotFound(
@@ -107,14 +107,14 @@ public class SwingElementFinder {
                                                                ComponentHierarchy h,
                                                                ComponentMatcher m ) {
 
-        String message = concat( "Unable to find component using matcher ", m, "." );
-        message = concat( message,
-                          LINE_SEPARATOR,
-                          LINE_SEPARATOR,
-                          "Component hierarchy:",
-                          LINE_SEPARATOR,
-                          formattedHierarchy( robot.printer(), root( h ) ) );
-        throw new ComponentLookupException( message );
+        String message = concat("Unable to find component using matcher ", m, ".");
+        message = concat(message,
+                         LINE_SEPARATOR,
+                         LINE_SEPARATOR,
+                         "Component hierarchy:",
+                         LINE_SEPARATOR,
+                         formattedHierarchy(robot.printer(), root(h)));
+        throw new ComponentLookupException(message);
     }
 
     private static ComponentLookupException multipleComponentsFound(
@@ -122,30 +122,30 @@ public class SwingElementFinder {
                                                                      ComponentMatcher m ) {
 
         StringBuilder message = new StringBuilder();
-        message.append( "Found more than one component using matcher " )
-               .append( m )
-               .append( "." )
-               .append( LINE_SEPARATOR )
-               .append( LINE_SEPARATOR )
-               .append( "Found:" );
-        appendComponents( message, found );
-        if( !found.isEmpty() ) {
-            message.append( LINE_SEPARATOR );
+        message.append("Found more than one component using matcher ")
+               .append(m)
+               .append(".")
+               .append(LINE_SEPARATOR)
+               .append(LINE_SEPARATOR)
+               .append("Found:");
+        appendComponents(message, found);
+        if (!found.isEmpty()) {
+            message.append(LINE_SEPARATOR);
         }
-        throw new ComponentLookupException( message.toString(), found );
+        throw new ComponentLookupException(message.toString(), found);
     }
 
     private static void appendComponents(
                                           final StringBuilder message,
                                           final Collection<Component> found ) {
 
-        execute( new GuiTask() {
+        execute(new GuiTask() {
             protected void executeInEDT() {
 
-                for( Component c : found )
-                    message.append( LINE_SEPARATOR ).append( format( c ) );
+                for (Component c : found)
+                    message.append(LINE_SEPARATOR).append(format(c));
             }
-        } );
+        });
     }
 
     private static String formattedHierarchy(
@@ -153,18 +153,18 @@ public class SwingElementFinder {
                                               Container root ) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream( out, true );
-        printer.printComponents( printStream, root );
+        PrintStream printStream = new PrintStream(out, true);
+        printer.printComponents(printStream, root);
         printStream.flush();
 
-        return new String( out.toByteArray() );
+        return new String(out.toByteArray());
     }
 
     private static Container root(
                                    ComponentHierarchy h ) {
 
-        if( h instanceof SingleComponentHierarchy ) {
-            return ( ( SingleComponentHierarchy ) h ).root();
+        if (h instanceof SingleComponentHierarchy) {
+            return ((SingleComponentHierarchy) h).root();
         }
         return null;
     }
@@ -174,8 +174,8 @@ public class SwingElementFinder {
                                          ComponentMatcher m ) {
 
         List<Component> found = new ArrayList<Component>();
-        for( Object o : rootsOf( h ) ) {
-            find( h, m, ( Component ) o, found );
+        for (Object o : rootsOf(h)) {
+            find(h, m, (Component) o, found);
         }
         return found;
     }
@@ -186,11 +186,11 @@ public class SwingElementFinder {
                               Component root,
                               List<Component> found ) {
 
-        for( Component c : childrenOfComponent( root, h ) ) {
-            find( h, m, c, found );
+        for (Component c : childrenOfComponent(root, h)) {
+            find(h, m, c, found);
         }
-        if( isMatching( root, m ) && !found.contains( root ) ) {
-            found.add( root );
+        if (isMatching(root, m) && !found.contains(root)) {
+            found.add(root);
         }
     }
 
@@ -198,34 +198,34 @@ public class SwingElementFinder {
                                        final Component c,
                                        final ComponentMatcher m ) {
 
-        return execute( new GuiQuery<Boolean>() {
+        return execute(new GuiQuery<Boolean>() {
             protected Boolean executeInEDT() {
 
-                return m.matches( c );
+                return m.matches(c);
             }
-        } );
+        });
     }
 
     private static Collection<? extends Component> rootsOf(
                                                             final ComponentHierarchy h ) {
 
-        return execute( new GuiQuery<Collection<? extends Component>>() {
+        return execute(new GuiQuery<Collection<? extends Component>>() {
             protected Collection<? extends Component> executeInEDT() {
 
                 return h.roots();
             }
-        } );
+        });
     }
 
     private static Collection<Component> childrenOfComponent(
                                                               final Component c,
                                                               final ComponentHierarchy h ) {
 
-        return execute( new GuiQuery<Collection<Component>>() {
+        return execute(new GuiQuery<Collection<Component>>() {
             protected Collection<Component> executeInEDT() {
 
-                return h.childrenOf( c );
+                return h.childrenOf(c);
             }
-        } );
+        });
     }
 }

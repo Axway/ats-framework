@@ -39,17 +39,17 @@ public class HiddenHtmlTextArea extends HtmlTextArea {
     public HiddenHtmlTextArea( UiDriver uiDriver,
                                UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{},
-                                                                    "textarea" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{},
+                                                                   "textarea");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
     }
 
     /**
@@ -60,9 +60,9 @@ public class HiddenHtmlTextArea extends HtmlTextArea {
     @PublicAtsApi
     public String getValue() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        return HiddenHtmlElementLocator.findElement( this ).getAttribute( "value" );
+        return HiddenHtmlElementLocator.findElement(this).getAttribute("value");
     }
 
     /**
@@ -75,12 +75,12 @@ public class HiddenHtmlTextArea extends HtmlTextArea {
     public void setValue(
                           String value ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this );
+        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this);
         element.clear();
-        element.sendKeys( value );
-        
+        element.sendKeys(value);
+
         UiEngineUtilities.sleep();
     }
 
@@ -94,11 +94,11 @@ public class HiddenHtmlTextArea extends HtmlTextArea {
     public void appendValue(
                              String value ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement( this );
-        element.sendKeys( value );
-        
+        HtmlUnitWebElement element = HiddenHtmlElementLocator.findElement(this);
+        element.sendKeys(value);
+
         UiEngineUtilities.sleep();
     }
 
@@ -112,10 +112,10 @@ public class HiddenHtmlTextArea extends HtmlTextArea {
     public void verifyValue(
                              String expectedValue ) {
 
-        expectedValue = normalizeText( expectedValue );
+        expectedValue = normalizeText(expectedValue);
         String actualText = getValue();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -129,16 +129,16 @@ public class HiddenHtmlTextArea extends HtmlTextArea {
     public void verifyNotValue(
                                 String notExpectedValue ) {
 
-        notExpectedValue = normalizeText( notExpectedValue );
+        notExpectedValue = normalizeText(notExpectedValue);
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 
     private String normalizeText(
                                   String src ) {
 
-        return src.replace( "\r\n", "\n" ).trim();
+        return src.replace("\r\n", "\n").trim();
     }
 }

@@ -39,23 +39,23 @@ public class RealHtmlTextBox extends HtmlTextBox {
     public RealHtmlTextBox( UiDriver uiDriver,
                             UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the xpath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "text",
-                                                                                  "password",
-                                                                                  "hidden",
-                                                                                  "search",
-                                                                                  "email",
-                                                                                  "url",
-                                                                                  "tel" },
-                                                                    "input" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "text",
+                                                                                 "password",
+                                                                                 "hidden",
+                                                                                 "search",
+                                                                                 "email",
+                                                                                 "url",
+                                                                                 "tel" },
+                                                                   "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
         //webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
     }
@@ -68,9 +68,9 @@ public class RealHtmlTextBox extends HtmlTextBox {
     @PublicAtsApi
     public String getValue() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        return RealHtmlElementLocator.findElement( this ).getAttribute( "value" );
+        return RealHtmlElementLocator.findElement(this).getAttribute("value");
     }
 
     /**
@@ -82,10 +82,10 @@ public class RealHtmlTextBox extends HtmlTextBox {
     public void appendValue(
                              String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( value );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        element.sendKeys(value);
 
         UiEngineUtilities.sleep();
     }
@@ -100,11 +100,11 @@ public class RealHtmlTextBox extends HtmlTextBox {
     public void setValue(
                           String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
+        WebElement element = RealHtmlElementLocator.findElement(this);
         element.clear();
-        element.sendKeys( value );
+        element.sendKeys(value);
 
         UiEngineUtilities.sleep();
     }
@@ -122,8 +122,8 @@ public class RealHtmlTextBox extends HtmlTextBox {
         expectedValue = expectedValue.trim();
 
         String actualText = getValue().trim();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -138,8 +138,8 @@ public class RealHtmlTextBox extends HtmlTextBox {
                                 String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

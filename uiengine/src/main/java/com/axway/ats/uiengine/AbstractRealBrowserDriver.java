@@ -75,536 +75,536 @@ import com.axway.ats.uiengine.utilities.realbrowser.html.RealHtmlElementState;
 @PublicAtsApi
 public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
 
-	public static enum BrowserType {
-		Chrome, FireFox, Edge, Safari, Opera, InternetExplorer, PhantomJS
+    public static enum BrowserType {
+        Chrome, FireFox, Edge, Safari, Opera, InternetExplorer, PhantomJS
 
-	}
+    }
 
-	private static Logger log = Logger.getLogger(AbstractRealBrowserDriver.class);
+    private static Logger         log                 = Logger.getLogger(AbstractRealBrowserDriver.class);
 
-	private String url;
-	private String browserPath;
-	private String remoteSeleniumURL;
+    private String                url;
+    private String                browserPath;
+    private String                remoteSeleniumURL;
 
-	protected BrowserType browserType;
-	protected WebDriver webDriver;
+    protected BrowserType         browserType;
+    protected WebDriver           webDriver;
 
-	private Queue<IExpectedPopup> expectedPopupsQueue = new LinkedList<IExpectedPopup>();
+    private Queue<IExpectedPopup> expectedPopupsQueue = new LinkedList<IExpectedPopup>();
 
-	static {
-		try {
-            String jarPath = AbstractRealBrowserDriver.class.getResource( "AbstractRealBrowserDriver.class" )
+    static {
+        try {
+            String jarPath = AbstractRealBrowserDriver.class.getResource("AbstractRealBrowserDriver.class")
                                                             .getPath();
-            if( jarPath.indexOf( "!/" ) == -1 ) { // UIEngine project is directly referred , so classes are not packed yet.
-                log.info( "UIEngine classes seem not to be in JAR file. Supported browser versions could not be obtained." );
-			} else {
-				jarPath = IoUtils.normalizeFilePath(jarPath.substring(0, jarPath.indexOf("!/")));
+            if (jarPath.indexOf("!/") == -1) { // UIEngine project is directly referred , so classes are not packed yet.
+                log.info("UIEngine classes seem not to be in JAR file. Supported browser versions could not be obtained.");
+            } else {
+                jarPath = IoUtils.normalizeFilePath(jarPath.substring(0, jarPath.indexOf("!/")));
 
-				String pomContent = IoUtils.streamToString(IoUtils.readFileFromJar(jarPath,
-						"META-INF\\maven\\com.axway.ats.framework\\ats-uiengine\\pom.xml"));
-				String propertyName = "selenium-supported.browser.versions";
-                String supportedBrowserVersions = pomContent.substring( pomContent.indexOf( "<"
-                                                                                            + propertyName
-                                                                                            + ">" )
-                                                                                + propertyName.length() + 2,
-                                                                        pomContent.indexOf( "</"
-                                                                                            + propertyName
-                                                                                            + ">" ) );
-				log.info("Supported browser versions: " + supportedBrowserVersions);
-			}
-		} catch (Exception e) {
-			log.warn("Unable to get the supported browser drivers by Selenium.", e);
-		}
-	}
+                String pomContent = IoUtils.streamToString(IoUtils.readFileFromJar(jarPath,
+                                                                                   "META-INF\\maven\\com.axway.ats.framework\\ats-uiengine\\pom.xml"));
+                String propertyName = "selenium-supported.browser.versions";
+                String supportedBrowserVersions = pomContent.substring(pomContent.indexOf("<"
+                                                                                          + propertyName
+                                                                                          + ">")
+                                                                       + propertyName.length() + 2,
+                                                                       pomContent.indexOf("</"
+                                                                                          + propertyName
+                                                                                          + ">"));
+                log.info("Supported browser versions: " + supportedBrowserVersions);
+            }
+        } catch (Exception e) {
+            log.warn("Unable to get the supported browser drivers by Selenium.", e);
+        }
+    }
 
-	/**
+    /**
      * @param url the target application URL
      * @param browserStartCommand command for starting a real UI browser or the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
-	 */
+     */
     public AbstractRealBrowserDriver( BrowserType browserType,
                                       String url,
                                       String browserPath ) {
 
-		this.browserType = browserType;
-		this.url = url;
-		if (browserPath != null && browserPath.toLowerCase().startsWith("http")) {
-			this.remoteSeleniumURL = browserPath;
-		} else {
-			this.browserPath = browserPath;
-		}
-	}
+        this.browserType = browserType;
+        this.url = url;
+        if (browserPath != null && browserPath.toLowerCase().startsWith("http")) {
+            this.remoteSeleniumURL = browserPath;
+        } else {
+            this.browserPath = browserPath;
+        }
+    }
 
-	/**
+    /**
      * @param url the target application URL
      * @param browserStartCommand command for starting a real UI browser
      * @param remoteSeleniumURL the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
-	 */
+     */
     public AbstractRealBrowserDriver( BrowserType browserType,
                                       String url,
                                       String browserPath,
-			String remoteSeleniumURL) {
+                                      String remoteSeleniumURL ) {
 
-		this.browserType = browserType;
-		this.url = url;
-		this.browserPath = browserPath;
-		this.remoteSeleniumURL = remoteSeleniumURL;
-	}
+        this.browserType = browserType;
+        this.url = url;
+        this.browserPath = browserPath;
+        this.remoteSeleniumURL = remoteSeleniumURL;
+    }
 
-	@Override
-	@PublicAtsApi
-	public void start() {
+    @Override
+    @PublicAtsApi
+    public void start() {
 
-		try {
-			log.info("Starting selenium browser with " + this.getClass().getSimpleName());
-			if (browserType == BrowserType.FireFox) {
+        try {
+            log.info("Starting selenium browser with " + this.getClass().getSimpleName());
+            if (browserType == BrowserType.FireFox) {
 
-				com.axway.ats.uiengine.FirefoxDriver firefoxDriver = new com.axway.ats.uiengine.FirefoxDriver(url,
-                                                                                                               browserPath,
-                                                                                                               remoteSeleniumURL );
+                com.axway.ats.uiengine.FirefoxDriver firefoxDriver = new com.axway.ats.uiengine.FirefoxDriver(url,
+                                                                                                              browserPath,
+                                                                                                              remoteSeleniumURL);
 
-				FirefoxProfile profile = null;
-				if (firefoxDriver.getProfileName() != null) {
+                FirefoxProfile profile = null;
+                if (firefoxDriver.getProfileName() != null) {
 
-					profile = new ProfilesIni().getProfile(firefoxDriver.getProfileName());
-					if (profile == null) {
-                        throw new SeleniumOperationException( "Firefox profile '"
-                                                              + firefoxDriver.getProfileName()
-                                                              + "' doesn't exist" );
-					}
-				} else if (firefoxDriver.getProfileDirectory() != null) {
+                    profile = new ProfilesIni().getProfile(firefoxDriver.getProfileName());
+                    if (profile == null) {
+                        throw new SeleniumOperationException("Firefox profile '"
+                                                             + firefoxDriver.getProfileName()
+                                                             + "' doesn't exist");
+                    }
+                } else if (firefoxDriver.getProfileDirectory() != null) {
 
-					File profileDirectory = new File(firefoxDriver.getProfileDirectory());
-					profile = new FirefoxProfile(profileDirectory);
-				} else {
+                    File profileDirectory = new File(firefoxDriver.getProfileDirectory());
+                    profile = new FirefoxProfile(profileDirectory);
+                } else {
 
-					profile = new FirefoxProfile();
-					String downloadDir = UiEngineConfigurator.getInstance().getBrowserDownloadDir();
+                    profile = new FirefoxProfile();
+                    String downloadDir = UiEngineConfigurator.getInstance().getBrowserDownloadDir();
                     // If the download dir ends with '/' or '\' browser skips the property and shows the dialog for asking
-					// for default browser. Now will FIX this behavior
-					if (downloadDir.endsWith("/") || downloadDir.endsWith("\\")) {
-						downloadDir = downloadDir.substring(0, downloadDir.length() - 1);
-					}
+                    // for default browser. Now will FIX this behavior
+                    if (downloadDir.endsWith("/") || downloadDir.endsWith("\\")) {
+                        downloadDir = downloadDir.substring(0, downloadDir.length() - 1);
+                    }
                     // Following options are described in http://kb.mozillazine.org/Firefox_:_FAQs_:_About:config_Entries
-					profile.setPreference("browser.download.dir", downloadDir);
-					profile.setPreference("browser.download.folderList", 2);
-					profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
-							UiEngineConfigurator.getInstance().getBrowserDownloadMimeTypes());
-                    profile.setPreference( "plugin.state.java", 2 ); // set to  "Always Activate"
-                    profile.setPreference( "plugin.state.flash", 2 ); // set to  "Always Activate"
+                    profile.setPreference("browser.download.dir", downloadDir);
+                    profile.setPreference("browser.download.folderList", 2);
+                    profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
+                                          UiEngineConfigurator.getInstance().getBrowserDownloadMimeTypes());
+                    profile.setPreference("plugin.state.java", 2); // set to  "Always Activate"
+                    profile.setPreference("plugin.state.flash", 2); // set to  "Always Activate"
 
-					profile.setAcceptUntrustedCertificates(true);
-					profile.setEnableNativeEvents(true);
-				}
+                    profile.setAcceptUntrustedCertificates(true);
+                    profile.setEnableNativeEvents(true);
+                }
 
-				DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-				capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-				setFirefoxProxyIfAvailable(capabilities);
+                DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+                setFirefoxProxyIfAvailable(capabilities);
 
-				if (this.browserPath != null) {
-					capabilities.setCapability(FirefoxDriver.BINARY, this.browserPath);
-				}
-				
-				FirefoxOptions options = UiEngineConfigurator.getInstance().getFirefoxDriverOptions();
-				if ( options == null ) {
-				    options = new FirefoxOptions();
-				}
-				capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
-				
-				if (this.remoteSeleniumURL != null) {
-					webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
-				} else {
-				    webDriver = new FirefoxDriver(capabilities);
-				}
-			}
+                if (this.browserPath != null) {
+                    capabilities.setCapability(FirefoxDriver.BINARY, this.browserPath);
+                }
 
-			else if (browserType == BrowserType.InternetExplorer) {
+                FirefoxOptions options = UiEngineConfigurator.getInstance().getFirefoxDriverOptions();
+                if (options == null) {
+                    options = new FirefoxOptions();
+                }
+                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
 
-				if (this.remoteSeleniumURL != null) {
+                if (this.remoteSeleniumURL != null) {
+                    webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
+                } else {
+                    webDriver = new FirefoxDriver(capabilities);
+                }
+            }
 
-					webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL),
-							DesiredCapabilities.internetExplorer());
-				} else {
-					webDriver = new org.openqa.selenium.ie.InternetExplorerDriver();
-				}
-			}
+            else if (browserType == BrowserType.InternetExplorer) {
 
-			else if (browserType == BrowserType.Edge) {
+                if (this.remoteSeleniumURL != null) {
 
-				if (this.remoteSeleniumURL != null) {
+                    webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL),
+                                                    DesiredCapabilities.internetExplorer());
+                } else {
+                    webDriver = new org.openqa.selenium.ie.InternetExplorerDriver();
+                }
+            }
 
-                    webDriver = new RemoteWebDriver( new URL( this.remoteSeleniumURL ),
-                                                     DesiredCapabilities.edge() );
-				} else {
-					webDriver = new org.openqa.selenium.edge.EdgeDriver();
-				}
-			}
+            else if (browserType == BrowserType.Edge) {
 
-			else if (browserType == BrowserType.Chrome) {
+                if (this.remoteSeleniumURL != null) {
 
-				DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                    webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL),
+                                                    DesiredCapabilities.edge());
+                } else {
+                    webDriver = new org.openqa.selenium.edge.EdgeDriver();
+                }
+            }
 
-				// apply Chrome options
-				ChromeOptions options = UiEngineConfigurator.getInstance().getChromeDriverOptions();
-				if (options == null) {
-					options = new ChromeOptions();
-				}
+            else if (browserType == BrowserType.Chrome) {
 
-				/* set browser download dir for Chrome Browser */
-				String downloadDir = UiEngineConfigurator.getInstance().getBrowserDownloadDir();
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
 
-				HashMap<String, Object> prefs = new HashMap<String, Object>();
-				prefs.put("profile.default_content_settings.popups", 0);
-				prefs.put("download.default_directory", downloadDir);
-				options.setExperimentalOption("prefs", prefs);
+                // apply Chrome options
+                ChromeOptions options = UiEngineConfigurator.getInstance().getChromeDriverOptions();
+                if (options == null) {
+                    options = new ChromeOptions();
+                }
 
-				capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+                /* set browser download dir for Chrome Browser */
+                String downloadDir = UiEngineConfigurator.getInstance().getBrowserDownloadDir();
 
-				if (this.remoteSeleniumURL != null) {
-					webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
-				} else {
-					webDriver = new org.openqa.selenium.chrome.ChromeDriver(capabilities);
-				}
-			}
+                HashMap<String, Object> prefs = new HashMap<String, Object>();
+                prefs.put("profile.default_content_settings.popups", 0);
+                prefs.put("download.default_directory", downloadDir);
+                options.setExperimentalOption("prefs", prefs);
 
-			else if (browserType == BrowserType.Safari) {
+                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
-				if (this.remoteSeleniumURL != null) {
-                    webDriver = new RemoteWebDriver( new URL( this.remoteSeleniumURL ),
-                                                     DesiredCapabilities.safari() );
-				} else {
-					webDriver = new org.openqa.selenium.safari.SafariDriver();
-				}
-			}
+                if (this.remoteSeleniumURL != null) {
+                    webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
+                } else {
+                    webDriver = new org.openqa.selenium.chrome.ChromeDriver(capabilities);
+                }
+            }
 
-			else if (browserType == BrowserType.PhantomJS) {
+            else if (browserType == BrowserType.Safari) {
 
-				DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-				capabilities.setJavascriptEnabled(true);
-				capabilities.setCapability("acceptSslCerts", true);
-				capabilities.setCapability("browserConnectionEnabled", true);
-				capabilities.setCapability("takesScreenshot", true);
+                if (this.remoteSeleniumURL != null) {
+                    webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL),
+                                                    DesiredCapabilities.safari());
+                } else {
+                    webDriver = new org.openqa.selenium.safari.SafariDriver();
+                }
+            }
+
+            else if (browserType == BrowserType.PhantomJS) {
+
+                DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+                capabilities.setJavascriptEnabled(true);
+                capabilities.setCapability("acceptSslCerts", true);
+                capabilities.setCapability("browserConnectionEnabled", true);
+                capabilities.setCapability("takesScreenshot", true);
 
                 // See: https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#settings-object
-				if (System.getProperty(PhantomJsDriver.SETTINGS_PROPERTY) != null) {
+                if (System.getProperty(PhantomJsDriver.SETTINGS_PROPERTY) != null) {
 
-                    Map<String, String> settings = extractPhantomJSCapabilityValues( System.getProperty( PhantomJsDriver.SETTINGS_PROPERTY ) );
-					for (Entry<String, String> capability : settings.entrySet()) {
+                    Map<String, String> settings = extractPhantomJSCapabilityValues(System.getProperty(PhantomJsDriver.SETTINGS_PROPERTY));
+                    for (Entry<String, String> capability : settings.entrySet()) {
 
-                        capabilities.setCapability( PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX
-                                                    + capability.getKey(), capability.getValue() );
-					}
-				}
+                        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX
+                                                   + capability.getKey(), capability.getValue());
+                    }
+                }
 
                 // See:  https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-customHeaders
-				if (System.getProperty(PhantomJsDriver.CUSTOM_HEADERS_PROPERTY) != null) {
+                if (System.getProperty(PhantomJsDriver.CUSTOM_HEADERS_PROPERTY) != null) {
 
-                    Map<String, String> customHeaders = extractPhantomJSCapabilityValues( System.getProperty( PhantomJsDriver.CUSTOM_HEADERS_PROPERTY ) );
-					for (Entry<String, String> header : customHeaders.entrySet()) {
+                    Map<String, String> customHeaders = extractPhantomJSCapabilityValues(System.getProperty(PhantomJsDriver.CUSTOM_HEADERS_PROPERTY));
+                    for (Entry<String, String> header : customHeaders.entrySet()) {
 
-                        capabilities.setCapability( PhantomJSDriverService.PHANTOMJS_PAGE_CUSTOMHEADERS_PREFIX
-                                                            + header.getKey(),
-								header.getValue());
-					}
-				}
+                        capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_CUSTOMHEADERS_PREFIX
+                                                   + header.getKey(),
+                                                   header.getValue());
+                    }
+                }
 
-				if (this.browserPath != null) {
+                if (this.browserPath != null) {
 
-					capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-							this.browserPath);
-                    System.setProperty( PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-                                        this.browserPath ); // required from the create screenshot method
-				}
+                    capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
+                                               this.browserPath);
+                    System.setProperty(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
+                                       this.browserPath); // required from the create screenshot method
+                }
 
                 // See:  https://github.com/ariya/phantomjs/wiki/API-Reference#command-line-options
-				List<String> cliArgsCapabilities = new ArrayList<String>();
-				cliArgsCapabilities.add("--web-security=false");
-				cliArgsCapabilities.add("--ignore-ssl-errors=true");
-				if (System.getProperty(PhantomJsDriver.SSL_PROTOCOL_PROPERTY) != null) {
-                    cliArgsCapabilities.add( "--ssl-protocol="
-                                             + System.getProperty( PhantomJsDriver.SSL_PROTOCOL_PROPERTY ) );
-				} else {
-					cliArgsCapabilities.add("--ssl-protocol=any");
-				}
-				if (System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
+                List<String> cliArgsCapabilities = new ArrayList<String>();
+                cliArgsCapabilities.add("--web-security=false");
+                cliArgsCapabilities.add("--ignore-ssl-errors=true");
+                if (System.getProperty(PhantomJsDriver.SSL_PROTOCOL_PROPERTY) != null) {
+                    cliArgsCapabilities.add("--ssl-protocol="
+                                            + System.getProperty(PhantomJsDriver.SSL_PROTOCOL_PROPERTY));
+                } else {
+                    cliArgsCapabilities.add("--ssl-protocol=any");
+                }
+                if (System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
 
-					cliArgsCapabilities.add("--cookies-file=" + PhantomJsDriver.cookiesFile);
-				}
+                    cliArgsCapabilities.add("--cookies-file=" + PhantomJsDriver.cookiesFile);
+                }
                 // cliArgsCapabilities.add( "--local-to-remote-url-access=true" );
-				setPhantomJSProxyIfAvailable(cliArgsCapabilities);
-				capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, cliArgsCapabilities);
-				if (this.remoteSeleniumURL != null) {
-					webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
-				} else {
-					webDriver = new org.openqa.selenium.phantomjs.PhantomJSDriver(capabilities);
-				}
-			}
+                setPhantomJSProxyIfAvailable(cliArgsCapabilities);
+                capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, cliArgsCapabilities);
+                if (this.remoteSeleniumURL != null) {
+                    webDriver = new RemoteWebDriver(new URL(this.remoteSeleniumURL), capabilities);
+                } else {
+                    webDriver = new org.openqa.selenium.phantomjs.PhantomJSDriver(capabilities);
+                }
+            }
 
-			log.info("Openning URL: " + url);
-			webDriver.get(url);
-			if (this instanceof com.axway.ats.uiengine.PhantomJsDriver) {
-				webDriver.manage().window().setSize(new Dimension(1280, 1024));
-			} else if (!(this instanceof com.axway.ats.uiengine.EdgeDriver)) {
-				webDriver.manage().window().maximize();
-			}
-			int browserActionTimeout = UiEngineConfigurator.getInstance().getBrowserActionTimeout();
-			if (browserActionTimeout > 0) {
-				webDriver.manage().timeouts().setScriptTimeout(browserActionTimeout, TimeUnit.SECONDS);
-			}
-			if (!(this instanceof com.axway.ats.uiengine.EdgeDriver)) {
-				webDriver.manage().timeouts().pageLoadTimeout(browserActionTimeout, TimeUnit.SECONDS);
-			}
-			// waiting for the "body" element to be loaded
-			waitForPageLoaded(webDriver, UiEngineConfigurator.getInstance().getWaitPageToLoadTimeout());
+            log.info("Openning URL: " + url);
+            webDriver.get(url);
+            if (this instanceof com.axway.ats.uiengine.PhantomJsDriver) {
+                webDriver.manage().window().setSize(new Dimension(1280, 1024));
+            } else if (! (this instanceof com.axway.ats.uiengine.EdgeDriver)) {
+                webDriver.manage().window().maximize();
+            }
+            int browserActionTimeout = UiEngineConfigurator.getInstance().getBrowserActionTimeout();
+            if (browserActionTimeout > 0) {
+                webDriver.manage().timeouts().setScriptTimeout(browserActionTimeout, TimeUnit.SECONDS);
+            }
+            if (! (this instanceof com.axway.ats.uiengine.EdgeDriver)) {
+                webDriver.manage().timeouts().pageLoadTimeout(browserActionTimeout, TimeUnit.SECONDS);
+            }
+            // waiting for the "body" element to be loaded
+            waitForPageLoaded(webDriver, UiEngineConfigurator.getInstance().getWaitPageToLoadTimeout());
 
-		} catch (Exception e) {
-			throw new SeleniumOperationException("Error starting Selenium", e);
-		}
-	}
+        } catch (Exception e) {
+            throw new SeleniumOperationException("Error starting Selenium", e);
+        }
+    }
 
-	public void waitForPageLoaded(WebDriver driver, int timeoutInSeconds) {
+    public void waitForPageLoaded( WebDriver driver, int timeoutInSeconds ) {
 
-		/*InternetExplorer is unable to wait for document's readyState to be complete.*/
-		if (this instanceof com.axway.ats.uiengine.InternetExplorerDriver) {
-			return;
-		}
+        /*InternetExplorer is unable to wait for document's readyState to be complete.*/
+        if (this instanceof com.axway.ats.uiengine.InternetExplorerDriver) {
+            return;
+        }
 
-		ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
+        ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
             public Boolean apply(
                                   WebDriver driver ) {
 
-                return "complete".equals( ( ( JavascriptExecutor ) driver ).executeScript( "return document.readyState" ) );
+                return "complete".equals( ((JavascriptExecutor) driver).executeScript("return document.readyState"));
             }
-		};
+        };
 
-		Wait<WebDriver> wait = new WebDriverWait(driver, timeoutInSeconds);
-		try {
-			wait.until(expectation);
-		} catch (Exception e) {
-			throw new SeleniumOperationException("Timeout waiting for Page Load Request to complete.", e);
-		}
-	}
+        Wait<WebDriver> wait = new WebDriverWait(driver, timeoutInSeconds);
+        try {
+            wait.until(expectation);
+        } catch (Exception e) {
+            throw new SeleniumOperationException("Timeout waiting for Page Load Request to complete.", e);
+        }
+    }
 
     private Map<String, String> extractPhantomJSCapabilityValues(
                                                                   String capabiliesString ) {
 
-		Map<String, String> capabilities = new HashMap<String, String>();
-		if (capabiliesString.indexOf('{') > -1) {
+        Map<String, String> capabilities = new HashMap<String, String>();
+        if (capabiliesString.indexOf('{') > -1) {
 
             // there are multiple capabilities in format:  {cap 1: value 1}, {cap 2 : value 2}
-			Pattern multipleCapablitiesPattern = Pattern.compile("\\{\\s*([^:]+)\\s*:\\s*([^\\}]+)\\},?");
-			Matcher matcher = multipleCapablitiesPattern.matcher(capabiliesString);
-			while (matcher.find()) {
-				capabilities.put(matcher.group(1).trim(), matcher.group(2).trim());
-			}
-		} else {
+            Pattern multipleCapablitiesPattern = Pattern.compile("\\{\\s*([^:]+)\\s*:\\s*([^\\}]+)\\},?");
+            Matcher matcher = multipleCapablitiesPattern.matcher(capabiliesString);
+            while (matcher.find()) {
+                capabilities.put(matcher.group(1).trim(), matcher.group(2).trim());
+            }
+        } else {
 
-			capabilities.put(capabiliesString.substring(0, capabiliesString.indexOf(':')).trim(),
-					capabiliesString.substring(capabiliesString.indexOf(':') + 1).trim());
-		}
-		return capabilities;
-	}
+            capabilities.put(capabiliesString.substring(0, capabiliesString.indexOf(':')).trim(),
+                             capabiliesString.substring(capabiliesString.indexOf(':') + 1).trim());
+        }
+        return capabilities;
+    }
 
     private void setFirefoxProxyIfAvailable(
                                              DesiredCapabilities capabilities ) {
 
-		if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
-				&& !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
+        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
+            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
 
-            capabilities.setCapability( CapabilityType.PROXY,
-                                        new Proxy().setHttpProxy( AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST
-                                                                  + ':'
-                                                                  + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT ) );
-		}
-	}
+            capabilities.setCapability(CapabilityType.PROXY,
+                                       new Proxy().setHttpProxy(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST
+                                                                + ':'
+                                                                + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
+        }
+    }
 
     private void setPhantomJSProxyIfAvailable(
                                                List<String> cliArgsCapabilities ) {
 
-		if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
-				&& !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
+        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
+            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
 
-			cliArgsCapabilities.add("--proxy=" + AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST + ":"
-					+ AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT);
-			// cliArgsCap.add("--proxy-auth=username:password");
-			// cliArgsCap.add("--proxy-type=http");
-		}
-	}
+            cliArgsCapabilities.add("--proxy=" + AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST + ":"
+                                    + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT);
+            // cliArgsCap.add("--proxy-auth=username:password");
+            // cliArgsCap.add("--proxy-type=http");
+        }
+    }
 
-	// private void waitPageToLoad(
-	// int timeout ) {
-	//
-	// long endLoadTime = System.currentTimeMillis() + timeout;
-	// while( System.currentTimeMillis() - endLoadTime < 0 ) {
-	// if( this.seleniumBrowser.isElementPresent( "//body" ) ) {
-	// return;
-	// }
-	// UiEngineUtilities.sleep( 200 );
-	// }
+    // private void waitPageToLoad(
+    // int timeout ) {
+    //
+    // long endLoadTime = System.currentTimeMillis() + timeout;
+    // while( System.currentTimeMillis() - endLoadTime < 0 ) {
+    // if( this.seleniumBrowser.isElementPresent( "//body" ) ) {
+    // return;
+    // }
+    // UiEngineUtilities.sleep( 200 );
+    // }
     //        throw new SeleniumOperationException( "Html application did not load within " + timeout + " ms" );
-	// }
+    // }
 
-	@Override
-	@PublicAtsApi
-	public void stop() {
+    @Override
+    @PublicAtsApi
+    public void stop() {
 
-		if (webDriver == null) {
-            log.warn( "Ignoring browser driver stop(). start() method has not been invoked or browser initialization had failed." );
-			return;
-		}
+        if (webDriver == null) {
+            log.warn("Ignoring browser driver stop(). start() method has not been invoked or browser initialization had failed.");
+            return;
+        }
 
-		if (System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
-			new File(PhantomJsDriver.cookiesFile).delete();
-		}
+        if (System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
+            new File(PhantomJsDriver.cookiesFile).delete();
+        }
 
-		log.info("Stoping selenium browser with " + this.getClass().getSimpleName());
-		webDriver.quit();
-	}
+        log.info("Stoping selenium browser with " + this.getClass().getSimpleName());
+        webDriver.quit();
+    }
 
-	/**
-	 * @return an HtmlEngine instance
-	 */
-	@Override
-	@PublicAtsApi
-	public RealHtmlEngine getHtmlEngine() {
+    /**
+     * @return an HtmlEngine instance
+     */
+    @Override
+    @PublicAtsApi
+    public RealHtmlEngine getHtmlEngine() {
 
-		if (webDriver == null) {
-			throw new IllegalStateException("Browser driver is not initialized. Either start() method is not invoked "
-					+ "or browser initialization had failed.");
-		}
+        if (webDriver == null) {
+            throw new IllegalStateException("Browser driver is not initialized. Either start() method is not invoked "
+                                            + "or browser initialization had failed.");
+        }
 
-		return new RealHtmlEngine(this);
-	}
+        return new RealHtmlEngine(this);
+    }
 
-	/**
+    /**
      * <b>NOTE:</b> This method should not be used directly into the test scripts.
      * The implementation may be changed by the Automation Framework Team without notice.
-	 * @return Internal Object
-	 */
+     * @return Internal Object
+     */
     public Object getInternalObject(
                                      String objectName ) {
 
         //NOTE: we use a String argument 'objectName' not directly an InternalObjectsEnum object, because we want to
-		// hide from the end users this method and his usage
+        // hide from the end users this method and his usage
 
-		switch (InternalObjectsEnum.getEnum(objectName)) {
+        switch (InternalObjectsEnum.getEnum(objectName)) {
 
-		case Engine:
-			// returns instance of engine operating over HTML pages
-			return new RealHtmlEngine(this);
-		case WebDriver:
-			// returns current Selenium Web Driver
-			return this.webDriver;
-		default:
-			break;
-		}
-		return null;
-	}
+            case Engine:
+                // returns instance of engine operating over HTML pages
+                return new RealHtmlEngine(this);
+            case WebDriver:
+                // returns current Selenium Web Driver
+                return this.webDriver;
+            default:
+                break;
+        }
+        return null;
+    }
 
-	/**
-	 * <b>Note:</b> For internal use only
-	 */
+    /**
+     * <b>Note:</b> For internal use only
+     */
     public void addExpectedPopup(
                                   IExpectedPopup expectedPopup ) {
 
-		expectedPopupsQueue.add(expectedPopup);
-	}
+        expectedPopupsQueue.add(expectedPopup);
+    }
 
-	/**
-	 * <b>Note:</b> For internal use only
-	 */
+    /**
+     * <b>Note:</b> For internal use only
+     */
     public boolean containsExpectedPopup(
                                           IExpectedPopup expectedPopup ) {
 
-		return expectedPopupsQueue.contains(expectedPopup);
-	}
+        return expectedPopupsQueue.contains(expectedPopup);
+    }
 
-	/**
-	 * <b>Note:</b> For internal use only
-	 */
-	public void clearExpectedPopups() {
+    /**
+     * <b>Note:</b> For internal use only
+     */
+    public void clearExpectedPopups() {
 
-		expectedPopupsQueue.clear();
-	}
+        expectedPopupsQueue.clear();
+    }
 
-	/**
-	 * <b>Note:</b> For internal use only
-	 */
-	public void handleExpectedPopups() {
+    /**
+     * <b>Note:</b> For internal use only
+     */
+    public void handleExpectedPopups() {
 
-		while (!expectedPopupsQueue.isEmpty()) {
+        while (!expectedPopupsQueue.isEmpty()) {
 
-			IExpectedPopup expectedPopup = expectedPopupsQueue.poll();
-			if (expectedPopup instanceof ExpectedAlert) {
+            IExpectedPopup expectedPopup = expectedPopupsQueue.poll();
+            if (expectedPopup instanceof ExpectedAlert) {
 
-				ExpectedAlert expectedAlert = (ExpectedAlert) expectedPopup;
+                ExpectedAlert expectedAlert = (ExpectedAlert) expectedPopup;
 
-				new RealHtmlElementState(new RealHtmlAlert(this)).waitToBecomeExisting();
+                new RealHtmlElementState(new RealHtmlAlert(this)).waitToBecomeExisting();
 
-				Alert alert = getAlert();
-                if( expectedAlert.expectedText != null
-                    && !expectedAlert.expectedText.equals( alert.getText() ) ) {
+                Alert alert = getAlert();
+                if (expectedAlert.expectedText != null
+                    && !expectedAlert.expectedText.equals(alert.getText())) {
 
-                    throw new VerificationException( "The expected alert message was: '"
-                                                     + expectedAlert.expectedText
-							+ "', but actually it is: '" + alert.getText() + "'");
-				}
-				alert.accept();
-			} else if (expectedPopup instanceof ExpectedPrompt) {
+                    throw new VerificationException("The expected alert message was: '"
+                                                    + expectedAlert.expectedText
+                                                    + "', but actually it is: '" + alert.getText() + "'");
+                }
+                alert.accept();
+            } else if (expectedPopup instanceof ExpectedPrompt) {
 
-				ExpectedPrompt expectedPrompt = (ExpectedPrompt) expectedPopup;
+                ExpectedPrompt expectedPrompt = (ExpectedPrompt) expectedPopup;
 
-				new RealHtmlElementState(new RealHtmlPrompt(this)).waitToBecomeExisting();
+                new RealHtmlElementState(new RealHtmlPrompt(this)).waitToBecomeExisting();
 
-				Alert prompt = getAlert();
-                if( expectedPrompt.expectedText != null
-                    && !expectedPrompt.expectedText.equals( prompt.getText() ) ) {
+                Alert prompt = getAlert();
+                if (expectedPrompt.expectedText != null
+                    && !expectedPrompt.expectedText.equals(prompt.getText())) {
 
-                    throw new VerificationException( "The expected prompt text was: '"
-                                                     + expectedPrompt.expectedText
-							+ "', but actually it is: '" + prompt.getText() + "'");
-				}
-				if (expectedPrompt.clickOk) {
-					prompt.sendKeys(expectedPrompt.promptValueToSet);
-					prompt.accept();
-				} else {
-					prompt.dismiss();
-				}
+                    throw new VerificationException("The expected prompt text was: '"
+                                                    + expectedPrompt.expectedText
+                                                    + "', but actually it is: '" + prompt.getText() + "'");
+                }
+                if (expectedPrompt.clickOk) {
+                    prompt.sendKeys(expectedPrompt.promptValueToSet);
+                    prompt.accept();
+                } else {
+                    prompt.dismiss();
+                }
 
-			} else if (expectedPopup instanceof ExpectedConfirm) {
+            } else if (expectedPopup instanceof ExpectedConfirm) {
 
-				ExpectedConfirm expectedConfirm = (ExpectedConfirm) expectedPopup;
+                ExpectedConfirm expectedConfirm = (ExpectedConfirm) expectedPopup;
 
-				new RealHtmlElementState(new RealHtmlConfirm(this)).waitToBecomeExisting();
+                new RealHtmlElementState(new RealHtmlConfirm(this)).waitToBecomeExisting();
 
-				Alert confirm = getAlert();
-                if( expectedConfirm.expectedText != null
-                    && !expectedConfirm.expectedText.equals( confirm.getText() ) ) {
+                Alert confirm = getAlert();
+                if (expectedConfirm.expectedText != null
+                    && !expectedConfirm.expectedText.equals(confirm.getText())) {
 
-					throw new VerificationException("The expected confirmation message was: '"
-                                                     + expectedConfirm.expectedText
-                                                     + "', but actually it is: '" + confirm.getText() + "'" );
-				}
+                    throw new VerificationException("The expected confirmation message was: '"
+                                                    + expectedConfirm.expectedText
+                                                    + "', but actually it is: '" + confirm.getText() + "'");
+                }
 
-				if (expectedConfirm.clickOk) {
-					confirm.accept();
-				} else {
-					confirm.dismiss();
-				}
-			}
-			UiEngineUtilities.sleep();
-		}
-	}
+                if (expectedConfirm.clickOk) {
+                    confirm.accept();
+                } else {
+                    confirm.dismiss();
+                }
+            }
+            UiEngineUtilities.sleep();
+        }
+    }
 
-	/**
-	 *
+    /**
+     *
     * @return {@link Alert} object representing HTML alert, prompt or confirmation modal dialog
-	 */
-	private Alert getAlert() {
+     */
+    private Alert getAlert() {
 
-		try {
-			return this.webDriver.switchTo().alert();
-		} catch (NoAlertPresentException e) {
-			throw new ElementNotFoundException(e);
-		}
-	}
+        try {
+            return this.webDriver.switchTo().alert();
+        } catch (NoAlertPresentException e) {
+            throw new ElementNotFoundException(e);
+        }
+    }
 }

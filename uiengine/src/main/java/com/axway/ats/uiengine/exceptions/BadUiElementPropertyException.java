@@ -28,7 +28,7 @@ public class BadUiElementPropertyException extends RuntimeException {
      */
     public BadUiElementPropertyException( String message ) {
 
-        super( message );
+        super(message);
     }
 
 }

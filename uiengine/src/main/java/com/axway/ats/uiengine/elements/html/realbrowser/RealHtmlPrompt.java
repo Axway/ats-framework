@@ -36,8 +36,8 @@ public class RealHtmlPrompt extends HtmlPrompt {
 
     public RealHtmlPrompt( UiDriver uiDriver ) {
 
-        super( uiDriver );
-        driver = ( ( AbstractRealBrowserDriver ) super.getUiDriver() );
+        super(uiDriver);
+        driver = ((AbstractRealBrowserDriver) super.getUiDriver());
     }
 
     @Override
@@ -45,8 +45,8 @@ public class RealHtmlPrompt extends HtmlPrompt {
     public void clickOk(
                          String promptValue ) {
 
-        expectedPrompt = new ExpectedPrompt( promptValue, true );
-        driver.addExpectedPopup( expectedPrompt );
+        expectedPrompt = new ExpectedPrompt(promptValue, true);
+        driver.addExpectedPopup(expectedPrompt);
     }
 
     @Override
@@ -55,16 +55,16 @@ public class RealHtmlPrompt extends HtmlPrompt {
                          String expectedText,
                          String promptValue ) {
 
-        expectedPrompt = new ExpectedPrompt( expectedText, promptValue, true );
-        driver.addExpectedPopup( expectedPrompt );
+        expectedPrompt = new ExpectedPrompt(expectedText, promptValue, true);
+        driver.addExpectedPopup(expectedPrompt);
     }
 
     @Override
     @PublicAtsApi
     public void clickCancel() {
 
-        expectedPrompt = new ExpectedPrompt( null, false );
-        driver.addExpectedPopup( expectedPrompt );
+        expectedPrompt = new ExpectedPrompt(null, false);
+        driver.addExpectedPopup(expectedPrompt);
     }
 
     @Override
@@ -72,8 +72,8 @@ public class RealHtmlPrompt extends HtmlPrompt {
     public void clickCancel(
                              String expectedText ) {
 
-        expectedPrompt = new ExpectedPrompt( expectedText, null, false );
-        driver.addExpectedPopup( expectedPrompt );
+        expectedPrompt = new ExpectedPrompt(expectedText, null, false);
+        driver.addExpectedPopup(expectedPrompt);
     }
 
     @Override
@@ -83,13 +83,13 @@ public class RealHtmlPrompt extends HtmlPrompt {
         long millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !driver.containsExpectedPopup( expectedPrompt ) ) {
+            if (!driver.containsExpectedPopup(expectedPrompt)) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the Prompt is processed within " + millis + " ms" );
+        throw new VerificationException("Failed to verify the Prompt is processed within " + millis + " ms");
     }
 
 }

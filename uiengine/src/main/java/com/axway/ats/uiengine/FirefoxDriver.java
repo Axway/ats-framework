@@ -32,7 +32,7 @@ public class FirefoxDriver extends AbstractRealBrowserDriver {
      */
     protected FirefoxDriver( String url ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.FireFox, url, null );
+        super(AbstractRealBrowserDriver.BrowserType.FireFox, url, null);
     }
 
     /**
@@ -43,7 +43,7 @@ public class FirefoxDriver extends AbstractRealBrowserDriver {
     protected FirefoxDriver( String url,
                              String browserPath ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.FireFox, url, browserPath );
+        super(AbstractRealBrowserDriver.BrowserType.FireFox, url, browserPath);
     }
 
     /**
@@ -56,7 +56,7 @@ public class FirefoxDriver extends AbstractRealBrowserDriver {
                              String browserPath,
                              String remoteSeleniumURL ) {
 
-        super( AbstractRealBrowserDriver.BrowserType.FireFox, url, browserPath, remoteSeleniumURL );
+        super(AbstractRealBrowserDriver.BrowserType.FireFox, url, browserPath, remoteSeleniumURL);
     }
 
     /**

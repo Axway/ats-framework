@@ -25,13 +25,13 @@ public class VerifyEqualityException extends UiElementException {
                                     String actualValue,
                                     UiElement uiElement ) {
 
-        super( "The expected value '" + expectedValue + "' is not equal to the actual value '" + actualValue
-               + "'", uiElement );
+        super("The expected value '" + expectedValue + "' is not equal to the actual value '" + actualValue
+              + "'", uiElement);
     }
 
     public VerifyEqualityException( String expectedValue,
                                     UiElement uiElement ) {
 
-        super( "The element's value is not the expected '" + expectedValue + "'", uiElement );
+        super("The element's value is not the expected '" + expectedValue + "'", uiElement);
     }
 }

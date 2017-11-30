@@ -21,12 +21,12 @@ public class SwingException extends RuntimeException {
 
     public SwingException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public SwingException( String message,
-                              Throwable cause ) {
+                           Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

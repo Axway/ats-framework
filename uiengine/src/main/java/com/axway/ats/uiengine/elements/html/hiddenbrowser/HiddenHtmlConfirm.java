@@ -45,27 +45,27 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
 
     public HiddenHtmlConfirm( UiDriver uiDriver ) {
 
-        super( uiDriver );
+        super(uiDriver);
 
-        HiddenBrowserDriver browserDriver = ( HiddenBrowserDriver ) uiDriver;
-        HtmlUnitDriver driver = ( HtmlUnitDriver ) browserDriver.getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        HiddenBrowserDriver browserDriver = (HiddenBrowserDriver) uiDriver;
+        HtmlUnitDriver driver = (HtmlUnitDriver) browserDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
         Field webClientField = null;
         boolean fieldAccessibleState = false;
         try {
 
             TargetLocator targetLocator = driver.switchTo();
-            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField( "webClient" );
+            webClientField = targetLocator.getClass().getDeclaringClass().getDeclaredField("webClient");
             fieldAccessibleState = webClientField.isAccessible();
-            webClientField.setAccessible( true );
-            webClient = ( WebClient ) webClientField.get( targetLocator.defaultContent() );
+            webClientField.setAccessible(true);
+            webClient = (WebClient) webClientField.get(targetLocator.defaultContent());
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new SeleniumOperationException( "Error retrieving internal Selenium web client", e );
+            throw new SeleniumOperationException("Error retrieving internal Selenium web client", e);
         } finally {
 
-            if( webClientField != null ) {
-                webClientField.setAccessible( fieldAccessibleState );
+            if (webClientField != null) {
+                webClientField.setAccessible(fieldAccessibleState);
             }
         }
     }
@@ -75,7 +75,7 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
     public void clickOk() {
 
         isProcessed = false;
-        webClient.setConfirmHandler( new ConfirmHandler() {
+        webClient.setConfirmHandler(new ConfirmHandler() {
 
             @Override
             public boolean handleConfirm(
@@ -85,7 +85,7 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
                 isProcessed = true;
                 return true;
             }
-        } );
+        });
     }
 
     @Override
@@ -94,7 +94,7 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
                          final String expectedConfirmText ) {
 
         isProcessed = false;
-        webClient.setConfirmHandler( new ConfirmHandler() {
+        webClient.setConfirmHandler(new ConfirmHandler() {
 
             @Override
             public boolean handleConfirm(
@@ -102,15 +102,15 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
                                           String confirmationText ) {
 
                 isProcessed = true;
-                if( !confirmationText.equals( expectedConfirmText ) ) {
+                if (!confirmationText.equals(expectedConfirmText)) {
 
-                    throw new VerificationException( "The expected confirm message was: '"
-                                                     + expectedConfirmText + "', but actually it is: '"
-                                                     + confirmationText + "'" );
+                    throw new VerificationException("The expected confirm message was: '"
+                                                    + expectedConfirmText + "', but actually it is: '"
+                                                    + confirmationText + "'");
                 }
                 return true;
             }
-        } );
+        });
     }
 
     @Override
@@ -118,7 +118,7 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
     public void clickCancel() {
 
         isProcessed = false;
-        webClient.setConfirmHandler( new ConfirmHandler() {
+        webClient.setConfirmHandler(new ConfirmHandler() {
 
             @Override
             public boolean handleConfirm(
@@ -128,7 +128,7 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
                 isProcessed = true;
                 return false;
             }
-        } );
+        });
     }
 
     @Override
@@ -137,7 +137,7 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
                              final String expectedConfirmText ) {
 
         isProcessed = false;
-        webClient.setConfirmHandler( new ConfirmHandler() {
+        webClient.setConfirmHandler(new ConfirmHandler() {
 
             @Override
             public boolean handleConfirm(
@@ -145,15 +145,15 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
                                           String confirmationText ) {
 
                 isProcessed = true;
-                if( !confirmationText.equals( expectedConfirmText ) ) {
+                if (!confirmationText.equals(expectedConfirmText)) {
 
-                    throw new VerificationException( "The expected confirm message was: '"
-                                                     + expectedConfirmText + "', but actually it is: '"
-                                                     + confirmationText + "'" );
+                    throw new VerificationException("The expected confirm message was: '"
+                                                    + expectedConfirmText + "', but actually it is: '"
+                                                    + confirmationText + "'");
                 }
                 return false;
             }
-        } );
+        });
     }
 
     @Override
@@ -163,13 +163,13 @@ public class HiddenHtmlConfirm extends HtmlConfirm {
         long millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isProcessed ) {
+            if (isProcessed) {
                 return;
             }
             UiEngineUtilities.sleep();
-        } while( endTime - System.currentTimeMillis() > 0 );
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the Confirm is processed within " + millis + " ms" );
+        throw new VerificationException("Failed to verify the Confirm is processed within " + millis + " ms");
     }
 
 }

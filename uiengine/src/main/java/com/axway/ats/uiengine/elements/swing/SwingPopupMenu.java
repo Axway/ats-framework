@@ -48,14 +48,14 @@ public class SwingPopupMenu extends UiElement {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingPopupMenu.class, JPopupMenu.class );
+        SwingElementLocator.componentsMap.put(SwingPopupMenu.class, JPopupMenu.class);
     }
 
     public SwingPopupMenu( UiDriver uiDriver,
                            UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -65,9 +65,9 @@ public class SwingPopupMenu extends UiElement {
     @PublicAtsApi
     public void click() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JPopupMenuFixture ) SwingElementLocator.findFixture( this ) ).click();
+        ((JPopupMenuFixture) SwingElementLocator.findFixture(this)).click();
     }
 
     /**
@@ -79,9 +79,9 @@ public class SwingPopupMenu extends UiElement {
     public void clickMenuItemByName(
                                      String menuItemName ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JPopupMenuFixture ) SwingElementLocator.findFixture( this ) ).menuItem( menuItemName ).click();
+        ((JPopupMenuFixture) SwingElementLocator.findFixture(this)).menuItem(menuItemName).click();
     }
 
     /**
@@ -93,10 +93,10 @@ public class SwingPopupMenu extends UiElement {
     public void clickMenuItemByText(
                                      String... menuItemText ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JPopupMenuFixture ) SwingElementLocator.findFixture( this ) ).menuItemWithPath( menuItemText )
-                                                                         .click();
+        ((JPopupMenuFixture) SwingElementLocator.findFixture(this)).menuItemWithPath(menuItemText)
+                                                                   .click();
     }
 
     /**
@@ -107,9 +107,9 @@ public class SwingPopupMenu extends UiElement {
     @PublicAtsApi
     public String[] getMenuLabels() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JPopupMenuFixture ) SwingElementLocator.findFixture( this ) ).menuLabels();
+        return ((JPopupMenuFixture) SwingElementLocator.findFixture(this)).menuLabels();
     }
 
     /**
@@ -120,35 +120,35 @@ public class SwingPopupMenu extends UiElement {
     @PublicAtsApi
     public String[] getVisibleMenuLabels() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JPopupMenuFixture popupMenuFixture = ( JPopupMenuFixture ) SwingElementLocator.findFixture( this );
+        JPopupMenuFixture popupMenuFixture = (JPopupMenuFixture) SwingElementLocator.findFixture(this);
         String[] labels = popupMenuFixture.menuLabels();
 
-        List<String> visibleLabels = new ArrayList<String>( labels.length );
-        for( final String label : labels ) {
+        List<String> visibleLabels = new ArrayList<String>(labels.length);
+        for (final String label : labels) {
 
-            JMenuItemFixture menuItemFixture = popupMenuFixture.menuItem( new GenericTypeMatcher<JMenuItem>( JMenuItem.class,
-                                                                                                             false ) {
+            JMenuItemFixture menuItemFixture = popupMenuFixture.menuItem(new GenericTypeMatcher<JMenuItem>(JMenuItem.class,
+                                                                                                           false) {
 
                 @Override
                 protected boolean isMatching(
                                               JMenuItem menuItem ) {
 
                     String text = menuItem.getText();
-                    if( text != null && text.equals( label ) ) {
+                    if (text != null && text.equals(label)) {
                         return true;
                     }
                     return false;
                 }
 
-            } );
+            });
 
-            if( menuItemFixture != null && menuItemFixture.component().isVisible() ) {
-                visibleLabels.add( label );
+            if (menuItemFixture != null && menuItemFixture.component().isVisible()) {
+                visibleLabels.add(label);
             }
         }
 
-        return visibleLabels.toArray( new String[0] );
+        return visibleLabels.toArray(new String[0]);
     }
 }

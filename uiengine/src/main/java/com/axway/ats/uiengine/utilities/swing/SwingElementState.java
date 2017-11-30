@@ -60,10 +60,10 @@ public class SwingElementState {
     public void verifyExist() {
 
         boolean exists = isElementPresent();
-        if( !exists ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " does not exist while it is expected to exist",
-                                             lastNotFoundException );
+        if (!exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " does not exist while it is expected to exist",
+                                            lastNotFoundException);
         }
     }
 
@@ -76,10 +76,10 @@ public class SwingElementState {
     public void verifyNotExist() {
 
         boolean exists = isElementPresent();
-        if( exists ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " exists while it is expected to not exist",
-                                             lastNotFoundException );
+        if (exists) {
+            throw new VerificationException(getElementDescription()
+                                            + " exists while it is expected to not exist",
+                                            lastNotFoundException);
         }
     }
 
@@ -92,10 +92,10 @@ public class SwingElementState {
     public void verifyVisible() {
 
         boolean visible = isElementVisible();
-        if( !visible ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " is invisible while it is expected to be visible",
-                                             lastNotFoundException );
+        if (!visible) {
+            throw new VerificationException(getElementDescription()
+                                            + " is invisible while it is expected to be visible",
+                                            lastNotFoundException);
         }
     }
 
@@ -108,10 +108,10 @@ public class SwingElementState {
     public void verifyNotVisible() {
 
         boolean visible = isElementVisible();
-        if( visible ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " is visible while it is expected to be invisible",
-                                             lastNotFoundException );
+        if (visible) {
+            throw new VerificationException(getElementDescription()
+                                            + " is visible while it is expected to be invisible",
+                                            lastNotFoundException);
         }
     }
 
@@ -124,10 +124,10 @@ public class SwingElementState {
     public void verifyEnabled() {
 
         boolean enabled = isElementEnabled();
-        if( !enabled ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " is disabled while it is expected to be enabled",
-                                             lastNotFoundException );
+        if (!enabled) {
+            throw new VerificationException(getElementDescription()
+                                            + " is disabled while it is expected to be enabled",
+                                            lastNotFoundException);
         }
     }
 
@@ -140,10 +140,10 @@ public class SwingElementState {
     public void verifyDisabled() {
 
         boolean enabled = isElementEnabled();
-        if( enabled ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " is enabled while it is expected to be disabled",
-                                             lastNotFoundException );
+        if (enabled) {
+            throw new VerificationException(getElementDescription()
+                                            + " is enabled while it is expected to be disabled",
+                                            lastNotFoundException);
         }
     }
 
@@ -156,10 +156,10 @@ public class SwingElementState {
     public void verifyEditable() {
 
         boolean editable = isElementEditable();
-        if( !editable ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " is not editable while it is expected to be editable",
-                                             lastNotFoundException );
+        if (!editable) {
+            throw new VerificationException(getElementDescription()
+                                            + " is not editable while it is expected to be editable",
+                                            lastNotFoundException);
         }
     }
 
@@ -172,10 +172,10 @@ public class SwingElementState {
     public void verifyNotEditable() {
 
         boolean editable = isElementEditable();
-        if( editable ) {
-            throw new VerificationException( getElementDescription()
-                                                     + " is editable while it is expected to be not editable",
-                                             lastNotFoundException );
+        if (editable) {
+            throw new VerificationException(getElementDescription()
+                                            + " is editable while it is expected to be not editable",
+                                            lastNotFoundException);
         }
     }
 
@@ -191,14 +191,14 @@ public class SwingElementState {
         int millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementVisible() ) {
+            if (isElementVisible()) {
                 return;
             }
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify that element is visible within " + millis + " ms"
-                                         + getElementDescription(), lastNotFoundException );
+        throw new VerificationException("Failed to verify that element is visible within " + millis + " ms"
+                                        + getElementDescription(), lastNotFoundException);
     }
 
     /**
@@ -213,14 +213,14 @@ public class SwingElementState {
         int millis = UiEngineConfigurator.getInstance().getElementStateChangeDelay();
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementVisible() ) {
+            if (!isElementVisible()) {
                 return;
             }
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify that element is invisible within " + millis
-                                         + " ms" + getElementDescription(), lastNotFoundException );
+        throw new VerificationException("Failed to verify that element is invisible within " + millis
+                                        + " ms" + getElementDescription(), lastNotFoundException);
     }
 
     /**
@@ -232,7 +232,7 @@ public class SwingElementState {
     @PublicAtsApi
     public void waitToBecomeEnabled() {
 
-        waitToBecomeEnabled( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeEnabled(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -244,7 +244,7 @@ public class SwingElementState {
     @PublicAtsApi
     public void waitToBecomeDisabled() {
 
-        waitToBecomeDisabled( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeDisabled(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -256,7 +256,7 @@ public class SwingElementState {
     @PublicAtsApi
     public void waitToBecomeExisting() {
 
-        waitToBecomeExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -271,14 +271,14 @@ public class SwingElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementPresent() ) {
+            if (isElementPresent()) {
                 return;
             }
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify that element exists within " + millis + " ms"
-                                         + getElementDescription(), lastNotFoundException );
+        throw new VerificationException("Failed to verify that element exists within " + millis + " ms"
+                                        + getElementDescription(), lastNotFoundException);
     }
 
     /**
@@ -290,7 +290,7 @@ public class SwingElementState {
     @PublicAtsApi
     public void waitToBecomeNotExisting() {
 
-        waitToBecomeNotExisting( UiEngineConfigurator.getInstance().getElementStateChangeDelay() );
+        waitToBecomeNotExisting(UiEngineConfigurator.getInstance().getElementStateChangeDelay());
     }
 
     /**
@@ -305,14 +305,14 @@ public class SwingElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementPresent() ) {
+            if (!isElementPresent()) {
                 return;
             }
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify the element is not existing within " + millis
-                                         + " ms" + getElementDescription(), lastNotFoundException );
+        throw new VerificationException("Failed to verify the element is not existing within " + millis
+                                        + " ms" + getElementDescription(), lastNotFoundException);
     }
 
     /**
@@ -327,14 +327,14 @@ public class SwingElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( isElementEnabled() ) {
+            if (isElementEnabled()) {
                 return;
             }
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify that element is enabled within " + millis + " ms"
-                                         + getElementDescription(), lastNotFoundException );
+        throw new VerificationException("Failed to verify that element is enabled within " + millis + " ms"
+                                        + getElementDescription(), lastNotFoundException);
     }
 
     /**
@@ -349,21 +349,22 @@ public class SwingElementState {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
-            if( !isElementEnabled() ) {
+            if (!isElementEnabled()) {
                 return;
             }
-            UiEngineUtilities.sleep( SLEEP_PERIOD );
-        } while( endTime - System.currentTimeMillis() > 0 );
+            UiEngineUtilities.sleep(SLEEP_PERIOD);
+        } while (endTime - System.currentTimeMillis() > 0);
 
-        throw new VerificationException( "Failed to verify that element is disabled within " + millis + " ms"
-                                         + getElementDescription(), lastNotFoundException );
+        throw new VerificationException("Failed to verify that element is disabled within " + millis + " ms"
+                                        + getElementDescription(), lastNotFoundException);
     }
 
     private String getElementDescription() {
 
-        return " '" + ( element != null
+        return " '" + (element != null
                                        ? element.toString()
-                                       : "Element " + elementProperties.toString() ) + "'";
+                                       : "Element " + elementProperties.toString())
+               + "'";
     }
 
     /**
@@ -376,9 +377,9 @@ public class SwingElementState {
 
         try {
 
-            SwingElementLocator.findFixture( element );
+            SwingElementLocator.findFixture(element);
             return true;
-        } catch( ElementNotFoundException nsee ) {
+        } catch (ElementNotFoundException nsee) {
             lastNotFoundException = nsee;
             return false;
         }
@@ -394,8 +395,8 @@ public class SwingElementState {
 
         try {
 
-            return SwingElementLocator.findFixture( element ).component().isVisible();
-        } catch( ElementNotFoundException nsee ) {
+            return SwingElementLocator.findFixture(element).component().isVisible();
+        } catch (ElementNotFoundException nsee) {
             lastNotFoundException = nsee;
             return false;
         }
@@ -411,8 +412,8 @@ public class SwingElementState {
 
         try {
 
-            return SwingElementLocator.findFixture( element ).component().isEnabled();
-        } catch( ElementNotFoundException nsee ) {
+            return SwingElementLocator.findFixture(element).component().isEnabled();
+        } catch (ElementNotFoundException nsee) {
             lastNotFoundException = nsee;
             return false;
         }
@@ -428,17 +429,17 @@ public class SwingElementState {
 
         try {
 
-            Component component = SwingElementLocator.findFixture( element ).component();
-            if( component instanceof JTextComponent ) {
-                return ( ( JTextComponent ) component ).isEditable();
-            } else if( component instanceof JComboBox ) {
-                return ( ( JComboBox ) component ).isEditable();
-            } else if( component instanceof JTree ) {
-                return ( ( JTree ) component ).isEditable();
+            Component component = SwingElementLocator.findFixture(element).component();
+            if (component instanceof JTextComponent) {
+                return ((JTextComponent) component).isEditable();
+            } else if (component instanceof JComboBox) {
+                return ((JComboBox) component).isEditable();
+            } else if (component instanceof JTree) {
+                return ((JTree) component).isEditable();
             }
-            throw new NotSupportedOperationException( "Component of type \"" + component.getClass().getName()
-                                                      + "\" doesn't have 'editable' state!" );
-        } catch( ElementNotFoundException nsee ) {
+            throw new NotSupportedOperationException("Component of type \"" + component.getClass().getName()
+                                                     + "\" doesn't have 'editable' state!");
+        } catch (ElementNotFoundException nsee) {
             lastNotFoundException = nsee;
             return false;
         }

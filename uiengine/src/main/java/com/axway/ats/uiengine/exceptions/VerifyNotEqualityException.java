@@ -24,8 +24,8 @@ public class VerifyNotEqualityException extends UiElementException {
     public VerifyNotEqualityException( String notExpectedValue,
                                        UiElement uiElement ) {
 
-        super( "The NOT expected value '" + notExpectedValue + "' is in fact equal to the actual value",
-               uiElement );
+        super("The NOT expected value '" + notExpectedValue + "' is in fact equal to the actual value",
+              uiElement);
     }
 
 }

@@ -55,21 +55,21 @@ public class RealHtmlElement extends HtmlElement {
     public RealHtmlElement( UiDriver uiDriver,
                             UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
 
         // get rules used for finding html element
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "RealHtml",
-                                                               RULES_DUMMY );
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "RealHtml",
+                                                              RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String locator = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                      properties,
-                                                                      new String[]{},
-                                                                      "*" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, locator );
+        String locator = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                     properties,
+                                                                     new String[]{},
+                                                                     "*");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, locator);
 
-        webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        webDriver = (WebDriver) ((AbstractRealBrowserDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -81,9 +81,9 @@ public class RealHtmlElement extends HtmlElement {
     public String getAttributeValue(
                                      String attribute ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        return RealHtmlElementLocator.findElement( this ).getAttribute( attribute );
+        return RealHtmlElementLocator.findElement(this).getAttribute(attribute);
     }
 
     /**
@@ -96,9 +96,9 @@ public class RealHtmlElement extends HtmlElement {
     public String getCssPropertyValue(
                                        String propertyName ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        return RealHtmlElementLocator.findElement( this ).getCssValue( propertyName );
+        return RealHtmlElementLocator.findElement(this).getCssValue(propertyName);
     }
 
     /**
@@ -109,9 +109,9 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public String getTextContent() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        return RealHtmlElementLocator.findElement( this ).getText();
+        return RealHtmlElementLocator.findElement(this).getText();
     }
 
     /**
@@ -123,10 +123,10 @@ public class RealHtmlElement extends HtmlElement {
     public void setTextContent(
                                 String content ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( content );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        element.sendKeys(content);
     }
 
     /**
@@ -136,20 +136,20 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void click() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
         try {
-            WebElement element = RealHtmlElementLocator.findElement( this );
+            WebElement element = RealHtmlElementLocator.findElement(this);
             try {
                 element.click();
-            } catch( ElementNotInteractableException enie ) {
-                if( !UiEngineConfigurator.getInstance().isWorkWithInvisibleElements() ) {
+            } catch (ElementNotInteractableException enie) {
+                if (!UiEngineConfigurator.getInstance().isWorkWithInvisibleElements()) {
                     throw enie;
                 }
-                ( ( JavascriptExecutor ) webDriver ).executeScript( "arguments[0].click()", element );
+                ((JavascriptExecutor) webDriver).executeScript("arguments[0].click()", element);
             }
-        } catch( Exception e ) {
-            throw new SeleniumOperationException( this, "click", e );
+        } catch (Exception e) {
+            throw new SeleniumOperationException(this, "click", e);
         }
     }
 
@@ -160,11 +160,11 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void doubleClick() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
+        WebElement element = RealHtmlElementLocator.findElement(this);
 
-        new Actions( webDriver ).doubleClick( element ).perform();
+        new Actions(webDriver).doubleClick(element).perform();
     }
 
     /**
@@ -174,11 +174,11 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void rightClick() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
+        WebElement element = RealHtmlElementLocator.findElement(this);
 
-        new Actions( webDriver ).contextClick( element ).perform();
+        new Actions(webDriver).contextClick(element).perform();
     }
 
     /**
@@ -188,12 +188,12 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void mouseOver() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
+        WebElement element = RealHtmlElementLocator.findElement(this);
 
         // 1. option
-        new Actions( webDriver ).moveToElement( element ).perform();
+        new Actions(webDriver).moveToElement(element).perform();
 
         // 2. option
         //        element.sendKeys( "" );
@@ -219,14 +219,13 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressEnterKey() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        if (webDriver instanceof PhantomJSDriver){
-            element.sendKeys( Keys.ENTER );
-        }
-        else{
-            element.sendKeys( Keys.RETURN );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        if (webDriver instanceof PhantomJSDriver) {
+            element.sendKeys(Keys.ENTER);
+        } else {
+            element.sendKeys(Keys.RETURN);
         }
     }
 
@@ -237,10 +236,10 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressSpaceKey() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( Keys.SPACE );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        element.sendKeys(Keys.SPACE);
     }
 
     /**
@@ -250,10 +249,10 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressTabKey() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( Keys.TAB );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        element.sendKeys(Keys.TAB);
     }
 
     /**
@@ -263,10 +262,10 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void pressEscapeKey() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        element.sendKeys( Keys.ESCAPE );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        element.sendKeys(Keys.ESCAPE);
     }
 
     /**
@@ -278,15 +277,15 @@ public class RealHtmlElement extends HtmlElement {
     public void dragAndDropTo(
                                HtmlElement targetElement ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement source = RealHtmlElementLocator.findElement( this );
-        WebElement target = RealHtmlElementLocator.findElement( targetElement );
+        WebElement source = RealHtmlElementLocator.findElement(this);
+        WebElement target = RealHtmlElementLocator.findElement(targetElement);
 
-        Actions actionBuilder = new Actions( webDriver );
-        Action dragAndDropAction = actionBuilder.clickAndHold( source )
-                                                .moveToElement( target, 1, 1 )
-                                                .release( target )
+        Actions actionBuilder = new Actions(webDriver);
+        Action dragAndDropAction = actionBuilder.clickAndHold(source)
+                                                .moveToElement(target, 1, 1)
+                                                .release(target)
                                                 .build();
         dragAndDropAction.perform();
 
@@ -301,9 +300,9 @@ public class RealHtmlElement extends HtmlElement {
     @PublicAtsApi
     public void scrollTo() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        WebElement element = RealHtmlElementLocator.findElement( this );
-        ( ( JavascriptExecutor ) webDriver ).executeScript( "arguments[0].scrollIntoView();", element );
+        WebElement element = RealHtmlElementLocator.findElement(this);
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView();", element);
     }
 }

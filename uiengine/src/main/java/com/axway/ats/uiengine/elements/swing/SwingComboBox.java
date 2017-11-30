@@ -44,14 +44,14 @@ public class SwingComboBox extends UiComboBox {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingComboBox.class, JComboBox.class );
+        SwingElementLocator.componentsMap.put(SwingComboBox.class, JComboBox.class);
     }
 
     public SwingComboBox( UiDriver uiDriver,
                           UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -62,11 +62,11 @@ public class SwingComboBox extends UiComboBox {
     @PublicAtsApi
     public String getValue() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JComboBoxFixture ) SwingElementLocator.findFixture( this ) ).component()
-                                                                               .getSelectedItem()
-                                                                               .toString();
+        return ((JComboBoxFixture) SwingElementLocator.findFixture(this)).component()
+                                                                         .getSelectedItem()
+                                                                         .toString();
     }
 
     /**
@@ -74,34 +74,34 @@ public class SwingComboBox extends UiComboBox {
      * @param value the ComboBox value to set
      * @throws VerificationException if the element doesn't exist
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     @Override
     @PublicAtsApi
     public void setValue(
                           String value ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         JComboBoxFixture comboBoxFixture = null;
         try {
 
-            comboBoxFixture = ( ( JComboBoxFixture ) SwingElementLocator.findFixture( this ) );
-            comboBoxFixture.selectItem( value );
-        } catch( LocationUnavailableException lue ) { // an element matching the given text cannot be found
+            comboBoxFixture = ((JComboBoxFixture) SwingElementLocator.findFixture(this));
+            comboBoxFixture.selectItem(value);
+        } catch (LocationUnavailableException lue) { // an element matching the given text cannot be found
 
             // if the element is editable we'll enter the new value
-            if( comboBoxFixture != null && comboBoxFixture.component().isEditable() ) {
+            if (comboBoxFixture != null && comboBoxFixture.component().isEditable()) {
 
                 try {
-                    comboBoxFixture.component().addItem( value );
-                    comboBoxFixture.selectItem( value );
-                } catch( LocationUnavailableException e ) {
+                    comboBoxFixture.component().addItem(value);
+                    comboBoxFixture.selectItem(value);
+                } catch (LocationUnavailableException e) {
 
-                    throw new UiElementException( e.getMessage(), this );
+                    throw new UiElementException(e.getMessage(), this);
                 }
             } else {
 
-                throw new UiElementException( lue.getMessage(), this );
+                throw new UiElementException(lue.getMessage(), this);
             }
         }
     }
@@ -115,9 +115,9 @@ public class SwingComboBox extends UiComboBox {
     @PublicAtsApi
     public String[] getAvailableValues() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JComboBoxFixture ) SwingElementLocator.findFixture( this ) ).contents();
+        return ((JComboBoxFixture) SwingElementLocator.findFixture(this)).contents();
     }
 
     /**
@@ -132,9 +132,9 @@ public class SwingComboBox extends UiComboBox {
                              String expectedValue ) {
 
         String actualText = getValue();
-        if( !actualText.equals( expectedValue ) ) {
+        if (!actualText.equals(expectedValue)) {
 
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -150,9 +150,9 @@ public class SwingComboBox extends UiComboBox {
                                 String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
+        if (actualText.equals(notExpectedValue)) {
 
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 

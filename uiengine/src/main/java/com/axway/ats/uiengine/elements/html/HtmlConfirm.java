@@ -27,7 +27,7 @@ public abstract class HtmlConfirm extends UiConfirm {
 
     public HtmlConfirm( UiDriver uiDriver ) {
 
-        super( uiDriver );
+        super(uiDriver);
     }
 
     @PublicAtsApi

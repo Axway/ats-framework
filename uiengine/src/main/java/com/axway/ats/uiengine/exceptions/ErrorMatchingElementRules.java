@@ -27,17 +27,17 @@ public class ErrorMatchingElementRules extends RuntimeException {
     public ErrorMatchingElementRules( String message,
                                       Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     public ErrorMatchingElementRules( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public ErrorMatchingElementRules( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
 }

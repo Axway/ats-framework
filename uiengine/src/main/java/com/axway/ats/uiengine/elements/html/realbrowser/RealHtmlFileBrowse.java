@@ -56,18 +56,18 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
 
     public RealHtmlFileBrowse( UiDriver uiDriver, UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
         this.properties = properties;
 
-        String[] matchingRules = properties.checkTypeAndRules( this.getClass().getSimpleName(), "RealHtml",
-                                                               RealHtmlElement.RULES_DUMMY );
+        String[] matchingRules = properties.checkTypeAndRules(this.getClass().getSimpleName(), "RealHtml",
+                                                              RealHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules, properties,
-                                                                    new String[]{ "file" }, "input" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules, properties,
+                                                                   new String[]{ "file" }, "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
 
-        webDriver = ( WebDriver ) ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        webDriver = (WebDriver) ((AbstractRealBrowserDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -78,9 +78,9 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
     @PublicAtsApi
     public String getValue() {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        return RealHtmlElementLocator.findElement( this ).getAttribute( "value" );
+        return RealHtmlElementLocator.findElement(this).getAttribute("value");
     }
 
     /**
@@ -92,9 +92,9 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
     @PublicAtsApi
     public void setValue( String value ) {
 
-        new RealHtmlElementState( this ).waitToBecomeExisting();
+        new RealHtmlElementState(this).waitToBecomeExisting();
 
-        setFileInputValue( webDriver, value );
+        setFileInputValue(webDriver, value);
 
         UiEngineUtilities.sleep();
     }
@@ -108,69 +108,69 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
     @PublicAtsApi
     public void setValueUsingNativeDialog( String path ) throws Exception {
 
-        if( !OperatingSystemType.getCurrentOsType().isWindows() ) {
-            throw new RuntimeException( "This method is only available for Windows machines!" );
+        if (!OperatingSystemType.getCurrentOsType().isWindows()) {
+            throw new RuntimeException("This method is only available for Windows machines!");
         }
 
         // check if the file exist
-        if( !new File( path ).exists() ) {
-            throw new FileNotFoundException( "File path \"" + path + "\" is wrong or does not exist!" );
+        if (!new File(path).exists()) {
+            throw new FileNotFoundException("File path \"" + path + "\" is wrong or does not exist!");
         }
 
         // ats_file_upload.exe location
-        String uploadFileDestination = System.getProperty( "user.dir" ) + "\\ats_file_upload.exe";
+        String uploadFileDestination = System.getProperty("user.dir") + "\\ats_file_upload.exe";
         // native window name
         String windowName;
-        log.info( "Using native " + path + " to work with native browser dialogs" );
+        log.info("Using native " + path + " to work with native browser dialogs");
 
         // check if the ats_file_upload.exe file is already created
-        if( !new File( uploadFileDestination ).exists() ) {
+        if (!new File(uploadFileDestination).exists()) {
             OutputStream os = null;
             InputStream is = null;
             try {
                 // get the ats_file_upload.exe file, located in the ats-uiengine.jar
-                is = getClass().getClassLoader().getResourceAsStream( "binaries/ats_file_upload.exe" );
-                if( is == null ) {
+                is = getClass().getClassLoader().getResourceAsStream("binaries/ats_file_upload.exe");
+                if (is == null) {
 
-                    throw new FileNotFoundException( "The 'ats_file_upload.exe' file is not found in ats-uiengine.jar!" );
+                    throw new FileNotFoundException("The 'ats_file_upload.exe' file is not found in ats-uiengine.jar!");
                 }
 
-                File uploadFile = new File( uploadFileDestination );
-                os = new FileOutputStream( uploadFile );
-                IOUtils.copy( is, os );
+                File uploadFile = new File(uploadFileDestination);
+                os = new FileOutputStream(uploadFile);
+                IOUtils.copy(is, os);
 
             } finally {
-                IoUtils.closeStream( is );
-                IoUtils.closeStream( os );
+                IoUtils.closeStream(is);
+                IoUtils.closeStream(os);
             }
         }
 
-        if( webDriver instanceof FirefoxDriver ) {
+        if (webDriver instanceof FirefoxDriver) {
             windowName = " \"File Upload\" ";
-        } else if( webDriver instanceof ChromeDriver ) {
+        } else if (webDriver instanceof ChromeDriver) {
             windowName = " \"Open\" ";
         } else {
-            throw new RobotException( "Not Implemented for your browser! Currently Firefox and "
-                                      + "Chrome are supported." );
+            throw new RobotException("Not Implemented for your browser! Currently Firefox and "
+                                     + "Chrome are supported.");
         }
 
         // add the browse button properties
-        ( ( AbstractRealBrowserDriver ) super.getUiDriver() ).getHtmlEngine()
-                                                             .getElement( properties )
-                                                             .click();
+        ((AbstractRealBrowserDriver) super.getUiDriver()).getHtmlEngine()
+                                                         .getElement(properties)
+                                                         .click();
 
         // run the ats_file_upload.exe file
-        IProcessExecutor proc = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4,
-                                                          uploadFileDestination + windowName + path );
+        IProcessExecutor proc = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4,
+                                                         uploadFileDestination + windowName + path);
         proc.execute();
 
         // check if there is any error, while executing the ats_file_upload.exe file
-        if( proc.getExitCode() != 0 ) {
-            log.error( "AutoIT process for native browser interaction failed with exit code: "
-                       + proc.getExitCode() + ";" );
-            log.error( "Output stream data: " + proc.getStandardOutput() + ";" );
-            log.error( "Error stream data: " + proc.getErrorOutput() );
-            throw new RobotException( "AutoIT process for native browser interaction failed." );
+        if (proc.getExitCode() != 0) {
+            log.error("AutoIT process for native browser interaction failed with exit code: "
+                      + proc.getExitCode() + ";");
+            log.error("Output stream data: " + proc.getStandardOutput() + ";");
+            log.error("Error stream data: " + proc.getErrorOutput());
+            throw new RobotException("AutoIT process for native browser interaction failed.");
         }
     }
 
@@ -186,8 +186,8 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
         expectedValue = expectedValue.trim();
 
         String actualText = getValue().trim();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -201,8 +201,8 @@ public class RealHtmlFileBrowse extends HtmlFileBrowse {
     public void verifyNotValue( String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

@@ -44,8 +44,8 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
 
     public HiddenHtmlEngine( HiddenBrowserDriver hiddenBrowserDriver ) {
 
-        super( hiddenBrowserDriver, HiddenHtmlElementsFactory.getInstance() );
-        this.hiddenHtmlElementsFactory = ( HiddenHtmlElementsFactory ) elementsFactory;
+        super(hiddenBrowserDriver, HiddenHtmlElementsFactory.getInstance());
+        this.hiddenHtmlElementsFactory = (HiddenHtmlElementsFactory) elementsFactory;
     }
 
     /**
@@ -57,7 +57,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlElementState getUtilsElementState(
                                                         UiElement uiElement ) {
 
-        return new HiddenHtmlElementState( uiElement );
+        return new HiddenHtmlElementState(uiElement);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlButton getButton(
                                        String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlButton( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlButton(mapId, uiDriver);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlButton getButton(
                                        UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlButton( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlButton(properties, uiDriver);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlTextBox getTextBox(
                                          String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlTextBox( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlTextBox(mapId, uiDriver);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlTextBox getTextBox(
                                          UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlTextBox( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlTextBox(properties, uiDriver);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlCheckBox getCheckBox(
                                            String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlCheckBox( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlCheckBox(mapId, uiDriver);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlCheckBox getCheckBox(
                                            UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlCheckBox( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlCheckBox(properties, uiDriver);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlSingleSelectList getSingleSelectList(
                                                            String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenSingleSelectList( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenSingleSelectList(mapId, uiDriver);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlSingleSelectList getSingleSelectList(
                                                            UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenSingleSelectList( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenSingleSelectList(properties, uiDriver);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlFileBrowse getFileBrowse(
                                                String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenFileBrowse( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenFileBrowse(mapId, uiDriver);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlFileBrowse getFileBrowse(
                                                UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenFileBrowse( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenFileBrowse(properties, uiDriver);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlTable getTable(
                                      String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenTable( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenTable(mapId, uiDriver);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlTable getTable(
                                      UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenTable( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenTable(properties, uiDriver);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlLink getLink(
                                    String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenLink( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenLink(mapId, uiDriver);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlLink getLink(
                                    UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenLink( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenLink(properties, uiDriver);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlMultiSelectList getMultiSelectList(
                                                          String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenMultiSelectList( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenMultiSelectList(mapId, uiDriver);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlMultiSelectList getMultiSelectList(
                                                          UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenMultiSelectList( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenMultiSelectList(properties, uiDriver);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlRadioList getRadioList(
                                              String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenRadioList( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenRadioList(mapId, uiDriver);
     }
 
     @Override
@@ -201,53 +201,53 @@ public class HiddenHtmlEngine extends AbstractHtmlEngine implements IHtmlEngine 
     public HiddenHtmlRadioList getRadioList(
                                              UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenRadioList( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenRadioList(properties, uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlTextArea getTextArea(
                                            String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenTextArea( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenTextArea(mapId, uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlTextArea getTextArea(
                                            UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenTextArea( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenTextArea(properties, uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlElement getElement(
                                          String mapId ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlElement( mapId, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlElement(mapId, uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlElement getElement(
                                          UiElementProperties properties ) {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlElement( properties, uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlElement(properties, uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlAlert expectAlert() {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlAlert( uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlAlert(uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlPrompt expectPrompt() {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlPrompt( uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlPrompt(uiDriver);
     }
 
     @PublicAtsApi
     public HiddenHtmlConfirm expectConfirm() {
 
-        return this.hiddenHtmlElementsFactory.getHiddenHtmlConfirm( uiDriver );
+        return this.hiddenHtmlElementsFactory.getHiddenHtmlConfirm(uiDriver);
     }
 
 }

@@ -53,14 +53,14 @@ public class SwingTable extends UiTable {
     private static final String[] RULES = { "label,visible", "label", "name,visible", "name", "index" };
 
     static {
-        SwingElementLocator.componentsMap.put( SwingTable.class, JTable.class );
+        SwingElementLocator.componentsMap.put(SwingTable.class, JTable.class);
     }
 
     public SwingTable( UiDriver uiDriver,
                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        checkTypeAndRules( "Swing", RULES );
+        super(uiDriver, properties);
+        checkTypeAndRules("Swing", RULES);
     }
 
     /**
@@ -78,24 +78,24 @@ public class SwingTable extends UiTable {
                                int row,
                                int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
         try {
 
-            TableCell tableCell = new TableCell( row, column ) {};
-            tableFixture.selectCell( tableCell ); // if the cell coordinates are wrong, the exception will be thrown
-            if( tableFixture.component().isCellEditable( row, column ) ) {
+            TableCell tableCell = new TableCell(row, column) {};
+            tableFixture.selectCell(tableCell); // if the cell coordinates are wrong, the exception will be thrown
+            if (tableFixture.component().isCellEditable(row, column)) {
 
-                tableFixture.enterValue( tableCell, value );
+                tableFixture.enterValue(tableCell, value);
             } else {
 
-                throw new NotSupportedOperationException( "The table cell [" + row + "," + column
-                                                          + "] is not editable. " + toString() );
+                throw new NotSupportedOperationException("The table cell [" + row + "," + column
+                                                         + "] is not editable. " + toString());
             }
-        } catch( IndexOutOfBoundsException ioobe ) {
+        } catch (IndexOutOfBoundsException ioobe) {
 
-            throw new UiElementException( ioobe.getMessage(), this );
+            throw new UiElementException(ioobe.getMessage(), this);
         }
     }
 
@@ -112,14 +112,14 @@ public class SwingTable extends UiTable {
                                  int row,
                                  int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         try {
-            return ( ( JTableFixture ) SwingElementLocator.findFixture( this ) ).valueAt( new TableCell( row,
-                                                                                                         column ) {} );
-        } catch( IndexOutOfBoundsException ioobe ) {
+            return ((JTableFixture) SwingElementLocator.findFixture(this)).valueAt(new TableCell(row,
+                                                                                                 column) {});
+        } catch (IndexOutOfBoundsException ioobe) {
 
-            throw new UiElementException( ioobe.getMessage(), this );
+            throw new UiElementException(ioobe.getMessage(), this);
         }
     }
 
@@ -132,9 +132,9 @@ public class SwingTable extends UiTable {
     @PublicAtsApi
     public int getRowCount() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        return ( ( JTableFixture ) SwingElementLocator.findFixture( this ) ).rowCount();
+        return ((JTableFixture) SwingElementLocator.findFixture(this)).rowCount();
     }
 
     /**
@@ -147,7 +147,7 @@ public class SwingTable extends UiTable {
     @PublicAtsApi
     public int getColumnCount() {
 
-        throw new NotSupportedOperationException( "Not implemented" );
+        throw new NotSupportedOperationException("Not implemented");
     }
 
     /**
@@ -165,10 +165,10 @@ public class SwingTable extends UiTable {
                                   int row,
                                   int column ) {
 
-        String actualValue = getFieldValue( row, column );
+        String actualValue = getFieldValue(row, column);
 
-        if( !actualValue.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualValue, this );
+        if (!actualValue.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualValue, this);
         }
     }
 
@@ -187,10 +187,10 @@ public class SwingTable extends UiTable {
                                      int row,
                                      int column ) {
 
-        String actualValue = getFieldValue( row, column );
+        String actualValue = getFieldValue(row, column);
 
-        if( actualValue.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualValue.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 
@@ -209,10 +209,10 @@ public class SwingTable extends UiTable {
                                        int row,
                                        int column ) {
 
-        String actualValue = getFieldValue( row, column );
+        String actualValue = getFieldValue(row, column);
 
-        if( !Pattern.matches( expectedValueRegex, actualValue ) ) {
-            throw new VerifyEqualityException( expectedValueRegex, actualValue, this );
+        if (!Pattern.matches(expectedValueRegex, actualValue)) {
+            throw new VerifyEqualityException(expectedValueRegex, actualValue, this);
         }
     }
 
@@ -228,14 +228,14 @@ public class SwingTable extends UiTable {
                            int row,
                            int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
-            tableFixture.cell( new TableCell( row, column ) {} ).click();
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableFixture.cell(new TableCell(row, column) {}).click();
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -251,14 +251,14 @@ public class SwingTable extends UiTable {
                                  int row,
                                  int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
-            tableFixture.cell( new TableCell( row, column ) {} ).doubleClick();
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableFixture.cell(new TableCell(row, column) {}).doubleClick();
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -274,14 +274,14 @@ public class SwingTable extends UiTable {
                                 int row,
                                 int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
-            tableFixture.cell( new TableCell( row, column ) {} ).rightClick();
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableFixture.cell(new TableCell(row, column) {}).rightClick();
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -299,44 +299,44 @@ public class SwingTable extends UiTable {
                                                   String value,
                                                   boolean isRegEx ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
         List<Integer[]> results = new ArrayList<Integer[]>();
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
-            if( value == null ) {
+            if (value == null) {
                 isRegEx = false;
             }
             Pattern regexPattern = null;
-            if( isRegEx ) {
-                regexPattern = Pattern.compile( value );
+            if (isRegEx) {
+                regexPattern = Pattern.compile(value);
             }
 
-            for( int row = 0; row < tableFixture.target.getRowCount(); row++ ) {
-                for( int column = 0; column < tableFixture.target.getColumnCount(); column++ ) {
+            for (int row = 0; row < tableFixture.target.getRowCount(); row++) {
+                for (int column = 0; column < tableFixture.target.getColumnCount(); column++) {
 
                     String cellValue = null;
                     try {
-                        cellValue = tableFixture.valueAt( new TableCell( row, column ) {} );
-                    } catch( NullPointerException npe ) {
+                        cellValue = tableFixture.valueAt(new TableCell(row, column) {});
+                    } catch (NullPointerException npe) {
                         // valueAt() throws NPE if the cell is null
                     }
-                    if( cellValue == null && value != null ) {
+                    if (cellValue == null && value != null) {
                         continue;
                     }
-                    if( ( cellValue == null && value == null )
-                        || ( isRegEx && regexPattern.matcher( cellValue ).matches() )
-                        || ( !isRegEx && cellValue.equals( value ) ) ) {
+                    if ( (cellValue == null && value == null)
+                         || (isRegEx && regexPattern.matcher(cellValue).matches())
+                         || (!isRegEx && cellValue.equals(value))) {
 
-                        results.add( new Integer[]{ row, column } );
+                        results.add(new Integer[]{ row, column });
                     }
                 }
             }
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
         return results;
     }
@@ -353,14 +353,14 @@ public class SwingTable extends UiTable {
                             int row,
                             int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
-            tableFixture.selectCell( new TableCell( row, column ) {} );
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableFixture.selectCell(new TableCell(row, column) {});
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -374,21 +374,21 @@ public class SwingTable extends UiTable {
     public void selectCells(
                              int[][] cells ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
         try {
 
             TableCell[] cellsToSelect = new TableCell[cells.length];
-            for( int i = 0; i < cells.length; i++ ) {
+            for (int i = 0; i < cells.length; i++) {
                 int row = cells[i][0];
                 int column = cells[i][1];
-                cellsToSelect[i] = new TableCell( row, column ) {};
+                cellsToSelect[i] = new TableCell(row, column) {};
             }
-            tableFixture.selectCells( cellsToSelect );
-        } catch( Exception e ) {
+            tableFixture.selectCells(cellsToSelect);
+        } catch (Exception e) {
 
-            throw new UiElementException( e.getMessage(), this );
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -402,14 +402,14 @@ public class SwingTable extends UiTable {
     public void selectRow(
                            int... rows ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
-            tableFixture.selectRows( rows );
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableFixture.selectRows(rows);
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -422,14 +422,14 @@ public class SwingTable extends UiTable {
     @PublicAtsApi
     public int[] getSelectedRows() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
 
         try {
             return tableFixture.component().getSelectedRows();
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -443,15 +443,15 @@ public class SwingTable extends UiTable {
     public void clickHeader(
                              int columnIndex ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
         JTableHeaderFixture tableHeaderFixture = tableFixture.tableHeader();
 
         try {
-            tableHeaderFixture.clickColumn( columnIndex );
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableHeaderFixture.clickColumn(columnIndex);
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -465,15 +465,15 @@ public class SwingTable extends UiTable {
     public void clickHeader(
                              String columnName ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
         JTableHeaderFixture tableHeaderFixture = tableFixture.tableHeader();
 
         try {
-            tableHeaderFixture.clickColumn( columnName );
-        } catch( Exception e ) {
-            throw new UiElementException( e.getMessage(), this );
+            tableHeaderFixture.clickColumn(columnName);
+        } catch (Exception e) {
+            throw new UiElementException(e.getMessage(), this);
         }
     }
 
@@ -488,9 +488,9 @@ public class SwingTable extends UiTable {
                       int row,
                       int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTableFixture ) SwingElementLocator.findFixture( this ) ).drag( new TableCell( row, column ) {} );
+        ((JTableFixture) SwingElementLocator.findFixture(this)).drag(new TableCell(row, column) {});
     }
 
     /**
@@ -504,9 +504,9 @@ public class SwingTable extends UiTable {
                       int row,
                       int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        ( ( JTableFixture ) SwingElementLocator.findFixture( this ) ).drop( new TableCell( row, column ) {} );
+        ((JTableFixture) SwingElementLocator.findFixture(this)).drop(new TableCell(row, column) {});
     }
 
     /**
@@ -520,10 +520,10 @@ public class SwingTable extends UiTable {
                                          int row,
                                          int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
-        return tableFixture.backgroundAt( new TableCell( row, column ) {} ).target();
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
+        return tableFixture.backgroundAt(new TableCell(row, column) {}).target();
     }
 
     /**
@@ -535,12 +535,12 @@ public class SwingTable extends UiTable {
     @PublicAtsApi
     public Color[][] getCellBackgroundColors() {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        final JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
+        final JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
         int rowCount = tableFixture.rowCount();
         // SwingUtilities.
-        int columnCount = GuiActionRunner.execute( new GuiQuery<Integer>() {
+        int columnCount = GuiActionRunner.execute(new GuiQuery<Integer>() {
 
             @Override
             protected Integer executeInEDT() throws Throwable {
@@ -548,11 +548,11 @@ public class SwingTable extends UiTable {
                 return tableFixture.component().getColumnCount();
             }
 
-        } );
+        });
         Color[][] resultArr = new Color[rowCount][columnCount];
-        for( int i = 0; i < rowCount; i++ ) {
-            for( int j = 0; j < columnCount; j++ ) {
-                resultArr[i][j] = tableFixture.backgroundAt( new TableCell( i, j ) {} ).target();
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                resultArr[i][j] = tableFixture.backgroundAt(new TableCell(i, j) {}).target();
             }
         }
         return resultArr;
@@ -569,10 +569,10 @@ public class SwingTable extends UiTable {
                                          int row,
                                          int column ) {
 
-        new SwingElementState( this ).waitToBecomeExisting();
+        new SwingElementState(this).waitToBecomeExisting();
 
-        JTableFixture tableFixture = ( JTableFixture ) SwingElementLocator.findFixture( this );
-        return tableFixture.foregroundAt( new TableCell( row, column ) {} ).target();
+        JTableFixture tableFixture = (JTableFixture) SwingElementLocator.findFixture(this);
+        return tableFixture.foregroundAt(new TableCell(row, column) {}).target();
     }
 
 }

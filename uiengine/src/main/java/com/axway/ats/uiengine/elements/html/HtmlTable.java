@@ -29,7 +29,7 @@ public abstract class HtmlTable extends UiTable {
     public HtmlTable( UiDriver uiDriver,
                       UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     private static String scriptForGettingTableContent;
@@ -48,6 +48,6 @@ public abstract class HtmlTable extends UiTable {
     protected String generateScriptForGettingTableContent(
                                                            String innerHtmlToken ) {
 
-        return scriptForGettingTableContent.replace( "${inner_html}", innerHtmlToken );
+        return scriptForGettingTableContent.replace("${inner_html}", innerHtmlToken);
     }
 }

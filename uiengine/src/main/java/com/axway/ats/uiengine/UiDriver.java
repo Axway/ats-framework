@@ -49,7 +49,7 @@ public abstract class UiDriver {
     public static FirefoxDriver getFirefoxDriver(
                                                   String url ) {
 
-        return new FirefoxDriver( url );
+        return new FirefoxDriver(url);
     }
 
     /**
@@ -65,7 +65,7 @@ public abstract class UiDriver {
                                                   String url,
                                                   String browserPath ) {
 
-        return new FirefoxDriver( url, browserPath );
+        return new FirefoxDriver(url, browserPath);
     }
 
     /**
@@ -81,7 +81,7 @@ public abstract class UiDriver {
                                                   String browserPath,
                                                   String remoteSeleniumURL ) {
 
-        return new FirefoxDriver( url, browserPath, remoteSeleniumURL );
+        return new FirefoxDriver(url, browserPath, remoteSeleniumURL);
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class UiDriver {
     public static InternetExplorerDriver getInternetExplorerDriver(
                                                                     String url ) {
 
-        return new InternetExplorerDriver( url );
+        return new InternetExplorerDriver(url);
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class UiDriver {
                                             String url,
                                             String remoteSeleniumURL ) {
 
-        return new EdgeDriver( url, remoteSeleniumURL );
+        return new EdgeDriver(url, remoteSeleniumURL);
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class UiDriver {
     public static EdgeDriver getEdgeDriver(
                                             String url ) {
 
-        return new EdgeDriver( url );
+        return new EdgeDriver(url);
     }
 
     /**
@@ -133,7 +133,7 @@ public abstract class UiDriver {
                                                                     String url,
                                                                     String remoteSeleniumURL ) {
 
-        return new InternetExplorerDriver( url, remoteSeleniumURL );
+        return new InternetExplorerDriver(url, remoteSeleniumURL);
     }
 
     /**
@@ -145,7 +145,7 @@ public abstract class UiDriver {
     public static ChromeDriver getChromeDriver(
                                                 String url ) {
 
-        return new ChromeDriver( url );
+        return new ChromeDriver(url);
     }
 
     /**
@@ -159,7 +159,7 @@ public abstract class UiDriver {
                                                 String url,
                                                 String remoteSeleniumURL ) {
 
-        return new ChromeDriver( url, remoteSeleniumURL );
+        return new ChromeDriver(url, remoteSeleniumURL);
     }
 
     /**
@@ -171,7 +171,7 @@ public abstract class UiDriver {
     public static SafariDriver getSafariDriver(
                                                 String url ) {
 
-        return new SafariDriver( url );
+        return new SafariDriver(url);
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class UiDriver {
                                                 String url,
                                                 String remoteSeleniumURL ) {
 
-        return new SafariDriver( url, remoteSeleniumURL );
+        return new SafariDriver(url, remoteSeleniumURL);
     }
 
     /**
@@ -197,7 +197,7 @@ public abstract class UiDriver {
     public static HiddenBrowserDriver getHiddenBrowserDriver(
                                                               String url ) {
 
-        return new HiddenBrowserDriver( url );
+        return new HiddenBrowserDriver(url);
     }
 
     /**
@@ -211,7 +211,7 @@ public abstract class UiDriver {
                                                               String url,
                                                               BrowserVersion browserVersion ) {
 
-        return new HiddenBrowserDriver( url, browserVersion );
+        return new HiddenBrowserDriver(url, browserVersion);
     }
 
     /**
@@ -225,7 +225,7 @@ public abstract class UiDriver {
                                                       String url,
                                                       String browserPath ) {
 
-        return new PhantomJsDriver( url, browserPath );
+        return new PhantomJsDriver(url, browserPath);
     }
 
     /**
@@ -247,7 +247,7 @@ public abstract class UiDriver {
     public static SwingDriver getSwingDriver(
                                               Class<?> mainClassOfTestedApplication ) {
 
-        return new SwingDriverInternal( mainClassOfTestedApplication );
+        return new SwingDriverInternal(mainClassOfTestedApplication);
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class UiDriver {
                                               Class<?> mainClassOfTestedApplication,
                                               String windowTitle ) {
 
-        return new SwingDriverInternal( mainClassOfTestedApplication, windowTitle );
+        return new SwingDriverInternal(mainClassOfTestedApplication, windowTitle);
     }
 
     /**
@@ -273,7 +273,7 @@ public abstract class UiDriver {
     public static SwingDriver getSwingDriver(
                                               String windowTitle ) {
 
-        return new SwingDriverInternal( windowTitle );
+        return new SwingDriverInternal(windowTitle);
     }
 
     /**
@@ -287,7 +287,7 @@ public abstract class UiDriver {
                                               String jnlpLocation,
                                               boolean cacheEnabled ) {
 
-        return new SwingDriverInternal( jnlpLocation, cacheEnabled );
+        return new SwingDriverInternal(jnlpLocation, cacheEnabled);
     }
 
     /**
@@ -307,7 +307,7 @@ public abstract class UiDriver {
                                                 String udid,
                                                 String host ) {
 
-        return new MobileDriver( deviceName, platformVersion, udid, host );
+        return new MobileDriver(deviceName, platformVersion, udid, host);
     }
 
     /**
@@ -329,7 +329,7 @@ public abstract class UiDriver {
                                                 String host,
                                                 int port ) {
 
-        return new MobileDriver( deviceName, platformVersion, udid, host, port );
+        return new MobileDriver(deviceName, platformVersion, udid, host, port);
     }
 
     /**
@@ -347,11 +347,11 @@ public abstract class UiDriver {
 
         UiDriver driver = null;
         try {
-            Class<?> clss = Class.forName( driverClassName );
+            Class<?> clss = Class.forName(driverClassName);
             Constructor<?> constructor = new MethodFinder(clss).findConstructor(parameterTypes);
-            driver = ( UiDriver ) constructor.newInstance( constructorArguments );
-        } catch( Exception e ) {
-            throw new Exception( "Error while loading custom driver '" + driverClassName + "'", e );
+            driver = (UiDriver) constructor.newInstance(constructorArguments);
+        } catch (Exception e) {
+            throw new Exception("Error while loading custom driver '" + driverClassName + "'", e);
         }
 
         return driver;

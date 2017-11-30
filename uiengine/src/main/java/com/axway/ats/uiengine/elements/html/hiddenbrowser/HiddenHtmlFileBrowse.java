@@ -41,18 +41,18 @@ public class HiddenHtmlFileBrowse extends HtmlFileBrowse {
     public HiddenHtmlFileBrowse( UiDriver uiDriver,
                                  UiElementProperties properties ) {
 
-        super( uiDriver, properties );
-        String matchingRules[] = properties.checkTypeAndRules( this.getClass().getSimpleName(),
-                                                               "HiddenHtml",
-                                                               HiddenHtmlElement.RULES_DUMMY );
+        super(uiDriver, properties);
+        String matchingRules[] = properties.checkTypeAndRules(this.getClass().getSimpleName(),
+                                                              "HiddenHtml",
+                                                              HiddenHtmlElement.RULES_DUMMY);
 
         // generate the XPath of this HTML element
-        String xpath = HtmlElementLocatorBuilder.buildXpathLocator( matchingRules,
-                                                                    properties,
-                                                                    new String[]{ "file" },
-                                                                    "input" );
-        properties.addInternalProperty( HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath );
-        webDriver = ( WebDriver ) ( ( HiddenBrowserDriver ) super.getUiDriver() ).getInternalObject( InternalObjectsEnum.WebDriver.name() );
+        String xpath = HtmlElementLocatorBuilder.buildXpathLocator(matchingRules,
+                                                                   properties,
+                                                                   new String[]{ "file" },
+                                                                   "input");
+        properties.addInternalProperty(HtmlElementLocatorBuilder.PROPERTY_ELEMENT_LOCATOR, xpath);
+        webDriver = (WebDriver) ((HiddenBrowserDriver) super.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -64,9 +64,9 @@ public class HiddenHtmlFileBrowse extends HtmlFileBrowse {
     @PublicAtsApi
     public String getValue() {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        return HiddenHtmlElementLocator.findElement( this ).getAttribute( "value" );
+        return HiddenHtmlElementLocator.findElement(this).getAttribute("value");
     }
 
     /**
@@ -79,10 +79,10 @@ public class HiddenHtmlFileBrowse extends HtmlFileBrowse {
     public void setValue(
                           String value ) {
 
-        new HiddenHtmlElementState( this ).waitToBecomeExisting();
+        new HiddenHtmlElementState(this).waitToBecomeExisting();
 
-        setFileInputValue( webDriver, value );
-        
+        setFileInputValue(webDriver, value);
+
         UiEngineUtilities.sleep();
     }
 
@@ -98,8 +98,8 @@ public class HiddenHtmlFileBrowse extends HtmlFileBrowse {
 
         expectedValue = expectedValue.trim();
         String actualText = getValue().trim();
-        if( !actualText.equals( expectedValue ) ) {
-            throw new VerifyEqualityException( expectedValue, actualText, this );
+        if (!actualText.equals(expectedValue)) {
+            throw new VerifyEqualityException(expectedValue, actualText, this);
         }
     }
 
@@ -114,8 +114,8 @@ public class HiddenHtmlFileBrowse extends HtmlFileBrowse {
                                 String notExpectedValue ) {
 
         String actualText = getValue();
-        if( actualText.equals( notExpectedValue ) ) {
-            throw new VerifyNotEqualityException( notExpectedValue, this );
+        if (actualText.equals(notExpectedValue)) {
+            throw new VerifyNotEqualityException(notExpectedValue, this);
         }
     }
 }

@@ -27,7 +27,7 @@ public abstract class UiCheckBox extends UiElement {
     public UiCheckBox( UiDriver uiDriver,
                        UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**

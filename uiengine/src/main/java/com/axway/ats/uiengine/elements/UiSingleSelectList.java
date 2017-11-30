@@ -27,7 +27,7 @@ public abstract class UiSingleSelectList extends UiElement {
     public UiSingleSelectList( UiDriver uiDriver,
                                UiElementProperties properties ) {
 
-        super( uiDriver, properties );
+        super(uiDriver, properties);
     }
 
     /**
