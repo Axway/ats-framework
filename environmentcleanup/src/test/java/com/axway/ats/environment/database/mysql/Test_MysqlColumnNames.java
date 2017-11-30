@@ -29,37 +29,37 @@ public class Test_MysqlColumnNames extends BaseTest {
     @Test
     public void getNameJDBC4() throws SQLException, DbException {
 
-        Assert.assertEquals( "COLUMN_NAME", MysqlColumnNames.COLUMN_NAME.getName( true ) );
+        Assert.assertEquals("COLUMN_NAME", MysqlColumnNames.COLUMN_NAME.getName(true));
     }
 
     @Test
     public void getNameJDBC3() throws SQLException, DbException {
 
-        Assert.assertEquals( "Field", MysqlColumnNames.COLUMN_NAME.getName( false ) );
+        Assert.assertEquals("Field", MysqlColumnNames.COLUMN_NAME.getName(false));
     }
 
     @Test
     public void getNameJDBC4Type() throws SQLException, DbException {
 
-        Assert.assertEquals( "COLUMN_TYPE", MysqlColumnNames.COLUMN_TYPE.getName( true ) );
+        Assert.assertEquals("COLUMN_TYPE", MysqlColumnNames.COLUMN_TYPE.getName(true));
     }
 
     @Test
     public void getNameJDBC3Type() throws SQLException, DbException {
 
-        Assert.assertEquals( "Type", MysqlColumnNames.COLUMN_TYPE.getName( false ) );
+        Assert.assertEquals("Type", MysqlColumnNames.COLUMN_TYPE.getName(false));
     }
 
     @Test
     public void getNameJDBC4Default() throws SQLException, DbException {
 
-        Assert.assertEquals( "COLUMN_DEFAULT", MysqlColumnNames.DEFAULT_COLUMN.getName( true ) );
+        Assert.assertEquals("COLUMN_DEFAULT", MysqlColumnNames.DEFAULT_COLUMN.getName(true));
     }
 
     @Test
     public void getNameJDBC3Default() throws SQLException, DbException {
 
-        Assert.assertEquals( "Default", MysqlColumnNames.DEFAULT_COLUMN.getName( false ) );
+        Assert.assertEquals("Default", MysqlColumnNames.DEFAULT_COLUMN.getName(false));
     }
 
 }

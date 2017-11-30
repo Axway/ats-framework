@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  */
 public class AdditionalActionsQueue {
 
-    private static final Logger           log = Logger.getLogger( AdditionalActionsQueue.class );
+    private static final Logger           log = Logger.getLogger(AdditionalActionsQueue.class);
 
     private static AdditionalActionsQueue instance;
 
@@ -46,7 +46,7 @@ public class AdditionalActionsQueue {
 
     public static synchronized AdditionalActionsQueue getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new AdditionalActionsQueue();
         }
         return instance;
@@ -64,18 +64,18 @@ public class AdditionalActionsQueue {
                                   String environmentUnitDescription ) {
 
         String actionIdentifier = additionalAction.getDescription();
-        this.actionsMap.put( actionIdentifier, additionalAction );
+        this.actionsMap.put(actionIdentifier, additionalAction);
 
-        String actionParents = this.actionParentsMap.get( actionIdentifier );
-        if( actionParents == null ) {
+        String actionParents = this.actionParentsMap.get(actionIdentifier);
+        if (actionParents == null) {
             actionParents = "";
         } else {
             actionParents += ", ";
         }
-        this.actionParentsMap.put( actionIdentifier, actionParents + "'" + environmentUnitDescription + "'" );
+        this.actionParentsMap.put(actionIdentifier, actionParents + "'" + environmentUnitDescription + "'");
 
-        log.debug( "Scheduled the execution of additional action '" + actionIdentifier + "' with "
-                   + additionalAction.getSleepInterval() + " seconds sleep" );
+        log.debug("Scheduled the execution of additional action '" + actionIdentifier + "' with "
+                  + additionalAction.getSleepInterval() + " seconds sleep");
     }
 
     /**
@@ -84,24 +84,24 @@ public class AdditionalActionsQueue {
      */
     public void flushAllActions() throws EnvironmentCleanupException {
 
-        if( actionsMap.size() == 0 ) {
+        if (actionsMap.size() == 0) {
             return;
         }
 
-        log.debug( "Executing all scheduled additional actions" );
+        log.debug("Executing all scheduled additional actions");
 
         // Most actions have a sleep interval which must be honored after its execution.
         // We first execute all actions and then sleep for the longest sleep interval.
         int maxSleepInterval = 0;
         try {
-            for( Entry<String, AdditionalAction> actionEntry : actionsMap.entrySet() ) {
-                log.debug( "Executing additional action due to the restore of environment unit(s): "
-                           + this.actionParentsMap.get( actionEntry.getKey() ) );
+            for (Entry<String, AdditionalAction> actionEntry : actionsMap.entrySet()) {
+                log.debug("Executing additional action due to the restore of environment unit(s): "
+                          + this.actionParentsMap.get(actionEntry.getKey()));
 
                 AdditionalAction action = actionEntry.getValue();
                 action.execute();
 
-                if( action.getSleepInterval() > maxSleepInterval ) {
+                if (action.getSleepInterval() > maxSleepInterval) {
                     maxSleepInterval = action.getSleepInterval();
                 }
             }
@@ -110,15 +110,15 @@ public class AdditionalActionsQueue {
             this.actionParentsMap.clear();
         }
 
-        if( maxSleepInterval > 0 ) {
-            log.debug( "Sleeping for " + maxSleepInterval
-                       + " second(s) after the execution of all additional actions" );
+        if (maxSleepInterval > 0) {
+            log.debug("Sleeping for " + maxSleepInterval
+                      + " second(s) after the execution of all additional actions");
 
             //sleep for the given amount of seconds
             try {
-                Thread.sleep( maxSleepInterval * 1000 );
-            } catch( InterruptedException ie ) {
-                log.debug( "Interrupted exception caught" );
+                Thread.sleep(maxSleepInterval * 1000);
+            } catch (InterruptedException ie) {
+                log.debug("Interrupted exception caught");
             }
         }
     }

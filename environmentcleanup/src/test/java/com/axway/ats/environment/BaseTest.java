@@ -27,22 +27,22 @@ import org.apache.log4j.PatternLayout;
 import com.axway.ats.environment.EnvironmentUnit;
 
 public class BaseTest {
-    private final static Logger LOG = Logger.getLogger( BaseTest.class );
+    private final static Logger LOG = Logger.getLogger(BaseTest.class);
 
     static {
-        ConsoleAppender appender = new ConsoleAppender( new PatternLayout( "%-5p %d{HH:MM:ss} %c{2}: %m%n" ) );
+        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));
 
         //init log4j
-        BasicConfigurator.configure( appender );
+        BasicConfigurator.configure(appender);
     }
 
     protected String getTempBackupDir(
                                        EnvironmentUnit env ) throws Exception {
 
-        Field privateField = EnvironmentUnit.class.getDeclaredField( "tempBackupDir" );
-        privateField.setAccessible( true );
-        String tempBackupDir = ( String ) privateField.get( env );
-        privateField.setAccessible( false );
+        Field privateField = EnvironmentUnit.class.getDeclaredField("tempBackupDir");
+        privateField.setAccessible(true);
+        String tempBackupDir = (String) privateField.get(env);
+        privateField.setAccessible(false);
 
         return tempBackupDir;
     }
@@ -50,22 +50,22 @@ public class BaseTest {
     protected void deleteFolder(
                                  File path ) throws IOException {
 
-        LOG.debug("Trying to delete entry " +  path.getAbsolutePath());
-        if( path.isFile() ) {
+        LOG.debug("Trying to delete entry " + path.getAbsolutePath());
+        if (path.isFile()) {
             if (!path.delete()) {
-                LOG.error( "Could not delete file entry "  + path.getAbsolutePath());
+                LOG.error("Could not delete file entry " + path.getAbsolutePath());
             }
         } else {
             File[] files = path.listFiles();
-            if( files != null ) {
-                for( int i = 0; i < files.length; ++i ) {
-                    if( files[i].isDirectory() ) {
-                        deleteFolder( files[i] );
+            if (files != null) {
+                for (int i = 0; i < files.length; ++i) {
+                    if (files[i].isDirectory()) {
+                        deleteFolder(files[i]);
                     }
                     files[i].delete();
                 }
                 if (!path.delete()) {
-                    LOG.error( "Could not delete dir. entry "  + path.getAbsolutePath());
+                    LOG.error("Could not delete dir. entry " + path.getAbsolutePath());
                 }
             }
         }

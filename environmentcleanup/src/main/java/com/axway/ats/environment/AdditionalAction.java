@@ -28,13 +28,13 @@ public abstract class AdditionalAction {
 
     public AdditionalAction() {
 
-        this( 0 );
+        this(0);
     }
 
     public AdditionalAction( int sleepInterval ) {
 
         this.sleepInterval = sleepInterval;
-        this.log = Logger.getLogger( this.getClass() );
+        this.log = Logger.getLogger(this.getClass());
     }
 
     /**
@@ -55,7 +55,7 @@ public abstract class AdditionalAction {
         //execute the additional action
         executeAction();
 
-        log.debug( "Successfully executed " + getDescription() );
+        log.debug("Successfully executed " + getDescription());
     }
 
     protected abstract void executeAction() throws EnvironmentCleanupException;

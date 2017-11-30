@@ -51,7 +51,7 @@ public class EnvironmentHandlerFactory {
      */
     public synchronized static EnvironmentHandlerFactory getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new EnvironmentHandlerFactory();
         }
 
@@ -71,28 +71,28 @@ public class EnvironmentHandlerFactory {
     public BackupHandler createDbBackupHandler(
                                                 DbConnection dbConnection ) {
 
-        switch( dbConnection.getDbType() ){
+        switch (dbConnection.getDbType()) {
             case DbConnMySQL.DATABASE_TYPE: {
-                DbConnMySQL mysqlConnection = ( DbConnMySQL ) dbConnection;
-                return new MysqlEnvironmentHandler( mysqlConnection, new MysqlDbProvider( mysqlConnection ) );
+                DbConnMySQL mysqlConnection = (DbConnMySQL) dbConnection;
+                return new MysqlEnvironmentHandler(mysqlConnection, new MysqlDbProvider(mysqlConnection));
             }
             case DbConnOracle.DATABASE_TYPE: {
-                DbConnOracle oracleConnection = ( DbConnOracle ) dbConnection;
-                return new OracleEnvironmentHandler( oracleConnection,
-                                                     new OracleDbProvider( oracleConnection ) );
+                DbConnOracle oracleConnection = (DbConnOracle) dbConnection;
+                return new OracleEnvironmentHandler(oracleConnection,
+                                                    new OracleDbProvider(oracleConnection));
             }
             case DbConnSQLServer.DATABASE_TYPE: {
-                DbConnSQLServer mssqlConnection = ( DbConnSQLServer ) dbConnection;
-                return new MssqlEnvironmentHandler( mssqlConnection, new MssqlDbProvider( mssqlConnection ) );
+                DbConnSQLServer mssqlConnection = (DbConnSQLServer) dbConnection;
+                return new MssqlEnvironmentHandler(mssqlConnection, new MssqlDbProvider(mssqlConnection));
             }
             case DbConnCassandra.DATABASE_TYPE: {
-                DbConnCassandra cassandraConnection = ( DbConnCassandra ) dbConnection;
-                return new CassandraEnvironmentHandler( cassandraConnection,
-                                                        new CassandraDbProvider( cassandraConnection ) );
+                DbConnCassandra cassandraConnection = (DbConnCassandra) dbConnection;
+                return new CassandraEnvironmentHandler(cassandraConnection,
+                                                       new CassandraDbProvider(cassandraConnection));
             }
             default: {
                 //should never happen
-                throw new IllegalArgumentException( dbConnection.getDbType() + " connections not supported" );
+                throw new IllegalArgumentException(dbConnection.getDbType() + " connections not supported");
             }
         }
     }
@@ -110,27 +110,28 @@ public class EnvironmentHandlerFactory {
     public RestoreHandler createDbRestoreHandler(
                                                   DbConnection dbConnection ) {
 
-        switch( dbConnection.getDbType() ){
+        switch (dbConnection.getDbType()) {
             case DbConnMySQL.DATABASE_TYPE: {
-                DbConnMySQL mysqlConnection = ( DbConnMySQL ) dbConnection;
-                return new MysqlEnvironmentHandler( mysqlConnection, new MysqlDbProvider( mysqlConnection ) );
+                DbConnMySQL mysqlConnection = (DbConnMySQL) dbConnection;
+                return new MysqlEnvironmentHandler(mysqlConnection, new MysqlDbProvider(mysqlConnection));
             }
             case DbConnOracle.DATABASE_TYPE: {
-                DbConnOracle oracleConnection = ( DbConnOracle ) dbConnection;
-                return new OracleEnvironmentHandler( oracleConnection,
-                                                     new OracleDbProvider( oracleConnection ) );
+                DbConnOracle oracleConnection = (DbConnOracle) dbConnection;
+                return new OracleEnvironmentHandler(oracleConnection,
+                                                    new OracleDbProvider(oracleConnection));
             }
             case DbConnSQLServer.DATABASE_TYPE: {
-                DbConnSQLServer mssqlConnection = ( DbConnSQLServer ) dbConnection;
-                return new MssqlEnvironmentHandler( mssqlConnection, new MssqlDbProvider( mssqlConnection ) );
+                DbConnSQLServer mssqlConnection = (DbConnSQLServer) dbConnection;
+                return new MssqlEnvironmentHandler(mssqlConnection, new MssqlDbProvider(mssqlConnection));
             }
             case DbConnCassandra.DATABASE_TYPE: {
-                DbConnCassandra cassandraConnection = ( DbConnCassandra ) dbConnection;
-                return new CassandraEnvironmentHandler( cassandraConnection, new CassandraDbProvider( cassandraConnection ) );
+                DbConnCassandra cassandraConnection = (DbConnCassandra) dbConnection;
+                return new CassandraEnvironmentHandler(cassandraConnection,
+                                                       new CassandraDbProvider(cassandraConnection));
             }
             default: {
                 //should never happen
-                throw new IllegalArgumentException( dbConnection.getDbType() + " connections not supported" );
+                throw new IllegalArgumentException(dbConnection.getDbType() + " connections not supported");
             }
         }
     }

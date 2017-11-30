@@ -32,76 +32,76 @@ public class Test_ColumnDescription extends BaseTest {
     @Test
     public void accessors() {
 
-        ColumnDescription columnDescription = new ColumnDescription( "name", "type" );
+        ColumnDescription columnDescription = new ColumnDescription("name", "type");
 
-        assertEquals( "name", columnDescription.getName() );
-        assertEquals( "type", columnDescription.getType() );
+        assertEquals("name", columnDescription.getName());
+        assertEquals("type", columnDescription.getType());
     }
 
     @Test
     public void isTypeNumericPositive() {
 
         List<String> numericTypes = new ArrayList<String>();
-        numericTypes.add( "int" );
-        numericTypes.add( "decimal" );
-        numericTypes.add( "numeric" );
-        numericTypes.add( "real" );
-        numericTypes.add( "double" );
-        numericTypes.add( "bit" );
+        numericTypes.add("int");
+        numericTypes.add("decimal");
+        numericTypes.add("numeric");
+        numericTypes.add("real");
+        numericTypes.add("double");
+        numericTypes.add("bit");
 
-        for( String numericType : numericTypes ) {
-            ColumnDescription columnDescription = new ColumnDescription( "name", numericType );
-            assertTrue( columnDescription.isTypeNumeric() );
+        for (String numericType : numericTypes) {
+            ColumnDescription columnDescription = new ColumnDescription("name", numericType);
+            assertTrue(columnDescription.isTypeNumeric());
         }
     }
 
     @Test
     public void isTypeNumericNegative() {
 
-        ColumnDescription columnDescription = new ColumnDescription( "name", "type" );
+        ColumnDescription columnDescription = new ColumnDescription("name", "type");
 
-        assertFalse( columnDescription.isTypeNumeric() );
+        assertFalse(columnDescription.isTypeNumeric());
     }
 
     @Test
     public void isTypeBinaryPositive() {
 
         List<String> binaryTypes = new ArrayList<String>();
-        binaryTypes.add( "blob" );
-        binaryTypes.add( "longblob" );
-        binaryTypes.add( "binary" );
-        binaryTypes.add( "binary(5)" );
-        binaryTypes.add( "varbinary" );
-        binaryTypes.add( "varbinary(5)" );
+        binaryTypes.add("blob");
+        binaryTypes.add("longblob");
+        binaryTypes.add("binary");
+        binaryTypes.add("binary(5)");
+        binaryTypes.add("varbinary");
+        binaryTypes.add("varbinary(5)");
 
-        for( String numericType : binaryTypes ) {
-            ColumnDescription columnDescription = new ColumnDescription( "name", numericType );
-            assertTrue( columnDescription.isTypeBinary() );
+        for (String numericType : binaryTypes) {
+            ColumnDescription columnDescription = new ColumnDescription("name", numericType);
+            assertTrue(columnDescription.isTypeBinary());
         }
     }
 
     @Test
     public void isTypeBinaryNegative() {
 
-        ColumnDescription columnDescription = new ColumnDescription( "name", "char binary" );
-        assertFalse( columnDescription.isTypeBinary() );
-        columnDescription = new ColumnDescription( "name", "varchar binary(5)" );
-        assertFalse( columnDescription.isTypeBinary() );
+        ColumnDescription columnDescription = new ColumnDescription("name", "char binary");
+        assertFalse(columnDescription.isTypeBinary());
+        columnDescription = new ColumnDescription("name", "varchar binary(5)");
+        assertFalse(columnDescription.isTypeBinary());
     }
 
     @Test
     public void isTypeBitPositive() {
 
-        ColumnDescription columnDescription = new ColumnDescription( "name", "bit" );
+        ColumnDescription columnDescription = new ColumnDescription("name", "bit");
 
-        assertTrue( columnDescription.isTypeBit() );
+        assertTrue(columnDescription.isTypeBit());
     }
 
     @Test
     public void isTypeBit() {
 
-        ColumnDescription columnDescription = new ColumnDescription( "name", "type" );
+        ColumnDescription columnDescription = new ColumnDescription("name", "type");
 
-        assertFalse( columnDescription.isTypeBit() );
+        assertFalse(columnDescription.isTypeBit());
     }
 }

@@ -44,7 +44,7 @@ public interface BackupHandler {
      */
     public void setIncludeDeleteStatements(
                                             boolean includeDeleteStatements )
-                                                                             throws DatabaseEnvironmentCleanupException;
+                                                                              throws DatabaseEnvironmentCleanupException;
 
     /**
      * Enable or disable the foreign key check prior to restoring the

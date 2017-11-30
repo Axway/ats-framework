@@ -30,15 +30,15 @@ public class Test_DbTable extends BaseTest {
     @Test
     public void accessors() {
 
-        DbTable dbTable = new DbTable( "table1" );
+        DbTable dbTable = new DbTable("table1");
 
-        assertEquals( "table1", dbTable.getTableName() );
-        assertEquals( 0, dbTable.getColumnsToExclude().size() );
+        assertEquals("table1", dbTable.getTableName());
+        assertEquals(0, dbTable.getColumnsToExclude().size());
 
         List<String> columns = new ArrayList<String>();
-        dbTable = new DbTable( "table2", columns );
+        dbTable = new DbTable("table2", columns);
 
-        assertEquals( "table2", dbTable.getTableName() );
-        assertEquals( columns, dbTable.getColumnsToExclude() );
+        assertEquals("table2", dbTable.getTableName());
+        assertEquals(columns, dbTable.getColumnsToExclude());
     }
 }

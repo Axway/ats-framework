@@ -45,8 +45,8 @@ public class Test_FileEnvironmentUnit extends BaseTest {
     @BeforeClass
     public static void setUpTest_FileEnvironmentUnit() {
 
-        originalFileName = Test_FileEnvironmentUnit.class.getResource( "orig_file.txt" ).getFile();
-        backupFolder = IoUtils.getFilePath( originalFileName );
+        originalFileName = Test_FileEnvironmentUnit.class.getResource("orig_file.txt").getFile();
+        backupFolder = IoUtils.getFilePath(originalFileName);
         backupFileName = "backup_file.txt";
     }
 
@@ -54,15 +54,15 @@ public class Test_FileEnvironmentUnit extends BaseTest {
     public void setUp() throws Exception {
 
         //remove the backup file if exists
-        File backupFile = new File( backupFolder + backupFileName );
-        if( backupFile.exists() ) {
+        File backupFile = new File(backupFolder + backupFileName);
+        if (backupFile.exists()) {
             backupFile.delete();
         }
 
         //remove the test backup directory if exist
-        File testBackupDir = new File( backupFolder + "agent_test_backup" );
-        if( testBackupDir.exists() ) {
-            deleteFolder( testBackupDir );
+        File testBackupDir = new File(backupFolder + "agent_test_backup");
+        if (testBackupDir.exists()) {
+            deleteFolder(testBackupDir);
         }
     }
 
@@ -71,117 +71,117 @@ public class Test_FileEnvironmentUnit extends BaseTest {
 
         String backupFileNameInDeepDir = backupFolder
                                          + "agent_test_backup/test_folder/other_folder/backup_file.txt";
-        EnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileName,
-                                                               backupFolder
-                                                                       + "agent_test_backup/test_folder/other_folder/",
-                                                               "backup_file.txt" );
+        EnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileName,
+                                                              backupFolder
+                                                                                + "agent_test_backup/test_folder/other_folder/",
+                                                              "backup_file.txt");
         fileEnvUnit.backup();
 
         //verify if the backup file exists on the right place
-        File backupFile = new File( backupFileNameInDeepDir );
-        Assert.assertTrue( backupFile.exists() );
+        File backupFile = new File(backupFileNameInDeepDir);
+        Assert.assertTrue(backupFile.exists());
     }
 
     @Test
     public void backupPositive() throws EnvironmentCleanupException, IOException {
 
-        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileName,
-                                                                   backupFolder,
-                                                                   backupFileName );
+        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileName,
+                                                                  backupFolder,
+                                                                  backupFileName);
         fileEnvUnit.backup();
 
         //verify the files are the same
-        assertEquals( new File( backupFolder + backupFileName ).length(),
-                      new File( originalFileName ).length() );
+        assertEquals(new File(backupFolder + backupFileName).length(),
+                     new File(originalFileName).length());
     }
 
     @Test
     public void backupPositive_deleteWrongBackupFile() throws EnvironmentCleanupException, IOException {
 
         String originalFileNameChanged = originalFileName + "_changed";
-        new File( originalFileNameChanged ).delete();
+        new File(originalFileNameChanged).delete();
 
         String backupFileNameChanged = backupFileName + "_changed";
-        File backupFileChanged = new File( backupFolder + backupFileNameChanged );
+        File backupFileChanged = new File(backupFolder + backupFileNameChanged);
         backupFileChanged.createNewFile();
 
-        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileNameChanged,
-                                                                   backupFolder,
-                                                                   backupFileNameChanged );
+        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileNameChanged,
+                                                                  backupFolder,
+                                                                  backupFileNameChanged);
 
-        assertTrue( backupFileChanged.exists() );
+        assertTrue(backupFileChanged.exists());
         fileEnvUnit.backup();
-        assertFalse( backupFileChanged.exists() );
+        assertFalse(backupFileChanged.exists());
     }
 
     @Test
     public void restorePositiveNoNeedToRestore() throws EnvironmentCleanupException, IOException {
 
-        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileName,
-                                                                   backupFolder,
-                                                                   backupFileName );
+        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileName,
+                                                                  backupFolder,
+                                                                  backupFileName);
         fileEnvUnit.backup();
-        assertFalse( fileEnvUnit.restore() );
+        assertFalse(fileEnvUnit.restore());
     }
 
     @Test
     public void restorePositiveNoOriginalFile() throws EnvironmentCleanupException, IOException {
 
-        FileEnvironmentUnit fileEnvUnitBackup = new FileEnvironmentUnit( originalFileName,
-                                                                         backupFolder,
-                                                                         backupFileName );
+        FileEnvironmentUnit fileEnvUnitBackup = new FileEnvironmentUnit(originalFileName,
+                                                                        backupFolder,
+                                                                        backupFileName);
         fileEnvUnitBackup.backup();
 
-        FileEnvironmentUnit fileEnvUnitRestore = new FileEnvironmentUnit( originalFileName + "1",
-                                                                          backupFolder,
-                                                                          backupFileName );
-        assertTrue( fileEnvUnitRestore.restore() );
+        FileEnvironmentUnit fileEnvUnitRestore = new FileEnvironmentUnit(originalFileName + "1",
+                                                                         backupFolder,
+                                                                         backupFileName);
+        assertTrue(fileEnvUnitRestore.restore());
     }
 
     @Test
     public void restorePositiveNoBackupFile() throws EnvironmentCleanupException, IOException {
 
         try {
-            FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileName,
-                                                                       backupFolder,
-                                                                       backupFileName + "1" );
-            assertTrue( fileEnvUnit.restore() );
-            assertTrue( !new File( originalFileName ).exists() );
+            FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileName,
+                                                                      backupFolder,
+                                                                      backupFileName + "1");
+            assertTrue(fileEnvUnit.restore());
+            assertTrue(!new File(originalFileName).exists());
         } finally {
-            new File( originalFileName ).createNewFile();
+            new File(originalFileName).createNewFile();
         }
     }
 
     @Test
     public void restorePositiveFilesAreDifferent() throws Exception {
 
-        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileName,
-                                                                   backupFolder,
-                                                                   backupFileName );
+        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileName,
+                                                                  backupFolder,
+                                                                  backupFileName);
         fileEnvUnit.backup();
 
         //1sec wait is needed to avoid getting same last modification times after the next file edit operation
-        Thread.sleep( 1000 );
+        Thread.sleep(1000);
 
         //add one letter to the original file
         FileOutputStream originalFileStream = null;
         try {
-            originalFileStream = new FileOutputStream( new File( originalFileName ) );
-            originalFileStream.write( 65 );
+            originalFileStream = new FileOutputStream(new File(originalFileName));
+            originalFileStream.write(65);
             originalFileStream.flush();
         } finally {
-            IoUtils.closeStream( originalFileStream );
+            IoUtils.closeStream(originalFileStream);
         }
 
-        assertTrue( fileEnvUnit.restore() );
+        assertTrue(fileEnvUnit.restore());
     }
 
-    @Test(expected = EnvironmentCleanupException.class)
+    @Test( expected = EnvironmentCleanupException.class)
     public void restoreNegativeTargetFileIsDirectory() throws EnvironmentCleanupException {
 
         // Create the backup file
-        FileEnvironmentUnit fileEnvUnitBackup = new FileEnvironmentUnit( originalFileName, backupFolder,
-                                                                         backupFileName );
+        FileEnvironmentUnit fileEnvUnitBackup = new FileEnvironmentUnit(originalFileName, backupFolder,
+                                                                        backupFileName);
         fileEnvUnitBackup.backup();
 
         // Try to restore.
@@ -191,33 +191,33 @@ public class Test_FileEnvironmentUnit extends BaseTest {
         // Sometimes it turns out that both backup file and restore target have same modification times.
         // In such case we skip the restore, the restore method returns false and the assert at the end of the test fails.
         // That is why we make sure both modification times are different prior to doing restore.
-        new File( backupFolder + backupFileName ).setLastModified( new File( backupFolder ).lastModified()
-                                                                   - 1000 );
+        new File(backupFolder + backupFileName).setLastModified(new File(backupFolder).lastModified()
+                                                                - 1000);
 
-        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( IoUtils.getFilePath( originalFileName ),
-                                                                   backupFolder,
-                                                                   backupFileName );
-        assertTrue( fileEnvUnit.restore() );
+        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(IoUtils.getFilePath(originalFileName),
+                                                                  backupFolder,
+                                                                  backupFileName);
+        assertTrue(fileEnvUnit.restore());
     }
 
     @Test
     public void useTempBackupDir() throws Exception {
 
-        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit( originalFileName,
-                                                                   backupFolder,
-                                                                   backupFileName );
+        FileEnvironmentUnit fileEnvUnit = new FileEnvironmentUnit(originalFileName,
+                                                                  backupFolder,
+                                                                  backupFileName);
 
-        String tmpBackupDir = IoUtils.normalizeDirPath( backupFolder ) + "tmpBackupDir/";
+        String tmpBackupDir = IoUtils.normalizeDirPath(backupFolder) + "tmpBackupDir/";
 
-        fileEnvUnit.setTempBackupDir( tmpBackupDir );
-        assertNotNull( getTempBackupDir( fileEnvUnit ) );
+        fileEnvUnit.setTempBackupDir(tmpBackupDir);
+        assertNotNull(getTempBackupDir(fileEnvUnit));
         fileEnvUnit.backup();
-        assertNull( getTempBackupDir( fileEnvUnit ) );
+        assertNull(getTempBackupDir(fileEnvUnit));
 
-        fileEnvUnit.setTempBackupDir( tmpBackupDir );
-        assertNotNull( getTempBackupDir( fileEnvUnit ) );
-        assertFalse( fileEnvUnit.restore() );
-        assertNull( getTempBackupDir( fileEnvUnit ) );
+        fileEnvUnit.setTempBackupDir(tmpBackupDir);
+        assertNotNull(getTempBackupDir(fileEnvUnit));
+        assertFalse(fileEnvUnit.restore());
+        assertNull(getTempBackupDir(fileEnvUnit));
     }
 
 }

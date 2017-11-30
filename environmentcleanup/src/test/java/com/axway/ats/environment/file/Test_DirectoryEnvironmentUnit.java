@@ -38,45 +38,45 @@ import com.axway.ats.environment.EnvironmentUnit;
 
 public class Test_DirectoryEnvironmentUnit extends BaseTest {
 
-    private static final Logger log = Logger.getLogger( Test_DirectoryEnvironmentUnit.class );
+    private static final Logger log = Logger.getLogger(Test_DirectoryEnvironmentUnit.class);
     public static String        restoreDirPath;
     public static String        backupDirPath;
     public static String        backupDirName;
-    public static String        tempBackupDirName;                                            // destination folder for backups
+    public static String        tempBackupDirName;                                          // destination folder for backups
 
     @BeforeClass
     public static void setUpTest_FileEnvironmentUnit() throws IOException {
 
-        backupDirPath = Test_DirectoryEnvironmentUnit.class.getResource( "dir_backup" ).getFile();
+        backupDirPath = Test_DirectoryEnvironmentUnit.class.getResource("dir_backup").getFile();
         // here backupDirPath under Maven run is with lower case of logical drive letter (Win).
         // It should be corrected in DirectoryUnit:  backupDirPath = new File(backupDirPath).getCanonicalPath();
-        backupDirPath = IoUtils.normalizeDirPath( new File( backupDirPath ).getParent() );
+        backupDirPath = IoUtils.normalizeDirPath(new File(backupDirPath).getParent());
 
         backupDirName = "dir_backup";
         tempBackupDirName = "temp_dir_backup";
 
-        restoreDirPath = IoUtils.normalizeDirPath( backupDirPath + "dir_to_restore" );
+        restoreDirPath = IoUtils.normalizeDirPath(backupDirPath + "dir_to_restore");
 
         // create an empty folder required by some of the tests
-        new File( backupDirPath + backupDirName + "/emptydir" ).mkdir();
+        new File(backupDirPath + backupDirName + "/emptydir").mkdir();
     }
 
     @Before
     public void setUp() throws Exception {
 
         //remove the backup dir if exists
-        deleteFolder( new File( restoreDirPath ) );
+        deleteFolder(new File(restoreDirPath));
     }
 
     @Test
     public void backupPositive() throws EnvironmentCleanupException, IOException {
 
-        log.debug( "backupDirPath: " + backupDirPath );
-        String originalDir = IoUtils.normalizeDirPath( backupDirPath + backupDirName );
-        log.debug( "originalDir: " + originalDir );
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( originalDir,
-                                                                   backupDirPath,
-                                                                   tempBackupDirName );
+        log.debug("backupDirPath: " + backupDirPath);
+        String originalDir = IoUtils.normalizeDirPath(backupDirPath + backupDirName);
+        log.debug("originalDir: " + originalDir);
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(originalDir,
+                                                                  backupDirPath,
+                                                                  tempBackupDirName);
         dirEnvUnit.backup();
 
         // verify the content of the backup folder
@@ -85,104 +85,104 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
          *  We should make the check independent to particular folder content
          */
 
-        String tempBackupDir = IoUtils.normalizeDirPath( backupDirPath + tempBackupDirName );
+        String tempBackupDir = IoUtils.normalizeDirPath(backupDirPath + tempBackupDirName);
 
-        log.debug( "tempBackupDir: " + tempBackupDir );
-        assertTrue( new File( tempBackupDir ).exists() );
-        assertEquals( 3, new File( tempBackupDir ).listFiles().length );
+        log.debug("tempBackupDir: " + tempBackupDir);
+        assertTrue(new File(tempBackupDir).exists());
+        assertEquals(3, new File(tempBackupDir).listFiles().length);
 
         String file1 = tempBackupDir + "file1.txt";
-        assertTrue( new File( file1 ).exists() );
-        assertEquals( new File( file1 ).length(), new File( tempBackupDir + "file1.txt" ).length() );
+        assertTrue(new File(file1).exists());
+        assertEquals(new File(file1).length(), new File(tempBackupDir + "file1.txt").length());
 
-        String emptyDir = IoUtils.normalizeDirPath( tempBackupDir + "emptydir/" );
-        org.apache.log4j.Logger.getLogger( Test_DirectoryEnvironmentUnit.class )
-                               .error( "emptydir='" + emptyDir + "'" );
-        assertTrue( new File( emptyDir ).exists() );
+        String emptyDir = IoUtils.normalizeDirPath(tempBackupDir + "emptydir/");
+        org.apache.log4j.Logger.getLogger(Test_DirectoryEnvironmentUnit.class)
+                               .error("emptydir='" + emptyDir + "'");
+        assertTrue(new File(emptyDir).exists());
 
-        assertEquals( new File( emptyDir ).listFiles().length, 0 );
+        assertEquals(new File(emptyDir).listFiles().length, 0);
 
-        String subDir = IoUtils.normalizeDirPath( tempBackupDir + "subdir/" );
-        assertTrue( new File( subDir ).exists() );
-        assertEquals( new File( subDir ).listFiles().length, 1 );
+        String subDir = IoUtils.normalizeDirPath(tempBackupDir + "subdir/");
+        assertTrue(new File(subDir).exists());
+        assertEquals(new File(subDir).listFiles().length, 1);
 
         String file2 = subDir + "file2.txt";
-        assertTrue( new File( file2 ).exists() );
-        assertEquals( new File( file2 ).length(), new File( tempBackupDir + "subdir/file2.txt" ).length() );
+        assertTrue(new File(file2).exists());
+        assertEquals(new File(file2).length(), new File(tempBackupDir + "subdir/file2.txt").length());
     }
 
     @Test
     public void backupNegative_noOriginalDir() throws EnvironmentCleanupException, IOException {
 
-        String originalDir = IoUtils.normalizeDirPath( backupDirPath + "fakeDirName" );
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( originalDir,
-                                                                   backupDirPath,
-                                                                   "backupFakeDirName" );
+        String originalDir = IoUtils.normalizeDirPath(backupDirPath + "fakeDirName");
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(originalDir,
+                                                                  backupDirPath,
+                                                                  "backupFakeDirName");
         dirEnvUnit.backup();
         // check if the backup is really skipped
-        assertFalse( new File( IoUtils.normalizeDirPath( backupDirPath + "backupFakeDirName" ) ).exists() );
+        assertFalse(new File(IoUtils.normalizeDirPath(backupDirPath + "backupFakeDirName")).exists());
     }
 
     @Test
     public void restore() throws EnvironmentCleanupException {
 
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( restoreDirPath,
-                                                                   backupDirPath,
-                                                                   backupDirName );
-        Assert.assertTrue( dirEnvUnit.restore() );
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(restoreDirPath,
+                                                                  backupDirPath,
+                                                                  backupDirName);
+        Assert.assertTrue(dirEnvUnit.restore());
     }
 
     @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void restoreNotNeeded() throws EnvironmentCleanupException {
 
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( restoreDirPath,
-                                                                   backupDirPath,
-                                                                   backupDirName );
-        Assert.assertTrue( dirEnvUnit.restore() );
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(restoreDirPath,
+                                                                  backupDirPath,
+                                                                  backupDirName);
+        Assert.assertTrue(dirEnvUnit.restore());
 
         // now the restore is not needed
-        Assert.assertFalse( dirEnvUnit.restore() );
+        Assert.assertFalse(dirEnvUnit.restore());
     }
 
     @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void restore_aNewFileMustBeDeleted() throws EnvironmentCleanupException, IOException {
 
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( restoreDirPath,
-                                                                   backupDirPath,
-                                                                   backupDirName );
-        Assert.assertTrue( dirEnvUnit.restore() );
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(restoreDirPath,
+                                                                  backupDirPath,
+                                                                  backupDirName);
+        Assert.assertTrue(dirEnvUnit.restore());
 
-        new File( restoreDirPath + "newFile.txt" ).createNewFile();
+        new File(restoreDirPath + "newFile.txt").createNewFile();
 
         // now the restore is not needed
-        Assert.assertTrue( dirEnvUnit.restore() );
+        Assert.assertTrue(dirEnvUnit.restore());
     }
 
     @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void restore_aNewSubdirMustBeDeleted() throws EnvironmentCleanupException, IOException {
 
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( restoreDirPath,
-                                                                   backupDirPath,
-                                                                   backupDirName );
-        Assert.assertTrue( dirEnvUnit.restore() );
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(restoreDirPath,
+                                                                  backupDirPath,
+                                                                  backupDirName);
+        Assert.assertTrue(dirEnvUnit.restore());
 
-        new File( restoreDirPath + "new_sub_dir" ).mkdir();
+        new File(restoreDirPath + "new_sub_dir").mkdir();
 
         // now the restore is not needed
-        Assert.assertTrue( dirEnvUnit.restore() );
+        Assert.assertTrue(dirEnvUnit.restore());
     }
 
-    @Test(expected = EnvironmentCleanupException.class)
+    @Test( expected = EnvironmentCleanupException.class)
     public void restore_originalDirectoryIsFile() throws EnvironmentCleanupException, IOException {
 
-        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( restoreDirPath,
-                                                                   backupDirPath,
-                                                                   backupDirName );
+        EnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(restoreDirPath,
+                                                                  backupDirPath,
+                                                                  backupDirName);
 
-        new File( restoreDirPath ).createNewFile();
+        new File(restoreDirPath).createNewFile();
 
         dirEnvUnit.restore();
         //        Assert.assertTrue( dirEnvUnit.restore() );
@@ -196,21 +196,21 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
     @Test
     public void useTempBackupDir() throws Exception {
 
-        String originalDir = IoUtils.normalizeDirPath( backupDirPath + backupDirName );
-        DirectoryEnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit( originalDir,
-                                                                            backupDirPath,
-                                                                            tempBackupDirName );
+        String originalDir = IoUtils.normalizeDirPath(backupDirPath + backupDirName);
+        DirectoryEnvironmentUnit dirEnvUnit = new DirectoryEnvironmentUnit(originalDir,
+                                                                           backupDirPath,
+                                                                           tempBackupDirName);
 
-        String tmpBackupDir = IoUtils.normalizeDirPath( backupDirPath ) + "tmpBackupDir/";
+        String tmpBackupDir = IoUtils.normalizeDirPath(backupDirPath) + "tmpBackupDir/";
 
-        dirEnvUnit.setTempBackupDir( tmpBackupDir );
-        assertNotNull( getTempBackupDir( dirEnvUnit ) );
+        dirEnvUnit.setTempBackupDir(tmpBackupDir);
+        assertNotNull(getTempBackupDir(dirEnvUnit));
         dirEnvUnit.backup();
-        assertNull( getTempBackupDir( dirEnvUnit ) );
+        assertNull(getTempBackupDir(dirEnvUnit));
 
-        dirEnvUnit.setTempBackupDir( tmpBackupDir );
-        assertNotNull( getTempBackupDir( dirEnvUnit ) );
-        assertFalse( dirEnvUnit.restore() );
-        assertNull( getTempBackupDir( dirEnvUnit ) );
+        dirEnvUnit.setTempBackupDir(tmpBackupDir);
+        assertNotNull(getTempBackupDir(dirEnvUnit));
+        assertFalse(dirEnvUnit.restore());
+        assertNull(getTempBackupDir(dirEnvUnit));
     }
 }

@@ -17,17 +17,17 @@ package com.axway.ats.environment.database.exceptions;
 
 import com.axway.ats.environment.EnvironmentCleanupException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class DatabaseEnvironmentCleanupException extends EnvironmentCleanupException {
 
     public DatabaseEnvironmentCleanupException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public DatabaseEnvironmentCleanupException( String message,
                                                 Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

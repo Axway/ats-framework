@@ -38,7 +38,7 @@ public class DbTable {
      */
     public DbTable( String tableName ) {
 
-        this( tableName, new ArrayList<String>() );
+        this(tableName, new ArrayList<String>());
     }
 
     /**
@@ -50,7 +50,7 @@ public class DbTable {
     public DbTable( String tableName,
                     List<String> columnsToExclude ) {
 
-        this( tableName, columnsToExclude, true );
+        this(tableName, columnsToExclude, true);
     }
 
     /**
@@ -62,7 +62,7 @@ public class DbTable {
     public DbTable( String tableName,
                     boolean lockTable ) {
 
-        this( tableName, new ArrayList<String>(), lockTable );
+        this(tableName, new ArrayList<String>(), lockTable);
     }
 
     /**
@@ -144,11 +144,11 @@ public class DbTable {
 
     public DbTable getNewCopy() {
 
-        DbTable newDbTable = new DbTable( this.tableName, this.lockTable );
+        DbTable newDbTable = new DbTable(this.tableName, this.lockTable);
 
         List<String> newColumnsToExclude = new ArrayList<String>();
-        for( String columnToExclude : this.columnsToExclude ) {
-            newColumnsToExclude.add( columnToExclude );
+        for (String columnToExclude : this.columnsToExclude) {
+            newColumnsToExclude.add(columnToExclude);
         }
         newDbTable.columnsToExclude = newColumnsToExclude;
 

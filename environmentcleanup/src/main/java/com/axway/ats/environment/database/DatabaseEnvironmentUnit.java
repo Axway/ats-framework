@@ -40,7 +40,7 @@ import com.axway.ats.harness.config.TestBox;
 @PublicAtsApi
 public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
-    private static final Logger       log = Logger.getLogger( DatabaseEnvironmentUnit.class );
+    private static final Logger       log = Logger.getLogger(DatabaseEnvironmentUnit.class);
 
     private EnvironmentHandlerFactory environmentHandlerFactory;
 
@@ -69,10 +69,10 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
                                     List<DbTable> dbTables ) {
 
-        this( backupDirPath, backupFileName, dbConnection, dbTables,
-              EnvironmentHandlerFactory.getInstance() );
+        this(backupDirPath, backupFileName, dbConnection, dbTables,
+             EnvironmentHandlerFactory.getInstance());
     }
-    
+
     /**
      * Constructor
      *
@@ -88,18 +88,19 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
                                     TestBox testBox,
                                     Map<String, Object> customProperties,
                                     List<DbTable> dbTables ) {
-        
-        this( backupDirPath, 
-              backupFileName, 
-              DatabaseProviderFactory.getDatabaseProvider( testBox.getDbType(),
-                        testBox.getHost(),
-                        testBox.getDbName(),
-                        testBox.getDbUser(),
-                        testBox.getDbPass(),
-                        testBox.getDbPort(),
-                        customProperties ).getDbConnection(),
-              dbTables,
-              EnvironmentHandlerFactory.getInstance() );
+
+        this(backupDirPath,
+             backupFileName,
+             DatabaseProviderFactory.getDatabaseProvider(testBox.getDbType(),
+                                                         testBox.getHost(),
+                                                         testBox.getDbName(),
+                                                         testBox.getDbUser(),
+                                                         testBox.getDbPass(),
+                                                         testBox.getDbPort(),
+                                                         customProperties)
+                                    .getDbConnection(),
+             dbTables,
+             EnvironmentHandlerFactory.getInstance());
     }
 
     /**
@@ -115,7 +116,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
         this.dbTables = dbTables;
 
-        this.backupDirPath = IoUtils.normalizeDirPath( backupDirPath );
+        this.backupDirPath = IoUtils.normalizeDirPath(backupDirPath);
         this.backupFileName = backupFileName;
         this.addLocks = true;
         this.disableForeignKeys = true;
@@ -123,7 +124,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
         this.environmentHandlerFactory = environmentHandlerFactory;
 
-        setDbConnection( dbConnection );
+        setDbConnection(dbConnection);
     }
 
     public DbConnection getDbConnection() {
@@ -144,27 +145,27 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
         BackupHandler dbBackup = null;
         try {
-            log.info( "Creating backup of environment unit " + getDescription() + "..." );
+            log.info("Creating backup of environment unit " + getDescription() + "...");
 
             //create db backup handler instance
-            dbBackup = environmentHandlerFactory.createDbBackupHandler( dbConnection );
-            dbBackup.setLockTables( addLocks );
-            dbBackup.setForeignKeyCheck( disableForeignKeys );
-            dbBackup.setIncludeDeleteStatements( includeDeleteStatements );
+            dbBackup = environmentHandlerFactory.createDbBackupHandler(dbConnection);
+            dbBackup.setLockTables(addLocks);
+            dbBackup.setForeignKeyCheck(disableForeignKeys);
+            dbBackup.setIncludeDeleteStatements(includeDeleteStatements);
 
-            for( DbTable dbTable : dbTables ) {
-                dbBackup.addTable( dbTable );
+            for (DbTable dbTable : dbTables) {
+                dbBackup.addTable(dbTable);
             }
 
             String backupFile = getBackupFile();
-            createDirIfNotExist( backupFile );
-            dbBackup.createBackup( backupFile );
+            createDirIfNotExist(backupFile);
+            dbBackup.createBackup(backupFile);
 
-            log.info( "Successfully created backup of environment unit " + getDescription() );
+            log.info("Successfully created backup of environment unit " + getDescription());
         } finally {
-            setTempBackupDir( null );
+            setTempBackupDir(null);
 
-            if( dbBackup != null ) {
+            if (dbBackup != null) {
                 dbBackup.disconnect();
             }
         }
@@ -176,11 +177,11 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
         //create db backup handler instance
         RestoreHandler dbRestore = null;
         try {
-            dbRestore = environmentHandlerFactory.createDbRestoreHandler( dbConnection );
+            dbRestore = environmentHandlerFactory.createDbRestoreHandler(dbConnection);
 
-            dbRestore.restore( getBackupFile() );
+            dbRestore.restore(getBackupFile());
         } finally {
-            if( dbRestore != null ) {
+            if (dbRestore != null) {
                 dbRestore.disconnect();
             }
         }
@@ -198,7 +199,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     private String getBackupFile() {
 
         String tempBackupDir = getTempBackupDir();
-        if( tempBackupDir != null ) {
+        if (tempBackupDir != null) {
             return tempBackupDir + backupFileName;
         }
         return backupDirPath + backupFileName;
@@ -206,14 +207,14 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     public EnvironmentUnit getNewCopy() {
 
-        DatabaseEnvironmentUnit newDatabaseEnvironmentUnit = new DatabaseEnvironmentUnit( this.backupDirPath,
-                                                                                          this.backupFileName,
-                                                                                          this.dbConnection, // we do not copy this object, seems to be constant
-                                                                                          null );
+        DatabaseEnvironmentUnit newDatabaseEnvironmentUnit = new DatabaseEnvironmentUnit(this.backupDirPath,
+                                                                                         this.backupFileName,
+                                                                                         this.dbConnection, // we do not copy this object, seems to be constant
+                                                                                         null);
 
         List<DbTable> newDbTables = new ArrayList<DbTable>();
-        for( DbTable dbTable : dbTables ) {
-            newDbTables.add( dbTable.getNewCopy() );
+        for (DbTable dbTable : dbTables) {
+            newDbTables.add(dbTable.getNewCopy());
         }
         newDatabaseEnvironmentUnit.dbTables = newDbTables;
 

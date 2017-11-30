@@ -43,25 +43,25 @@ public enum MysqlColumnNames {
     public String getName(
                            boolean isJDBC4 ) throws DbException {
 
-        switch( this ){
+        switch (this) {
             case COLUMN_NAME:
-                if( !isJDBC4 ) {
+                if (!isJDBC4) {
                     return "Field";
                 }
                 return "COLUMN_NAME";
             case COLUMN_TYPE:
-                if( !isJDBC4 ) {
+                if (!isJDBC4) {
                     return "Type";
                 }
                 return "COLUMN_TYPE";
 
             case DEFAULT_COLUMN:
-                if( !isJDBC4 ) {
+                if (!isJDBC4) {
                     return "Default";
                 }
                 return "COLUMN_DEFAULT";
             default:
-                throw new DbException( "No case for type " + this );
+                throw new DbException("No case for type " + this);
         }
     }
 }

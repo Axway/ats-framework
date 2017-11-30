@@ -46,11 +46,11 @@ import com.axway.ats.environment.database.model.RestoreHandler;
  */
 abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandler {
 
-    private static final Logger   log                        = Logger.getLogger( AbstractEnvironmentHandler.class );
-    private static final String   ERROR_CREATING_BACKUP      = "Could not create backup in file ";
-    protected static final String ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
-    private static final String   DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
-    protected static final String EOL_MARKER                 = " -- ATS EOL;";
+    private static final Logger    log                        = Logger.getLogger(AbstractEnvironmentHandler.class);
+    private static final String    ERROR_CREATING_BACKUP      = "Could not create backup in file ";
+    protected static final String  ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
+    private static final String    DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
+    protected static final String  EOL_MARKER                 = " -- ATS EOL;";
 
     protected boolean              addLocks;
     protected boolean              disableForeignKeys;
@@ -60,7 +60,6 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected DbProvider           dbProvider;
     // whether the delete statements are already written to file
     protected boolean              deleteStatementsInserted;
-
 
     /**
      * Constructor
@@ -85,29 +84,29 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      */
     public void createBackup(
                               String backupFileName ) throws DatabaseEnvironmentCleanupException {
-        
+
         // reset flag, so delete statements will be inserted
         this.deleteStatementsInserted = false;
 
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter( new File( backupFileName ) );
-            log.debug( "Dumping database backup to file '" + backupFileName + "'" );
+            fileWriter = new FileWriter(new File(backupFileName));
+            log.debug("Dumping database backup to file '" + backupFileName + "'");
 
-            writeBackupToFile( fileWriter );
+            writeBackupToFile(fileWriter);
 
-            log.debug( "Finished writing db backup to file '" + backupFileName + "'" );
+            log.debug("Finished writing db backup to file '" + backupFileName + "'");
 
-        } catch( Exception pe ) {
-            markBackupFileAsDamaged( fileWriter, backupFileName );
-            throw new DatabaseEnvironmentCleanupException( ERROR_CREATING_BACKUP + backupFileName, pe );
+        } catch (Exception pe) {
+            markBackupFileAsDamaged(fileWriter, backupFileName);
+            throw new DatabaseEnvironmentCleanupException(ERROR_CREATING_BACKUP + backupFileName, pe);
         } finally {
             try {
-                if( fileWriter != null ) {
+                if (fileWriter != null) {
                     fileWriter.close();
                 }
-            } catch( IOException ioe ) {
-                log.error( ERROR_CREATING_BACKUP + backupFileName, ioe );
+            } catch (IOException ioe) {
+                log.error(ERROR_CREATING_BACKUP + backupFileName, ioe);
             }
         }
     }
@@ -122,24 +121,24 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                                           String backupFileName ) {
 
         try {
-            if( fileWriter != null ) {
+            if (fileWriter != null) {
                 //stream must be closed to flush writing to the file and to be ready for move
                 fileWriter.close();
                 //avoid any further operation with the stream
                 fileWriter = null;
 
-                File bkFile = new File( backupFileName );
-                if( bkFile.exists() ) {
+                File bkFile = new File(backupFileName);
+                if (bkFile.exists()) {
                     String dmgFileName = backupFileName + DAMAGED_BACKUP_FILE_SUFFIX;
-                    if( bkFile.renameTo( new File( dmgFileName ) ) ) {
-                        log.debug( "Faulty backup file is renamed to: " + dmgFileName );
+                    if (bkFile.renameTo(new File(dmgFileName))) {
+                        log.debug("Faulty backup file is renamed to: " + dmgFileName);
                     } else {
-                        log.debug( "Faulty backup file can`t be marked as 'damaged'. The rename operation Failed" );
+                        log.debug("Faulty backup file can`t be marked as 'damaged'. The rename operation Failed");
                     }
                 }
             }
-        } catch( IOException ioe ) {
-            log.error( ERROR_CREATING_BACKUP + backupFileName, ioe );
+        } catch (IOException ioe) {
+            log.error(ERROR_CREATING_BACKUP + backupFileName, ioe);
         }
     }
 
@@ -154,48 +153,48 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      */
     protected void writeBackupToFile(
                                       FileWriter fileWriter ) throws IOException,
-                                                             DatabaseEnvironmentCleanupException,
-                                                             DbException, ParseException {
+                                                              DatabaseEnvironmentCleanupException,
+                                                              DbException, ParseException {
 
-        if( disableForeignKeys ) {
-            fileWriter.write( disableForeignKeyChecksStart() );
+        if (disableForeignKeys) {
+            fileWriter.write(disableForeignKeyChecksStart());
         }
 
-        for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+        for (Entry<String, DbTable> entry : dbTables.entrySet()) {
             DbTable dbTable = entry.getValue();
 
-            if( log.isDebugEnabled() ) {
-                log.debug( "Preparing data for backup of table " + ( dbTable != null
-                                                                                    ? dbTable.getTableName()
-                                                                                    : null ) );
+            if (log.isDebugEnabled()) {
+                log.debug("Preparing data for backup of table " + (dbTable != null
+                                                                                   ? dbTable.getTableName()
+                                                                                   : null));
             }
             List<ColumnDescription> columnsToSelect = null;
-            columnsToSelect = getColumnsToSelect( dbTable, dbConnection.getUser() );
-            if( columnsToSelect == null || columnsToSelect.size() == 0 ) {
+            columnsToSelect = getColumnsToSelect(dbTable, dbConnection.getUser());
+            if (columnsToSelect == null || columnsToSelect.size() == 0) {
                 // NOTE: if needed change behavior to continue if the table has no columns.
                 // Currently it is assumed that if the table is described for backup then
                 // it contains some meaningful data and so it has columns
-                throw new DatabaseEnvironmentCleanupException( "No columns to backup for table "
-                                                               + ( dbTable != null
-                                                                                   ? dbTable.getTableName()
-                                                                                   : "" ) );
+                throw new DatabaseEnvironmentCleanupException("No columns to backup for table "
+                                                              + (dbTable != null
+                                                                                 ? dbTable.getTableName()
+                                                                                 : ""));
             }
 
             StringBuilder selectQuery = new StringBuilder();
-            selectQuery.append( "SELECT " );
-            selectQuery.append( getColumnsString( columnsToSelect ) );
-            selectQuery.append( " FROM " );
-            selectQuery.append( dbTable.getTableName() );
+            selectQuery.append("SELECT ");
+            selectQuery.append(getColumnsString(columnsToSelect));
+            selectQuery.append(" FROM ");
+            selectQuery.append(dbTable.getTableName());
 
-            DbQuery query = new DbQuery( selectQuery.toString() );
+            DbQuery query = new DbQuery(selectQuery.toString());
 
-            DbRecordValuesList[] records = dbProvider.select( query, DbReturnModes.ESCAPED_STRING );
+            DbRecordValuesList[] records = dbProvider.select(query, DbReturnModes.ESCAPED_STRING);
 
-            writeTableToFile( columnsToSelect, dbTable, records, fileWriter );
+            writeTableToFile(columnsToSelect, dbTable, records, fileWriter);
         }
 
-        if( disableForeignKeys ) {
-            fileWriter.write( disableForeignKeyChecksEnd() );
+        if (disableForeignKeys) {
+            fileWriter.write(disableForeignKeyChecksEnd());
         }
     }
 
@@ -221,14 +220,14 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         StringBuilder columnsBuilder = new StringBuilder();
 
         //create the columns string
-        for( ColumnDescription column : columns ) {
-            columnsBuilder.append( column.getName() );
-            columnsBuilder.append( "," );
+        for (ColumnDescription column : columns) {
+            columnsBuilder.append(column.getName());
+            columnsBuilder.append(",");
 
         }
         //remove the last comma
-        if( columnsBuilder.length() > 1 ) {
-            columnsBuilder.delete( columnsBuilder.length() - 1, columnsBuilder.length() );
+        if (columnsBuilder.length() > 1) {
+            columnsBuilder.delete(columnsBuilder.length() - 1, columnsBuilder.length());
         }
 
         return columnsBuilder.toString();
@@ -245,7 +244,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected abstract List<ColumnDescription> getColumnsToSelect(
                                                                    DbTable dbTable,
                                                                    String userName ) throws DbException,
-                                                                                    ColumnHasNoDefaultValueException;
+                                                                                     ColumnHasNoDefaultValueException;
 
     protected abstract String disableForeignKeyChecksStart();
 
@@ -260,11 +259,11 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     public void addTable(
                           DbTable dbTable ) {
 
-        if( dbTables.containsKey( dbTable.getTableName() ) ) {
-            log.warn( "DB table with name '" + dbTable.getTableName()
-                      + "' has already been added for backup." );
+        if (dbTables.containsKey(dbTable.getTableName())) {
+            log.warn("DB table with name '" + dbTable.getTableName()
+                     + "' has already been added for backup.");
         } else {
-            dbTables.put( dbTable.getTableName(), dbTable );
+            dbTables.put(dbTable.getTableName(), dbTable);
         }
 
     }
@@ -314,7 +313,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     }
 
     protected abstract void writeDeleteStatements(
-                                                FileWriter fileWriter ) throws IOException;
+                                                   FileWriter fileWriter ) throws IOException;
 
     /**
      * Release the database connection

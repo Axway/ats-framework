@@ -46,20 +46,20 @@ import com.axway.ats.environment.database.model.DbTable;
 
 class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger log            = Logger.getLogger( MssqlEnvironmentHandler.class );
+    private static final Logger log            = Logger.getLogger(MssqlEnvironmentHandler.class);
     private static final String HEX_PREFIX_STR = "0x";
 
     MssqlEnvironmentHandler( DbConnSQLServer dbConnection,
                              MssqlDbProvider dbProvider ) {
 
-        super( dbConnection, dbProvider );
+        super(dbConnection, dbProvider);
     }
 
     @Override
     protected List<ColumnDescription> getColumnsToSelect(
                                                           DbTable table,
                                                           String userName ) throws DbException,
-                                                                           ColumnHasNoDefaultValueException {
+                                                                            ColumnHasNoDefaultValueException {
 
         String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE, "
                                    + "columnproperty(object_id('"
@@ -70,33 +70,33 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         ArrayList<ColumnDescription> columnsToSelect = new ArrayList<ColumnDescription>();
         DbRecordValuesList[] columnsMetaData = null;
         try {
-            columnsMetaData = this.dbProvider.select( selectColumnsInfo );
-        } catch( DbException e ) {
-            log.error( "Could not get columns for table "
-                       + table.getTableName()
-                       + ". Check if the table is existing and that the user has permissions. See more details in the trace." );
+            columnsMetaData = this.dbProvider.select(selectColumnsInfo);
+        } catch (DbException e) {
+            log.error("Could not get columns for table "
+                      + table.getTableName()
+                      + ". Check if the table is existing and that the user has permissions. See more details in the trace.");
             throw e;
         }
 
-        table.setIdentityColumnPresent( false ); // the Identity column can be skipped(excluded)
-        for( DbRecordValuesList columnMetaData : columnsMetaData ) {
+        table.setIdentityColumnPresent(false); // the Identity column can be skipped(excluded)
+        for (DbRecordValuesList columnMetaData : columnsMetaData) {
 
-            String columnName = ( String ) columnMetaData.get( "COLUMN_NAME" );
+            String columnName = (String) columnMetaData.get("COLUMN_NAME");
 
             //check if the column should be skipped in the backup
-            if( !table.getColumnsToExclude().contains( columnName ) ) {
+            if (!table.getColumnsToExclude().contains(columnName)) {
 
-                ColumnDescription colDescription = new MssqlColumnDescription( columnName,
-                                                                               ( String ) columnMetaData.get( "DATA_TYPE" ) );
-                columnsToSelect.add( colDescription );
-                if( ( Integer ) columnMetaData.get( "isIdentity" ) == 1 ) {
-                    table.setIdentityColumnPresent( true );
+                ColumnDescription colDescription = new MssqlColumnDescription(columnName,
+                                                                              (String) columnMetaData.get("DATA_TYPE"));
+                columnsToSelect.add(colDescription);
+                if ((Integer) columnMetaData.get("isIdentity") == 1) {
+                    table.setIdentityColumnPresent(true);
                 }
             } else {
                 //if this column has no default value, we cannot skip it in the backup
-                if( columnMetaData.get( "COLUMN_DEFAULT" ) == null ) {
-                    log.error( "Cannot skip columns with no default values while creating backup" );
-                    throw new ColumnHasNoDefaultValueException( table.getTableName(), columnName );
+                if (columnMetaData.get("COLUMN_DEFAULT") == null) {
+                    log.error("Cannot skip columns with no default values while creating backup");
+                    throw new ColumnHasNoDefaultValueException(table.getTableName(), columnName);
                 }
             }
         }
@@ -111,23 +111,23 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException, ParseException {
 
-        if( !this.deleteStatementsInserted ) {
-            writeDeleteStatements( fileWriter );
+        if (!this.deleteStatementsInserted) {
+            writeDeleteStatements(fileWriter);
         }
 
-        if( table.getAutoIncrementResetValue() != null ) {
-            fileWriter.write( "DBCC CHECKIDENT ('" + table.getTableName() + "', RESEED, "
-                              + table.getAutoIncrementResetValue() + ");" + EOL_MARKER
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        if (table.getAutoIncrementResetValue() != null) {
+            fileWriter.write("DBCC CHECKIDENT ('" + table.getTableName() + "', RESEED, "
+                             + table.getAutoIncrementResetValue() + ");" + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
 
-        if( records.length > 0 ) {
+        if (records.length > 0) {
 
             StringBuilder insertStatement = new StringBuilder();
-            String insertBegin = "INSERT INTO " + table.getTableName() + "(" + getColumnsString( columns )
+            String insertBegin = "INSERT INTO " + table.getTableName() + "(" + getColumnsString(columns)
                                  + ") VALUES (";
             String insertEnd = null;
-            if( table.isIdentityColumnPresent() ) {
+            if (table.isIdentityColumnPresent()) {
                 insertBegin = "SET IDENTITY_INSERT " + table.getTableName() + " ON; " + insertBegin;
                 insertEnd = "); SET IDENTITY_INSERT " + table.getTableName() + " OFF;" + EOL_MARKER
                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
@@ -135,24 +135,24 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 insertEnd = ");" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
             }
 
-            for( DbRecordValuesList record : records ) {
+            for (DbRecordValuesList record : records) {
 
-                insertStatement.append( insertBegin );
+                insertStatement.append(insertBegin);
 
-                for( int i = 0; i < record.size(); i++ ) {
+                for (int i = 0; i < record.size(); i++) {
 
-                    DbRecordValue recordValue = record.get( i );
-                    String fieldValue = ( String ) recordValue.getValue();
+                    DbRecordValue recordValue = record.get(i);
+                    String fieldValue = (String) recordValue.getValue();
 
                     // extract specific values depending on their type
-                    insertStatement.append( extractValue( columns.get( i ), fieldValue ) );
-                    insertStatement.append( "," );
+                    insertStatement.append(extractValue(columns.get(i), fieldValue));
+                    insertStatement.append(",");
                 }
                 //remove the last comma
-                insertStatement.delete( insertStatement.length() - 1, insertStatement.length() );
-                insertStatement.append( insertEnd );
+                insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
+                insertStatement.append(insertEnd);
             }
-            fileWriter.write( insertStatement.toString() );
+            fileWriter.write(insertStatement.toString());
         }
     }
 
@@ -162,14 +162,14 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         StringBuilder columnsBuilder = new StringBuilder();
 
         //create the columns string
-        for( ColumnDescription column : columns ) {
-            columnsBuilder.append( '[' + column.getName() );
-            columnsBuilder.append( "]," );
+        for (ColumnDescription column : columns) {
+            columnsBuilder.append('[' + column.getName());
+            columnsBuilder.append("],");
 
         }
         //remove the last comma
-        if( columnsBuilder.length() > 1 ) {
-            columnsBuilder.delete( columnsBuilder.length() - 1, columnsBuilder.length() );
+        if (columnsBuilder.length() > 1) {
+            columnsBuilder.delete(columnsBuilder.length() - 1, columnsBuilder.length());
         }
 
         return columnsBuilder.toString();
@@ -195,11 +195,11 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     protected void writeDeleteStatements(
                                           FileWriter fileWriter ) throws IOException {
 
-        if( this.includeDeleteStatements ) {
-            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+        if (this.includeDeleteStatements) {
+            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
-                fileWriter.write( "DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
-                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                fileWriter.write("DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
             }
             this.deleteStatementsInserted = true;
         }
@@ -211,40 +211,40 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                         ColumnDescription column,
                                         String fieldValue ) throws ParseException {
 
-        if( fieldValue == null ) {
-            return new StringBuilder( "NULL" );
+        if (fieldValue == null) {
+            return new StringBuilder("NULL");
         }
 
         StringBuilder insertStatement = new StringBuilder();
         // non-string values. Should not be in quotes and do not need escaping
-        if( column.isTypeNumeric() ) {
+        if (column.isTypeNumeric()) {
 
             // BIT type stores only two types of values - 0 and 1, we need to
             // extract them and pass them back as string
-            if( column.isTypeBit() ) {
+            if (column.isTypeBit()) {
                 // The value must be a hex number 0xnnnn
-                if( fieldValue.startsWith( HEX_PREFIX_STR ) ) {
+                if (fieldValue.startsWith(HEX_PREFIX_STR)) {
                     // value already in hex notation. This is because for BIT(>1) resultSet.getObject(col) currently
                     // returns byte[]
-                    insertStatement.append( fieldValue );
+                    insertStatement.append(fieldValue);
                 } else {
-                    insertStatement.append( HEX_PREFIX_STR + fieldValue );
+                    insertStatement.append(HEX_PREFIX_STR + fieldValue);
                 }
             } else {
-                insertStatement.append( fieldValue );
+                insertStatement.append(fieldValue);
             }
-        } else if( column.isTypeBinary() ) {
+        } else if (column.isTypeBinary()) {
 
-            if( fieldValue.startsWith( HEX_PREFIX_STR ) ) {
-                insertStatement.append( fieldValue );
+            if (fieldValue.startsWith(HEX_PREFIX_STR)) {
+                insertStatement.append(fieldValue);
             } else {
-                insertStatement.append( HEX_PREFIX_STR + fieldValue );
+                insertStatement.append(HEX_PREFIX_STR + fieldValue);
             }
         } else {
 
-            insertStatement.append( '\'' );
-            insertStatement.append( fieldValue.replace( "'", "''" ) );
-            insertStatement.append( '\'' );
+            insertStatement.append('\'');
+            insertStatement.append(fieldValue.replace("'", "''"));
+            insertStatement.append('\'');
         }
 
         return insertStatement;
@@ -263,40 +263,40 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            log.debug( "Starting restoring db backup from file '" + backupFileName + "'" );
+            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
 
-            backupReader = new BufferedReader( new FileReader( new File( backupFileName ) ) );
+            backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
-            connection = ConnectionPool.getConnection( dbConnection );
+            connection = ConnectionPool.getConnection(dbConnection);
 
             isAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit( false );
+            connection.setAutoCommit(false);
 
             StringBuilder sql = new StringBuilder();
             String line = backupReader.readLine();
-            while( line != null ) {
+            while (line != null) {
 
-                sql.append( line );
+                sql.append(line);
 
-                if( line.endsWith( EOL_MARKER ) ) {
+                if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker
-                    sql.delete( sql.length() - EOL_MARKER.length(), sql.length() );
-                    PreparedStatement updateStatement = connection.prepareStatement( sql.toString() );
+                    sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
+                    PreparedStatement updateStatement = connection.prepareStatement(sql.toString());
 
                     //catch the exception and rollback, otherwise we are locked
                     try {
                         updateStatement.execute();
-                    } catch( SQLException sqle ) {
-                        log.error( "Error invoking restore satement: " + sql.toString() );
+                    } catch (SQLException sqle) {
+                        log.error("Error invoking restore satement: " + sql.toString());
                         //we have to roll back the transaction and re-throw the exception
                         connection.rollback();
                         throw sqle;
                     } finally {
                         try {
                             updateStatement.close();
-                        } catch( SQLException sqle ) {
-                            log.error( "Unable to close prepared statement", sqle );
+                        } catch (SQLException sqle) {
+                            log.error("Unable to close prepared statement", sqle);
                         }
                     }
                     sql = new StringBuilder();
@@ -304,7 +304,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     //add a new line
                     //FIXME: this code will add the system line ending - it
                     //is not guaranteed that this was the actual line ending
-                    sql.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                    sql.append(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
 
                 line = backupReader.readLine();
@@ -314,30 +314,30 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 //commit the transaction
                 connection.commit();
 
-            } catch( SQLException sqle ) {
+            } catch (SQLException sqle) {
                 //we have to roll back the transaction and re-throw the exception
                 connection.rollback();
                 throw sqle;
             }
 
-            log.debug( "Finished restoring db backup from file '" + backupFileName + "'" );
+            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
 
-        } catch( IOException ioe ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, ioe );
-        } catch( SQLException sqle ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, sqle );
-        } catch( DbException dbe ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, dbe );
+        } catch (IOException ioe) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
+        } catch (SQLException sqle) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, sqle);
+        } catch (DbException dbe) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, dbe);
         } finally {
             try {
-                IoUtils.closeStream( backupReader, "Could not close reader for backup file "
-                        + backupFileName);
-                if( connection != null ) {
-                    connection.setAutoCommit( isAutoCommit );
+                IoUtils.closeStream(backupReader, "Could not close reader for backup file "
+                                                  + backupFileName);
+                if (connection != null) {
+                    connection.setAutoCommit(isAutoCommit);
                     connection.close();
                 }
-            } catch( SQLException sqle ) {
-                log.error( ERROR_RESTORING_BACKUP + backupFileName, sqle );
+            } catch (SQLException sqle) {
+                log.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
         }
     }

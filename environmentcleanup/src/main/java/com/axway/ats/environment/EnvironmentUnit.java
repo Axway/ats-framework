@@ -44,7 +44,7 @@ public abstract class EnvironmentUnit {
      */
     public EnvironmentUnit() {
 
-        this( new ArrayList<AdditionalAction>() );
+        this(new ArrayList<AdditionalAction>());
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class EnvironmentUnit {
     public EnvironmentUnit( List<AdditionalAction> actions ) {
 
         this.actions = actions;
-        this.log = Logger.getLogger( this.getClass() );
+        this.log = Logger.getLogger(this.getClass());
     }
 
     /**
@@ -67,8 +67,8 @@ public abstract class EnvironmentUnit {
     @PublicAtsApi
     public final void addAdditionalActions( List<AdditionalAction> additionalActions ) {
 
-        if( additionalActions.size() > 0 ) {
-            actions.addAll( additionalActions );
+        if (additionalActions.size() > 0) {
+            actions.addAll(additionalActions);
         }
     }
 
@@ -99,21 +99,21 @@ public abstract class EnvironmentUnit {
 
         try {
             // restore the environment unit if needed
-            if( executeRestoreIfNecessary() ) {
+            if (executeRestoreIfNecessary()) {
                 // it was restored
 
                 // schedule any additional actions for execution
-                for( AdditionalAction action : actions ) {
-                    AdditionalActionsQueue.getInstance().addActionToQueue( action, this.getDescription() );
+                for (AdditionalAction action : actions) {
+                    AdditionalActionsQueue.getInstance().addActionToQueue(action, this.getDescription());
                 }
-                log.info( "Successfully restored " + getDescription() );
+                log.info("Successfully restored " + getDescription());
                 return true;
             } else {
-                log.debug( "No need to restore " + getDescription() );
+                log.debug("No need to restore " + getDescription());
                 return false;
             }
         } finally {
-            setTempBackupDir( null );
+            setTempBackupDir(null);
         }
     }
 
@@ -123,15 +123,15 @@ public abstract class EnvironmentUnit {
 
     protected void createDirIfNotExist( String fileName ) throws EnvironmentCleanupException {
 
-        String filePath = IoUtils.getFilePath( fileName );
+        String filePath = IoUtils.getFilePath(fileName);
 
-        File directory = new File( filePath );
-        if( directory != null && !directory.exists() ) {
-            if( directory.mkdirs() ) {
-                log.info( "Directory was created: \"" + filePath + "\"." );
+        File directory = new File(filePath);
+        if (directory != null && !directory.exists()) {
+            if (directory.mkdirs()) {
+                log.info("Directory was created: \"" + filePath + "\".");
             } else {
-                throw new EnvironmentCleanupException( "Could not create directory: "
-                                                       + getFileCanonicalPath( directory ) );
+                throw new EnvironmentCleanupException("Could not create directory: "
+                                                      + getFileCanonicalPath(directory));
             }
         }
     }
@@ -149,9 +149,9 @@ public abstract class EnvironmentUnit {
         try {
 
             return file.getCanonicalPath();
-        } catch( IOException e ) {
+        } catch (IOException e) {
 
-            throw new EnvironmentCleanupException( "Can't get file canonical path", e );
+            throw new EnvironmentCleanupException("Can't get file canonical path", e);
         }
     }
 
@@ -162,13 +162,13 @@ public abstract class EnvironmentUnit {
      */
     public void setTempBackupDir( String tempBackupDir ) throws EnvironmentCleanupException {
 
-        if( tempBackupDir != null ) {
-            if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (tempBackupDir != null) {
+            if (OperatingSystemType.getCurrentOsType().isWindows()) {
                 // unify dir. paths to compare them as strings. 
                 // getCanonicalPath() retunrs logical drive letter (Win) in upper case
-                tempBackupDir = getFileCanonicalPath( new File( tempBackupDir ) );
+                tempBackupDir = getFileCanonicalPath(new File(tempBackupDir));
             }
-            this.tempBackupDir = IoUtils.normalizeDirPath( tempBackupDir );
+            this.tempBackupDir = IoUtils.normalizeDirPath(tempBackupDir);
         } else {
             this.tempBackupDir = null;
         }

@@ -47,19 +47,19 @@ import com.axway.ats.environment.database.model.DbTable;
 
 class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger log = Logger.getLogger( OracleEnvironmentHandler.class );
+    private static final Logger log = Logger.getLogger(OracleEnvironmentHandler.class);
 
     OracleEnvironmentHandler( DbConnOracle dbConnection,
                               OracleDbProvider dbProvider ) {
 
-        super( dbConnection, dbProvider );
+        super(dbConnection, dbProvider);
     }
 
     @Override
     protected List<ColumnDescription> getColumnsToSelect(
                                                           DbTable table,
                                                           String userName ) throws DbException,
-                                                                           ColumnHasNoDefaultValueException {
+                                                                            ColumnHasNoDefaultValueException {
 
         // TODO Implementation might be replaced with JDBC DatabaseMetaData.getColumns() but should be verified
         // with default column values
@@ -72,36 +72,36 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         ArrayList<ColumnDescription> columnsToSelect = new ArrayList<ColumnDescription>();
         DbRecordValuesList[] columnsMetaData = null;
         try {
-            columnsMetaData = this.dbProvider.select( selectColumnsInfo );
-        } catch( DbException e ) {
-            log.error( "Could not get columns for table "
-                       + table.getTableName()
-                       + ". You may check if the table exists, if the you are using the right user and it has the right permissions. See more details in the trace." );
+            columnsMetaData = this.dbProvider.select(selectColumnsInfo);
+        } catch (DbException e) {
+            log.error("Could not get columns for table "
+                      + table.getTableName()
+                      + ". You may check if the table exists, if the you are using the right user and it has the right permissions. See more details in the trace.");
             throw e;
         }
 
-        if( columnsMetaData.length == 0 ) {
-            throw new DbException( "Could not get columns for table "
-                                   + table.getTableName()
-                                   + ". You may check if the table exists, if the you are using the right user and it has the right permissions." );
+        if (columnsMetaData.length == 0) {
+            throw new DbException("Could not get columns for table "
+                                  + table.getTableName()
+                                  + ". You may check if the table exists, if the you are using the right user and it has the right permissions.");
         }
 
-        for( DbRecordValuesList columnMetaData : columnsMetaData ) {
+        for (DbRecordValuesList columnMetaData : columnsMetaData) {
 
-            String columnName = ( String ) columnMetaData.get( "COLUMN_NAME" );
+            String columnName = (String) columnMetaData.get("COLUMN_NAME");
 
             //check if the column should be skipped in the backup
-            if( !table.getColumnsToExclude().contains( columnName ) ) {
+            if (!table.getColumnsToExclude().contains(columnName)) {
 
-                ColumnDescription colDescription = new OracleColumnDescription( columnName,
-                                                                                ( String ) columnMetaData.get( "DATA_TYPE" ) );
+                ColumnDescription colDescription = new OracleColumnDescription(columnName,
+                                                                               (String) columnMetaData.get("DATA_TYPE"));
 
-                columnsToSelect.add( colDescription );
+                columnsToSelect.add(colDescription);
             } else {
                 //if this column has no default value, we cannot skip it in the backup
-                if( columnMetaData.get( "DATA_DEFAULT" ) == null ) {
-                    log.error( "Cannot skip columns with no default values while creating backup" );
-                    throw new ColumnHasNoDefaultValueException( table.getTableName(), columnName );
+                if (columnMetaData.get("DATA_DEFAULT") == null) {
+                    log.error("Cannot skip columns with no default values while creating backup");
+                    throw new ColumnHasNoDefaultValueException(table.getTableName(), columnName);
                 }
             }
         }
@@ -118,8 +118,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
         // TODO : exclusive table locks START
 
-        if( !this.deleteStatementsInserted ) {
-            writeDeleteStatements( fileWriter );
+        if (!this.deleteStatementsInserted) {
+            writeDeleteStatements(fileWriter);
         }
 
         /*
@@ -136,9 +136,9 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             END;
          */
 
-        if( records.length > 0 ) {
+        if (records.length > 0) {
 
-            if( containsBinaryTypes( columns ) ) {
+            if (containsBinaryTypes(columns)) {
 
                 /*
                  * If the binary value is too long the INSERT operation will fail.
@@ -155,82 +155,83 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
                 final String INDENTATION = "  ";
                 final String VAR_PREFIX = "binValue_";
-                StringBuilder stmtBlockBuilder = new StringBuilder( "DECLARE" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                StringBuilder stmtBlockBuilder = new StringBuilder("DECLARE"
+                                                                   + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
 
                 int variableIndex = 0;
-                for( ColumnDescription column : columns ) {
-                    if( column.isTypeBinary() ) {
-                        stmtBlockBuilder.append( INDENTATION + VAR_PREFIX + ( variableIndex++ ) + " "
-                                                 + table.getTableName() + "." + column.getName() + "%type;"
-                                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                for (ColumnDescription column : columns) {
+                    if (column.isTypeBinary()) {
+                        stmtBlockBuilder.append(INDENTATION + VAR_PREFIX + (variableIndex++) + " "
+                                                + table.getTableName() + "." + column.getName() + "%type;"
+                                                + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                     }
                 }
-                stmtBlockBuilder.append( "BEGIN" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                stmtBlockBuilder.append("BEGIN" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 int stmtBlockStart = stmtBlockBuilder.length();
                 String insertBegin = INDENTATION + "INSERT INTO " + table.getTableName() + "("
-                                     + getColumnsString( columns ) + ") VALUES (";
+                                     + getColumnsString(columns) + ") VALUES (";
                 String insertEnd = ");" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
-                for( DbRecordValuesList record : records ) {
+                for (DbRecordValuesList record : records) {
 
                     StringBuilder insertStatement = new StringBuilder();
                     variableIndex = 0;
-                    for( int i = 0; i < record.size(); i++ ) {
+                    for (int i = 0; i < record.size(); i++) {
 
-                        ColumnDescription column = columns.get( i );
-                        DbRecordValue recordValue = record.get( i );
+                        ColumnDescription column = columns.get(i);
+                        DbRecordValue recordValue = record.get(i);
                         // extract the value depending on the column type
-                        String fieldValue = extractValue( column, ( String ) recordValue.getValue() ).toString();
+                        String fieldValue = extractValue(column, (String) recordValue.getValue()).toString();
 
-                        if( column.isTypeBinary() ) {
-                            String varName = VAR_PREFIX + ( variableIndex++ );
-                            stmtBlockBuilder.append( INDENTATION + varName + " := " + fieldValue + ";"
-                                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-                            insertStatement.append( varName );
+                        if (column.isTypeBinary()) {
+                            String varName = VAR_PREFIX + (variableIndex++);
+                            stmtBlockBuilder.append(INDENTATION + varName + " := " + fieldValue + ";"
+                                                    + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            insertStatement.append(varName);
                         } else {
-                            insertStatement.append( fieldValue );
+                            insertStatement.append(fieldValue);
                         }
-                        insertStatement.append( "," );
+                        insertStatement.append(",");
                     }
                     //remove the last comma
-                    insertStatement.delete( insertStatement.length() - 1, insertStatement.length() );
+                    insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
 
-                    stmtBlockBuilder.append( insertBegin );
-                    stmtBlockBuilder.append( insertStatement.toString() );
-                    stmtBlockBuilder.append( insertEnd );
-                    stmtBlockBuilder.append( "END;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-                    fileWriter.write( stmtBlockBuilder.toString() );
+                    stmtBlockBuilder.append(insertBegin);
+                    stmtBlockBuilder.append(insertStatement.toString());
+                    stmtBlockBuilder.append(insertEnd);
+                    stmtBlockBuilder.append("END;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                    fileWriter.write(stmtBlockBuilder.toString());
                     fileWriter.flush();
 
                     // clear to block BEGIN tag
-                    stmtBlockBuilder.delete( stmtBlockStart, stmtBlockBuilder.length() );
+                    stmtBlockBuilder.delete(stmtBlockStart, stmtBlockBuilder.length());
                 }
             } else {
 
                 StringBuilder insertStatement = new StringBuilder();
-                String insertBegin = "INSERT INTO " + table.getTableName() + "(" + getColumnsString( columns )
+                String insertBegin = "INSERT INTO " + table.getTableName() + "(" + getColumnsString(columns)
                                      + ") VALUES (";
                 String insertEnd = ");" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
-                for( DbRecordValuesList record : records ) {
+                for (DbRecordValuesList record : records) {
 
-                    insertStatement.append( insertBegin );
+                    insertStatement.append(insertBegin);
 
-                    for( int i = 0; i < record.size(); i++ ) {
+                    for (int i = 0; i < record.size(); i++) {
 
-                        DbRecordValue recordValue = record.get( i );
-                        String fieldValue = ( String ) recordValue.getValue();
+                        DbRecordValue recordValue = record.get(i);
+                        String fieldValue = (String) recordValue.getValue();
 
                         // extract specific values depending on their type
-                        insertStatement.append( extractValue( columns.get( i ), fieldValue ) );
-                        insertStatement.append( "," );
+                        insertStatement.append(extractValue(columns.get(i), fieldValue));
+                        insertStatement.append(",");
                     }
                     //remove the last comma
-                    insertStatement.delete( insertStatement.length() - 1, insertStatement.length() );
-                    insertStatement.append( insertEnd );
+                    insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
+                    insertStatement.append(insertEnd);
 
                 }
-                fileWriter.write( insertStatement.toString() );
+                fileWriter.write(insertStatement.toString());
             }
         }
 
@@ -241,11 +242,11 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     protected void writeDeleteStatements(
                                           FileWriter fileWriter ) throws IOException {
 
-        if( this.includeDeleteStatements ) {
-            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+        if (this.includeDeleteStatements) {
+            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
-                fileWriter.write( "DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
-                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                fileWriter.write("DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
             }
             this.deleteStatementsInserted = true;
         }
@@ -254,8 +255,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     private boolean containsBinaryTypes(
                                          List<ColumnDescription> columns ) {
 
-        for( ColumnDescription column : columns ) {
-            if( column.isTypeBinary() ) {
+        for (ColumnDescription column : columns) {
+            if (column.isTypeBinary()) {
                 return true;
             }
         }
@@ -279,37 +280,37 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                                         ColumnDescription column,
                                         String fieldValue ) throws ParseException {
 
-        if( fieldValue == null ) {
-            return new StringBuilder( "NULL" );
+        if (fieldValue == null) {
+            return new StringBuilder("NULL");
         }
 
         StringBuilder insertStatement = new StringBuilder();
 
         String typeInUpperCase = column.getType().toUpperCase();
-        if( "DATE".equals( typeInUpperCase ) ) {
-            SimpleDateFormat inputDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.0" );
-            SimpleDateFormat outputDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        if ("DATE".equals(typeInUpperCase)) {
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            insertStatement.append( "to_date('" );
-            insertStatement.append( outputDateFormat.format( inputDateFormat.parse( fieldValue ) ) );
-            insertStatement.append( "','YYYY-MM-DD hh24:mi:ss')" );
+            insertStatement.append("to_date('");
+            insertStatement.append(outputDateFormat.format(inputDateFormat.parse(fieldValue)));
+            insertStatement.append("','YYYY-MM-DD hh24:mi:ss')");
 
-        } else if( typeInUpperCase.startsWith( "TIMESTAMP" ) ) {
-            insertStatement.append( "to_timestamp('" );
-            insertStatement.append( fieldValue );
-            insertStatement.append( "','YYYY-MM-DD hh24:mi:ss.FF')" );
-        } else if( "BLOB".equals( typeInUpperCase ) ) {
-            insertStatement.append( "to_blob('" );
-            insertStatement.append( fieldValue );
-            insertStatement.append( "')" );
-        } else if( "CLOB".equals( typeInUpperCase ) ) {
-            insertStatement.append( "to_clob('" );
-            insertStatement.append( fieldValue.replace( "'", "''" ) );
-            insertStatement.append( "')" );
+        } else if (typeInUpperCase.startsWith("TIMESTAMP")) {
+            insertStatement.append("to_timestamp('");
+            insertStatement.append(fieldValue);
+            insertStatement.append("','YYYY-MM-DD hh24:mi:ss.FF')");
+        } else if ("BLOB".equals(typeInUpperCase)) {
+            insertStatement.append("to_blob('");
+            insertStatement.append(fieldValue);
+            insertStatement.append("')");
+        } else if ("CLOB".equals(typeInUpperCase)) {
+            insertStatement.append("to_clob('");
+            insertStatement.append(fieldValue.replace("'", "''"));
+            insertStatement.append("')");
         } else {
-            insertStatement.append( "'" );
-            insertStatement.append( fieldValue.replace( "'", "''" ) );
-            insertStatement.append( "'" );
+            insertStatement.append("'");
+            insertStatement.append(fieldValue.replace("'", "''"));
+            insertStatement.append("'");
         }
 
         return insertStatement;
@@ -329,46 +330,46 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            log.debug( "Starting restoring db backup from file '" + backupFileName + "'" );
+            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
 
-            backupReader = new BufferedReader( new FileReader( new File( backupFileName ) ) );
+            backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
-            connection = ConnectionPool.getConnection( dbConnection );
+            connection = ConnectionPool.getConnection(dbConnection);
 
             isAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit( false );
+            connection.setAutoCommit(false);
 
             StringBuilder sql = new StringBuilder();
             String line = backupReader.readLine();
-            while( line != null ) {
+            while (line != null) {
 
-                sql.append( line );
+                sql.append(line);
 
-                if( line.endsWith( EOL_MARKER ) ) {
+                if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker and the trailing semicolon because, strangely, Oracle JDBC driver
                     // does not require it, as opposing to any other, excluding blocks ([DECLARE]BEGIN-END;)
-                    if( line.contains( "END;" ) ) { // in this case semicolon is mandatory
-                        sql.delete( sql.length() - EOL_MARKER.length(), sql.length() );
+                    if (line.contains("END;")) { // in this case semicolon is mandatory
+                        sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
                     } else {
-                        sql.delete( sql.length() - EOL_MARKER.length() - 1, sql.length() );
+                        sql.delete(sql.length() - EOL_MARKER.length() - 1, sql.length());
                     }
 
-                    PreparedStatement updateStatement = connection.prepareStatement( sql.toString() );
+                    PreparedStatement updateStatement = connection.prepareStatement(sql.toString());
 
                     //catch the exception and rollback, otherwise we are locked
                     try {
                         updateStatement.execute();
-                    } catch( SQLException sqle ) {
-                        log.error( "Error invoking restore satement: " + sql.toString() );
+                    } catch (SQLException sqle) {
+                        log.error("Error invoking restore satement: " + sql.toString());
                         //we have to roll back the transaction and re throw the exception
                         connection.rollback();
                         throw sqle;
                     } finally {
                         try {
                             updateStatement.close();
-                        } catch( SQLException sqle ) {
-                            log.error( "Unable to close prepared statement", sqle );
+                        } catch (SQLException sqle) {
+                            log.error("Unable to close prepared statement", sqle);
                         }
                     }
                     sql = new StringBuilder();
@@ -376,7 +377,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                     //add a new line
                     //FIXME: this code will add the system line ending - it
                     //is not guaranteed that this was the actual line ending
-                    sql.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                    sql.append(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
 
                 line = backupReader.readLine();
@@ -386,31 +387,31 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                 //commit the transaction
                 connection.commit();
 
-            } catch( SQLException sqle ) {
+            } catch (SQLException sqle) {
                 //we have to roll back the transaction and re throw the exception
                 connection.rollback();
                 throw sqle;
             }
 
-            log.debug( "Finished restoring db backup from file '" + backupFileName + "'" );
+            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
 
-        } catch( IOException ioe ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, ioe );
-        } catch( SQLException sqle ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, sqle );
-        } catch( DbException dbe ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, dbe );
+        } catch (IOException ioe) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
+        } catch (SQLException sqle) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, sqle);
+        } catch (DbException dbe) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, dbe);
         } finally {
             try {
-                IoUtils.closeStream( backupReader, "Could not close reader for backup file "
-                        + backupFileName);
+                IoUtils.closeStream(backupReader, "Could not close reader for backup file "
+                                                  + backupFileName);
 
-                if( connection != null ) {
-                    connection.setAutoCommit( isAutoCommit );
+                if (connection != null) {
+                    connection.setAutoCommit(isAutoCommit);
                     connection.close();
                 }
-            } catch( SQLException sqle ) {
-                log.error( ERROR_RESTORING_BACKUP + backupFileName, sqle );
+            } catch (SQLException sqle) {
+                log.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
         }
     }

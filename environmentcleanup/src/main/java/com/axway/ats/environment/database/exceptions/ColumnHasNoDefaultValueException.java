@@ -15,14 +15,13 @@
  */
 package com.axway.ats.environment.database.exceptions;
 
-
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ColumnHasNoDefaultValueException extends DatabaseEnvironmentCleanupException {
 
     public ColumnHasNoDefaultValueException( String tableName,
                                              String columnName ) {
 
-        super( "The column " + tableName + "." + columnName
-               + " has no default value and cannot be excluded from backup" );
+        super("The column " + tableName + "." + columnName
+              + " has no default value and cannot be excluded from backup");
     }
 }

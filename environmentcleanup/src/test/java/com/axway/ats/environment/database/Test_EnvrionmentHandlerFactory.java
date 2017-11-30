@@ -34,12 +34,12 @@ public class Test_EnvrionmentHandlerFactory extends BaseTest {
 
         EnvironmentHandlerFactory factory = EnvironmentHandlerFactory.getInstance();
 
-        assertEquals( MysqlEnvironmentHandler.class,
-                      factory.createDbBackupHandler( new DbConnMySQL( "host", "db", "user", "pass" ) )
-                             .getClass() );
-        assertEquals( OracleEnvironmentHandler.class,
-                      factory.createDbBackupHandler( new DbConnOracle( "host", "db", "user", "pass" ) )
-                             .getClass() );
+        assertEquals(MysqlEnvironmentHandler.class,
+                     factory.createDbBackupHandler(new DbConnMySQL("host", "db", "user", "pass"))
+                            .getClass());
+        assertEquals(OracleEnvironmentHandler.class,
+                     factory.createDbBackupHandler(new DbConnOracle("host", "db", "user", "pass"))
+                            .getClass());
     }
 
     @Test
@@ -47,12 +47,12 @@ public class Test_EnvrionmentHandlerFactory extends BaseTest {
 
         EnvironmentHandlerFactory factory = EnvironmentHandlerFactory.getInstance();
 
-        assertEquals( MysqlEnvironmentHandler.class,
-                      factory.createDbRestoreHandler( new DbConnMySQL( "host", "db", "user", "pass" ) )
-                             .getClass() );
-        assertEquals( OracleEnvironmentHandler.class,
-                      factory.createDbRestoreHandler( new DbConnOracle( "host", "db", "user", "pass" ) )
-                             .getClass() );
+        assertEquals(MysqlEnvironmentHandler.class,
+                     factory.createDbRestoreHandler(new DbConnMySQL("host", "db", "user", "pass"))
+                            .getClass());
+        assertEquals(OracleEnvironmentHandler.class,
+                     factory.createDbRestoreHandler(new DbConnOracle("host", "db", "user", "pass"))
+                            .getClass());
     }
 
 }

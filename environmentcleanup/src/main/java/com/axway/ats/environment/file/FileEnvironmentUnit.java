@@ -38,7 +38,7 @@ import com.axway.ats.environment.EnvironmentUnit;
 @PublicAtsApi
 public class FileEnvironmentUnit extends EnvironmentUnit {
 
-    private static final Logger log = Logger.getLogger( FileEnvironmentUnit.class );
+    private static final Logger log = Logger.getLogger(FileEnvironmentUnit.class);
 
     private String              origFileName;
     private String              backupDirPath;
@@ -53,7 +53,7 @@ public class FileEnvironmentUnit extends EnvironmentUnit {
         super();
 
         this.origFileName = origFileName;
-        this.backupDirPath = IoUtils.normalizeDirPath( backupDirPath );
+        this.backupDirPath = IoUtils.normalizeDirPath(backupDirPath);
         this.backupFileName = backupFileName;
         this.description = "file " + origFileName;
     }
@@ -64,68 +64,68 @@ public class FileEnvironmentUnit extends EnvironmentUnit {
 
         try {
             String backupFileAsString = getBackupFile();
-            createDirIfNotExist( backupFileAsString );
-            if( new File( origFileName ).exists() ) {
+            createDirIfNotExist(backupFileAsString);
+            if (new File(origFileName).exists()) {
 
-                copyFile( origFileName, backupFileAsString );
+                copyFile(origFileName, backupFileAsString);
 
                 // fix the modification date of the backup file
-                File origFile = new File( origFileName );
-                File backupFile = new File( backupFileAsString );
-                backupFile.setLastModified( origFile.lastModified() );
-            } else if( new File( backupFileAsString ).exists() ) {
+                File origFile = new File(origFileName);
+                File backupFile = new File(backupFileAsString);
+                backupFile.setLastModified(origFile.lastModified());
+            } else if (new File(backupFileAsString).exists()) {
 
-                if( !new File( backupFileAsString ).delete() ) {
-                    throw new EnvironmentCleanupException( "File " + backupFileAsString
-                                                           + " must be removed, but the delete operation fails." );
+                if (!new File(backupFileAsString).delete()) {
+                    throw new EnvironmentCleanupException("File " + backupFileAsString
+                                                          + " must be removed, but the delete operation fails.");
                 }
             }
 
-        } catch( FileNotFoundException fnfe ) {
+        } catch (FileNotFoundException fnfe) {
 
-            log.warn( "Cannot backup file: " + origFileName + " Skipping it.", fnfe );
-        } catch( IOException ioe ) {
+            log.warn("Cannot backup file: " + origFileName + " Skipping it.", fnfe);
+        } catch (IOException ioe) {
 
-            throw new EnvironmentCleanupException( "Could not backup file " + origFileName, ioe );
+            throw new EnvironmentCleanupException("Could not backup file " + origFileName, ioe);
         } finally {
-            setTempBackupDir( null );
+            setTempBackupDir(null);
         }
     }
 
     @Override
     protected boolean executeRestoreIfNecessary() throws EnvironmentCleanupException {
 
-        if( isRestoreNecessary() ) {
+        if (isRestoreNecessary()) {
 
             String backupFileAsString = getBackupFile();
             try {
-                File origFile = new File( origFileName );
-                File backupFile = new File( backupFileAsString );
+                File origFile = new File(origFileName);
+                File backupFile = new File(backupFileAsString);
 
-                if( origFile.exists() && origFile.isDirectory() ) {
+                if (origFile.exists() && origFile.isDirectory()) {
 
-                    throw new EnvironmentCleanupException( "File " + getFileCanonicalPath( origFile )
-                                                           + " is actually a directory and can not be restored." );
-                } else if( origFile.exists() && !backupFile.exists() ) {
+                    throw new EnvironmentCleanupException("File " + getFileCanonicalPath(origFile)
+                                                          + " is actually a directory and can not be restored.");
+                } else if (origFile.exists() && !backupFile.exists()) {
 
-                    if( origFile.delete() ) {
-                        log.info( "File " + getFileCanonicalPath( origFile ) + " is deleted." );
+                    if (origFile.delete()) {
+                        log.info("File " + getFileCanonicalPath(origFile) + " is deleted.");
                     } else {
-                        throw new EnvironmentCleanupException( "File " + getFileCanonicalPath( origFile )
-                                                               + " must be removed, but the delete opeation fails." );
+                        throw new EnvironmentCleanupException("File " + getFileCanonicalPath(origFile)
+                                                              + " must be removed, but the delete opeation fails.");
                     }
-                } else if( backupFile.exists() ) {
+                } else if (backupFile.exists()) {
 
-                    createDirIfNotExist( origFileName );
-                    copyFile( backupFileAsString, origFileName );
+                    createDirIfNotExist(origFileName);
+                    copyFile(backupFileAsString, origFileName);
 
                     // fix the modification date of the original file
-                    origFile.setLastModified( backupFile.lastModified() );
+                    origFile.setLastModified(backupFile.lastModified());
                 }
-            } catch( FileNotFoundException fnfe ) {
-                log.warn( "Cannot restore from backup file: " + backupFileAsString + " Skipping it.", fnfe );
-            } catch( IOException ioe ) {
-                throw new EnvironmentCleanupException( "Could not restore file " + origFileName, ioe );
+            } catch (FileNotFoundException fnfe) {
+                log.warn("Cannot restore from backup file: " + backupFileAsString + " Skipping it.", fnfe);
+            } catch (IOException ioe) {
+                throw new EnvironmentCleanupException("Could not restore file " + origFileName, ioe);
             }
             return true;
         } else {
@@ -135,15 +135,15 @@ public class FileEnvironmentUnit extends EnvironmentUnit {
 
     private boolean isRestoreNecessary() throws EnvironmentCleanupException {
 
-        File origFile = new File( origFileName );
-        File backupFile = new File( getBackupFile() );
+        File origFile = new File(origFileName);
+        File backupFile = new File(getBackupFile());
 
-        boolean needRestore = ( origFile.exists() && !backupFile.exists() )
-                              || ( !origFile.exists() && backupFile.exists() )
-                              || ( origFile.lastModified() != backupFile.lastModified() );
+        boolean needRestore = (origFile.exists() && !backupFile.exists())
+                              || (!origFile.exists() && backupFile.exists())
+                              || (origFile.lastModified() != backupFile.lastModified());
 
-        if( needRestore ) {
-            log.debug( getDescription() + " is not the same as backup - restoring..." );
+        if (needRestore) {
+            log.debug(getDescription() + " is not the same as backup - restoring...");
         }
 
         return needRestore;
@@ -169,25 +169,25 @@ public class FileEnvironmentUnit extends EnvironmentUnit {
 
         try {
             // Create channel on the source
-            srcChannel = new FileInputStream( sourceFileName ).getChannel();
+            srcChannel = new FileInputStream(sourceFileName).getChannel();
 
             // Create channel on the destination
-            dstChannel = new FileOutputStream( destinationFileName ).getChannel();
+            dstChannel = new FileOutputStream(destinationFileName).getChannel();
 
             // Copy file contents from source to destination
-            dstChannel.truncate( 0 );
-            dstChannel.transferFrom( srcChannel, 0, srcChannel.size() );
+            dstChannel.truncate(0);
+            dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
         } finally {
             // Close the channels
-            IoUtils.closeStream( srcChannel );
-            IoUtils.closeStream( dstChannel );
+            IoUtils.closeStream(srcChannel);
+            IoUtils.closeStream(dstChannel);
         }
     }
 
     private String getBackupFile() {
 
         String tempBackupDir = getTempBackupDir();
-        if( tempBackupDir != null ) {
+        if (tempBackupDir != null) {
             return tempBackupDir + backupFileName;
         }
         return backupDirPath + backupFileName;
@@ -195,7 +195,7 @@ public class FileEnvironmentUnit extends EnvironmentUnit {
 
     public EnvironmentUnit getNewCopy() {
 
-        return new FileEnvironmentUnit( this.origFileName, this.backupDirPath, this.backupFileName );
+        return new FileEnvironmentUnit(this.origFileName, this.backupDirPath, this.backupFileName);
     }
 
 }

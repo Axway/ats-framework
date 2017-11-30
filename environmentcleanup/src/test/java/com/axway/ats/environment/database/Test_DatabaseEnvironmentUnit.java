@@ -51,18 +51,18 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
     @Before
     public void setUp() throws IOException {
 
-        mockDbConnection = createMock( DbConnection.class );
-        mockFactory = createMock( EnvironmentHandlerFactory.class );
-        mockRestoreHandler = createMock( RestoreHandler.class );
-        mockBackupHandler = createMock( BackupHandler.class );
+        mockDbConnection = createMock(DbConnection.class);
+        mockFactory = createMock(EnvironmentHandlerFactory.class);
+        mockRestoreHandler = createMock(RestoreHandler.class);
+        mockBackupHandler = createMock(BackupHandler.class);
 
-        tempFile = File.createTempFile( "auto", ".tmp" );
+        tempFile = File.createTempFile("auto", ".tmp");
     }
 
     @After
     public void tearDown() {
 
-        if( tempFile.exists() ) {
+        if (tempFile.exists()) {
             tempFile.delete();
         }
     }
@@ -70,93 +70,93 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
     @Test
     public void createBackupMysql() throws EnvironmentCleanupException, IOException {
 
-        DbTable table1 = new DbTable( "table1" );
-        DbTable table2 = new DbTable( "table2" );
+        DbTable table1 = new DbTable("table1");
+        DbTable table2 = new DbTable("table2");
 
         List<DbTable> tables = new ArrayList<DbTable>();
-        tables.add( table1 );
-        tables.add( table2 );
+        tables.add(table1);
+        tables.add(table2);
 
-        expect( mockFactory.createDbBackupHandler( mockDbConnection ) ).andReturn( mockBackupHandler );
+        expect(mockFactory.createDbBackupHandler(mockDbConnection)).andReturn(mockBackupHandler);
 
-        mockBackupHandler.setLockTables( true );
-        mockBackupHandler.setForeignKeyCheck( true );
-        mockBackupHandler.setIncludeDeleteStatements( true );
-        mockBackupHandler.addTable( table1 );
-        mockBackupHandler.addTable( table2 );
+        mockBackupHandler.setLockTables(true);
+        mockBackupHandler.setForeignKeyCheck(true);
+        mockBackupHandler.setIncludeDeleteStatements(true);
+        mockBackupHandler.addTable(table1);
+        mockBackupHandler.addTable(table2);
 
-        mockBackupHandler.createBackup( tempFile.getCanonicalPath() );
+        mockBackupHandler.createBackup(tempFile.getCanonicalPath());
         mockBackupHandler.disconnect();
 
-        replay( mockFactory );
-        replay( mockBackupHandler );
+        replay(mockFactory);
+        replay(mockBackupHandler);
 
-        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit( tempFile.getParentFile()
-                                                                                         .getCanonicalPath(),
-                                                                                 tempFile.getName(),
-                                                                                 mockDbConnection,
-                                                                                 tables,
-                                                                                 mockFactory );
+        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit(tempFile.getParentFile()
+                                                                                        .getCanonicalPath(),
+                                                                                tempFile.getName(),
+                                                                                mockDbConnection,
+                                                                                tables,
+                                                                                mockFactory);
         dbEnvironmentUnit.backup();
 
-        verify( mockFactory );
-        verify( mockBackupHandler );
+        verify(mockFactory);
+        verify(mockBackupHandler);
     }
 
     @Test
     public void executeRestore() throws EnvironmentCleanupException, IOException {
 
         //temp file is created and it exists, so backup will not be triggered
-        DbTable table1 = new DbTable( "table1" );
-        DbTable table2 = new DbTable( "table2" );
+        DbTable table1 = new DbTable("table1");
+        DbTable table2 = new DbTable("table2");
 
         List<DbTable> tables = new ArrayList<DbTable>();
-        tables.add( table1 );
-        tables.add( table2 );
+        tables.add(table1);
+        tables.add(table2);
 
-        expect( mockFactory.createDbRestoreHandler( mockDbConnection ) ).andReturn( mockRestoreHandler );
-        mockRestoreHandler.restore( tempFile.getCanonicalPath() );
+        expect(mockFactory.createDbRestoreHandler(mockDbConnection)).andReturn(mockRestoreHandler);
+        mockRestoreHandler.restore(tempFile.getCanonicalPath());
         mockRestoreHandler.disconnect();
 
-        replay( mockFactory );
-        replay( mockBackupHandler );
+        replay(mockFactory);
+        replay(mockBackupHandler);
 
-        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit( tempFile.getParentFile()
-                                                                                         .getCanonicalPath(),
-                                                                                 tempFile.getName(),
-                                                                                 mockDbConnection,
-                                                                                 tables,
-                                                                                 mockFactory );
+        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit(tempFile.getParentFile()
+                                                                                        .getCanonicalPath(),
+                                                                                tempFile.getName(),
+                                                                                mockDbConnection,
+                                                                                tables,
+                                                                                mockFactory);
         dbEnvironmentUnit.executeRestoreIfNecessary();
 
-        verify( mockFactory );
-        verify( mockBackupHandler );
+        verify(mockFactory);
+        verify(mockBackupHandler);
     }
 
     @Test
     public void getDescription() throws EnvironmentCleanupException, IOException {
 
         //temp file is created and it exists, so backup will not be triggered
-        DbTable table1 = new DbTable( "table1" );
-        DbTable table2 = new DbTable( "table2" );
+        DbTable table1 = new DbTable("table1");
+        DbTable table2 = new DbTable("table2");
 
         List<DbTable> tables = new ArrayList<DbTable>();
-        tables.add( table1 );
-        tables.add( table2 );
+        tables.add(table1);
+        tables.add(table2);
 
-        expect( mockDbConnection.getDbType() ).andReturn( DbConnMySQL.DATABASE_TYPE );
+        expect(mockDbConnection.getDbType()).andReturn(DbConnMySQL.DATABASE_TYPE);
 
-        replay( mockDbConnection );
+        replay(mockDbConnection);
 
-        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit( tempFile.getParentFile()
-                                                                                         .getCanonicalPath(),
-                                                                                 tempFile.getName(),
-                                                                                 mockDbConnection,
-                                                                                 tables,
-                                                                                 mockFactory );
-        assertEquals( "MYSQL database in file " + tempFile.getCanonicalPath(),
-                      dbEnvironmentUnit.getDescription() );
+        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit(tempFile.getParentFile()
+                                                                                        .getCanonicalPath(),
+                                                                                tempFile.getName(),
+                                                                                mockDbConnection,
+                                                                                tables,
+                                                                                mockFactory);
+        assertEquals("MYSQL database in file " + tempFile.getCanonicalPath(),
+                     dbEnvironmentUnit.getDescription());
 
-        verify( mockDbConnection );
+        verify(mockDbConnection);
     }
 }

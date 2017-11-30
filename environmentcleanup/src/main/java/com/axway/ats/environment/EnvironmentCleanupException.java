@@ -15,18 +15,18 @@
  */
 package com.axway.ats.environment;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class EnvironmentCleanupException extends Exception {
 
     public EnvironmentCleanupException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public EnvironmentCleanupException( String message,
                                         Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

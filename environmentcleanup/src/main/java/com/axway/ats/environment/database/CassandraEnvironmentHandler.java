@@ -46,9 +46,9 @@ import com.axway.ats.environment.database.model.DbTable;
  */
 class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger           log            = Logger.getLogger( CassandraEnvironmentHandler.class );
+    private static final Logger           log            = Logger.getLogger(CassandraEnvironmentHandler.class);
 
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ssZ" );
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
     private static final String           HEX_PREFIX_STR = "0x";
     private static final String           HEXES          = "0123456789abcdef";
@@ -56,38 +56,38 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
     CassandraEnvironmentHandler( DbConnCassandra dbConnection,
                                  CassandraDbProvider dbProvider ) {
 
-        super( dbConnection, dbProvider );
+        super(dbConnection, dbProvider);
     }
 
     @Override
     protected List<ColumnDescription> getColumnsToSelect(
                                                           DbTable table,
                                                           String userName ) throws DbException,
-                                                                           ColumnHasNoDefaultValueException {
+                                                                            ColumnHasNoDefaultValueException {
 
-        Map<String, String> columnInfo = ( ( CassandraDbProvider ) this.dbProvider ).getColumnInfo( table.getTableName() );
+        Map<String, String> columnInfo = ((CassandraDbProvider) this.dbProvider).getColumnInfo(table.getTableName());
 
         ArrayList<ColumnDescription> columnsToSelect = new ArrayList<ColumnDescription>();
-        for( Entry<String, String> columnEntry : columnInfo.entrySet() ) {
+        for (Entry<String, String> columnEntry : columnInfo.entrySet()) {
 
             //check if the column should be skipped in the backup
-            if( !table.getColumnsToExclude().contains( columnEntry.getKey() ) ) {
+            if (!table.getColumnsToExclude().contains(columnEntry.getKey())) {
 
                 String dataTypes = columnEntry.getValue();
 
                 ColumnDescription colDescription;
-                if( !dataTypes.contains( "|" ) ) {
-                    colDescription = new ColumnDescription( columnEntry.getKey(), columnEntry.getValue() );
+                if (!dataTypes.contains("|")) {
+                    colDescription = new ColumnDescription(columnEntry.getKey(), columnEntry.getValue());
                 } else {
-                    String[] dataTypesArray = dataTypes.split( "\\|" );
+                    String[] dataTypesArray = dataTypes.split("\\|");
                     String[] subDataTypesArray = new String[dataTypesArray.length - 1];
-                    for( int i = 0; i < subDataTypesArray.length; i++ ) {
+                    for (int i = 0; i < subDataTypesArray.length; i++) {
                         subDataTypesArray[i] = dataTypesArray[i + 1];
                     }
-                    colDescription = new ColumnDescription( columnEntry.getKey(), dataTypesArray[0], subDataTypesArray );
+                    colDescription = new ColumnDescription(columnEntry.getKey(), dataTypesArray[0], subDataTypesArray);
                 }
 
-                columnsToSelect.add( colDescription );
+                columnsToSelect.add(colDescription);
             }
         }
 
@@ -101,34 +101,34 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      FileWriter fileWriter ) throws IOException, ParseException {
 
-        if( !this.deleteStatementsInserted ) {
-            writeDeleteStatements( fileWriter );
+        if (!this.deleteStatementsInserted) {
+            writeDeleteStatements(fileWriter);
         }
 
-        if( records.length > 0 ) {
+        if (records.length > 0) {
 
-            String counterColumnName = getCounterColumn( records );
-            if( counterColumnName == null ) {
+            String counterColumnName = getCounterColumn(records);
+            if (counterColumnName == null) {
                 final String insertBegin = "INSERT INTO " + table.getTableName() + "("
-                                           + getColumnsString( columns ) + ") VALUES (";
+                                           + getColumnsString(columns) + ") VALUES (";
                 final String insertEnd = ");" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
                 StringBuilder insertStatement = new StringBuilder();
-                for( DbRecordValuesList dbRow : records ) {
-                    insertStatement.setLength( 0 );
-                    insertStatement.append( insertBegin );
+                for (DbRecordValuesList dbRow : records) {
+                    insertStatement.setLength(0);
+                    insertStatement.append(insertBegin);
 
-                    for( int i = 0; i < dbRow.size(); i++ ) {
+                    for (int i = 0; i < dbRow.size(); i++) {
                         // extract specific values depending on their type
-                        insertStatement.append( extractValue( columns.get( i ), dbRow.get( i ).getValue() ) );
-                        insertStatement.append( "," );
+                        insertStatement.append(extractValue(columns.get(i), dbRow.get(i).getValue()));
+                        insertStatement.append(",");
                     }
 
                     //remove the last comma
-                    insertStatement.delete( insertStatement.length() - 1, insertStatement.length() );
-                    insertStatement.append( insertEnd );
+                    insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
+                    insertStatement.append(insertEnd);
 
-                    fileWriter.write( insertStatement.toString() );
+                    fileWriter.write(insertStatement.toString());
                 }
             } else {
                 // This is the way to insert rows for tables having counter data type. Only one column could have such type.
@@ -139,33 +139,33 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                 final String insertEnd = EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 
                 StringBuilder insertStatement = new StringBuilder();
-                for( DbRecordValuesList dbRow : records ) {
+                for (DbRecordValuesList dbRow : records) {
 
-                    insertStatement.setLength( 0 );
-                    insertStatement.append( insertBegin );
+                    insertStatement.setLength(0);
+                    insertStatement.append(insertBegin);
 
                     String counterValue = "";
 
-                    for( int i = 0; i < dbRow.size(); i++ ) {
-                        DbRecordValue dbValue = dbRow.get( i );
+                    for (int i = 0; i < dbRow.size(); i++) {
+                        DbRecordValue dbValue = dbRow.get(i);
                         String dbColumnName = dbValue.getDbColumn().getColumnName();
-                        if( dbColumnName.equals( counterColumnName ) ) {
+                        if (dbColumnName.equals(counterColumnName)) {
                             // this is a counter, we will apply it later
                             counterValue = dbValue.getValue().toString();
                         } else {
                             // extract specific values depending on their type
-                            insertStatement.append( dbColumnName + " = "
-                                                    + extractValue( columns.get( i ), dbValue.getValue() ) );
-                            insertStatement.append( " AND " );
+                            insertStatement.append(dbColumnName + " = "
+                                                   + extractValue(columns.get(i), dbValue.getValue()));
+                            insertStatement.append(" AND ");
                         }
                     }
 
                     //remove the last 'AND'
-                    insertStatement.delete( insertStatement.length() - 5, insertStatement.length() );
-                    insertStatement.append( insertEnd );
+                    insertStatement.delete(insertStatement.length() - 5, insertStatement.length());
+                    insertStatement.append(insertEnd);
 
-                    fileWriter.write( insertStatement.toString()
-                                                     .replace( "<the counter value>", counterValue ) );
+                    fileWriter.write(insertStatement.toString()
+                                                    .replace("<the counter value>", counterValue));
                 }
             }
         }
@@ -179,9 +179,9 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
     private String getCounterColumn(
                                      DbRecordValuesList[] dbRows ) {
 
-        for( int i = 0; i < dbRows[0].size(); i++ ) {
-            DbRecordValue dbValue = dbRows[0].get( i );
-            if( "counter".equalsIgnoreCase( dbValue.getDbColumn().getColumnType() ) ) {
+        for (int i = 0; i < dbRows[0].size(); i++) {
+            DbRecordValue dbValue = dbRows[0].get(i);
+            if ("counter".equalsIgnoreCase(dbValue.getDbColumn().getColumnType())) {
                 return dbValue.getDbColumn().getColumnName();
             }
         }
@@ -193,11 +193,11 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
     protected void writeDeleteStatements(
                                           FileWriter fileWriter ) throws IOException {
 
-        if( this.includeDeleteStatements ) {
-            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+        if (this.includeDeleteStatements) {
+            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
-                fileWriter.write( "TRUNCATE " + dbTable.getTableName() + ";" + EOL_MARKER
-                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                fileWriter.write("TRUNCATE " + dbTable.getTableName() + ";" + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
             }
             this.deleteStatementsInserted = true;
         }
@@ -211,13 +211,13 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
         StringBuilder columnsBuilder = new StringBuilder();
 
         //create the columns string
-        for( ColumnDescription column : columns ) {
-            columnsBuilder.append( column.getName() );
-            columnsBuilder.append( "," );
+        for (ColumnDescription column : columns) {
+            columnsBuilder.append(column.getName());
+            columnsBuilder.append(",");
         }
         //remove the last comma
-        if( columnsBuilder.length() > 1 ) {
-            columnsBuilder.delete( columnsBuilder.length() - 1, columnsBuilder.length() );
+        if (columnsBuilder.length() > 1) {
+            columnsBuilder.delete(columnsBuilder.length() - 1, columnsBuilder.length());
         }
 
         return columnsBuilder.toString();
@@ -243,88 +243,88 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                               String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         try {
-            super.createBackup( backupFileName );
+            super.createBackup(backupFileName);
         } finally {
-            ( ( CassandraDbProvider ) dbProvider ).disconnect();
+            ((CassandraDbProvider) dbProvider).disconnect();
         }
     }
 
     // extracts the specific value, considering it's type and the specifics associated with it
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     private StringBuilder extractValue(
                                         ColumnDescription column,
                                         Object fieldValue ) throws ParseException {
 
-        if( fieldValue == null ) {
-            return new StringBuilder( "NULL" );
+        if (fieldValue == null) {
+            return new StringBuilder("NULL");
         }
 
         StringBuilder insertStatement = new StringBuilder();
         // non-string values. Should not be in quotes and do not need escaping
-        if( "UUID".equalsIgnoreCase( column.getType() ) ) {
-            insertStatement.append( fieldValue.toString() );
-        } else if( "Set".equalsIgnoreCase( column.getType() ) ) {
+        if ("UUID".equalsIgnoreCase(column.getType())) {
+            insertStatement.append(fieldValue.toString());
+        } else if ("Set".equalsIgnoreCase(column.getType())) {
 
-            final ColumnDescription subElementDescription = new ColumnDescription( null,
-                                                                                   column.getSubsType()[0] );
+            final ColumnDescription subElementDescription = new ColumnDescription(null,
+                                                                                  column.getSubsType()[0]);
 
-            insertStatement.append( "{" );
-            Object[] values = ( ( Set<Object> ) fieldValue ).toArray();
-            for( int i = 0; i < values.length; i++ ) {
-                insertStatement.append( extractValue( subElementDescription, values[i] ) );
-                if( i < values.length - 1 ) {
-                    insertStatement.append( ',' );
+            insertStatement.append("{");
+            Object[] values = ((Set<Object>) fieldValue).toArray();
+            for (int i = 0; i < values.length; i++) {
+                insertStatement.append(extractValue(subElementDescription, values[i]));
+                if (i < values.length - 1) {
+                    insertStatement.append(',');
                 }
             }
-            insertStatement.append( "}" );
-        } else if( "List".equalsIgnoreCase( column.getType() ) ) {
+            insertStatement.append("}");
+        } else if ("List".equalsIgnoreCase(column.getType())) {
 
-            final ColumnDescription subElementDescription = new ColumnDescription( null,
-                                                                                   column.getSubsType()[0] );
+            final ColumnDescription subElementDescription = new ColumnDescription(null,
+                                                                                  column.getSubsType()[0]);
 
-            insertStatement.append( "[" );
-            Object[] values = ( ( List<Object> ) fieldValue ).toArray();
-            for( int i = 0; i < values.length; i++ ) {
-                insertStatement.append( extractValue( subElementDescription, values[i] ) );
-                if( i < values.length - 1 ) {
-                    insertStatement.append( ',' );
+            insertStatement.append("[");
+            Object[] values = ((List<Object>) fieldValue).toArray();
+            for (int i = 0; i < values.length; i++) {
+                insertStatement.append(extractValue(subElementDescription, values[i]));
+                if (i < values.length - 1) {
+                    insertStatement.append(',');
                 }
             }
-            insertStatement.append( "]" );
-        } else if( "Map".equalsIgnoreCase( column.getType() ) ) {
-            final ColumnDescription subElementKeyDescription = new ColumnDescription( null,
-                                                                                      column.getSubsType()[0] );
-            final ColumnDescription subElementValueDescription = new ColumnDescription( null,
-                                                                                        column.getSubsType()[1] );
+            insertStatement.append("]");
+        } else if ("Map".equalsIgnoreCase(column.getType())) {
+            final ColumnDescription subElementKeyDescription = new ColumnDescription(null,
+                                                                                     column.getSubsType()[0]);
+            final ColumnDescription subElementValueDescription = new ColumnDescription(null,
+                                                                                       column.getSubsType()[1]);
 
-            insertStatement.append( "{" );
-            Map<String, Object> valuesMap = ( Map<String, Object> ) fieldValue;
+            insertStatement.append("{");
+            Map<String, Object> valuesMap = (Map<String, Object>) fieldValue;
             Set<Entry<String, Object>> fieldEntries = valuesMap.entrySet();
             int i = 0;
-            for( Entry<String, Object> fieldEntry : fieldEntries ) {
-                insertStatement.append( extractValue( subElementKeyDescription, fieldEntry.getKey() ) );
-                insertStatement.append( ':' );
-                insertStatement.append( extractValue( subElementValueDescription, fieldEntry.getValue() ) );
+            for (Entry<String, Object> fieldEntry : fieldEntries) {
+                insertStatement.append(extractValue(subElementKeyDescription, fieldEntry.getKey()));
+                insertStatement.append(':');
+                insertStatement.append(extractValue(subElementValueDescription, fieldEntry.getValue()));
                 ++i;
-                if( i < fieldEntries.size() ) {
-                    insertStatement.append( ',' );
+                if (i < fieldEntries.size()) {
+                    insertStatement.append(',');
                 }
             }
-            insertStatement.append( "}" );
-        } else if( "Date".equalsIgnoreCase( column.getType() ) || "Timestamp".equalsIgnoreCase( column.getType() ) ) {
-            insertStatement.append( '\'' );
-            insertStatement.append( DATE_FORMATTER.format( fieldValue ) );
-            insertStatement.append( '\'' );
-        } else if( "String".equalsIgnoreCase( column.getType() )
-                   || "varchar".equalsIgnoreCase( column.getType() ) ) {
-            insertStatement.append( '\'' );
-            insertStatement.append( fieldValue.toString().replace( "'", "''" ) );
-            insertStatement.append( '\'' );
-        } else if( "ByteBuffer".equalsIgnoreCase( column.getType() ) ) {
-            insertStatement.append( HEX_PREFIX_STR );
-            insertStatement.append( byteArrayToHex( ( ( byte[] ) fieldValue ) ) );
+            insertStatement.append("}");
+        } else if ("Date".equalsIgnoreCase(column.getType()) || "Timestamp".equalsIgnoreCase(column.getType())) {
+            insertStatement.append('\'');
+            insertStatement.append(DATE_FORMATTER.format(fieldValue));
+            insertStatement.append('\'');
+        } else if ("String".equalsIgnoreCase(column.getType())
+                   || "varchar".equalsIgnoreCase(column.getType())) {
+            insertStatement.append('\'');
+            insertStatement.append(fieldValue.toString().replace("'", "''"));
+            insertStatement.append('\'');
+        } else if ("ByteBuffer".equalsIgnoreCase(column.getType())) {
+            insertStatement.append(HEX_PREFIX_STR);
+            insertStatement.append(byteArrayToHex( ((byte[]) fieldValue)));
         } else {
-            insertStatement.append( fieldValue.toString().replace( "'", "''" ) );
+            insertStatement.append(fieldValue.toString().replace("'", "''"));
         }
 
         return insertStatement;
@@ -336,60 +336,60 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
         BufferedReader backupReader = null;
 
         try {
-            log.debug( "Starting restoring db backup from file '" + backupFileName + "'" );
+            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
 
-            backupReader = new BufferedReader( new FileReader( new File( backupFileName ) ) );
+            backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
             StringBuilder sql = new StringBuilder();
             String line = backupReader.readLine();
-            while( line != null ) {
+            while (line != null) {
 
-                sql.append( line );
-                if( line.endsWith( EOL_MARKER ) ) {
+                sql.append(line);
+                if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker
-                    sql.delete( sql.length() - EOL_MARKER.length(), sql.length() );
-                    dbProvider.executeUpdate( sql.toString() );
+                    sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
+                    dbProvider.executeUpdate(sql.toString());
 
-                    sql.delete( 0, sql.length() );
+                    sql.delete(0, sql.length());
                 } else {
                     //add a new line
                     //FIXME: this code will add the system line ending - it
                     //is not guaranteed that this was the actual line ending
-                    sql.append( AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                    sql.append(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
 
                 line = backupReader.readLine();
             }
 
-            log.debug( "Finished restoring db backup from file '" + backupFileName + "'" );
+            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
 
-        } catch( IOException ioe ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, ioe );
-        } catch( DbException dbe ) {
-            throw new DatabaseEnvironmentCleanupException( ERROR_RESTORING_BACKUP + backupFileName, dbe );
+        } catch (IOException ioe) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
+        } catch (DbException dbe) {
+            throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, dbe);
         } finally {
             try {
-                if( backupReader != null ) {
+                if (backupReader != null) {
                     backupReader.close();
                 }
-            } catch( IOException ioe ) {
-                log.error( ERROR_RESTORING_BACKUP + backupFileName, ioe );
+            } catch (IOException ioe) {
+                log.error(ERROR_RESTORING_BACKUP + backupFileName, ioe);
             }
 
-            ( ( CassandraDbProvider ) dbProvider ).disconnect();
+            ((CassandraDbProvider) dbProvider).disconnect();
         }
     }
-    
+
     private String byteArrayToHex(
                                    byte[] bytes ) {
 
-        if( bytes == null ) {
+        if (bytes == null) {
             return null;
         }
-        final StringBuilder hex = new StringBuilder( 2 * bytes.length );
-        for( final byte b : bytes ) {
-            hex.append( HEXES.charAt( ( b & 0xF0 ) >> 4 ) ).append( HEXES.charAt( ( b & 0x0F ) ) );
+        final StringBuilder hex = new StringBuilder(2 * bytes.length);
+        for (final byte b : bytes) {
+            hex.append(HEXES.charAt( (b & 0xF0) >> 4)).append(HEXES.charAt( (b & 0x0F)));
         }
         return hex.toString();
     }

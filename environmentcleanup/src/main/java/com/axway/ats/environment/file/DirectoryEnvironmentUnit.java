@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-    package com.axway.ats.environment.file;
+package com.axway.ats.environment.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import com.axway.ats.environment.EnvironmentUnit;
 @PublicAtsApi
 public class DirectoryEnvironmentUnit extends EnvironmentUnit {
 
-    private static final Logger log = Logger.getLogger( DirectoryEnvironmentUnit.class );
+    private static final Logger log = Logger.getLogger(DirectoryEnvironmentUnit.class);
 
     // directory to be processed. Source for backup or destination for restore
     private String              origDirName;
@@ -61,20 +61,20 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
 
         super();
 
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (OperatingSystemType.getCurrentOsType().isWindows()) {
             try {
                 // unify dir. paths in order to compare them as strings
                 // as it is used in our implementation to cycle files
                 // getCanonicalPath() is used to convert drive letter (Win) to upper case
-                origDirName = new File( origDirName ).getCanonicalPath();
-                backupDirPath = new File( backupDirPath ).getCanonicalPath();
-            } catch( IOException ex ) { // usually should not happen
-                throw new IllegalStateException( "Error while trying to get canonical "
-                                                 + "paths of original or backup folder", ex );
+                origDirName = new File(origDirName).getCanonicalPath();
+                backupDirPath = new File(backupDirPath).getCanonicalPath();
+            } catch (IOException ex) { // usually should not happen
+                throw new IllegalStateException("Error while trying to get canonical "
+                                                + "paths of original or backup folder", ex);
             }
         }
-        this.origDirName = IoUtils.normalizeDirPath( origDirName ); // add trailing slash too
-        this.backupDirPath = IoUtils.normalizeDirPath( backupDirPath );
+        this.origDirName = IoUtils.normalizeDirPath(origDirName); // add trailing slash too
+        this.backupDirPath = IoUtils.normalizeDirPath(backupDirPath);
         this.backupDirName = backupDirName;
         this.description = "directory " + origDirName;
     }
@@ -85,17 +85,17 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
 
         try {
 
-            File origDir = new File( origDirName );
-            if( origDir.isDirectory() ) {
+            File origDir = new File(origDirName);
+            if (origDir.isDirectory()) {
 
-                backupAllFilesInDirectory( origDir );
+                backupAllFilesInDirectory(origDir);
             } else {
 
-                log.warn( "Directory with name '" + origDirName
-                          + "' does not exist so backup for it will be skipped." );
+                log.warn("Directory with name '" + origDirName
+                         + "' does not exist so backup for it will be skipped.");
             }
         } finally {
-            setTempBackupDir( null );
+            setTempBackupDir(null);
         }
     }
 
@@ -103,36 +103,36 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
                                             File origDir ) throws EnvironmentCleanupException {
 
         File[] files = origDir.listFiles();
-        if( files == null ) {
-            throw new EnvironmentCleanupException("No such directory '" + origDir +"'.");
+        if (files == null) {
+            throw new EnvironmentCleanupException("No such directory '" + origDir + "'.");
         }
-        for( File file : files ) {
-            if( file.isDirectory() ) {
+        for (File file : files) {
+            if (file.isDirectory()) {
 
-                backupAllFilesInDirectory( file );
+                backupAllFilesInDirectory(file);
             } else {
 
-                String backupFileName = IoUtils.normalizeFilePath( getFileCanonicalPath( file ) );
+                String backupFileName = IoUtils.normalizeFilePath(getFileCanonicalPath(file));
                 // important that case matches incl. drive letter so origDirName and backupDir
                 // should also come after getCanonicalPath() invocation
-                backupFileName = backupFileName.replace( origDirName, getBackupDir() );
-                new FileEnvironmentUnit( getFileCanonicalPath( file ),
-                                         IoUtils.getFilePath( backupFileName ),
-                                         file.getName() ).backup();
+                backupFileName = backupFileName.replace(origDirName, getBackupDir());
+                new FileEnvironmentUnit(getFileCanonicalPath(file),
+                                        IoUtils.getFilePath(backupFileName),
+                                        file.getName()).backup();
             }
         }
         // if the directory is empty - create the new empty directory in the backup folder
-        if( files.length == 0 ) {
-            String backupDir = IoUtils.normalizeDirPath( getFileCanonicalPath( origDir ) )
-                    .replace( origDirName, getBackupDir() );
-            new File( backupDir ).mkdirs();
+        if (files.length == 0) {
+            String backupDir = IoUtils.normalizeDirPath(getFileCanonicalPath(origDir))
+                                      .replace(origDirName, getBackupDir());
+            new File(backupDir).mkdirs();
         }
     }
 
     private void updateRestoredFlag(
                                      boolean restored ) {
 
-        if( !this.restored ) {
+        if (!this.restored) {
             this.restored = restored;
         }
     }
@@ -140,35 +140,35 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
     private void restoreAllFilesInDirectory(
                                              File originalDir,
                                              Set<String> fileAndDirectoryPaths )
-                                                                                throws EnvironmentCleanupException {
+                                                                                 throws EnvironmentCleanupException {
 
         File[] files = originalDir.listFiles();
-        if( files != null ) {
-            for( File file : files ) {
-                if( file.isDirectory() ) {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
 
-                    restoreAllFilesInDirectory( file, fileAndDirectoryPaths );
+                    restoreAllFilesInDirectory(file, fileAndDirectoryPaths);
                 } else {
 
-                    String backupFilePath = IoUtils.normalizeFilePath( getFileCanonicalPath( file ) )
-                                                   .replace( origDirName, getBackupDir() );
-                    if( fileAndDirectoryPaths.contains( backupFilePath ) ) {
+                    String backupFilePath = IoUtils.normalizeFilePath(getFileCanonicalPath(file))
+                                                   .replace(origDirName, getBackupDir());
+                    if (fileAndDirectoryPaths.contains(backupFilePath)) {
 
-                        boolean fileRestored = new FileEnvironmentUnit( getFileCanonicalPath( file ),
-                                                                        IoUtils.getFilePath( backupFilePath ),
-                                                                        file.getName() ).restore();
-                        updateRestoredFlag( fileRestored );
+                        boolean fileRestored = new FileEnvironmentUnit(getFileCanonicalPath(file),
+                                                                       IoUtils.getFilePath(backupFilePath),
+                                                                       file.getName()).restore();
+                        updateRestoredFlag(fileRestored);
 
                         // remove from the backup files and directories index
-                        fileAndDirectoryPaths.remove( backupFilePath );
+                        fileAndDirectoryPaths.remove(backupFilePath);
                     } else {
                         // the file is new and missing from the backup directory => delete it
-                        if( file.delete() ) {
-                            updateRestoredFlag( true );
-                            log.info( "File " + getFileCanonicalPath( file ) + " is deleted." );
+                        if (file.delete()) {
+                            updateRestoredFlag(true);
+                            log.info("File " + getFileCanonicalPath(file) + " is deleted.");
                         } else {
-                            throw new EnvironmentCleanupException( "File " + getFileCanonicalPath( file )
-                                                                   + " must be removed, but the delete operation fails." );
+                            throw new EnvironmentCleanupException("File " + getFileCanonicalPath(file)
+                                                                  + " must be removed, but the delete operation fails.");
                         }
                     }
                 }
@@ -176,27 +176,27 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
         }
 
         // we have to delete all new created directories, which are missing in the backup directory
-        String backupDirPath = IoUtils.normalizeDirPath( getFileCanonicalPath( originalDir ) )
-                                    .replace( origDirName, getBackupDir() );
-        if( fileAndDirectoryPaths.contains( backupDirPath ) ) {
+        String backupDirPath = IoUtils.normalizeDirPath(getFileCanonicalPath(originalDir))
+                                      .replace(origDirName, getBackupDir());
+        if (fileAndDirectoryPaths.contains(backupDirPath)) {
 
             // remove from the backup files and directories index
-            fileAndDirectoryPaths.remove( backupDirPath );
+            fileAndDirectoryPaths.remove(backupDirPath);
 
-        } else if( !backupDirPath.equals( getBackupDir() ) ) { // we must not delete the original root folder
+        } else if (!backupDirPath.equals(getBackupDir())) { // we must not delete the original root folder
 
-            if( originalDir.delete() ) {
-                updateRestoredFlag( true );
-                log.info( "Directory " + getFileCanonicalPath( originalDir ) + " is deleted." );
+            if (originalDir.delete()) {
+                updateRestoredFlag(true);
+                log.info("Directory " + getFileCanonicalPath(originalDir) + " is deleted.");
             } else {
                 // TODO delete
-                log.error("Directory " + getFileCanonicalPath( originalDir )
-                          + " must be removed, but the delete operation fails. Details follow" );
-                log.error("Exists: " +  originalDir.exists());
-                log.error("Is directory: " +  originalDir.isDirectory());
-                log.error("Is file: " +  originalDir.isFile());
-                throw new EnvironmentCleanupException( "Directory " + getFileCanonicalPath( originalDir )
-                                                       + " must be removed, but the delete operation fails." );
+                log.error("Directory " + getFileCanonicalPath(originalDir)
+                          + " must be removed, but the delete operation fails. Details follow");
+                log.error("Exists: " + originalDir.exists());
+                log.error("Is directory: " + originalDir.isDirectory());
+                log.error("Is file: " + originalDir.isFile());
+                throw new EnvironmentCleanupException("Directory " + getFileCanonicalPath(originalDir)
+                                                      + " must be removed, but the delete operation fails.");
             }
         }
     }
@@ -207,41 +207,41 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
         // reset the restored flag
         this.restored = false;
 
-        File backupDir = new File( getBackupDir() );
+        File backupDir = new File(getBackupDir());
 
-        if( backupDir.isDirectory() ) {
+        if (backupDir.isDirectory()) {
 
-            File origDir = new File( origDirName );
-            if( origDir.exists() && !origDir.isDirectory() ) {
+            File origDir = new File(origDirName);
+            if (origDir.exists() && !origDir.isDirectory()) {
 
-                throw new EnvironmentCleanupException( "'" + origDirName + "' exists, but is not a directory" );
-            } else if( !origDir.exists() ) {
+                throw new EnvironmentCleanupException("'" + origDirName + "' exists, but is not a directory");
+            } else if (!origDir.exists()) {
 
-                if( origDir.mkdirs() ) {
-                    updateRestoredFlag( true );
-                    log.debug( "Created restore folder '" + origDirName + "'" );
+                if (origDir.mkdirs()) {
+                    updateRestoredFlag(true);
+                    log.debug("Created restore folder '" + origDirName + "'");
                 } else {
-                    log.warn( "Can't create folder '" + origDirName + "'" );
+                    log.warn("Can't create folder '" + origDirName + "'");
                 }
             }
 
-            Set<String> fileAndDirectoryPaths = getFileAndDirectoryPathsIndex( backupDir );
-            restoreAllFilesInDirectory( origDir, fileAndDirectoryPaths );
+            Set<String> fileAndDirectoryPaths = getFileAndDirectoryPathsIndex(backupDir);
+            restoreAllFilesInDirectory(origDir, fileAndDirectoryPaths);
 
             // here in fileAndDirectoryPaths we have left only entries in original folder which are deleted after test run.
             // We should restore them
-            for( String backupFilePath : fileAndDirectoryPaths ) {
-                String originalFilePath = backupFilePath.replace( getBackupDir(), origDirName );
-                if( originalFilePath.endsWith( "/" ) || originalFilePath.endsWith( "\\" ) ) {
-                    File dir = new File( originalFilePath );
-                    if( !dir.exists() && !dir.mkdirs() ) {
-                        log.warn( "Can't create folder '" + originalFilePath + "'" );
+            for (String backupFilePath : fileAndDirectoryPaths) {
+                String originalFilePath = backupFilePath.replace(getBackupDir(), origDirName);
+                if (originalFilePath.endsWith("/") || originalFilePath.endsWith("\\")) {
+                    File dir = new File(originalFilePath);
+                    if (!dir.exists() && !dir.mkdirs()) {
+                        log.warn("Can't create folder '" + originalFilePath + "'");
                     }
                 } else {
-                    boolean fileRestored = new FileEnvironmentUnit( originalFilePath,
-                                                                    IoUtils.getFilePath( backupFilePath ),
-                                                                    IoUtils.getFileName( backupFilePath ) ).restore();
-                    updateRestoredFlag( fileRestored );
+                    boolean fileRestored = new FileEnvironmentUnit(originalFilePath,
+                                                                   IoUtils.getFilePath(backupFilePath),
+                                                                   IoUtils.getFileName(backupFilePath)).restore();
+                    updateRestoredFlag(fileRestored);
                 }
             }
         }
@@ -254,14 +254,14 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
 
         Set<String> fileAndDirectoryPaths = new HashSet<String>();
         File[] files = dir.listFiles();
-        if( files != null ) {
-            for( File file : files ) {
-                if( file.isDirectory() ) {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
 
-                    fileAndDirectoryPaths.add( IoUtils.normalizeDirPath( getFileCanonicalPath( file ) ) );
-                    fileAndDirectoryPaths.addAll( getFileAndDirectoryPathsIndex( file ) );
+                    fileAndDirectoryPaths.add(IoUtils.normalizeDirPath(getFileCanonicalPath(file)));
+                    fileAndDirectoryPaths.addAll(getFileAndDirectoryPathsIndex(file));
                 } else {
-                    fileAndDirectoryPaths.add( IoUtils.normalizeFilePath( getFileCanonicalPath( file ) ) );
+                    fileAndDirectoryPaths.add(IoUtils.normalizeFilePath(getFileCanonicalPath(file)));
                 }
             }
         }
@@ -277,14 +277,14 @@ public class DirectoryEnvironmentUnit extends EnvironmentUnit {
     private String getBackupDir() {
 
         String tempBackupDir = getTempBackupDir();
-        if( tempBackupDir != null ) {
-            return IoUtils.normalizeDirPath( tempBackupDir + backupDirName );
+        if (tempBackupDir != null) {
+            return IoUtils.normalizeDirPath(tempBackupDir + backupDirName);
         }
-        return IoUtils.normalizeDirPath( backupDirPath + backupDirName );
+        return IoUtils.normalizeDirPath(backupDirPath + backupDirName);
     }
 
     public EnvironmentUnit getNewCopy() {
 
-        return new DirectoryEnvironmentUnit( this.origDirName, this.backupDirPath, this.backupDirName );
+        return new DirectoryEnvironmentUnit(this.origDirName, this.backupDirPath, this.backupDirName);
     }
 }

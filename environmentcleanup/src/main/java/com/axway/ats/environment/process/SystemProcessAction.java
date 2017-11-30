@@ -26,7 +26,7 @@ import com.axway.ats.environment.EnvironmentCleanupException;
 @PublicAtsApi
 public class SystemProcessAction extends AdditionalAction {
 
-    private static final Logger log = Logger.getLogger( SystemProcessAction.class );
+    private static final Logger log = Logger.getLogger(SystemProcessAction.class);
 
     private String              shellCommand;
 
@@ -36,7 +36,7 @@ public class SystemProcessAction extends AdditionalAction {
     @PublicAtsApi
     public SystemProcessAction( String shellCommand, int sleepInterval ) {
 
-        super( sleepInterval );
+        super(sleepInterval);
 
         this.shellCommand = shellCommand;
         this.description = " shell command '" + shellCommand + "'";
@@ -46,13 +46,13 @@ public class SystemProcessAction extends AdditionalAction {
     protected void executeAction() throws EnvironmentCleanupException {
 
         try {
-            log.debug( "Executing additional action with shell command '" + shellCommand + "'" );
+            log.debug("Executing additional action with shell command '" + shellCommand + "'");
 
-            LocalProcessExecutor processExecutor = new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4,
-                                                                             shellCommand );
+            LocalProcessExecutor processExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4,
+                                                                            shellCommand);
             processExecutor.execute();
-        } catch( Exception e ) {
-            throw new EnvironmentCleanupException( "Could not execute command '" + shellCommand + "'", e );
+        } catch (Exception e) {
+            throw new EnvironmentCleanupException("Could not execute command '" + shellCommand + "'", e);
         }
     }
 
