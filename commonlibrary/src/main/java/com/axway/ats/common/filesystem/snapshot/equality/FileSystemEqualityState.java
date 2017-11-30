@@ -40,7 +40,7 @@ public class FileSystemEqualityState implements Serializable {
     // remember the agent addresses, there are cases we need them
     private String            firstAtsAgent;
     private String            secondAtsAgent;
-    
+
     public FileSystemEqualityState( String firstSnapshotName, String secondSnapshotName ) {
 
         this.firstSnapshotName = firstSnapshotName;
@@ -73,39 +73,39 @@ public class FileSystemEqualityState implements Serializable {
     @PublicAtsApi
     public List<FileTrace> getDifferences() {
 
-        Collections.sort( differences, new Comparator<FileTrace>() {
+        Collections.sort(differences, new Comparator<FileTrace>() {
             @Override
             public int compare( FileTrace trace1, FileTrace trace2 ) {
 
                 return trace1.getDifferenceType().toInt() - trace2.getDifferenceType().toInt();
             }
-        } );
+        });
 
         return differences;
     }
 
     public void addDifference( FileTrace difference ) {
 
-        differences.add( difference );
+        differences.add(difference);
     }
 
     public String getFirstAtsAgent() {
-    
+
         return firstAtsAgent;
     }
 
     public void setFirstAtsAgent( String firstAtsAgent ) {
-    
+
         this.firstAtsAgent = firstAtsAgent;
     }
 
     public String getSecondAtsAgent() {
-    
+
         return secondAtsAgent;
     }
 
     public void setSecondAtsAgent( String secondAtsAgent ) {
-    
+
         this.secondAtsAgent = secondAtsAgent;
     }
 }

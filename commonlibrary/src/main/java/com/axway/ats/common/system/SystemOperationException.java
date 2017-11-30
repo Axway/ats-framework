@@ -30,7 +30,7 @@ public class SystemOperationException extends RuntimeException {
      */
     public SystemOperationException( String message, Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     /**
@@ -40,7 +40,7 @@ public class SystemOperationException extends RuntimeException {
      */
     public SystemOperationException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     /**
@@ -50,6 +50,6 @@ public class SystemOperationException extends RuntimeException {
      */
     public SystemOperationException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

@@ -73,14 +73,14 @@ public class AtsSystemProperties {
      * Following are system properties which are not supposed to be changed
      * during the VM lifetime, so we do not need to read them more than once.
      */
-    public static final String  SYSTEM_LINE_SEPARATOR                                             = System.getProperty( "line.separator" );
-    public static final String  SYSTEM_FILE_SEPARATOR                                             = System.getProperty( "file.separator" );
-    public static final String  SYSTEM_OS_NAME                                                    = System.getProperty( "os.name" );
-    public static final String  SYSTEM_USER_HOME_DIR                                              = System.getProperty( "user.dir" );
-    public static final String  SYSTEM_USER_TEMP_DIR                                              = System.getProperty( "java.io.tmpdir" );
-    public static final String  SYSTEM_JAVA_HOME_DIR                                              = System.getProperty( "java.home" );
-    public static final String  SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty( "http.proxyHost" );
-    public static final String  SYSTEM_HTTP_PROXY_PORT                                            = System.getProperty( "http.proxyPort" );
+    public static final String  SYSTEM_LINE_SEPARATOR                                             = System.getProperty("line.separator");
+    public static final String  SYSTEM_FILE_SEPARATOR                                             = System.getProperty("file.separator");
+    public static final String  SYSTEM_OS_NAME                                                    = System.getProperty("os.name");
+    public static final String  SYSTEM_USER_HOME_DIR                                              = System.getProperty("user.dir");
+    public static final String  SYSTEM_USER_TEMP_DIR                                              = System.getProperty("java.io.tmpdir");
+    public static final String  SYSTEM_JAVA_HOME_DIR                                              = System.getProperty("java.home");
+    public static final String  SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty("http.proxyHost");
+    public static final String  SYSTEM_HTTP_PROXY_PORT                                            = System.getProperty("http.proxyPort");
 
     /**
      * @return the default ATS agent port number
@@ -90,9 +90,9 @@ public class AtsSystemProperties {
 
         Integer defaultPort = null;
         try {
-            defaultPort = getPropertyAsNumber( DEFAULT_AGENT_PORT_KEY );
+            defaultPort = getPropertyAsNumber(DEFAULT_AGENT_PORT_KEY);
         } catch (IllegalArgumentException iae) {
-            System.err.println( iae.getMessage() );
+            System.err.println(iae.getMessage());
         }
 
         if (defaultPort == null) {
@@ -105,9 +105,9 @@ public class AtsSystemProperties {
      * @param defaultAgentPort the new default ATS agent port number
      */
     @PublicAtsApi
-    public static void setAgentDefaultPort( int defaultAgentPort) {
+    public static void setAgentDefaultPort( int defaultAgentPort ) {
 
-        System.setProperty( DEFAULT_AGENT_PORT_KEY, String.valueOf( defaultAgentPort ) );
+        System.setProperty(DEFAULT_AGENT_PORT_KEY, String.valueOf(defaultAgentPort));
     }
 
     /**
@@ -119,18 +119,18 @@ public class AtsSystemProperties {
      * @return a number
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNumber( String key) {
+    public static Integer getPropertyAsNumber( String key ) {
 
-        String strValue = getPropertyAsString( key );
+        String strValue = getPropertyAsString(key);
 
         if (strValue == null) {
             return null;
         } else {
             try {
-                return Integer.parseInt( strValue );
+                return Integer.parseInt(strValue);
             } catch (NumberFormatException nfe) {
-                throw new IllegalArgumentException( "System property with name '" + key
-                                                    + "' has a non integer value '" + strValue + "'" );
+                throw new IllegalArgumentException("System property with name '" + key
+                                                   + "' has a non integer value '" + strValue + "'");
             }
         }
     }
@@ -143,17 +143,17 @@ public class AtsSystemProperties {
      * @return a number
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNumber( String key, Integer defaultValue) {
+    public static Integer getPropertyAsNumber( String key, Integer defaultValue ) {
 
-        String strValue = getPropertyAsString( key );
+        String strValue = getPropertyAsString(key);
 
         if (strValue != null) {
             try {
-                return Integer.parseInt( strValue );
+                return Integer.parseInt(strValue);
             } catch (NumberFormatException nfe) {
                 if (defaultValue == null) {
-                    throw new IllegalArgumentException( "System property with name '" + key
-                                                        + "' has a non integer value '" + strValue + "'" );
+                    throw new IllegalArgumentException("System property with name '" + key
+                                                       + "' has a non integer value '" + strValue + "'");
                 }
             }
         }
@@ -170,9 +170,9 @@ public class AtsSystemProperties {
      * @return a boolean value
      */
     @PublicAtsApi
-    public static Boolean getPropertyAsBoolean( String key) {
+    public static Boolean getPropertyAsBoolean( String key ) {
 
-        return getPropertyAsBoolean( key, null );
+        return getPropertyAsBoolean(key, null);
     }
 
     /**
@@ -186,23 +186,23 @@ public class AtsSystemProperties {
      * @return a boolean value
      */
     @PublicAtsApi
-    public static Boolean getPropertyAsBoolean( String key, Boolean defaultValue) {
+    public static Boolean getPropertyAsBoolean( String key, Boolean defaultValue ) {
 
-        String strValue = getPropertyAsString( key );
+        String strValue = getPropertyAsString(key);
 
         if (strValue != null) {
-            if (strValue.equalsIgnoreCase( "true" ) || strValue.equals( "1" )) {
+            if (strValue.equalsIgnoreCase("true") || strValue.equals("1")) {
                 return Boolean.TRUE;
             }
 
-            if (strValue.equalsIgnoreCase( "false" ) || strValue.equals( "0" )) {
+            if (strValue.equalsIgnoreCase("false") || strValue.equals("0")) {
                 return Boolean.FALSE;
             }
 
             if (defaultValue == null) {
-                throw new IllegalArgumentException( "System property with name '" + key
-                                                    + "' has a non boolean value '" + strValue
-                                                    + "'. Expected values are 'true' or '1' for TRUE and 'false' or '0' for FALSE." );
+                throw new IllegalArgumentException("System property with name '" + key
+                                                   + "' has a non boolean value '" + strValue
+                                                   + "'. Expected values are 'true' or '1' for TRUE and 'false' or '0' for FALSE.");
             }
         }
         return defaultValue;
@@ -218,9 +218,9 @@ public class AtsSystemProperties {
      * @return a number that is 0 or above
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNonNegativeNumber( String key) {
+    public static Integer getPropertyAsNonNegativeNumber( String key ) {
 
-        return getPropertyAsNonNegativeNumber( key, null );
+        return getPropertyAsNonNegativeNumber(key, null);
     }
 
     /**
@@ -234,22 +234,22 @@ public class AtsSystemProperties {
      * @return a number that is 0 or above
      */
     @PublicAtsApi
-    public static Integer getPropertyAsNonNegativeNumber( String key, Integer defaultValue) {
+    public static Integer getPropertyAsNonNegativeNumber( String key, Integer defaultValue ) {
 
-        String strValue = getPropertyAsString( key );
+        String strValue = getPropertyAsString(key);
 
         if (strValue != null) {
             try {
-                int intValue = Integer.parseInt( strValue );
+                int intValue = Integer.parseInt(strValue);
                 if (intValue < 0 && defaultValue == null) {
-                    throw new IllegalArgumentException( "System property with name '" + key
-                                                        + "' has a non positive number '" + strValue + "'" );
+                    throw new IllegalArgumentException("System property with name '" + key
+                                                       + "' has a non positive number '" + strValue + "'");
                 }
                 return intValue;
             } catch (NumberFormatException nfe) {
                 if (defaultValue == null) {
-                    throw new IllegalArgumentException( "System property with name '" + key
-                                                        + "' has a non number value '" + strValue + "'" );
+                    throw new IllegalArgumentException("System property with name '" + key
+                                                       + "' has a non number value '" + strValue + "'");
                 }
             }
         }
@@ -263,9 +263,9 @@ public class AtsSystemProperties {
      * @return
      */
     @PublicAtsApi
-    public static String getPropertyAsString( String key) {
+    public static String getPropertyAsString( String key ) {
 
-        String value = System.getProperty( key );
+        String value = System.getProperty(key);
 
         if (value == null) {
             return value;
@@ -282,9 +282,9 @@ public class AtsSystemProperties {
      * @return
      */
     @PublicAtsApi
-    public static String getPropertyAsString( String key, String defaultValue) {
+    public static String getPropertyAsString( String key, String defaultValue ) {
 
-        String value = System.getProperty( key );
+        String value = System.getProperty(key);
 
         if (value == null) {
             return defaultValue;

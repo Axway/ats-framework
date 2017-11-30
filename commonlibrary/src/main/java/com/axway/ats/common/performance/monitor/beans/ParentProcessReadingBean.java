@@ -38,7 +38,7 @@ public class ParentProcessReadingBean extends ReadingBean {
                                      String name,
                                      String unit ) {
 
-        super( monitorClass, name, unit );
+        super(monitorClass, name, unit);
 
         this.dbId = dbId;
         this.nameOfThisParentProcess = nameOfThisParentProcess;
@@ -71,7 +71,7 @@ public class ParentProcessReadingBean extends ReadingBean {
      */
     public float poll() {
 
-        return new Float( currentValue ).floatValue();
+        return new Float(currentValue).floatValue();
     }
 
     /**
@@ -82,7 +82,7 @@ public class ParentProcessReadingBean extends ReadingBean {
                           float newValue ) {
 
         // we filter out negative valuesnewValue
-        if( newValue > 0 ) {
+        if (newValue > 0) {
             currentValue += newValue;
         }
     }

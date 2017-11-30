@@ -53,7 +53,7 @@ public enum OperatingSystemType {
 
     static {
         //static section to initialize the current OS type
-        currentOs = getOsType( AtsSystemProperties.SYSTEM_OS_NAME );
+        currentOs = getOsType(AtsSystemProperties.SYSTEM_OS_NAME);
     }
 
     /**
@@ -102,22 +102,22 @@ public enum OperatingSystemType {
      */
     @PublicAtsApi
     public static OperatingSystemType getOsType(
-                                                 String osName) {
+                                                 String osName ) {
 
         //not sure if this can happen
         if (osName == null) {
             return OperatingSystemType.UNKNOWN;
         }
 
-        if (osName.startsWith( OS_WINDOWS_PREFIX )) {
+        if (osName.startsWith(OS_WINDOWS_PREFIX)) {
             return OperatingSystemType.WINDOWS;
-        } else if (osName.equalsIgnoreCase( OS_SOLARIS ) || osName.equalsIgnoreCase( OS_SUNOS )) {
+        } else if (osName.equalsIgnoreCase(OS_SOLARIS) || osName.equalsIgnoreCase(OS_SUNOS)) {
             return OperatingSystemType.SOLARIS;
-        } else if (osName.equalsIgnoreCase( OS_AIX )) {
+        } else if (osName.equalsIgnoreCase(OS_AIX)) {
             return OperatingSystemType.AIX;
-        } else if (osName.equalsIgnoreCase( OS_HP_UX )) {
+        } else if (osName.equalsIgnoreCase(OS_HP_UX)) {
             return OperatingSystemType.HP_UX;
-        } else if (osName.equalsIgnoreCase( OS_LINUX )) {
+        } else if (osName.equalsIgnoreCase(OS_LINUX)) {
             return OperatingSystemType.LINUX;
         } else {
             return OperatingSystemType.UNKNOWN;

@@ -27,16 +27,16 @@ public class RegistryOperationsException extends RuntimeException {
 
     public RegistryOperationsException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     public RegistryOperationsException( Throwable arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     public RegistryOperationsException( String arg0, Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

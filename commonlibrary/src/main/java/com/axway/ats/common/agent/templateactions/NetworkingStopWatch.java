@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 public class NetworkingStopWatch {
 
     public static final String netTimeLoggerStr        = "com.axway.ats.common.agent.templateactions.wireTimer";
-    public static final Logger logTimer                = Logger.getLogger( netTimeLoggerStr );
+    public static final Logger logTimer                = Logger.getLogger(netTimeLoggerStr);
 
     /**
      * Timer for network IO including possible server processing time
@@ -92,10 +92,10 @@ public class NetworkingStopWatch {
      * @param actionNameStepWithNumber
      */
     public void step0_SetNewContext(
-                                     String actionNameStepWithNumber) {
+                                     String actionNameStepWithNumber ) {
 
         if (logTimer.isTraceEnabled()) {
-            logTimer.trace( "Starting new step " + actionNameStepWithNumber + " and reset timers" );
+            logTimer.trace("Starting new step " + actionNameStepWithNumber + " and reset timers");
         }
         currentActionName = actionNameStepWithNumber;
         timerNetAndServerProcessingTime.reset();
@@ -132,9 +132,9 @@ public class NetworkingStopWatch {
         timerNetAndServerProcessingTime.start();
         timerNetAndServerProcessingTime.suspend();
         if (timerNetAndServerProcessingTime.getTime() > 20) { // if start/suspend delay is relatively big
-            logTimer.warn( "Due to thread delay network timer intially starts with "
-                           + timerNetAndServerProcessingTime.getTime()
-                           + "ms more. Probably the system is too much loaded." );
+            logTimer.warn("Due to thread delay network timer intially starts with "
+                          + timerNetAndServerProcessingTime.getTime()
+                          + "ms more. Probably the system is too much loaded.");
         }
     }
 
@@ -144,8 +144,8 @@ public class NetworkingStopWatch {
     public void step5_StartInterimTimer() {
 
         if (logTimer.isTraceEnabled()) {
-            logTimer.trace( "This action step " + currentActionName + " request network time took "
-                            + timerNetAndServerProcessingTime.getTime() + " ms" );
+            logTimer.trace("This action step " + currentActionName + " request network time took "
+                           + timerNetAndServerProcessingTime.getTime() + " ms");
         }
         timerBetweenReqAndResp.reset();
         timerBetweenReqAndResp.start();

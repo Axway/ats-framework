@@ -26,29 +26,29 @@ import org.apache.log4j.Logger;
  */
 public class SharedReadingBean extends ReadingBean {
 
-    private static final long          serialVersionUID           = 1L;
+    private static final long          serialVersionUID = 1L;
 
-    private Logger                     log                        = Logger.getLogger( this.getClass() );
+    private Logger                     log              = Logger.getLogger(this.getClass());
 
     // format the given float CPU usage values, output 4 digits after decimal point
     // which are later multiplied by 100
     private static final DecimalFormat CPU_USAGE_FORMATTER;
     static {
-        CPU_USAGE_FORMATTER = new DecimalFormat( "#.####" );
-        CPU_USAGE_FORMATTER.setDecimalFormatSymbols( new DecimalFormatSymbols( Locale.US ) );
+        CPU_USAGE_FORMATTER = new DecimalFormat("#.####");
+        CPU_USAGE_FORMATTER.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
     }
 
-    private static final byte          MAX_NUMBER_LOGGED_WARNINGS = 10;
-    private byte                       loggedWarnings             = 0;
+    private static final byte MAX_NUMBER_LOGGED_WARNINGS = 10;
+    private byte              loggedWarnings             = 0;
 
-    protected float                    normalizationFactor;
+    protected float           normalizationFactor;
 
     public SharedReadingBean( String monitorClass,
                               String name,
                               String unit,
                               float normalizationFactor ) {
 
-        super( monitorClass, name, unit );
+        super(monitorClass, name, unit);
 
         this.normalizationFactor = normalizationFactor;
     }
@@ -62,8 +62,8 @@ public class SharedReadingBean extends ReadingBean {
     protected double fixDoubleValue(
                                      double value ) {
 
-        if( Double.isNaN( value ) || Double.isInfinite( value ) || value < 0.0D ) {
-            logWarning( "Invalid value for " + getName() + " [expected a value >= 0]: " + value );
+        if (Double.isNaN(value) || Double.isInfinite(value) || value < 0.0D) {
+            logWarning("Invalid value for " + getName() + " [expected a value >= 0]: " + value);
             return -1.0D;
         } else {
             loggedWarnings = 0; // reset logged warnings counter
@@ -80,13 +80,13 @@ public class SharedReadingBean extends ReadingBean {
     protected float fixDoubleValueInPercents(
                                               double value ) {
 
-        if( Double.isNaN( value ) || Double.isInfinite( value ) || value < 0.0D ) {
-            logWarning( "Invalid value for " + getName() + " [expected a value in range 0.0 - 100.0]: "
-                        + value );
+        if (Double.isNaN(value) || Double.isInfinite(value) || value < 0.0D) {
+            logWarning("Invalid value for " + getName() + " [expected a value in range 0.0 - 100.0]: "
+                       + value);
             return -0.01F;
         } else {
             loggedWarnings = 0; // reset logged warnings counter
-            return Float.parseFloat( CPU_USAGE_FORMATTER.format( value ) ) * normalizationFactor;
+            return Float.parseFloat(CPU_USAGE_FORMATTER.format(value)) * normalizationFactor;
         }
     }
 
@@ -99,8 +99,8 @@ public class SharedReadingBean extends ReadingBean {
     protected long fixLongValue(
                                  long value ) {
 
-        if( value < 0L ) {
-            logWarning( "Invalid value for " + getName() + " [expected value >= 0]: " + value );
+        if (value < 0L) {
+            logWarning("Invalid value for " + getName() + " [expected value >= 0]: " + value);
             return -1L;
         } else {
             loggedWarnings = 0; // reset logged warnings counter
@@ -115,27 +115,27 @@ public class SharedReadingBean extends ReadingBean {
     private void logWarning(
                              String warnMessage ) {
 
-        if( loggedWarnings < MAX_NUMBER_LOGGED_WARNINGS ) {
+        if (loggedWarnings < MAX_NUMBER_LOGGED_WARNINGS) {
 
-            if( ++loggedWarnings == MAX_NUMBER_LOGGED_WARNINGS ) {
+            if (++loggedWarnings == MAX_NUMBER_LOGGED_WARNINGS) {
                 warnMessage += "\nThis is the " + MAX_NUMBER_LOGGED_WARNINGS
                                + "th and last time we are logging polling warning for this statistic.";
             }
-            log.warn( warnMessage );
+            log.warn(warnMessage);
         }
     }
 
     protected void applyMemoryNormalizationFactor() {
 
-        if( unit.startsWith( "Byte" ) ) {
+        if (unit.startsWith("Byte")) {
             normalizationFactor = 1.0F;
-        } else if( unit.startsWith( "KB" ) ) {
+        } else if (unit.startsWith("KB")) {
             normalizationFactor = 1.0F / 1024.0F;
-        } else if( unit.startsWith( "MB" ) ) {
-            normalizationFactor = 1.0F / ( 1024.0F * 1024.0F );
+        } else if (unit.startsWith("MB")) {
+            normalizationFactor = 1.0F / (1024.0F * 1024.0F);
         } else {
             normalizationFactor = 1.0F;
-            logUnknownUnitError( name, new String[]{ "Byte", "KB", "MB" }, "Byte" );
+            logUnknownUnitError(name, new String[]{ "Byte", "KB", "MB" }, "Byte");
         }
     }
 
@@ -145,21 +145,21 @@ public class SharedReadingBean extends ReadingBean {
                                       String defaultUnit ) {
 
         StringBuilder errorMessage = new StringBuilder();
-        errorMessage.append( "Unknown unit for " );
-        errorMessage.append( readingName );
-        errorMessage.append( ". Valid units are [" );
+        errorMessage.append("Unknown unit for ");
+        errorMessage.append(readingName);
+        errorMessage.append(". Valid units are [");
         boolean first = true;
-        for( String validUnit : validUnits ) {
-            if( first ) {
+        for (String validUnit : validUnits) {
+            if (first) {
                 first = false;
             } else {
-                errorMessage.append( "," );
+                errorMessage.append(",");
             }
-            errorMessage.append( validUnit );
+            errorMessage.append(validUnit);
         }
-        errorMessage.append( "]. We will use the default '" );
-        errorMessage.append( defaultUnit );
-        errorMessage.append( "'" );
-        log.warn( errorMessage );
+        errorMessage.append("]. We will use the default '");
+        errorMessage.append(defaultUnit);
+        errorMessage.append("'");
+        log.warn(errorMessage);
     }
 }

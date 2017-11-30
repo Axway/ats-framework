@@ -35,7 +35,7 @@ public class FileSystemOperationException extends RuntimeException {
      */
     public FileSystemOperationException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -46,7 +46,7 @@ public class FileSystemOperationException extends RuntimeException {
      */
     public FileSystemOperationException( String message, Exception e ) {
 
-        super( message, e );
+        super(message, e);
     }
 
     /**
@@ -56,6 +56,6 @@ public class FileSystemOperationException extends RuntimeException {
      */
     public FileSystemOperationException( Exception e ) {
 
-        super( e );
+        super(e);
     }
 }

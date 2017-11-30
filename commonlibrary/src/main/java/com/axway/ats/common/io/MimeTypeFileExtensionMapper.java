@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 public class MimeTypeFileExtensionMapper {
 
-    private final static Logger     log                     = Logger.getLogger( MimeTypeFileExtensionMapper.class );
+    private final static Logger     log                     = Logger.getLogger(MimeTypeFileExtensionMapper.class);
 
     public final static String      GZIP_CONTENT_ENCODING   = "gzip";
     public final static String      GZIP_FILE_EXTENSION     = "gzip";
@@ -30,44 +30,44 @@ public class MimeTypeFileExtensionMapper {
                                                                 private static final long serialVersionUID = 1L;
                                                                 {
                                                                     try {
-                                                                        loadFromXML( MimeTypeFileExtensionMapper.class.getResourceAsStream( "MimeTypeFileExtensionMapper.xml" ) );
+                                                                        loadFromXML(MimeTypeFileExtensionMapper.class.getResourceAsStream("MimeTypeFileExtensionMapper.xml"));
                                                                     } catch (Exception e) {
-                                                                        log.error( "Could not load file with mime types to files extension mappings",
-                                                                                   e );
+                                                                        log.error("Could not load file with mime types to files extension mappings",
+                                                                                  e);
                                                                     }
                                                                 }
                                                             };
 
     public static String getFileExtension(
-                                           String contentType) {
+                                           String contentType ) {
 
-        return getFileExtension( contentType, null );
+        return getFileExtension(contentType, null);
     }
 
     public static String getFileExtension(
                                            String contentType,
-                                           String contentEncoding) {
+                                           String contentEncoding ) {
 
         if (contentType == null) {
             return null;
         }
-        int columnIdx = contentType.indexOf( ';' );
+        int columnIdx = contentType.indexOf(';');
         if (columnIdx > 0) {
-            contentType = contentType.substring( 0, columnIdx ).trim().toLowerCase();
+            contentType = contentType.substring(0, columnIdx).trim().toLowerCase();
         } else {
             contentType = contentType.toLowerCase();
         }
-        contentEncoding = ( contentEncoding != null )
-                                                      ? contentEncoding.toLowerCase()
-                                                      : null;
-        String fileExt = contentTypeFileExtProps.getProperty( contentType );
+        contentEncoding = (contentEncoding != null)
+                                                    ? contentEncoding.toLowerCase()
+                                                    : null;
+        String fileExt = contentTypeFileExtProps.getProperty(contentType);
         if (fileExt == null) {
             return null;
         }
-        StringBuilder resultStr = new StringBuilder( fileExt );
-        if (GZIP_CONTENT_ENCODING.equals( contentEncoding )) {
-            resultStr.append( "." );
-            resultStr.append( GZIP_FILE_EXTENSION );
+        StringBuilder resultStr = new StringBuilder(fileExt);
+        if (GZIP_CONTENT_ENCODING.equals(contentEncoding)) {
+            resultStr.append(".");
+            resultStr.append(GZIP_FILE_EXTENSION);
         }
         return resultStr.toString();
     }

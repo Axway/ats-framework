@@ -32,20 +32,20 @@ public class XMLException extends RuntimeException {
 
     @PublicAtsApi
     public XMLException( String message ) {
-        super( message );
+        super(message);
 
     }
 
     @PublicAtsApi
     public XMLException( Throwable cause ) {
-        super( cause );
+        super(cause);
 
     }
 
     @PublicAtsApi
     public XMLException( String message,
                          Throwable cause ) {
-        super( message, cause );
+        super(message, cause);
 
     }
 

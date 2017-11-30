@@ -31,65 +31,65 @@ public class SshCipher implements Serializable {
     // a long list of jscape supported ciphers could be found in a JceEncryptions class
 
     @PublicAtsApi
-    public static final SshCipher AES128_CBC       = new SshCipher( "aes128-cbc",
-                                                                    "AES/CBC/NoPadding",
-                                                                    "BC",
-                                                                    16,
-                                                                    16 );
+    public static final SshCipher AES128_CBC       = new SshCipher("aes128-cbc",
+                                                                   "AES/CBC/NoPadding",
+                                                                   "BC",
+                                                                   16,
+                                                                   16);
     @PublicAtsApi
-    public static final SshCipher AES192_CBC       = new SshCipher( "aes192-cbc",
-                                                                    "AES/CBC/NoPadding",
-                                                                    "BC",
-                                                                    16,
-                                                                    24 );
+    public static final SshCipher AES192_CBC       = new SshCipher("aes192-cbc",
+                                                                   "AES/CBC/NoPadding",
+                                                                   "BC",
+                                                                   16,
+                                                                   24);
     @PublicAtsApi
-    public static final SshCipher AES256_CBC       = new SshCipher( "aes256-cbc",
-                                                                    "AES/CBC/NoPadding",
-                                                                    "BC",
-                                                                    16,
-                                                                    32 );
+    public static final SshCipher AES256_CBC       = new SshCipher("aes256-cbc",
+                                                                   "AES/CBC/NoPadding",
+                                                                   "BC",
+                                                                   16,
+                                                                   32);
     @PublicAtsApi
-    public static final SshCipher AES128_CTR       = new SshCipher( "aes128-ctr",
-                                                                    "AES/CTR/NoPadding",
-                                                                    "BC",
-                                                                    16,
-                                                                    16 );
+    public static final SshCipher AES128_CTR       = new SshCipher("aes128-ctr",
+                                                                   "AES/CTR/NoPadding",
+                                                                   "BC",
+                                                                   16,
+                                                                   16);
     @PublicAtsApi
-    public static final SshCipher AES192_CTR       = new SshCipher( "aes192-ctr",
-                                                                    "AES/CTR/NoPadding",
-                                                                    "BC",
-                                                                    16,
-                                                                    24 );
+    public static final SshCipher AES192_CTR       = new SshCipher("aes192-ctr",
+                                                                   "AES/CTR/NoPadding",
+                                                                   "BC",
+                                                                   16,
+                                                                   24);
     @PublicAtsApi
-    public static final SshCipher AES256_CTR       = new SshCipher( "aes256-ctr",
-                                                                    "AES/CTR/NoPadding",
-                                                                    "BC",
-                                                                    16,
-                                                                    32 );
+    public static final SshCipher AES256_CTR       = new SshCipher("aes256-ctr",
+                                                                   "AES/CTR/NoPadding",
+                                                                   "BC",
+                                                                   16,
+                                                                   32);
     @PublicAtsApi
-    public static final SshCipher _3DES_CBC        = new SshCipher( "3des-cbc",
-                                                                    "DESede/CBC/NoPadding",
-                                                                    null,
-                                                                    8,
-                                                                    24 );
+    public static final SshCipher _3DES_CBC        = new SshCipher("3des-cbc",
+                                                                   "DESede/CBC/NoPadding",
+                                                                   null,
+                                                                   8,
+                                                                   24);
     @PublicAtsApi
-    public static final SshCipher BLOWFISH_CBC     = new SshCipher( "blowfish-cbc",
-                                                                    "Blowfish/CBC/NoPadding",
-                                                                    null,
-                                                                    8,
-                                                                    16 );
+    public static final SshCipher BLOWFISH_CBC     = new SshCipher("blowfish-cbc",
+                                                                   "Blowfish/CBC/NoPadding",
+                                                                   null,
+                                                                   8,
+                                                                   16);
     @PublicAtsApi
-    public static final SshCipher ARCFOUR128       = new SshCipher( "arcfour128",
-                                                                    "Arcfour/CBC/NoPadding",
-                                                                    "BC",
-                                                                    8,
-                                                                    16 );
+    public static final SshCipher ARCFOUR128       = new SshCipher("arcfour128",
+                                                                   "Arcfour/CBC/NoPadding",
+                                                                   "BC",
+                                                                   8,
+                                                                   16);
     @PublicAtsApi
-    public static final SshCipher ARCFOUR256       = new SshCipher( "arcfour256",
-                                                                    "Arcfour/CBC/NoPadding",
-                                                                    "BC",
-                                                                    8,
-                                                                    32 );
+    public static final SshCipher ARCFOUR256       = new SshCipher("arcfour256",
+                                                                   "Arcfour/CBC/NoPadding",
+                                                                   "BC",
+                                                                   8,
+                                                                   32);
 
     /**
      * Check currently defined ciphers here (SSH RFC4253, [Page 10]): http://www.ietf.org/rfc/rfc4253.txt<br/>
@@ -142,7 +142,7 @@ public class SshCipher implements Serializable {
                       int blockLength,
                       int keyLength ) {
 
-        this( sshAlgorithmName, jceAlgorithmName, null, blockLength, keyLength );
+        this(sshAlgorithmName, jceAlgorithmName, null, blockLength, keyLength);
     }
 
     /**
@@ -219,7 +219,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setSshAlgorithmName(
-                                     String sshAlgorithmName) {
+                                     String sshAlgorithmName ) {
 
         this.sshAlgorithmName = sshAlgorithmName;
     }
@@ -229,7 +229,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setJceAlgorithmName(
-                                     String jceAlgorithmName) {
+                                     String jceAlgorithmName ) {
 
         this.jceAlgorithmName = jceAlgorithmName;
     }
@@ -240,7 +240,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setProvider(
-                             String provider) {
+                             String provider ) {
 
         this.provider = provider;
     }
@@ -251,7 +251,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setBlockLength(
-                                int blockLength) {
+                                int blockLength ) {
 
         this.blockLength = blockLength;
     }
@@ -261,7 +261,7 @@ public class SshCipher implements Serializable {
      */
     @PublicAtsApi
     public void setKeyLength(
-                              int keyLength) {
+                              int keyLength ) {
 
         this.keyLength = keyLength;
     }

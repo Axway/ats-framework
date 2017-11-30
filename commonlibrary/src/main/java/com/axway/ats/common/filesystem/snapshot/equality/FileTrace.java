@@ -44,8 +44,8 @@ public class FileTrace implements Serializable {
     private Map<String, String> secondSnapshotDifferencies;
 
     // describe the file we are dealing with
-    private String entityType;
-    
+    private String              entityType;
+
     private DifferenceType      differenceType;
 
     public FileTrace( String firstSnapshot, String firstEntityPath, String secondSnapshot,
@@ -55,26 +55,26 @@ public class FileTrace implements Serializable {
         this.firstEntityPath = firstEntityPath;
         this.secondSnapshot = secondSnapshot;
         this.secondEntityPath = secondEntityPath;
-        
+
         this.entityType = entityType;
 
         this.firstSnapshotDifferencies = new TreeMap<>();
         this.secondSnapshotDifferencies = new TreeMap<>();
-        parseDifferenceType( isComparingFiles );
+        parseDifferenceType(isComparingFiles);
     }
 
     private void parseDifferenceType( boolean isComparingFiles ) {
 
-        if( firstEntityPath != null && secondEntityPath == null ) {
+        if (firstEntityPath != null && secondEntityPath == null) {
             // entity found in first snapshot only
-            if( isComparingFiles ) {
+            if (isComparingFiles) {
                 differenceType = DifferenceType.FILE_PRESENT_IN_FIRST_SNAPSHOT_ONLY;
             } else {
                 differenceType = DifferenceType.DIR_PRESENT_IN_FIRST_SNAPSHOT_ONLY;
             }
-        } else if( firstEntityPath == null && secondEntityPath != null ) {
+        } else if (firstEntityPath == null && secondEntityPath != null) {
             // entity found in second snapshot only
-            if( isComparingFiles ) {
+            if (isComparingFiles) {
                 differenceType = DifferenceType.FILE_PRESENT_IN_SECOND_SNAPSHOT_ONLY;
             } else {
                 differenceType = DifferenceType.DIR_PRESENT_IN_SECOND_SNAPSHOT_ONLY;
@@ -99,7 +99,7 @@ public class FileTrace implements Serializable {
 
         return secondSnapshot;
     }
-    
+
     /**
      * @return path to the first different entity(file or directory)
      */
@@ -120,8 +120,8 @@ public class FileTrace implements Serializable {
 
     public void addDifference( String valueDescription, String srcValue, String dstValue ) {
 
-        firstSnapshotDifferencies.put( valueDescription, srcValue );
-        secondSnapshotDifferencies.put( valueDescription, dstValue );
+        firstSnapshotDifferencies.put(valueDescription, srcValue);
+        secondSnapshotDifferencies.put(valueDescription, dstValue);
 
         // files are present, but they have some different attributes
         differenceType = DifferenceType.DIFFERENT_FILES;
@@ -135,7 +135,7 @@ public class FileTrace implements Serializable {
 
         return firstSnapshotDifferencies.size() + secondSnapshotDifferencies.size() > 0;
     }
-    
+
     /**
      * Get what is present in the first snapshot only
      * @return map with key (describing the difference) and value (the difference itself)
@@ -155,7 +155,7 @@ public class FileTrace implements Serializable {
 
         return secondSnapshotDifferencies;
     }
-    
+
     /**
      * @return the difference type
      */
@@ -171,26 +171,26 @@ public class FileTrace implements Serializable {
 
         StringBuilder msg = new StringBuilder();
 
-        if( firstEntityPath != null && secondEntityPath == null ) {
+        if (firstEntityPath != null && secondEntityPath == null) {
             // entity(file or directory) found in first snapshot only
-            msg.append( firstEntityPath );
-        } else if( firstEntityPath == null && secondEntityPath != null ) {
+            msg.append(firstEntityPath);
+        } else if (firstEntityPath == null && secondEntityPath != null) {
             // entity(file or directory) found in second snapshot only
-            msg.append( secondEntityPath );
+            msg.append(secondEntityPath);
         } else {
             // files are present in both snapshots, but are different
-            msg.append( "[" + firstSnapshot + "] " );
-            msg.append( entityType + " \"" );
-            msg.append( firstEntityPath );
-            msg.append( "\" - " );
-            msg.append( "[" + secondSnapshot + "] " );
-            msg.append( entityType + " \"" );
-            msg.append( secondEntityPath );
-            msg.append( "\":" );
+            msg.append("[" + firstSnapshot + "] ");
+            msg.append(entityType + " \"");
+            msg.append(firstEntityPath);
+            msg.append("\" - ");
+            msg.append("[" + secondSnapshot + "] ");
+            msg.append(entityType + " \"");
+            msg.append(secondEntityPath);
+            msg.append("\":");
 
-            for( String diffKey : firstSnapshotDifferencies.keySet() ) {
-                msg.append( "\n\t" + diffKey + ": " + firstSnapshotDifferencies.get( diffKey ) + " - "
-                            + secondSnapshotDifferencies.get( diffKey ) );
+            for (String diffKey : firstSnapshotDifferencies.keySet()) {
+                msg.append("\n\t" + diffKey + ": " + firstSnapshotDifferencies.get(diffKey) + " - "
+                           + secondSnapshotDifferencies.get(diffKey));
             }
         }
 

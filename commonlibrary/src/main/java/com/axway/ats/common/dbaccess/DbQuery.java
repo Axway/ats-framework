@@ -68,7 +68,7 @@ public class DbQuery {
     @PublicAtsApi
     public DbQuery( String q, Object[] args ) {
 
-        this.arguments = Arrays.asList( args );
+        this.arguments = Arrays.asList(args);
         this.query = q;
     }
 
@@ -84,7 +84,7 @@ public class DbQuery {
      * Sets the contents of the query statement
      * @param query the new query
      */
-    public void setQuery( String query) {
+    public void setQuery( String query ) {
 
         this.query = query;
     }
@@ -102,7 +102,7 @@ public class DbQuery {
      * Sets the {@link List} of arguments for the where clauses
      * @param arguments the new list of arguments
      */
-    public void setArguments( List<Object> arguments) {
+    public void setArguments( List<Object> arguments ) {
 
         this.arguments = arguments;
     }

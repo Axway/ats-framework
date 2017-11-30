@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 
 public class DatabaseSnapshotUtils {
 
-    private static final SimpleDateFormat DATE_FORMAT                = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSSZ" );
+    private static final SimpleDateFormat DATE_FORMAT                = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
 
     // XML nodes used when saving/loading snapshots from files
     public static final String            NODE_DB_SNAPSHOT           = "DB_SNAPSHOT";
@@ -57,16 +57,16 @@ public class DatabaseSnapshotUtils {
     public static String dateToString(
                                        long timeInMillis ) {
 
-        return DATE_FORMAT.format( new Date( timeInMillis ) );
+        return DATE_FORMAT.format(new Date(timeInMillis));
     }
 
     public static long stringToDate(
                                      String timeString ) {
 
         try {
-            return DATE_FORMAT.parse( timeString ).getTime();
-        } catch( ParseException e ) {
-            throw new DatabaseSnapshotException( "Cannot parse date '" + timeString + "'" );
+            return DATE_FORMAT.parse(timeString).getTime();
+        } catch (ParseException e) {
+            throw new DatabaseSnapshotException("Cannot parse date '" + timeString + "'");
         }
     }
 
@@ -75,9 +75,9 @@ public class DatabaseSnapshotUtils {
                                                       String name ) {
 
         List<Element> nodeList = new ArrayList<Element>();
-        for( Node child = parent.getFirstChild(); child != null; child = child.getNextSibling() ) {
-            if( child.getNodeType() == Node.ELEMENT_NODE && name.equals( child.getNodeName() ) ) {
-                nodeList.add( ( Element ) child );
+        for (Node child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child.getNodeType() == Node.ELEMENT_NODE && name.equals(child.getNodeName())) {
+                nodeList.add((Element) child);
             }
         }
 

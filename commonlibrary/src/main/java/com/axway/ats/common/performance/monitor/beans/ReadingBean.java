@@ -149,8 +149,8 @@ public class ReadingBean implements Serializable {
     public String getParameter(
                                 String parameterName ) {
 
-        if( this.parameters != null ) {
-            return this.parameters.get( parameterName );
+        if (this.parameters != null) {
+            return this.parameters.get(parameterName);
         } else {
             return null;
         }
@@ -195,11 +195,11 @@ public class ReadingBean implements Serializable {
     public boolean equals(
                            Object obj ) {
 
-        if( obj instanceof ReadingBean ) {
-            ReadingBean that = ( ReadingBean ) obj;
-            if( name.equals( that.name ) ) {
-                if( parameters != null && that.parameters != null
-                    && parameters.toString().equals( that.parameters.toString() ) ) {
+        if (obj instanceof ReadingBean) {
+            ReadingBean that = (ReadingBean) obj;
+            if (name.equals(that.name)) {
+                if (parameters != null && that.parameters != null
+                    && parameters.toString().equals(that.parameters.toString())) {
                     return true;
                 }
             }

@@ -29,23 +29,23 @@ import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
 @PublicAtsApi
 public class FileSystemSnapshotException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long       serialVersionUID = 1L;
 
-    private FileSystemEqualityState     equality;
+    private FileSystemEqualityState equality;
 
     public FileSystemSnapshotException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     public FileSystemSnapshotException( Throwable arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     public FileSystemSnapshotException( String arg0, Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 
     public FileSystemSnapshotException( FileSystemEqualityState equality ) {
@@ -69,36 +69,36 @@ public class FileSystemSnapshotException extends RuntimeException {
     @PublicAtsApi
     public String getMessage() {
 
-        if( equality == null ) {
+        if (equality == null) {
             // got a generic exception, not directly concerning the comparision
             return super.getMessage();
         } else {
             StringBuilder msg = new StringBuilder();
-            msg.append( "Comparing [" );
-            msg.append( equality.getFirstSnapshotName() );
-            msg.append( "] and [" );
-            msg.append( equality.getSecondSnapshotName() );
-            msg.append( "] produced the following unexpected differences:" );
+            msg.append("Comparing [");
+            msg.append(equality.getFirstSnapshotName());
+            msg.append("] and [");
+            msg.append(equality.getSecondSnapshotName());
+            msg.append("] produced the following unexpected differences:");
 
             // tell all differences sorted by their type
             DifferenceType diffType = null;
             DifferenceType nextDiffType;
-            for( FileTrace diff : equality.getDifferences() ) {
+            for (FileTrace diff : equality.getDifferences()) {
                 nextDiffType = diff.getDifferenceType();
-                if( nextDiffType != diffType ) {
+                if (nextDiffType != diffType) {
                     // add new difference type
-                    msg.append( "\n\n" );
-                    msg.append( nextDiffType.getDescription( diff.getFirstSnapshot(),
-                                                             diff.getSecondSnapshot() ) );
+                    msg.append("\n\n");
+                    msg.append(nextDiffType.getDescription(diff.getFirstSnapshot(),
+                                                           diff.getSecondSnapshot()));
 
                     diffType = nextDiffType;
                 }
 
                 // add new difference
-                msg.append( "\n" );
-                msg.append( diff.toString() );
+                msg.append("\n");
+                msg.append(diff.toString());
             }
-            msg.append( "\n" );
+            msg.append("\n");
             return msg.toString();
         }
     }
@@ -113,18 +113,18 @@ public class FileSystemSnapshotException extends RuntimeException {
     public List<String> getDirectoriesPresentInOneSnapshotOnly( String snapshot ) {
 
         DifferenceType searchedDiffType;
-        if( equality.getFirstSnapshotName().equals( snapshot ) ) {
+        if (equality.getFirstSnapshotName().equals(snapshot)) {
             searchedDiffType = DifferenceType.DIR_PRESENT_IN_FIRST_SNAPSHOT_ONLY;
-        } else if( equality.getSecondSnapshotName().equals( snapshot ) ) {
+        } else if (equality.getSecondSnapshotName().equals(snapshot)) {
             searchedDiffType = DifferenceType.DIR_PRESENT_IN_SECOND_SNAPSHOT_ONLY;
         } else {
             return null;
         }
 
         List<String> dirs = new ArrayList<String>();
-        for( FileTrace diff : equality.getDifferences() ) {
-            if( diff.getDifferenceType() == searchedDiffType ) {
-                dirs.add( diff.toString() );
+        for (FileTrace diff : equality.getDifferences()) {
+            if (diff.getDifferenceType() == searchedDiffType) {
+                dirs.add(diff.toString());
             }
         }
         return dirs;
@@ -140,18 +140,18 @@ public class FileSystemSnapshotException extends RuntimeException {
     public List<String> getFilesPresentInOneSnapshotOnly( String snapshot ) {
 
         DifferenceType searchedDiffType;
-        if( equality.getFirstSnapshotName().equals( snapshot ) ) {
+        if (equality.getFirstSnapshotName().equals(snapshot)) {
             searchedDiffType = DifferenceType.FILE_PRESENT_IN_FIRST_SNAPSHOT_ONLY;
-        } else if( equality.getSecondSnapshotName().equals( snapshot ) ) {
+        } else if (equality.getSecondSnapshotName().equals(snapshot)) {
             searchedDiffType = DifferenceType.FILE_PRESENT_IN_SECOND_SNAPSHOT_ONLY;
         } else {
             return null;
         }
 
         List<String> files = new ArrayList<String>();
-        for( FileTrace diff : equality.getDifferences() ) {
-            if( diff.getDifferenceType() == searchedDiffType ) {
-                files.add( diff.toString() );
+        for (FileTrace diff : equality.getDifferences()) {
+            if (diff.getDifferenceType() == searchedDiffType) {
+                files.add(diff.toString());
             }
         }
         return files;
@@ -163,9 +163,9 @@ public class FileSystemSnapshotException extends RuntimeException {
     public List<String> getDifferentFilesPresentInBothSnapshots() {
 
         List<String> files = new ArrayList<String>();
-        for( FileTrace diff : equality.getDifferences() ) {
-            if( diff.getDifferenceType() == DifferenceType.DIFFERENT_FILES ) {
-                files.add( diff.toString() );
+        for (FileTrace diff : equality.getDifferences()) {
+            if (diff.getDifferenceType() == DifferenceType.DIFFERENT_FILES) {
+                files.add(diff.toString());
             }
         }
         return files;

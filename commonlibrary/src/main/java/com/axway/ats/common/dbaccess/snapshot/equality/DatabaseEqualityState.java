@@ -94,8 +94,8 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<String> getTablesPresentInOneSnapshotOnly( String snapshot ) {
 
-        List<String> tablesPerSnapshot = tablePresentInOneSnapshotOnly.get( snapshot );;
-        if( tablesPerSnapshot == null ) {
+        List<String> tablesPerSnapshot = tablePresentInOneSnapshotOnly.get(snapshot);;
+        if (tablesPerSnapshot == null) {
             tablesPerSnapshot = new ArrayList<String>();
         }
 
@@ -104,13 +104,13 @@ public class DatabaseEqualityState {
 
     public void addTablePresentInOneSnapshotOnly( String snapshotName, String table ) {
 
-        List<String> tablesPerSnapshot = tablePresentInOneSnapshotOnly.get( snapshotName );
-        if( tablesPerSnapshot == null ) {
+        List<String> tablesPerSnapshot = tablePresentInOneSnapshotOnly.get(snapshotName);
+        if (tablesPerSnapshot == null) {
             tablesPerSnapshot = new ArrayList<String>();
-            tablePresentInOneSnapshotOnly.put( snapshotName, tablesPerSnapshot );
+            tablePresentInOneSnapshotOnly.put(snapshotName, tablesPerSnapshot);
         }
 
-        tablesPerSnapshot.add( table );
+        tablesPerSnapshot.add(table);
     }
 
     /**
@@ -124,8 +124,8 @@ public class DatabaseEqualityState {
     public List<String> getTablesWithDifferentPrimaryKeys( String snapshot ) {
 
         List<String> tables = new ArrayList<>();
-        if( differentPrimaryKeys.containsKey( snapshot ) ) {
-            tables.addAll( differentPrimaryKeys.get( snapshot ).keySet() );
+        if (differentPrimaryKeys.containsKey(snapshot)) {
+            tables.addAll(differentPrimaryKeys.get(snapshot).keySet());
         }
 
         return tables;
@@ -144,9 +144,9 @@ public class DatabaseEqualityState {
 
         String primaryKey = null;
 
-        Map<String, String> keysPerTable = differentPrimaryKeys.get( snapshot );
-        if( keysPerTable != null ) {
-            primaryKey = keysPerTable.get( table );
+        Map<String, String> keysPerTable = differentPrimaryKeys.get(snapshot);
+        if (keysPerTable != null) {
+            primaryKey = keysPerTable.get(table);
         }
 
         return primaryKey != null
@@ -157,18 +157,18 @@ public class DatabaseEqualityState {
     public void addDifferentPrimaryKeys( String firstSnapshotName, String secondSnapshotName,
                                          String firstPrimaryKey, String secondPrimaryKey, String table ) {
 
-        addDifferentPrimaryKey( firstSnapshotName, firstPrimaryKey, table );
-        addDifferentPrimaryKey( secondSnapshotName, secondPrimaryKey, table );
+        addDifferentPrimaryKey(firstSnapshotName, firstPrimaryKey, table);
+        addDifferentPrimaryKey(secondSnapshotName, secondPrimaryKey, table);
     }
 
     private void addDifferentPrimaryKey( String snapshot, String primaryKey, String table ) {
 
-        Map<String, String> _differentPrimaryKeys = differentPrimaryKeys.get( snapshot );
-        if( _differentPrimaryKeys == null ) {
+        Map<String, String> _differentPrimaryKeys = differentPrimaryKeys.get(snapshot);
+        if (_differentPrimaryKeys == null) {
             _differentPrimaryKeys = new TreeMap<>();
-            differentPrimaryKeys.put( snapshot, _differentPrimaryKeys );
+            differentPrimaryKeys.put(snapshot, _differentPrimaryKeys);
         }
-        _differentPrimaryKeys.put( table, primaryKey );
+        _differentPrimaryKeys.put(table, primaryKey);
     }
 
     /**
@@ -182,8 +182,8 @@ public class DatabaseEqualityState {
     public List<String> getTablesWithDifferentNumberOfRows( String snapshot ) {
 
         List<String> tables = new ArrayList<>();
-        if( differentNumberOfRows.containsKey( snapshot ) ) {
-            tables.addAll( differentNumberOfRows.get( snapshot ).keySet() );
+        if (differentNumberOfRows.containsKey(snapshot)) {
+            tables.addAll(differentNumberOfRows.get(snapshot).keySet());
         }
 
         return tables;
@@ -201,9 +201,9 @@ public class DatabaseEqualityState {
 
         Integer numberRows = null;
 
-        Map<String, Integer> numberRowsPerTable = differentNumberOfRows.get( snapshot );
-        if( numberRowsPerTable != null ) {
-            numberRows = numberRowsPerTable.get( table );
+        Map<String, Integer> numberRowsPerTable = differentNumberOfRows.get(snapshot);
+        if (numberRowsPerTable != null) {
+            numberRows = numberRowsPerTable.get(table);
         }
 
         return numberRows;
@@ -212,18 +212,18 @@ public class DatabaseEqualityState {
     public void addDifferentNumberOfRows( String firstSnapshotName, String secondSnapshotName,
                                           int firstNumberOfRows, int secondNumberOfRows, String table ) {
 
-        addDifferentNumberOfRows( firstSnapshotName, table, firstNumberOfRows );
-        addDifferentNumberOfRows( secondSnapshotName, table, secondNumberOfRows );
+        addDifferentNumberOfRows(firstSnapshotName, table, firstNumberOfRows);
+        addDifferentNumberOfRows(secondSnapshotName, table, secondNumberOfRows);
     }
 
     private void addDifferentNumberOfRows( String snapshot, String table, Integer numberOfRows ) {
 
-        Map<String, Integer> _differentNumberOfRows = differentNumberOfRows.get( snapshot );
-        if( _differentNumberOfRows == null ) {
+        Map<String, Integer> _differentNumberOfRows = differentNumberOfRows.get(snapshot);
+        if (_differentNumberOfRows == null) {
             _differentNumberOfRows = new TreeMap<>();
-            differentNumberOfRows.put( snapshot, _differentNumberOfRows );
+            differentNumberOfRows.put(snapshot, _differentNumberOfRows);
         }
-        _differentNumberOfRows.put( table, numberOfRows );
+        _differentNumberOfRows.put(table, numberOfRows);
     }
 
     /**
@@ -235,7 +235,7 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<String> getTablesWithColumnsPresentInOneSnapshotOnly( String snapshot ) {
 
-        return breakIntoTables( columnPresentInOneSnapshotOnly, snapshot );
+        return breakIntoTables(columnPresentInOneSnapshotOnly, snapshot);
     }
 
     /**
@@ -252,7 +252,7 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<Map<String, String>> getColumnsPresentInOneSnapshotOnly( String snapshot, String table ) {
 
-        return breakIntoEntityAttributes( columnPresentInOneSnapshotOnly, snapshot, table, ", " );
+        return breakIntoEntityAttributes(columnPresentInOneSnapshotOnly, snapshot, table, ", ");
     }
 
     /**
@@ -269,9 +269,9 @@ public class DatabaseEqualityState {
 
         List<String> result = new ArrayList<>();
 
-        Map<String, List<String>> columnsPerTable = columnPresentInOneSnapshotOnly.get( snapshot );
-        if( columnsPerTable != null ) {
-            result = columnsPerTable.get( table );
+        Map<String, List<String>> columnsPerTable = columnPresentInOneSnapshotOnly.get(snapshot);
+        if (columnsPerTable != null) {
+            result = columnsPerTable.get(table);
         }
 
         return result;
@@ -279,19 +279,19 @@ public class DatabaseEqualityState {
 
     public void addColumnPresentInOneSnapshotOnly( String snapshotName, String table, String column ) {
 
-        Map<String, List<String>> tablesPerSnapshot = columnPresentInOneSnapshotOnly.get( snapshotName );
-        if( tablesPerSnapshot == null ) {
+        Map<String, List<String>> tablesPerSnapshot = columnPresentInOneSnapshotOnly.get(snapshotName);
+        if (tablesPerSnapshot == null) {
             tablesPerSnapshot = new TreeMap<>();
-            columnPresentInOneSnapshotOnly.put( snapshotName, tablesPerSnapshot );
+            columnPresentInOneSnapshotOnly.put(snapshotName, tablesPerSnapshot);
         }
 
-        List<String> columnsPerTable = tablesPerSnapshot.get( table );
-        if( columnsPerTable == null ) {
+        List<String> columnsPerTable = tablesPerSnapshot.get(table);
+        if (columnsPerTable == null) {
             columnsPerTable = new ArrayList<>();
-            tablesPerSnapshot.put( table, columnsPerTable );
+            tablesPerSnapshot.put(table, columnsPerTable);
         }
 
-        columnsPerTable.add( column );
+        columnsPerTable.add(column);
     }
 
     /**
@@ -303,7 +303,7 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<String> getTablesWithIndexesPresentInOneSnapshotOnly( String snapshot ) {
 
-        return breakIntoTables( indexPresentInOneSnapshotOnly, snapshot );
+        return breakIntoTables(indexPresentInOneSnapshotOnly, snapshot);
     }
 
     /**
@@ -320,7 +320,7 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<Map<String, String>> getIndexesPresentInOneSnapshotOnly( String snapshot, String table ) {
 
-        return breakIntoEntityAttributes( indexPresentInOneSnapshotOnly, snapshot, table, ", " );
+        return breakIntoEntityAttributes(indexPresentInOneSnapshotOnly, snapshot, table, ", ");
     }
 
     /**
@@ -337,9 +337,9 @@ public class DatabaseEqualityState {
 
         List<String> result = new ArrayList<>();
 
-        Map<String, List<String>> indexesPerTable = indexPresentInOneSnapshotOnly.get( snapshot );
-        if( indexesPerTable != null ) {
-            result = indexesPerTable.get( table );
+        Map<String, List<String>> indexesPerTable = indexPresentInOneSnapshotOnly.get(snapshot);
+        if (indexesPerTable != null) {
+            result = indexesPerTable.get(table);
         }
 
         return result;
@@ -348,19 +348,19 @@ public class DatabaseEqualityState {
     public void addIndexPresentInOneSnapshotOnly( String snapshotName, String table, String indexName,
                                                   String index ) {
 
-        Map<String, List<String>> tablesPerSnapshot = indexPresentInOneSnapshotOnly.get( snapshotName );
-        if( tablesPerSnapshot == null ) {
+        Map<String, List<String>> tablesPerSnapshot = indexPresentInOneSnapshotOnly.get(snapshotName);
+        if (tablesPerSnapshot == null) {
             tablesPerSnapshot = new TreeMap<>();
-            indexPresentInOneSnapshotOnly.put( snapshotName, tablesPerSnapshot );
+            indexPresentInOneSnapshotOnly.put(snapshotName, tablesPerSnapshot);
         }
 
-        List<String> indexesPerTable = tablesPerSnapshot.get( table );
-        if( indexesPerTable == null ) {
+        List<String> indexesPerTable = tablesPerSnapshot.get(table);
+        if (indexesPerTable == null) {
             indexesPerTable = new ArrayList<>();
-            tablesPerSnapshot.put( table, indexesPerTable );
+            tablesPerSnapshot.put(table, indexesPerTable);
         }
 
-        indexesPerTable.add( "name=" + indexName + index );
+        indexesPerTable.add("name=" + indexName + index);
     }
 
     /**
@@ -372,7 +372,7 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<String> getTablesWithRowsPresentInOneSnapshotOnly( String snapshot ) {
 
-        return breakIntoTables( rowPresentInOneSnapshotOnly, snapshot );
+        return breakIntoTables(rowPresentInOneSnapshotOnly, snapshot);
     }
 
     /**
@@ -389,7 +389,7 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<Map<String, String>> getRowsPresentInOneSnapshotOnly( String snapshot, String table ) {
 
-        return breakIntoEntityAttributes( rowPresentInOneSnapshotOnly, snapshot, table, "\\|" );
+        return breakIntoEntityAttributes(rowPresentInOneSnapshotOnly, snapshot, table, "\\|");
     }
 
     /**
@@ -406,9 +406,9 @@ public class DatabaseEqualityState {
 
         List<String> result = new ArrayList<>();
 
-        Map<String, List<String>> rowsPerTable = rowPresentInOneSnapshotOnly.get( snapshot );
-        if( rowsPerTable != null ) {
-            result = rowsPerTable.get( table );
+        Map<String, List<String>> rowsPerTable = rowPresentInOneSnapshotOnly.get(snapshot);
+        if (rowsPerTable != null) {
+            result = rowsPerTable.get(table);
         }
 
         return result;
@@ -416,26 +416,26 @@ public class DatabaseEqualityState {
 
     public void addRowPresentInOneSnapshotOnly( String snapshotName, String table, String rowValues ) {
 
-        Map<String, List<String>> tablesPerSnapshot = rowPresentInOneSnapshotOnly.get( snapshotName );
-        if( tablesPerSnapshot == null ) {
+        Map<String, List<String>> tablesPerSnapshot = rowPresentInOneSnapshotOnly.get(snapshotName);
+        if (tablesPerSnapshot == null) {
             tablesPerSnapshot = new TreeMap<>();
-            rowPresentInOneSnapshotOnly.put( snapshotName, tablesPerSnapshot );
+            rowPresentInOneSnapshotOnly.put(snapshotName, tablesPerSnapshot);
         }
 
-        List<String> rowsPerTable = tablesPerSnapshot.get( table );
-        if( rowsPerTable == null ) {
+        List<String> rowsPerTable = tablesPerSnapshot.get(table);
+        if (rowsPerTable == null) {
             rowsPerTable = new ArrayList<>();
-            tablesPerSnapshot.put( table, rowsPerTable );
+            tablesPerSnapshot.put(table, rowsPerTable);
         }
 
-        rowsPerTable.add( rowValues );
+        rowsPerTable.add(rowValues);
     }
 
     private List<String> breakIntoTables( Map<String, Map<String, List<String>>> entities, String snapshot ) {
 
         List<String> tables = new ArrayList<>();
-        if( entities.containsKey( snapshot ) ) {
-            tables.addAll( entities.get( snapshot ).keySet() );
+        if (entities.containsKey(snapshot)) {
+            tables.addAll(entities.get(snapshot).keySet());
         }
 
         return tables;
@@ -447,26 +447,26 @@ public class DatabaseEqualityState {
 
         List<Map<String, String>> result = new ArrayList<>();
 
-        Map<String, List<String>> entitiesPerTable = entities.get( snapshot );
-        if( entitiesPerTable != null ) {
-            List<String> allEntitiesAsStrings = entitiesPerTable.get( table );
+        Map<String, List<String>> entitiesPerTable = entities.get(snapshot);
+        if (entitiesPerTable != null) {
+            List<String> allEntitiesAsStrings = entitiesPerTable.get(table);
 
             // cycle all entities
-            for( String entityAsString : allEntitiesAsStrings ) {
-                String[] entityAttributesAsString = entityAsString.split( delimeter );
+            for (String entityAsString : allEntitiesAsStrings) {
+                String[] entityAttributesAsString = entityAsString.split(delimeter);
 
                 // cycle all attributes of one entity
                 Map<String, String> attributes = new TreeMap<>();
-                for( String entityAttributeAsString : entityAttributesAsString ) {
-                    String[] attributeTokens = entityAttributeAsString.split( "=" );
-                    if( attributeTokens.length == 2 ) {
-                        attributes.put( attributeTokens[0], attributeTokens[1] );
+                for (String entityAttributeAsString : entityAttributesAsString) {
+                    String[] attributeTokens = entityAttributeAsString.split("=");
+                    if (attributeTokens.length == 2) {
+                        attributes.put(attributeTokens[0], attributeTokens[1]);
                     } else {
                         // expecting just key without a value
-                        attributes.put( attributeTokens[0], "" );
+                        attributes.put(attributeTokens[0], "");
                     }
                 }
-                result.add( attributes );
+                result.add(attributes);
             }
         }
 

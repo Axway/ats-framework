@@ -23,9 +23,9 @@ import java.util.List;
  */
 public class MonitorResults implements Serializable {
 
-    private static final long      serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private long                   timestamp;
+    private long              timestamp;
     private List<ReadingBean> readings;
 
     public MonitorResults( long timestamp,
@@ -49,13 +49,13 @@ public class MonitorResults implements Serializable {
     public String toString() {
 
         StringBuilder result = new StringBuilder();
-        result.append( timestamp );
-        result.append( ": " );
-        for( ReadingBean reading : readings ) {
-            result.append( reading.getName() );
-            result.append( " = " );
-            result.append( reading.getValue() );
-            result.append( ", " );
+        result.append(timestamp);
+        result.append(": ");
+        for (ReadingBean reading : readings) {
+            result.append(reading.getName());
+            result.append(" = ");
+            result.append(reading.getValue());
+            result.append(", ");
         }
 
         return result.toString();

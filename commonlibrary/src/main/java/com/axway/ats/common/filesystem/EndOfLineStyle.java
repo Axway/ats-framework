@@ -52,7 +52,7 @@ public enum EndOfLineStyle {
             }
             default: {
                 //should never happen
-                throw new IllegalArgumentException( "End of line style " + this + " is not supported" );
+                throw new IllegalArgumentException("End of line style " + this + " is not supported");
             }
         }
     }
@@ -65,15 +65,15 @@ public enum EndOfLineStyle {
     public static EndOfLineStyle getCurrentOsStyle() {
 
         String terminationString = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
-        if ("\r\n".equals( terminationString )) {
+        if ("\r\n".equals(terminationString)) {
             return WINDOWS;
-        } else if ("\n".equals( terminationString )) {
+        } else if ("\n".equals(terminationString)) {
             return UNIX;
-        } else if ("\r".equals( terminationString )) {
+        } else if ("\r".equals(terminationString)) {
             return MACOS;
         } else {
             //should never happen
-            throw new IllegalArgumentException( "Termination string of current OS is not supported" );
+            throw new IllegalArgumentException("Termination string of current OS is not supported");
         }
     }
 }

@@ -30,7 +30,7 @@ public class ProcessTalkException extends RuntimeException {
      */
     public ProcessTalkException( String message, Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     /**
@@ -40,7 +40,7 @@ public class ProcessTalkException extends RuntimeException {
      */
     public ProcessTalkException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     /**
@@ -50,6 +50,6 @@ public class ProcessTalkException extends RuntimeException {
      */
     public ProcessTalkException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

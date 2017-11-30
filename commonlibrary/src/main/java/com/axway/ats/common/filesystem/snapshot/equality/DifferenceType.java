@@ -23,13 +23,18 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public enum DifferenceType {
 
-    @PublicAtsApi DIR_PRESENT_IN_FIRST_SNAPSHOT_ONLY(1),
+    @PublicAtsApi
+    DIR_PRESENT_IN_FIRST_SNAPSHOT_ONLY(1),
 
-    @PublicAtsApi DIR_PRESENT_IN_SECOND_SNAPSHOT_ONLY(2),
+    @PublicAtsApi
+    DIR_PRESENT_IN_SECOND_SNAPSHOT_ONLY(2),
 
-    @PublicAtsApi FILE_PRESENT_IN_FIRST_SNAPSHOT_ONLY(3),
+    @PublicAtsApi
+    FILE_PRESENT_IN_FIRST_SNAPSHOT_ONLY(3),
 
-    @PublicAtsApi FILE_PRESENT_IN_SECOND_SNAPSHOT_ONLY(4), @PublicAtsApi DIFFERENT_FILES(5);
+    @PublicAtsApi
+    FILE_PRESENT_IN_SECOND_SNAPSHOT_ONLY(4), @PublicAtsApi
+    DIFFERENT_FILES(5);
 
     private int value;
 
@@ -49,7 +54,7 @@ public enum DifferenceType {
     @PublicAtsApi
     public String getDescription( String firstSnapshot, String secondSnapshot ) {
 
-        switch( this ){
+        switch (this) {
             case DIR_PRESENT_IN_FIRST_SNAPSHOT_ONLY:
                 return "Directory is present in [" + firstSnapshot + "] snapshot only:";
             case DIR_PRESENT_IN_SECOND_SNAPSHOT_ONLY:

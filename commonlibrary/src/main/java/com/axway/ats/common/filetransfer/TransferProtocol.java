@@ -58,7 +58,7 @@ public enum TransferProtocol {
             case HTTPS:
                 return 443;
             default:
-                throw new RuntimeException( "No default port is set for the protocol" + this );
+                throw new RuntimeException("No default port is set for the protocol" + this);
         }
     }
 }

@@ -37,7 +37,7 @@ public class FileTransferException extends RuntimeException {
     public FileTransferException( String message,
                                   Exception e ) {
 
-        super( message, e );
+        super(message, e);
     }
 
     /**
@@ -47,7 +47,7 @@ public class FileTransferException extends RuntimeException {
      */
     public FileTransferException( Exception e ) {
 
-        super( e );
+        super(e);
     }
 
     /**
@@ -57,6 +57,6 @@ public class FileTransferException extends RuntimeException {
      */
     public FileTransferException( String message ) {
 
-        super( message );
+        super(message);
     }
 }
