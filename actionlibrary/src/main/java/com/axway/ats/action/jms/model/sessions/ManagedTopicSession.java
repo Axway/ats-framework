@@ -27,7 +27,7 @@ public class ManagedTopicSession extends ManagedSession implements TopicSession 
 
     public ManagedTopicSession( final TopicSession session ) {
 
-        super( session );
+        super(session);
         topicSession = session;
     }
 
@@ -35,7 +35,7 @@ public class ManagedTopicSession extends ManagedSession implements TopicSession 
     public TopicSubscriber createSubscriber(
                                              Topic topic ) throws JMSException {
 
-        return addConsumer( topicSession.createSubscriber( topic ) );
+        return addConsumer(topicSession.createSubscriber(topic));
     }
 
     @Override
@@ -44,13 +44,13 @@ public class ManagedTopicSession extends ManagedSession implements TopicSession 
                                              String messageSelector,
                                              boolean noLocal ) throws JMSException {
 
-        return addConsumer( topicSession.createSubscriber( topic, messageSelector, noLocal ) );
+        return addConsumer(topicSession.createSubscriber(topic, messageSelector, noLocal));
     }
 
     @Override
     public TopicPublisher createPublisher(
                                            Topic topic ) throws JMSException {
 
-        return addProducer( topicSession.createPublisher( topic ) );
+        return addProducer(topicSession.createPublisher(topic));
     }
 }

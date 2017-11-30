@@ -264,7 +264,7 @@ public class HttpClient {
      */
     boolean                           isChain               = false;
 
-    private static final Logger       log                   = Logger.getLogger( HttpClient.class );
+    private static final Logger       log                   = Logger.getLogger(HttpClient.class);
 
     /**
      * Constructor.
@@ -282,7 +282,7 @@ public class HttpClient {
     @PublicAtsApi
     public HttpClient( String url ) {
 
-        setURL( url );
+        setURL(url);
     }
 
     /**
@@ -309,10 +309,10 @@ public class HttpClient {
     public void addRequestParameter( String name, String... values ) {
 
         List<String> valuesList = new ArrayList<String>();
-        for( String value : values ) {
-            valuesList.add( value );
+        for (String value : values) {
+            valuesList.add(value);
         }
-        this.requestParameters.put( name, valuesList );
+        this.requestParameters.put(name, valuesList);
     }
 
     /**
@@ -327,7 +327,7 @@ public class HttpClient {
     @PublicAtsApi
     public void addRequestParameter( String name, List<String> values ) {
 
-        this.requestParameters.put( name, values );
+        this.requestParameters.put(name, values);
     }
 
     /**
@@ -338,8 +338,8 @@ public class HttpClient {
     @PublicAtsApi
     public void addRequestParameters( Map<String, List<String>> requestParameters ) {
 
-        for( Entry<String, List<String>> valueEntry : requestParameters.entrySet() ) {
-            this.requestParameters.put( valueEntry.getKey(), valueEntry.getValue() );
+        for (Entry<String, List<String>> valueEntry : requestParameters.entrySet()) {
+            this.requestParameters.put(valueEntry.getKey(), valueEntry.getValue());
         }
     }
 
@@ -349,20 +349,20 @@ public class HttpClient {
      * @param name the name of the parameter
      */
     @PublicAtsApi
-    public void removeRequestParameter(String name){
+    public void removeRequestParameter( String name ) {
 
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
-        while( keys.hasNext() ) {
+        while (keys.hasNext()) {
             String key = keys.next();
-            if( key.equals( name ) ) {
+            if (key.equals(name)) {
                 keys.remove();
                 return;
             }
         }
 
-        log.warn( "Parameter with name '" + name
-                  + "' will not be removed since it was not found in request parameters." );
+        log.warn("Parameter with name '" + name
+                 + "' will not be removed since it was not found in request parameters.");
 
     }
 
@@ -372,21 +372,20 @@ public class HttpClient {
      * @param names the names of the parameters
      */
     @PublicAtsApi
-    public void removeRequestParameters(String... names){
+    public void removeRequestParameters( String... names ) {
 
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
-        while( keys.hasNext() ) {
+        while (keys.hasNext()) {
             String key = keys.next();
-            for( String name : names ) {
-                if( key.equals( name ) ) {
+            for (String name : names) {
+                if (key.equals(name)) {
                     keys.remove();
                 }
             }
         }
 
     }
-
 
     /**
      * Set timeouts. Timeouts default to zero, i.e. no timeout.
@@ -417,16 +416,16 @@ public class HttpClient {
     @PublicAtsApi
     public void addResourcePath( String... resourcePathArray ) {
 
-        if( resourcePathArray != null ) {
-            for( String resourcePathToken : resourcePathArray ) {
-                for( String token : resourcePathToken.split( "/" ) ) {
-                    if( token.length() > 0 ) {
-                        this.resourcePath.add( token );
+        if (resourcePathArray != null) {
+            for (String resourcePathToken : resourcePathArray) {
+                for (String token : resourcePathToken.split("/")) {
+                    if (token.length() > 0) {
+                        this.resourcePath.add(token);
                     }
                 }
             }
         } else {
-            log.warn( "Null provided as resource path to add. Skipped" );
+            log.warn("Null provided as resource path to add. Skipped");
         }
     }
 
@@ -440,7 +439,7 @@ public class HttpClient {
     @PublicAtsApi
     public void addRequestHeader( String name, String value ) {
 
-        addHeaderToList( requestHeaders, name, value );
+        addHeaderToList(requestHeaders, name, value);
     }
 
     /**
@@ -454,21 +453,20 @@ public class HttpClient {
 
         boolean atLeastOneHeaderFound = false;
 
-        for( int i = 0; i < this.requestHeaders.size(); i++ ) {
-            HttpHeader header = this.requestHeaders.get( i );
-            if( header.getKey().equalsIgnoreCase( name ) ) {
-                this.requestHeaders.remove( i );
+        for (int i = 0; i < this.requestHeaders.size(); i++) {
+            HttpHeader header = this.requestHeaders.get(i);
+            if (header.getKey().equalsIgnoreCase(name)) {
+                this.requestHeaders.remove(i);
                 atLeastOneHeaderFound = true;
             }
         }
 
-        if( !atLeastOneHeaderFound ) {
-            log.warn( "Header with name '" + name
-                      + "' will not be removed since it was not found in request headers." );
+        if (!atLeastOneHeaderFound) {
+            log.warn("Header with name '" + name
+                     + "' will not be removed since it was not found in request headers.");
         }
 
     }
-
 
     /**
      * Set the user-specified HTTP request headers.
@@ -478,7 +476,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestHeaders( HttpHeader[] headers ) {
 
-        Collections.addAll( requestHeaders, headers );
+        Collections.addAll(requestHeaders, headers);
     }
 
     /**
@@ -488,7 +486,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestMediaType( String mediaType ) {
 
-        addHeaderToList( requestHeaders, "Content-Type", mediaType );
+        addHeaderToList(requestHeaders, "Content-Type", mediaType);
     }
 
     /**
@@ -501,7 +499,7 @@ public class HttpClient {
     @PublicAtsApi
     public HttpHeader[] getRequestHeaders() {
 
-        return requestHeaders.toArray( new HttpHeader[requestHeaders.size()] );
+        return requestHeaders.toArray(new HttpHeader[requestHeaders.size()]);
     }
 
     /**
@@ -526,7 +524,7 @@ public class HttpClient {
     @PublicAtsApi
     public HttpHeader[] getActualRequestHeaders() {
 
-        return actualRequestHeaders.toArray( new HttpHeader[actualRequestHeaders.size()] );
+        return actualRequestHeaders.toArray(new HttpHeader[actualRequestHeaders.size()]);
     }
 
     /**
@@ -623,7 +621,7 @@ public class HttpClient {
      * default_tgs_enctypes= rc4-hmac
      * default_realm = example.com
      * forwardable = true
-
+    
      * [realms]
      * example.com = {
      *     kdc = kerberos-dc.example.com
@@ -647,7 +645,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setTrustedServerSSLCertificate( File trustedServerSSLCertificateFile ) throws HttpException {
 
-        trustedServerCertificates = new X509Certificate[]{ convertFileToX509Certificate( trustedServerSSLCertificateFile ) };
+        trustedServerCertificates = new X509Certificate[]{ convertFileToX509Certificate(trustedServerSSLCertificateFile) };
     }
 
     /**
@@ -663,12 +661,13 @@ public class HttpClient {
      * @throws HttpException
      */
     @PublicAtsApi
-    public boolean setTrustedServerSSLCertificates( Collection<File> trustedServerSSLCertificateFiles ) throws HttpException {
+    public boolean
+            setTrustedServerSSLCertificates( Collection<File> trustedServerSSLCertificateFiles ) throws HttpException {
 
         trustedServerCertificates = new X509Certificate[trustedServerSSLCertificateFiles.size()];
         int i = 0;
-        for( File file : trustedServerSSLCertificateFiles ) {
-            trustedServerCertificates[i++] = convertFileToX509Certificate( file );
+        for (File file : trustedServerSSLCertificateFiles) {
+            trustedServerCertificates[i++] = convertFileToX509Certificate(file);
         }
 
         // Check if the certificates are a chain, if they are then
@@ -677,10 +676,10 @@ public class HttpClient {
         // The root CA is the last in the chain.
         isChain = trustedServerCertificates.length > 1;
 
-        for( int c = 0; c < trustedServerCertificates.length - 1; c++ ) {
+        for (int c = 0; c < trustedServerCertificates.length - 1; c++) {
             X509Certificate subjectCert = trustedServerCertificates[c];
             X509Certificate issuerCert = trustedServerCertificates[c + 1];
-            if( !subjectCert.getIssuerDN().equals( issuerCert.getSubjectDN() ) ) {
+            if (!subjectCert.getIssuerDN().equals(issuerCert.getSubjectDN())) {
                 isChain = false;
                 break;
             }
@@ -714,9 +713,9 @@ public class HttpClient {
         FileInputStream fis = null;
         try {
             clientSSLKeyStorePassword = password;
-            clientSSLKeyStore = KeyStore.getInstance( "PKCS12" );
-            fis = new FileInputStream( clientSSLCertificateP12File );
-            clientSSLKeyStore.load( fis, clientSSLKeyStorePassword.toCharArray() );
+            clientSSLKeyStore = KeyStore.getInstance("PKCS12");
+            fis = new FileInputStream(clientSSLCertificateP12File);
+            clientSSLKeyStore.load(fis, clientSSLKeyStorePassword.toCharArray());
 
             // The following code seems to not make any effect on the communication.
             // It just reads the certificates in the keystore file
@@ -724,29 +723,29 @@ public class HttpClient {
             // Maybe the initial intention behind this code was to verify the keystore
             // content can be successfully loaded?
             Enumeration<String> e = clientSSLKeyStore.aliases();
-            while( e.hasMoreElements() ) {
+            while (e.hasMoreElements()) {
                 String alias = e.nextElement();
-                if( clientSSLKeyStore.getCertificateChain( alias ) != null ) {
-                    Certificate[] certs = clientSSLKeyStore.getCertificateChain( alias );
+                if (clientSSLKeyStore.getCertificateChain(alias) != null) {
+                    Certificate[] certs = clientSSLKeyStore.getCertificateChain(alias);
                     this.clientSSLCertificateChain = new X509Certificate[certs.length];
                     int i = 0;
-                    for( Certificate cert : certs ) {
-                        clientSSLCertificateChain[i++] = ( X509Certificate ) cert;
+                    for (Certificate cert : certs) {
+                        clientSSLCertificateChain[i++] = (X509Certificate) cert;
                     }
                 }
             }
-        } catch( Exception e ) {
-            throw new HttpException( "Failed to load client SSL certificate from '"
-                                     + ( ( clientSSLCertificateP12File != null )
-                                                                                 ? clientSSLCertificateP12File
-                                                                                 : "null" )
-                                     + "'.", e );
+        } catch (Exception e) {
+            throw new HttpException("Failed to load client SSL certificate from '"
+                                    + ( (clientSSLCertificateP12File != null)
+                                                                              ? clientSSLCertificateP12File
+                                                                              : "null")
+                                    + "'.", e);
         } finally {
-            if( fis != null ) {
+            if (fis != null) {
                 try {
                     fis.close();
-                } catch( IOException e ) {
-                    log.error( e );
+                } catch (IOException e) {
+                    log.error(e);
                 }
             }
         }
@@ -773,7 +772,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestBody( File file, String contentType ) {
 
-        requestBody = new FileEntity( file, ContentType.create( contentType ) );
+        requestBody = new FileEntity(file, ContentType.create(contentType));
     }
 
     /**
@@ -786,7 +785,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestBody( File file, String contentType, String charset ) {
 
-        requestBody = new FileEntity( file, ContentType.create( contentType, charset ) );
+        requestBody = new FileEntity(file, ContentType.create(contentType, charset));
     }
 
     /**
@@ -798,7 +797,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestBody( String string, String contentType ) {
 
-        requestBody = new StringEntity( string, ContentType.create( contentType ) );
+        requestBody = new StringEntity(string, ContentType.create(contentType));
     }
 
     /**
@@ -811,7 +810,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestBody( String string, String contentType, String charset ) {
 
-        requestBody = new StringEntity( string, ContentType.create( contentType, charset ) );
+        requestBody = new StringEntity(string, ContentType.create(contentType, charset));
     }
 
     /**
@@ -823,7 +822,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestBody( byte[] bytes, String contentType ) {
 
-        requestBody = new ByteArrayEntity( bytes, ContentType.create( contentType ) );
+        requestBody = new ByteArrayEntity(bytes, ContentType.create(contentType));
     }
 
     /**
@@ -836,7 +835,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setRequestBody( byte[] bytes, String contentType, String charset ) {
 
-        requestBody = new ByteArrayEntity( bytes, ContentType.create( contentType, charset ) );
+        requestBody = new ByteArrayEntity(bytes, ContentType.create(contentType, charset));
     }
 
     /**
@@ -848,21 +847,21 @@ public class HttpClient {
     @PublicAtsApi
     public void addRequestBodyPart( HttpBodyPart part ) {
 
-        this.requestBodyParts.add( part );
+        this.requestBodyParts.add(part);
     }
 
     private void constructRequestBody() {
 
         // we have work to do here only when using multipart body
-        if( requestBodyParts.size() > 0 ) {
+        if (requestBodyParts.size() > 0) {
             try {
                 MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-                for( HttpBodyPart part : requestBodyParts ) {
-                    entityBuilder.addPart( part.getName(), part.constructContentBody() );
+                for (HttpBodyPart part : requestBodyParts) {
+                    entityBuilder.addPart(part.getName(), part.constructContentBody());
                 }
                 requestBody = entityBuilder.build();
-            } catch( Exception e ) {
-                throw new HttpException( "Exception trying to create a multipart message.", e );
+            } catch (Exception e) {
+                throw new HttpException("Exception trying to create a multipart message.", e);
             }
         }
     }
@@ -879,10 +878,10 @@ public class HttpClient {
 
         constructRequestBody();
 
-        if( requestBody == null ) {
+        if (requestBody == null) {
             return "";
         } else {
-            return new String( getRequestBodyAsBytes() );
+            return new String(getRequestBodyAsBytes());
         }
     }
 
@@ -899,7 +898,7 @@ public class HttpClient {
 
         constructRequestBody();
 
-        return new String( getRequestBodyAsBytes(), charset );
+        return new String(getRequestBodyAsBytes(), charset);
     }
 
     /**
@@ -914,12 +913,12 @@ public class HttpClient {
 
         constructRequestBody();
 
-        if( requestBody == null ) {
+        if (requestBody == null) {
             return null;
         }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        requestBody.writeTo( bos );
+        requestBody.writeTo(bos);
         return bos.toByteArray();
     }
 
@@ -935,17 +934,17 @@ public class HttpClient {
 
         constructRequestBody();
 
-        if( requestBody == null ) {
+        if (requestBody == null) {
             return null;
         }
 
         DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
-        newInstance.setNamespaceAware( true );
+        newInstance.setNamespaceAware(true);
         try {
             return newInstance.newDocumentBuilder()
-                              .parse( new ByteArrayInputStream( getRequestBodyAsBytes() ) );
-        } catch( Exception e ) {
-            throw new HttpException( "Exception trying to convert response to Document.", e );
+                              .parse(new ByteArrayInputStream(getRequestBodyAsBytes()));
+        } catch (Exception e) {
+            throw new HttpException("Exception trying to convert response to Document.", e);
         }
     }
 
@@ -980,11 +979,11 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse post() throws HttpException {
 
-        HttpPost method = new HttpPost( constructURI() );
+        HttpPost method = new HttpPost(constructURI());
         constructRequestBody();
-        log.info( "We will POST object to " + constructURI() );
-        method.setEntity( requestBody );
-        return execute( method );
+        log.info("We will POST object to " + constructURI());
+        method.setEntity(requestBody);
+        return execute(method);
     }
 
     /**
@@ -996,11 +995,11 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse put() throws HttpException {
 
-        HttpPut method = new HttpPut( constructURI() );
+        HttpPut method = new HttpPut(constructURI());
         constructRequestBody();
-        log.info( "We will PUT object to " + constructURI() );
-        method.setEntity( requestBody );
-        return execute( method );
+        log.info("We will PUT object to " + constructURI());
+        method.setEntity(requestBody);
+        return execute(method);
     }
 
     /**
@@ -1012,9 +1011,9 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse get() throws HttpException {
 
-        HttpGet method = new HttpGet( constructURI() );
-        log.info( "We will GET from " + constructURI() );
-        return execute( method );
+        HttpGet method = new HttpGet(constructURI());
+        log.info("We will GET from " + constructURI());
+        return execute(method);
     }
 
     /**
@@ -1026,9 +1025,9 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse delete() throws HttpException {
 
-        HttpDelete method = new HttpDelete( constructURI() );
-        log.info( "We will DELETE from " + constructURI() );
-        return execute( method );
+        HttpDelete method = new HttpDelete(constructURI());
+        log.info("We will DELETE from " + constructURI());
+        return execute(method);
     }
 
     /**
@@ -1040,8 +1039,8 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse head() throws HttpException {
 
-        HttpHead method = new HttpHead( constructURI() );
-        return execute( method );
+        HttpHead method = new HttpHead(constructURI());
+        return execute(method);
     }
 
     /**
@@ -1050,7 +1049,7 @@ public class HttpClient {
     @PublicAtsApi
     public void close() {
 
-        IoUtils.closeStream( this.httpClient, "Failed to close HttpClient" );
+        IoUtils.closeStream(this.httpClient, "Failed to close HttpClient");
     }
 
     @Override
@@ -1072,36 +1071,36 @@ public class HttpClient {
     private HttpResponse execute( HttpRequestBase httpMethod ) throws HttpException {
 
         HttpClientContext localContext = null;
-        if( httpClient == null ) {
+        if (httpClient == null) {
             HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
             // Add this interceptor to get the values of all HTTP headers in the request.
             // Some of them are provided by the user while others are generated by Apache HTTP Components.
-            httpClientBuilder.addInterceptorLast( new HttpRequestInterceptor() {
+            httpClientBuilder.addInterceptorLast(new HttpRequestInterceptor() {
                 @Override
                 public void process( HttpRequest request, HttpContext context ) throws HttpException,
                                                                                 IOException {
 
                     Header[] requestHeaders = request.getAllHeaders();
                     actualRequestHeaders = new ArrayList<HttpHeader>();
-                    for( Header header : requestHeaders ) {
-                        addHeaderToList( actualRequestHeaders, header.getName(), header.getValue() );
+                    for (Header header : requestHeaders) {
+                        addHeaderToList(actualRequestHeaders, header.getName(), header.getValue());
                     }
-                    if( debugLevel != HttpDebugLevel.NONE ) {
-                        logHTTPRequest( requestHeaders, request );
+                    if (debugLevel != HttpDebugLevel.NONE) {
+                        logHTTPRequest(requestHeaders, request);
                     }
                 }
 
-            } );
+            });
 
             // Setup authentication
-            if( !StringUtils.isNullOrEmpty( username ) ) {
-                localContext = setupAuthentication( httpClientBuilder );
+            if (!StringUtils.isNullOrEmpty(username)) {
+                localContext = setupAuthentication(httpClientBuilder);
             }
 
             // Setup SSL
-            if( url.toLowerCase().startsWith( "https" ) ) {
-                setupSSL( httpClientBuilder );
+            if (url.toLowerCase().startsWith("https")) {
+                setupSSL(httpClientBuilder);
             }
 
             // SocketConfig socketConfig = SocketConfig.copy( SocketConfig.DEFAULT )
@@ -1109,75 +1108,76 @@ public class HttpClient {
             // httpClientBuilder.setDefaultSocketConfig( socketConfig );
 
             // all important options are set, now build the HTTP client
-            if( AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST != null
-                && AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT != null ) {
+            if (AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST != null
+                && AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT != null) {
 
-                HttpHost proxy = new HttpHost( AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST,
-                                               Integer.parseInt( AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT ) );
-                DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner( proxy );
-                httpClient = httpClientBuilder.setRoutePlanner( routePlanner ).build();
+                HttpHost proxy = new HttpHost(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST,
+                                              Integer.parseInt(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
+                DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+                httpClient = httpClientBuilder.setRoutePlanner(routePlanner).build();
             } else {
                 httpClient = httpClientBuilder.build();
             }
         }
 
         // Setup read and connect timeouts
-        httpMethod.setConfig( RequestConfig.custom()
-                                           .setSocketTimeout( readTimeoutSeconds * 1000 )
-                                           .setConnectTimeout( connectTimeoutSeconds * 1000 )
-                                           .build() );
+        httpMethod.setConfig(RequestConfig.custom()
+                                          .setSocketTimeout(readTimeoutSeconds * 1000)
+                                          .setConnectTimeout(connectTimeoutSeconds * 1000)
+                                          .build());
 
         // Add HTTP headers
-        addHeadersToHttpMethod( httpMethod );
+        addHeadersToHttpMethod(httpMethod);
 
         // Create response handler
         ResponseHandler<HttpResponse> responseHandler = new ResponseHandler<HttpResponse>() {
 
             @Override
-            public HttpResponse handleResponse( final org.apache.http.HttpResponse response ) throws ClientProtocolException,
-                                                                                              IOException {
+            public HttpResponse
+                    handleResponse( final org.apache.http.HttpResponse response ) throws ClientProtocolException,
+                                                                                  IOException {
 
                 int status = response.getStatusLine().getStatusCode();
                 Header[] responseHeaders = response.getAllHeaders();
                 List<HttpHeader> responseHeadersList = new ArrayList<HttpHeader>();
 
-                for( Header header : responseHeaders ) {
-                    addHeaderToList( responseHeadersList, header.getName(), header.getValue() );
+                for (Header header : responseHeaders) {
+                    addHeaderToList(responseHeadersList, header.getName(), header.getValue());
                 }
-                if( ( debugLevel & HttpDebugLevel.HEADERS ) == HttpDebugLevel.HEADERS ) {
-                    logHTTPResponse( responseHeaders, response );
+                if ( (debugLevel & HttpDebugLevel.HEADERS) == HttpDebugLevel.HEADERS) {
+                    logHTTPResponse(responseHeaders, response);
                 }
 
                 try {
                     HttpEntity entity = response.getEntity();
-                    if( entity == null ) {
+                    if (entity == null) {
                         // No response body, generally have '204 No content' status
-                        return new HttpResponse( status, response.getStatusLine().getReasonPhrase(),
-                                                 responseHeadersList );
+                        return new HttpResponse(status, response.getStatusLine().getReasonPhrase(),
+                                                responseHeadersList);
                     } else {
-                        if( responseBodyFilePath != null ) {
+                        if (responseBodyFilePath != null) {
 
                             FileOutputStream fos = null;
                             try {
-                                fos = new FileOutputStream( new File( responseBodyFilePath ), false );
-                                entity.writeTo( fos );
+                                fos = new FileOutputStream(new File(responseBodyFilePath), false);
+                                entity.writeTo(fos);
                             } finally {
-                                IoUtils.closeStream( fos );
+                                IoUtils.closeStream(fos);
                             }
-                            return new HttpResponse( status, response.getStatusLine().getReasonPhrase(),
-                                                     responseHeadersList );
+                            return new HttpResponse(status, response.getStatusLine().getReasonPhrase(),
+                                                    responseHeadersList);
                         } else {
 
                             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                            entity.writeTo( bos );
-                            return new HttpResponse( status, response.getStatusLine().getReasonPhrase(),
-                                                     responseHeadersList, bos.toByteArray() );
+                            entity.writeTo(bos);
+                            return new HttpResponse(status, response.getStatusLine().getReasonPhrase(),
+                                                    responseHeadersList, bos.toByteArray());
                         }
                     }
                 } finally {
-                    if( response instanceof CloseableHttpResponse ) {
-                        IoUtils.closeStream( ( CloseableHttpResponse ) response,
-                                             "Failed to close HttpResponse" );
+                    if (response instanceof CloseableHttpResponse) {
+                        IoUtils.closeStream((CloseableHttpResponse) response,
+                                            "Failed to close HttpResponse");
                     }
                 }
             }
@@ -1185,23 +1185,23 @@ public class HttpClient {
 
         // Send the request as POST/GET etc. and return response.
         try {
-            return httpClient.execute( httpMethod, responseHandler, localContext );
-        } catch( IOException e ) {
-            throw new HttpException( "Exception occurred sending message to URL '" + actualUrl
-                                     + "' with a read timeout of " + readTimeoutSeconds
-                                     + " seconds and a connect timeout of " + connectTimeoutSeconds
-                                     + " seconds.", e );
+            return httpClient.execute(httpMethod, responseHandler, localContext);
+        } catch (IOException e) {
+            throw new HttpException("Exception occurred sending message to URL '" + actualUrl
+                                    + "' with a read timeout of " + readTimeoutSeconds
+                                    + " seconds and a connect timeout of " + connectTimeoutSeconds
+                                    + " seconds.", e);
         } finally {
 
             // clear internal variables
             ActionLibraryConfigurator actionLibraryConfigurator = ActionLibraryConfigurator.getInstance();
-            if( !actionLibraryConfigurator.getHttpKeepRequestHeaders() ) {
+            if (!actionLibraryConfigurator.getHttpKeepRequestHeaders()) {
                 this.requestHeaders.clear();
             }
-            if( !actionLibraryConfigurator.getHttpKeepRequestParameters() ) {
+            if (!actionLibraryConfigurator.getHttpKeepRequestParameters()) {
                 this.requestParameters.clear();
             }
-            if( !actionLibraryConfigurator.getHttpKeepRequestBody() ) {
+            if (!actionLibraryConfigurator.getHttpKeepRequestBody()) {
                 this.requestBody = null;
             }
             this.responseBodyFilePath = null;
@@ -1211,35 +1211,35 @@ public class HttpClient {
     private void logHTTPRequest( Header[] requestHeaders, HttpRequest request ) {
 
         StringBuilder requestMessage = new StringBuilder();
-        requestMessage.append( "Sending the following requests : \n" );
-        requestMessage.append( request.getRequestLine() + "\n" );
+        requestMessage.append("Sending the following requests : \n");
+        requestMessage.append(request.getRequestLine() + "\n");
         String requestBody = "";
-        for( Header header : requestHeaders ) {
-            if( ( debugLevel & HttpDebugLevel.HEADERS ) == HttpDebugLevel.HEADERS ) {
-                requestMessage.append( header.getName() + ": " + header.getValue() + "\n" );
+        for (Header header : requestHeaders) {
+            if ( (debugLevel & HttpDebugLevel.HEADERS) == HttpDebugLevel.HEADERS) {
+                requestMessage.append(header.getName() + ": " + header.getValue() + "\n");
             }
-            if( ( debugLevel & HttpDebugLevel.BODY ) == HttpDebugLevel.BODY
-                && !header.getValue().equals( ContentType.APPLICATION_OCTET_STREAM.getMimeType() ) ) {
+            if ( (debugLevel & HttpDebugLevel.BODY) == HttpDebugLevel.BODY
+                 && !header.getValue().equals(ContentType.APPLICATION_OCTET_STREAM.getMimeType())) {
                 try {
                     requestBody = "\n" + getRequestBodyAsString();
-                } catch( IOException e ) {
-                    log.warn( "Request body can`t be logged." );
+                } catch (IOException e) {
+                    log.warn("Request body can`t be logged.");
                 }
             }
         }
-        log.info( requestMessage + requestBody );
+        log.info(requestMessage + requestBody);
     }
 
     private void logHTTPResponse( Header[] responseHeaders, org.apache.http.HttpResponse response ) {
 
         StringBuilder responseMessage = new StringBuilder();
-        responseMessage.append( "Receiving the following response : \n" );
-        responseMessage.append( response.getStatusLine() + "\n" );
+        responseMessage.append("Receiving the following response : \n");
+        responseMessage.append(response.getStatusLine() + "\n");
 
-        for( Header header : responseHeaders ) {
-            responseMessage.append( header.getName() + ": " + header.getValue() + "\n" );
+        for (Header header : responseHeaders) {
+            responseMessage.append(header.getName() + ": " + header.getValue() + "\n");
         }
-        log.info( responseMessage );
+        log.info(responseMessage);
     }
 
     /**
@@ -1251,14 +1251,14 @@ public class HttpClient {
      */
     private void addHeaderToList( List<HttpHeader> headers, String name, String value ) {
 
-        for( HttpHeader header : headers ) {
-            if( header.getKey().equalsIgnoreCase( name ) ) {
-                header.addValue( value );
+        for (HttpHeader header : headers) {
+            if (header.getKey().equalsIgnoreCase(name)) {
+                header.addValue(value);
                 return;
             }
         }
 
-        headers.add( new HttpHeader( name, value ) );
+        headers.add(new HttpHeader(name, value));
     }
 
     /**
@@ -1267,9 +1267,9 @@ public class HttpClient {
      */
     private void addHeadersToHttpMethod( HttpRequestBase httpMethod ) {
 
-        for( HttpHeader header : requestHeaders ) {
-            for( String value : header.getValues() ) {
-                httpMethod.addHeader( header.getKey(), value );
+        for (HttpHeader header : requestHeaders) {
+            for (String value : header.getValues()) {
+                httpMethod.addHeader(header.getKey(), value);
             }
         }
     }
@@ -1277,32 +1277,32 @@ public class HttpClient {
     private URI constructURI() throws HttpException {
 
         // navigate to internal resource
-        StringBuilder uriBuilder = new StringBuilder( url );
-        if( resourcePath.size() > 0 ) {
-            if( !url.endsWith( IoUtils.FORWARD_SLASH ) ) {
-                uriBuilder.append( IoUtils.FORWARD_SLASH );
+        StringBuilder uriBuilder = new StringBuilder(url);
+        if (resourcePath.size() > 0) {
+            if (!url.endsWith(IoUtils.FORWARD_SLASH)) {
+                uriBuilder.append(IoUtils.FORWARD_SLASH);
             }
-            for( String token : resourcePath ) {
-                uriBuilder.append( token );
-                uriBuilder.append( IoUtils.FORWARD_SLASH );
+            for (String token : resourcePath) {
+                uriBuilder.append(token);
+                uriBuilder.append(IoUtils.FORWARD_SLASH);
             }
             // remove the last slash if added resource path tokens
-            actualUrl = uriBuilder.substring( 0, uriBuilder.length() - 1 );
+            actualUrl = uriBuilder.substring(0, uriBuilder.length() - 1);
         } else {
             actualUrl = uriBuilder.toString();
         }
 
         try {
-            URIBuilder builder = new URIBuilder( actualUrl );
+            URIBuilder builder = new URIBuilder(actualUrl);
             // add request parameters
-            for( Entry<String, List<String>> reqParam : requestParameters.entrySet() ) {
-                for( String value : reqParam.getValue() ) {
-                    builder.addParameter( reqParam.getKey(), value );
+            for (Entry<String, List<String>> reqParam : requestParameters.entrySet()) {
+                for (String value : reqParam.getValue()) {
+                    builder.addParameter(reqParam.getKey(), value);
                 }
             }
             return builder.build();
-        } catch( URISyntaxException e ) {
-            throw new HttpException( "Exception occurred when creating URL.", e );
+        } catch (URISyntaxException e) {
+            throw new HttpException("Exception occurred when creating URL.", e);
         }
     }
 
@@ -1318,38 +1318,38 @@ public class HttpClient {
         HttpClientContext localContext = null;
 
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials( new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT ),
-                                      new UsernamePasswordCredentials( username, password ) );
-        httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider( credsProvider );
+        credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+                                     new UsernamePasswordCredentials(username, password));
+        httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
 
-        if( authType == AuthType.always ) {
+        if (authType == AuthType.always) {
             AuthCache authCache = new BasicAuthCache();
             // Generate BASIC scheme object and add it to the local
             // auth cache
             BasicScheme basicAuth = new BasicScheme();
             URL uri = null;
             try {
-                uri = new URL( url );
-            } catch( MalformedURLException e ) {
-                throw new HttpException( "Exception occurred creating URL from '" + url + "'.", e );
+                uri = new URL(url);
+            } catch (MalformedURLException e) {
+                throw new HttpException("Exception occurred creating URL from '" + url + "'.", e);
             }
-            HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getProtocol() );
-            authCache.put( target, basicAuth );
+            HttpHost target = new HttpHost(uri.getHost(), uri.getPort(), uri.getProtocol());
+            authCache.put(target, basicAuth);
 
             // Add AuthCache to the execution context
             localContext = HttpClientContext.create();
-            localContext.setAuthCache( authCache );
+            localContext.setAuthCache(authCache);
 
         } else {
-            if( !StringUtils.isNullOrEmpty( kerberosServicePrincipalName ) ) {
-                GssClient gssClient = new GssClient( username, password, kerberosClientKeytab, krb5ConfFile );
-                AuthSchemeProvider nsf = new SPNegoSchemeFactory( gssClient, kerberosServicePrincipalName,
-                                                                  kerberosServicePrincipalType );
+            if (!StringUtils.isNullOrEmpty(kerberosServicePrincipalName)) {
+                GssClient gssClient = new GssClient(username, password, kerberosClientKeytab, krb5ConfFile);
+                AuthSchemeProvider nsf = new SPNegoSchemeFactory(gssClient, kerberosServicePrincipalName,
+                                                                 kerberosServicePrincipalType);
                 final Registry<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.<AuthSchemeProvider> create()
-                                                                                       .register( AuthSchemes.SPNEGO,
-                                                                                                  nsf )
+                                                                                       .register(AuthSchemes.SPNEGO,
+                                                                                                 nsf)
                                                                                        .build();
-                httpClientBuilder.setDefaultAuthSchemeRegistry( authSchemeRegistry );
+                httpClientBuilder.setDefaultAuthSchemeRegistry(authSchemeRegistry);
             }
         }
 
@@ -1368,32 +1368,32 @@ public class HttpClient {
         try {
             SSLContextBuilder sslContextBuilder = SSLContexts.custom();
 
-            sslContextBuilder.loadTrustMaterial( convertToKeyStore( trustedServerCertificates ),
-                                                 new TrustStrategy() {
+            sslContextBuilder.loadTrustMaterial(convertToKeyStore(trustedServerCertificates),
+                                                new TrustStrategy() {
 
-                                                     @Override
-                                                     public boolean isTrusted( X509Certificate[] chain,
-                                                                               String authType ) throws CertificateException {
+                                                    @Override
+                                                    public boolean isTrusted( X509Certificate[] chain,
+                                                                              String authType ) throws CertificateException {
 
-                                                         return checkIsTrusted( chain );
-                                                     }
-                                                 } );
+                                                        return checkIsTrusted(chain);
+                                                    }
+                                                });
 
-            if( clientSSLKeyStore != null ) {
-                sslContextBuilder.loadKeyMaterial( clientSSLKeyStore,
-                                                   clientSSLKeyStorePassword.toCharArray() );
+            if (clientSSLKeyStore != null) {
+                sslContextBuilder.loadKeyMaterial(clientSSLKeyStore,
+                                                  clientSSLKeyStorePassword.toCharArray());
             }
 
             SSLContext sslContext = sslContextBuilder.build();
             // Allow all supported protocols
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory( sslContext, supportedProtocols,
-                                                                               supportedCipherSuites,
-                                                                               new NoopHostnameVerifier() );
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, supportedProtocols,
+                                                                              supportedCipherSuites,
+                                                                              new NoopHostnameVerifier());
 
-            httpClientBuilder.setSSLSocketFactory( sslsf );
+            httpClientBuilder.setSSLSocketFactory(sslsf);
 
-        } catch( Exception e ) {
-            throw new HttpException( "Exception occurred when setting up SSL.", e );
+        } catch (Exception e) {
+            throw new HttpException("Exception occurred when setting up SSL.", e);
         }
     }
 
@@ -1445,20 +1445,20 @@ public class HttpClient {
 
         InputStream is = null;
         try {
-            is = new FileInputStream( pemFile );
-            CertificateFactory cf = CertificateFactory.getInstance( "X.509" );
-            return ( X509Certificate ) cf.generateCertificate( is );
-        } catch( Exception e ) {
-            throw new HttpException( "Failed to convert file '" + ( ( pemFile != null )
-                                                                                        ? pemFile
-                                                                                        : "null" )
-                                     + "' to X509 certificate.", e );
+            is = new FileInputStream(pemFile);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) cf.generateCertificate(is);
+        } catch (Exception e) {
+            throw new HttpException("Failed to convert file '" + ( (pemFile != null)
+                                                                                     ? pemFile
+                                                                                     : "null")
+                                    + "' to X509 certificate.", e);
         } finally {
-            if( is != null ) {
+            if (is != null) {
                 try {
                     is.close();
-                } catch( IOException e ) {
-                    log.error( e );
+                } catch (IOException e) {
+                    log.error(e);
                 }
             }
         }
@@ -1474,16 +1474,16 @@ public class HttpClient {
     private KeyStore convertToKeyStore( X509Certificate[] certificates ) throws HttpException {
 
         try {
-            KeyStore keystore = KeyStore.getInstance( "JKS" );
-            keystore.load( null );
-            if( certificates != null ) {
-                for( X509Certificate certificate : certificates ) {
-                    keystore.setCertificateEntry( certificate.getSubjectDN().getName(), certificate );
+            KeyStore keystore = KeyStore.getInstance("JKS");
+            keystore.load(null);
+            if (certificates != null) {
+                for (X509Certificate certificate : certificates) {
+                    keystore.setCertificateEntry(certificate.getSubjectDN().getName(), certificate);
                 }
             }
             return keystore;
-        } catch( Exception e ) {
-            throw new HttpException( "Failed to create keystore from certificates", e );
+        } catch (Exception e) {
+            throw new HttpException("Failed to create keystore from certificates", e);
         }
     }
 
@@ -1496,72 +1496,72 @@ public class HttpClient {
      */
     private boolean checkIsTrusted( X509Certificate[] chain ) {
 
-        if( trustedServerCertificates == null ) {
+        if (trustedServerCertificates == null) {
             // Trust all as we have not specified what to trust.
             // Default behavior.
             return true;
         }
 
         // Ensure presented certs are valid.
-        for( X509Certificate presentedCert : chain ) {
+        for (X509Certificate presentedCert : chain) {
             try {
                 presentedCert.checkValidity(); // throws exception
-            } catch( Exception e ) {
-                log.error( "Certificate invalid.", e );
+            } catch (Exception e) {
+                log.error("Certificate invalid.", e);
                 return false;
             }
         }
 
         // Verify presented chain
-        for( int i = 0; i < chain.length - 1; i++ ) {
+        for (int i = 0; i < chain.length - 1; i++) {
             X509Certificate subject = chain[i];
             X509Certificate issuer = chain[i + 1];
             try {
-                subject.verify( issuer.getPublicKey() );
-            } catch( GeneralSecurityException e ) {
-                log.error( "Failed to verify certificate.", e );
+                subject.verify(issuer.getPublicKey());
+            } catch (GeneralSecurityException e) {
+                log.error("Failed to verify certificate.", e);
                 return false;
             }
         }
 
-        if( isChain ) {
+        if (isChain) {
             // Do an exact match of chains
-            if( chain.length != trustedServerCertificates.length ) {
-                log.error( "Presented chain of certificates has a different length to trusted chain." );
+            if (chain.length != trustedServerCertificates.length) {
+                log.error("Presented chain of certificates has a different length to trusted chain.");
                 return false;
             }
             // Ensure that the presented certs are all to be found in trustedCerts
-            for( X509Certificate presentedCert : chain ) {
-                printCertificateInfo( presentedCert );
+            for (X509Certificate presentedCert : chain) {
+                printCertificateInfo(presentedCert);
 
                 boolean found = false;
-                for( X509Certificate trustedCert : trustedServerCertificates ) {
-                    if( presentedCert.equals( trustedCert ) ) {
-                        log.info( "Server certificate found in trusted chain." );
+                for (X509Certificate trustedCert : trustedServerCertificates) {
+                    if (presentedCert.equals(trustedCert)) {
+                        log.info("Server certificate found in trusted chain.");
                         found = true;
                         break;
                     }
                 }
 
-                if( !found ) {
-                    log.error( "Failed to find presented chain certificate '" + presentedCert.getSubjectDN()
-                               + "' in trusted chain." );
+                if (!found) {
+                    log.error("Failed to find presented chain certificate '" + presentedCert.getSubjectDN()
+                              + "' in trusted chain.");
                     return false;
                 }
             }
         } else {
             // Check we trust one of the certs on the chain
-            for( X509Certificate presentedCert : chain ) {
-                printCertificateInfo( presentedCert );
+            for (X509Certificate presentedCert : chain) {
+                printCertificateInfo(presentedCert);
 
-                for( X509Certificate trustedCert : trustedServerCertificates ) {
-                    if( presentedCert.equals( trustedCert ) ) {
-                        log.info( "Server certificate trusted." );
+                for (X509Certificate trustedCert : trustedServerCertificates) {
+                    if (presentedCert.equals(trustedCert)) {
+                        log.info("Server certificate trusted.");
                         return true;
                     }
                 }
             }
-            log.error( "Cannot trust any certificate on presented chain." );
+            log.error("Cannot trust any certificate on presented chain.");
             return false;
         }
 
@@ -1582,11 +1582,11 @@ public class HttpClient {
 
     private void printCertificateInfo( X509Certificate cert ) {
 
-        log.info( " Checking SSL Server certificate :" );
-        log.info( "  Subject DN: " + cert.getSubjectDN() );
-        log.info( "  Signature Algorithm: " + cert.getSigAlgName() );
-        log.info( "  Valid from: " + cert.getNotBefore() );
-        log.info( "  Valid until: " + cert.getNotAfter() );
-        log.info( "  Issuer: " + cert.getIssuerDN() );
+        log.info(" Checking SSL Server certificate :");
+        log.info("  Subject DN: " + cert.getSubjectDN());
+        log.info("  Signature Algorithm: " + cert.getSigAlgName());
+        log.info("  Valid from: " + cert.getNotBefore());
+        log.info("  Valid until: " + cert.getNotAfter());
+        log.info("  Issuer: " + cert.getIssuerDN());
     }
 }

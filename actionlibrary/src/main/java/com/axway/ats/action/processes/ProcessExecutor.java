@@ -53,14 +53,14 @@ public class ProcessExecutor {
      * </p>
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                            @Validate(name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public ProcessExecutor( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
+                            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, command } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, command });
 
-        this.processExecutor = getOperationsImplementationFor( atsAgent, command );
+        this.processExecutor = getOperationsImplementationFor(atsAgent, command);
     }
 
     /**
@@ -69,12 +69,12 @@ public class ProcessExecutor {
      * @param command the command to run
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate(name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ command } );
+        new Validator().validateMethodParameters(new Object[]{ command });
 
-        this.processExecutor = getOperationsImplementationFor( null, command );
+        this.processExecutor = getOperationsImplementationFor(null, command);
     }
 
     /**
@@ -89,15 +89,15 @@ public class ProcessExecutor {
      * </p>
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                            @Validate(name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate(name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
+    public ProcessExecutor( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
+                            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
+                            @Validate( name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, command, commandArguments } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, command, commandArguments });
 
-        this.processExecutor = getOperationsImplementationFor( atsAgent, command, commandArguments );
+        this.processExecutor = getOperationsImplementationFor(atsAgent, command, commandArguments);
     }
 
     /**
@@ -107,13 +107,13 @@ public class ProcessExecutor {
      * @param commandArguments command arguments
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate(name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate(name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
+    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
+                            @Validate( name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ command, commandArguments } );
+        new Validator().validateMethodParameters(new Object[]{ command, commandArguments });
 
-        this.processExecutor = getOperationsImplementationFor( null, command, commandArguments );
+        this.processExecutor = getOperationsImplementationFor(null, command, commandArguments);
     }
 
     /**
@@ -122,7 +122,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void execute() {
 
-        execute( true );
+        execute(true);
     }
 
     /**
@@ -134,7 +134,7 @@ public class ProcessExecutor {
     public void execute( boolean waitForCompletion ) {
 
         isProcessAlreadyStarted = true;
-        this.processExecutor.execute( waitForCompletion );
+        this.processExecutor.execute(waitForCompletion);
     }
 
     /**
@@ -172,9 +172,9 @@ public class ProcessExecutor {
     public static int killExternalProcess( String startCommandSnippet ) {
 
         try {
-            return LocalProcessExecutor.killProcess( startCommandSnippet );
-        } catch( Exception e ) {
-            throw new ProcessExecutorException( e );
+            return LocalProcessExecutor.killProcess(startCommandSnippet);
+        } catch (Exception e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -189,17 +189,18 @@ public class ProcessExecutor {
      * @return the number of killed processes
      */
     @PublicAtsApi
-    public static int killExternalProcess( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                                           @Validate(name = "startCommandSnippet", type = ValidationType.STRING_NOT_EMPTY) String startCommandSnippet ) {
+    public static int
+            killExternalProcess( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
+                                 @Validate( name = "startCommandSnippet", type = ValidationType.STRING_NOT_EMPTY) String startCommandSnippet ) {
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, startCommandSnippet } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, startCommandSnippet });
 
         try {
-            return new InternalProcessOperations( atsAgent ).killExternalProcess( startCommandSnippet );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return new InternalProcessOperations(atsAgent).killExternalProcess(startCommandSnippet);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -306,7 +307,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void setStandardOutputFile( String standardOutputFile ) {
 
-        this.processExecutor.setStandardOutputFile( standardOutputFile );
+        this.processExecutor.setStandardOutputFile(standardOutputFile);
     }
 
     /**
@@ -317,7 +318,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void setErrorOutputFile( String errorOutputFile ) {
 
-        this.processExecutor.setErrorOutputFile( errorOutputFile );
+        this.processExecutor.setErrorOutputFile(errorOutputFile);
     }
 
     /**
@@ -328,7 +329,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void setLogStandardOutput( boolean logStandardOutput ) {
 
-        this.processExecutor.setLogStandardOutput( logStandardOutput );
+        this.processExecutor.setLogStandardOutput(logStandardOutput);
     }
 
     /**
@@ -339,7 +340,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void setLogErrorOutput( boolean logErrorOutput ) {
 
-        this.processExecutor.setLogErrorOutput( logErrorOutput );
+        this.processExecutor.setLogErrorOutput(logErrorOutput);
     }
 
     /**
@@ -350,7 +351,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void setWorkDirectory( String workDirectory ) {
 
-        this.processExecutor.setWorkDirectory( workDirectory );
+        this.processExecutor.setWorkDirectory(workDirectory);
     }
 
     /**
@@ -362,7 +363,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void setEnvVariable( String variableName, String variableValue ) {
 
-        this.processExecutor.setEnvVariable( variableName, variableValue );
+        this.processExecutor.setEnvVariable(variableName, variableValue);
     }
 
     /**
@@ -376,7 +377,7 @@ public class ProcessExecutor {
     @PublicAtsApi
     public void appendToEnvVariable( String variableName, String variableValueToAppend ) {
 
-        this.processExecutor.appendToEnvVariable( variableName, variableValueToAppend );
+        this.processExecutor.appendToEnvVariable(variableName, variableValueToAppend);
     }
 
     /**
@@ -390,22 +391,22 @@ public class ProcessExecutor {
     public String getEnvVariable( String variableName ) {
 
         checkIfProcessIsStarted();
-        return this.processExecutor.getEnvVariable( variableName );
+        return this.processExecutor.getEnvVariable(variableName);
     }
 
     private IProcessExecutor getOperationsImplementationFor( String atsAgent, String command,
                                                              String... commandArgs ) {
 
-        if( HostUtils.isLocalAtsAgent( atsAgent ) ) {
-            return new LocalProcessExecutor( HostUtils.LOCAL_HOST_IPv4, command, commandArgs );
+        if (HostUtils.isLocalAtsAgent(atsAgent)) {
+            return new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, command, commandArgs);
         } else {
-            return new RemoteProcessExecutor( atsAgent, command, commandArgs );
+            return new RemoteProcessExecutor(atsAgent, command, commandArgs);
         }
     }
 
     private void checkIfProcessIsStarted() throws ProcessExecutorException {
 
-        if( !isProcessAlreadyStarted )
-            throw new ProcessExecutorException( "You first need to start the process with execute(boolean) method!" );
+        if (!isProcessAlreadyStarted)
+            throw new ProcessExecutorException("You first need to start the process with execute(boolean) method!");
     }
 }

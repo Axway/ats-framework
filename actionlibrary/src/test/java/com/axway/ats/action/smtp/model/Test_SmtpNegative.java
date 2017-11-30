@@ -37,7 +37,7 @@ public class Test_SmtpNegative extends BaseTest {
 
         smtp = new SmtpManager();
         Logger.getRootLogger()
-              .info( "--------------------------START TESTCASE----------------------------------------" );
+              .info("--------------------------START TESTCASE----------------------------------------");
 
     }
 
@@ -45,53 +45,53 @@ public class Test_SmtpNegative extends BaseTest {
     public void tearDown() {
 
         Logger.getRootLogger()
-              .info( "--------------------------END TESTCASE----------------------------------------" );
+              .info("--------------------------END TESTCASE----------------------------------------");
 
-        smtp.closeConnection( -1 );
+        smtp.closeConnection(-1);
 
     }
 
     @Ignore
-    @Test(expected = RuntimeException.class)
+    @Test( expected = RuntimeException.class)
     public void openConnection_nullHost() {
 
-        smtp.openConnections( null, port, 1 );
+        smtp.openConnections(null, port, 1);
     }
 
     @Ignore
-    @Test(expected = RuntimeException.class)
+    @Test( expected = RuntimeException.class)
     public void openConnection_wrongHost() {
 
-        smtp.openConnections( "unit.ne.localdomain", port, 1 );
+        smtp.openConnections("unit.ne.localdomain", port, 1);
     }
 
     @Ignore
-    @Test(expected = RuntimeException.class)
+    @Test( expected = RuntimeException.class)
     public void openConnection_wrongPort() {
 
-        smtp.openConnections( host, 2, 1 );
+        smtp.openConnections(host, 2, 1);
     }
 
     @Ignore
-    @Test(expected = RuntimeException.class)
+    @Test( expected = RuntimeException.class)
     public void execCommand_nullCommand() {
 
-        assertEquals( 1, smtp.openConnections( host, port, 1 ) );
-        smtp.execCommand( 0, null );
+        assertEquals(1, smtp.openConnections(host, port, 1));
+        smtp.execCommand(0, null);
     }
 
     @Ignore
-    @Test(expected = RuntimeException.class)
+    @Test( expected = RuntimeException.class)
     public void execCommand() {
 
-        assertEquals( 1, smtp.openConnections( host, port, 1 ) );
-        smtp.execCommand( -1, "EHLO localhost" );
+        assertEquals(1, smtp.openConnections(host, port, 1));
+        smtp.execCommand(-1, "EHLO localhost");
     }
 
     @Ignore
-    @Test(expected = RuntimeException.class)
+    @Test( expected = RuntimeException.class)
     public void verifyConnectionArray() {
 
-        smtp.verifyConnection( null );
+        smtp.verifyConnection(null);
     }
 }

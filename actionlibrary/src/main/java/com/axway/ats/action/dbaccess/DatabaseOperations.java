@@ -51,7 +51,7 @@ import com.axway.ats.harness.config.TestBox;
 @PublicAtsApi
 public class DatabaseOperations {
 
-    private final Logger log = Logger.getLogger( DatabaseOperations.class );
+    private final Logger log = Logger.getLogger(DatabaseOperations.class);
 
     protected DbProvider dbProvider;
 
@@ -71,7 +71,7 @@ public class DatabaseOperations {
     @PublicAtsApi
     public DatabaseOperations( TestBox testBox ) {
 
-        this( testBox, null );
+        this(testBox, null);
     }
 
     /**
@@ -83,15 +83,14 @@ public class DatabaseOperations {
     */
     @PublicAtsApi
     public DatabaseOperations( TestBox testBox,
-                                      Map<String, Object> customProperties ) {
-
+                               Map<String, Object> customProperties ) {
 
         String dbUser = testBox.getDbUser();
 
         String dbPass = testBox.getDbPass();
 
         if (customProperties != null && customProperties.containsKey(OracleKeys.USE_ADMIN_CREDENTIALS)
-                && "true".equals(customProperties.get(OracleKeys.USE_ADMIN_CREDENTIALS))) {
+            && "true".equals(customProperties.get(OracleKeys.USE_ADMIN_CREDENTIALS))) {
             dbUser = testBox.getAdminUser();
             dbPass = testBox.getAdminPass();
         }
@@ -112,12 +111,12 @@ public class DatabaseOperations {
      */
     @PublicAtsApi
     public DatabaseOperations( String dbType,
-                                      String dbHost,
-                                      String dbName,
-                                      String dbUser,
-                                      String dbPass,
-                                      int dbPort,
-                                      Map<String, Object> customProperties ) {
+                               String dbHost,
+                               String dbName,
+                               String dbUser,
+                               String dbPass,
+                               int dbPort,
+                               Map<String, Object> customProperties ) {
 
         createDbProvider(dbType, dbHost, dbName, dbUser, dbPass, dbPort, customProperties);
     }
@@ -130,13 +129,13 @@ public class DatabaseOperations {
                                    int dbPort,
                                    Map<String, Object> customProperties ) {
 
-        dbProvider = DatabaseProviderFactory.getDatabaseProvider( dbType,
-                                                                  dbHost,
-                                                                  dbName,
-                                                                  dbUser,
-                                                                  dbPass,
-                                                                  dbPort,
-                                                                  customProperties );
+        dbProvider = DatabaseProviderFactory.getDatabaseProvider(dbType,
+                                                                 dbHost,
+                                                                 dbName,
+                                                                 dbUser,
+                                                                 dbPass,
+                                                                 dbPort,
+                                                                 customProperties);
 
     }
 
@@ -158,19 +157,19 @@ public class DatabaseOperations {
                                           String whereColumnValue ) {
 
         String quotation = getQuotation();
-        String sqlQuery = new StringBuilder().append( "SELECT " )
-                                             .append( selectColumnName )
-                                             .append( " FROM " )
-                                             .append( tableName )
-                                             .append( " WHERE " )
-                                             .append( whereColumnName )
-                                             .append( " = " )
-                                             .append( quotation )
-                                             .append( whereColumnValue )
-                                             .append( quotation )
+        String sqlQuery = new StringBuilder().append("SELECT ")
+                                             .append(selectColumnName)
+                                             .append(" FROM ")
+                                             .append(tableName)
+                                             .append(" WHERE ")
+                                             .append(whereColumnName)
+                                             .append(" = ")
+                                             .append(quotation)
+                                             .append(whereColumnValue)
+                                             .append(quotation)
                                              .toString();
 
-        return getDatabaseData( sqlQuery );
+        return getDatabaseData(sqlQuery);
     }
 
     /**
@@ -188,28 +187,28 @@ public class DatabaseOperations {
 
         List<DatabaseRow> dbRows = new ArrayList<DatabaseRow>();
         try {
-            log.debug( "Executing query: " + sqlQuery );
-            DbRecordValuesList[] rsList = dbProvider.select( sqlQuery );
+            log.debug("Executing query: " + sqlQuery);
+            DbRecordValuesList[] rsList = dbProvider.select(sqlQuery);
 
-            if( rsList != null ) {
-                for( DbRecordValuesList rs : rsList ) {
+            if (rsList != null) {
+                for (DbRecordValuesList rs : rsList) {
                     Iterator<DbRecordValue> it = rs.iterator();
-                    if( it.hasNext() ) {
+                    if (it.hasNext()) {
                         DatabaseRow dbRow = new DatabaseRow();
-                        while( it.hasNext() ) {
+                        while (it.hasNext()) {
                             DbRecordValue dbRecordValue = it.next();
-                            dbRow.addCell( new DatabaseCell( dbRecordValue.getDbColumn().getColumnName(),
-                                                             dbRecordValue.getValueAsString() ) );
+                            dbRow.addCell(new DatabaseCell(dbRecordValue.getDbColumn().getColumnName(),
+                                                           dbRecordValue.getValueAsString()));
                         }
-                        dbRows.add( dbRow );
+                        dbRows.add(dbRow);
                     }
                 }
             }
 
-            return dbRows.toArray( new DatabaseRow[dbRows.size()] );
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error getting data from DB with query '"
-                                                          + sqlQuery + "'", e );
+            return dbRows.toArray(new DatabaseRow[dbRows.size()]);
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error getting data from DB with query '"
+                                                  + sqlQuery + "'", e);
         }
     }
 
@@ -233,28 +232,28 @@ public class DatabaseOperations {
 
         List<DatabaseRow> dbRows = new LinkedList<DatabaseRow>();
         try {
-            log.debug( "Executing query: " + sqlQuery );
-            DbRecordValuesList[] rsList = dbProvider.select( new DbQuery( sqlQuery ), DbReturnModes.STRING );
+            log.debug("Executing query: " + sqlQuery);
+            DbRecordValuesList[] rsList = dbProvider.select(new DbQuery(sqlQuery), DbReturnModes.STRING);
 
-            if( rsList != null ) {
-                for( DbRecordValuesList rs : rsList ) {
+            if (rsList != null) {
+                for (DbRecordValuesList rs : rsList) {
                     Iterator<DbRecordValue> it = rs.iterator();
-                    if( it.hasNext() ) {
+                    if (it.hasNext()) {
                         DatabaseRow dbRow = new DatabaseRow();
-                        while( it.hasNext() ) {
+                        while (it.hasNext()) {
                             DbRecordValue dbRecordValue = it.next();
-                            dbRow.addCell( new DatabaseCell( dbRecordValue.getDbColumn().getColumnName(),
-                                                             dbRecordValue.getValueAsString() ) );
+                            dbRow.addCell(new DatabaseCell(dbRecordValue.getDbColumn().getColumnName(),
+                                                           dbRecordValue.getValueAsString()));
                         }
-                        dbRows.add( dbRow );
+                        dbRows.add(dbRow);
                     }
                 }
             }
 
-            return dbRows.toArray( new DatabaseRow[dbRows.size()] );
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error getting data from DB with query '"
-                                                          + sqlQuery + "'", e );
+            return dbRows.toArray(new DatabaseRow[dbRows.size()]);
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error getting data from DB with query '"
+                                                  + sqlQuery + "'", e);
         }
     }
 
@@ -283,19 +282,19 @@ public class DatabaseOperations {
                             String whereColumnValue ) {
 
         String quotation = getQuotation();
-        String sqlQuery = new StringBuilder().append( "SELECT " )
-                                             .append( selectColumnName )
-                                             .append( " FROM " )
-                                             .append( tableName )
-                                             .append( " WHERE " )
-                                             .append( whereColumnName )
-                                             .append( " = " )
-                                             .append( quotation )
-                                             .append( whereColumnValue )
-                                             .append( quotation )
+        String sqlQuery = new StringBuilder().append("SELECT ")
+                                             .append(selectColumnName)
+                                             .append(" FROM ")
+                                             .append(tableName)
+                                             .append(" WHERE ")
+                                             .append(whereColumnName)
+                                             .append(" = ")
+                                             .append(quotation)
+                                             .append(whereColumnValue)
+                                             .append(quotation)
                                              .toString();
 
-        return getValue( sqlQuery );
+        return getValue(sqlQuery);
     }
 
     /**
@@ -314,20 +313,20 @@ public class DatabaseOperations {
                             String sqlQuery ) {
 
         try {
-            log.debug( "Executing query: " + sqlQuery );
-            DbRecordValuesList[] rsList = dbProvider.select( sqlQuery );
-            if( rsList != null && rsList.length > 0 ) {
-                if( rsList.length > 1 ) {
-                    log.warn( "SQL query '" + sqlQuery + "' returned " + rsList.length + " rows of results" );
+            log.debug("Executing query: " + sqlQuery);
+            DbRecordValuesList[] rsList = dbProvider.select(sqlQuery);
+            if (rsList != null && rsList.length > 0) {
+                if (rsList.length > 1) {
+                    log.warn("SQL query '" + sqlQuery + "' returned " + rsList.length + " rows of results");
                 }
-                if( rsList[0].size() > 1 ) {
-                    log.warn( "SQL query '" + sqlQuery + "' returned " + rsList[0].size() + " values per row" );
+                if (rsList[0].size() > 1) {
+                    log.warn("SQL query '" + sqlQuery + "' returned " + rsList[0].size() + " values per row");
                 }
-                return rsList[0].get( 0 ).getValueAsString();
+                return rsList[0].get(0).getValueAsString();
             }
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error getting value from DB with query '"
-                                                          + sqlQuery + "'", e );
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error getting value from DB with query '"
+                                                  + sqlQuery + "'", e);
         }
 
         return null;
@@ -352,8 +351,8 @@ public class DatabaseOperations {
                             String whereColumnValue ) {
 
         String quotation = getQuotation();
-        return updateValue( "UPDATE " + tableName + " SET " + columnToUpdate + "='" + updateValue
-                            + "' WHERE " + whereColumnName + "=" + quotation + whereColumnValue + quotation );
+        return updateValue("UPDATE " + tableName + " SET " + columnToUpdate + "='" + updateValue
+                           + "' WHERE " + whereColumnName + "=" + quotation + whereColumnValue + quotation);
     }
 
     /**
@@ -368,18 +367,18 @@ public class DatabaseOperations {
 
         int rowsUpdated;
         try {
-            log.debug( "Executing update query: '" + sqlQuery + "'" );
-            rowsUpdated = dbProvider.executeUpdate( sqlQuery );
-            if( ! ( dbProvider instanceof CassandraDbProvider ) ) {
-                if( rowsUpdated == 0 ) {
-                    log.warn( "SQL query '" + sqlQuery + "' updated 0 rows" );
+            log.debug("Executing update query: '" + sqlQuery + "'");
+            rowsUpdated = dbProvider.executeUpdate(sqlQuery);
+            if (! (dbProvider instanceof CassandraDbProvider)) {
+                if (rowsUpdated == 0) {
+                    log.warn("SQL query '" + sqlQuery + "' updated 0 rows");
                 } else {
-                    log.debug( "SQL query '" + sqlQuery + "' updated '" + rowsUpdated + "' rows" );
+                    log.debug("SQL query '" + sqlQuery + "' updated '" + rowsUpdated + "' rows");
                 }
             }
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error executing update query '" + sqlQuery + "'",
-                                                          e );
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error executing update query '" + sqlQuery + "'",
+                                                  e);
         }
         return rowsUpdated;
     }
@@ -399,27 +398,27 @@ public class DatabaseOperations {
 
         Map<String, String> columns = new HashMap<String, String>();
 
-        if( columnNames.length != columnValues.length ) {
-            throw new DatabaseOperationsException( "The number of columns [" + columnNames.length
-                                                          + "] is not the same as the number of values ["
-                                                          + columnValues.length + "]" );
+        if (columnNames.length != columnValues.length) {
+            throw new DatabaseOperationsException("The number of columns [" + columnNames.length
+                                                  + "] is not the same as the number of values ["
+                                                  + columnValues.length + "]");
         }
 
-        for( int i = 0; i < columnNames.length; i++ ) {
-            columns.put( columnNames[i], columnValues[i] );
+        for (int i = 0; i < columnNames.length; i++) {
+            columns.put(columnNames[i], columnValues[i]);
         }
 
         try {
-            log.debug( "Executing insert query in table '" + tableName + "'" );
-            int rowsInserted = dbProvider.insertRow( tableName, columns );
-            if( rowsInserted == 0 ) {
+            log.debug("Executing insert query in table '" + tableName + "'");
+            int rowsInserted = dbProvider.insertRow(tableName, columns);
+            if (rowsInserted == 0) {
                 // this should never happen
-                throw new DatabaseOperationsException( "No data was inserted into table '" + tableName
-                                                              + "'" );
+                throw new DatabaseOperationsException("No data was inserted into table '" + tableName
+                                                      + "'");
             }
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error executing insert query in table '"
-                                                          + tableName + "'", e );
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error executing insert query in table '"
+                                                  + tableName + "'", e);
         }
     }
 
@@ -435,10 +434,10 @@ public class DatabaseOperations {
                          String sqlQuery ) {
 
         try {
-            log.debug( "Executing query: '" + sqlQuery + "'" );
-            dbProvider.executeUpdate( sqlQuery );
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error executing query '" + sqlQuery + "'", e );
+            log.debug("Executing query: '" + sqlQuery + "'");
+            dbProvider.executeUpdate(sqlQuery);
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error executing query '" + sqlQuery + "'", e);
         }
     }
 
@@ -456,24 +455,24 @@ public class DatabaseOperations {
                        String whereClause ) {
 
         String sqlQuery = "DELETE FROM " + tableName;
-        if( whereClause != null ) {
+        if (whereClause != null) {
             whereClause = whereClause.trim();
-            if( whereClause.length() > 0 ) {
+            if (whereClause.length() > 0) {
                 sqlQuery = sqlQuery + " WHERE " + whereClause;
             }
         }
 
         int rowsDeleted;
         try {
-            log.debug( "Executing query: '" + sqlQuery + "'" );
-            rowsDeleted = dbProvider.executeUpdate( sqlQuery );
-            if( rowsDeleted == 0 ) {
-                log.warn( "SQL query '" + sqlQuery + "' affected 0 rows" );
+            log.debug("Executing query: '" + sqlQuery + "'");
+            rowsDeleted = dbProvider.executeUpdate(sqlQuery);
+            if (rowsDeleted == 0) {
+                log.warn("SQL query '" + sqlQuery + "' affected 0 rows");
             } else {
-                log.debug( "SQL query '" + sqlQuery + "' affected '" + rowsDeleted + "' rows" );
+                log.debug("SQL query '" + sqlQuery + "' affected '" + rowsDeleted + "' rows");
             }
-        } catch( DbException e ) {
-            throw new DatabaseOperationsException( "Error executing query '" + sqlQuery + "'", e );
+        } catch (DbException e) {
+            throw new DatabaseOperationsException("Error executing query '" + sqlQuery + "'", e);
         }
         return rowsDeleted;
     }
@@ -499,12 +498,12 @@ public class DatabaseOperations {
     @PublicAtsApi
     public DatabaseMetaData getDatabaseMetaData() {
 
-            return dbProvider.getDatabaseMetaData();
+        return dbProvider.getDatabaseMetaData();
     }
 
     private String getQuotation() {
 
-        if( dbProvider instanceof CassandraDbProvider ) {
+        if (dbProvider instanceof CassandraDbProvider) {
             // in this case the use is responsible to provide quotation marks when needed
             return "";
         } else {

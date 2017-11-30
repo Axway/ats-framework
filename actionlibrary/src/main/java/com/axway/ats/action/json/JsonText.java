@@ -50,9 +50,9 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class JsonText {
 
-    private static final Logger  log                    = Logger.getLogger( JsonText.class );
+    private static final Logger  log                    = Logger.getLogger(JsonText.class);
 
-    private static final Pattern NAME_AND_INDEX_PATTERN = Pattern.compile( "(.*)\\[(\\d*)\\]" );
+    private static final Pattern NAME_AND_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d*)\\]");
 
     private static final String  PATH_DELIMETER         = "/";
 
@@ -80,30 +80,30 @@ public class JsonText {
     @PublicAtsApi
     public JsonText( String jsonText ) throws JsonException {
 
-        if( jsonText.startsWith( "{" ) ) {
+        if (jsonText.startsWith("{")) {
             try {
-                this.jsonObject = ( JSONObject ) new JSONParser().parse( jsonText );
-            } catch( ParseException e ) {
-                throw new JsonException( "Error creating JSON Object. " + getFirstBytes( jsonText ), e );
+                this.jsonObject = (JSONObject) new JSONParser().parse(jsonText);
+            } catch (ParseException e) {
+                throw new JsonException("Error creating JSON Object. " + getFirstBytes(jsonText), e);
             }
-        } else if( jsonText.startsWith( "[" ) ) {
+        } else if (jsonText.startsWith("[")) {
             try {
-                this.jsonArray = ( JSONArray ) new JSONParser().parse( jsonText );
-            } catch( ParseException e ) {
-                throw new JsonException( "Error creating JSON Array. " + getFirstBytes( jsonText ), e );
+                this.jsonArray = (JSONArray) new JSONParser().parse(jsonText);
+            } catch (ParseException e) {
+                throw new JsonException("Error creating JSON Array. " + getFirstBytes(jsonText), e);
             }
         } else {
-            throw new JsonException( "Provided JSON text must start with '{' or '['. "
-                                     + getFirstBytes( jsonText ) );
+            throw new JsonException("Provided JSON text must start with '{' or '['. "
+                                    + getFirstBytes(jsonText));
         }
     }
 
     private JsonText( Object object ) {
 
-        if( object instanceof JSONObject ) {
-            this.jsonObject = ( JSONObject ) object;
-        } else if( object instanceof JSONArray ) {
-            this.jsonArray = ( JSONArray ) object;
+        if (object instanceof JSONObject) {
+            this.jsonObject = (JSONObject) object;
+        } else if (object instanceof JSONArray) {
+            this.jsonArray = (JSONArray) object;
         } else {
             this.javaObject = object;
         }
@@ -112,13 +112,13 @@ public class JsonText {
     private String getFirstBytes( String jsonText ) {
 
         int endIndex = jsonText.length();
-        if( endIndex > ERROR_MSG_MAX_BYTES ) {
+        if (endIndex > ERROR_MSG_MAX_BYTES) {
             endIndex = ERROR_MSG_MAX_BYTES;
 
-            return "The first " + endIndex + " JSON body characters are '" + jsonText.substring( 0, endIndex )
+            return "The first " + endIndex + " JSON body characters are '" + jsonText.substring(0, endIndex)
                    + "'";
         } else {
-            return "The JSON body content is '" + jsonText.substring( 0, endIndex ) + "'";
+            return "The JSON body content is '" + jsonText.substring(0, endIndex) + "'";
         }
     }
 
@@ -131,27 +131,27 @@ public class JsonText {
      * @throws JsonException
      */
     @PublicAtsApi
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public JsonText add( String keyPath, Object keyValue ) throws JsonException {
 
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
-            throw new JsonException( "Null/empty path is not allowed" );
+        if (StringUtils.isNullOrEmpty(keyPath)) {
+            throw new JsonException("Null/empty path is not allowed");
         }
 
-        if( keyPath.contains( PATH_DELIMETER ) ) {
-            throw new JsonException( "'" + keyPath + "' contains the not allowed delimiter character '"
-                                     + PATH_DELIMETER + "'" );
+        if (keyPath.contains(PATH_DELIMETER)) {
+            throw new JsonException("'" + keyPath + "' contains the not allowed delimiter character '"
+                                    + PATH_DELIMETER + "'");
         }
 
-        if( keyValue != null && keyValue.getClass().isArray() ) {
-            throw new JsonException( "Use the appropriate method to add array to '" + keyPath + "'" );
+        if (keyValue != null && keyValue.getClass().isArray()) {
+            throw new JsonException("Use the appropriate method to add array to '" + keyPath + "'");
         }
 
-        if( keyValue instanceof JsonText ) {
-            keyValue = ( ( JsonText ) keyValue ).jsonObject;
+        if (keyValue instanceof JsonText) {
+            keyValue = ((JsonText) keyValue).jsonObject;
         }
 
-        this.jsonObject.put( keyPath, keyValue );
+        this.jsonObject.put(keyPath, keyValue);
         return this;
     }
 
@@ -164,15 +164,15 @@ public class JsonText {
      * @throws JsonException
      */
     @PublicAtsApi
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public JsonText addArray( String keyPath, int[] keyValues ) throws JsonException {
 
         JSONArray jsonArray = new JSONArray();
-        for( int keyValue : keyValues ) {
-            jsonArray.add( keyValue );
+        for (int keyValue : keyValues) {
+            jsonArray.add(keyValue);
         }
 
-        this.jsonObject.put( keyPath, jsonArray );
+        this.jsonObject.put(keyPath, jsonArray);
         return this;
     }
 
@@ -185,15 +185,15 @@ public class JsonText {
      * @throws JsonException
      */
     @PublicAtsApi
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public JsonText addArray( String keyPath, float[] keyValues ) throws JsonException {
 
         JSONArray jsonArray = new JSONArray();
-        for( float keyValue : keyValues ) {
-            jsonArray.add( keyValue );
+        for (float keyValue : keyValues) {
+            jsonArray.add(keyValue);
         }
 
-        this.jsonObject.put( keyPath, jsonArray );
+        this.jsonObject.put(keyPath, jsonArray);
         return this;
     }
 
@@ -206,19 +206,19 @@ public class JsonText {
      * @throws JsonException
      */
     @PublicAtsApi
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public JsonText addArray( String keyPath, Object[] keyValues ) throws JsonException {
 
         List<Object> actualKeyValues = new ArrayList<Object>();
-        for( int i = 0; i < keyValues.length; i++ ) {
-            if( keyValues[i] instanceof JsonText ) {
-                actualKeyValues.add( ( ( JsonText ) keyValues[i] ).jsonObject );
+        for (int i = 0; i < keyValues.length; i++) {
+            if (keyValues[i] instanceof JsonText) {
+                actualKeyValues.add( ((JsonText) keyValues[i]).jsonObject);
             } else {
-                actualKeyValues.add( ( Object ) keyValues[i] );
+                actualKeyValues.add((Object) keyValues[i]);
             }
         }
 
-        this.jsonObject.put( keyPath, actualKeyValues );
+        this.jsonObject.put(keyPath, actualKeyValues);
         return this;
     }
 
@@ -232,47 +232,47 @@ public class JsonText {
     @PublicAtsApi
     public JsonText remove( String keyPath ) throws JsonException {
 
-        JsonText parentJsonText = getParentOf( keyPath );
+        JsonText parentJsonText = getParentOf(keyPath);
 
-        List<String> paths = new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) );
-        String lastTokenPath = paths.get( paths.size() - 1 );
+        List<String> paths = new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)));
+        String lastTokenPath = paths.get(paths.size() - 1);
 
-        Matcher m = NAME_AND_INDEX_PATTERN.matcher( lastTokenPath );
-        if( m.find() ) {
+        Matcher m = NAME_AND_INDEX_PATTERN.matcher(lastTokenPath);
+        if (m.find()) {
             // last token is pointing to array
-            if( m.groupCount() < 2 ) {
-                throw new JsonException( "'" + lastTokenPath
-                                         + "' does not specify an array in the valid way 'key_name[index_number]'" );
+            if (m.groupCount() < 2) {
+                throw new JsonException("'" + lastTokenPath
+                                        + "' does not specify an array in the valid way 'key_name[index_number]'");
             }
 
-            String name = m.group( 1 ); // name in the path token
-            int index = getIndex( lastTokenPath, m ); // index in the path token, for example "name[3]"
+            String name = m.group(1); // name in the path token
+            int index = getIndex(lastTokenPath, m); // index in the path token, for example "name[3]"
 
-            if( parentJsonText.jsonObject != null ) {
-                List<?> array = ( List<?> ) parentJsonText.jsonObject.get( name );
-                if( index >= array.size() ) {
-                    throw new JsonException( "Cannot remove item at position " + ( index + 1 )
-                                             + " as there are only " + array.size() + " items present" );
+            if (parentJsonText.jsonObject != null) {
+                List<?> array = (List<?>) parentJsonText.jsonObject.get(name);
+                if (index >= array.size()) {
+                    throw new JsonException("Cannot remove item at position " + (index + 1)
+                                            + " as there are only " + array.size() + " items present");
                 } else {
-                    array.remove( index );
+                    array.remove(index);
                 }
             } else // if( parentJsonText.jsonObject != null ) 
             {
-                parentJsonText.jsonArray.remove( index );
+                parentJsonText.jsonArray.remove(index);
             }
         } else {
             // last token is pointing to object
-            if( parentJsonText.jsonObject != null ) {
-                if( !parentJsonText.jsonObject.containsKey( lastTokenPath ) ) {
-                    throw new JsonException( "Cannot remove JSON item '" + keyPath
-                                             + "' as it does not exist" );
+            if (parentJsonText.jsonObject != null) {
+                if (!parentJsonText.jsonObject.containsKey(lastTokenPath)) {
+                    throw new JsonException("Cannot remove JSON item '" + keyPath
+                                            + "' as it does not exist");
                 } else {
-                    parentJsonText.jsonObject.remove( lastTokenPath );
+                    parentJsonText.jsonObject.remove(lastTokenPath);
                 }
-            } else if( parentJsonText.jsonArray != null ) {
-                parentJsonText.jsonArray.remove( lastTokenPath );
+            } else if (parentJsonText.jsonArray != null) {
+                parentJsonText.jsonArray.remove(lastTokenPath);
             } else {
-                throw new RuntimeException( "Not implemented" );
+                throw new RuntimeException("Not implemented");
             }
         }
         return this;
@@ -286,48 +286,48 @@ public class JsonText {
      * @return this instance
      */
     @PublicAtsApi
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public JsonText replace( String keyPath, Object newKeyValue ) throws JsonException {
 
-        JsonText parentJsonText = getParentOf( keyPath );
+        JsonText parentJsonText = getParentOf(keyPath);
 
-        List<String> paths = new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) );
-        String lastTokenPath = paths.get( paths.size() - 1 );
+        List<String> paths = new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)));
+        String lastTokenPath = paths.get(paths.size() - 1);
 
-        Matcher m = NAME_AND_INDEX_PATTERN.matcher( lastTokenPath );
-        if( m.find() ) {
+        Matcher m = NAME_AND_INDEX_PATTERN.matcher(lastTokenPath);
+        if (m.find()) {
             // last token is pointing to array
-            if( m.groupCount() < 2 ) {
-                throw new JsonException( "'" + lastTokenPath
-                                         + "' does not specify an array in the valid way 'key_name[index_number]'" );
+            if (m.groupCount() < 2) {
+                throw new JsonException("'" + lastTokenPath
+                                        + "' does not specify an array in the valid way 'key_name[index_number]'");
             }
 
-            String name = m.group( 1 ); // name in the path token
-            int index = getIndex( lastTokenPath, m ); // index in the path token, for example "name[3]"
+            String name = m.group(1); // name in the path token
+            int index = getIndex(lastTokenPath, m); // index in the path token, for example "name[3]"
 
-            if( parentJsonText.jsonObject != null ) {
-                List<Object> array = ( List<Object> ) parentJsonText.jsonObject.get( name );
-                if( index >= array.size() ) {
-                    throw new JsonException( "Cannot replace JSON item at positin " + ( index + 1 )
-                                             + " as there are only " + array.size() + " items present" );
+            if (parentJsonText.jsonObject != null) {
+                List<Object> array = (List<Object>) parentJsonText.jsonObject.get(name);
+                if (index >= array.size()) {
+                    throw new JsonException("Cannot replace JSON item at positin " + (index + 1)
+                                            + " as there are only " + array.size() + " items present");
                 } else {
-                    array.set( index, newKeyValue );
+                    array.set(index, newKeyValue);
                 }
             } else // if( parentJsonText.jsonObject != null ) 
             {
-                parentJsonText.jsonArray.set( index, newKeyValue );
+                parentJsonText.jsonArray.set(index, newKeyValue);
             }
         } else {
             // last token is pointing to object
-            if( parentJsonText.jsonObject != null ) {
-                if( !parentJsonText.jsonObject.containsKey( lastTokenPath ) ) {
-                    throw new JsonException( "Cannot replace JSON item '" + keyPath
-                                             + "' as it does not exist" );
+            if (parentJsonText.jsonObject != null) {
+                if (!parentJsonText.jsonObject.containsKey(lastTokenPath)) {
+                    throw new JsonException("Cannot replace JSON item '" + keyPath
+                                            + "' as it does not exist");
                 } else {
-                    parentJsonText.jsonObject.put( lastTokenPath, newKeyValue );
+                    parentJsonText.jsonObject.put(lastTokenPath, newKeyValue);
                 }
             } else {
-                throw new RuntimeException( "Not implemented" );
+                throw new RuntimeException("Not implemented");
             }
         }
         return this;
@@ -340,11 +340,11 @@ public class JsonText {
     @PublicAtsApi
     public JsonText get( String keyPath ) {
 
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
-            throw new JsonException( "Invalid json path '" + keyPath + "'" );
+        if (StringUtils.isNullOrEmpty(keyPath)) {
+            throw new JsonException("Invalid json path '" + keyPath + "'");
         }
 
-        return getInternalJson( new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) ) );
+        return getInternalJson(new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER))));
     }
 
     /**
@@ -355,23 +355,23 @@ public class JsonText {
     public String getString( String keyPath ) {
 
         Object object;
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
+        if (StringUtils.isNullOrEmpty(keyPath)) {
             // return the root element
             object = this.toString();
         } else {
-            object = getInternalJson( new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) ) ).javaObject;
+            object = getInternalJson(new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)))).javaObject;
         }
 
-        if( object == null ) {
-            throw new JsonException( "'" + keyPath + "' is not a valid path" );
+        if (object == null) {
+            throw new JsonException("'" + keyPath + "' is not a valid path");
         }
 
-        if( ! ( object instanceof String ) ) {
-            throw new JsonException( "'" + keyPath + "' does not point to a String value:\n"
-                                     + object.toString() );
+        if (! (object instanceof String)) {
+            throw new JsonException("'" + keyPath + "' does not point to a String value:\n"
+                                    + object.toString());
         }
 
-        return ( String ) object;
+        return (String) object;
     }
 
     /**
@@ -382,22 +382,22 @@ public class JsonText {
     public int getInt( String keyPath ) {
 
         Object object;
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
+        if (StringUtils.isNullOrEmpty(keyPath)) {
             // return the root element
             object = this.javaObject;
         } else {
-            object = getInternalJson( new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) ) ).javaObject;
+            object = getInternalJson(new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)))).javaObject;
         }
 
-        if( object == null ) {
-            throw new JsonException( "'" + keyPath + "' is not a valid path" );
+        if (object == null) {
+            throw new JsonException("'" + keyPath + "' is not a valid path");
         }
 
         try {
-            return Integer.parseInt( object.toString() );
-        } catch( NumberFormatException nfe ) {
-            throw new JsonException( "'" + keyPath + "' does not point to a Integer value:\n"
-                                     + object.toString() );
+            return Integer.parseInt(object.toString());
+        } catch (NumberFormatException nfe) {
+            throw new JsonException("'" + keyPath + "' does not point to a Integer value:\n"
+                                    + object.toString());
         }
     }
 
@@ -409,18 +409,18 @@ public class JsonText {
     public boolean getBoolean( String keyPath ) {
 
         Object object;
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
+        if (StringUtils.isNullOrEmpty(keyPath)) {
             // return the root element
             object = this.javaObject;
         } else {
-            object = getInternalJson( new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) ) ).javaObject;
+            object = getInternalJson(new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)))).javaObject;
         }
 
-        if( object == null ) {
-            throw new JsonException( "'" + keyPath + "' is not a valid path" );
+        if (object == null) {
+            throw new JsonException("'" + keyPath + "' is not a valid path");
         }
 
-        return Boolean.parseBoolean( object.toString() );
+        return Boolean.parseBoolean(object.toString());
     }
 
     /**
@@ -431,22 +431,22 @@ public class JsonText {
     public float getFloat( String keyPath ) {
 
         Object object;
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
+        if (StringUtils.isNullOrEmpty(keyPath)) {
             // return the root element
             object = this.javaObject;
         } else {
-            object = getInternalJson( new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) ) ).javaObject;
+            object = getInternalJson(new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)))).javaObject;
         }
 
-        if( object == null ) {
-            throw new JsonException( "'" + keyPath + "' is not a valid path" );
+        if (object == null) {
+            throw new JsonException("'" + keyPath + "' is not a valid path");
         }
 
         try {
-            return Float.parseFloat( object.toString() );
-        } catch( NumberFormatException nfe ) {
-            throw new JsonException( "'" + keyPath + "' does not point to a Float value:\n"
-                                     + object.toString() );
+            return Float.parseFloat(object.toString());
+        } catch (NumberFormatException nfe) {
+            throw new JsonException("'" + keyPath + "' does not point to a Float value:\n"
+                                    + object.toString());
         }
     }
 
@@ -462,9 +462,9 @@ public class JsonText {
 
         List<JsonText> jsonResults = new ArrayList<>();
 
-        parseInternalJson( jsonResults, new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) ) );
+        parseInternalJson(jsonResults, new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER))));
 
-        return jsonResults.toArray( new JsonText[jsonResults.size()] );
+        return jsonResults.toArray(new JsonText[jsonResults.size()]);
     }
 
     /**
@@ -480,11 +480,11 @@ public class JsonText {
      * @return the names of all top level elements
      */
     @PublicAtsApi
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public String[] getElementNames() {
 
         Set<String> keys = jsonObject.keySet();
-        return keys.toArray( new String[keys.size()] );
+        return keys.toArray(new String[keys.size()]);
     }
 
     /**
@@ -499,70 +499,70 @@ public class JsonText {
     public int getNumberOfElements( String keyPath ) {
 
         JsonText jsonText;
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
+        if (StringUtils.isNullOrEmpty(keyPath)) {
             jsonText = this;
         } else {
-            jsonText = get( keyPath );
+            jsonText = get(keyPath);
         }
 
-        if(jsonText == null){
-            log.warn( "JSON object " + keyPath + " is empty!" );
+        if (jsonText == null) {
+            log.warn("JSON object " + keyPath + " is empty!");
             return 0;
-        } else if( jsonText.jsonObject != null ) {
+        } else if (jsonText.jsonObject != null) {
             return jsonText.jsonObject.size();
-        } else if( jsonText.jsonArray != null ) {
+        } else if (jsonText.jsonArray != null) {
             return jsonText.jsonArray.size();
-        } else if( jsonText.javaObject != null ) {
+        } else if (jsonText.javaObject != null) {
             return 1;
         } else {
             // we assume this is a String, Integer or something similar
-            log.warn( "We expected to point to a JSON object or array. We will return 1 as number of its elements" );
+            log.warn("We expected to point to a JSON object or array. We will return 1 as number of its elements");
             return 1;
         }
     }
 
     private JsonText getParentOf( String keyPath ) {
 
-        if( StringUtils.isNullOrEmpty( keyPath ) ) {
-            throw new JsonException( "Invalid json path '" + keyPath + "'" );
+        if (StringUtils.isNullOrEmpty(keyPath)) {
+            throw new JsonException("Invalid json path '" + keyPath + "'");
         }
 
-        List<String> paths = new ArrayList<>( Arrays.asList( keyPath.split( PATH_DELIMETER ) ) );
-        if( paths.size() == 1 ) {
+        List<String> paths = new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)));
+        if (paths.size() == 1) {
             // there is only one token, check it is present in our JSON text as a top level element
 
-            String lastTokenPath = paths.get( 0 );
+            String lastTokenPath = paths.get(0);
             boolean pathIsPresent = false;
-            if( jsonObject != null && jsonObject.containsKey( lastTokenPath ) ) {
+            if (jsonObject != null && jsonObject.containsKey(lastTokenPath)) {
                 pathIsPresent = true;
-            } else if( jsonArray != null ) {
+            } else if (jsonArray != null) {
 
-                Matcher m = NAME_AND_INDEX_PATTERN.matcher( lastTokenPath );
-                if( m.find() ) {
+                Matcher m = NAME_AND_INDEX_PATTERN.matcher(lastTokenPath);
+                if (m.find()) {
                     // last token is pointing to array
-                    if( m.groupCount() < 2 ) {
-                        throw new JsonException( "'" + lastTokenPath
-                                                 + "' does not specify an array in the valid way 'key_name[index_number]'" );
+                    if (m.groupCount() < 2) {
+                        throw new JsonException("'" + lastTokenPath
+                                                + "' does not specify an array in the valid way 'key_name[index_number]'");
                     }
 
-                    String name = m.group( 1 ); // name in the path token
-                    int index = getIndex( lastTokenPath, m ); // index in the path token, for example "name[3]"
-                    if( StringUtils.isNullOrEmpty( name ) && index < jsonArray.size() ) {
+                    String name = m.group(1); // name in the path token
+                    int index = getIndex(lastTokenPath, m); // index in the path token, for example "name[3]"
+                    if (StringUtils.isNullOrEmpty(name) && index < jsonArray.size()) {
                         pathIsPresent = true;
                     }
                 }
             }
 
-            if( pathIsPresent ) {
+            if (pathIsPresent) {
                 return this;
             } else {
-                throw new JsonException( "'" + keyPath + "' is not a valid path" );
+                throw new JsonException("'" + keyPath + "' is not a valid path");
             }
         } else
 
         {
-            paths.remove( paths.size() - 1 );
-            return getInternalJson( new ArrayList<>( paths ) );
+            paths.remove(paths.size() - 1);
+            return getInternalJson(new ArrayList<>(paths));
         }
 
     }
@@ -575,62 +575,62 @@ public class JsonText {
      */
     private JsonText getInternalJson( List<String> pathTokens ) {
 
-        for( String path : pathTokens ) {
+        for (String path : pathTokens) {
 
-            Matcher m = NAME_AND_INDEX_PATTERN.matcher( path );
+            Matcher m = NAME_AND_INDEX_PATTERN.matcher(path);
 
-            if( m.find() ) {
+            if (m.find()) {
                 // path is pointing to array
-                if( m.groupCount() < 2 ) {
-                    throw new JsonException( "'" + path
-                                             + "' does not specify an array in the valid way 'key_name[index_number]'" );
+                if (m.groupCount() < 2) {
+                    throw new JsonException("'" + path
+                                            + "' does not specify an array in the valid way 'key_name[index_number]'");
                 }
 
-                String name = m.group( 1 ); // name in the path token
-                int index = getIndex( path, m ); // index in the path token, for example "name[3]"
+                String name = m.group(1); // name in the path token
+                int index = getIndex(path, m); // index in the path token, for example "name[3]"
 
-                if( index == -1 ) {
+                if (index == -1) {
                     // we have an array but no index is specified -> "[]"
-                } else if( !StringUtils.isNullOrEmpty( name ) ) {
+                } else if (!StringUtils.isNullOrEmpty(name)) {
                     // pointing to JSON object
-                    pathTokens.remove( 0 );
+                    pathTokens.remove(0);
 
-                    if( index >= 0 ) {
-                        pathTokens.add( 0, "[" + String.valueOf( index ) + "]" );
+                    if (index >= 0) {
+                        pathTokens.add(0, "[" + String.valueOf(index) + "]");
                     }
-                    return new JsonText( jsonObject.get( name ) ).getInternalJson( pathTokens );
+                    return new JsonText(jsonObject.get(name)).getInternalJson(pathTokens);
                 } else {
                     // directly pointing to JSON array, for example "[3]"
-                    pathTokens.remove( 0 );
+                    pathTokens.remove(0);
 
-                    if( pathTokens.size() > 0 ) {
-                        return new JsonText( jsonArray.get( index ) ).getInternalJson( pathTokens );
+                    if (pathTokens.size() > 0) {
+                        return new JsonText(jsonArray.get(index)).getInternalJson(pathTokens);
                     } else {
-                        if( index >= jsonArray.size() ) {
-                            throw new JsonException( "Cannot remove item at positin " + ( index + 1 )
-                                                     + " as there are only " + jsonArray.size()
-                                                     + " items present" );
+                        if (index >= jsonArray.size()) {
+                            throw new JsonException("Cannot remove item at positin " + (index + 1)
+                                                    + " as there are only " + jsonArray.size()
+                                                    + " items present");
                         } else {
-                            return new JsonText( jsonArray.get( index ) );
+                            return new JsonText(jsonArray.get(index));
                         }
                     }
                 }
             } else {
                 // path is pointing to object
-                if( !jsonObject.containsKey( path ) ) {
-                    throw new JsonException( "'" + path + "' is not a valid path" );
+                if (!jsonObject.containsKey(path)) {
+                    throw new JsonException("'" + path + "' is not a valid path");
                 }
 
-                if( jsonObject.get( path ) == null ) {
+                if (jsonObject.get(path) == null) {
                     // the value is null
                     return null;
                 }
 
-                JsonText jsonText = new JsonText( jsonObject.get( path ) );
+                JsonText jsonText = new JsonText(jsonObject.get(path));
 
-                pathTokens.remove( 0 );
-                if( pathTokens.size() > 0 ) {
-                    jsonText = jsonText.getInternalJson( pathTokens );
+                pathTokens.remove(0);
+                if (pathTokens.size() > 0) {
+                    jsonText = jsonText.getInternalJson(pathTokens);
                 }
                 return jsonText;
             }
@@ -648,87 +648,87 @@ public class JsonText {
      */
     private void parseInternalJson( List<JsonText> jsonResults, List<String> pathTokens ) {
 
-        List<String> _paths = new ArrayList<>( pathTokens );
-        for( String path : pathTokens ) {
+        List<String> _paths = new ArrayList<>(pathTokens);
+        for (String path : pathTokens) {
 
-            Matcher m = NAME_AND_INDEX_PATTERN.matcher( path );
+            Matcher m = NAME_AND_INDEX_PATTERN.matcher(path);
 
-            if( m.find() ) {
+            if (m.find()) {
                 // path is pointing to array
-                if( m.groupCount() < 2 ) {
-                    throw new JsonException( "'" + _paths
-                                             + "' does not specify an array in the valid way 'key_name[index_number]'" );
+                if (m.groupCount() < 2) {
+                    throw new JsonException("'" + _paths
+                                            + "' does not specify an array in the valid way 'key_name[index_number]'");
                 }
 
-                String name = m.group( 1 ); // name in the path token
-                int index = getIndex( path, m ); // index in the path token, for example "name[3]"
+                String name = m.group(1); // name in the path token
+                int index = getIndex(path, m); // index in the path token, for example "name[3]"
 
-                _paths.remove( 0 );
-                if( index == -1 ) {
+                _paths.remove(0);
+                if (index == -1) {
                     // we have an array but no index is specified -> "[]"
-                    Object internalObject = jsonObject.get( name );
-                    if( internalObject instanceof JSONArray ) {
-                        JSONArray internalJsonArray = ( JSONArray ) internalObject;
-                        for( int i = 0; i < internalJsonArray.size(); i++ ) {
-                            JsonText ooo = new JsonText( internalJsonArray.get( i ) );
-                            if( _paths.size() == 0 ) {
+                    Object internalObject = jsonObject.get(name);
+                    if (internalObject instanceof JSONArray) {
+                        JSONArray internalJsonArray = (JSONArray) internalObject;
+                        for (int i = 0; i < internalJsonArray.size(); i++) {
+                            JsonText ooo = new JsonText(internalJsonArray.get(i));
+                            if (_paths.size() == 0) {
                                 // this is the path end, the last path token ends with "[]"
-                                jsonResults.add( ooo );
+                                jsonResults.add(ooo);
                             } else {
                                 // go deeper
-                                ooo.parseInternalJson( jsonResults, _paths );
+                                ooo.parseInternalJson(jsonResults, _paths);
                             }
                         }
 
                         // we have cycled deeply into an array, do not go to the next path token
                         return;
                     } else {
-                        throw new RuntimeException( "Not implemented" );
+                        throw new RuntimeException("Not implemented");
                     }
-                } else if( !StringUtils.isNullOrEmpty( name ) ) {
+                } else if (!StringUtils.isNullOrEmpty(name)) {
                     // pointing to JSON object
-                    if( index >= 0 ) {
-                        _paths.add( 0, "[" + String.valueOf( index ) + "]" );
+                    if (index >= 0) {
+                        _paths.add(0, "[" + String.valueOf(index) + "]");
                     }
-                    new JsonText( jsonObject.get( name ) ).parseInternalJson( jsonResults, _paths );
+                    new JsonText(jsonObject.get(name)).parseInternalJson(jsonResults, _paths);
                     return;
                 } else {
                     // directly pointing to JSON array, for example "[3]"
-                    if( _paths.size() == 0 ) {
+                    if (_paths.size() == 0) {
                         // this is the path end
-                        if( index >= jsonArray.size() ) {
-                            throw new JsonException( "Cannot remove item at positin " + ( index + 1 )
-                                                     + " as there are only " + jsonArray.size()
-                                                     + " items present" );
+                        if (index >= jsonArray.size()) {
+                            throw new JsonException("Cannot remove item at positin " + (index + 1)
+                                                    + " as there are only " + jsonArray.size()
+                                                    + " items present");
                         } else {
-                            jsonResults.add( new JsonText( jsonArray.get( index ) ) );
+                            jsonResults.add(new JsonText(jsonArray.get(index)));
                             return;
                         }
                     } else {
                         // go deeper
-                        new JsonText( jsonArray.get( index ) ).parseInternalJson( jsonResults, _paths );
+                        new JsonText(jsonArray.get(index)).parseInternalJson(jsonResults, _paths);
                         return;
                     }
                 }
             } else {
                 // path is pointing to object
-                if( !jsonObject.containsKey( path ) ) {
-                    throw new JsonException( "'" + _paths + "' is not a valid path" );
+                if (!jsonObject.containsKey(path)) {
+                    throw new JsonException("'" + _paths + "' is not a valid path");
                 }
 
-                if( jsonObject.get( path ) == null ) {
+                if (jsonObject.get(path) == null) {
                     // the value is null
-                    jsonResults.add( null );
+                    jsonResults.add(null);
                     return;
                 }
 
-                JsonText jsonText = new JsonText( jsonObject.get( path ) );
+                JsonText jsonText = new JsonText(jsonObject.get(path));
 
-                _paths.remove( 0 );
-                if( _paths.size() > 0 ) {
-                    jsonText.parseInternalJson( jsonResults, _paths );
+                _paths.remove(0);
+                if (_paths.size() > 0) {
+                    jsonText.parseInternalJson(jsonResults, _paths);
                 } else {
-                    jsonResults.add( jsonText );
+                    jsonResults.add(jsonText);
                 }
                 return;
             }
@@ -742,11 +742,11 @@ public class JsonText {
     @PublicAtsApi
     public String toString() {
 
-        if( jsonObject != null ) {
+        if (jsonObject != null) {
             return jsonObject.toString();
-        } else if( jsonArray != null ) {
+        } else if (jsonArray != null) {
             return jsonArray.toString();
-        } else if( javaObject != null ) {
+        } else if (javaObject != null) {
             return javaObject.toString();
         } else {
             // this is legal, we are pointing to a NULL value somewhere inside the JSON text
@@ -768,41 +768,41 @@ public class JsonText {
         StringBuilder sb = new StringBuilder();
 
         String plain;
-        if( jsonObject != null ) {
+        if (jsonObject != null) {
             plain = jsonObject.toString();
-        } else if( jsonArray != null ) {
+        } else if (jsonArray != null) {
             plain = jsonArray.toString();
         } else {
             plain = javaObject.toString();
         }
 
-        for( int i = 0; i < plain.length(); i++ ) {
-            char ch = plain.charAt( i );
+        for (int i = 0; i < plain.length(); i++) {
+            char ch = plain.charAt(i);
 
-            if( ch == '[' ) {
+            if (ch == '[') {
                 weAreInArray = true;
-            } else if( ch == ']' ) {
+            } else if (ch == ']') {
                 weAreInArray = false;
             }
 
-            if( ch == ',' ) {
-                sb.append( ch );
-                if( !weAreInArray || lastChar < '0' || lastChar > '9' ) {
-                    sb.append( "\n" );
-                    sb.append( indent );
+            if (ch == ',') {
+                sb.append(ch);
+                if (!weAreInArray || lastChar < '0' || lastChar > '9') {
+                    sb.append("\n");
+                    sb.append(indent);
                 }
-            } else if( ch == '{' || ch == '[' ) {
-                sb.append( ch );
-                sb.append( "\n" );
+            } else if (ch == '{' || ch == '[') {
+                sb.append(ch);
+                sb.append("\n");
                 indent = indent + INDENT_CHAR;
-                sb.append( indent );
-            } else if( ch == '}' || ch == ']' ) {
-                sb.append( "\n" );
-                indent = indent.replaceFirst( INDENT_CHAR, "" );
-                sb.append( indent );
-                sb.append( ch );
+                sb.append(indent);
+            } else if (ch == '}' || ch == ']') {
+                sb.append("\n");
+                indent = indent.replaceFirst(INDENT_CHAR, "");
+                sb.append(indent);
+                sb.append(ch);
             } else {
-                sb.append( ch );
+                sb.append(ch);
             }
 
             lastChar = ch;
@@ -813,20 +813,20 @@ public class JsonText {
 
     private int getIndex( String path, Matcher m ) {
 
-        if( StringUtils.isNullOrEmpty( m.group( 2 ) ) ) {
+        if (StringUtils.isNullOrEmpty(m.group(2))) {
             // we have an array but no index is specified -> "[]"
             return -1;
         }
 
         int index = -1;
         try {
-            index = Integer.parseInt( m.group( 2 ) );
-        } catch( NumberFormatException nfe ) {
-            throw new JsonException( "Invalid index number in '" + path + "'" );
+            index = Integer.parseInt(m.group(2));
+        } catch (NumberFormatException nfe) {
+            throw new JsonException("Invalid index number in '" + path + "'");
         }
 
-        if( index < 0 ) {
-            throw new JsonException( "Negative index number in '" + path + "'" );
+        if (index < 0) {
+            throw new JsonException("Negative index number in '" + path + "'");
         }
 
         return index;

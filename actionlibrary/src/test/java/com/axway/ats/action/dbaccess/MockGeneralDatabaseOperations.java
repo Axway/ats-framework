@@ -37,7 +37,7 @@ public class MockGeneralDatabaseOperations extends DatabaseOperations {
 
     public MockGeneralDatabaseOperations() {
 
-        super( new MockDbProvider() );
+        super(new MockDbProvider());
     }
 
 }
@@ -53,7 +53,7 @@ class MockDbProvider implements DbProvider {
     @Override
     public DbConnection getDbConnection() {
 
-        return new DbConnMySQL( "localhost", "db", "user", "pass" );
+        return new DbConnMySQL("localhost", "db", "user", "pass");
     }
 
     @Override
@@ -91,7 +91,7 @@ class MockDbProvider implements DbProvider {
     @Override
     public DbRecordValuesList[] select( String query ) throws DbException {
 
-        return this.select( new DbQuery( query, new ArrayList<Object>() ) );
+        return this.select(new DbQuery(query, new ArrayList<Object>()));
     }
 
     @Override
@@ -99,48 +99,48 @@ class MockDbProvider implements DbProvider {
 
         DbRecordValuesList[] resultSet = null;
         DbRecordValuesList result = new DbRecordValuesList();
-        result.add( new DbRecordValue( "asd", "key0", "value00" ) );
+        result.add(new DbRecordValue("asd", "key0", "value00"));
 
         //testing db exception
-        if( dbQuery.getQuery().contains( "wrongTableName" ) ) {
-            throw new DbException( "wrong table name" );
+        if (dbQuery.getQuery().contains("wrongTableName")) {
+            throw new DbException("wrong table name");
 
             //test more than one result values
-        } else if( dbQuery.getQuery().contains( "moreValues" ) ) {
+        } else if (dbQuery.getQuery().contains("moreValues")) {
             resultSet = new DbRecordValuesList[2];
             resultSet[0] = result;
             DbRecordValuesList sresult = new DbRecordValuesList();
-            sresult.add( new DbRecordValue( "dfg", "key0", "value11" ) );
+            sresult.add(new DbRecordValue("dfg", "key0", "value11"));
             resultSet[1] = result;
 
             //testing with DatabaseRow and DatabaseCell classes
-        } else if( dbQuery.getQuery().contains( "tableWithManyRows" ) ) {
-            if( dbQuery.getQuery().contains( "*" ) ) {
+        } else if (dbQuery.getQuery().contains("tableWithManyRows")) {
+            if (dbQuery.getQuery().contains("*")) {
                 resultSet = new DbRecordValuesList[2];
 
                 DbRecordValuesList firstDbRow = new DbRecordValuesList();
-                firstDbRow.add( new DbRecordValue( "tableWithManyRows", "firstColumnName", "value01" ) );
-                firstDbRow.add( new DbRecordValue( "tableWithManyRows", "secondColumnName", "value02" ) );
+                firstDbRow.add(new DbRecordValue("tableWithManyRows", "firstColumnName", "value01"));
+                firstDbRow.add(new DbRecordValue("tableWithManyRows", "secondColumnName", "value02"));
                 resultSet[0] = firstDbRow;
 
                 DbRecordValuesList secondDbRow = new DbRecordValuesList();
-                secondDbRow.add( new DbRecordValue( "tableWithManyRows", "firstColumnName", "value11" ) );
-                secondDbRow.add( new DbRecordValue( "tableWithManyRows", "secondColumnName", "value12" ) );
+                secondDbRow.add(new DbRecordValue("tableWithManyRows", "firstColumnName", "value11"));
+                secondDbRow.add(new DbRecordValue("tableWithManyRows", "secondColumnName", "value12"));
                 resultSet[1] = secondDbRow;
             } else {
                 resultSet = new DbRecordValuesList[2];
 
                 DbRecordValuesList firstDbRow = new DbRecordValuesList();
-                firstDbRow.add( new DbRecordValue( "tableWithManyRows", "selectColumnName", "value1" ) );
+                firstDbRow.add(new DbRecordValue("tableWithManyRows", "selectColumnName", "value1"));
                 resultSet[0] = firstDbRow;
 
                 DbRecordValuesList secondDbRow = new DbRecordValuesList();
-                secondDbRow.add( new DbRecordValue( "tableWithManyRows", "selectColumnName", "value2" ) );
+                secondDbRow.add(new DbRecordValue("tableWithManyRows", "selectColumnName", "value2"));
                 resultSet[1] = secondDbRow;
             }
 
             //testing no value result
-        } else if( !dbQuery.getQuery().contains( "nullValue" ) ) {
+        } else if (!dbQuery.getQuery().contains("nullValue")) {
             resultSet = new DbRecordValuesList[1];
             resultSet[0] = result;
         }

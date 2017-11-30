@@ -72,12 +72,12 @@ public class RegistryOperations {
      * @param rootKey the root key, use one of the predefined HKEY_* values
      */
     @PublicAtsApi
-    public RegistryOperations( @Validate(name = "rootKey", type = ValidationType.STRING_NOT_EMPTY) String rootKey ) {
+    public RegistryOperations( @Validate( name = "rootKey", type = ValidationType.STRING_NOT_EMPTY) String rootKey ) {
 
-        new Validator().validateMethodParameters( new Object[]{ rootKey } );
+        new Validator().validateMethodParameters(new Object[]{ rootKey });
 
         this.rootKey = rootKey;
-        this.registryOperationsImpl = getOperationsImplementationFor( null );
+        this.registryOperationsImpl = getOperationsImplementationFor(null);
     }
 
     /**
@@ -87,14 +87,14 @@ public class RegistryOperations {
      * @param rootKey the root key, use one of the predefined HKEY_* values
      */
     @PublicAtsApi
-    public RegistryOperations( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                               @Validate(name = "rootKey", type = ValidationType.STRING_NOT_EMPTY) String rootKey ) {
+    public RegistryOperations( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
+                               @Validate( name = "rootKey", type = ValidationType.STRING_NOT_EMPTY) String rootKey ) {
 
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent, rootKey } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent, rootKey });
 
         this.rootKey = rootKey;
-        this.registryOperationsImpl = getOperationsImplementationFor( atsAgent );
+        this.registryOperationsImpl = getOperationsImplementationFor(atsAgent);
     }
 
     /**
@@ -105,13 +105,13 @@ public class RegistryOperations {
      * @return if the key exists
      */
     @PublicAtsApi
-    public boolean isKeyPresent( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                                 @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
+    public boolean isKeyPresent( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                                 @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName });
 
-        return registryOperationsImpl.isKeyPresent( rootKey, keyPath, keyName );
+        return registryOperationsImpl.isKeyPresent(rootKey, keyPath, keyName);
     }
 
     /**
@@ -122,13 +122,13 @@ public class RegistryOperations {
      * @return the key value
      */
     @PublicAtsApi
-    public String getStringValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                                  @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
+    public String getStringValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                                  @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName });
 
-        return registryOperationsImpl.getStringValue( rootKey, keyPath, keyName );
+        return registryOperationsImpl.getStringValue(rootKey, keyPath, keyName);
     }
 
     /**
@@ -139,13 +139,13 @@ public class RegistryOperations {
      * @return the key value
      */
     @PublicAtsApi
-    public int getIntValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                            @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
+    public int getIntValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                            @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName });
 
-        return registryOperationsImpl.getIntValue( rootKey, keyPath, keyName );
+        return registryOperationsImpl.getIntValue(rootKey, keyPath, keyName);
     }
 
     /**
@@ -156,13 +156,13 @@ public class RegistryOperations {
      * @return the key value
      */
     @PublicAtsApi
-    public long getLongValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                              @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
+    public long getLongValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                              @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName });
 
-        return registryOperationsImpl.getLongValue( rootKey, keyPath, keyName );
+        return registryOperationsImpl.getLongValue(rootKey, keyPath, keyName);
     }
 
     /**
@@ -173,13 +173,13 @@ public class RegistryOperations {
      * @return the key value
      */
     @PublicAtsApi
-    public byte[] getBinaryValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                                  @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
+    public byte[] getBinaryValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                                  @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName });
 
-        return registryOperationsImpl.getBinaryValue( rootKey, keyPath, keyName );
+        return registryOperationsImpl.getBinaryValue(rootKey, keyPath, keyName);
     }
 
     /**
@@ -193,12 +193,12 @@ public class RegistryOperations {
      * @param keyPath path to the key
      */
     @PublicAtsApi
-    public void createPath( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath ) {
+    public void createPath( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath });
 
-        registryOperationsImpl.createPath( rootKey, keyPath );
+        registryOperationsImpl.createPath(rootKey, keyPath);
     }
 
     /**
@@ -212,14 +212,14 @@ public class RegistryOperations {
      * @param keyValue the new key value
      */
     @PublicAtsApi
-    public void setStringValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                                @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
-                                @Validate(name = "keyValue", type = ValidationType.NOT_NULL) String keyValue ) {
+    public void setStringValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                                @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
+                                @Validate( name = "keyValue", type = ValidationType.NOT_NULL) String keyValue ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName, keyValue } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName, keyValue });
 
-        registryOperationsImpl.setStringValue( rootKey, keyPath, keyName, keyValue );
+        registryOperationsImpl.setStringValue(rootKey, keyPath, keyName, keyValue);
     }
 
     /**
@@ -233,14 +233,14 @@ public class RegistryOperations {
      * @param keyValue the new key value
      */
     @PublicAtsApi
-    public void setIntValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                             @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
-                             @Validate(name = "keyValue", type = ValidationType.NONE) int keyValue ) {
+    public void setIntValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                             @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
+                             @Validate( name = "keyValue", type = ValidationType.NONE) int keyValue ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName, keyValue } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName, keyValue });
 
-        registryOperationsImpl.setIntValue( rootKey, keyPath, keyName, keyValue );
+        registryOperationsImpl.setIntValue(rootKey, keyPath, keyName, keyValue);
     }
 
     /**
@@ -254,14 +254,14 @@ public class RegistryOperations {
      * @param keyValue the new key value
      */
     @PublicAtsApi
-    public void setLongValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                              @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
-                              @Validate(name = "keyValue", type = ValidationType.NONE) long keyValue ) {
+    public void setLongValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                              @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
+                              @Validate( name = "keyValue", type = ValidationType.NONE) long keyValue ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName, keyValue } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName, keyValue });
 
-        registryOperationsImpl.setLongValue( rootKey, keyPath, keyName, keyValue );
+        registryOperationsImpl.setLongValue(rootKey, keyPath, keyName, keyValue);
     }
 
     /**
@@ -275,14 +275,14 @@ public class RegistryOperations {
      * @param keyValue the new key value
      */
     @PublicAtsApi
-    public void setBinaryValue( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                                @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
-                                @Validate(name = "keyValue", type = ValidationType.NOT_NULL) byte[] keyValue ) {
+    public void setBinaryValue( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                                @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName,
+                                @Validate( name = "keyValue", type = ValidationType.NOT_NULL) byte[] keyValue ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName, keyValue } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName, keyValue });
 
-        registryOperationsImpl.setBinaryValue( rootKey, keyPath, keyName, keyValue );
+        registryOperationsImpl.setBinaryValue(rootKey, keyPath, keyName, keyValue);
     }
 
     /**
@@ -292,21 +292,21 @@ public class RegistryOperations {
      * @param keyName name of the key
      */
     @PublicAtsApi
-    public void deleteKey( @Validate(name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
-                           @Validate(name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
+    public void deleteKey( @Validate( name = "keyPath", type = ValidationType.STRING_NOT_EMPTY) String keyPath,
+                           @Validate( name = "keyName", type = ValidationType.STRING_NOT_EMPTY) String keyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ keyPath, keyName } );
+        new Validator().validateMethodParameters(new Object[]{ keyPath, keyName });
 
-        registryOperationsImpl.deleteKey( rootKey, keyPath, keyName );
+        registryOperationsImpl.deleteKey(rootKey, keyPath, keyName);
     }
 
     private IRegistryOperations getOperationsImplementationFor( String atsAgent ) {
 
-        if( HostUtils.isLocalAtsAgent( atsAgent ) ) {
+        if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalRegistryOperations();
         } else {
-            return new RemoteRegistryOperations( atsAgent );
+            return new RemoteRegistryOperations(atsAgent);
         }
     }
 }

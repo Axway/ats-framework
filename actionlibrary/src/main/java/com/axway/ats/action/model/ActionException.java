@@ -15,22 +15,22 @@
  */
 package com.axway.ats.action.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ActionException extends Exception {
 
     public ActionException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public ActionException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public ActionException( String message,
                             Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

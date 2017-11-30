@@ -15,20 +15,20 @@
  */
 package com.axway.ats.action.objects.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchHeaderException extends PackageException {
 
     public NoSuchHeaderException( String headerName,
                                   int headerIndex ) {
 
-        super( "Message does not contain header with name '" + headerName + "' at position " + headerIndex );
+        super("Message does not contain header with name '" + headerName + "' at position " + headerIndex);
     }
 
     public NoSuchHeaderException( String headerName,
                                   int partNum,
                                   int headerIndex ) {
 
-        super( "MIME part number " + partNum + " does not contain header with name '" + headerName
-               + "' at position " + headerIndex );
+        super("MIME part number " + partNum + " does not contain header with name '" + headerName
+              + "' at position " + headerIndex);
     }
 }

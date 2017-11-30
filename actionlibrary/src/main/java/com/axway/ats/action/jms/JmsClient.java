@@ -51,7 +51,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class JmsClient {
 
-    private static final Logger           log         = Logger.getLogger( JmsClient.class );
+    private static final Logger           log         = Logger.getLogger(JmsClient.class);
 
     private static InitialContext         defaultStaticInitialcontext;
     private static String                 defaultStaticConnectionFactoryName;
@@ -88,17 +88,17 @@ public class JmsClient {
     public JmsClient( final InitialContext context, final String defaultConnectionFactoryName,
                       final String brokerURI ) throws NamingException {
 
-        this.context = new InitialContext( context.getEnvironment() );
+        this.context = new InitialContext(context.getEnvironment());
         this.defaultConnectionFactoryName = defaultConnectionFactoryName;
         this.brokerURI = brokerURI;
-        if( this.brokerURI != null ) {
-            this.context.addToEnvironment( Context.PROVIDER_URL, this.brokerURI );
+        if (this.brokerURI != null) {
+            this.context.addToEnvironment(Context.PROVIDER_URL, this.brokerURI);
         }
     }
 
     public JmsClient( final String brokerURI ) throws NamingException {
 
-        this( defaultStaticInitialcontext, defaultStaticConnectionFactoryName, brokerURI );
+        this(defaultStaticInitialcontext, defaultStaticConnectionFactoryName, brokerURI);
     }
 
     /**
@@ -112,12 +112,12 @@ public class JmsClient {
     public JmsClient( final InitialContext context,
                       final String defaultConnectionFactoryName ) throws NamingException {
 
-        this( context, defaultConnectionFactoryName, null );
+        this(context, defaultConnectionFactoryName, null);
     }
 
     public JmsClient() throws NamingException {
 
-        this( defaultStaticInitialcontext, defaultStaticConnectionFactoryName );
+        this(defaultStaticInitialcontext, defaultStaticConnectionFactoryName);
     }
 
     /**
@@ -152,11 +152,11 @@ public class JmsClient {
 
         final Object connectionFactoryObject;
         try {
-            connectionFactoryObject = context.lookup( defaultConnectionFactoryName );
-            return ( ConnectionFactory ) connectionFactoryObject;
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Error loading JMS connection factory '"
-                                           + defaultConnectionFactoryName + "'", e );
+            connectionFactoryObject = context.lookup(defaultConnectionFactoryName);
+            return (ConnectionFactory) connectionFactoryObject;
+        } catch (Exception e) {
+            throw new JmsMessageException("Error loading JMS connection factory '"
+                                          + defaultConnectionFactoryName + "'", e);
         }
     }
 
@@ -165,15 +165,15 @@ public class JmsClient {
         final ManagedConnection connection;
         final ConnectionFactory connectionFactory = getConnectionFactory();
         try {
-            if( !StringUtils.isNullOrEmpty( this.username ) ) {
-                connection = ManagedConnection.create( connectionFactory.createConnection( this.username,
-                                                                                           this.password ) );
+            if (!StringUtils.isNullOrEmpty(this.username)) {
+                connection = ManagedConnection.create(connectionFactory.createConnection(this.username,
+                                                                                         this.password));
             } else {
-                connection = ManagedConnection.create( connectionFactory.createConnection() );
+                connection = ManagedConnection.create(connectionFactory.createConnection());
             }
-        } catch( JMSException e ) {
-            throw new JmsMessageException( "Error creating JMS connection from connection factory '"
-                                           + defaultConnectionFactoryName + "'", e );
+        } catch (JMSException e) {
+            throw new JmsMessageException("Error creating JMS connection from connection factory '"
+                                          + defaultConnectionFactoryName + "'", e);
         }
         return connection;
     }
@@ -184,10 +184,10 @@ public class JmsClient {
         final ManagedConnection connection = createManagedConnection();
         try {
             connection.start();
-        } catch( JMSException e ) {
+        } catch (JMSException e) {
             connection.shutdown();
-            throw new JmsMessageException( "Error starting JMS connection from connection factory '"
-                                           + defaultConnectionFactoryName + "'", e );
+            throw new JmsMessageException("Error starting JMS connection from connection factory '"
+                                          + defaultConnectionFactoryName + "'", e);
         }
         this.connection = connection;
         return connection;
@@ -200,11 +200,11 @@ public class JmsClient {
     @PublicAtsApi
     public synchronized void shutdown() {
 
-        releaseSession( true );
+        releaseSession(true);
 
         releaseConnection();
 
-        for( final ManagedConnection connection : connections ) {
+        for (final ManagedConnection connection : connections) {
             connection.shutdown();
         }
         connections.clear();
@@ -212,7 +212,7 @@ public class JmsClient {
 
     private synchronized void releaseConnection() {
 
-        if( connection == null ) {
+        if (connection == null) {
             return;
         }
 
@@ -224,7 +224,7 @@ public class JmsClient {
     private synchronized ManagedConnection loadConnection() {
 
         final ManagedConnection c = connection;
-        if( c != null ) {
+        if (c != null) {
             return c;
         }
 
@@ -235,28 +235,28 @@ public class JmsClient {
                                               final int acknowledgeMode ) throws JMSException {
 
         final Session s = session;
-        if( s != null ) {
-            if( ( s.getTransacted() == transacted ) && ( s.getAcknowledgeMode() == acknowledgeMode ) ) {
+        if (s != null) {
+            if ( (s.getTransacted() == transacted) && (s.getAcknowledgeMode() == acknowledgeMode)) {
                 return s;
             }
             s.close();
         }
-        final Session newSession = loadConnection().createSession( transacted, acknowledgeMode );
+        final Session newSession = loadConnection().createSession(transacted, acknowledgeMode);
         session = newSession;
         return newSession;
     }
 
     private synchronized void releaseSession( boolean closeEvenIfKeepAlive ) {
 
-        if( session == null ) {
+        if (session == null) {
             return;
         }
 
-        if( isKeepAlive && !closeEvenIfKeepAlive ) {
+        if (isKeepAlive && !closeEvenIfKeepAlive) {
             return;
         }
 
-        ( ( ManagedSession ) session ).shutdown();
+        ((ManagedSession) session).shutdown();
         session = null;
     }
 
@@ -264,18 +264,18 @@ public class JmsClient {
 
         Object destination;
         try {
-            destination = context.lookup( resourceName );
-        } catch( NamingException e ) {
-            throw new JmsMessageException( "Error retrieving destination '" + resourceName + "'", e );
+            destination = context.lookup(resourceName);
+        } catch (NamingException e) {
+            throw new JmsMessageException("Error retrieving destination '" + resourceName + "'", e);
         }
-        if( ! ( destination instanceof Destination ) ) {
-            throw new JmsMessageException( "Error retrieving resource '" + resourceName
-                                           + "': invalide destination type " + ( destination == null
-                                                                                                     ? null
-                                                                                                     : destination.getClass() ) );
+        if (! (destination instanceof Destination)) {
+            throw new JmsMessageException("Error retrieving resource '" + resourceName
+                                          + "': invalide destination type " + (destination == null
+                                                                                                   ? null
+                                                                                                   : destination.getClass()));
         }
 
-        return ( Destination ) destination;
+        return (Destination) destination;
     }
 
     /**
@@ -289,7 +289,7 @@ public class JmsClient {
     public void sendTextMessage( final String jndiName, final String textMessage,
                                  final Map<String, ?> properties ) {
 
-        sendTextMessage( getDestination( jndiName ), textMessage, properties );
+        sendTextMessage(getDestination(jndiName), textMessage, properties);
     }
 
     /**
@@ -303,7 +303,7 @@ public class JmsClient {
     public void sendTextMessage( final Destination destination, final String textMessage,
                                  final Map<String, ?> properties ) {
 
-        sendTextMessage( loadConnection(), destination, textMessage, properties );
+        sendTextMessage(loadConnection(), destination, textMessage, properties);
     }
 
     /**
@@ -318,10 +318,10 @@ public class JmsClient {
                                         final Map<String, ?> properties ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            doSendTextMessage( session, session.createQueue( queueName ), textMessage, properties );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to send text message to queue " + queueName, e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            doSendTextMessage(session, session.createQueue(queueName), textMessage, properties);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to send text message to queue " + queueName, e);
         }
     }
 
@@ -337,10 +337,10 @@ public class JmsClient {
                                         final Map<String, ?> properties ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            doSendTextMessage( session, session.createTopic( topicName ), textMessage, properties );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to send text message to topic " + topicName, e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            doSendTextMessage(session, session.createTopic(topicName), textMessage, properties);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to send text message to topic " + topicName, e);
         }
     }
 
@@ -348,10 +348,10 @@ public class JmsClient {
                                   final String textMessage, final Map<String, ?> properties ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            doSendTextMessage( session, destination, textMessage, properties );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to send message", e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            doSendTextMessage(session, destination, textMessage, properties);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to send message", e);
         }
     }
 
@@ -362,20 +362,20 @@ public class JmsClient {
 
         try {
             final Message message = textMessage != null
-                                                        ? session.createTextMessage( textMessage )
+                                                        ? session.createTextMessage(textMessage)
                                                         : session.createTextMessage();
-            if( properties != null ) {
+            if (properties != null) {
                 // Note: Setting any properties (including JMS fields) using
                 // setObjectProperty might not be supported by all providers
                 // Tested with: ActiveMQ
-                for( final Entry<String, ?> property : properties.entrySet() ) {
-                    message.setObjectProperty( property.getKey(), property.getValue() );
+                for (final Entry<String, ?> property : properties.entrySet()) {
+                    message.setObjectProperty(property.getKey(), property.getValue());
                 }
             }
-            final MessageProducer producer = session.createProducer( destination );
-            producer.send( message );
+            final MessageProducer producer = session.createProducer(destination);
+            producer.send(message);
         } finally {
-            releaseSession( false );
+            releaseSession(false);
         }
     }
 
@@ -391,10 +391,10 @@ public class JmsClient {
                                           final Map<String, ?> properties ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            doSendBinaryMessage( session, session.createQueue( queueName ), bytes, properties );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to send binary message to queue " + queueName, e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            doSendBinaryMessage(session, session.createQueue(queueName), bytes, properties);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to send binary message to queue " + queueName, e);
         }
     }
 
@@ -405,19 +405,19 @@ public class JmsClient {
 
         try {
             BytesMessage message = session.createBytesMessage();
-            message.writeBytes( bytes );
-            if( properties != null ) {
+            message.writeBytes(bytes);
+            if (properties != null) {
                 // Note: Setting any properties (including JMS fields) using
                 // setObjectProperty might not be supported by all providers
                 // Tested with: ActiveMQ
-                for( final Entry<String, ?> property : properties.entrySet() ) {
-                    message.setObjectProperty( property.getKey(), property.getValue() );
+                for (final Entry<String, ?> property : properties.entrySet()) {
+                    message.setObjectProperty(property.getKey(), property.getValue());
                 }
             }
-            final MessageProducer producer = session.createProducer( destination );
-            producer.send( message );
+            final MessageProducer producer = session.createProducer(destination);
+            producer.send(message);
         } finally {
-            releaseSession( false );
+            releaseSession(false);
         }
     }
 
@@ -430,7 +430,7 @@ public class JmsClient {
     @PublicAtsApi
     public Message receiveMessage( final String jndiName ) {
 
-        return receiveMessage( jndiName, 0 );
+        return receiveMessage(jndiName, 0);
     }
 
     /**
@@ -443,7 +443,7 @@ public class JmsClient {
     @PublicAtsApi
     public Message receiveMessage( final String jndiName, final long timeout ) {
 
-        return receiveMessage( getDestination( jndiName ), timeout );
+        return receiveMessage(getDestination(jndiName), timeout);
     }
 
     /**
@@ -455,7 +455,7 @@ public class JmsClient {
     @PublicAtsApi
     public Message receiveMessage( final Destination destination ) {
 
-        return receiveMessage( destination, 0 );
+        return receiveMessage(destination, 0);
     }
 
     /**
@@ -469,10 +469,10 @@ public class JmsClient {
     public Message receiveMessage( final Destination destination, final long timeout ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            return doReceiveMessage( session, destination, timeout );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to read message from " + destination, e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            return doReceiveMessage(session, destination, timeout);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to read message from " + destination, e);
         }
     }
 
@@ -485,7 +485,7 @@ public class JmsClient {
     @PublicAtsApi
     public Message receiveMessageFromQueue( final String queueName ) {
 
-        return receiveMessageFromQueue( queueName, 0 );
+        return receiveMessageFromQueue(queueName, 0);
     }
 
     /**
@@ -499,10 +499,10 @@ public class JmsClient {
     public Message receiveMessageFromQueue( final String queueName, final long timeout ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            return doReceiveMessage( session, session.createQueue( queueName ), timeout );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to read message message from queue " + queueName, e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            return doReceiveMessage(session, session.createQueue(queueName), timeout);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to read message message from queue " + queueName, e);
         }
     }
 
@@ -515,7 +515,7 @@ public class JmsClient {
     @PublicAtsApi
     public Message receiveMessageFromTopic( final String topicName ) {
 
-        return receiveMessageFromTopic( topicName, 0 );
+        return receiveMessageFromTopic(topicName, 0);
     }
 
     /**
@@ -529,10 +529,10 @@ public class JmsClient {
     public Message receiveMessageFromTopic( final String topicName, final long timeout ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            return doReceiveMessage( session, session.createTopic( topicName ), timeout );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to read message message from topic " + topicName, e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            return doReceiveMessage(session, session.createTopic(topicName), timeout);
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to read message message from topic " + topicName, e);
         }
     }
 
@@ -541,9 +541,9 @@ public class JmsClient {
                                       final long timeout ) throws JMSException {
 
         try {
-            return session.createConsumer( destination ).receive( timeout );
+            return session.createConsumer(destination).receive(timeout);
         } finally {
-            releaseSession( false );
+            releaseSession(false);
         }
     }
 
@@ -557,29 +557,29 @@ public class JmsClient {
     public void cleanupMessagesQueue( final String queueName ) throws JMSException {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            doCleanupQueue( session, session.createQueue( queueName ) );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            doCleanupQueue(session, session.createQueue(queueName));
 
-            log.info( "Successfully cleanedup message queue " + queueName
-                      + ". This is done by reading all existing messages." );
-        } catch( Exception e ) {
-            throw new JmsMessageException( "Failed to cleanup message queue " + queueName, e );
+            log.info("Successfully cleanedup message queue " + queueName
+                     + ". This is done by reading all existing messages.");
+        } catch (Exception e) {
+            throw new JmsMessageException("Failed to cleanup message queue " + queueName, e);
         }
     }
 
     private void doCleanupQueue( final Session session, final Destination destination ) throws JMSException {
 
         try {
-            MessageConsumer consumer = session.createConsumer( destination );
+            MessageConsumer consumer = session.createConsumer(destination);
             Message message = null;
             do {
                 message = consumer.receiveNoWait();
-                if( message != null ) {
+                if (message != null) {
                     message.acknowledge();
                 }
-            } while( message != null );
+            } while (message != null);
         } finally {
-            releaseSession( false );
+            releaseSession(false);
         }
     }
 
@@ -594,14 +594,14 @@ public class JmsClient {
                              final String topicName ) {
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            final Topic topic = session.createTopic( topicName );
-            session.createConsumer( topic ).close();
-        } catch( JMSException e ) {
-            throw new JmsMessageException( "Could not start listening for messages on topic " + topicName,
-                                           e );
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            final Topic topic = session.createTopic(topicName);
+            session.createConsumer(topic).close();
+        } catch (JMSException e) {
+            throw new JmsMessageException("Could not start listening for messages on topic " + topicName,
+                                          e);
         } finally {
-            releaseSession( false );
+            releaseSession(false);
         }
     }
 
@@ -615,26 +615,26 @@ public class JmsClient {
 
                                        final String topicName ) {
 
-        final TopicInfo topicInfo = getTopicInfo( topicName );
-        if( topicInfo.isListening() ) {
-            throw new JmsMessageException( "We are already listening for messages on topic " + topicName );
+        final TopicInfo topicInfo = getTopicInfo(topicName);
+        if (topicInfo.isListening()) {
+            throw new JmsMessageException("We are already listening for messages on topic " + topicName);
         }
 
         try {
-            final Session session = loadSession( false, Session.AUTO_ACKNOWLEDGE );
-            final Topic topic = session.createTopic( topicName );
-            topicInfo.topicConsumer = session.createConsumer( topic );
-            topicInfo.topicConsumer.setMessageListener( new MessageListener() {
+            final Session session = loadSession(false, Session.AUTO_ACKNOWLEDGE);
+            final Topic topic = session.createTopic(topicName);
+            topicInfo.topicConsumer = session.createConsumer(topic);
+            topicInfo.topicConsumer.setMessageListener(new MessageListener() {
 
                 @Override
                 public void onMessage( Message message ) {
 
-                    topicInfo.addMessage( message );
+                    topicInfo.addMessage(message);
                 }
-            } );
-        } catch( JMSException e ) {
-            throw new JmsMessageException( "Could not start listening for messages on topic " + topicName,
-                                           e );
+            });
+        } catch (JMSException e) {
+            throw new JmsMessageException("Could not start listening for messages on topic " + topicName,
+                                          e);
         }
     }
 
@@ -646,15 +646,15 @@ public class JmsClient {
     @PublicAtsApi
     public void stopListeningToTopic( final String topicName ) {
 
-        TopicInfo topicInfo = getTopicInfo( topicName );
-        if( !topicInfo.isListening() ) {
-            throw new JmsMessageException( "We are not listening for messages on topic " + topicName );
+        TopicInfo topicInfo = getTopicInfo(topicName);
+        if (!topicInfo.isListening()) {
+            throw new JmsMessageException("We are not listening for messages on topic " + topicName);
         }
 
         try {
             topicInfo.topicConsumer.close();
-        } catch( JMSException e ) {
-            throw new JmsMessageException( "Could not stop listening for messages on topic " + topicName, e );
+        } catch (JMSException e) {
+            throw new JmsMessageException("Could not stop listening for messages on topic " + topicName, e);
         } finally {
             topicInfo.topicConsumer = null;
         }
@@ -669,7 +669,7 @@ public class JmsClient {
     @PublicAtsApi
     public Message[] getCollectedTopicMessages( final String topicName ) {
 
-        return getTopicInfo( topicName ).getMessages();
+        return getTopicInfo(topicName).getMessages();
     }
 
     /**
@@ -686,12 +686,12 @@ public class JmsClient {
 
         synchronized void addMessage( Message message ) {
 
-            topicMessages.add( message );
+            topicMessages.add(message);
         }
 
         synchronized Message[] getMessages() {
 
-            final Message[] messagesArray = topicMessages.toArray( new Message[topicMessages.size()] );
+            final Message[] messagesArray = topicMessages.toArray(new Message[topicMessages.size()]);
             topicMessages.clear();
             return messagesArray;
         }
@@ -699,10 +699,10 @@ public class JmsClient {
 
     private TopicInfo getTopicInfo( final String topicName ) {
 
-        TopicInfo topic = topics.get( topicName );
-        if( topic == null ) {
+        TopicInfo topic = topics.get(topicName);
+        if (topic == null) {
             topic = new TopicInfo();
-            topics.put( topicName, topic );
+            topics.put(topicName, topic);
         }
         return topic;
     }

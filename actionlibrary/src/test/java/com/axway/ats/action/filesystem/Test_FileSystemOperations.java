@@ -43,10 +43,10 @@ import com.axway.ats.core.validation.exceptions.InvalidInputArgumentsException;
 /**
  * Unit tests for the {@link FileSystemOperations} class
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ FileSystemOperations.class,
-                 LocalFileSystemOperations.class,
-                 RemoteFileSystemOperations.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { FileSystemOperations.class,
+                   LocalFileSystemOperations.class,
+                   RemoteFileSystemOperations.class })
 public class Test_FileSystemOperations extends BaseTest {
 
     private static final String        DESTINATION_FILE_NAME_VALID    = "destination.file";
@@ -70,7 +70,7 @@ public class Test_FileSystemOperations extends BaseTest {
     private FileSystemOperations       fileSystemOperationsRemote     = null;
     private LocalFileSystemOperations  localFSOperationsMock;
     private RemoteFileSystemOperations remoteFSOperationsMock;
-    
+
     /**
      * Setup method
      */
@@ -78,22 +78,22 @@ public class Test_FileSystemOperations extends BaseTest {
     public void setUpTest_FileSystemOperations() {
 
         fileSystemOperationsLocal = new FileSystemOperations();
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID, "" );
-        fileSystemOperationsLocal.createFile( DESTINATION_FILE_NAME_VALID, "" );
-        fileSystemOperationsRemote = new FileSystemOperations( REMOTE_HOST_NAME_VALID );
-        localFSOperationsMock = createMock( LocalFileSystemOperations.class );
-        remoteFSOperationsMock = createMock( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID, "");
+        fileSystemOperationsLocal.createFile(DESTINATION_FILE_NAME_VALID, "");
+        fileSystemOperationsRemote = new FileSystemOperations(REMOTE_HOST_NAME_VALID);
+        localFSOperationsMock = createMock(LocalFileSystemOperations.class);
+        remoteFSOperationsMock = createMock(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID);
     }
-    
+
     @After
     public void setDownTest_FileSystemOperations() throws Exception {
 
         // we have to clean the mock repository, otherwise this method fails 
         // mock check see it as another class invocation and throws an exception
-        MockRepository.remove( LocalFileSystemOperations.class );
+        MockRepository.remove(LocalFileSystemOperations.class);
 
-        fileSystemOperationsLocal.deleteFile( SOURCE_FILE_NAME_VALID );
-        fileSystemOperationsLocal.deleteFile( DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsLocal.deleteFile(SOURCE_FILE_NAME_VALID);
+        fileSystemOperationsLocal.deleteFile(DESTINATION_FILE_NAME_VALID);
     }
 
     /**
@@ -103,17 +103,17 @@ public class Test_FileSystemOperations extends BaseTest {
     @Test
     public void testConstructorWithValidRemoteHost() throws Exception {
 
-        new FileSystemOperations( REMOTE_HOST_NAME_VALID );
+        new FileSystemOperations(REMOTE_HOST_NAME_VALID);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testConstructorWithInvalidRemoteHost() throws Exception {
 
-        new FileSystemOperations( REMOTE_HOST_NAME_INVALID );
+        new FileSystemOperations(REMOTE_HOST_NAME_INVALID);
     }
 
     // -----------------------------------------------------------------------------
@@ -128,13 +128,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testFileCopy() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.copyFile( SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID, true );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.copyFile(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID, true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.copyFileTo( SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsLocal.copyFileTo(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -144,22 +144,22 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileCopyNegativeWrongDestination() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.copyFileTo( SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_INVALID );
+        fileSystemOperationsLocal.copyFileTo(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_INVALID);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileCopyNegativeWrongSource() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.copyFileTo( SOURCE_FILE_NAME_INVALID, DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsLocal.copyFileTo(SOURCE_FILE_NAME_INVALID, DESTINATION_FILE_NAME_VALID);
     }
 
     /**
@@ -170,13 +170,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testFileCopyRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.copyFile( SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID, true );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.copyFile(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID, true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.copyFileTo( SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsRemote.copyFileTo(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -190,18 +190,18 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testFileCopyBothRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, ANOTHER_REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.copyFileTo( SOURCE_FILE_NAME_VALID, ANOTHER_REMOTE_HOST_NAME_VALID,
-                                           DESTINATION_FILE_NAME_VALID, true );
+        expectNew(RemoteFileSystemOperations.class, ANOTHER_REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.copyFileTo(SOURCE_FILE_NAME_VALID, ANOTHER_REMOTE_HOST_NAME_VALID,
+                                          DESTINATION_FILE_NAME_VALID, true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.copyRemoteFile( REMOTE_HOST_NAME_VALID,
-                                                   SOURCE_FILE_NAME_VALID,
-                                                   ANOTHER_REMOTE_HOST_NAME_VALID,
-                                                   DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsRemote.copyRemoteFile(REMOTE_HOST_NAME_VALID,
+                                                  SOURCE_FILE_NAME_VALID,
+                                                  ANOTHER_REMOTE_HOST_NAME_VALID,
+                                                  DESTINATION_FILE_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -211,28 +211,28 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileCopyBothRemoteNegativeWrongDestination() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.copyRemoteFile( SOURCE_HOST_NAME_VALID,
-                                                  SOURCE_FILE_NAME_VALID,
-                                                  REMOTE_HOST_NAME_INVALID,
-                                                  DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsLocal.copyRemoteFile(SOURCE_HOST_NAME_VALID,
+                                                 SOURCE_FILE_NAME_VALID,
+                                                 REMOTE_HOST_NAME_INVALID,
+                                                 DESTINATION_FILE_NAME_VALID);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileCopyBothRemoteNegativeWrongSourceHost() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.copyRemoteFile( SOURCE_HOST_NAME_INVALID,
-                                                  SOURCE_FILE_NAME_VALID,
-                                                  REMOTE_HOST_NAME_VALID,
-                                                  DESTINATION_FILE_NAME_INVALID );
+        fileSystemOperationsLocal.copyRemoteFile(SOURCE_HOST_NAME_INVALID,
+                                                 SOURCE_FILE_NAME_VALID,
+                                                 REMOTE_HOST_NAME_VALID,
+                                                 DESTINATION_FILE_NAME_INVALID);
     }
 
     // -----------------------------------------------------------------------------
@@ -247,13 +247,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testFileDeleteFile() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.deleteFile( SOURCE_FILE_NAME_VALID );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.deleteFile(SOURCE_FILE_NAME_VALID);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.deleteFile( SOURCE_FILE_NAME_VALID );
+        fileSystemOperationsLocal.deleteFile(SOURCE_FILE_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -263,11 +263,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDeleteFileNegative() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.deleteFile( SOURCE_FILE_NAME_INVALID );
+        fileSystemOperationsLocal.deleteFile(SOURCE_FILE_NAME_INVALID);
     }
 
     /**
@@ -278,13 +278,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testFileDeleteFileRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.deleteFile( DESTINATION_FILE_NAME_VALID );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.deleteFile(DESTINATION_FILE_NAME_VALID);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.deleteFile( DESTINATION_FILE_NAME_VALID );
+        fileSystemOperationsRemote.deleteFile(DESTINATION_FILE_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -294,11 +294,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDeleteFileRemoteNegativeInvalidFile() throws Exception {
 
         // execute operation
-        fileSystemOperationsRemote.deleteFile( SOURCE_FILE_NAME_INVALID );
+        fileSystemOperationsRemote.deleteFile(SOURCE_FILE_NAME_INVALID);
     }
 
     // -----------------------------------------------------------------------------
@@ -313,13 +313,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateDirectory() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsLocal.createDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -329,11 +329,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateDirectoryNegative() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createDirectory( SOURCE_DIRECTORY_NAME_INVALID );
+        fileSystemOperationsLocal.createDirectory(SOURCE_DIRECTORY_NAME_INVALID);
     }
 
     /**
@@ -344,13 +344,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateRemoteDirectory() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.createDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.createDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.createDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsRemote.createDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -360,11 +360,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateRemoteNegativeInvalidDirectory() throws Exception {
 
         // execute operation
-        fileSystemOperationsRemote.createDirectory( SOURCE_DIRECTORY_NAME_INVALID );
+        fileSystemOperationsRemote.createDirectory(SOURCE_DIRECTORY_NAME_INVALID);
     }
 
     // -----------------------------------------------------------------------------
@@ -379,13 +379,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateDirectoryWithUidAndGid() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createDirectory( SOURCE_DIRECTORY_NAME_VALID, 10, 20 );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createDirectory(SOURCE_DIRECTORY_NAME_VALID, 10, 20);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createDirectory( SOURCE_DIRECTORY_NAME_VALID, 10, 20 );
+        fileSystemOperationsLocal.createDirectory(SOURCE_DIRECTORY_NAME_VALID, 10, 20);
 
         // verify results
         verifyAll();
@@ -395,11 +395,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateNegativeWithUidAndGid() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createDirectory( SOURCE_DIRECTORY_NAME_INVALID, 10, 20 );
+        fileSystemOperationsLocal.createDirectory(SOURCE_DIRECTORY_NAME_INVALID, 10, 20);
     }
 
     /**
@@ -410,13 +410,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateRemoteWithUidAndGid() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.createDirectory( SOURCE_DIRECTORY_NAME_VALID, 10, 20 );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.createDirectory(SOURCE_DIRECTORY_NAME_VALID, 10, 20);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.createDirectory( SOURCE_DIRECTORY_NAME_VALID, 10, 20 );
+        fileSystemOperationsRemote.createDirectory(SOURCE_DIRECTORY_NAME_VALID, 10, 20);
 
         // verify results
         verifyAll();
@@ -426,11 +426,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateDirectoryWithUidAndGidNegativeInvalidName() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createDirectory( SOURCE_DIRECTORY_NAME_INVALID, 10, 20 );
+        fileSystemOperationsLocal.createDirectory(SOURCE_DIRECTORY_NAME_INVALID, 10, 20);
     }
 
     // -----------------------------------------------------------------------------
@@ -445,13 +445,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testDeleteDirectory() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID, true );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID, true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsLocal.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -461,11 +461,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testDeleteDirectoryNegative() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.deleteDirectory( SOURCE_DIRECTORY_NAME_INVALID );
+        fileSystemOperationsLocal.deleteDirectory(SOURCE_DIRECTORY_NAME_INVALID);
     }
 
     /**
@@ -476,13 +476,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testDeleteDirectoryRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID, true );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID, true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsRemote.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -492,18 +492,18 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testDeleteDirectoryException() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID, true );
-        expectLastCall().andThrow( new FileSystemOperationException( "Test" ) );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID, true);
+        expectLastCall().andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsLocal.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -513,19 +513,19 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testDeleteDirectoryRemoteException() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID, true );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID, true);
 
-        expectLastCall().andThrow( new FileSystemOperationException( "Test" ) );
+        expectLastCall().andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.deleteDirectory( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsRemote.deleteDirectory(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -535,11 +535,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testDeleteDirectoryRemoteNegativeInvalidDirectory() throws Exception {
 
         // execute operation
-        fileSystemOperationsRemote.deleteDirectory( SOURCE_DIRECTORY_NAME_INVALID );
+        fileSystemOperationsRemote.deleteDirectory(SOURCE_DIRECTORY_NAME_INVALID);
     }
 
     // -----------------------------------------------------------------------------
@@ -554,13 +554,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testPurgeDirectory() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.purgeDirectoryContents( SOURCE_DIRECTORY_NAME_VALID );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.purgeDirectoryContents(SOURCE_DIRECTORY_NAME_VALID);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.deleteDirectoryContent( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsLocal.deleteDirectoryContent(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -570,11 +570,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testPurgeDirectoryNegative() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.deleteDirectoryContent( SOURCE_DIRECTORY_NAME_INVALID );
+        fileSystemOperationsLocal.deleteDirectoryContent(SOURCE_DIRECTORY_NAME_INVALID);
     }
 
     /**
@@ -585,13 +585,13 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testPurgeDirectoryRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.purgeDirectoryContents( SOURCE_DIRECTORY_NAME_VALID );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.purgeDirectoryContents(SOURCE_DIRECTORY_NAME_VALID);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.deleteDirectoryContent( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsRemote.deleteDirectoryContent(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -601,18 +601,18 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testPurgeDirectoryException() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.purgeDirectoryContents( SOURCE_DIRECTORY_NAME_VALID );
-        expectLastCall().andThrow( new FileSystemOperationException( "Test" ) );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.purgeDirectoryContents(SOURCE_DIRECTORY_NAME_VALID);
+        expectLastCall().andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.deleteDirectoryContent( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsLocal.deleteDirectoryContent(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -622,18 +622,18 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testPurgeDirectoryRemoteException() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.purgeDirectoryContents( SOURCE_DIRECTORY_NAME_VALID );
-        expectLastCall().andThrow( new FileSystemOperationException( "Test" ) );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.purgeDirectoryContents(SOURCE_DIRECTORY_NAME_VALID);
+        expectLastCall().andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.deleteDirectoryContent( SOURCE_DIRECTORY_NAME_VALID );
+        fileSystemOperationsRemote.deleteDirectoryContent(SOURCE_DIRECTORY_NAME_VALID);
 
         // verify results
         verifyAll();
@@ -643,11 +643,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testPurgeDirectoryRemoteNegativeInvalidDirectory() throws Exception {
 
         // execute operation
-        fileSystemOperationsRemote.deleteDirectoryContent( SOURCE_DIRECTORY_NAME_INVALID );
+        fileSystemOperationsRemote.deleteDirectoryContent(SOURCE_DIRECTORY_NAME_INVALID);
     }
 
     // -----------------------------------------------------------------------------
@@ -662,23 +662,23 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateFileRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.createFile( SOURCE_FILE_NAME_VALID,
-                                           FILE_SIZE_VALID,
-                                           FILE_UID_VALID,
-                                           FILE_GID_VALID,
-                                           true,
-                                           null );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.createFile(SOURCE_FILE_NAME_VALID,
+                                          FILE_SIZE_VALID,
+                                          FILE_UID_VALID,
+                                          FILE_GID_VALID,
+                                          true,
+                                          null);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.createFile( SOURCE_FILE_NAME_VALID,
-                                               FILE_SIZE_VALID,
-                                               FILE_UID_VALID,
-                                               FILE_GID_VALID,
-                                               null,
-                                               true );
+        fileSystemOperationsRemote.createFile(SOURCE_FILE_NAME_VALID,
+                                              FILE_SIZE_VALID,
+                                              FILE_UID_VALID,
+                                              FILE_GID_VALID,
+                                              null,
+                                              true);
 
         // verify results
         verifyAll();
@@ -692,23 +692,23 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateFileEOLWindows() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createFile( SOURCE_FILE_NAME_VALID,
-                                          FILE_SIZE_VALID,
-                                          FILE_UID_VALID,
-                                          FILE_GID_VALID,
-                                          true,
-                                          EndOfLineStyle.WINDOWS );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createFile(SOURCE_FILE_NAME_VALID,
+                                         FILE_SIZE_VALID,
+                                         FILE_UID_VALID,
+                                         FILE_GID_VALID,
+                                         true,
+                                         EndOfLineStyle.WINDOWS);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              FILE_UID_VALID,
-                                              FILE_GID_VALID,
-                                              EndOfLineStyle.WINDOWS,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             FILE_UID_VALID,
+                                             FILE_GID_VALID,
+                                             EndOfLineStyle.WINDOWS,
+                                             true);
 
         // verify results
         verifyAll();
@@ -722,23 +722,23 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateFileEOLUnix() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createFile( SOURCE_FILE_NAME_VALID,
-                                          FILE_SIZE_VALID,
-                                          FILE_UID_VALID,
-                                          FILE_GID_VALID,
-                                          true,
-                                          EndOfLineStyle.UNIX );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createFile(SOURCE_FILE_NAME_VALID,
+                                         FILE_SIZE_VALID,
+                                         FILE_UID_VALID,
+                                         FILE_GID_VALID,
+                                         true,
+                                         EndOfLineStyle.UNIX);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              FILE_UID_VALID,
-                                              FILE_GID_VALID,
-                                              EndOfLineStyle.UNIX,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             FILE_UID_VALID,
+                                             FILE_GID_VALID,
+                                             EndOfLineStyle.UNIX,
+                                             true);
 
         // verify results
         verifyAll();
@@ -752,23 +752,23 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateFileLocal() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createFile( SOURCE_FILE_NAME_VALID,
-                                          FILE_SIZE_VALID,
-                                          FILE_UID_VALID,
-                                          FILE_GID_VALID,
-                                          true,
-                                          null );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createFile(SOURCE_FILE_NAME_VALID,
+                                         FILE_SIZE_VALID,
+                                         FILE_UID_VALID,
+                                         FILE_GID_VALID,
+                                         true,
+                                         null);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              FILE_UID_VALID,
-                                              FILE_GID_VALID,
-                                              null,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             FILE_UID_VALID,
+                                             FILE_GID_VALID,
+                                             null,
+                                             true);
 
         // verify results
         verifyAll();
@@ -782,16 +782,16 @@ public class Test_FileSystemOperations extends BaseTest {
     public void testCreateFileLocalAlt() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createFile( SOURCE_FILE_NAME_VALID, FILE_SIZE_VALID, true, EndOfLineStyle.UNIX );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createFile(SOURCE_FILE_NAME_VALID, FILE_SIZE_VALID, true, EndOfLineStyle.UNIX);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              EndOfLineStyle.UNIX,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             EndOfLineStyle.UNIX,
+                                             true);
 
         // verify results
         verifyAll();
@@ -801,21 +801,21 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void testCreateFileLocalAltNegativeException() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createFile( SOURCE_FILE_NAME_VALID, FILE_SIZE_VALID, true, EndOfLineStyle.UNIX );
-        expectLastCall().andThrow( new FileSystemOperationException( "Test" ) );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createFile(SOURCE_FILE_NAME_VALID, FILE_SIZE_VALID, true, EndOfLineStyle.UNIX);
+        expectLastCall().andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              EndOfLineStyle.UNIX,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             EndOfLineStyle.UNIX,
+                                             true);
 
         // verify results
         verifyAll();
@@ -825,88 +825,88 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalAltNegativeInvalidFileName() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_INVALID,
-                                              FILE_SIZE_VALID,
-                                              EndOfLineStyle.UNIX,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_INVALID,
+                                             FILE_SIZE_VALID,
+                                             EndOfLineStyle.UNIX,
+                                             true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalAltNegativeInvalidSize() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_INVALID,
-                                              EndOfLineStyle.UNIX,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_INVALID,
+                                             EndOfLineStyle.UNIX,
+                                             true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidFileName() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_INVALID,
-                                              FILE_SIZE_VALID,
-                                              FILE_UID_VALID,
-                                              FILE_GID_VALID,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_INVALID,
+                                             FILE_SIZE_VALID,
+                                             FILE_UID_VALID,
+                                             FILE_GID_VALID,
+                                             true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidFileSize() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_INVALID,
-                                              FILE_UID_VALID,
-                                              FILE_GID_VALID,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_INVALID,
+                                             FILE_UID_VALID,
+                                             FILE_GID_VALID,
+                                             true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidUID() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              FILE_UID_INVALID,
-                                              FILE_GID_VALID,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             FILE_UID_INVALID,
+                                             FILE_GID_VALID,
+                                             true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidGID() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createFile( SOURCE_FILE_NAME_VALID,
-                                              FILE_SIZE_VALID,
-                                              FILE_UID_VALID,
-                                              FILE_GID_INVALID,
-                                              true );
+        fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID,
+                                             FILE_SIZE_VALID,
+                                             FILE_UID_VALID,
+                                             FILE_GID_INVALID,
+                                             true);
     }
 
     // -----------------------------------------------------------------------------
@@ -921,21 +921,21 @@ public class Test_FileSystemOperations extends BaseTest {
     public void createBinaryFileRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        remoteFSOperationsMock.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                 FILE_SIZE_VALID,
-                                                 FILE_UID_VALID,
-                                                 FILE_GID_VALID,
-                                                 true );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        remoteFSOperationsMock.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                                FILE_SIZE_VALID,
+                                                FILE_UID_VALID,
+                                                FILE_GID_VALID,
+                                                true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                     FILE_SIZE_VALID,
-                                                     FILE_UID_VALID,
-                                                     FILE_GID_VALID,
-                                                     true );
+        fileSystemOperationsRemote.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                                    FILE_SIZE_VALID,
+                                                    FILE_UID_VALID,
+                                                    FILE_GID_VALID,
+                                                    true);
 
         // verify results
         verifyAll();
@@ -949,21 +949,21 @@ public class Test_FileSystemOperations extends BaseTest {
     public void createBinaryFileLocal() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        localFSOperationsMock.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                FILE_SIZE_VALID,
-                                                FILE_UID_VALID,
-                                                FILE_GID_VALID,
-                                                true );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        localFSOperationsMock.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                               FILE_SIZE_VALID,
+                                               FILE_UID_VALID,
+                                               FILE_GID_VALID,
+                                               true);
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                    FILE_SIZE_VALID,
-                                                    FILE_UID_VALID,
-                                                    FILE_GID_VALID,
-                                                    true );
+        fileSystemOperationsLocal.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                                   FILE_SIZE_VALID,
+                                                   FILE_UID_VALID,
+                                                   FILE_GID_VALID,
+                                                   true);
 
         // verify results
         verifyAll();
@@ -973,60 +973,60 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidFileName() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createBinaryFile( SOURCE_FILE_NAME_INVALID,
-                                                    FILE_SIZE_VALID,
-                                                    FILE_UID_VALID,
-                                                    FILE_GID_VALID,
-                                                    true );
+        fileSystemOperationsLocal.createBinaryFile(SOURCE_FILE_NAME_INVALID,
+                                                   FILE_SIZE_VALID,
+                                                   FILE_UID_VALID,
+                                                   FILE_GID_VALID,
+                                                   true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidFileSize() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                    FILE_SIZE_INVALID,
-                                                    FILE_UID_VALID,
-                                                    FILE_GID_VALID,
-                                                    true );
+        fileSystemOperationsLocal.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                                   FILE_SIZE_INVALID,
+                                                   FILE_UID_VALID,
+                                                   FILE_GID_VALID,
+                                                   true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidUID() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                    FILE_SIZE_VALID,
-                                                    FILE_UID_INVALID,
-                                                    FILE_GID_VALID,
-                                                    true );
+        fileSystemOperationsLocal.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                                   FILE_SIZE_VALID,
+                                                   FILE_UID_INVALID,
+                                                   FILE_GID_VALID,
+                                                   true);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidGID() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.createBinaryFile( SOURCE_FILE_NAME_VALID,
-                                                    FILE_SIZE_VALID,
-                                                    FILE_UID_VALID,
-                                                    FILE_GID_INVALID,
-                                                    true );
+        fileSystemOperationsLocal.createBinaryFile(SOURCE_FILE_NAME_VALID,
+                                                   FILE_SIZE_VALID,
+                                                   FILE_UID_VALID,
+                                                   FILE_GID_INVALID,
+                                                   true);
     }
 
     // -----------------------------------------------------------------------------
@@ -1043,16 +1043,16 @@ public class Test_FileSystemOperations extends BaseTest {
         String expected = "MD5@#@!$%$@#%@#@#!";
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        expect( remoteFSOperationsMock.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY ) ).andReturn( expected );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        expect(remoteFSOperationsMock.computeMd5Sum(SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY)).andReturn(expected);
 
         replayAll();
 
         // execute operation
-        String result = fileSystemOperationsRemote.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY );
+        String result = fileSystemOperationsRemote.computeMd5Sum(SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY);
 
         // verify results
-        Assert.assertEquals( expected, result );
+        Assert.assertEquals(expected, result);
         verifyAll();
     }
 
@@ -1060,17 +1060,18 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void computeMD5NegativeExceptionRemote() throws Exception {
 
         // setup expectations
-        expectNew( RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID ).andReturn( remoteFSOperationsMock );
-        expect( remoteFSOperationsMock.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY ) ).andThrow( new FileSystemOperationException( "Test" ) );
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        expect(remoteFSOperationsMock.computeMd5Sum(SOURCE_FILE_NAME_VALID,
+                                                    Md5SumMode.BINARY)).andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsRemote.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY );
+        fileSystemOperationsRemote.computeMd5Sum(SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY);
 
         // verify results
         verifyAll();
@@ -1080,11 +1081,11 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void computeMD5NegativeWrongFile() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.computeMd5Sum( SOURCE_FILE_NAME_INVALID, Md5SumMode.BINARY );
+        fileSystemOperationsLocal.computeMd5Sum(SOURCE_FILE_NAME_INVALID, Md5SumMode.BINARY);
     }
 
     /**
@@ -1097,16 +1098,16 @@ public class Test_FileSystemOperations extends BaseTest {
         String expected = "MD5@#@!$%$@#%@#@#!";
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        expect( localFSOperationsMock.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY ) ).andReturn( expected );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        expect(localFSOperationsMock.computeMd5Sum(SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY)).andReturn(expected);
 
         replayAll();
 
         // execute operation
-        String result = fileSystemOperationsLocal.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY );
+        String result = fileSystemOperationsLocal.computeMd5Sum(SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY);
 
         // verify results
-        Assert.assertEquals( expected, result );
+        Assert.assertEquals(expected, result);
         verifyAll();
     }
 
@@ -1114,17 +1115,18 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileSystemOperationException.class)
+    @Test( expected = FileSystemOperationException.class)
     public void computeMD5NegativeExceptionLocal() throws Exception {
 
         // setup expectations
-        expectNew( LocalFileSystemOperations.class ).andReturn( localFSOperationsMock );
-        expect( localFSOperationsMock.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY ) ).andThrow( new FileSystemOperationException( "Test" ) );
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        expect(localFSOperationsMock.computeMd5Sum(SOURCE_FILE_NAME_VALID,
+                                                   Md5SumMode.BINARY)).andThrow(new FileSystemOperationException("Test"));
 
         replayAll();
 
         // execute operation
-        fileSystemOperationsLocal.computeMd5Sum( SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY );
+        fileSystemOperationsLocal.computeMd5Sum(SOURCE_FILE_NAME_VALID, Md5SumMode.BINARY);
 
         // verify results
         verifyAll();
@@ -1134,10 +1136,10 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void computeMD5NegativeWrongFileLocal() throws Exception {
 
         // execute operation
-        fileSystemOperationsLocal.computeMd5Sum( SOURCE_FILE_NAME_INVALID, Md5SumMode.BINARY );
+        fileSystemOperationsLocal.computeMd5Sum(SOURCE_FILE_NAME_INVALID, Md5SumMode.BINARY);
     }
 }

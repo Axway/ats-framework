@@ -29,33 +29,33 @@ import com.axway.ats.common.xml.XMLException;
 
 public class Test_XmlText extends BaseTest {
 
-    private static final Logger        log   = Logger.getLogger( Test_XmlText.class );
+    private static final Logger        log   = Logger.getLogger(Test_XmlText.class);
 
     private static File                file;
 
-    private static final StringBuilder body1 = new StringBuilder().append( "<owner id=\"1\">" )
-                                                                  .append( "<firstname>Dragoslav</firstname>" )
-                                                                  .append( "<lastname>Slaveykov</lastname>" )
-                                                                  .append( "<email>dslaveykov@a2007.bg</email>" )
-                                                                  .append( "<phone>+359888224406</phone>" )
-                                                                  .append( "</owner>" );
+    private static final StringBuilder body1 = new StringBuilder().append("<owner id=\"1\">")
+                                                                  .append("<firstname>Dragoslav</firstname>")
+                                                                  .append("<lastname>Slaveykov</lastname>")
+                                                                  .append("<email>dslaveykov@a2007.bg</email>")
+                                                                  .append("<phone>+359888224406</phone>")
+                                                                  .append("</owner>");
 
-    private static final StringBuilder body2 = new StringBuilder().append( "<location>" )
-                                                                  .append( "<country>Serbia</country>" )
-                                                                  .append( "<city>" )
-                                                                  .append( "<name>Beograd</name>" )
-                                                                  .append( "<street>" )
-                                                                  .append( "<name>bul. Mihajla Pupina</name>" )
-                                                                  .append( "<number>9</number>" )
-                                                                  .append( "</street>" )
-                                                                  .append( "</city>" )
-                                                                  .append( "</location>" );
+    private static final StringBuilder body2 = new StringBuilder().append("<location>")
+                                                                  .append("<country>Serbia</country>")
+                                                                  .append("<city>")
+                                                                  .append("<name>Beograd</name>")
+                                                                  .append("<street>")
+                                                                  .append("<name>bul. Mihajla Pupina</name>")
+                                                                  .append("<number>9</number>")
+                                                                  .append("</street>")
+                                                                  .append("</city>")
+                                                                  .append("</location>");
 
-    private static final StringBuilder body3 = new StringBuilder().append( "<engine>" )
-                                                                  .append( "<fuel>gasoline</fuel>" )
-                                                                  .append( "<volume>5000cc</volume>" )
-                                                                  .append( "<power>650hp</power>" )
-                                                                  .append( "</engine>" );
+    private static final StringBuilder body3 = new StringBuilder().append("<engine>")
+                                                                  .append("<fuel>gasoline</fuel>")
+                                                                  .append("<volume>5000cc</volume>")
+                                                                  .append("<power>650hp</power>")
+                                                                  .append("</engine>");
 
     private static XmlText             xmlText1;
 
@@ -66,16 +66,16 @@ public class Test_XmlText extends BaseTest {
     @Before
     public void setUpTest_XmlText() {
 
-        file = new File( Test_XmlText.class.getResource( "test.xml" ).getPath() );
+        file = new File(Test_XmlText.class.getResource("test.xml").getPath());
 
         try {
-            xmlText1 = new XmlText( body1.toString() );
+            xmlText1 = new XmlText(body1.toString());
 
-            xmlText2 = new XmlText( body2.toString() );
+            xmlText2 = new XmlText(body2.toString());
 
-            xmlText3 = new XmlText( body3.toString() );
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+            xmlText3 = new XmlText(body3.toString());
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -90,19 +90,19 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml1 = new XmlText( file );
+            XmlText xml1 = new XmlText(file);
 
             expectedValue = xmlText1.toString();
 
-            actualValue = xml1.get( xpath ).toString();
+            actualValue = xml1.get(xpath).toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        log.info( "root element XPath of xmlText3: " + xmlText3.getRootElementXPath() );
+        log.info("root element XPath of xmlText3: " + xmlText3.getRootElementXPath());
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -114,15 +114,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            xmlText = new XmlText( xml );
+            xmlText = new XmlText(xml);
 
-        } catch( XMLException e ) {
+        } catch (XMLException e) {
 
-            log.error( e.getMessage() );
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( null, xmlText );
+        assertEquals(null, xmlText);
     }
 
     @Test
@@ -130,8 +130,8 @@ public class Test_XmlText extends BaseTest {
 
         File xml = null;
         try {
-            xml = File.createTempFile( "temp_xml", null );
-        } catch( IOException ex ) {
+            xml = File.createTempFile("temp_xml", null);
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
 
@@ -139,15 +139,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            xmlText = new XmlText( xml );
+            xmlText = new XmlText(xml);
 
-        } catch( XMLException e ) {
+        } catch (XMLException e) {
 
-            log.error( e.getMessage() );
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( null, xmlText );
+        assertEquals(null, xmlText);
 
         xml.delete();
     }
@@ -159,15 +159,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            xmlText = new XmlText( new String() );
+            xmlText = new XmlText(new String());
 
-        } catch( XMLException e ) {
+        } catch (XMLException e) {
 
-            log.error( e.getMessage() );
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( null, xmlText );
+        assertEquals(null, xmlText);
     }
 
     @Test
@@ -177,12 +177,12 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml1 = new XmlText( file );
+            XmlText xml1 = new XmlText(file);
 
-            assertEquals( xmlText2.toString(), xml1.get( xpath ).toString() );
+            assertEquals(xmlText2.toString(), xml1.get(xpath).toString());
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -195,15 +195,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualXMLText = xml.get( xpath );
+            actualXMLText = xml.get(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( null, actualXMLText );
+        assertEquals(null, actualXMLText);
     }
 
     @Test
@@ -215,15 +215,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualXMLText = xml.get( xpath );
+            actualXMLText = xml.get(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( null, actualXMLText );
+        assertEquals(null, actualXMLText);
     }
 
     @Test
@@ -251,31 +251,31 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualStr1 = xml.getString( "//model[@series='MK4']" );
+            actualStr1 = xml.getString("//model[@series='MK4']");
 
-            actualStr2 = xml.getString( "/vehicles/cars[2]/car[1]/engine/fuel" );
+            actualStr2 = xml.getString("/vehicles/cars[2]/car[1]/engine/fuel");
 
-            actualStr3 = xml.getString( "//owner[@id='1']/phone" );
+            actualStr3 = xml.getString("//owner[@id='1']/phone");
 
-            actualStr4 = xml.getString( "//car[2]/location/city/street/name" );
+            actualStr4 = xml.getString("//car[2]/location/city/street/name");
 
-            actualStr5 = xml.getString( "//cars[2]/car[2]/engine/volume" );
+            actualStr5 = xml.getString("//cars[2]/car[2]/engine/volume");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( str1, actualStr1 );
+        assertEquals(str1, actualStr1);
 
-        assertEquals( str2, actualStr2 );
+        assertEquals(str2, actualStr2);
 
-        assertEquals( str3, actualStr3 );
+        assertEquals(str3, actualStr3);
 
-        assertEquals( str4, actualStr4 );
+        assertEquals(str4, actualStr4);
 
-        assertEquals( str5, actualStr5 );
+        assertEquals(str5, actualStr5);
 
     }
 
@@ -286,16 +286,16 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualStr1 = xml.getString( "//cars[1]/car[3]/location" );
+            actualStr1 = xml.getString("//cars[1]/car[3]/location");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( null, actualStr1 );
+        assertEquals(null, actualStr1);
 
     }
 
@@ -324,31 +324,31 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualVal1 = xml.getInt( "//car[1]/date/year" );
+            actualVal1 = xml.getInt("//car[1]/date/year");
 
-            actualVal2 = xml.getInt( "//cars[2]/car[1]/date/year" );
+            actualVal2 = xml.getInt("//cars[2]/car[1]/date/year");
 
-            actualVal3 = xml.getInt( "//cars[2]/car[3]/location/city/street/number" );
+            actualVal3 = xml.getInt("//cars[2]/car[3]/location/city/street/number");
 
-            actualVal4 = xml.getInt( "//cars[1]/car[2]/date/month" );
+            actualVal4 = xml.getInt("//cars[1]/car[2]/date/month");
 
-            actualVal5 = xml.getInt( "//cars[2]/car[2]/location/city/street/number" );
+            actualVal5 = xml.getInt("//cars[2]/car[2]/location/city/street/number");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( val1, actualVal1 );
+        assertEquals(val1, actualVal1);
 
-        assertEquals( val2, actualVal2 );
+        assertEquals(val2, actualVal2);
 
-        assertEquals( val3, actualVal3 );
+        assertEquals(val3, actualVal3);
 
-        assertEquals( val4, actualVal4 );
+        assertEquals(val4, actualVal4);
 
-        assertEquals( val5, actualVal5 );
+        assertEquals(val5, actualVal5);
     }
 
     @Test
@@ -358,15 +358,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getInt( "/vehicles/cars[1]/car[1]/owner" );
+            val1 = xml.getInt("/vehicles/cars[1]/car[1]/owner");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( -1, val1 );
+        assertEquals(-1, val1);
 
     }
 
@@ -377,15 +377,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getInt( "/vehicles/cars[1]/car[1]/engine/volume" );
+            val1 = xml.getInt("/vehicles/cars[1]/car[1]/engine/volume");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( -1, val1 );
+        assertEquals(-1, val1);
 
     }
 
@@ -396,15 +396,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getInt( null );
+            val1 = xml.getInt(null);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( -1, val1 );
+        assertEquals(-1, val1);
     }
 
     @Test
@@ -414,15 +414,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getFloat( "/vehicles/cars[2]/car[2]/date/year" );
+            val1 = xml.getFloat("/vehicles/cars[2]/car[2]/date/year");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( 2005f, val1 );
+        assertEquals(2005f, val1);
     }
 
     @Test
@@ -432,15 +432,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getFloat( null );
+            val1 = xml.getFloat(null);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( -10000f, val1 );
+        assertEquals(-10000f, val1);
     }
 
     @Test
@@ -450,15 +450,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getFloat( "//car[2]/engine/power" );
+            val1 = xml.getFloat("//car[2]/engine/power");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( -10000f, val1 );
+        assertEquals(-10000f, val1);
     }
 
     @Test
@@ -468,15 +468,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getFloat( "/" );
+            val1 = xml.getFloat("/");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( -10000f, val1 );
+        assertEquals(-10000f, val1);
     }
 
     @Test
@@ -486,15 +486,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getBoolean( "/vehicles/cars[2]/car[3]/used" );
+            val1 = xml.getBoolean("/vehicles/cars[2]/car[3]/used");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( true, val1 );
+        assertEquals(true, val1);
     }
 
     @Test
@@ -504,15 +504,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getBoolean( "" );
+            val1 = xml.getBoolean("");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( false, val1 );
+        assertEquals(false, val1);
     }
 
     @Test
@@ -522,15 +522,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getBoolean( "/vehicles/cars[2]/car[2]/status/available" );
+            val1 = xml.getBoolean("/vehicles/cars[2]/car[2]/status/available");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( false, val1 );
+        assertEquals(false, val1);
     }
 
     @Test
@@ -540,15 +540,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            val1 = xml.getBoolean( "/vehicles/cars[2]/car[2]/date" );
+            val1 = xml.getBoolean("/vehicles/cars[2]/car[2]/date");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( false, val1 );
+        assertEquals(false, val1);
     }
 
     @Test
@@ -562,21 +562,21 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            xml = new XmlText( file );
+            xml = new XmlText(file);
 
             expectedValue = xmlText3.toString();
 
-            xml.add( "/vehicles/cars[1]/car[3]", xmlText3 );
+            xml.add("/vehicles/cars[1]/car[3]", xmlText3);
 
-            actualValue = xml.get( "/vehicles/cars[1]/car[3]/engine[2]" ).toString();
+            actualValue = xml.get("/vehicles/cars[1]/car[3]/engine[2]").toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             expectedValue = "should not see that";
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -590,21 +590,21 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            xml = new XmlText( file );
+            xml = new XmlText(file);
 
             expectedValue = xmlText2.toFormattedString();
 
-            xml.add( "/vehicles/cars[2]/car[1]", body2.toString() );
+            xml.add("/vehicles/cars[2]/car[1]", body2.toString());
 
-            actualValue = xml.get( "/vehicles/cars[2]/car[1]/location[2]" ).toFormattedString();
+            actualValue = xml.get("/vehicles/cars[2]/car[1]/location[2]").toFormattedString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             expectedValue = "should not see that";
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -616,17 +616,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.add( "/vehicles/carss[11]", xmlText3 );
+            xml.add("/vehicles/carss[11]", xmlText3);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -638,17 +638,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.add( null, xmlText3 );
+            xml.add(null, xmlText3);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -660,17 +660,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.add( "/vehicles/cars[2]/car[1]", new Double( 10.0 ) );
+            xml.add("/vehicles/cars[2]/car[1]", new Double(10.0));
 
             actualValue = "should not see that";
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -682,18 +682,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.add( "/vehicles/cars[1]/car[1]", null );
+            xml.add("/vehicles/cars[1]/car[1]", null);
 
             actualValue = "should not see that";
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -705,18 +705,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( "<car>Hello<model>GOLF</model></car>" );
+            XmlText xml = new XmlText("<car>Hello<model>GOLF</model></car>");
 
-            xml.remove( "//car/model" );
+            xml.remove("//car/model");
 
             actualValue = xml.toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -728,20 +728,20 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( "<car>Hello<model>GOLF</model></car>" );
+            XmlText xml = new XmlText("<car>Hello<model>GOLF</model></car>");
 
-            xml.remove( "//car/model[@name='first']" );
+            xml.remove("//car/model[@name='first']");
 
             actualValue = xml.toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -753,20 +753,20 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( "<car>Hello<model>GOLF</model></car>" );
+            XmlText xml = new XmlText("<car>Hello<model>GOLF</model></car>");
 
-            xml.remove( null );
+            xml.remove(null);
 
             actualValue = xml.toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -778,20 +778,20 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( "<car name='a car'>Hello<model>GOLF</model></car>" );
+            XmlText xml = new XmlText("<car name='a car'>Hello<model>GOLF</model></car>");
 
-            xml.remove( "//car[@name='a car']" );
+            xml.remove("//car[@name='a car']");
 
             actualValue = xml.toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -805,18 +805,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, xmlText1 );
+            xml.replace(xpath, xmlText1);
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
 
     }
 
@@ -831,18 +831,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, body1.toString() );
+            xml.replace(xpath, body1.toString());
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
 
     }
 
@@ -857,19 +857,19 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, new String() );
+            xml.replace(xpath, new String());
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
 
     }
 
@@ -884,20 +884,20 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, new StringBuilder( body1 ) );
+            xml.replace(xpath, new StringBuilder(body1));
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -911,20 +911,20 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, xmlText2 );
+            xml.replace(xpath, xmlText2);
 
-            actualValue = xml.get( "/" ).toString();
+            actualValue = xml.get("/").toString();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -938,22 +938,22 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, null );
+            xml.replace(xpath, null);
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-            log.info( xml.toFormattedString() );
+            log.info(xml.toFormattedString());
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -967,22 +967,22 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, xmlText2 );
+            xml.replace(xpath, xmlText2);
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-            log.info( xml.toFormattedString() );
+            log.info(xml.toFormattedString());
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -996,22 +996,22 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.replace( xpath, xmlText2 );
+            xml.replace(xpath, xmlText2);
 
-            actualValue = xml.get( xpath ).toString();
+            actualValue = xml.get(xpath).toString();
 
-            log.info( xml.toFormattedString() );
+            log.info(xml.toFormattedString());
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1027,22 +1027,22 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            expectedValue = xml.getString( xpath ).concat( text );
+            expectedValue = xml.getString(xpath).concat(text);
 
-            xml.appendText( xpath, text );
+            xml.appendText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             expectedValue = "should not see that";
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1058,18 +1058,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.appendText( xpath, text );
+            xml.appendText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1085,20 +1085,20 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.appendText( xpath, text );
+            xml.appendText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1114,18 +1114,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.appendText( xpath, text );
+            xml.appendText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1139,18 +1139,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.setText( xpath, text );
+            xml.setText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( text, actualValue );
+        assertEquals(text, actualValue);
     }
 
     @Test
@@ -1166,18 +1166,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.setText( xpath, text );
+            xml.setText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1193,18 +1193,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.setText( xpath, text );
+            xml.setText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1220,17 +1220,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            xml.setText( xpath, text );
+            xml.setText(xpath, text);
 
-            actualValue = xml.getString( xpath );
+            actualValue = xml.getString(xpath);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1242,15 +1242,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttributes( "//cars[1]/car[1]/date" ).size();
+            actualValue = xml.getAttributes("//cars[1]/car[1]/date").size();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1262,15 +1262,15 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttributes( "//cars[1]/car[2]/date/day" ).size();
+            actualValue = xml.getAttributes("//cars[1]/car[2]/date/day").size();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1282,17 +1282,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttributes( "//cars[1]/car[2]/date/days[1]" ).size();
+            actualValue = xml.getAttributes("//cars[1]/car[2]/date/days[1]").size();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = 0;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1304,17 +1304,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttributes( null ).size();
+            actualValue = xml.getAttributes(null).size();
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = 0;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1326,16 +1326,16 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttribute( "//cars[1]/car[2]/date", "format" );
+            actualValue = xml.getAttribute("//cars[1]/car[2]/date", "format");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1347,17 +1347,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttribute( "//cars[1]/car[2]/date", "invallid attr name" );
+            actualValue = xml.getAttribute("//cars[1]/car[2]/date", "invallid attr name");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1369,17 +1369,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttribute( "//cars[1]/car[2]/date", null );
+            actualValue = xml.getAttribute("//cars[1]/car[2]/date", null);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1391,17 +1391,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttribute( "//cars[2]/car[1]/date[2]", "format" );
+            actualValue = xml.getAttribute("//cars[2]/car[1]/date[2]", "format");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1413,17 +1413,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.getAttribute( null, "format" );
+            actualValue = xml.getAttribute(null, "format");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1435,16 +1435,16 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.setAttribute( "/vehicles", "new name", "new value" ).getAttribute( "/vehicles",
-                                                                                                 "new name" );
+            actualValue = xml.setAttribute("/vehicles", "new name", "new value").getAttribute("/vehicles",
+                                                                                              "new name");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1456,17 +1456,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.setAttribute( null, "new name", "new value" ).getAttribute( null, "new name" );
+            actualValue = xml.setAttribute(null, "new name", "new value").getAttribute(null, "new name");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1478,18 +1478,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.setAttribute( "/vehicles/cars[1]/car[1]/trucks[1]", "new name", "new value" )
-                             .getAttribute( "/vehicles/cars[1]/car[1]/trucks[1]", "new name" );
+            actualValue = xml.setAttribute("/vehicles/cars[1]/car[1]/trucks[1]", "new name", "new value")
+                             .getAttribute("/vehicles/cars[1]/car[1]/trucks[1]", "new name");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1501,18 +1501,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.setAttribute( "/vehicles/cars[1]/car[1]", null, "new value" )
-                             .getAttribute( "/vehicles/cars[1]/car[1]", null );
+            actualValue = xml.setAttribute("/vehicles/cars[1]/car[1]", null, "new value")
+                             .getAttribute("/vehicles/cars[1]/car[1]", null);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1524,18 +1524,18 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.setAttribute( "/vehicles/cars[1]/car[1]", "new name", "" )
-                             .getAttribute( "/vehicles/cars[1]/car[1]", "new name" );
+            actualValue = xml.setAttribute("/vehicles/cars[1]/car[1]", "new name", "")
+                             .getAttribute("/vehicles/cars[1]/car[1]", "new name");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1551,17 +1551,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.removeAttribute( xpath, name ).getAttribute( xpath, name );
+            actualValue = xml.removeAttribute(xpath, name).getAttribute(xpath, name);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
 
     }
 
@@ -1578,17 +1578,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.removeAttribute( xpath, name ).getAttribute( xpath, name );
+            actualValue = xml.removeAttribute(xpath, name).getAttribute(xpath, name);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1604,17 +1604,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.removeAttribute( xpath, name ).getAttribute( xpath, name );
+            actualValue = xml.removeAttribute(xpath, name).getAttribute(xpath, name);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1630,17 +1630,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.removeAttribute( xpath, name ).getAttribute( xpath, name );
+            actualValue = xml.removeAttribute(xpath, name).getAttribute(xpath, name);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1656,17 +1656,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValue = xml.removeAttribute( xpath, name ).getAttribute( xpath, name );
+            actualValue = xml.removeAttribute(xpath, name).getAttribute(xpath, name);
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValue = null;
         }
 
-        assertEquals( expectedValue, actualValue );
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -1678,17 +1678,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValues = xml.getElementNames( "//cars[1]/car[2]/owner" );
+            actualValues = xml.getElementNames("//cars[1]/car[2]/owner");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
         }
 
-        for( int i = 0; i < expectedValues.length; i++ ) {
-            assertEquals( expectedValues[i], actualValues[i] );
+        for (int i = 0; i < expectedValues.length; i++) {
+            assertEquals(expectedValues[i], actualValues[i]);
         }
     }
 
@@ -1701,17 +1701,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValues = xml.getElementNames( "//cars[1]/car[2]/owner[2]" );
+            actualValues = xml.getElementNames("//cars[1]/car[2]/owner[2]");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValues = new String[]{};
         }
 
-        assertEquals( expectedValues.length, actualValues.length );
+        assertEquals(expectedValues.length, actualValues.length);
     }
 
     @Test
@@ -1723,17 +1723,17 @@ public class Test_XmlText extends BaseTest {
 
         try {
 
-            XmlText xml = new XmlText( file );
+            XmlText xml = new XmlText(file);
 
-            actualValues = xml.getElementNames( "" );
+            actualValues = xml.getElementNames("");
 
-        } catch( XMLException e ) {
-            log.error( e.getMessage() );
+        } catch (XMLException e) {
+            log.error(e.getMessage());
 
             actualValues = new String[]{};
         }
 
-        assertEquals( expectedValues.length, actualValues.length );
+        assertEquals(expectedValues.length, actualValues.length);
     }
 
 }

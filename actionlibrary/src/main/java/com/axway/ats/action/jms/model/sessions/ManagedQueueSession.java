@@ -27,7 +27,7 @@ public class ManagedQueueSession extends ManagedSession implements QueueSession 
 
     public ManagedQueueSession( final QueueSession session ) {
 
-        super( session );
+        super(session);
         queueSession = session;
     }
 
@@ -35,7 +35,7 @@ public class ManagedQueueSession extends ManagedSession implements QueueSession 
     public QueueReceiver createReceiver(
                                          Queue queue ) throws JMSException {
 
-        return addConsumer( queueSession.createReceiver( queue ) );
+        return addConsumer(queueSession.createReceiver(queue));
     }
 
     @Override
@@ -43,13 +43,13 @@ public class ManagedQueueSession extends ManagedSession implements QueueSession 
                                          Queue queue,
                                          String messageSelector ) throws JMSException {
 
-        return addConsumer( queueSession.createReceiver( queue, messageSelector ) );
+        return addConsumer(queueSession.createReceiver(queue, messageSelector));
     }
 
     @Override
     public QueueSender createSender(
                                      Queue queue ) throws JMSException {
 
-        return addProducer( queueSession.createSender( queue ) );
+        return addProducer(queueSession.createSender(queue));
     }
 }

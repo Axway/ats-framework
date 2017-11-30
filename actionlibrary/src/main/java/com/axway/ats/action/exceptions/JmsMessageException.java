@@ -33,19 +33,19 @@ public class JmsMessageException extends RuntimeException {
     @PublicAtsApi
     public JmsMessageException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     @PublicAtsApi
     public JmsMessageException( Throwable arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     @PublicAtsApi
     public JmsMessageException( String arg0,
                                 Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

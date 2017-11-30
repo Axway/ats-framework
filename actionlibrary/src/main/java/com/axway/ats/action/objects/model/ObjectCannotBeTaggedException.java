@@ -17,23 +17,24 @@ package com.axway.ats.action.objects.model;
 
 import com.axway.ats.action.model.ActionException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ObjectCannotBeTaggedException extends ActionException {
 
     public ObjectCannotBeTaggedException( String objectName,
                                           String message ) {
 
-        super( objectName + " cannot be tagged" + ( message != null
-                                                                   ? ": " + message
-                                                                   : "" ) );
+        super(objectName + " cannot be tagged" + (message != null
+                                                                  ? ": " + message
+                                                                  : ""));
     }
 
     public ObjectCannotBeTaggedException( String objectName,
                                           String message,
                                           Throwable t ) {
 
-        super( objectName + " cannot be tagged" + ( message != null
-                                                                   ? ": " + message
-                                                                   : "" ), t );
+        super(objectName + " cannot be tagged" + (message != null
+                                                                  ? ": " + message
+                                                                  : ""),
+              t);
     }
 }

@@ -39,7 +39,7 @@ public class CertificateUtilities {
                                                          String host,
                                                          String port ) {
 
-        return SslUtils.getCertificatesFromSocket( host, port );
+        return SslUtils.getCertificatesFromSocket(host, port);
     }
 
     /**
@@ -61,6 +61,6 @@ public class CertificateUtilities {
                                                  String keyStorePassword,
                                                  String keyStoreType ) {
 
-        return SslUtils.createKeyStore( cert, null, null, fullKeyStorePath, keyStorePassword, keyStoreType );
+        return SslUtils.createKeyStore(cert, null, null, fullKeyStorePath, keyStorePassword, keyStoreType);
     }
 }

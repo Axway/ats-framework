@@ -42,7 +42,7 @@ import com.axway.ats.common.PublicAtsApi;
  */
 @PublicAtsApi
 public class HttpResponse {
-    
+
     /**
      * The status code e.g. 200
      */
@@ -60,7 +60,7 @@ public class HttpResponse {
      */
     private byte[]              body;
 
-    private static final Logger log = Logger.getLogger( HttpResponse.class );
+    private static final Logger log = Logger.getLogger(HttpResponse.class);
 
     /**
      * Construct a HTTPResponse when there is a response body.
@@ -127,7 +127,7 @@ public class HttpResponse {
     @PublicAtsApi
     public HttpHeader[] getHeaders() {
 
-        return headers.toArray( new HttpHeader[headers.size()] );
+        return headers.toArray(new HttpHeader[headers.size()]);
     }
 
     /**
@@ -141,8 +141,8 @@ public class HttpResponse {
     public HttpHeader getHeader(
                                  String name ) {
 
-        for( HttpHeader header : headers ) {
-            if( header.getKey().equalsIgnoreCase( name ) ) {
+        for (HttpHeader header : headers) {
+            if (header.getKey().equalsIgnoreCase(name)) {
                 return header;
             }
         }
@@ -162,10 +162,10 @@ public class HttpResponse {
     public String[] getHeaderValues(
                                      String name ) {
 
-        for( HttpHeader header : headers ) {
-            if( header.getKey().equalsIgnoreCase( name ) ) {
+        for (HttpHeader header : headers) {
+            if (header.getKey().equalsIgnoreCase(name)) {
                 List<String> values = header.getValues();
-                return values.toArray( new String[values.size()] );
+                return values.toArray(new String[values.size()]);
             }
         }
 
@@ -191,9 +191,9 @@ public class HttpResponse {
     @PublicAtsApi
     public String getBodyAsString() {
 
-        if( body == null )
+        if (body == null)
             return null;
-        return new String( body );
+        return new String(body);
     }
 
     /**
@@ -206,12 +206,12 @@ public class HttpResponse {
     public String getBodyAsString(
                                    String charset ) {
 
-        if( body == null )
+        if (body == null)
             return null;
         try {
-            return new String( body, charset );
-        } catch( UnsupportedEncodingException e ) {
-            log.error( e );
+            return new String(body, charset);
+        } catch (UnsupportedEncodingException e) {
+            log.error(e);
             return getBodyAsString();
         }
     }
@@ -228,48 +228,48 @@ public class HttpResponse {
     @PublicAtsApi
     public Document getBodyAsXML() throws HttpException {
 
-        if( body == null ) {
+        if (body == null) {
             return null;
         }
 
         String contentType = null;
-        for( HttpHeader header : headers ) {
-            if( "Content-Type".equalsIgnoreCase( header.getKey() ) ) {
+        for (HttpHeader header : headers) {
+            if ("Content-Type".equalsIgnoreCase(header.getKey())) {
                 contentType = header.getValue();
                 break;
             }
         }
 
-        if( contentType != null ) {
-            if( contentType.contains( "xml" ) ) {
-                return getDocument( body );
-            } else if( contentType.contains( "multipart" ) ) {
+        if (contentType != null) {
+            if (contentType.contains("xml")) {
+                return getDocument(body);
+            } else if (contentType.contains("multipart")) {
                 // Get the first part of the multipart that has "xml" in its
                 // Content-Type header as a Document.
                 try {
-                    InputStream is = new ByteArrayInputStream( body );
-                    MimePackage mime = new MimePackage( is );
+                    InputStream is = new ByteArrayInputStream(body);
+                    MimePackage mime = new MimePackage(is);
                     List<MimePart> parts = mime.getMimeParts();
-                    for( MimePart part : parts ) {
-                        String[] partContentTypes = part.getHeader( "Content-Type" );
-                        for( String partContentType : partContentTypes ) {
-                            if( partContentType.contains( "xml" ) ) {
+                    for (MimePart part : parts) {
+                        String[] partContentTypes = part.getHeader("Content-Type");
+                        for (String partContentType : partContentTypes) {
+                            if (partContentType.contains("xml")) {
                                 // We have an XML document
-                                MimeBodyPart p = ( MimeBodyPart ) part;
-                                return getDocument( IOUtils.toByteArray( p.getRawInputStream() ) );
+                                MimeBodyPart p = (MimeBodyPart) part;
+                                return getDocument(IOUtils.toByteArray(p.getRawInputStream()));
                             }
                         }
                     }
-                } catch( Exception e ) {
-                    throw new HttpException( "Error trying to extract main XML document from multipart message.",
-                                             e );
+                } catch (Exception e) {
+                    throw new HttpException("Error trying to extract main XML document from multipart message.",
+                                            e);
                 }
             }
         }
 
         return null;
     }
-    
+
     /**
      * Get the response body as a XMLText object. Note that Content-Type must indicate
      * that the body is XML, e.g. "text/xml", "application/soap+xml".
@@ -279,53 +279,53 @@ public class HttpResponse {
      * @return The body as a XMLText object
      * @throws HTTPException
      */
-    
+
     @PublicAtsApi
-    public XmlText getBodyAsXmlText(){
-        
-        if( body == null ) {
+    public XmlText getBodyAsXmlText() {
+
+        if (body == null) {
             return null;
         }
-        
+
         String contentType = null;
-        for( HttpHeader header : headers ) {
-            if( header.getKey().equalsIgnoreCase( "Content-Type" ) ) {
+        for (HttpHeader header : headers) {
+            if (header.getKey().equalsIgnoreCase("Content-Type")) {
                 contentType = header.getValue();
                 break;
             }
         }
-        
-        if( contentType != null ) {
-            if( contentType.contains( "xml" ) ) {
-                return new XmlText( new String( body ) );
-            } else if( contentType.contains( "multipart" ) ) {
+
+        if (contentType != null) {
+            if (contentType.contains("xml")) {
+                return new XmlText(new String(body));
+            } else if (contentType.contains("multipart")) {
                 // Get the first part of the multipart that has "xml" in its
                 // Content-Type header as a XMLText.
                 try {
-                    InputStream is = new ByteArrayInputStream( body );
-                    MimePackage mime = new MimePackage( is );
+                    InputStream is = new ByteArrayInputStream(body);
+                    MimePackage mime = new MimePackage(is);
                     List<MimePart> parts = mime.getMimeParts();
-                    for( MimePart part : parts ) {
-                        String[] partContentTypes = part.getHeader( "Content-Type" );
-                        for( String partContentType : partContentTypes ) {
-                            if( partContentType.contains( "xml" ) ) {
+                    for (MimePart part : parts) {
+                        String[] partContentTypes = part.getHeader("Content-Type");
+                        for (String partContentType : partContentTypes) {
+                            if (partContentType.contains("xml")) {
                                 // We have an XMLText object
-                                MimeBodyPart p = ( MimeBodyPart ) part;
-                                return new XmlText( new String(IOUtils.toByteArray( p.getRawInputStream() )) );
+                                MimeBodyPart p = (MimeBodyPart) part;
+                                return new XmlText(new String(IOUtils.toByteArray(p.getRawInputStream())));
                             }
                         }
                     }
-                } catch( Exception e ) {
-                    throw new HttpException( "Error while trying to convert multipart message's content to a XMLText object",
-                                             e );
+                } catch (Exception e) {
+                    throw new HttpException("Error while trying to convert multipart message's content to a XMLText object",
+                                            e);
                 }
             }
         }
 
         return null;
-        
+
     }
-    
+
     /**
      * Get the response body as a JSONText object. Note that Content-Type must indicate
      * that the body is JSON, e.g. "application/json".
@@ -335,54 +335,53 @@ public class HttpResponse {
      * @return The body as a JSONText object
      * @throws HTTPException
      */
-    
+
     @PublicAtsApi
-    public JsonText getBodyAsJsonText(){
-        
-        if( body == null ) {
+    public JsonText getBodyAsJsonText() {
+
+        if (body == null) {
             return null;
         }
-        
+
         String contentType = null;
-        for( HttpHeader header : headers ) {
-            if( header.getKey().equalsIgnoreCase( "Content-Type" ) ) {
+        for (HttpHeader header : headers) {
+            if (header.getKey().equalsIgnoreCase("Content-Type")) {
                 contentType = header.getValue();
                 break;
             }
         }
-        
-        if( contentType != null ) {
-            if( contentType.contains( "json" ) ) {
-                return new JsonText( new String( body ) );
-            } else if( contentType.contains( "multipart" ) ) {
+
+        if (contentType != null) {
+            if (contentType.contains("json")) {
+                return new JsonText(new String(body));
+            } else if (contentType.contains("multipart")) {
                 // Get the first part of the multipart that has "json" in its
                 // Content-Type header as a JSONText.
                 try {
-                    InputStream is = new ByteArrayInputStream( body );
-                    MimePackage mime = new MimePackage( is );
+                    InputStream is = new ByteArrayInputStream(body);
+                    MimePackage mime = new MimePackage(is);
                     List<MimePart> parts = mime.getMimeParts();
-                    for( MimePart part : parts ) {
-                        String[] partContentTypes = part.getHeader( "Content-Type" );
-                        for( String partContentType : partContentTypes ) {
-                            if( partContentType.contains( "json" ) ) {
+                    for (MimePart part : parts) {
+                        String[] partContentTypes = part.getHeader("Content-Type");
+                        for (String partContentType : partContentTypes) {
+                            if (partContentType.contains("json")) {
                                 // We have an JSONText object
-                                MimeBodyPart p = ( MimeBodyPart ) part;
-                                return new JsonText( new String(IOUtils.toByteArray( p.getRawInputStream() )) );
+                                MimeBodyPart p = (MimeBodyPart) part;
+                                return new JsonText(new String(IOUtils.toByteArray(p.getRawInputStream())));
                             }
                         }
                     }
-                } catch( Exception e ) {
-                    throw new HttpException( "Error while trying to convert multipart message's content to a JSONText object",
-                                             e );
+                } catch (Exception e) {
+                    throw new HttpException("Error while trying to convert multipart message's content to a JSONText object",
+                                            e);
                 }
             }
         }
 
         return null;
-        
+
     }
 
-    
     /**
      * Verify that the response contains header exact value
      * Be sure to use the right case, the search is case sensitive
@@ -394,16 +393,16 @@ public class HttpResponse {
     @PublicAtsApi
     public HttpResponse verifyHeader( String header, String value ) {
 
-        HttpHeader response = getHeader( header );
+        HttpHeader response = getHeader(header);
 
-        if( response == null ) {
-            throw new VerificationException( "Header \"" + header + "\" does not exist in the response!" );
+        if (response == null) {
+            throw new VerificationException("Header \"" + header + "\" does not exist in the response!");
         }
 
-        if( !response.getValue().equals( value ) ) {
-            throw new VerificationException( "Header with name \"" + header + "\" has value \""
-                                             + response.getValue() + "\" while the expected value is \""
-                                             + value + "\"" );
+        if (!response.getValue().equals(value)) {
+            throw new VerificationException("Header with name \"" + header + "\" has value \""
+                                            + response.getValue() + "\" while the expected value is \""
+                                            + value + "\"");
         }
 
         return this;
@@ -421,11 +420,11 @@ public class HttpResponse {
 
         String responseBody = getBodyAsString();
 
-        if( responseBody != null && responseBody.indexOf( responseBodyPart ) >= 0 ) {
+        if (responseBody != null && responseBody.indexOf(responseBodyPart) >= 0) {
             return this;
         }
-        throw new VerificationException( "The given response part \"" + responseBodyPart
-                                         + "\" is not present in the real response body" );
+        throw new VerificationException("The given response part \"" + responseBodyPart
+                                        + "\" is not present in the real response body");
     }
 
     /**
@@ -440,14 +439,14 @@ public class HttpResponse {
 
         String responseBody = getBodyAsString();
 
-        if( responseBody != null ) {
-            if( responseBody.equals( body ) )
+        if (responseBody != null) {
+            if (responseBody.equals(body))
                 return this;
         }
-        throw new VerificationException( "The actual response body is \"" + responseBody
-                                         + "\" while the expected is \"" + body + "\"" );
+        throw new VerificationException("The actual response body is \"" + responseBody
+                                        + "\" while the expected is \"" + body + "\"");
     }
-    
+
     /**
      * Verify response body by REGEX
      * Be sure to use the right case, the search is case sensitive
@@ -460,14 +459,14 @@ public class HttpResponse {
 
         String responseBody = getBodyAsString();
 
-        if( responseBody != null ) {
-            if( Pattern.compile( responseBodyRegex ).matcher( responseBody ).find() )
+        if (responseBody != null) {
+            if (Pattern.compile(responseBodyRegex).matcher(responseBody).find())
                 return this;
         }
-        throw new VerificationException( "The given regex \"" + responseBodyRegex
-                                         + "\" does not match the body" );
-    }    
-    
+        throw new VerificationException("The given regex \"" + responseBodyRegex
+                                        + "\" does not match the body");
+    }
+
     /**
      * Verify response status code
      * 
@@ -477,11 +476,11 @@ public class HttpResponse {
     @PublicAtsApi
     public HttpResponse verifyStatusCode( int statusCode ) {
 
-        if( this.statusCode == statusCode )
+        if (this.statusCode == statusCode)
             return this;
 
-        throw new VerificationException( "Expected status code is: " + statusCode + ", actual status code is: "
-                                         + this.statusCode );
+        throw new VerificationException("Expected status code is: " + statusCode + ", actual status code is: "
+                                        + this.statusCode);
     }
 
     /**
@@ -494,13 +493,13 @@ public class HttpResponse {
     @PublicAtsApi
     public HttpResponse verifyStatusMessage( String statusMessage ) {
 
-        if( getStatusMessage().equalsIgnoreCase( statusMessage ) )
+        if (getStatusMessage().equalsIgnoreCase(statusMessage))
             return this;
 
-        throw new VerificationException( "Expected status message is: \"" + statusMessage
-                                         + "\", actual status message is: \"" + this.statusMessage + "\"" );
+        throw new VerificationException("Expected status message is: \"" + statusMessage
+                                        + "\", actual status message is: \"" + this.statusMessage + "\"");
     }
-    
+
     /**
      * Convert byte array to Document
      *
@@ -512,11 +511,11 @@ public class HttpResponse {
                                   byte[] body ) throws HttpException {
 
         DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
-        newInstance.setNamespaceAware( true );
+        newInstance.setNamespaceAware(true);
         try {
-            return newInstance.newDocumentBuilder().parse( new ByteArrayInputStream( body ) );
-        } catch( Exception e ) {
-            throw new HttpException( "Exception trying to convert response to Document.", e );
+            return newInstance.newDocumentBuilder().parse(new ByteArrayInputStream(body));
+        } catch (Exception e) {
+            throw new HttpException("Exception trying to convert response to Document.", e);
         }
     }
 }

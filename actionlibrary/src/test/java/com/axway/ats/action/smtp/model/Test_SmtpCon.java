@@ -30,15 +30,15 @@ public class Test_SmtpCon extends BaseTest {
     //-------------------------------------------------------------------------
     private static final String host = "unit4.da.localdomain";
     private static final int    port = 25;
-    private SmtpManager                smtp;
-    private SmtpConnection             connection;
+    private SmtpManager         smtp;
+    private SmtpConnection      connection;
 
     @Before
     public void setUp() {
 
         smtp = new SmtpManager();
-        smtp.openConnections( host, port, 1 );
-        connection = smtp.getConnection( 0 );
+        smtp.openConnections(host, port, 1);
+        connection = smtp.getConnection(0);
     }
 
     @Ignore
@@ -48,8 +48,8 @@ public class Test_SmtpCon extends BaseTest {
         String username = "test123@automation.com";
         String password = "123";
         String mechanism = "PLAIN";
-        connection.ehlo( "localhost" );
-        assertTrue( connection.authenticate( mechanism, username, password ) );
+        connection.ehlo("localhost");
+        assertTrue(connection.authenticate(mechanism, username, password));
     }
 
     @Ignore

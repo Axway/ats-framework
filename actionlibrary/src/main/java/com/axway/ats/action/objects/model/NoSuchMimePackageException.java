@@ -15,23 +15,23 @@
  */
 package com.axway.ats.action.objects.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class NoSuchMimePackageException extends PackageException {
 
     public NoSuchMimePackageException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public NoSuchMimePackageException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public NoSuchMimePackageException( String message,
-                                    Throwable cause ) {
+                                       Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

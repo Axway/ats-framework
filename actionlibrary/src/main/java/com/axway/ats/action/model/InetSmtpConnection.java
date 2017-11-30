@@ -94,7 +94,7 @@ public class InetSmtpConnection {
     /**
      * The logger used for SMTP protocol traces.
      */
-    public final Logger           log           = Logger.getLogger( this.getClass() );
+    public final Logger           log           = Logger.getLogger(this.getClass());
 
     /**
      * The underlying socket used for communicating with the server.
@@ -138,7 +138,7 @@ public class InetSmtpConnection {
      */
     public InetSmtpConnection( String host ) throws IOException {
 
-        this( host, DEFAULT_PORT, null, 0, 0, false, null );
+        this(host, DEFAULT_PORT, null, 0, 0, false, null);
     }
 
     /**
@@ -150,7 +150,7 @@ public class InetSmtpConnection {
     public InetSmtpConnection( String host,
                                int port ) throws IOException {
 
-        this( host, port, null, 0, 0, false, null );
+        this(host, port, null, 0, 0, false, null);
     }
 
     /**
@@ -165,7 +165,7 @@ public class InetSmtpConnection {
                                int port,
                                String bindAddress ) throws IOException {
 
-        this( host, port, bindAddress, 0, 0, false, null );
+        this(host, port, bindAddress, 0, 0, false, null);
     }
 
     /**
@@ -184,7 +184,7 @@ public class InetSmtpConnection {
                                int connectionTimeout,
                                int timeout ) throws IOException {
 
-        this( host, port, bindAddress, connectionTimeout, timeout, false, null );
+        this(host, port, bindAddress, connectionTimeout, timeout, false, null);
     }
 
     /**
@@ -208,7 +208,7 @@ public class InetSmtpConnection {
                                boolean secure,
                                TrustManager tm ) throws IOException {
 
-        this( host, port, bindAddress, connectionTimeout, timeout, secure, tm, true );
+        this(host, port, bindAddress, connectionTimeout, timeout, secure, tm, true);
     }
 
     /**
@@ -234,7 +234,7 @@ public class InetSmtpConnection {
                                TrustManager tm,
                                boolean init ) throws IOException {
 
-        if( port <= 0 ) {
+        if (port <= 0) {
             port = DEFAULT_PORT;
         }
         response = null;
@@ -243,48 +243,48 @@ public class InetSmtpConnection {
         // Initialize socket
         try {
             socket = new Socket();
-            if( bindAddress != null && !bindAddress.isEmpty() ) {
-                socket.setReuseAddress( true );
+            if (bindAddress != null && !bindAddress.isEmpty()) {
+                socket.setReuseAddress(true);
                 // In case of exceptions or lost data we may try with setting small
                 // but positive socket linger timeout like 2-3 seconds.
                 // Noted in http://www.rgagnon.com/javadetails/java-0293.html
-                socket.setSoLinger( true, 0 ); // prevent socket TIME_WAIT state.
-                socket.bind( new InetSocketAddress( bindAddress, 0 ) );
+                socket.setSoLinger(true, 0); // prevent socket TIME_WAIT state.
+                socket.bind(new InetSocketAddress(bindAddress, 0));
             }
-            InetSocketAddress address = new InetSocketAddress( host, port );
-            if( connectionTimeout > 0 ) {
-                socket.connect( address, connectionTimeout );
+            InetSocketAddress address = new InetSocketAddress(host, port);
+            if (connectionTimeout > 0) {
+                socket.connect(address, connectionTimeout);
             } else {
-                socket.connect( address );
+                socket.connect(address);
             }
-            if( timeout > 0 ) {
-                socket.setSoTimeout( timeout );
+            if (timeout > 0) {
+                socket.setSoTimeout(timeout);
             }
-            if( secure ) {
-                SSLSocketFactory factory = getSSLSocketFactory( tm );
-                SSLSocket ss = ( SSLSocket ) factory.createSocket( socket, host, port, true );
+            if (secure) {
+                SSLSocketFactory factory = getSSLSocketFactory(tm);
+                SSLSocket ss = (SSLSocket) factory.createSocket(socket, host, port, true);
                 String[] protocols = { "TLSv1", "SSLv3" };
-                ss.setEnabledProtocols( protocols );
-                ss.setUseClientMode( true );
+                ss.setEnabledProtocols(protocols);
+                ss.setUseClientMode(true);
                 ss.startHandshake();
                 socket = ss;
             }
-        } catch( GeneralSecurityException e ) {
+        } catch (GeneralSecurityException e) {
             IOException e2 = new IOException();
-            e2.initCause( e );
+            e2.initCause(e);
             throw e2;
         }
 
         // Initialize streams
         InputStream is = socket.getInputStream();
-        is = new BufferedInputStream( is );
-        is = new CRLFInputStream( is );
-        in = new LineInputStream( is );
+        is = new BufferedInputStream(is);
+        is = new CRLFInputStream(is);
+        in = new LineInputStream(is);
         OutputStream os = socket.getOutputStream();
-        os = new BufferedOutputStream( os );
-        out = new CRLFOutputStream( os );
+        os = new BufferedOutputStream(os);
+        out = new CRLFOutputStream(os);
 
-        if( init )
+        if (init)
             init();
     }
 
@@ -300,17 +300,17 @@ public class InetSmtpConnection {
         StringBuffer greetingBuffer = new StringBuffer();
         boolean notFirst = false;
         do {
-            if( getResponse() != READY ) {
-                throw new SmtpException( response, responseCode );
+            if (getResponse() != READY) {
+                throw new SmtpException(response, responseCode);
             }
-            if( notFirst ) {
-                greetingBuffer.append( '\n' );
+            if (notFirst) {
+                greetingBuffer.append('\n');
             } else {
                 notFirst = true;
             }
-            greetingBuffer.append( response );
+            greetingBuffer.append(response);
 
-        } while( continuation );
+        } while (continuation);
         greeting = greetingBuffer.toString();
     }
 
@@ -350,16 +350,16 @@ public class InetSmtpConnection {
                              String reversePath,
                              ParameterList parameters ) throws IOException {
 
-        StringBuffer command = new StringBuffer( MAIL_FROM );
-        command.append( '<' );
-        command.append( reversePath );
-        command.append( '>' );
-        if( parameters != null ) {
-            command.append( SP );
-            command.append( parameters );
+        StringBuffer command = new StringBuffer(MAIL_FROM);
+        command.append('<');
+        command.append(reversePath);
+        command.append('>');
+        if (parameters != null) {
+            command.append(SP);
+            command.append(parameters);
         }
-        send( command.toString() );
-        switch( getAllResponses() ){
+        send(command.toString());
+        switch (getAllResponses()) {
             case OK:
             case OK_NOT_LOCAL:
             case OK_UNVERIFIED:
@@ -379,16 +379,16 @@ public class InetSmtpConnection {
                            String forwardPath,
                            ParameterList parameters ) throws IOException {
 
-        StringBuffer command = new StringBuffer( RCPT_TO );
-        command.append( '<' );
-        command.append( forwardPath );
-        command.append( '>' );
-        if( parameters != null ) {
-            command.append( SP );
-            command.append( parameters );
+        StringBuffer command = new StringBuffer(RCPT_TO);
+        command.append('<');
+        command.append(forwardPath);
+        command.append('>');
+        if (parameters != null) {
+            command.append(SP);
+            command.append(parameters);
         }
-        send( command.toString() );
-        switch( getAllResponses() ){
+        send(command.toString());
+        switch (getAllResponses()) {
             case OK:
             case OK_NOT_LOCAL:
             case OK_UNVERIFIED:
@@ -409,12 +409,12 @@ public class InetSmtpConnection {
      */
     public OutputStream data() throws IOException {
 
-        send( DATA );
-        switch( getAllResponses() ){
+        send(DATA);
+        switch (getAllResponses()) {
             case SEND_DATA:
-                return new MessageOutputStream( out );
+                return new MessageOutputStream(out);
             default:
-                throw new SmtpException( response, responseCode );
+                throw new SmtpException(response, responseCode);
         }
     }
 
@@ -425,8 +425,8 @@ public class InetSmtpConnection {
      */
     public boolean finishData() throws IOException {
 
-        send( FINISH_DATA );
-        switch( getAllResponses() ){
+        send(FINISH_DATA);
+        switch (getAllResponses()) {
             case OK:
                 return true;
             default:
@@ -439,9 +439,9 @@ public class InetSmtpConnection {
      */
     public void rset() throws IOException {
 
-        send( RSET );
-        if( getAllResponses() != OK ) {
-            throw new SmtpException( response, responseCode );
+        send(RSET);
+        if (getAllResponses() != OK) {
+            throw new SmtpException(response, responseCode);
         }
     }
 
@@ -456,26 +456,26 @@ public class InetSmtpConnection {
                               String address ) throws IOException {
 
         String command = VRFY + ' ' + address;
-        send( command );
+        send(command);
         List<String> list = new ArrayList<String>();
         do {
-            switch( getResponse() ){
+            switch (getResponse()) {
                 case OK:
                 case AMBIGUOUS:
                     response = response.trim();
-                    if( response.indexOf( '@' ) != -1 ) {
-                        list.add( response );
-                    } else if( response.indexOf( '<' ) != -1 ) {
-                        list.add( response );
-                    } else if( response.indexOf( ' ' ) == -1 ) {
-                        list.add( response );
+                    if (response.indexOf('@') != -1) {
+                        list.add(response);
+                    } else if (response.indexOf('<') != -1) {
+                        list.add(response);
+                    } else if (response.indexOf(' ') == -1) {
+                        list.add(response);
                     }
                     break;
                 default:
                     return null;
             }
-        } while( continuation );
-        return Collections.unmodifiableList( list );
+        } while (continuation);
+        return Collections.unmodifiableList(list);
     }
 
     /**
@@ -487,19 +487,19 @@ public class InetSmtpConnection {
                               String address ) throws IOException {
 
         String command = EXPN + ' ' + address;
-        send( command );
+        send(command);
         List<String> list = new ArrayList<String>();
         do {
-            switch( getResponse() ){
+            switch (getResponse()) {
                 case OK:
                     response = response.trim();
-                    list.add( response );
+                    list.add(response);
                     break;
                 default:
                     return null;
             }
-        } while( continuation );
-        return Collections.unmodifiableList( list );
+        } while (continuation);
+        return Collections.unmodifiableList(list);
     }
 
     /**
@@ -512,21 +512,21 @@ public class InetSmtpConnection {
     public List<String> help(
                               String arg ) throws IOException {
 
-        String command = ( arg == null )
-                                        ? HELP
-                                        : HELP + ' ' + arg;
-        send( command );
+        String command = (arg == null)
+                                       ? HELP
+                                       : HELP + ' ' + arg;
+        send(command);
         List<String> list = new ArrayList<String>();
         do {
-            switch( getResponse() ){
+            switch (getResponse()) {
                 case INFO:
-                    list.add( response );
+                    list.add(response);
                     break;
                 default:
                     return null;
             }
-        } while( continuation );
-        return Collections.unmodifiableList( list );
+        } while (continuation);
+        return Collections.unmodifiableList(list);
     }
 
     /**
@@ -535,7 +535,7 @@ public class InetSmtpConnection {
      */
     public void noop() throws IOException {
 
-        send( NOOP );
+        send(NOOP);
         getAllResponses();
     }
 
@@ -545,12 +545,12 @@ public class InetSmtpConnection {
     public void quit() throws IOException {
 
         try {
-            send( QUIT );
+            send(QUIT);
             getAllResponses();
             /* RFC 2821 states that the server MUST send an OK reply here, but
              * many don't: postfix, for instance, sends 221.
              * In any case we have done our best. */
-        } catch( IOException e ) {} finally {
+        } catch (IOException e) {} finally {
             // Close the socket anyway.
             socket.close();
         }
@@ -564,8 +564,8 @@ public class InetSmtpConnection {
                          String hostname ) throws IOException {
 
         String command = HELO + ' ' + hostname;
-        send( command );
-        return ( getAllResponses() == OK );
+        send(command);
+        return (getAllResponses() == OK);
     }
 
     /**
@@ -579,18 +579,18 @@ public class InetSmtpConnection {
                               String hostname ) throws IOException {
 
         String command = EHLO + ' ' + hostname;
-        send( command );
+        send(command);
         List<String> extensions = new ArrayList<String>();
         do {
-            switch( getResponse() ){
+            switch (getResponse()) {
                 case OK:
-                    extensions.add( response );
+                    extensions.add(response);
                     break;
                 default:
                     return null;
             }
-        } while( continuation );
-        return Collections.unmodifiableList( extensions );
+        } while (continuation);
+        return Collections.unmodifiableList(extensions);
     }
 
     /**
@@ -601,12 +601,12 @@ public class InetSmtpConnection {
     protected SSLSocketFactory getSSLSocketFactory(
                                                     TrustManager tm ) throws GeneralSecurityException {
 
-        if( tm == null ) {
+        if (tm == null) {
             tm = new EmptyX509TrustManager();
         }
-        SSLContext context = SSLContext.getInstance( "TLS" );
+        SSLContext context = SSLContext.getInstance("TLS");
         TrustManager[] trust = new TrustManager[]{ tm };
-        context.init( null, trust, null );
+        context.init(null, trust, null);
         return context.getSocketFactory();
     }
 
@@ -617,7 +617,7 @@ public class InetSmtpConnection {
      */
     public boolean starttls() throws IOException {
 
-        return starttls( new EmptyX509TrustManager() );
+        return starttls(new EmptyX509TrustManager());
     }
 
     /**
@@ -630,31 +630,31 @@ public class InetSmtpConnection {
                              TrustManager tm ) throws IOException {
 
         try {
-            SSLSocketFactory factory = getSSLSocketFactory( tm );
+            SSLSocketFactory factory = getSSLSocketFactory(tm);
 
-            send( STARTTLS );
-            if( getAllResponses() != READY ) {
+            send(STARTTLS);
+            if (getAllResponses() != READY) {
                 return false;
             }
 
             String hostname = socket.getInetAddress().getHostName();
             int port = socket.getPort();
-            SSLSocket ss = ( SSLSocket ) factory.createSocket( socket, hostname, port, true );
+            SSLSocket ss = (SSLSocket) factory.createSocket(socket, hostname, port, true);
             String[] protocols = { "TLSv1", "SSLv3" };
-            ss.setEnabledProtocols( protocols );
-            ss.setUseClientMode( true );
+            ss.setEnabledProtocols(protocols);
+            ss.setUseClientMode(true);
             ss.startHandshake();
 
             // Set up streams
             InputStream is = ss.getInputStream();
-            is = new BufferedInputStream( is );
-            is = new CRLFInputStream( is );
-            in = new LineInputStream( is );
+            is = new BufferedInputStream(is);
+            is = new CRLFInputStream(is);
+            in = new LineInputStream(is);
             OutputStream os = ss.getOutputStream();
-            os = new BufferedOutputStream( os );
-            out = new CRLFOutputStream( os );
+            os = new BufferedOutputStream(os);
+            out = new CRLFOutputStream(os);
             return true;
-        } catch( GeneralSecurityException e ) {
+        } catch (GeneralSecurityException e) {
             return false;
         }
     }
@@ -677,86 +677,86 @@ public class InetSmtpConnection {
 
         try {
             String[] m = new String[]{ mechanism };
-            CallbackHandler ch = new SaslCallbackHandler( username, password );
+            CallbackHandler ch = new SaslCallbackHandler(username, password);
             // Avoid lengthy callback procedure for GNU Crypto
             HashMap<String, String> p = new HashMap<String, String>();
-            p.put( "gnu.crypto.sasl.username", username );
-            p.put( "gnu.crypto.sasl.password", password );
-            SaslClient sasl = Sasl.createSaslClient( m,
-                                                     null,
-                                                     "smtp",
-                                                     socket.getInetAddress().getHostName(),
-                                                     p,
-                                                     ch );
-            if( sasl == null ) {
+            p.put("gnu.crypto.sasl.username", username);
+            p.put("gnu.crypto.sasl.password", password);
+            SaslClient sasl = Sasl.createSaslClient(m,
+                                                    null,
+                                                    "smtp",
+                                                    socket.getInetAddress().getHostName(),
+                                                    p,
+                                                    ch);
+            if (sasl == null) {
                 // Fall back to home-grown SASL clients
-                if( "LOGIN".equalsIgnoreCase( mechanism ) ) {
-                    sasl = new SaslLogin( username, password );
-                } else if( "PLAIN".equalsIgnoreCase( mechanism ) ) {
-                    sasl = new SaslPlain( username, password );
-                } else if( "CRAM-MD5".equalsIgnoreCase( mechanism ) ) {
-                    sasl = new SaslCramMD5( username, password );
+                if ("LOGIN".equalsIgnoreCase(mechanism)) {
+                    sasl = new SaslLogin(username, password);
+                } else if ("PLAIN".equalsIgnoreCase(mechanism)) {
+                    sasl = new SaslPlain(username, password);
+                } else if ("CRAM-MD5".equalsIgnoreCase(mechanism)) {
+                    sasl = new SaslCramMD5(username, password);
                 } else {
                     return false;
                 }
             }
 
-            StringBuffer cmd = new StringBuffer( AUTH );
-            cmd.append( ' ' );
-            cmd.append( mechanism );
-            if( sasl.hasInitialResponse() ) {
-                cmd.append( ' ' );
-                byte[] init = sasl.evaluateChallenge( new byte[0] );
-                if( init.length == 0 ) {
-                    cmd.append( '=' );
+            StringBuffer cmd = new StringBuffer(AUTH);
+            cmd.append(' ');
+            cmd.append(mechanism);
+            if (sasl.hasInitialResponse()) {
+                cmd.append(' ');
+                byte[] init = sasl.evaluateChallenge(new byte[0]);
+                if (init.length == 0) {
+                    cmd.append('=');
                 } else {
-                    cmd.append( new String( BASE64.encode( init ), "US-ASCII" ) );
+                    cmd.append(new String(BASE64.encode(init), "US-ASCII"));
                 }
             }
-            send( cmd.toString() );
-            while( true ) {
-                switch( getAllResponses() ){
+            send(cmd.toString());
+            while (true) {
+                switch (getAllResponses()) {
                     case 334:
                         try {
-                            byte[] c0 = response.getBytes( "US-ASCII" );
-                            byte[] c1 = BASE64.decode( c0 ); // challenge
-                            byte[] r0 = sasl.evaluateChallenge( c1 );
-                            byte[] r1 = BASE64.encode( r0 ); // response
-                            out.write( r1 );
-                            out.write( 0x0d );
+                            byte[] c0 = response.getBytes("US-ASCII");
+                            byte[] c1 = BASE64.decode(c0); // challenge
+                            byte[] r0 = sasl.evaluateChallenge(c1);
+                            byte[] r1 = BASE64.encode(r0); // response
+                            out.write(r1);
+                            out.write(0x0d);
                             out.flush();
-                            log.trace( "> " + new String( r1, "US-ASCII" ) );
-                        } catch( SaslException e ) {
+                            log.trace("> " + new String(r1, "US-ASCII"));
+                        } catch (SaslException e) {
                             // Error in SASL challenge evaluation - cancel exchange
-                            out.write( 0x2a );
-                            out.write( 0x0d );
+                            out.write(0x2a);
+                            out.write(0x0d);
                             out.flush();
-                            log.trace( "> *" );
+                            log.trace("> *");
                         }
                         break;
                     case 235:
-                        String qop = ( String ) sasl.getNegotiatedProperty( Sasl.QOP );
-                        if( "auth-int".equalsIgnoreCase( qop ) || "auth-conf".equalsIgnoreCase( qop ) ) {
+                        String qop = (String) sasl.getNegotiatedProperty(Sasl.QOP);
+                        if ("auth-int".equalsIgnoreCase(qop) || "auth-conf".equalsIgnoreCase(qop)) {
                             InputStream is = socket.getInputStream();
-                            is = new BufferedInputStream( is );
-                            is = new SaslInputStream( sasl, is );
-                            is = new CRLFInputStream( is );
-                            in = new LineInputStream( is );
+                            is = new BufferedInputStream(is);
+                            is = new SaslInputStream(sasl, is);
+                            is = new CRLFInputStream(is);
+                            in = new LineInputStream(is);
                             OutputStream os = socket.getOutputStream();
-                            os = new BufferedOutputStream( os );
-                            os = new SaslOutputStream( sasl, os );
-                            out = new CRLFOutputStream( os );
+                            os = new BufferedOutputStream(os);
+                            os = new SaslOutputStream(sasl, os);
+                            out = new CRLFOutputStream(os);
                         }
                         return true;
                     default:
                         return false;
                 }
             }
-        } catch( SaslException e ) {
-            log.error( e.getMessage(), e );
+        } catch (SaslException e) {
+            log.error(e.getMessage(), e);
             return false; // No provider for mechanism
-        } catch( RuntimeException e ) {
-            log.error( e.getMessage(), e );
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e);
             return false; // No javax.security.sasl classes
         }
     }
@@ -774,7 +774,7 @@ public class InetSmtpConnection {
     public int sendCommand(
                             String command ) throws IOException {
 
-        send( command );
+        send(command);
         return getAllResponses();
     }
 
@@ -785,9 +785,9 @@ public class InetSmtpConnection {
     protected void send(
                          String command ) throws IOException {
 
-        log.trace( "> " + command );
-        out.write( command.getBytes( "US-ASCII" ) );
-        out.write( 0x0d );
+        log.trace("> " + command);
+        out.write(command.getBytes("US-ASCII"));
+        out.write(0x0d);
         out.flush();
     }
 
@@ -800,16 +800,16 @@ public class InetSmtpConnection {
         try {
             line = in.readLine();
             // Handle special case eg. 334 where CRLF occurs after code.
-            if( line.length() < 4 ) {
+            if (line.length() < 4) {
                 line = line + '\n' + in.readLine();
             }
-            log.trace( "< " + line );
-            responseCode = Integer.parseInt( line.substring( 0, 3 ) );
-            continuation = ( line.charAt( 3 ) == '-' );
-            response = line.substring( 4 );
+            log.trace("< " + line);
+            responseCode = Integer.parseInt(line.substring(0, 3));
+            continuation = (line.charAt(3) == '-');
+            response = line.substring(4);
             return responseCode;
-        } catch( NumberFormatException e ) {
-            throw new SmtpException( "Unexpected response: " + line );
+        } catch (NumberFormatException e) {
+            throw new SmtpException("Unexpected response: " + line);
         }
     }
 
@@ -824,14 +824,14 @@ public class InetSmtpConnection {
         int code1, code;
         boolean err = false;
         code1 = code = getResponse();
-        while( continuation ) {
+        while (continuation) {
             code = getResponse();
-            if( code != code1 ) {
+            if (code != code1) {
                 err = true;
             }
         }
-        if( err ) {
-            throw new SmtpException( "Conflicting response codes" );
+        if (err) {
+            throw new SmtpException("Conflicting response codes");
         }
         return code;
     }

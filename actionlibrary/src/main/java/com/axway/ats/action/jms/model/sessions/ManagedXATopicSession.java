@@ -27,14 +27,14 @@ public class ManagedXATopicSession extends ManagedSession implements XATopicSess
 
     public ManagedXATopicSession( final XATopicSession session ) {
 
-        super( session );
+        super(session);
         xaTopicSession = session;
     }
 
     @Override
     public Session getSession() throws JMSException {
 
-        return addSession( xaTopicSession.getSession() );
+        return addSession(xaTopicSession.getSession());
     }
 
     @Override
@@ -46,6 +46,6 @@ public class ManagedXATopicSession extends ManagedSession implements XATopicSess
     @Override
     public TopicSession getTopicSession() throws JMSException {
 
-        return addSession( xaTopicSession.getTopicSession() );
+        return addSession(xaTopicSession.getTopicSession());
     }
 }

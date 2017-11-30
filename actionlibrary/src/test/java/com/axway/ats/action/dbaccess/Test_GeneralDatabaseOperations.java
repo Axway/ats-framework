@@ -42,63 +42,63 @@ public class Test_GeneralDatabaseOperations extends BaseTest {
     @Test
     public void testGettingDatabaseData() {
 
-        DatabaseRow[] dbRows = dbOps.getDatabaseData( "tableWithManyRows",
-                                                      "selectColumnName",
-                                                      "whereColumnName",
-                                                      "whereColumnValue" );
-        Assert.assertEquals( dbRows.length, 2 );
+        DatabaseRow[] dbRows = dbOps.getDatabaseData("tableWithManyRows",
+                                                     "selectColumnName",
+                                                     "whereColumnName",
+                                                     "whereColumnValue");
+        Assert.assertEquals(dbRows.length, 2);
 
-        Assert.assertEquals( dbRows[0].getAllCells().length, 1 );
-        Assert.assertEquals( dbRows[0].getCellValue( "selectColumnName" ), "value1" );
+        Assert.assertEquals(dbRows[0].getAllCells().length, 1);
+        Assert.assertEquals(dbRows[0].getCellValue("selectColumnName"), "value1");
 
-        Assert.assertEquals( dbRows[1].getAllCells().length, 1 );
-        Assert.assertEquals( dbRows[1].getCellValue( "selectColumnName" ), "value2" );
+        Assert.assertEquals(dbRows[1].getAllCells().length, 1);
+        Assert.assertEquals(dbRows[1].getCellValue("selectColumnName"), "value2");
     }
 
     @Test
     public void testGettingDatabaseData2() {
 
-        DatabaseRow[] dbRows = dbOps.getDatabaseData( "Select * from tableWithManyRows" );
+        DatabaseRow[] dbRows = dbOps.getDatabaseData("Select * from tableWithManyRows");
 
-        Assert.assertEquals( dbRows.length, 2 );
+        Assert.assertEquals(dbRows.length, 2);
 
-        Assert.assertEquals( dbRows[0].getAllCells().length, 2 );
-        Assert.assertEquals( dbRows[0].getCellValue( "firstColumnName" ), "value01" );
-        Assert.assertEquals( dbRows[0].getCellValue( "secondColumnName" ), "value02" );
+        Assert.assertEquals(dbRows[0].getAllCells().length, 2);
+        Assert.assertEquals(dbRows[0].getCellValue("firstColumnName"), "value01");
+        Assert.assertEquals(dbRows[0].getCellValue("secondColumnName"), "value02");
 
-        Assert.assertEquals( dbRows[1].getAllCells().length, 2 );
-        Assert.assertEquals( dbRows[1].getCellValue( "firstColumnName" ), "value11" );
-        Assert.assertEquals( dbRows[1].getCellValue( "secondColumnName" ), "value12" );
+        Assert.assertEquals(dbRows[1].getAllCells().length, 2);
+        Assert.assertEquals(dbRows[1].getCellValue("firstColumnName"), "value11");
+        Assert.assertEquals(dbRows[1].getCellValue("secondColumnName"), "value12");
     }
 
     @Test
     public void testGettingValue() {
 
-        Assert.assertEquals( dbOps.getValue( "tRuns", "dateEnd", "runId", "7661" ), "value00" );
+        Assert.assertEquals(dbOps.getValue("tRuns", "dateEnd", "runId", "7661"), "value00");
     }
 
     @Test
     public void testGettingMoreThanOneValues() {
 
-        Assert.assertEquals( dbOps.getValue( "tRuns", "dateEnd", "runId", "moreValues" ), "value00" );
+        Assert.assertEquals(dbOps.getValue("tRuns", "dateEnd", "runId", "moreValues"), "value00");
     }
 
     @Test
     public void testGettingNullValue() {
 
-        Assert.assertNull( dbOps.getValue( "tRuns", "dateEnd", "runId", "nullValue" ) );
+        Assert.assertNull(dbOps.getValue("tRuns", "dateEnd", "runId", "nullValue"));
     }
 
-    @Test(expected = DatabaseOperationsException.class)
+    @Test( expected = DatabaseOperationsException.class)
     public void testGettingValueWithDbOperationException() {
 
-        dbOps.getDatabaseData( "wrongTableName", "dateEnd", "runId", "7661" );
+        dbOps.getDatabaseData("wrongTableName", "dateEnd", "runId", "7661");
     }
 
-    @Test(expected = DatabaseOperationsException.class)
+    @Test( expected = DatabaseOperationsException.class)
     public void testGettingValueWithDbOperationException2() {
 
-        dbOps.getValue( "wrongTableName", "dateEnd", "runId", "7661" );
+        dbOps.getValue("wrongTableName", "dateEnd", "runId", "7661");
     }
 
 }

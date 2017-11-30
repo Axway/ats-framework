@@ -28,7 +28,7 @@ public class ManagedTopicConnection extends ManagedConnection implements TopicCo
 
     public ManagedTopicConnection( TopicConnection connection ) {
 
-        super( connection );
+        super(connection);
         this.topicConnection = connection;
     }
 
@@ -37,7 +37,7 @@ public class ManagedTopicConnection extends ManagedConnection implements TopicCo
                                             boolean transacted,
                                             int acknowledgeMode ) throws JMSException {
 
-        return addSession( topicConnection.createTopicSession( transacted, acknowledgeMode ) );
+        return addSession(topicConnection.createTopicSession(transacted, acknowledgeMode));
     }
 
     @Override
@@ -47,9 +47,9 @@ public class ManagedTopicConnection extends ManagedConnection implements TopicCo
                                                         ServerSessionPool sessionPool,
                                                         int maxMessages ) throws JMSException {
 
-        return addConnectionConsumer( topicConnection.createConnectionConsumer( topic,
-                                                                                messageSelector,
-                                                                                sessionPool,
-                                                                                maxMessages ) );
+        return addConnectionConsumer(topicConnection.createConnectionConsumer(topic,
+                                                                              messageSelector,
+                                                                              sessionPool,
+                                                                              maxMessages));
     }
 }

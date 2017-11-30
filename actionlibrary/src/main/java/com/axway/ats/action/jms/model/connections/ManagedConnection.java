@@ -42,20 +42,20 @@ public class ManagedConnection implements Connection {
     public static ManagedConnection create(
                                             final Connection connection ) {
 
-        if( ( connection instanceof XAQueueConnection ) && ( connection instanceof XATopicConnection ) ) {
-            return new ManagedXAQueueTopicConnection( connection );
-        } else if( connection instanceof XAQueueConnection ) {
-            return new ManagedXAQueueConnection( ( XAQueueConnection ) connection );
-        } else if( connection instanceof XATopicConnection ) {
-            return new ManagedXATopicConnection( ( XATopicConnection ) connection );
-        } else if( ( connection instanceof QueueConnection ) && ( connection instanceof TopicConnection ) ) {
-            return new ManagedQueueTopicConnection( connection );
-        } else if( connection instanceof QueueConnection ) {
-            return new ManagedQueueConnection( ( QueueConnection ) connection );
-        } else if( connection instanceof TopicConnection ) {
-            return new ManagedTopicConnection( ( TopicConnection ) connection );
+        if ( (connection instanceof XAQueueConnection) && (connection instanceof XATopicConnection)) {
+            return new ManagedXAQueueTopicConnection(connection);
+        } else if (connection instanceof XAQueueConnection) {
+            return new ManagedXAQueueConnection((XAQueueConnection) connection);
+        } else if (connection instanceof XATopicConnection) {
+            return new ManagedXATopicConnection((XATopicConnection) connection);
+        } else if ( (connection instanceof QueueConnection) && (connection instanceof TopicConnection)) {
+            return new ManagedQueueTopicConnection(connection);
+        } else if (connection instanceof QueueConnection) {
+            return new ManagedQueueConnection((QueueConnection) connection);
+        } else if (connection instanceof TopicConnection) {
+            return new ManagedTopicConnection((TopicConnection) connection);
         } else {
-            return new ManagedConnection( connection );
+            return new ManagedConnection(connection);
         }
     }
 
@@ -68,24 +68,24 @@ public class ManagedConnection implements Connection {
 
         try {
             this.close();
-        } catch( final Exception e ) {
+        } catch (final Exception e) {
             // Ignored
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     protected synchronized <T extends Session> T addSession(
                                                              final T session ) {
 
-        final ManagedSession managedSession = ManagedSession.create( session );
-        sessions.add( managedSession );
-        return ( T ) managedSession;
+        final ManagedSession managedSession = ManagedSession.create(session);
+        sessions.add(managedSession);
+        return (T) managedSession;
     }
 
     protected synchronized ConnectionConsumer addConnectionConsumer(
                                                                      ConnectionConsumer connectionConsumer ) {
 
-        connectionConsumers.add( connectionConsumer );
+        connectionConsumers.add(connectionConsumer);
         return connectionConsumer;
     }
 
@@ -95,7 +95,7 @@ public class ManagedConnection implements Connection {
                                   boolean transacted,
                                   int acknowledgeMode ) throws JMSException {
 
-        return addSession( connection.createSession( transacted, acknowledgeMode ) );
+        return addSession(connection.createSession(transacted, acknowledgeMode));
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ManagedConnection implements Connection {
     public void setClientID(
                              String clientID ) throws JMSException {
 
-        connection.setClientID( clientID );
+        connection.setClientID(clientID);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class ManagedConnection implements Connection {
     public void setExceptionListener(
                                       ExceptionListener listener ) throws JMSException {
 
-        connection.setExceptionListener( listener );
+        connection.setExceptionListener(listener);
     }
 
     @Override
@@ -145,17 +145,17 @@ public class ManagedConnection implements Connection {
     @Override
     public synchronized void close() throws JMSException {
 
-        for( final ConnectionConsumer c : connectionConsumers )
+        for (final ConnectionConsumer c : connectionConsumers)
             try {
                 c.close();
-            } catch( final Exception e ) {}
+            } catch (final Exception e) {}
         connectionConsumers.clear();
-        for( final ManagedSession session : sessions )
+        for (final ManagedSession session : sessions)
             session.shutdown();
         sessions.clear();
         try {
             this.stop();
-        } catch( final Exception e ) {}
+        } catch (final Exception e) {}
         connection.close();
     }
 
@@ -166,7 +166,7 @@ public class ManagedConnection implements Connection {
                                                         ServerSessionPool sessionPool,
                                                         int maxMessages ) throws JMSException {
 
-        return connection.createConnectionConsumer( destination, messageSelector, sessionPool, maxMessages );
+        return connection.createConnectionConsumer(destination, messageSelector, sessionPool, maxMessages);
     }
 
     @Override
@@ -177,10 +177,10 @@ public class ManagedConnection implements Connection {
                                                                ServerSessionPool sessionPool,
                                                                int maxMessages ) throws JMSException {
 
-        return connection.createDurableConnectionConsumer( topic,
-                                                           subscriptionName,
-                                                           messageSelector,
-                                                           sessionPool,
-                                                           maxMessages );
+        return connection.createDurableConnectionConsumer(topic,
+                                                          subscriptionName,
+                                                          messageSelector,
+                                                          sessionPool,
+                                                          maxMessages);
     }
 }

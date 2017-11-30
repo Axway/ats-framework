@@ -39,11 +39,11 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
 
         this.atsAgent = atsAgent;
         this.configuration = configuration;
-        this.remoteFSSnapshot = new InternalFileSystemSnapshot( atsAgent );
+        this.remoteFSSnapshot = new InternalFileSystemSnapshot(atsAgent);
         try {
-            this.internalId = this.remoteFSSnapshot.initFileSystemSnapshot( name, configuration );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            this.internalId = this.remoteFSSnapshot.initFileSystemSnapshot(name, configuration);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -51,21 +51,21 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
 
         return this.internalId;
     }
-    
+
     public String getAtsAgent() {
 
         return this.atsAgent;
     }
-    
+
     /**
      * @return a remote snapshot
      */
     public LocalFileSystemSnapshot getFileSystemSnapshot() {
 
         try {
-            return remoteFSSnapshot.getFileSystemSnapshot( internalId );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            return remoteFSSnapshot.getFileSystemSnapshot(internalId);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -77,9 +77,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                         LocalFileSystemSnapshot newSnapshot ) {
 
         try {
-            this.internalId = remoteFSSnapshot.pushFileSystemSnapshot( internalId, newSnapshot );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            this.internalId = remoteFSSnapshot.pushFileSystemSnapshot(internalId, newSnapshot);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -91,9 +91,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                          String name ) {
 
         try {
-            remoteFSSnapshot.setName( internalId, name );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.setName(internalId, name);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -104,14 +104,14 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
     public RemoteFileSystemSnapshot newSnapshot(
                                                  String newSnapshotName ) {
 
-        RemoteFileSystemSnapshot newSnapshot = new RemoteFileSystemSnapshot( this.atsAgent,
-                                                                             newSnapshotName,
-                                                                             configuration );
+        RemoteFileSystemSnapshot newSnapshot = new RemoteFileSystemSnapshot(this.atsAgent,
+                                                                            newSnapshotName,
+                                                                            configuration);
         try {
-            newSnapshot.internalId = remoteFSSnapshot.newSnapshot( internalId, newSnapshotName );
+            newSnapshot.internalId = remoteFSSnapshot.newSnapshot(internalId, newSnapshotName);
             return newSnapshot;
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -121,33 +121,33 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                               String directoryPath ) {
 
         try {
-            remoteFSSnapshot.addDirectory( internalId, directoryAlias, directoryPath );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.addDirectory(internalId, directoryAlias, directoryPath);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
-    
+
     @Override
     public void skipDirectory(
                                String rootDirectoryAlias,
                                String relativeDirectoryPath ) {
 
         try {
-            remoteFSSnapshot.skipDirectory( internalId, rootDirectoryAlias, relativeDirectoryPath );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipDirectory(internalId, rootDirectoryAlias, relativeDirectoryPath);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
-    
+
     @Override
     public void skipDirectoryByRegex(
-                               String rootDirectoryAlias,
-                               String relativeDirectoryPath ) {
+                                      String rootDirectoryAlias,
+                                      String relativeDirectoryPath ) {
 
         try {
-            remoteFSSnapshot.skipDirectoryByRegex( internalId, rootDirectoryAlias, relativeDirectoryPath );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipDirectoryByRegex(internalId, rootDirectoryAlias, relativeDirectoryPath);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -158,9 +158,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                           int... skipRules ) {
 
         try {
-            remoteFSSnapshot.skipFile( internalId, rootDirectoryAlias, relativeFilePath, skipRules );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipFile(internalId, rootDirectoryAlias, relativeFilePath, skipRules);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -171,9 +171,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                  int... skipRules ) {
 
         try {
-            remoteFSSnapshot.skipFileByRegex( internalId, rootDirectoryAlias, relativeFilePath, skipRules );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipFileByRegex(internalId, rootDirectoryAlias, relativeFilePath, skipRules);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -184,21 +184,21 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                            int... checkRules ) {
 
         try {
-            remoteFSSnapshot.checkFile( internalId, rootDirectoryAlias, relativeFilePath, checkRules );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.checkFile(internalId, rootDirectoryAlias, relativeFilePath, checkRules);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
-    
+
     @Override
     public void skipPropertyWithKey( String rootDirectoryAlias, String relativeFilePath, String key,
                                      String matchType ) {
 
         try {
-            remoteFSSnapshot.skipPropertyWithKey( internalId, rootDirectoryAlias, relativeFilePath, key,
-                                                  matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipPropertyWithKey(internalId, rootDirectoryAlias, relativeFilePath, key,
+                                                 matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -207,23 +207,22 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                        String matchType ) {
 
         try {
-            remoteFSSnapshot.skipPropertyWithValue( internalId, rootDirectoryAlias, relativeFilePath, value,
-                                                    matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipPropertyWithValue(internalId, rootDirectoryAlias, relativeFilePath, value,
+                                                   matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
-    
 
     @Override
     public void skipNodeByValue( String rootDirectoryAlias, String relativeFilePath, String nodeXpath,
                                  String value, String matchType ) {
 
         try {
-            remoteFSSnapshot.skipNodeByValue( internalId, rootDirectoryAlias, relativeFilePath, nodeXpath,value,
-                                                  matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipNodeByValue(internalId, rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                             matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -233,10 +232,10 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                      String attributeValueMatchType ) {
 
         try {
-            remoteFSSnapshot.skipNodeByAttribute( internalId, rootDirectoryAlias, relativeFilePath, nodeXpath,
-                                                  attributeKey, attributeValue, attributeValueMatchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipNodeByAttribute(internalId, rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                 attributeKey, attributeValue, attributeValueMatchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -245,10 +244,10 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                 String matchType ) {
 
         try {
-            remoteFSSnapshot.skipIniSection( internalId, rootDirectoryAlias, relativeFilePath, section,
-                                             matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipIniSection(internalId, rootDirectoryAlias, relativeFilePath, section,
+                                            matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -257,10 +256,10 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                         String key, String matchType ) {
 
         try {
-            remoteFSSnapshot.skipIniPropertyWithKey( internalId, rootDirectoryAlias, relativeFilePath,
-                                                     section, key, matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipIniPropertyWithKey(internalId, rootDirectoryAlias, relativeFilePath,
+                                                    section, key, matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -269,33 +268,32 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                                           String value, String matchType ) {
 
         try {
-            remoteFSSnapshot.skipIniPropertyWithValue( internalId, rootDirectoryAlias, relativeFilePath,
-                                                       section, value, matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.skipIniPropertyWithValue(internalId, rootDirectoryAlias, relativeFilePath,
+                                                      section, value, matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
-    
+
     @Override
     public void skipTextLine( String rootDirectoryAlias, String relativeFilePath, String line,
-                                String matchType ) {
+                              String matchType ) {
 
         try {
-            remoteFSSnapshot.skipTextLine( internalId, rootDirectoryAlias, relativeFilePath, line,
-                                             matchType );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
-        }      
+            remoteFSSnapshot.skipTextLine(internalId, rootDirectoryAlias, relativeFilePath, line,
+                                          matchType);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
+        }
     }
-
 
     @Override
     public void takeSnapshot() {
 
         try {
-            remoteFSSnapshot.takeSnapshot( internalId );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.takeSnapshot(internalId);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -303,9 +301,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                          RemoteFileSystemSnapshot that ) {
 
         try {
-            remoteFSSnapshot.compare( internalId, that.internalId );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.compare(internalId, that.internalId);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -314,9 +312,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                               String sourceFile ) {
 
         try {
-            remoteFSSnapshot.loadFromFile( internalId, sourceFile );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.loadFromFile(internalId, sourceFile);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -328,9 +326,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
                         String backupFile ) {
 
         try {
-            remoteFSSnapshot.toFile( internalId, backupFile );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            remoteFSSnapshot.toFile(internalId, backupFile);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -338,9 +336,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
     public String toString() {
 
         try {
-            return remoteFSSnapshot.toString( internalId );
-        } catch( AgentException e ) {
-            throw new FileSystemSnapshotException( e );
+            return remoteFSSnapshot.toString(internalId);
+        } catch (AgentException e) {
+            throw new FileSystemSnapshotException(e);
         }
     }
 
@@ -358,9 +356,9 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
     protected void finalize() throws Throwable {
 
         TestcaseStateEventsDispacher.getInstance()
-                                    .cleanupInternalObjectResources( atsAgent,
-                                                                     CallerRelatedInfoRepository.KEY_FILESYSTEM_SNAPSHOT
-                                                                             + internalId );
+                                    .cleanupInternalObjectResources(atsAgent,
+                                                                    CallerRelatedInfoRepository.KEY_FILESYSTEM_SNAPSHOT
+                                                                              + internalId);
 
         super.finalize();
     }

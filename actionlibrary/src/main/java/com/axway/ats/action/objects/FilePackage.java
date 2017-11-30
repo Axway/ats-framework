@@ -68,7 +68,7 @@ public class FilePackage implements Package {
      */
     public FilePackage( String absolutePath ) throws PackageException {
 
-        this( null, absolutePath );
+        this(null, absolutePath);
     }
 
     /**
@@ -79,7 +79,7 @@ public class FilePackage implements Package {
      */
     public FilePackage( String absolutePath, OperatingSystemType osType ) {
 
-        this( null, absolutePath, osType );
+        this(null, absolutePath, osType);
     }
 
     /**
@@ -90,7 +90,7 @@ public class FilePackage implements Package {
      */
     public FilePackage( String atsAgent, String absolutePath ) throws PackageException {
 
-        this( atsAgent, absolutePath, null );
+        this(atsAgent, absolutePath, null);
     }
 
     /**
@@ -103,18 +103,18 @@ public class FilePackage implements Package {
     public FilePackage( String atsAgent, String absolutePath, OperatingSystemType osType ) {
 
         this.atsAgent = atsAgent;
-        this.path = IoUtils.getFilePath( absolutePath );
-        this.name = IoUtils.getFileName( absolutePath );
+        this.path = IoUtils.getFilePath(absolutePath);
+        this.name = IoUtils.getFileName(absolutePath);
 
-        if( this.atsAgent == null ) {
+        if (this.atsAgent == null) {
             this.fileSystemOperations = new FileSystemOperations();
             this.systemOperations = new SystemOperations();
         } else {
-            this.fileSystemOperations = new FileSystemOperations( this.atsAgent );
-            this.systemOperations = new SystemOperations( this.atsAgent );
+            this.fileSystemOperations = new FileSystemOperations(this.atsAgent);
+            this.systemOperations = new SystemOperations(this.atsAgent);
         }
 
-        if( osType == null ) {
+        if (osType == null) {
             this.osType = this.systemOperations.getOperatingSystemType();
         } else {
             this.osType = osType;
@@ -132,8 +132,8 @@ public class FilePackage implements Package {
                  FileSystemOperations fileSystemOperations, SystemOperations systemOperations ) {
 
         this.atsAgent = atsAgent;
-        this.path = IoUtils.getFilePath( absolutePath );
-        this.name = IoUtils.getFileName( absolutePath );
+        this.path = IoUtils.getFilePath(absolutePath);
+        this.name = IoUtils.getFileName(absolutePath);
         this.osType = osType;
 
         this.fileSystemOperations = fileSystemOperations;
@@ -143,13 +143,13 @@ public class FilePackage implements Package {
     public List<PackageHeader> getAllHeaders() throws PackageException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
     }
 
     public List<InputStream> getAllStreams() throws PackageException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
     }
 
     public String getDescription() throws PackageException {
@@ -161,33 +161,33 @@ public class FilePackage implements Package {
     public String[] getHeaderValues( String headerName ) throws PackageException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
 
     }
 
     public String getSubject() throws PackageException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
 
     }
 
     public String getTag() throws ActionException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
     }
 
     public InputStream getWholePackage() throws PackageException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
     }
 
     public void tag() throws ActionException {
 
         // FIXME either the interface should not define such a method or we need to somehow fit it into the abstraction
-        throw new PackageException( "Not available for file packages" );
+        throw new PackageException("Not available for file packages");
     }
 
     public String getName() {
@@ -206,16 +206,16 @@ public class FilePackage implements Package {
     public String getOwnerName() throws PackageException {
 
         //attribute not supported on windows
-        if( osType == OperatingSystemType.WINDOWS ) {
+        if (osType == OperatingSystemType.WINDOWS) {
             return null;
         }
 
         //lazy initialization
-        if( ownerName == null ) {
+        if (ownerName == null) {
             try {
-                ownerName = this.fileSystemOperations.getFileOwner( getAbsolutePath() );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract owner name for file " + getAbsolutePath(), e );
+                ownerName = this.fileSystemOperations.getFileOwner(getAbsolutePath());
+            } catch (Exception e) {
+                throw new PackageException("Could not extract owner name for file " + getAbsolutePath(), e);
             }
         }
 
@@ -233,16 +233,16 @@ public class FilePackage implements Package {
     public String getGroupName() throws PackageException {
 
         //attribute not supported on windows
-        if( osType == OperatingSystemType.WINDOWS ) {
+        if (osType == OperatingSystemType.WINDOWS) {
             return null;
         }
 
         //lazy initialization
-        if( groupName == null ) {
+        if (groupName == null) {
             try {
-                groupName = this.fileSystemOperations.getFileGroup( getAbsolutePath() );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract group name for file " + getAbsolutePath(), e );
+                groupName = this.fileSystemOperations.getFileGroup(getAbsolutePath());
+            } catch (Exception e) {
+                throw new PackageException("Could not extract group name for file " + getAbsolutePath(), e);
             }
         }
 
@@ -253,16 +253,16 @@ public class FilePackage implements Package {
     public long getGid() throws PackageException {
 
         //attribute not supported on windows
-        if( osType == OperatingSystemType.WINDOWS ) {
+        if (osType == OperatingSystemType.WINDOWS) {
             return ATTRIBUTE_NOT_SUPPORTED;
         }
 
         //lazy initialization
-        if( gid == null ) {
+        if (gid == null) {
             try {
-                gid = this.fileSystemOperations.getFileGID( getAbsolutePath() );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract GID for file " + getAbsolutePath(), e );
+                gid = this.fileSystemOperations.getFileGID(getAbsolutePath());
+            } catch (Exception e) {
+                throw new PackageException("Could not extract GID for file " + getAbsolutePath(), e);
             }
         }
 
@@ -273,16 +273,16 @@ public class FilePackage implements Package {
     public long getUid() throws PackageException {
 
         //attribute not supported on windows
-        if( osType == OperatingSystemType.WINDOWS ) {
+        if (osType == OperatingSystemType.WINDOWS) {
             return ATTRIBUTE_NOT_SUPPORTED;
         }
 
         //lazy initialization
-        if( uid == null ) {
+        if (uid == null) {
             try {
-                uid = this.fileSystemOperations.getFileUID( getAbsolutePath() );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract UID for file " + getAbsolutePath(), e );
+                uid = this.fileSystemOperations.getFileUID(getAbsolutePath());
+            } catch (Exception e) {
+                throw new PackageException("Could not extract UID for file " + getAbsolutePath(), e);
             }
         }
 
@@ -302,9 +302,9 @@ public class FilePackage implements Package {
         String[] contents;
 
         try {
-            contents = this.fileSystemOperations.fileGrep( getAbsolutePath(), expression, !isRegExp );
-        } catch( Exception e ) {
-            throw new PackageException( "Could not extract contents for file " + getAbsolutePath(), e );
+            contents = this.fileSystemOperations.fileGrep(getAbsolutePath(), expression, !isRegExp);
+        } catch (Exception e) {
+            throw new PackageException("Could not extract contents for file " + getAbsolutePath(), e);
         }
 
         return contents;
@@ -321,15 +321,15 @@ public class FilePackage implements Package {
         // extract the list of files with this name - since we are now specifically asking for
         // files then if the entity is a directory it would not come up in the list
         try {
-            fileList = getFileSystemOperationsImplementationFor( atsAgent ).findFiles( path, name, false,
-                                                                                       false, false );
+            fileList = getFileSystemOperationsImplementationFor(atsAgent).findFiles(path, name, false,
+                                                                                    false, false);
 
-        } catch( Exception e ) {
-            throw new PackageException( "Unable to get file list. " + e.getMessage(), e );
+        } catch (Exception e) {
+            throw new PackageException("Unable to get file list. " + e.getMessage(), e);
         }
 
         // check if the list is empty (no such file was found)
-        if( fileList.length == 0 ) {
+        if (fileList.length == 0) {
             return false;
         }
 
@@ -340,20 +340,20 @@ public class FilePackage implements Package {
     public long getPermissions() throws PackageException {
 
         //attribute not supported on windows
-        if( osType == OperatingSystemType.WINDOWS ) {
+        if (osType == OperatingSystemType.WINDOWS) {
             return ATTRIBUTE_NOT_SUPPORTED;
         }
 
         //lazy initialization
-        if( permissions == null ) {
+        if (permissions == null) {
             try {
-                permissions = Long.parseLong( this.fileSystemOperations.getFilePermissions( getAbsolutePath() ) );
-            } catch( NumberFormatException e ) {
-                throw new PackageException( "Could not convert permissions to Long for file "
-                                            + getAbsolutePath(), e );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract permissions for file " + getAbsolutePath(),
-                                            e );
+                permissions = Long.parseLong(this.fileSystemOperations.getFilePermissions(getAbsolutePath()));
+            } catch (NumberFormatException e) {
+                throw new PackageException("Could not convert permissions to Long for file "
+                                           + getAbsolutePath(), e);
+            } catch (Exception e) {
+                throw new PackageException("Could not extract permissions for file " + getAbsolutePath(),
+                                           e);
             }
         }
 
@@ -364,12 +364,12 @@ public class FilePackage implements Package {
     public long getModTime() throws PackageException {
 
         //lazy initialization
-        if( modtime == null ) {
+        if (modtime == null) {
             try {
-                modtime = this.fileSystemOperations.getFileModificationTime( getAbsolutePath() );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract modification time for file "
-                                            + getAbsolutePath(), e );
+                modtime = this.fileSystemOperations.getFileModificationTime(getAbsolutePath());
+            } catch (Exception e) {
+                throw new PackageException("Could not extract modification time for file "
+                                           + getAbsolutePath(), e);
             }
         }
 
@@ -379,10 +379,10 @@ public class FilePackage implements Package {
     public String getUniqueIdentifier() throws PackageException {
 
         try {
-            return this.fileSystemOperations.getFileUniqueId( getAbsolutePath() );
-        } catch( Exception e ) {
-            throw new PackageException( "Could not extract unique identifier for file " + getAbsolutePath(),
-                                        e );
+            return this.fileSystemOperations.getFileUniqueId(getAbsolutePath());
+        } catch (Exception e) {
+            throw new PackageException("Could not extract unique identifier for file " + getAbsolutePath(),
+                                       e);
         }
     }
 
@@ -390,12 +390,12 @@ public class FilePackage implements Package {
     public long getSize() throws PackageException {
 
         //lazy initialization
-        if( size == null ) {
+        if (size == null) {
             try {
-                size = this.fileSystemOperations.getFileSize( getAbsolutePath() );
-            } catch( Exception e ) {
-                throw new PackageException( "Could not extract size for file '" + getAbsolutePath() + "'",
-                                            e );
+                size = this.fileSystemOperations.getFileSize(getAbsolutePath());
+            } catch (Exception e) {
+                throw new PackageException("Could not extract size for file '" + getAbsolutePath() + "'",
+                                           e);
             }
         }
 
@@ -405,18 +405,18 @@ public class FilePackage implements Package {
     @PublicAtsApi
     public String getMd5sum() throws PackageException {
 
-        return getMd5sum( true );
+        return getMd5sum(true);
     }
 
     @PublicAtsApi
     public String getMd5sum( boolean binaryMode ) throws PackageException {
 
         try {
-            return this.fileSystemOperations.computeMd5Sum( getAbsolutePath(), binaryMode
-                                                                                          ? Md5SumMode.BINARY
-                                                                                          : Md5SumMode.ASCII );
-        } catch( Exception e ) {
-            throw new PackageException( e );
+            return this.fileSystemOperations.computeMd5Sum(getAbsolutePath(), binaryMode
+                                                                                         ? Md5SumMode.BINARY
+                                                                                         : Md5SumMode.ASCII);
+        } catch (Exception e) {
+            throw new PackageException(e);
         }
     }
 
@@ -426,7 +426,7 @@ public class FilePackage implements Package {
     @PublicAtsApi
     public String getAbsolutePath() {
 
-        return new StringBuilder().append( path ).append( name ).toString();
+        return new StringBuilder().append(path).append(name).toString();
     }
 
     /**
@@ -448,10 +448,10 @@ public class FilePackage implements Package {
 
     private IFileSystemOperations getFileSystemOperationsImplementationFor( String atsAgent ) {
 
-        if( HostUtils.isLocalAtsAgent( atsAgent ) ) {
+        if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemOperations();
         } else {
-            return new RemoteFileSystemOperations( atsAgent );
+            return new RemoteFileSystemOperations(atsAgent);
         }
     }
 }

@@ -32,7 +32,7 @@ public class MailTlsSender extends MailSender {
     @PublicAtsApi
     public MailTlsSender() {
 
-        this( BasicSslSocketFactory.class );
+        this(BasicSslSocketFactory.class);
     }
 
     /**
@@ -50,9 +50,9 @@ public class MailTlsSender extends MailSender {
          * Mail session properties SMTP reference:
          *  https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
          */
-        mailProperties.put( "mail.smtp.starttls.enable", "true" );
+        mailProperties.put("mail.smtp.starttls.enable", "true");
         // mailProperties.put("mail.smtp.ssl.protocols","TLSv1.2");
-        mailProperties.put( "mail.smtp.socketFactory.fallback", "false" );
-        mailProperties.put( "mail.smtp.ssl.socketFactory.class", sslSocketFactoryClass.getCanonicalName() );
+        mailProperties.put("mail.smtp.socketFactory.fallback", "false");
+        mailProperties.put("mail.smtp.ssl.socketFactory.class", sslSocketFactoryClass.getCanonicalName());
     }
 }

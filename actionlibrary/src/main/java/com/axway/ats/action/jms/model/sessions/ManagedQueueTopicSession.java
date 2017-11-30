@@ -30,14 +30,14 @@ public class ManagedQueueTopicSession extends ManagedSession implements QueueSes
 
     public ManagedQueueTopicSession( final Session session ) {
 
-        super( session );
+        super(session);
     }
 
     @Override
     public QueueReceiver createReceiver(
                                          Queue queue ) throws JMSException {
 
-        return addConsumer( ( ( QueueSession ) session ).createReceiver( queue ) );
+        return addConsumer( ((QueueSession) session).createReceiver(queue));
     }
 
     @Override
@@ -45,21 +45,21 @@ public class ManagedQueueTopicSession extends ManagedSession implements QueueSes
                                          Queue queue,
                                          String messageSelector ) throws JMSException {
 
-        return addConsumer( ( ( QueueSession ) session ).createReceiver( queue, messageSelector ) );
+        return addConsumer( ((QueueSession) session).createReceiver(queue, messageSelector));
     }
 
     @Override
     public QueueSender createSender(
                                      Queue queue ) throws JMSException {
 
-        return addProducer( ( ( QueueSession ) session ).createSender( queue ) );
+        return addProducer( ((QueueSession) session).createSender(queue));
     }
 
     @Override
     public TopicSubscriber createSubscriber(
                                              Topic topic ) throws JMSException {
 
-        return addConsumer( ( ( TopicSession ) session ).createSubscriber( topic ) );
+        return addConsumer( ((TopicSession) session).createSubscriber(topic));
     }
 
     @Override
@@ -68,13 +68,13 @@ public class ManagedQueueTopicSession extends ManagedSession implements QueueSes
                                              String messageSelector,
                                              boolean noLocal ) throws JMSException {
 
-        return addConsumer( ( ( TopicSession ) session ).createSubscriber( topic, messageSelector, noLocal ) );
+        return addConsumer( ((TopicSession) session).createSubscriber(topic, messageSelector, noLocal));
     }
 
     @Override
     public TopicPublisher createPublisher(
                                            Topic topic ) throws JMSException {
 
-        return addProducer( ( ( TopicSession ) session ).createPublisher( topic ) );
+        return addProducer( ((TopicSession) session).createPublisher(topic));
     }
 }

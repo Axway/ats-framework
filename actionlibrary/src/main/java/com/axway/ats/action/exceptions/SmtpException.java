@@ -33,7 +33,7 @@ public class SmtpException extends RuntimeException {
     @PublicAtsApi
     public SmtpException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     /**
@@ -45,7 +45,7 @@ public class SmtpException extends RuntimeException {
     public SmtpException( String resopnse,
                           int responseCode ) {
 
-        super( String.valueOf( responseCode ) + " " + resopnse );
+        super(String.valueOf(responseCode) + " " + resopnse);
         this.response = resopnse;
         this.responseCode = responseCode;
     }

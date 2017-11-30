@@ -31,10 +31,10 @@ import com.axway.ats.action.BaseTest;
 
 public class Test_RestClient extends BaseTest {
 
-    private String[] supportedProtocols;
-    private String   username;
-    private String   password;
-    private String   uri;
+    private String[]            supportedProtocols;
+    private String              username;
+    private String              password;
+    private String              uri;
 
     private Map<String, String> propMap;
     private List<Class<?>>      providerClasses;
@@ -54,13 +54,13 @@ public class Test_RestClient extends BaseTest {
         uri = "uri";
 
         providerClasses = new ArrayList<Class<?>>();
-        providerClasses.add( Test_RestClient.class );
+        providerClasses.add(Test_RestClient.class);
 
         providers = new ArrayList<Object>();
-        providers.add( "object" );
+        providers.add("object");
 
         propMap = new HashMap<String, String>();
-        propMap.put( "propName", "propValue" );
+        propMap.put("propName", "propValue");
 
         certFileName = "certFileName";
         certPassword = "certPassword";
@@ -74,32 +74,34 @@ public class Test_RestClient extends BaseTest {
 
         // create RESTClientConfigurator instance and set any custom properties to it
         RestClientConfigurator clientConfigurator = new RestClientConfigurator();
-        clientConfigurator.setSSLCertificate( certFileName, certPassword );
-        clientConfigurator.setProperty( "propName", propMap.get( "propName" ) );
-        clientConfigurator.registerProviderClass( Test_RestClient.class );
-        clientConfigurator.registerProvider( "object" );
+        clientConfigurator.setSSLCertificate(certFileName, certPassword);
+        clientConfigurator.setProperty("propName", propMap.get("propName"));
+        clientConfigurator.registerProviderClass(Test_RestClient.class);
+        clientConfigurator.registerProvider("object");
 
         // create RESTClient instance and set any custom properties to it
-        RestClient client = new RestClient( "http://www.test.com" );
-        client.setSupportedProtocols( supportedProtocols );
-        client.setURI( uri );
-        client.setBasicAuthorization( username, password );
-        client.setClientConfigurator( clientConfigurator );
+        RestClient client = new RestClient("http://www.test.com");
+        client.setSupportedProtocols(supportedProtocols);
+        client.setURI(uri);
+        client.setBasicAuthorization(username, password);
+        client.setClientConfigurator(clientConfigurator);
 
         // create a copy of the original instance
         RestClient clientCopy = client.newCopy();
 
         // verify all properties are copied to the copied instance
-        assertEquals( Arrays.toString( supportedProtocols ),
-                      Arrays.toString( clientCopy.getSupportedProtocols() ) );
-        assertEquals( uri, clientCopy.getURI() );
+        assertEquals(Arrays.toString(supportedProtocols),
+                     Arrays.toString(clientCopy.getSupportedProtocols()));
+        assertEquals(uri, clientCopy.getURI());
 
         // verify that clientConfigurator properties are also copied to the copied instance
-        assertEquals( certFileName, clientCopy.getClientConfigurator().getCertificateFileName() );
-        assertEquals( certPassword, clientCopy.getClientConfigurator().getCertificateFilePassword() );
-        assertTrue( clientCopy.getClientConfigurator().getProperties().entrySet()
-                              .containsAll( propMap.entrySet() ) );
-        assertTrue( clientCopy.getClientConfigurator().getProviderClasses().containsAll( providerClasses ) );
-        assertTrue( clientCopy.getClientConfigurator().getProviders().containsAll( providers ) );
+        assertEquals(certFileName, clientCopy.getClientConfigurator().getCertificateFileName());
+        assertEquals(certPassword, clientCopy.getClientConfigurator().getCertificateFilePassword());
+        assertTrue(clientCopy.getClientConfigurator()
+                             .getProperties()
+                             .entrySet()
+                             .containsAll(propMap.entrySet()));
+        assertTrue(clientCopy.getClientConfigurator().getProviderClasses().containsAll(providerClasses));
+        assertTrue(clientCopy.getClientConfigurator().getProviders().containsAll(providers));
     }
 }

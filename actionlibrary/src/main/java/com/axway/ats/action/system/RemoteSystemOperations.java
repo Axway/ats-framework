@@ -25,9 +25,9 @@ import com.axway.ats.core.system.model.ISystemOperations;
 
 public class RemoteSystemOperations implements ISystemOperations {
 
-    private String atsAgent;
+    private String                     atsAgent;
 
-    private InternalSystemOperations remoteSystemOperations;
+    private InternalSystemOperations   remoteSystemOperations;
 
     public RemoteSystemInputOperations inputOperatins;
 
@@ -39,7 +39,7 @@ public class RemoteSystemOperations implements ISystemOperations {
     public RemoteSystemOperations( String atsAgent ) {
 
         this.atsAgent = atsAgent;
-        this.remoteSystemOperations = new InternalSystemOperations( atsAgent );
+        this.remoteSystemOperations = new InternalSystemOperations(atsAgent);
     }
 
     @Override
@@ -47,8 +47,8 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         try {
             return this.remoteSystemOperations.getOperatingSystemType();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get OS type of machine " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get OS type of machine " + atsAgent, e);
         }
     }
 
@@ -57,10 +57,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                                      String propertyName ) {
 
         try {
-            return this.remoteSystemOperations.getSystemProperty( propertyName );
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get the system property with name '" + propertyName
-                                                + "' of machine " + atsAgent, e );
+            return this.remoteSystemOperations.getSystemProperty(propertyName);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get the system property with name '" + propertyName
+                                               + "' of machine " + atsAgent, e);
         }
     }
 
@@ -69,9 +69,9 @@ public class RemoteSystemOperations implements ISystemOperations {
                            boolean inMilliseconds ) {
 
         try {
-            return this.remoteSystemOperations.getTime( inMilliseconds );
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get system time of machine " + atsAgent, e );
+            return this.remoteSystemOperations.getTime(inMilliseconds);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get system time of machine " + atsAgent, e);
         }
     }
 
@@ -81,9 +81,9 @@ public class RemoteSystemOperations implements ISystemOperations {
                          boolean inMilliseconds ) {
 
         try {
-            this.remoteSystemOperations.setTime( timestamp, inMilliseconds );
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not set system time of machine " + atsAgent, e );
+            this.remoteSystemOperations.setTime(timestamp, inMilliseconds);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not set system time of machine " + atsAgent, e);
         }
     }
 
@@ -92,8 +92,8 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         try {
             return this.remoteSystemOperations.getAtsVersion();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get ATS version of agent: " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get ATS version of agent: " + atsAgent, e);
         }
     }
 
@@ -104,11 +104,11 @@ public class RemoteSystemOperations implements ISystemOperations {
                                 int timeout ) {
 
         try {
-            return this.remoteSystemOperations.isListening( host, port, timeout );
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Unable to check whether host '" + host
-                                                + "' is listening on port '" + port + "' of agent: "
-                                                + atsAgent, e );
+            return this.remoteSystemOperations.isListening(host, port, timeout);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Unable to check whether host '" + host
+                                               + "' is listening on port '" + port + "' of agent: "
+                                               + atsAgent, e);
         }
     }
 
@@ -118,14 +118,14 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         try {
             String remoteFilePath = null;
-            int extIndex = filePath.lastIndexOf( '.' );
-            if( extIndex > 0 ) {
-                remoteFilePath = filePath.substring( extIndex );
+            int extIndex = filePath.lastIndexOf('.');
+            if (extIndex > 0) {
+                remoteFilePath = filePath.substring(extIndex);
             }
-            remoteFilePath = this.remoteSystemOperations.createScreenshot( remoteFilePath );
-            new RemoteFileSystemOperations( atsAgent ).copyFileFrom( remoteFilePath, filePath, true );
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not create screenshot on agent: " + atsAgent, e );
+            remoteFilePath = this.remoteSystemOperations.createScreenshot(remoteFilePath);
+            new RemoteFileSystemOperations(atsAgent).copyFileFrom(remoteFilePath, filePath, true);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not create screenshot on agent: " + atsAgent, e);
         }
         return filePath;
     }
@@ -133,19 +133,19 @@ public class RemoteSystemOperations implements ISystemOperations {
     @Override
     public ISystemInputOperations getInputOperations() {
 
-        if( inputOperatins == null ) {
+        if (inputOperatins == null) {
             inputOperatins = new RemoteSystemInputOperations();
         }
         return inputOperatins;
     }
-    
+
     @Override
     public String getHostname() {
 
         try {
             return remoteSystemOperations.getHostname();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get Hostname on agent: " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get Hostname on agent: " + atsAgent, e);
         }
     }
 
@@ -154,18 +154,18 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         try {
             return remoteSystemOperations.getClassPath();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get ClassPath on agent: " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get ClassPath on agent: " + atsAgent, e);
         }
     }
-    
+
     @Override
     public void logClassPath() {
 
         try {
             remoteSystemOperations.logClassPath();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not log classpath on agent: " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not log classpath on agent: " + atsAgent, e);
         }
     }
 
@@ -174,8 +174,8 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         try {
             return remoteSystemOperations.getDuplicatedJars();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not get duplicated jars on agent: " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not get duplicated jars on agent: " + atsAgent, e);
         }
     }
 
@@ -184,8 +184,8 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         try {
             remoteSystemOperations.logDuplicatedJars();
-        } catch( AgentException e ) {
-            throw new SystemOperationException( "Could not log duplicated jars on agent: " + atsAgent, e );
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not log duplicated jars on agent: " + atsAgent, e);
         }
     }
 
@@ -197,10 +197,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                              int y ) {
 
             try {
-                remoteSystemOperations.inputOperations.clickAt( x, y );
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute mouse click action on agent: "
-                                                    + atsAgent, e );
+                remoteSystemOperations.inputOperations.clickAt(x, y);
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute mouse click action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -209,10 +209,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                           String text ) {
 
             try {
-                remoteSystemOperations.inputOperations.type( text );
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard type action on agent: "
-                                                    + atsAgent, e );
+                remoteSystemOperations.inputOperations.type(text);
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard type action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -221,10 +221,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                           int... keyCodes ) {
 
             try {
-                remoteSystemOperations.inputOperations.type( keyCodes );
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard type action on agent: "
-                                                    + atsAgent, e );
+                remoteSystemOperations.inputOperations.type(keyCodes);
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard type action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -234,10 +234,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                           int... keyCodes ) {
 
             try {
-                remoteSystemOperations.inputOperations.type( text, keyCodes );
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard type action on agent: "
-                                                    + atsAgent, e );
+                remoteSystemOperations.inputOperations.type(text, keyCodes);
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard type action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -246,9 +246,9 @@ public class RemoteSystemOperations implements ISystemOperations {
 
             try {
                 remoteSystemOperations.inputOperations.pressTab();
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard TAB action on agent: "
-                                                    + atsAgent, e );
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard TAB action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -257,9 +257,9 @@ public class RemoteSystemOperations implements ISystemOperations {
 
             try {
                 remoteSystemOperations.inputOperations.pressSpace();
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard SPACE action on agent: "
-                                                    + atsAgent, e );
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard SPACE action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -268,9 +268,9 @@ public class RemoteSystemOperations implements ISystemOperations {
 
             try {
                 remoteSystemOperations.inputOperations.pressEnter();
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard Enter action on agent: "
-                                                    + atsAgent, e );
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard Enter action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -279,9 +279,9 @@ public class RemoteSystemOperations implements ISystemOperations {
 
             try {
                 remoteSystemOperations.inputOperations.pressEsc();
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard Escape action on agent: "
-                                                    + atsAgent, e );
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard Escape action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -290,9 +290,9 @@ public class RemoteSystemOperations implements ISystemOperations {
 
             try {
                 remoteSystemOperations.inputOperations.pressAltF4();
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard Alt + F4 action on agent: "
-                                                    + atsAgent, e );
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard Alt + F4 action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -301,10 +301,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                               int keyCode ) {
 
             try {
-                remoteSystemOperations.inputOperations.keyPress( keyCode );
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard key press action on agent: "
-                                                    + atsAgent, e );
+                remoteSystemOperations.inputOperations.keyPress(keyCode);
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard key press action on agent: "
+                                                   + atsAgent, e);
             }
         }
 
@@ -313,10 +313,10 @@ public class RemoteSystemOperations implements ISystemOperations {
                                 int keyCode ) {
 
             try {
-                remoteSystemOperations.inputOperations.keyRelease( keyCode );
-            } catch( AgentException e ) {
-                throw new SystemOperationException( "Could not execute keyboard key release action on agent: "
-                                                    + atsAgent, e );
+                remoteSystemOperations.inputOperations.keyRelease(keyCode);
+            } catch (AgentException e) {
+                throw new SystemOperationException("Could not execute keyboard key release action on agent: "
+                                                   + atsAgent, e);
             }
         }
 

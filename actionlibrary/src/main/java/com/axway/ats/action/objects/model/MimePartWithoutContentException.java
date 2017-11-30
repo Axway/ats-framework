@@ -15,23 +15,23 @@
  */
 package com.axway.ats.action.objects.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class MimePartWithoutContentException extends PackageException {
 
     public MimePartWithoutContentException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public MimePartWithoutContentException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public MimePartWithoutContentException( String message,
                                             Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
 }

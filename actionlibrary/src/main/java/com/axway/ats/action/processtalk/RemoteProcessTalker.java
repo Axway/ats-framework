@@ -24,8 +24,8 @@ import com.axway.ats.core.processtalk.IProcessTalker;
 
 public class RemoteProcessTalker implements IProcessTalker {
 
-    private String atsAgent;
-    private String internalId;
+    private String                atsAgent;
+    private String                internalId;
 
     private InternalProcessTalker remoteProcessTalker;
 
@@ -33,11 +33,11 @@ public class RemoteProcessTalker implements IProcessTalker {
                                 String command ) {
 
         this.atsAgent = atsAgent;
-        this.remoteProcessTalker = new InternalProcessTalker( atsAgent );
+        this.remoteProcessTalker = new InternalProcessTalker(atsAgent);
         try {
-            this.internalId = this.remoteProcessTalker.initProcessTalker( command );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            this.internalId = this.remoteProcessTalker.initProcessTalker(command);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -46,9 +46,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                             String command ) {
 
         try {
-            remoteProcessTalker.setCommand( internalId, command );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.setCommand(internalId, command);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -57,9 +57,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                                             int defaultTimeoutSeconds ) {
 
         try {
-            remoteProcessTalker.setDefaultOperationTimeout( internalId, defaultTimeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.setDefaultOperationTimeout(internalId, defaultTimeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -67,9 +67,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public String getPendingToMatchContent() {
 
         try {
-            return remoteProcessTalker.getPendingToMatchContent( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.getPendingToMatchContent(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -77,9 +77,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public String getCurrentStandardOutContents() {
 
         try {
-            return remoteProcessTalker.getCurrentStandardOutContents( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.getCurrentStandardOutContents(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -87,9 +87,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public String getCurrentStandardErrContents() {
 
         try {
-            return remoteProcessTalker.getCurrentStandardErrContents( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.getCurrentStandardErrContents(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -98,9 +98,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                         String pattern ) {
 
         try {
-            remoteProcessTalker.expect( internalId, pattern );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expect(internalId, pattern);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -110,21 +110,21 @@ public class RemoteProcessTalker implements IProcessTalker {
                         int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expect( internalId, pattern, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expect(internalId, pattern, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-    
+
     @Override
     public void expectErr( String pattern, int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectErr( internalId, pattern, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectErr(internalId, pattern, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
-        
+
     }
 
     @Override
@@ -132,9 +132,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                                String pattern ) {
 
         try {
-            remoteProcessTalker.expectByRegex( internalId, pattern );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectByRegex(internalId, pattern);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -144,32 +144,31 @@ public class RemoteProcessTalker implements IProcessTalker {
                                int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectByRegex( internalId, pattern, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectByRegex(internalId, pattern, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-    
+
     @Override
     public void expectErrByRegex( String pattern, int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectErrByRegex( internalId, pattern, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectErrByRegex(internalId, pattern, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
-        
-    }
 
+    }
 
     @Override
     public int expectAny(
                           String[] patterns ) {
 
         try {
-            return remoteProcessTalker.expectAny( internalId, patterns );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.expectAny(internalId, patterns);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -179,31 +178,30 @@ public class RemoteProcessTalker implements IProcessTalker {
                           int timeoutSeconds ) {
 
         try {
-            return remoteProcessTalker.expectAny( internalId, patterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.expectAny(internalId, patterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-    
+
     @Override
     public int expectErrAny( String[] patterns, int timeoutSeconds ) {
 
         try {
-            return remoteProcessTalker.expectErrAny( internalId, patterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.expectErrAny(internalId, patterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-
 
     @Override
     public int expectAnyByRegex(
                                  String[] regexPatterns ) {
 
         try {
-            return remoteProcessTalker.expectAnyByRegex( internalId, regexPatterns );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.expectAnyByRegex(internalId, regexPatterns);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -213,19 +211,19 @@ public class RemoteProcessTalker implements IProcessTalker {
                                  int timeoutSeconds ) {
 
         try {
-            return remoteProcessTalker.expectAnyByRegex( internalId, regexPatterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.expectAnyByRegex(internalId, regexPatterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-    
+
     @Override
     public int expectErrAnyByRegex( String[] regexPatterns, int timeoutSeconds ) {
 
         try {
-            return remoteProcessTalker.expectErrAnyByRegex( internalId, regexPatterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.expectErrAnyByRegex(internalId, regexPatterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -234,9 +232,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                            String[] patterns ) {
 
         try {
-            remoteProcessTalker.expectAll( internalId, patterns );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectAll(internalId, patterns);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -246,21 +244,21 @@ public class RemoteProcessTalker implements IProcessTalker {
                            int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectAll( internalId, patterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectAll(internalId, patterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-    
+
     @Override
     public void expectErrAll( String[] patterns, int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectErrAll( internalId, patterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectErrAll(internalId, patterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
-        
+
     }
 
     @Override
@@ -268,9 +266,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                                   String[] regexPatterns ) {
 
         try {
-            remoteProcessTalker.expectAllByRegex( internalId, regexPatterns );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectAllByRegex(internalId, regexPatterns);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -280,32 +278,31 @@ public class RemoteProcessTalker implements IProcessTalker {
                                   int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectAllByRegex( internalId, regexPatterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectAllByRegex(internalId, regexPatterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
-    
+
     @Override
     public void expectErrAllByRegex( String[] regexPatterns, int timeoutSeconds ) {
 
         try {
-            remoteProcessTalker.expectErrAllByRegex( internalId, regexPatterns, timeoutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectErrAllByRegex(internalId, regexPatterns, timeoutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
-        
-    }
 
+    }
 
     @Override
     public void send(
                       String text ) {
 
         try {
-            remoteProcessTalker.send( internalId, text );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.send(internalId, text);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -313,9 +310,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public void sendEnterKey() {
 
         try {
-            remoteProcessTalker.sendEnterKey( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.sendEnterKey(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -326,12 +323,12 @@ public class RemoteProcessTalker implements IProcessTalker {
                                     int maxLoopTimes ) {
 
         try {
-            remoteProcessTalker.sendEnterKeyInLoop( internalId,
-                                                    intermediatePattern,
-                                                    finalPattern,
-                                                    maxLoopTimes );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.sendEnterKeyInLoop(internalId,
+                                                   intermediatePattern,
+                                                   finalPattern,
+                                                   maxLoopTimes);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -339,9 +336,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public void expectClose() {
 
         try {
-            remoteProcessTalker.expectClose( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectClose(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -350,9 +347,9 @@ public class RemoteProcessTalker implements IProcessTalker {
                              int timeOutSeconds ) {
 
         try {
-            remoteProcessTalker.expectClose( internalId, timeOutSeconds );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.expectClose(internalId, timeOutSeconds);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -360,9 +357,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public boolean isClosed() {
 
         try {
-            return remoteProcessTalker.isClosed( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.isClosed(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
 
     }
@@ -371,9 +368,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public int getExitValue() {
 
         try {
-            return remoteProcessTalker.getExitValue( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            return remoteProcessTalker.getExitValue(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -381,9 +378,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public void killExternalProcess() {
 
         try {
-            remoteProcessTalker.killExternalProcess( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.killExternalProcess(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -391,9 +388,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     public void killExternalProcessWithChildren() {
 
         try {
-            remoteProcessTalker.killExternalProcessWithChildren( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessTalkException( e );
+            remoteProcessTalker.killExternalProcessWithChildren(internalId);
+        } catch (AgentException e) {
+            throw new ProcessTalkException(e);
         }
     }
 
@@ -410,9 +407,9 @@ public class RemoteProcessTalker implements IProcessTalker {
     @Override
     protected void finalize() throws Throwable {
 
-        TestcaseStateEventsDispacher.getInstance().cleanupInternalObjectResources( atsAgent,
-                                                                                   CallerRelatedInfoRepository.KEY_PROCESS_TALKER
-                                                                                             + internalId );
+        TestcaseStateEventsDispacher.getInstance().cleanupInternalObjectResources(atsAgent,
+                                                                                  CallerRelatedInfoRepository.KEY_PROCESS_TALKER
+                                                                                            + internalId);
 
         super.finalize();
     }

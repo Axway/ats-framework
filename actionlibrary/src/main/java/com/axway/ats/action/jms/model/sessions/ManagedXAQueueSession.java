@@ -27,14 +27,14 @@ public class ManagedXAQueueSession extends ManagedSession implements XAQueueSess
 
     public ManagedXAQueueSession( final XAQueueSession session ) {
 
-        super( session );
+        super(session);
         xaQueueSession = session;
     }
 
     @Override
     public Session getSession() throws JMSException {
 
-        return addSession( xaQueueSession.getSession() );
+        return addSession(xaQueueSession.getSession());
     }
 
     @Override
@@ -46,6 +46,6 @@ public class ManagedXAQueueSession extends ManagedSession implements XAQueueSess
     @Override
     public QueueSession getQueueSession() throws JMSException {
 
-        return addSession( xaQueueSession.getQueueSession() );
+        return addSession(xaQueueSession.getQueueSession());
     }
 }

@@ -31,7 +31,7 @@ public class ManagedQueueTopicConnection extends ManagedConnection implements Qu
 
     public ManagedQueueTopicConnection( final Connection connection ) {
 
-        super( connection );
+        super(connection);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ManagedQueueTopicConnection extends ManagedConnection implements Qu
                                             boolean transacted,
                                             int acknowledgeMode ) throws JMSException {
 
-        return ( ( QueueConnection ) connection ).createQueueSession( transacted, acknowledgeMode );
+        return ((QueueConnection) connection).createQueueSession(transacted, acknowledgeMode);
     }
 
     @Override
@@ -49,10 +49,10 @@ public class ManagedQueueTopicConnection extends ManagedConnection implements Qu
                                                         ServerSessionPool sessionPool,
                                                         int maxMessages ) throws JMSException {
 
-        return addConnectionConsumer( ( ( QueueConnection ) connection ).createConnectionConsumer( queue,
-                                                                                                   messageSelector,
-                                                                                                   sessionPool,
-                                                                                                   maxMessages ) );
+        return addConnectionConsumer( ((QueueConnection) connection).createConnectionConsumer(queue,
+                                                                                              messageSelector,
+                                                                                              sessionPool,
+                                                                                              maxMessages));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ManagedQueueTopicConnection extends ManagedConnection implements Qu
                                             boolean transacted,
                                             int acknowledgeMode ) throws JMSException {
 
-        return addSession( ( ( TopicConnection ) connection ).createTopicSession( transacted, acknowledgeMode ) );
+        return addSession( ((TopicConnection) connection).createTopicSession(transacted, acknowledgeMode));
     }
 
     @Override
@@ -70,9 +70,9 @@ public class ManagedQueueTopicConnection extends ManagedConnection implements Qu
                                                         ServerSessionPool sessionPool,
                                                         int maxMessages ) throws JMSException {
 
-        return addConnectionConsumer( ( ( TopicConnection ) connection ).createConnectionConsumer( topic,
-                                                                                                   messageSelector,
-                                                                                                   sessionPool,
-                                                                                                   maxMessages ) );
+        return addConnectionConsumer( ((TopicConnection) connection).createConnectionConsumer(topic,
+                                                                                              messageSelector,
+                                                                                              sessionPool,
+                                                                                              maxMessages));
     }
 }

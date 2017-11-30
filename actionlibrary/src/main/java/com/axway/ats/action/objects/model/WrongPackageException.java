@@ -15,11 +15,11 @@
  */
 package com.axway.ats.action.objects.model;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class WrongPackageException extends PackageException {
 
     public WrongPackageException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

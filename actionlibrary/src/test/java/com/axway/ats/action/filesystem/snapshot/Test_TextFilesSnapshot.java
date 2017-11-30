@@ -32,36 +32,36 @@ public class Test_TextFilesSnapshot extends BaseTest {
 
     private static String getProjectRoot() {
 
-        String root = Test_TextFilesSnapshot.class.getResource( "/" ).getPath();
+        String root = Test_TextFilesSnapshot.class.getResource("/").getPath();
         do {
-            root = IoUtils.normalizeDirPath( root );
-            if( new File( root + "pom.xml" ).exists() ) {
+            root = IoUtils.normalizeDirPath(root);
+            if (new File(root + "pom.xml").exists()) {
                 return root;
             }
-        } while( ( root = new File( root ).getParent() ) != null );
+        } while ( (root = new File(root).getParent()) != null);
 
-        throw new RuntimeException( "Uable to determine the project root path." );
+        throw new RuntimeException("Uable to determine the project root path.");
     }
 
     @BeforeClass
     public static void beforeClass() {
 
         String projectRoot = getProjectRoot();
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (OperatingSystemType.getCurrentOsType().isWindows()) {
             // remove the leading "/"
-            if( projectRoot.startsWith( "/" ) ) {
-                projectRoot = projectRoot.substring( 1 );
+            if (projectRoot.startsWith("/")) {
+                projectRoot = projectRoot.substring(1);
             }
         }
 
-        FILES_ROOT = IoUtils.normalizeUnixDir( projectRoot ) + "src/test/resources/"
-                     + Test_TextFilesSnapshot.class.getPackage().getName().replace( '.', '/' )
+        FILES_ROOT = IoUtils.normalizeUnixDir(projectRoot) + "src/test/resources/"
+                     + Test_TextFilesSnapshot.class.getPackage().getName().replace('.', '/')
                      + "/check_content/text/";
 
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime( false );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckPropertiesFilesContent( false );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckTextFilesContent( true );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent( false );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime(false);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckPropertiesFilesContent(false);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckTextFilesContent(true);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent(false);
     }
 
     @Test
@@ -70,17 +70,17 @@ public class Test_TextFilesSnapshot extends BaseTest {
         String textToSkip = "<column_description>name=certPath, type=BLOB, auto increment=NO, "
                             + "default=null, nullable=NO, size=2147483647</column_description>";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.text.skipTextLineEqualsText( "F1", "sub-dir1/file1.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.text.skipTextLineEqualsText("F1", "sub-dir1/file1.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
@@ -88,112 +88,112 @@ public class Test_TextFilesSnapshot extends BaseTest {
 
         String textToSkip = ".*certPath, type=BLOB, auto increment=NO.*";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.text.skipTextLineMatchingText( "F1", "sub-dir1/file1.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.text.skipTextLineMatchingText("F1", "sub-dir1/file1.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipLineByContainingText_NoSuchDir() {
 
         String textToSkip = "<column_description>name=certPath, type=BLOB, auto increment=NO";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "fakeDir" );
-        snapshot1.text.skipTextLineContainingText( "F1", "sub-dir1/fakeFile.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "fakeDir");
+        snapshot1.text.skipTextLineContainingText("F1", "sub-dir1/fakeFile.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipLineByContainingText_EmptyString() {
 
         String textToSkip = "";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.text.skipTextLineContainingText( "F1", "sub-dir1/file1.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.text.skipTextLineContainingText("F1", "sub-dir1/file1.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        snapshot1.toLocalFile( "D:\\file" );
+        snapshot1.toLocalFile("D:\\file");
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipTextLineEqualsText_EmptyString() {
 
         String textToSkip = "";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.text.skipTextLineEqualsText( "F1", "sub-dir1/file1.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.text.skipTextLineEqualsText("F1", "sub-dir1/file1.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        snapshot1.toLocalFile( "D:\\file" );
+        snapshot1.toLocalFile("D:\\file");
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipTextLineMatchingText_EmptyString() {
 
         String textToSkip = "";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.text.skipTextLineMatchingText( "F1", "sub-dir1/file1.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.text.skipTextLineMatchingText("F1", "sub-dir1/file1.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        snapshot1.toLocalFile( "D:\\file" );
+        snapshot1.toLocalFile("D:\\file");
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipPropertyByKeyMatchingText_WrongRegex() {
 
         String textToSkip = "WRONG.*";
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.text.skipTextLineMatchingText( "F1", "sub-dir1/file1.txt", textToSkip );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.text.skipTextLineMatchingText("F1", "sub-dir1/file1.txt", textToSkip);
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 }

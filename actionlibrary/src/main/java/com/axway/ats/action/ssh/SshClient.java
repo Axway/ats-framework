@@ -44,7 +44,7 @@ public class SshClient implements Closeable {
                       String user,
                       String password ) {
 
-        this( host, user, password, 22 );
+        this(host, user, password, 22);
     }
 
     /**
@@ -62,7 +62,7 @@ public class SshClient implements Closeable {
 
         sshClient = new JschSshClient();
 
-        sshClient.connect( user, password, host, port );
+        sshClient.connect(user, password, host, port);
     }
 
     /**
@@ -85,7 +85,7 @@ public class SshClient implements Closeable {
     public void execute(
                          String command ) {
 
-        sshClient.execute( command, true );
+        sshClient.execute(command, true);
     }
 
     /**
@@ -127,7 +127,7 @@ public class SshClient implements Closeable {
     @Override
     protected void finalize() throws Throwable {
 
-        if( sshClient != null ) {
+        if (sshClient != null) {
             sshClient.disconnect();
         }
     }

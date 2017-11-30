@@ -41,9 +41,9 @@ public class SmtpConnection {
     public SmtpConnection( String remoteHost ) {
 
         try {
-            connectionObject = new InetSmtpConnection( remoteHost );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            connectionObject = new InetSmtpConnection(remoteHost);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -57,9 +57,9 @@ public class SmtpConnection {
                            int remotePort ) {
 
         try {
-            connectionObject = new InetSmtpConnection( remoteHost, remotePort );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            connectionObject = new InetSmtpConnection(remoteHost, remotePort);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -75,9 +75,9 @@ public class SmtpConnection {
                            String bindAddress ) {
 
         try {
-            connectionObject = new InetSmtpConnection( remoteHost, remotePort, bindAddress );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            connectionObject = new InetSmtpConnection(remoteHost, remotePort, bindAddress);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -97,13 +97,13 @@ public class SmtpConnection {
                            int timeout ) {
 
         try {
-            connectionObject = new InetSmtpConnection( remoteHost,
-                                                       remotePort,
-                                                       bindAddress,
-                                                       connectionTimeout,
-                                                       timeout );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            connectionObject = new InetSmtpConnection(remoteHost,
+                                                      remotePort,
+                                                      bindAddress,
+                                                      connectionTimeout,
+                                                      timeout);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -114,9 +114,9 @@ public class SmtpConnection {
                                  String password ) {
 
         try {
-            return connectionObject.authenticate( mechanism, username, password );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.authenticate(mechanism, username, password);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -125,8 +125,8 @@ public class SmtpConnection {
 
         try {
             return connectionObject.data();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -137,14 +137,14 @@ public class SmtpConnection {
         try {
             //obtain an output stream
             OutputStream dataStream = data();
-            dataStream.write( text.getBytes() );
+            dataStream.write(text.getBytes());
             dataStream.flush();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        if( !finishData() ) {
-            throw new RuntimeException( "Error executing data command" );
+        if (!finishData()) {
+            throw new RuntimeException("Error executing data command");
         }
     }
 
@@ -161,9 +161,9 @@ public class SmtpConnection {
 
         try {
 
-            return getStringList( connectionObject.ehlo( hostname ) );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return getStringList(connectionObject.ehlo(hostname));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -172,9 +172,9 @@ public class SmtpConnection {
                               String address ) {
 
         try {
-            return getStringList( connectionObject.expn( address ) );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return getStringList(connectionObject.expn(address));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -183,8 +183,8 @@ public class SmtpConnection {
 
         try {
             return connectionObject.finishData();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -211,9 +211,9 @@ public class SmtpConnection {
                          String hostname ) {
 
         try {
-            return connectionObject.helo( hostname );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.helo(hostname);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -222,9 +222,9 @@ public class SmtpConnection {
                               String arg ) {
 
         try {
-            return getStringList( connectionObject.help( arg ) );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return getStringList(connectionObject.help(arg));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -233,9 +233,9 @@ public class SmtpConnection {
                              String reversePath ) {
 
         try {
-            return connectionObject.mailFrom( reversePath, null );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.mailFrom(reversePath, null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -245,9 +245,9 @@ public class SmtpConnection {
                              ParameterList parameters ) {
 
         try {
-            return connectionObject.mailFrom( reversePath, parameters );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.mailFrom(reversePath, parameters);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -256,8 +256,8 @@ public class SmtpConnection {
 
         try {
             connectionObject.noop();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -266,8 +266,8 @@ public class SmtpConnection {
 
         try {
             connectionObject.quit();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -276,9 +276,9 @@ public class SmtpConnection {
                            String forwardPath ) {
 
         try {
-            return connectionObject.rcptTo( forwardPath, null );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.rcptTo(forwardPath, null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -288,9 +288,9 @@ public class SmtpConnection {
                            ParameterList parameters ) {
 
         try {
-            return connectionObject.rcptTo( forwardPath, parameters );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.rcptTo(forwardPath, parameters);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -299,8 +299,8 @@ public class SmtpConnection {
 
         try {
             connectionObject.rset();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -309,9 +309,9 @@ public class SmtpConnection {
                             String command ) {
 
         try {
-            return connectionObject.sendCommand( command );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return connectionObject.sendCommand(command);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -320,8 +320,8 @@ public class SmtpConnection {
 
         try {
             return connectionObject.starttls();
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -330,9 +330,9 @@ public class SmtpConnection {
                               String address ) {
 
         try {
-            return getStringList( connectionObject.vrfy( address ) );
-        } catch( IOException e ) {
-            throw new RuntimeException( e );
+            return getStringList(connectionObject.vrfy(address));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -340,8 +340,8 @@ public class SmtpConnection {
                                         List<?> objectsList ) {
 
         List<String> stringList = new ArrayList<String>();
-        for( Object object : objectsList ) {
-            stringList.add( String.valueOf( object ) );
+        for (Object object : objectsList) {
+            stringList.add(String.valueOf(object));
         }
         return stringList;
     }

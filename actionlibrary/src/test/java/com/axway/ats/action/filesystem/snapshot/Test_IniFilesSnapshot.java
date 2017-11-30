@@ -32,359 +32,359 @@ public class Test_IniFilesSnapshot extends BaseTest {
 
     private static String getProjectRoot() {
 
-        String root = Test_IniFilesSnapshot.class.getResource( "/" ).getPath();
+        String root = Test_IniFilesSnapshot.class.getResource("/").getPath();
         do {
-            root = IoUtils.normalizeDirPath( root );
-            if( new File( root + "pom.xml" ).exists() ) {
+            root = IoUtils.normalizeDirPath(root);
+            if (new File(root + "pom.xml").exists()) {
                 return root;
             }
-        } while( ( root = new File( root ).getParent() ) != null );
+        } while ( (root = new File(root).getParent()) != null);
 
-        throw new RuntimeException( "Uable to determine the project root path." );
+        throw new RuntimeException("Uable to determine the project root path.");
     }
 
     @BeforeClass
     public static void beforeClass() {
 
         String projectRoot = getProjectRoot();
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (OperatingSystemType.getCurrentOsType().isWindows()) {
             // remove the leading "/"
-            if( projectRoot.startsWith( "/" ) ) {
-                projectRoot = projectRoot.substring( 1 );
+            if (projectRoot.startsWith("/")) {
+                projectRoot = projectRoot.substring(1);
             }
         }
 
-        FILES_ROOT = IoUtils.normalizeUnixDir( projectRoot ) + "src/test/resources/"
-                     + Test_IniFilesSnapshot.class.getPackage().getName().replace( '.', '/' )
+        FILES_ROOT = IoUtils.normalizeUnixDir(projectRoot) + "src/test/resources/"
+                     + Test_IniFilesSnapshot.class.getPackage().getName().replace('.', '/')
                      + "/check_content/ini/";
 
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime( false );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckPropertiesFilesContent( false );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckIniFilesContent( true );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckTextFilesContent( false );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent( false );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime(false);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckPropertiesFilesContent(false);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckIniFilesContent(true);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckTextFilesContent(false);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent(false);
     }
 
     @Test
     public void skipIniPropertyByKeyContainingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyContainingText( "F1", "short_ini_file.ini", "[Mail]", "OLEM" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyContainingText("F1", "short_ini_file.ini", "[Mail]", "OLEM");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniPropertyByKeyContainingText_NoSuchDir() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyContainingText( "F1", "short_ini_file.ini", "[Mail]", "OLEM" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyContainingText("F1", "short_ini_file.ini", "[Mail]", "OLEM");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByKeyContainingText_NullOrEmptyKey() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyContainingText( "F1", "short_ini_file.ini", "[Mail]", "" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyContainingText("F1", "short_ini_file.ini", "[Mail]", "");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByKeyContainingText_NullOrEmptySection() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyContainingText( "F1", "short_ini_file.ini", "", "OLEM" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyContainingText("F1", "short_ini_file.ini", "", "OLEM");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniPropertyByKeyEqualsText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyEqualsText( "F1", "short_ini_file.ini", "[Mail]", "OLEMessaging" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyEqualsText("F1", "short_ini_file.ini", "[Mail]", "OLEMessaging");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByKeyEqualsText_KeyNotEqual() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyEqualsText( "F1", "short_ini_file.ini", "[Mail]",
-                                                      "OLEMessaginggggggg" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyEqualsText("F1", "short_ini_file.ini", "[Mail]",
+                                                     "OLEMessaginggggggg");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniPropertyByKeyMatchingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyMatchingText( "F1", "short_ini_file.ini", "[Mail]", ".*Messa.*" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyMatchingText("F1", "short_ini_file.ini", "[Mail]", ".*Messa.*");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByKeyMatchingText_BadRegex() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByKeyMatchingText( "F1", "short_ini_file.ini", "[Mail]", "Messa.*" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByKeyMatchingText("F1", "short_ini_file.ini", "[Mail]", "Messa.*");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniPropertyByValueContainingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByValueContainingText( "F1", "short_ini_file.ini", "[Mail]", "mapi" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByValueContainingText("F1", "short_ini_file.ini", "[Mail]", "mapi");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByValueContainingText_NullOrEmptyValue() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByValueContainingText( "F1", "short_ini_file.ini", "[Mail]", "" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByValueContainingText("F1", "short_ini_file.ini", "[Mail]", "");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniPropertyByValueEqualsText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByValueEqualsText( "F1", "short_ini_file.ini", "[Mail]", "mapi32.dll" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByValueEqualsText("F1", "short_ini_file.ini", "[Mail]", "mapi32.dll");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByValueEqualsText_ValueNotEqual() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByValueEqualsText( "F1", "short_ini_file.ini", "[Mail]", "notEqual" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByValueEqualsText("F1", "short_ini_file.ini", "[Mail]", "notEqual");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniPropertyByValueMatchingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByValueMatchingText( "F1", "short_ini_file.ini", "[Mail]", "map.*" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByValueMatchingText("F1", "short_ini_file.ini", "[Mail]", "map.*");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniPropertyByValueMatchingText_BadRegex() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.ini.skipIniPropertyByValueMatchingText( "F1", "short_ini_file.ini", "[Mail]", "badRegex" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.ini.skipIniPropertyByValueMatchingText("F1", "short_ini_file.ini", "[Mail]", "badRegex");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniSectionContainingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
 
-        snapshot1.ini.skipIniSectionContainingText( "F1", "short_ini_file.ini", "languages" );
+        snapshot1.ini.skipIniSectionContainingText("F1", "short_ini_file.ini", "languages");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniSectionContainingText_NoSuchSection() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
 
-        snapshot1.ini.skipIniSectionContainingText( "F1", "short_ini_file.ini", "noSuchSection" );
+        snapshot1.ini.skipIniSectionContainingText("F1", "short_ini_file.ini", "noSuchSection");
 
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniSectionEqualsText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
 
-        snapshot1.ini.skipIniSectionEqualsText( "F1", "short_ini_file.ini", "[languages]" );
+        snapshot1.ini.skipIniSectionEqualsText("F1", "short_ini_file.ini", "[languages]");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniSectionEqualsText_NotEqual() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
 
-        snapshot1.ini.skipIniSectionEqualsText( "F1", "short_ini_file.ini", "languagessssss" );
+        snapshot1.ini.skipIniSectionEqualsText("F1", "short_ini_file.ini", "languagessssss");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipIniSectionMatchingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
 
-        snapshot1.ini.skipIniSectionMatchingText( "F1", "short_ini_file.ini", ".*gua.*" );
+        snapshot1.ini.skipIniSectionMatchingText("F1", "short_ini_file.ini", ".*gua.*");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
-    @Test(expected = FileSystemSnapshotException.class)
+    @Test( expected = FileSystemSnapshotException.class)
     public void skipIniSectionMatchingText_BadRegex() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
 
-        snapshot1.ini.skipIniSectionMatchingText( "F1", "short_ini_file.ini", "badRegex" );
+        snapshot1.ini.skipIniSectionMatchingText("F1", "short_ini_file.ini", "badRegex");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 }

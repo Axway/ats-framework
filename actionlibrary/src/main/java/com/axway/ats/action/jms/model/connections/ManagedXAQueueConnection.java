@@ -27,19 +27,19 @@ public class ManagedXAQueueConnection extends ManagedQueueConnection implements 
 
     public ManagedXAQueueConnection( XAQueueConnection connection ) {
 
-        super( connection );
+        super(connection);
         this.xaConnection = connection;
     }
 
     @Override
     public XAQueueSession createXAQueueSession() throws JMSException {
 
-        return addSession( xaConnection.createXAQueueSession() );
+        return addSession(xaConnection.createXAQueueSession());
     }
 
     @Override
     public XASession createXASession() throws JMSException {
 
-        return addSession( xaConnection.createXASession() );
+        return addSession(xaConnection.createXASession());
     }
 }

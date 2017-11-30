@@ -56,10 +56,9 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class XmlText {
 
-    private static final Logger log = Logger.getLogger( XmlText.class );
+    private static final Logger log = Logger.getLogger(XmlText.class);
 
     private Element             root;
-
 
     /**
      * Constructor which accepts the text content
@@ -69,7 +68,7 @@ public class XmlText {
      */
     @PublicAtsApi
     public XmlText( String xmlText ) throws XMLException {
-        init( xmlText );
+        init(xmlText);
     }
 
     /**
@@ -81,25 +80,25 @@ public class XmlText {
     @PublicAtsApi
     public XmlText( File xmlFile ) throws XMLException {
         StringBuilder sb = new StringBuilder();
-        try (BufferedReader br = new BufferedReader( new FileReader( xmlFile ) )) {
+        try (BufferedReader br = new BufferedReader(new FileReader(xmlFile))) {
             String line = null;
-            while( ( line = br.readLine() ) != null ) {
-                sb.append( line );
+            while ( (line = br.readLine()) != null) {
+                sb.append(line);
             }
-            init( sb.toString() );
-        } catch( IOException | XMLException e ) {
-            throw new XMLException( "Error parsing XML file: " + xmlFile.getAbsolutePath(), e );
+            init(sb.toString());
+        } catch (IOException | XMLException e) {
+            throw new XMLException("Error parsing XML file: " + xmlFile.getAbsolutePath(), e);
         }
     }
 
     private XmlText( Element root ) throws XMLException {
-        this.root = DocumentHelper.createElement( "root" );
+        this.root = DocumentHelper.createElement("root");
 
-        DocumentHelper.createDocument( this.root );
+        DocumentHelper.createDocument(this.root);
 
         this.root = root.createCopy();
 
-        DocumentHelper.createDocument( this.root );
+        DocumentHelper.createDocument(this.root);
     }
 
     private void init(
@@ -107,9 +106,9 @@ public class XmlText {
 
         Document document = null;
         try {
-            document = new SAXReader().read( new StringReader( xmlText ) );
-        } catch( DocumentException e ) {
-            throw new XMLException( "Error parsing XML text:\n" + xmlText, e );
+            document = new SAXReader().read(new StringReader(xmlText));
+        } catch (DocumentException e) {
+            throw new XMLException("Error parsing XML text:\n" + xmlText, e);
         }
 
         this.root = document.getRootElement();
@@ -128,37 +127,37 @@ public class XmlText {
                         String xpath,
                         Object object ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        if( object == null ) {
-            throw new XMLException( "Null object is not allowed." );
+        if (object == null) {
+            throw new XMLException("Null object is not allowed.");
         }
 
         Element newElement = null;
 
-        Element parent = findElement( xpath );
+        Element parent = findElement(xpath);
 
-        if( parent == null ) {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+        if (parent == null) {
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
-        if( object instanceof XmlText ) {
-            newElement = ( ( XmlText ) object ).root;
+        if (object instanceof XmlText) {
+            newElement = ((XmlText) object).root;
         }
 
-        if( object instanceof String ) {
-            newElement = new XmlText( ( String ) object ).root;
+        if (object instanceof String) {
+            newElement = new XmlText((String) object).root;
         }
 
-        if( newElement == null ) {
-            throw new XMLException( "Given object for adding to xml document is from invallid class instance '"
-                                    + object.getClass().getSimpleName() + "'. "
-                                    + "Use String or XMLText instances only." );
+        if (newElement == null) {
+            throw new XMLException("Given object for adding to xml document is from invallid class instance '"
+                                   + object.getClass().getSimpleName() + "'. "
+                                   + "Use String or XMLText instances only.");
         }
 
-        parent.add( newElement );
+        parent.add(newElement);
 
         return this;
     }
@@ -174,21 +173,21 @@ public class XmlText {
     public XmlText remove(
                            String xpath ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        Element element = findElement( xpath );
+        Element element = findElement(xpath);
 
-        if( element != null ) {
+        if (element != null) {
 
-            if( element.isRootElement() ) {
-                throw new XMLException( "You cannot remove the root element of the XML document." );
+            if (element.isRootElement()) {
+                throw new XMLException("You cannot remove the root element of the XML document.");
             }
 
             element.detach();
         } else {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
         return this;
@@ -207,53 +206,53 @@ public class XmlText {
                             String xpath,
                             Object object ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        if( object == null ) {
-            throw new XMLException( "Null object is not allowed for replacement."
-                                    + "If you want to remove existing XML element, use XMLText.remove()." );
+        if (object == null) {
+            throw new XMLException("Null object is not allowed for replacement."
+                                   + "If you want to remove existing XML element, use XMLText.remove().");
         }
 
         Element newElement = null;
 
-        if( object instanceof XmlText ) {
-            newElement = ( ( XmlText ) object ).root;
+        if (object instanceof XmlText) {
+            newElement = ((XmlText) object).root;
         }
 
-        if( object instanceof String ) {
-            if( StringUtils.isNullOrEmpty( ( String ) object ) ) {
+        if (object instanceof String) {
+            if (StringUtils.isNullOrEmpty((String) object)) {
 
-                throw new XMLException( "Null/empty String object is not allowed for replacement."
-                                        + "If you want to remove existing XML element, use XMLText.remove()." );
+                throw new XMLException("Null/empty String object is not allowed for replacement."
+                                       + "If you want to remove existing XML element, use XMLText.remove().");
 
             }
-            newElement = new XmlText( ( String ) object ).root;
+            newElement = new XmlText((String) object).root;
         }
 
-        if( newElement == null ) {
-            throw new XMLException( "Given object for replacing an existing one is from invallid class instance. "
-                                    + "Use String or XMLText instances only." );
+        if (newElement == null) {
+            throw new XMLException("Given object for replacing an existing one is from invallid class instance. "
+                                   + "Use String or XMLText instances only.");
         }
 
-        Element oldElement = findElement( xpath );
+        Element oldElement = findElement(xpath);
 
-        if( oldElement != null ) {
+        if (oldElement != null) {
 
-            if( oldElement.isRootElement() ) {
-                throw new XMLException( "You cannot replace the root element of the XML document." );
+            if (oldElement.isRootElement()) {
+                throw new XMLException("You cannot replace the root element of the XML document.");
             }
 
             Element parent = oldElement.getParent();
-            if( parent != null ) {
-                parent.elements().set( parent.elements().indexOf( oldElement ), newElement );
+            if (parent != null) {
+                parent.elements().set(parent.elements().indexOf(oldElement), newElement);
             } else {
-                throw new XMLException( "Parent for element with xpath '" + xpath + "' could not be found." );
+                throw new XMLException("Parent for element with xpath '" + xpath + "' could not be found.");
             }
 
         } else {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
         return this;
@@ -272,25 +271,24 @@ public class XmlText {
                             String xpath,
                             String text ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        if( StringUtils.isNullOrEmpty( text ) ) {
-            throw new XMLException( "Null/empty text is not allowed." );
+        if (StringUtils.isNullOrEmpty(text)) {
+            throw new XMLException("Null/empty text is not allowed.");
         }
 
-        Element element = findElement( xpath );
+        Element element = findElement(xpath);
 
-        if( element == null ) {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+        if (element == null) {
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
-        element.setText( text );
+        element.setText(text);
 
         return this;
     }
-
 
     /**
      * Append text to a XML element.
@@ -305,25 +303,24 @@ public class XmlText {
                                String xpath,
                                String text ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        if( StringUtils.isNullOrEmpty( text ) ) {
-            throw new XMLException( "Null/empty text is not allowed." );
+        if (StringUtils.isNullOrEmpty(text)) {
+            throw new XMLException("Null/empty text is not allowed.");
         }
 
-        Element element = findElement( xpath );
+        Element element = findElement(xpath);
 
-        if( element == null ) {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+        if (element == null) {
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
-        element.addText( text );
+        element.addText(text);
 
         return this;
     }
-
 
     /**
      * @param xpath XPath , pointing to a XML element
@@ -334,17 +331,17 @@ public class XmlText {
     public XmlText get(
                         String xpath ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        Element element = findElement( xpath );
+        Element element = findElement(xpath);
 
-        if( element == null ) {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+        if (element == null) {
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
-        return new XmlText( element );
+        return new XmlText(element);
 
     }
 
@@ -357,22 +354,22 @@ public class XmlText {
     public String getString(
                              String xpath ) throws XMLException {
 
-        Object object = get( xpath );
+        Object object = get(xpath);
 
-        Element root = ( ( XmlText ) object ).root;
+        Element root = ((XmlText) object).root;
 
-        if( root.isTextOnly() ) {
+        if (root.isTextOnly()) {
 
             object = root.getText().trim();
 
         } else {
 
-            throw new XMLException( "'" + xpath + "' does not point to a String value:\n"
-                                    + object.toString() );
+            throw new XMLException("'" + xpath + "' does not point to a String value:\n"
+                                   + object.toString());
 
         }
 
-        return ( String ) object;
+        return (String) object;
     }
 
     /**
@@ -384,11 +381,11 @@ public class XmlText {
     public int getInt(
                        String xpath ) throws XMLException {
 
-        Object object = get( xpath );
+        Object object = get(xpath);
 
-        Element root = ( ( XmlText ) object ).root;
+        Element root = ((XmlText) object).root;
 
-        if( root.isTextOnly() ) {
+        if (root.isTextOnly()) {
 
             object = root.getText().trim();
 
@@ -399,9 +396,9 @@ public class XmlText {
         }
 
         try {
-            return Integer.parseInt( ( ( String ) object ).trim() );
-        } catch( NumberFormatException nfe ) {
-            throw new XMLException( "'" + xpath + "' does not point to an int value:\n" + object.toString() );
+            return Integer.parseInt( ((String) object).trim());
+        } catch (NumberFormatException nfe) {
+            throw new XMLException("'" + xpath + "' does not point to an int value:\n" + object.toString());
         }
     }
 
@@ -414,11 +411,11 @@ public class XmlText {
     public boolean getBoolean(
                                String xpath ) throws XMLException {
 
-        Object object = get( xpath );
+        Object object = get(xpath);
 
-        Element root = ( ( XmlText ) object ).root;
+        Element root = ((XmlText) object).root;
 
-        if( root.isTextOnly() ) {
+        if (root.isTextOnly()) {
 
             object = root.getText().trim();
 
@@ -428,12 +425,12 @@ public class XmlText {
 
         }
 
-        if( "true".equalsIgnoreCase( ( String ) object )
-            || "false".equalsIgnoreCase( ( String ) object ) ) {
-            return Boolean.parseBoolean( ( ( String ) object ).trim() );
+        if ("true".equalsIgnoreCase((String) object)
+            || "false".equalsIgnoreCase((String) object)) {
+            return Boolean.parseBoolean( ((String) object).trim());
         } else {
-            throw new XMLException( "'" + xpath + "' does not point to an boolean value:\n"
-                                    + object.toString() );
+            throw new XMLException("'" + xpath + "' does not point to an boolean value:\n"
+                                   + object.toString());
         }
     }
 
@@ -446,11 +443,11 @@ public class XmlText {
     public float getFloat(
                            String xpath ) throws XMLException {
 
-        Object object = get( xpath );
+        Object object = get(xpath);
 
-        Element root = ( ( XmlText ) object ).root;
+        Element root = ((XmlText) object).root;
 
-        if( root.isTextOnly() ) {
+        if (root.isTextOnly()) {
 
             object = root.getText().trim();
 
@@ -461,10 +458,10 @@ public class XmlText {
         }
 
         try {
-            return Float.parseFloat( ( ( String ) object ).trim() );
-        } catch( NumberFormatException nfe ) {
-            throw new XMLException( "'" + xpath + "' does not point to a float value:\n"
-                                    + object.toString() );
+            return Float.parseFloat( ((String) object).trim());
+        } catch (NumberFormatException nfe) {
+            throw new XMLException("'" + xpath + "' does not point to a float value:\n"
+                                   + object.toString());
         }
     }
 
@@ -475,29 +472,29 @@ public class XmlText {
      */
     @PublicAtsApi
     public Map<String, String> getAttributes(
-                                                  String xpath ) throws XMLException {
+                                              String xpath ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
+        if (StringUtils.isNullOrEmpty(xpath)) {
 
-            throw new XMLException( "Null/empty xpath is not allowed." );
-
-        }
-
-        Element element = findElement( xpath );
-
-        if( element == null ) {
-
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+            throw new XMLException("Null/empty xpath is not allowed.");
 
         }
 
-        HashMap<String, String> attributes = new HashMap<>( 1 );
+        Element element = findElement(xpath);
+
+        if (element == null) {
+
+            throw new XMLException("'" + xpath + "' is not a valid path");
+
+        }
+
+        HashMap<String, String> attributes = new HashMap<>(1);
 
         Iterator<Attribute> it = element.attributeIterator();
 
-        while( it.hasNext() ) {
+        while (it.hasNext()) {
             Attribute attr = it.next();
-            attributes.put( attr.getName(), attr.getValue() );
+            attributes.put(attr.getName(), attr.getValue());
         }
 
         return attributes;
@@ -515,32 +512,32 @@ public class XmlText {
                                 String xpath,
                                 String name ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
+        if (StringUtils.isNullOrEmpty(xpath)) {
 
-            throw new XMLException( "Null/empty xpath is not allowed." );
-
-        }
-
-        if( StringUtils.isNullOrEmpty( name ) ) {
-
-            throw new XMLException( "Null/empty attribute name is not allowed." );
+            throw new XMLException("Null/empty xpath is not allowed.");
 
         }
 
-        Element element = findElement( xpath );
+        if (StringUtils.isNullOrEmpty(name)) {
 
-        if( element == null ) {
-
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+            throw new XMLException("Null/empty attribute name is not allowed.");
 
         }
 
-        String attributeValue = element.attributeValue( name );
+        Element element = findElement(xpath);
 
-        if( attributeValue == null ) {
+        if (element == null) {
 
-            throw new XMLException( "'" + name + "' attribute is not found for XML element with xpath '"
-                                    + xpath + "'." );
+            throw new XMLException("'" + xpath + "' is not a valid path");
+
+        }
+
+        String attributeValue = element.attributeValue(name);
+
+        if (attributeValue == null) {
+
+            throw new XMLException("'" + name + "' attribute is not found for XML element with xpath '"
+                                   + xpath + "'.");
 
         }
 
@@ -562,33 +559,33 @@ public class XmlText {
                                  String name,
                                  String value ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
+        if (StringUtils.isNullOrEmpty(xpath)) {
 
-            throw new XMLException( "Null/empty xpath is not allowed." );
-
-        }
-
-        if( StringUtils.isNullOrEmpty( name ) ) {
-
-            throw new XMLException( "Null/empty attribute name is not allowed." );
+            throw new XMLException("Null/empty xpath is not allowed.");
 
         }
 
-        if( StringUtils.isNullOrEmpty( value ) ) {
+        if (StringUtils.isNullOrEmpty(name)) {
 
-            throw new XMLException( "Null/empty attribute value is not allowed." );
-
-        }
-
-        Element element = findElement( xpath );
-
-        if( element == null ) {
-
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+            throw new XMLException("Null/empty attribute name is not allowed.");
 
         }
 
-        element.addAttribute( name, value );
+        if (StringUtils.isNullOrEmpty(value)) {
+
+            throw new XMLException("Null/empty attribute value is not allowed.");
+
+        }
+
+        Element element = findElement(xpath);
+
+        if (element == null) {
+
+            throw new XMLException("'" + xpath + "' is not a valid path");
+
+        }
+
+        element.addAttribute(name, value);
 
         return this;
 
@@ -607,37 +604,37 @@ public class XmlText {
                                     String xpath,
                                     String name ) throws XMLException {
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
+        if (StringUtils.isNullOrEmpty(xpath)) {
 
-            throw new XMLException( "Null/empty xpath is not allowed." );
-
-        }
-
-        if( StringUtils.isNullOrEmpty( name ) ) {
-
-            throw new XMLException( "Null/empty attribute name is not allowed." );
+            throw new XMLException("Null/empty xpath is not allowed.");
 
         }
 
-        Element element = findElement( xpath );
+        if (StringUtils.isNullOrEmpty(name)) {
 
-        if( element == null ) {
-
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+            throw new XMLException("Null/empty attribute name is not allowed.");
 
         }
 
-        Attribute attribute = element.attribute( name );
+        Element element = findElement(xpath);
 
-        if( attribute == null ) {
+        if (element == null) {
 
-            throw new XMLException( "'" + name
-                                    + "' attribute cannot be found and replaced for element with xpath '"
-                                    + xpath + "'." );
+            throw new XMLException("'" + xpath + "' is not a valid path");
 
         }
 
-        element.attributes().remove( attribute );
+        Attribute attribute = element.attribute(name);
+
+        if (attribute == null) {
+
+            throw new XMLException("'" + name
+                                   + "' attribute cannot be found and replaced for element with xpath '"
+                                   + xpath + "'.");
+
+        }
+
+        element.attributes().remove(attribute);
 
         return this;
 
@@ -666,25 +663,25 @@ public class XmlText {
     public String[] getElementNames(
                                      String xpath ) throws XMLException {
 
-        ArrayList<String> elementNames = new ArrayList<>( 1 );
+        ArrayList<String> elementNames = new ArrayList<>(1);
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        Element element = findElement( xpath );
+        Element element = findElement(xpath);
 
-        if( element == null ) {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+        if (element == null) {
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
         Iterator<Element> it = element.elementIterator();
 
-        while( it.hasNext() ) {
-            elementNames.add( it.next().getName() );
+        while (it.hasNext()) {
+            elementNames.add(it.next().getName());
         }
 
-        return elementNames.toArray( new String[elementNames.size()] );
+        return elementNames.toArray(new String[elementNames.size()]);
     }
 
     /**
@@ -696,27 +693,27 @@ public class XmlText {
      */
     @PublicAtsApi
     public String[] getElementXPaths(
-                                     String xpath ) throws XMLException {
+                                      String xpath ) throws XMLException {
 
-        ArrayList<String> elementXPaths = new ArrayList<>( 1 );
+        ArrayList<String> elementXPaths = new ArrayList<>(1);
 
-        if( StringUtils.isNullOrEmpty( xpath ) ) {
-            throw new XMLException( "Null/empty xpath is not allowed." );
+        if (StringUtils.isNullOrEmpty(xpath)) {
+            throw new XMLException("Null/empty xpath is not allowed.");
         }
 
-        Element element = findElement( xpath );
+        Element element = findElement(xpath);
 
-        if( element == null ) {
-            throw new XMLException( "'" + xpath + "' is not a valid path" );
+        if (element == null) {
+            throw new XMLException("'" + xpath + "' is not a valid path");
         }
 
         Iterator<Element> it = element.elementIterator();
 
-        while( it.hasNext() ) {
-            elementXPaths.add( it.next().getUniquePath() );
+        while (it.hasNext()) {
+            elementXPaths.add(it.next().getUniquePath());
         }
 
-        return elementXPaths.toArray( new String[elementXPaths.size()] );
+        return elementXPaths.toArray(new String[elementXPaths.size()]);
     }
 
     /* (non-Javadoc)
@@ -727,9 +724,9 @@ public class XmlText {
     public String toString() {
 
         try {
-            return getFormattedString( OutputFormat.createCompactFormat() );
-        } catch( XMLException e ) {
-            log.error( e.getMessage(), e.getCause() );
+            return getFormattedString(OutputFormat.createCompactFormat());
+        } catch (XMLException e) {
+            log.error(e.getMessage(), e.getCause());
             return "";
         }
     }
@@ -741,9 +738,9 @@ public class XmlText {
     public String toFormattedString() {
 
         try {
-            return getFormattedString( OutputFormat.createPrettyPrint() );
-        } catch( XMLException e ) {
-            log.error( e.getMessage(), e.getCause() );
+            return getFormattedString(OutputFormat.createPrettyPrint());
+        } catch (XMLException e) {
+            log.error(e.getMessage(), e.getCause());
             return "";
         }
 
@@ -753,16 +750,16 @@ public class XmlText {
                                        OutputFormat format ) throws XMLException {
 
         StringWriter sw = new StringWriter();
-        XMLWriter writer = new XMLWriter( sw, format );
+        XMLWriter writer = new XMLWriter(sw, format);
         try {
-            writer.write( this.root.getDocument() );
-        } catch( IOException e ) {
-            throw new XMLException( "Error returning formatted XMLText", e );
+            writer.write(this.root.getDocument());
+        } catch (IOException e) {
+            throw new XMLException("Error returning formatted XMLText", e);
         } finally {
             try {
                 writer.flush();
                 writer.close();
-            } catch( IOException e ) {}
+            } catch (IOException e) {}
         }
 
         return sw.toString();
@@ -771,11 +768,11 @@ public class XmlText {
     private Element findElement(
                                  String xpath ) {
 
-        if( "/".equals( xpath ) ) {
+        if ("/".equals(xpath)) {
             return root;
         }
 
-        return ( Element ) root.selectSingleNode( xpath );
+        return (Element) root.selectSingleNode(xpath);
 
     }
 

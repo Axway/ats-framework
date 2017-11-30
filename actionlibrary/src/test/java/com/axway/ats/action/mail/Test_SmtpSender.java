@@ -55,43 +55,43 @@ public class Test_SmtpSender extends BaseTest {
     public void setUp() throws ActionException {
 
         mailSender = new MailSender();
-        mailSender.setMailServer( "fake.smtp.host", 25 );
+        mailSender.setMailServer("fake.smtp.host", 25);
 
         // mock the transport
         transportMock = new TransportMock();
-        Whitebox.setInternalState( mailSender, "transport", transportMock );
+        Whitebox.setInternalState(mailSender, "transport", transportMock);
 
         // create a message for test purposes
         mail = new MimePackage();
-        mail.setRecipient( RecipientType.TO, new String[]{ "sender@test.com" } );
-        mail.setSender( "sender@test.com" );
+        mail.setRecipient(RecipientType.TO, new String[]{ "sender@test.com" });
+        mail.setSender("sender@test.com");
     }
 
     @Test
     public void sendAndGetDelivered() throws ActionException {
 
-        transportMock.setDeliveryResult( DELIVERY_STATE.DELIVERED );
-        mailSender.send( mail );
+        transportMock.setDeliveryResult(DELIVERY_STATE.DELIVERED);
+        mailSender.send(mail);
 
     }
 
-    @Test(expected = ActionException.class)
+    @Test( expected = ActionException.class)
     public void sendAndGetErrorDelivering() throws ActionException {
 
-        transportMock.setDeliveryResult( DELIVERY_STATE.ERROR_DELIVERING );
-        mailSender.send( mail );
+        transportMock.setDeliveryResult(DELIVERY_STATE.ERROR_DELIVERING);
+        mailSender.send(mail);
 
     }
 
-    @Test(expected = ActionException.class)
+    @Test( expected = ActionException.class)
     public void sendAndPartiallyGetDelivered() throws ActionException {
 
-        transportMock.setDeliveryResult( DELIVERY_STATE.PARTIALLY_DELIVERED );
-        mailSender.send( mail );
+        transportMock.setDeliveryResult(DELIVERY_STATE.PARTIALLY_DELIVERED);
+        mailSender.send(mail);
 
     }
 
-    @Test(expected = ActionException.class)
+    @Test( expected = ActionException.class)
     public void noConnectionToHost() throws ActionException {
 
         // we are trying to get send a message to a fake smtp server,
@@ -100,35 +100,35 @@ public class Test_SmtpSender extends BaseTest {
                                          + ActionLibraryConfigurator.getInstance().getMailTimeout();
 
         try {
-            mailSender.send( mail );
+            mailSender.send(mail);
         } finally {
             long actualTimeoutTime = System.currentTimeMillis();
-            Assert.assertTrue( actualTimeoutTime >= expectedTimeoutTime );
+            Assert.assertTrue(actualTimeoutTime >= expectedTimeoutTime);
         }
     }
 
-    @Test(expected = WrongPackageException.class)
+    @Test( expected = WrongPackageException.class)
     public void wrongPackage() throws PackageException, ActionException {
 
-        mailSender.send( new FilePackage( "127.0.0.1", "", OperatingSystemType.LINUX ) );
+        mailSender.send(new FilePackage("127.0.0.1", "", OperatingSystemType.LINUX));
     }
 }
 
 class TransportMock extends Transport {
 
-    private static final Logger log = Logger.getLogger( TransportMock.class );
+    private static final Logger log = Logger.getLogger(TransportMock.class);
 
     private DELIVERY_STATE      deliveryState;
 
     public TransportMock() {
 
-        super( Session.getInstance( new Properties() ), new URLName( "" ) );
+        super(Session.getInstance(new Properties()), new URLName(""));
     }
 
     @Override
     public void connect() {
 
-        log.info( "fake SMTP connect" );
+        log.info("fake SMTP connect");
     }
 
     @Override
@@ -136,14 +136,14 @@ class TransportMock extends Transport {
                              Message arg0,
                              Address[] arg1 ) throws MessagingException {
 
-        log.info( "Fake message sending" );
+        log.info("Fake message sending");
 
-        if( deliveryState == DELIVERY_STATE.DELIVERED ) {
-            notifyTransportListeners( TransportEvent.MESSAGE_DELIVERED, null, null, null, null );
-        } else if( deliveryState == DELIVERY_STATE.PARTIALLY_DELIVERED ) {
-            notifyTransportListeners( TransportEvent.MESSAGE_PARTIALLY_DELIVERED, null, null, null, null );
-        } else if( deliveryState == DELIVERY_STATE.ERROR_DELIVERING ) {
-            notifyTransportListeners( TransportEvent.MESSAGE_NOT_DELIVERED, null, null, null, null );
+        if (deliveryState == DELIVERY_STATE.DELIVERED) {
+            notifyTransportListeners(TransportEvent.MESSAGE_DELIVERED, null, null, null, null);
+        } else if (deliveryState == DELIVERY_STATE.PARTIALLY_DELIVERED) {
+            notifyTransportListeners(TransportEvent.MESSAGE_PARTIALLY_DELIVERED, null, null, null, null);
+        } else if (deliveryState == DELIVERY_STATE.ERROR_DELIVERING) {
+            notifyTransportListeners(TransportEvent.MESSAGE_NOT_DELIVERED, null, null, null, null);
         }
     }
 

@@ -54,19 +54,19 @@ public class MailTransportListener implements TransportListener {
     public void messageDelivered(
                                   TransportEvent e ) {
 
-        processResult( DELIVERY_STATE.DELIVERED );
+        processResult(DELIVERY_STATE.DELIVERED);
     }
 
     public void messageNotDelivered(
                                      TransportEvent e ) {
 
-        processResult( DELIVERY_STATE.ERROR_DELIVERING );
+        processResult(DELIVERY_STATE.ERROR_DELIVERING);
     }
 
     public void messagePartiallyDelivered(
                                            TransportEvent e ) {
 
-        processResult( DELIVERY_STATE.ERROR_DELIVERING );
+        processResult(DELIVERY_STATE.ERROR_DELIVERING);
     }
 
     private void processResult(
@@ -76,7 +76,7 @@ public class MailTransportListener implements TransportListener {
         this.deliveryState = deliveryState;
         //log.debug( deliveryState );
 
-        synchronized( messageSendingMutex ) {
+        synchronized (messageSendingMutex) {
             // inform the mail sender thread we are done with mail sending
             messageSendingMutex.notifyAll();
         }

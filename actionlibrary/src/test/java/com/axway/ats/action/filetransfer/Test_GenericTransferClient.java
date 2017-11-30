@@ -52,21 +52,21 @@ import junit.framework.Assert;
 /**
  * Unit tests for the {@link FileSystemOperations} class
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ ClientFactory.class, FileTransferConfigurator.class })
+@RunWith( PowerMockRunner.class)
+@PrepareForTest( { ClientFactory.class, FileTransferConfigurator.class })
 public class Test_GenericTransferClient extends BaseTest {
 
     private static final String      SAMPLE_PASSWORD          = "sample.password";
     private static final String      SAMPLE_USER_NAME         = "sample.user.name";
     private static final String      SAMPLE_HOST_NAME         = "sample.host.name";
-    private static final String      SAMPLE_LOCAL_DIRECTORY   = normalizeDirUrl( "sample/local/directory/" );
+    private static final String      SAMPLE_LOCAL_DIRECTORY   = normalizeDirUrl("sample/local/directory/");
     private static final String      SAMPLE_REMOTE_DIRECTORY  = "sample/remote/directory/";
     private static final String      SAMPLE_LOCAL_FILE        = "sample.local.file";
     private static final String      SAMPLE_REMOTE_FILE       = "sample.remote.file";
     private static final String      SAMPLE_EXCEPTION_MESSAGE = "sample.exception.message";
     private static final String      SAMPLE_KEY_ALIAS         = "sample.key.alias";
     private static final int         SAMPLE_CUSTOM_PORT       = 22;
-    private final FileTransferClient testObject               = new FileTransferClient( TransferProtocol.FTP );
+    private final FileTransferClient testObject               = new FileTransferClient(TransferProtocol.FTP);
     private FileTransferClient       mockedTestObject         = null;
     private FtpClient                ftpMock                  = null;
     private ClientFactory            factoryMock              = null;
@@ -77,14 +77,14 @@ public class Test_GenericTransferClient extends BaseTest {
     @Before
     public void setUpTest_GeneralFileSystemOperations() {
 
-        mockedTestObject = new FileTransferClient( TransferProtocol.FTP );
+        mockedTestObject = new FileTransferClient(TransferProtocol.FTP);
 
         // create a mock file transfer client
-        ftpMock = createMock( FtpClient.class );
-        factoryMock = createMock( ClientFactory.class );
+        ftpMock = createMock(FtpClient.class);
+        factoryMock = createMock(ClientFactory.class);
 
         // inject the mock client into the test object
-        Whitebox.setInternalState( mockedTestObject, ftpMock );
+        Whitebox.setInternalState(mockedTestObject, ftpMock);
     }
 
     // ---------------------------------------------------------------------
@@ -99,50 +99,50 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testConnect() throws Exception {
 
         // setup expectations
-        ftpMock.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
-        replay( ftpMock );
+        ftpMock.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
+        mockedTestObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     @Test
     public void testConnectUsingCustomClientNegative() throws Exception {
 
         try {
-            mockedTestObject = new FileTransferClient( "HTTP", 80 );
-        } catch( FileTransferException e ) {
-            Assert.assertEquals( e.getMessage(),
-                                 "com.axway.ats.action.filetransfer.FileTransferConfiguratorException: Uknown custom client for HTTP_CUSTOM protocol. Either /ats-adapters.properties file is not in the classpath or actionlibrary.filetransfer.http.client property is missing/empty!" );
-            if( ! ( e instanceof FileTransferException ) ) {
-                Assert.fail( "Wrong exception type returned" );
+            mockedTestObject = new FileTransferClient("HTTP", 80);
+        } catch (FileTransferException e) {
+            Assert.assertEquals(e.getMessage(),
+                                "com.axway.ats.action.filetransfer.FileTransferConfiguratorException: Uknown custom client for HTTP_CUSTOM protocol. Either /ats-adapters.properties file is not in the classpath or actionlibrary.filetransfer.http.client property is missing/empty!");
+            if (! (e instanceof FileTransferException)) {
+                Assert.fail("Wrong exception type returned");
             }
         }
     }
 
-    @Test(expected = AssertionError.class)
+    @Test( expected = AssertionError.class)
     public void testConnectUsingCustomClient() throws Exception {
 
         String customFileTransferClientName = "SomeCustomClientClass";
 
-        mockStatic( FileTransferConfigurator.class );
-        FileTransferConfigurator mockFileTransferConfigurator = createMock( FileTransferConfigurator.class );
-        expect( FileTransferConfigurator.getInstance() ).andReturn( mockFileTransferConfigurator );
-        expect( mockFileTransferConfigurator.getFileTransferClient( "HTTP" ) ).andReturn( customFileTransferClientName );
+        mockStatic(FileTransferConfigurator.class);
+        FileTransferConfigurator mockFileTransferConfigurator = createMock(FileTransferConfigurator.class);
+        expect(FileTransferConfigurator.getInstance()).andReturn(mockFileTransferConfigurator);
+        expect(mockFileTransferConfigurator.getFileTransferClient("HTTP")).andReturn(customFileTransferClientName);
 
-        IFileTransferClient basicClient = createMock( IFileTransferClient.class );
+        IFileTransferClient basicClient = createMock(IFileTransferClient.class);
 
-        mockStatic( ClientFactory.class );
-        expect( ClientFactory.getInstance() ).andReturn( factoryMock );
-        expect( factoryMock.getClient( "HTTP", 80 ) ).andReturn( basicClient );
-        basicClient.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
+        mockStatic(ClientFactory.class);
+        expect(ClientFactory.getInstance()).andReturn(factoryMock);
+        expect(factoryMock.getClient("HTTP", 80)).andReturn(basicClient);
+        basicClient.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
         replayAll();
 
-        mockedTestObject = new FileTransferClient( "HTTP", 80 );
-        mockedTestObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
+        mockedTestObject = new FileTransferClient("HTTP", 80);
+        mockedTestObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
 
         verifyAll();
     }
@@ -151,107 +151,107 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testConnectException() throws Exception {
 
         // setup expectations
-        ftpMock.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) ).times( 5 );
-        replay( ftpMock );
+        ftpMock.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE)).times(5);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
+        mockedTestObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testConnectWrongHostName() throws Exception {
 
         // execute operations
-        testObject.connect( null, SAMPLE_USER_NAME, SAMPLE_PASSWORD );
+        testObject.connect(null, SAMPLE_USER_NAME, SAMPLE_PASSWORD);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testConnectWrongUserName() throws Exception {
 
         // execute operations
-        testObject.connect( SAMPLE_HOST_NAME, null, SAMPLE_PASSWORD );
+        testObject.connect(SAMPLE_HOST_NAME, null, SAMPLE_PASSWORD);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testConnectWrongPassword() throws Exception {
 
         // execute operations
-        testObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, null );
+        testObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, null);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testSecureConnect() throws Exception {
 
         // execute operations
-        testObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD, SAMPLE_KEY_ALIAS );
+        testObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD, SAMPLE_KEY_ALIAS);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testSecureConnectWrongHostName() throws Exception {
 
         // execute operations
-        testObject.connect( null, SAMPLE_USER_NAME, SAMPLE_PASSWORD, " " );
+        testObject.connect(null, SAMPLE_USER_NAME, SAMPLE_PASSWORD, " ");
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testSecureConnectWrongUser() throws Exception {
 
         // execute operations
-        testObject.connect( SAMPLE_HOST_NAME, null, SAMPLE_PASSWORD, " " );
+        testObject.connect(SAMPLE_HOST_NAME, null, SAMPLE_PASSWORD, " ");
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testSecureConnectWrongPassword() throws Exception {
 
         // execute operations
-        testObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, null, " " );
+        testObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, null, " ");
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testSecureConnectWrongKey() throws Exception {
 
         // execute operations
-        testObject.connect( SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD, null );
+        testObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD, null);
     }
 
     /**
@@ -263,33 +263,33 @@ public class Test_GenericTransferClient extends BaseTest {
 
         // setup expectations
         ftpMock.disconnect();
-        replay( ftpMock );
+        replay(ftpMock);
 
         // execute operations
         mockedTestObject.disconnect();
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testDisconnectNegative() throws Exception {
 
         // setup expectations
         ftpMock.disconnect();
-        expectLastCall().andThrow( new FileTransferException( "Exception" ) );
+        expectLastCall().andThrow(new FileTransferException("Exception"));
 
-        replay( ftpMock );
+        replay(ftpMock);
 
         // execute operations
         mockedTestObject.disconnect();
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     // ---------------------------------------------------------------------
@@ -304,48 +304,48 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testFileDownload() throws Exception {
 
         // setup expectations
-        ftpMock.downloadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_REMOTE_FILE,
-                              SAMPLE_REMOTE_DIRECTORY,
-                              SAMPLE_REMOTE_FILE );
-        replay( ftpMock );
+        ftpMock.downloadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_REMOTE_FILE,
+                             SAMPLE_REMOTE_DIRECTORY,
+                             SAMPLE_REMOTE_FILE);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        mockedTestObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testFileDownloadException() throws Exception {
 
         // setup expectations
-        ftpMock.downloadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_REMOTE_FILE,
-                              SAMPLE_REMOTE_DIRECTORY,
-                              SAMPLE_REMOTE_FILE );
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) );
-        replay( ftpMock );
+        ftpMock.downloadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_REMOTE_FILE,
+                             SAMPLE_REMOTE_DIRECTORY,
+                             SAMPLE_REMOTE_FILE);
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE));
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        mockedTestObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadWrongLocal() throws Exception {
 
         // execute operations
-        testObject.downloadFile( "", SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        testObject.downloadFile("", SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
 
     }
 
@@ -353,11 +353,11 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadWrongRemoteDir() throws Exception {
 
         // execute operations
-        testObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, "", SAMPLE_REMOTE_FILE );
+        testObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, "", SAMPLE_REMOTE_FILE);
 
     }
 
@@ -365,11 +365,11 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadWrongRemoteFile() throws Exception {
 
         // execute operations
-        testObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, SAMPLE_REMOTE_DIRECTORY, "" );
+        testObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, SAMPLE_REMOTE_DIRECTORY, "");
 
     }
 
@@ -381,65 +381,65 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testFileDownloadAlt() throws Exception {
 
         // setup expectations
-        ftpMock.downloadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                              SAMPLE_REMOTE_DIRECTORY,
-                              SAMPLE_REMOTE_FILE );
-        replay( ftpMock );
+        ftpMock.downloadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                             SAMPLE_REMOTE_DIRECTORY,
+                             SAMPLE_REMOTE_FILE);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.downloadFile( SAMPLE_LOCAL_FILE,
-                                       SAMPLE_LOCAL_DIRECTORY,
-                                       SAMPLE_REMOTE_DIRECTORY,
-                                       SAMPLE_REMOTE_FILE );
+        mockedTestObject.downloadFile(SAMPLE_LOCAL_FILE,
+                                      SAMPLE_LOCAL_DIRECTORY,
+                                      SAMPLE_REMOTE_DIRECTORY,
+                                      SAMPLE_REMOTE_FILE);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testFileDownloadAltException() throws Exception {
 
         // setup expectations
-        ftpMock.downloadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                              SAMPLE_REMOTE_DIRECTORY,
-                              SAMPLE_REMOTE_FILE );
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) );
-        replay( ftpMock );
+        ftpMock.downloadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                             SAMPLE_REMOTE_DIRECTORY,
+                             SAMPLE_REMOTE_FILE);
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE));
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.downloadFile( SAMPLE_LOCAL_FILE,
-                                       SAMPLE_LOCAL_DIRECTORY,
-                                       SAMPLE_REMOTE_DIRECTORY,
-                                       SAMPLE_REMOTE_FILE );
+        mockedTestObject.downloadFile(SAMPLE_LOCAL_FILE,
+                                      SAMPLE_LOCAL_DIRECTORY,
+                                      SAMPLE_REMOTE_DIRECTORY,
+                                      SAMPLE_REMOTE_FILE);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadAltWrongLocalFile() throws Exception {
 
         // execute operations
-        testObject.downloadFile( "", SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        testObject.downloadFile("", SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadAltWronglocalDir() throws Exception {
 
         // execute operations
-        testObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, "", SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        testObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, "", SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
 
     }
 
@@ -447,11 +447,11 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadAltWrongRemoteFile() throws Exception {
 
         // execute operations
-        testObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, SAMPLE_LOCAL_FILE, "", SAMPLE_REMOTE_FILE );
+        testObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, SAMPLE_LOCAL_FILE, "", SAMPLE_REMOTE_FILE);
 
     }
 
@@ -459,11 +459,11 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileDownloadAltWrongRemoteDir() throws Exception {
 
         // execute operations
-        testObject.downloadFile( SAMPLE_LOCAL_DIRECTORY, SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY, "" );
+        testObject.downloadFile(SAMPLE_LOCAL_DIRECTORY, SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY, "");
 
     }
 
@@ -479,42 +479,42 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testFileUploadAlt() throws Exception {
 
         // setup expectations
-        File fileMock = createMockAndExpectNew( File.class, SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE );
-        expect( fileMock.getName() ).andReturn( SAMPLE_LOCAL_FILE );
-        ftpMock.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                            SAMPLE_REMOTE_DIRECTORY,
-                            SAMPLE_LOCAL_FILE );
-        replay( ftpMock );
-        replay( fileMock, File.class );
+        File fileMock = createMockAndExpectNew(File.class, SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE);
+        expect(fileMock.getName()).andReturn(SAMPLE_LOCAL_FILE);
+        ftpMock.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                           SAMPLE_REMOTE_DIRECTORY,
+                           SAMPLE_LOCAL_FILE);
+        replay(ftpMock);
+        replay(fileMock, File.class);
 
         // execute operations
-        mockedTestObject.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY );
+        mockedTestObject.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testFileUploadAltException() throws Exception {
 
         // setup expectations
-        File fileMock = createMockAndExpectNew( File.class, SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE );
-        expect( fileMock.getName() ).andReturn( SAMPLE_LOCAL_FILE );
-        ftpMock.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                            SAMPLE_REMOTE_DIRECTORY,
-                            SAMPLE_LOCAL_FILE );
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) );
+        File fileMock = createMockAndExpectNew(File.class, SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE);
+        expect(fileMock.getName()).andReturn(SAMPLE_LOCAL_FILE);
+        ftpMock.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                           SAMPLE_REMOTE_DIRECTORY,
+                           SAMPLE_LOCAL_FILE);
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE));
         replayAll();
 
         // execute operations
-        mockedTestObject.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY );
+        mockedTestObject.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
@@ -525,29 +525,29 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testFileUpload() throws Exception {
 
         // setup expectations
-        ftpMock.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                            SAMPLE_REMOTE_DIRECTORY,
-                            SAMPLE_REMOTE_FILE );
-        replay( ftpMock );
+        ftpMock.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                           SAMPLE_REMOTE_DIRECTORY,
+                           SAMPLE_REMOTE_FILE);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                     SAMPLE_REMOTE_DIRECTORY,
-                                     SAMPLE_REMOTE_FILE );
+        mockedTestObject.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                    SAMPLE_REMOTE_DIRECTORY,
+                                    SAMPLE_REMOTE_FILE);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileUploadWronglocal() throws Exception {
 
         // execute operations
-        testObject.uploadFile( null, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        testObject.uploadFile(null, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
 
     }
 
@@ -555,11 +555,11 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileUploadWrongRemoteFile() throws Exception {
 
         // execute operations
-        testObject.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, null, SAMPLE_REMOTE_FILE );
+        testObject.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, null, SAMPLE_REMOTE_FILE);
 
     }
 
@@ -567,11 +567,11 @@ public class Test_GenericTransferClient extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testFileUploadWrongRemoteDir() throws Exception {
 
         // execute operations
-        testObject.uploadFile( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY, null );
+        testObject.uploadFile(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE, SAMPLE_REMOTE_DIRECTORY, null);
 
     }
 
@@ -583,80 +583,80 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testStartUploadAndPause() throws Exception {
 
         // setup expectations
-        ftpMock.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                     SAMPLE_REMOTE_DIRECTORY,
-                                     SAMPLE_REMOTE_FILE );
-        replay( ftpMock );
+        ftpMock.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                    SAMPLE_REMOTE_DIRECTORY,
+                                    SAMPLE_REMOTE_FILE);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                              SAMPLE_REMOTE_DIRECTORY,
-                                              SAMPLE_REMOTE_FILE );
+        mockedTestObject.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                             SAMPLE_REMOTE_DIRECTORY,
+                                             SAMPLE_REMOTE_FILE);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     @Test
     public void testStartUploadAndPauseAlt() throws Exception {
 
         // setup expectations
-        ftpMock.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                     SAMPLE_REMOTE_DIRECTORY,
-                                     SAMPLE_LOCAL_FILE );
-        replay( ftpMock );
+        ftpMock.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                    SAMPLE_REMOTE_DIRECTORY,
+                                    SAMPLE_LOCAL_FILE);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                              SAMPLE_REMOTE_DIRECTORY );
+        mockedTestObject.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                             SAMPLE_REMOTE_DIRECTORY);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testStartUploadAndPauseAltException() throws Exception {
 
         // setup expectations
-        File fileMock = createMockAndExpectNew( File.class, SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE );
-        expect( fileMock.getName() ).andReturn( SAMPLE_LOCAL_FILE );
-        ftpMock.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                     SAMPLE_REMOTE_DIRECTORY,
-                                     SAMPLE_LOCAL_FILE );
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) );
+        File fileMock = createMockAndExpectNew(File.class, SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE);
+        expect(fileMock.getName()).andReturn(SAMPLE_LOCAL_FILE);
+        ftpMock.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                    SAMPLE_REMOTE_DIRECTORY,
+                                    SAMPLE_LOCAL_FILE);
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE));
         replayAll();
 
         // execute operations
-        mockedTestObject.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                              SAMPLE_REMOTE_DIRECTORY );
+        mockedTestObject.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                             SAMPLE_REMOTE_DIRECTORY);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testStartUploadAndPauseWronglocal() throws Exception {
 
         // execute operations
-        testObject.startUploadAndPause( null, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE );
+        testObject.startUploadAndPause(null, SAMPLE_REMOTE_DIRECTORY, SAMPLE_REMOTE_FILE);
     }
 
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testStartUploadAndPauseWrongRemoteFile() throws Exception {
 
         // execute operations
-        testObject.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                        null,
-                                        SAMPLE_REMOTE_FILE );
+        testObject.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                       null,
+                                       SAMPLE_REMOTE_FILE);
     }
 
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testStartUploadAndPauseWrongRemoteDir() throws Exception {
 
         // execute operations
-        testObject.startUploadAndPause( SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
-                                        SAMPLE_REMOTE_DIRECTORY,
-                                        null );
+        testObject.startUploadAndPause(SAMPLE_LOCAL_DIRECTORY + SAMPLE_LOCAL_FILE,
+                                       SAMPLE_REMOTE_DIRECTORY,
+                                       null);
     }
 
     /**
@@ -668,28 +668,28 @@ public class Test_GenericTransferClient extends BaseTest {
 
         // setup expectations
         ftpMock.resumePausedTransfer();
-        replay( ftpMock );
+        replay(ftpMock);
 
         // execute operations
         mockedTestObject.resumePausedTransfer();
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testResumePausedTransferException() throws Exception {
 
         // setup expectations
         ftpMock.resumePausedTransfer();
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) );
-        replay( ftpMock );
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE));
+        replay(ftpMock);
 
         // execute operations
         mockedTestObject.resumePausedTransfer();
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     // ---------------------------------------------------------------------
@@ -704,33 +704,33 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testChangeMode() throws Exception {
 
         // setup expectations
-        ftpMock.setTransferMode( TransferMode.ASCII );
-        replay( ftpMock );
+        ftpMock.setTransferMode(TransferMode.ASCII);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.setTransferMode( TransferMode.ASCII );
+        mockedTestObject.setTransferMode(TransferMode.ASCII);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = FileTransferException.class)
+    @Test( expected = FileTransferException.class)
     public void testChangeModeException() throws Exception {
 
         // setup expectations
-        ftpMock.setTransferMode( TransferMode.ASCII );
-        expectLastCall().andThrow( new FileTransferException( SAMPLE_EXCEPTION_MESSAGE ) );
-        replay( ftpMock );
+        ftpMock.setTransferMode(TransferMode.ASCII);
+        expectLastCall().andThrow(new FileTransferException(SAMPLE_EXCEPTION_MESSAGE));
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.setTransferMode( TransferMode.ASCII );
+        mockedTestObject.setTransferMode(TransferMode.ASCII);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     // ---------------------------------------------------------------------
@@ -745,25 +745,25 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testChangePort() throws Exception {
 
         // setup expectations
-        ftpMock.setCustomPort( SAMPLE_CUSTOM_PORT );
-        replay( ftpMock );
+        ftpMock.setCustomPort(SAMPLE_CUSTOM_PORT);
+        replay(ftpMock);
 
         // execute operations
-        mockedTestObject.setPort( SAMPLE_CUSTOM_PORT );
+        mockedTestObject.setPort(SAMPLE_CUSTOM_PORT);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
      * Test case
      * @throws Exception
      */
-    @Test(expected = InvalidInputArgumentsException.class)
+    @Test( expected = InvalidInputArgumentsException.class)
     public void testChangePortWrong() throws Exception {
 
         // execute operations
-        testObject.setPort( -1 );
+        testObject.setPort(-1);
 
     }
 
@@ -771,29 +771,29 @@ public class Test_GenericTransferClient extends BaseTest {
     public void testGatherResponses() throws Exception {
 
         // setup expectations
-        ftpMock.enableResponseCollection( true );
-        replay( ftpMock );
+        ftpMock.enableResponseCollection(true);
+        replay(ftpMock);
 
-        mockedTestObject.enableResponseCollection( true );
+        mockedTestObject.enableResponseCollection(true);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     @Test
     public void testGetResponses() throws Exception {
 
         // setup expectations
-        expect( ftpMock.getResponses() ).andReturn( new String[]{ "1" } );
-        replay( ftpMock );
+        expect(ftpMock.getResponses()).andReturn(new String[]{ "1" });
+        replay(ftpMock);
 
         String[] responses = mockedTestObject.getResponses();
 
-        Assert.assertEquals( 1, responses.length );
-        Assert.assertEquals( "1", responses[0] );
+        Assert.assertEquals(1, responses.length);
+        Assert.assertEquals("1", responses[0]);
 
         // verify results
-        verify( ftpMock );
+        verify(ftpMock);
     }
 
     /**
@@ -804,15 +804,15 @@ public class Test_GenericTransferClient extends BaseTest {
 
         String correctFileSeparator;
         String wrongFileSeparator;
-        if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+        if (OperatingSystemType.getCurrentOsType().isUnix()) {
             correctFileSeparator = "/";
             wrongFileSeparator = "\\";
         } else {
             correctFileSeparator = "\\";
             wrongFileSeparator = "/";
         }
-        dir = dir.replace( wrongFileSeparator, correctFileSeparator );
-        if( !dir.endsWith( correctFileSeparator ) ) {
+        dir = dir.replace(wrongFileSeparator, correctFileSeparator);
+        if (!dir.endsWith(correctFileSeparator)) {
             dir = dir + correctFileSeparator;
         }
         return dir;

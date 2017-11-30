@@ -29,7 +29,7 @@ public class RemoteRegistryOperations implements IRegistryOperations {
     public RemoteRegistryOperations( String atsAgent ) {
 
         this.atsAgent = atsAgent;
-        this.registryOperations = new InternalRegistryOperations( atsAgent );
+        this.registryOperations = new InternalRegistryOperations(atsAgent);
     }
 
     @Override
@@ -39,9 +39,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                                  String keyName ) {
 
         try {
-            return this.registryOperations.isKeyPresent( rootKey, keyPath, keyName );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could check for registry key existence on " + atsAgent, e );
+            return this.registryOperations.isKeyPresent(rootKey, keyPath, keyName);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could check for registry key existence on " + atsAgent, e);
         }
     }
 
@@ -52,9 +52,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                                   String keyName ) {
 
         try {
-            return this.registryOperations.getStringValue( rootKey, keyPath, keyName );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could get registry key from " + atsAgent, e );
+            return this.registryOperations.getStringValue(rootKey, keyPath, keyName);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could get registry key from " + atsAgent, e);
         }
     }
 
@@ -65,9 +65,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                             String keyName ) {
 
         try {
-            return this.registryOperations.getIntValue( rootKey, keyPath, keyName );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could get registry key from " + atsAgent, e );
+            return this.registryOperations.getIntValue(rootKey, keyPath, keyName);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could get registry key from " + atsAgent, e);
         }
     }
 
@@ -78,9 +78,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                               String keyName ) {
 
         try {
-            return this.registryOperations.getLongValue( rootKey, keyPath, keyName );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could get registry key from " + atsAgent, e );
+            return this.registryOperations.getLongValue(rootKey, keyPath, keyName);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could get registry key from " + atsAgent, e);
         }
     }
 
@@ -91,9 +91,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                                   String keyName ) {
 
         try {
-            return this.registryOperations.getBinaryValue( rootKey, keyPath, keyName );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could get registry key from " + atsAgent, e );
+            return this.registryOperations.getBinaryValue(rootKey, keyPath, keyName);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could get registry key from " + atsAgent, e);
         }
     }
 
@@ -103,9 +103,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                             String keyPath ) {
 
         try {
-            this.registryOperations.createPath( rootKey, keyPath );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could create registry path on " + atsAgent, e );
+            this.registryOperations.createPath(rootKey, keyPath);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could create registry path on " + atsAgent, e);
         }
     }
 
@@ -117,9 +117,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                                 String keyValue ) {
 
         try {
-            this.registryOperations.setStringValue( rootKey, keyPath, keyName, keyValue );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could set registry key on " + atsAgent, e );
+            this.registryOperations.setStringValue(rootKey, keyPath, keyName, keyValue);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could set registry key on " + atsAgent, e);
         }
     }
 
@@ -131,9 +131,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                              int keyValue ) {
 
         try {
-            this.registryOperations.setIntValue( rootKey, keyPath, keyName, keyValue );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could set registry key on " + atsAgent, e );
+            this.registryOperations.setIntValue(rootKey, keyPath, keyName, keyValue);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could set registry key on " + atsAgent, e);
         }
     }
 
@@ -145,9 +145,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                               long keyValue ) {
 
         try {
-            this.registryOperations.setLongValue( rootKey, keyPath, keyName, keyValue );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could set registry key on " + atsAgent, e );
+            this.registryOperations.setLongValue(rootKey, keyPath, keyName, keyValue);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could set registry key on " + atsAgent, e);
         }
     }
 
@@ -159,9 +159,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                                 byte[] keyValue ) {
 
         try {
-            this.registryOperations.setBinaryValue( rootKey, keyPath, keyName, keyValue );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could set registry key on " + atsAgent, e );
+            this.registryOperations.setBinaryValue(rootKey, keyPath, keyName, keyValue);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could set registry key on " + atsAgent, e);
         }
     }
 
@@ -172,9 +172,9 @@ public class RemoteRegistryOperations implements IRegistryOperations {
                            String keyName ) {
 
         try {
-            this.registryOperations.deleteKey( rootKey, keyPath, keyName );
-        } catch( AgentException e ) {
-            throw new RegistryOperationsException( "Could delete registry key on " + atsAgent, e );
+            this.registryOperations.deleteKey(rootKey, keyPath, keyName);
+        } catch (AgentException e) {
+            throw new RegistryOperationsException("Could delete registry key on " + atsAgent, e);
         }
     }
 }

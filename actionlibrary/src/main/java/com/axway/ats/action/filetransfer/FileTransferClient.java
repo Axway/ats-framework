@@ -53,7 +53,7 @@ import com.axway.ats.core.validation.Validator;
 @PublicAtsApi
 public class FileTransferClient {
 
-    private static final Logger   log                                              = Logger.getLogger( FileTransferClient.class );
+    private static final Logger   log                                              = Logger.getLogger(FileTransferClient.class);
 
     /** Constants for setting FTPS connection type. */
     @PublicAtsApi
@@ -75,7 +75,6 @@ public class FileTransferClient {
     /** Accepts SFTP {@link SSHCipher} or {@link SSHCipher}s array. Only the specified ciphers will be used */
     @PublicAtsApi
     public static final String    SFTP_CIPHERS                                     = SftpClient.SFTP_CIPHERS;
-
 
     /** Property for customizing the HTTP/HTTPS client's socket buffer in bytes */
     @PublicAtsApi
@@ -149,7 +148,7 @@ public class FileTransferClient {
     @PublicAtsApi
     public void setConnectionTimeout( int newValue ) {
 
-        this.client.setConnectionTimeout( newValue );
+        this.client.setConnectionTimeout(newValue);
     }
 
     /**
@@ -165,12 +164,12 @@ public class FileTransferClient {
             int port = protocol.getDefaultPort();
 
             // a product specific client
-            this.client = ClientFactory.getInstance().getClient( protocol, port );
+            this.client = ClientFactory.getInstance().getClient(protocol, port);
 
-            this.client.setDebugMode( ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode() );
+            this.client.setDebugMode(ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode());
 
-        } catch( Exception e ) {
-            throw new FileTransferException( e );
+        } catch (Exception e) {
+            throw new FileTransferException(e);
         }
     }
 
@@ -187,28 +186,28 @@ public class FileTransferClient {
     public FileTransferClient( String protocol, int port ) {
 
         try {
-            TransferProtocol transferProtocol = checkTransferProtocolType( protocol );
-            if( transferProtocol != null ) {
+            TransferProtocol transferProtocol = checkTransferProtocolType(protocol);
+            if (transferProtocol != null) {
                 // a regular client we develop
-                this.client = ClientFactory.getInstance().getClient( transferProtocol, port );
+                this.client = ClientFactory.getInstance().getClient(transferProtocol, port);
             } else {
                 // a product specific client
                 String customFileTransferClient = FileTransferConfigurator.getInstance()
-                                                                          .getFileTransferClient( protocol );
+                                                                          .getFileTransferClient(protocol);
 
-                this.client = ClientFactory.getInstance().getClient( customFileTransferClient, port );
+                this.client = ClientFactory.getInstance().getClient(customFileTransferClient, port);
             }
 
-            this.client.setDebugMode( ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode() );
+            this.client.setDebugMode(ActionLibraryConfigurator.getInstance().getFileTransferVerboseMode());
 
-        } catch( Exception e ) {
-            throw new FileTransferException( e );
+        } catch (Exception e) {
+            throw new FileTransferException(e);
         }
     }
 
     private TransferProtocol checkTransferProtocolType( String transferProtocol ) {
 
-        switch( transferProtocol.toUpperCase() ){
+        switch (transferProtocol.toUpperCase()) {
             case "FTP":
                 return TransferProtocol.FTP;
             case "HTTP":
@@ -236,12 +235,12 @@ public class FileTransferClient {
      *            the port to use
      */
     @PublicAtsApi
-    public void setPort( @Validate(name = "port", type = ValidationType.NUMBER_PORT_NUMBER) int port ) {
+    public void setPort( @Validate( name = "port", type = ValidationType.NUMBER_PORT_NUMBER) int port ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ port } );
+        new Validator().validateMethodParameters(new Object[]{ port });
 
-        this.client.setCustomPort( port );
+        this.client.setCustomPort(port);
     }
 
     // -------------------- ACTIONS --------------------
@@ -256,7 +255,7 @@ public class FileTransferClient {
     @PublicAtsApi
     public void setTransferMode( TransferMode mode ) {
 
-        this.client.setTransferMode( mode );
+        this.client.setTransferMode(mode);
     }
 
     /**
@@ -274,7 +273,7 @@ public class FileTransferClient {
     @PublicAtsApi
     public void addCustomProperty( String key, Object value ) throws IllegalArgumentException {
 
-        this.client.addCustomProperty( key, value );
+        this.client.addCustomProperty(key, value);
     }
 
     /**
@@ -289,15 +288,15 @@ public class FileTransferClient {
      *            the remote file name that the file should have
      */
     @PublicAtsApi
-    public void uploadFile( @Validate(name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
-                            @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
-                            @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+    public void uploadFile( @Validate( name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
+                            @Validate( name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                            @Validate( name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ localFile, remoteDir, remoteFile } );
+        new Validator().validateMethodParameters(new Object[]{ localFile, remoteDir, remoteFile });
 
         // upload the file itself
-        this.client.uploadFile( localFile, remoteDir, remoteFile );
+        this.client.uploadFile(localFile, remoteDir, remoteFile);
     }
 
     /**
@@ -312,8 +311,8 @@ public class FileTransferClient {
     @PublicAtsApi
     public void uploadFile( String localFile, String remoteDir ) {
 
-        File local = new File( localFile );
-        uploadFile( localFile, remoteDir, local.getName() );
+        File local = new File(localFile);
+        uploadFile(localFile, remoteDir, local.getName());
     }
 
     /**
@@ -330,17 +329,17 @@ public class FileTransferClient {
      *            the remote file to download
      */
     @PublicAtsApi
-    public void downloadFile( @Validate(name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
-                              @Validate(name = "localDir", type = ValidationType.STRING_NOT_EMPTY) String localDir,
-                              @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
-                              @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+    public void downloadFile( @Validate( name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
+                              @Validate( name = "localDir", type = ValidationType.STRING_NOT_EMPTY) String localDir,
+                              @Validate( name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                              @Validate( name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ localFile, localDir, remoteDir,
-                                                                remoteFile } );
+        new Validator().validateMethodParameters(new Object[]{ localFile, localDir, remoteDir,
+                                                               remoteFile });
 
         // upload the file itself
-        this.client.downloadFile( IoUtils.normalizeDirPath( localDir ) + localFile, remoteDir, remoteFile );
+        this.client.downloadFile(IoUtils.normalizeDirPath(localDir) + localFile, remoteDir, remoteFile);
     }
 
     /**
@@ -355,15 +354,15 @@ public class FileTransferClient {
      *            the remote file to download
      */
     @PublicAtsApi
-    public void downloadFile( @Validate(name = "localDir", type = ValidationType.STRING_NOT_EMPTY) String localDir,
-                              @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
-                              @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+    public void downloadFile( @Validate( name = "localDir", type = ValidationType.STRING_NOT_EMPTY) String localDir,
+                              @Validate( name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                              @Validate( name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ localDir, remoteDir, remoteFile } );
+        new Validator().validateMethodParameters(new Object[]{ localDir, remoteDir, remoteFile });
 
         // upload the file itself
-        this.client.downloadFile( IoUtils.normalizeDirPath( localDir ) + remoteFile, remoteDir, remoteFile );
+        this.client.downloadFile(IoUtils.normalizeDirPath(localDir) + remoteFile, remoteDir, remoteFile);
     }
 
     /**
@@ -374,13 +373,14 @@ public class FileTransferClient {
      * @return the command output
      */
     @PublicAtsApi
-    public String executeCommand( @Validate(name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public String
+            executeCommand( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ command } );
+        new Validator().validateMethodParameters(new Object[]{ command });
 
         // execute the command
-        return this.client.executeCommand( command );
+        return this.client.executeCommand(command);
     }
 
     /**
@@ -398,14 +398,15 @@ public class FileTransferClient {
      *            the remote file name that the file should have
      */
     @PublicAtsApi
-    public void startUploadAndPause( @Validate(name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
-                                     @Validate(name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
-                                     @Validate(name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
+    public void
+            startUploadAndPause( @Validate( name = "localFile", type = ValidationType.STRING_NOT_EMPTY) String localFile,
+                                 @Validate( name = "remoteDir", type = ValidationType.STRING_NOT_EMPTY) String remoteDir,
+                                 @Validate( name = "remoteFile", type = ValidationType.STRING_NOT_EMPTY) String remoteFile ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ localFile, remoteDir, remoteFile } );
+        new Validator().validateMethodParameters(new Object[]{ localFile, remoteDir, remoteFile });
 
-        this.client.startUploadAndPause( localFile, remoteDir, remoteFile );
+        this.client.startUploadAndPause(localFile, remoteDir, remoteFile);
     }
 
     /**
@@ -423,8 +424,8 @@ public class FileTransferClient {
     @PublicAtsApi
     public void startUploadAndPause( String localFile, String remoteDir ) {
 
-        File local = new File( localFile );
-        startUploadAndPause( localFile, remoteDir, local.getName() );
+        File local = new File(localFile);
+        startUploadAndPause(localFile, remoteDir, local.getName());
     }
 
     /**
@@ -437,12 +438,12 @@ public class FileTransferClient {
     }
 
     @PublicAtsApi
-    public void connect( @Validate(name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname ) {
+    public void connect( @Validate( name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ hostname } );
+        new Validator().validateMethodParameters(new Object[]{ hostname });
 
-        doConnect( hostname, null, null );
+        doConnect(hostname, null, null);
     }
 
     /**
@@ -456,27 +457,27 @@ public class FileTransferClient {
      *            the password for the provided user name
      */
     @PublicAtsApi
-    public void connect( @Validate(name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname,
-                         @Validate(name = "userName", type = ValidationType.STRING_NOT_EMPTY) String userName,
-                         @Validate(name = "password", type = ValidationType.STRING_NOT_EMPTY) String password ) {
+    public void connect( @Validate( name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname,
+                         @Validate( name = "userName", type = ValidationType.STRING_NOT_EMPTY) String userName,
+                         @Validate( name = "password", type = ValidationType.STRING_NOT_EMPTY) String password ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ hostname, userName, password } );
+        new Validator().validateMethodParameters(new Object[]{ hostname, userName, password });
 
-        doConnect( hostname, userName, password );
+        doConnect(hostname, userName, password);
     }
 
     private void doConnect( String hostname, String userName, String password ) {
 
         // connect using base authentication
         try {
-            this.client.connect( hostname, userName, password );
+            this.client.connect(hostname, userName, password);
             return;
-        } catch( FileTransferException e ) {
-            log.error( "Connection attempt failed", e );
+        } catch (FileTransferException e) {
+            log.error("Connection attempt failed", e);
         }
 
-        throw new FileTransferException( "Could not connect. Look up the reason in the log." );
+        throw new FileTransferException("Could not connect. Look up the reason in the log.");
     }
 
     /**
@@ -492,24 +493,24 @@ public class FileTransferClient {
      *            the private key alias
      */
     @PublicAtsApi
-    public void connect( @Validate(name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname,
-                         @Validate(name = "keystoreFile", type = ValidationType.STRING_NOT_EMPTY) String keystoreFile,
-                         @Validate(name = "keystorePassword", type = ValidationType.STRING_NOT_EMPTY) String keystorePassword,
-                         @Validate(name = "privateKeyAlias", type = ValidationType.STRING_NOT_EMPTY) String privateKeyAlias ) {
+    public void connect( @Validate( name = "hostname", type = ValidationType.STRING_SERVER_ADDRESS) String hostname,
+                         @Validate( name = "keystoreFile", type = ValidationType.STRING_NOT_EMPTY) String keystoreFile,
+                         @Validate( name = "keystorePassword", type = ValidationType.STRING_NOT_EMPTY) String keystorePassword,
+                         @Validate( name = "privateKeyAlias", type = ValidationType.STRING_NOT_EMPTY) String privateKeyAlias ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ hostname, keystoreFile, keystorePassword,
-                                                                privateKeyAlias } );
+        new Validator().validateMethodParameters(new Object[]{ hostname, keystoreFile, keystorePassword,
+                                                               privateKeyAlias });
 
         // connect using base authentication
         try {
-            this.client.connect( hostname, keystoreFile, keystorePassword, privateKeyAlias );
+            this.client.connect(hostname, keystoreFile, keystorePassword, privateKeyAlias);
             return;
-        } catch( FileTransferException e ) {
-            log.error( "Connection attempt failed", e );
+        } catch (FileTransferException e) {
+            log.error("Connection attempt failed", e);
         }
 
-        throw new FileTransferException( "Could not connect. Look up the reason in the log." );
+        throw new FileTransferException("Could not connect. Look up the reason in the log.");
     }
 
     /**
@@ -530,7 +531,7 @@ public class FileTransferClient {
     @PublicAtsApi
     public void enableResponseCollection( boolean enable ) {
 
-        this.client.enableResponseCollection( enable );
+        this.client.enableResponseCollection(enable);
     }
 
     /**

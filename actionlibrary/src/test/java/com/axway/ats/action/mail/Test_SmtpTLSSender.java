@@ -26,6 +26,6 @@ public class Test_SmtpTLSSender extends BaseTest {
     @Test
     public void sendAndGetDelivered() throws ActionException {
 
-        new MailTlsSender( Test_SmtpTLSSender.class );
+        new MailTlsSender(Test_SmtpTLSSender.class);
     }
 }

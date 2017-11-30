@@ -36,7 +36,7 @@ public class DatabaseRow {
     public void addCell(
                          DatabaseCell cell ) {
 
-        cells.add( cell );
+        cells.add(cell);
     }
 
     /**
@@ -47,8 +47,8 @@ public class DatabaseRow {
     public String getCellValue(
                                 String cellName ) {
 
-        DatabaseCell cell = getCell( cellName );
-        if( cell != null ) {
+        DatabaseCell cell = getCell(cellName);
+        if (cell != null) {
             return cell.getValue();
         } else {
             return null;
@@ -63,8 +63,8 @@ public class DatabaseRow {
     public DatabaseCell getCell(
                                  String cellName ) {
 
-        for( DatabaseCell cell : cells ) {
-            if( cell.getName().equalsIgnoreCase( cellName ) ) {
+        for (DatabaseCell cell : cells) {
+            if (cell.getName().equalsIgnoreCase(cellName)) {
                 return cell;
             }
         }
@@ -78,19 +78,19 @@ public class DatabaseRow {
     @PublicAtsApi
     public DatabaseCell[] getAllCells() {
 
-        return cells.toArray( new DatabaseCell[cells.size()] );
+        return cells.toArray(new DatabaseCell[cells.size()]);
     }
 
     @Override
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append( "{" );
-        for( DatabaseCell cell : cells ) {
-            sb.append( cell.toString() );
-            sb.append( ";" );
+        sb.append("{");
+        for (DatabaseCell cell : cells) {
+            sb.append(cell.toString());
+            sb.append(";");
         }
-        sb.append( "}" );
+        sb.append("}");
         return sb.toString();
     }
 }

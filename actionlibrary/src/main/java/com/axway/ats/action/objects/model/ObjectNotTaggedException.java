@@ -17,11 +17,11 @@ package com.axway.ats.action.objects.model;
 
 import com.axway.ats.action.model.ActionException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class ObjectNotTaggedException extends ActionException {
 
     public ObjectNotTaggedException( String objectName ) {
 
-        super( objectName + " has not been tagged" );
+        super(objectName + " has not been tagged");
     }
 }

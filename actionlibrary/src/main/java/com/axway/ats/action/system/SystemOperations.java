@@ -53,7 +53,7 @@ public class SystemOperations {
 
     private String  atsAgent;
 
-    private Logger log = Logger.getLogger( SystemOperations.class );
+    private Logger  log      = Logger.getLogger(SystemOperations.class);
 
     @PublicAtsApi
     public Mouse    mouse    = new Mouse();
@@ -78,11 +78,11 @@ public class SystemOperations {
      * </p>
      */
     @PublicAtsApi
-    public SystemOperations( @Validate(name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent ) {
+    public SystemOperations( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent ) {
 
         // validate input parameters
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
-        new Validator().validateMethodParameters( new Object[]{ atsAgent } );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
+        new Validator().validateMethodParameters(new Object[]{ atsAgent });
 
         this.atsAgent = atsAgent;
     }
@@ -95,7 +95,7 @@ public class SystemOperations {
     @PublicAtsApi
     public OperatingSystemType getOperatingSystemType() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         return operations.getOperatingSystemType();
     }
 
@@ -109,14 +109,14 @@ public class SystemOperations {
      */
     @PublicAtsApi
     public String getSystemProperty(
-                                     @Validate(name = "propertyName", type = ValidationType.NOT_NULL) String propertyName ) {
+                                     @Validate( name = "propertyName", type = ValidationType.NOT_NULL) String propertyName ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ propertyName } );
+        new Validator().validateMethodParameters(new Object[]{ propertyName });
 
         // execute action
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-        return operations.getSystemProperty( propertyName );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+        return operations.getSystemProperty(propertyName);
     }
 
     /**
@@ -129,8 +129,8 @@ public class SystemOperations {
     public String getTime(
                            boolean inMilliseconds ) {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-        return operations.getTime( inMilliseconds );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+        return operations.getTime(inMilliseconds);
     }
 
     /**
@@ -142,15 +142,15 @@ public class SystemOperations {
      */
     @PublicAtsApi
     public void setTime(
-                         @Validate(name = "timestamp", type = ValidationType.STRING_NOT_EMPTY) String timestamp,
-                         @Validate(name = "inMilliseconds", type = ValidationType.NONE) boolean inMilliseconds ) {
+                         @Validate( name = "timestamp", type = ValidationType.STRING_NOT_EMPTY) String timestamp,
+                         @Validate( name = "inMilliseconds", type = ValidationType.NONE) boolean inMilliseconds ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ timestamp, inMilliseconds } );
+        new Validator().validateMethodParameters(new Object[]{ timestamp, inMilliseconds });
 
         // execute action
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-        operations.setTime( timestamp, inMilliseconds );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+        operations.setTime(timestamp, inMilliseconds);
     }
 
     /**
@@ -161,7 +161,7 @@ public class SystemOperations {
     @PublicAtsApi
     public String getAtsVersion() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         return operations.getAtsVersion();
     }
 
@@ -177,16 +177,16 @@ public class SystemOperations {
     */
     @PublicAtsApi
     public boolean isListening(
-                                @Validate(name = "host", type = ValidationType.STRING_NOT_EMPTY) String host,
-                                @Validate(name = "port", type = ValidationType.NUMBER_PORT_NUMBER) int port,
-                                @Validate(name = "timeout", type = ValidationType.NUMBER_POSITIVE) int timeout ) {
+                                @Validate( name = "host", type = ValidationType.STRING_NOT_EMPTY) String host,
+                                @Validate( name = "port", type = ValidationType.NUMBER_PORT_NUMBER) int port,
+                                @Validate( name = "timeout", type = ValidationType.NUMBER_POSITIVE) int timeout ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ host, port, timeout } );
+        new Validator().validateMethodParameters(new Object[]{ host, port, timeout });
 
         // execute action
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-        return operations.isListening( host, port, timeout );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+        return operations.isListening(host, port, timeout);
     }
 
     /**
@@ -197,13 +197,13 @@ public class SystemOperations {
      */
     @PublicAtsApi
     public void createScreenshot(
-                                  @Validate(name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath ) {
+                                  @Validate( name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters( new Object[]{ filePath } );
+        new Validator().validateMethodParameters(new Object[]{ filePath });
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-        operations.createScreenshot( filePath );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+        operations.createScreenshot(filePath);
     }
 
     /**
@@ -212,7 +212,7 @@ public class SystemOperations {
     @PublicAtsApi
     public String[] getClassPath() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         return operations.getClassPath();
     }
 
@@ -222,7 +222,7 @@ public class SystemOperations {
     @PublicAtsApi
     public void logClassPath() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         operations.logClassPath();
     }
 
@@ -232,7 +232,7 @@ public class SystemOperations {
     @PublicAtsApi
     public String[] getDuplicatedJars() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         return operations.getDuplicatedJars();
     }
 
@@ -242,7 +242,7 @@ public class SystemOperations {
     @PublicAtsApi
     public void logDuplicatedJars() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         operations.logDuplicatedJars();
     }
 
@@ -261,39 +261,39 @@ public class SystemOperations {
         JMXConnector jmxCon = null;
         try {
             // Connect to JMXConnector
-            JMXServiceURL serviceUrl = new JMXServiceURL( "service:jmx:rmi:///jndi/rmi://" + host + ":"
-                                                          + jmxPort + "/jmxrmi" );
-            jmxCon = JMXConnectorFactory.newJMXConnector( serviceUrl, null );
+            JMXServiceURL serviceUrl = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":"
+                                                         + jmxPort + "/jmxrmi");
+            jmxCon = JMXConnectorFactory.newJMXConnector(serviceUrl, null);
             jmxCon.connect();
 
             // Access the MBean
             MBeanServerConnection con = jmxCon.getMBeanServerConnection();
-            Set<ObjectName> queryResults = con.queryNames( null, null );
+            Set<ObjectName> queryResults = con.queryNames(null, null);
             StringBuilder results = new StringBuilder();
-            for( ObjectName theName : queryResults ) {
-                results.append( "\n---" );
-                results.append( "\nMBean name: " + theName.getCanonicalName() );
-                MBeanAttributeInfo[] attributes = con.getMBeanInfo( theName ).getAttributes();
-                for( MBeanAttributeInfo attribute : attributes ) {
-                    if( attribute.getType() != null ) {
-                        if( !"javax.management.openmbean.CompositeData".equals( attribute.getType() ) ) {
-                            if( "java.lang.Long".equals( attribute.getType() )
-                                || "java.lang.Integer".equals( attribute.getType() )
-                                || "int".equals( attribute.getType() )
-                                || "long".equals( attribute.getType() ) )
+            for (ObjectName theName : queryResults) {
+                results.append("\n---");
+                results.append("\nMBean name: " + theName.getCanonicalName());
+                MBeanAttributeInfo[] attributes = con.getMBeanInfo(theName).getAttributes();
+                for (MBeanAttributeInfo attribute : attributes) {
+                    if (attribute.getType() != null) {
+                        if (!"javax.management.openmbean.CompositeData".equals(attribute.getType())) {
+                            if ("java.lang.Long".equals(attribute.getType())
+                                || "java.lang.Integer".equals(attribute.getType())
+                                || "int".equals(attribute.getType())
+                                || "long".equals(attribute.getType()))
 
-                                results.append( "\r   " + attribute.getName() + " | " + attribute.getType() );
+                                results.append("\r   " + attribute.getName() + " | " + attribute.getType());
 
                         } else {
-                            results.append( "\r   " + attribute.getName() + " | " + attribute.getType() );
-                            CompositeData comdata = ( CompositeData ) con.getAttribute( theName,
-                                                                                        attribute.getName() );
-                            if( comdata != null ) {
-                                for( String key : comdata.getCompositeType().keySet() ) {
-                                    Object value = comdata.get( key );
-                                    if( value instanceof Integer || value instanceof Double
-                                        || value instanceof Long )
-                                        results.append( "\r      " + key + " | " + value.getClass() );
+                            results.append("\r   " + attribute.getName() + " | " + attribute.getType());
+                            CompositeData comdata = (CompositeData) con.getAttribute(theName,
+                                                                                     attribute.getName());
+                            if (comdata != null) {
+                                for (String key : comdata.getCompositeType().keySet()) {
+                                    Object value = comdata.get(key);
+                                    if (value instanceof Integer || value instanceof Double
+                                        || value instanceof Long)
+                                        results.append("\r      " + key + " | " + value.getClass());
                                 }
                             }
                         }
@@ -301,14 +301,14 @@ public class SystemOperations {
                 }
             }
             return results.toString();
-        } catch( Exception e ) {
-            throw new SystemOperationException( "MBeans with their attributes cannot be get.", e );
+        } catch (Exception e) {
+            throw new SystemOperationException("MBeans with their attributes cannot be get.", e);
         } finally {
-            if( jmxCon != null )
+            if (jmxCon != null)
                 try {
                     jmxCon.close();
-                } catch( IOException e ) {
-                    log.error( "JMX connection was not closed!" );
+                } catch (IOException e) {
+                    log.error("JMX connection was not closed!");
                 }
         }
     }
@@ -319,7 +319,7 @@ public class SystemOperations {
     @PublicAtsApi
     public String getHostname() {
 
-        ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+        ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         return operations.getHostname();
 
     }
@@ -327,10 +327,10 @@ public class SystemOperations {
     private ISystemOperations getOperationsImplementationFor(
                                                               String atsAgent ) {
 
-        if( HostUtils.isLocalAtsAgent( atsAgent ) ) {
+        if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalSystemOperations();
         } else {
-            return new RemoteSystemOperations( atsAgent );
+            return new RemoteSystemOperations(atsAgent);
         }
     }
 
@@ -350,8 +350,8 @@ public class SystemOperations {
         public void keyPress(
                               int keyCode ) {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-            operations.getInputOperations().keyPress( keyCode );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+            operations.getInputOperations().keyPress(keyCode);
         }
 
         /**
@@ -363,8 +363,8 @@ public class SystemOperations {
         public void keyRelease(
                                 int keyCode ) {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-            operations.getInputOperations().keyRelease( keyCode );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+            operations.getInputOperations().keyRelease(keyCode);
         }
 
         /**
@@ -373,7 +373,7 @@ public class SystemOperations {
         @PublicAtsApi
         public void pressEnter() {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
             operations.getInputOperations().pressEnter();
         }
 
@@ -383,7 +383,7 @@ public class SystemOperations {
         @PublicAtsApi
         public void pressEsc() {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
             operations.getInputOperations().pressEsc();
         }
 
@@ -393,7 +393,7 @@ public class SystemOperations {
         @PublicAtsApi
         public void pressTab() {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
             operations.getInputOperations().pressTab();
         }
 
@@ -403,7 +403,7 @@ public class SystemOperations {
         @PublicAtsApi
         public void pressSpace() {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
             operations.getInputOperations().pressSpace();
         }
 
@@ -413,7 +413,7 @@ public class SystemOperations {
         @PublicAtsApi
         public void pressAltF4() {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
             operations.getInputOperations().pressAltF4();
         }
 
@@ -426,8 +426,8 @@ public class SystemOperations {
         public void type(
                           int... keyCodes ) {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-            operations.getInputOperations().type( keyCodes );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+            operations.getInputOperations().type(keyCodes);
         }
 
         /**
@@ -439,8 +439,8 @@ public class SystemOperations {
         public void type(
                           String text ) {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-            operations.getInputOperations().type( text );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+            operations.getInputOperations().type(text);
         }
 
         /**
@@ -456,8 +456,8 @@ public class SystemOperations {
                           String text,
                           int... keyCodes ) {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-            operations.getInputOperations().type( text, keyCodes );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+            operations.getInputOperations().type(text, keyCodes);
         }
 
     }
@@ -480,8 +480,8 @@ public class SystemOperations {
                              int x,
                              int y ) {
 
-            ISystemOperations operations = getOperationsImplementationFor( atsAgent );
-            operations.getInputOperations().clickAt( x, y );
+            ISystemOperations operations = getOperationsImplementationFor(atsAgent);
+            operations.getInputOperations().clickAt(x, y);
         }
     }
 

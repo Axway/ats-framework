@@ -31,24 +31,24 @@ public class ManagedXAQueueTopicConnection extends ManagedQueueTopicConnection i
 
     public ManagedXAQueueTopicConnection( final Connection connection ) {
 
-        super( connection );
+        super(connection);
     }
 
     @Override
     public XASession createXASession() throws JMSException {
 
-        return addSession( ( ( XAConnection ) connection ).createXASession() );
+        return addSession( ((XAConnection) connection).createXASession());
     }
 
     @Override
     public XAQueueSession createXAQueueSession() throws JMSException {
 
-        return addSession( ( ( XAQueueConnection ) connection ).createXAQueueSession() );
+        return addSession( ((XAQueueConnection) connection).createXAQueueSession());
     }
 
     @Override
     public XATopicSession createXATopicSession() throws JMSException {
 
-        return addSession( ( ( XATopicConnection ) connection ).createXATopicSession() );
+        return addSession( ((XATopicConnection) connection).createXATopicSession());
     }
 }

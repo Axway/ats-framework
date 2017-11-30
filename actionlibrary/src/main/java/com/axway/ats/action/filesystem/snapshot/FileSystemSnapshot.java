@@ -103,18 +103,18 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public FileSystemSnapshot( String atsAgent, String name ) {
 
-        if( StringUtils.isNullOrEmpty( name ) ) {
-            throw new FileSystemSnapshotException( "Invalid snapshot name '" + name + "'" );
+        if (StringUtils.isNullOrEmpty(name)) {
+            throw new FileSystemSnapshotException("Invalid snapshot name '" + name + "'");
         }
 
         loadConfiguration();
 
         this.atsAgent = atsAgent;
-        this.fsSnapshotImpl = getOperationsImplementationFor( atsAgent, name, configuration );
-        this.properties = new PropertiesFile( this.fsSnapshotImpl );
-        this.xml = new XmlFile( this.fsSnapshotImpl );
-        this.ini = new IniFile( this.fsSnapshotImpl );
-        this.text = new TextFile( this.fsSnapshotImpl );
+        this.fsSnapshotImpl = getOperationsImplementationFor(atsAgent, name, configuration);
+        this.properties = new PropertiesFile(this.fsSnapshotImpl);
+        this.xml = new XmlFile(this.fsSnapshotImpl);
+        this.ini = new IniFile(this.fsSnapshotImpl);
+        this.text = new TextFile(this.fsSnapshotImpl);
     }
 
     /**
@@ -125,7 +125,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public FileSystemSnapshot( String name ) {
 
-        this( null, name );
+        this(null, name);
     }
 
     private FileSystemSnapshot() {
@@ -140,41 +140,41 @@ public class FileSystemSnapshot {
 
         ActionLibraryConfigurator configurator = ActionLibraryConfigurator.getInstance();
         configuration = new SnapshotConfiguration();
-        configuration.setCheckModificationTime( configurator.snapshots.getCheckModificationTime() );
-        configuration.setCheckSize( configurator.snapshots.getCheckFileSize() );
-        configuration.setCheckMD5( configurator.snapshots.getCheckFileMd5() );
-        configuration.setCheckPermissions( configurator.snapshots.getCheckFilePermissions() );
-        configuration.setSupportHidden( configurator.snapshots.getSupportHiddenFiles() );
+        configuration.setCheckModificationTime(configurator.snapshots.getCheckModificationTime());
+        configuration.setCheckSize(configurator.snapshots.getCheckFileSize());
+        configuration.setCheckMD5(configurator.snapshots.getCheckFileMd5());
+        configuration.setCheckPermissions(configurator.snapshots.getCheckFilePermissions());
+        configuration.setSupportHidden(configurator.snapshots.getSupportHiddenFiles());
 
         // Properties files
-        configuration.setCheckPropertiesFilesContent( configurator.snapshots.getCheckPropertiesFilesContent() );
+        configuration.setCheckPropertiesFilesContent(configurator.snapshots.getCheckPropertiesFilesContent());
         String propertiesExtensions = configurator.snapshots.getPropertiesFileExtensions();
-        if( !StringUtils.isNullOrEmpty( propertiesExtensions ) ) {
-            configuration.setPropertiesFileExtensions( propertiesExtensions.split( "," ) );
+        if (!StringUtils.isNullOrEmpty(propertiesExtensions)) {
+            configuration.setPropertiesFileExtensions(propertiesExtensions.split(","));
         }
 
         // XML files
-        configuration.setCheckXmlFilesContent( configurator.snapshots.getCheckXmlFilesContent() );
+        configuration.setCheckXmlFilesContent(configurator.snapshots.getCheckXmlFilesContent());
         String xmlExtensions = configurator.snapshots.getXmlFileExtensions();
-        if( !StringUtils.isNullOrEmpty( xmlExtensions ) ) {
-            configuration.setXmlFileExtensions( xmlExtensions.split( "," ) );
+        if (!StringUtils.isNullOrEmpty(xmlExtensions)) {
+            configuration.setXmlFileExtensions(xmlExtensions.split(","));
         }
 
         // INI files
-        configuration.setCheckIniFilesContent( configurator.snapshots.getCheckIniFilesContent() );
-        configuration.setIniFileStartSectionCharacter( configurator.snapshots.getIniFilesStartSectionChar() );
-        configuration.setIniFileStartCommentCharacter( configurator.snapshots.getIniFilesStartCommentChar() );
-        configuration.setIniFileDelimiterCharacter( configurator.snapshots.getIniFilesDelimeterChar() );
+        configuration.setCheckIniFilesContent(configurator.snapshots.getCheckIniFilesContent());
+        configuration.setIniFileStartSectionCharacter(configurator.snapshots.getIniFilesStartSectionChar());
+        configuration.setIniFileStartCommentCharacter(configurator.snapshots.getIniFilesStartCommentChar());
+        configuration.setIniFileDelimiterCharacter(configurator.snapshots.getIniFilesDelimeterChar());
         String iniExtensions = configurator.snapshots.getIniFileExtensions();
-        if( !StringUtils.isNullOrEmpty( iniExtensions ) ) {
-            configuration.setIniFileExtensions( iniExtensions.split( "," ) );
+        if (!StringUtils.isNullOrEmpty(iniExtensions)) {
+            configuration.setIniFileExtensions(iniExtensions.split(","));
         }
 
         // TEXT files
-        configuration.setCheckTextFilesContent( configurator.snapshots.getCheckTextFilesContent() );
+        configuration.setCheckTextFilesContent(configurator.snapshots.getCheckTextFilesContent());
         String textExtensions = configurator.snapshots.getTextFileExtensions();
-        if( !StringUtils.isNullOrEmpty( textExtensions ) ) {
-            configuration.setTextFileExtensions( textExtensions.split( "," ) );
+        if (!StringUtils.isNullOrEmpty(textExtensions)) {
+            configuration.setTextFileExtensions(textExtensions.split(","));
         }
     }
 
@@ -189,10 +189,10 @@ public class FileSystemSnapshot {
     public FileSystemSnapshot newSnapshot( String newSnapshotName ) {
 
         FileSystemSnapshot fss = new FileSystemSnapshot();
-        if( HostUtils.isLocalAtsAgent( this.atsAgent ) ) {
-            fss.fsSnapshotImpl = ( ( LocalFileSystemSnapshot ) this.fsSnapshotImpl ).newSnapshot( newSnapshotName );
+        if (HostUtils.isLocalAtsAgent(this.atsAgent)) {
+            fss.fsSnapshotImpl = ((LocalFileSystemSnapshot) this.fsSnapshotImpl).newSnapshot(newSnapshotName);
         } else {
-            fss.fsSnapshotImpl = ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).newSnapshot( newSnapshotName );
+            fss.fsSnapshotImpl = ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).newSnapshot(newSnapshotName);
         }
         return fss;
     }
@@ -206,7 +206,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void addDirectory( String directoryAlias, String directoryPath ) {
 
-        this.fsSnapshotImpl.addDirectory( directoryAlias, directoryPath );
+        this.fsSnapshotImpl.addDirectory(directoryAlias, directoryPath);
     }
 
     /**
@@ -218,7 +218,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void skipDirectory( String rootDirectoryAlias, String relativeDirectoryPath ) {
 
-        this.fsSnapshotImpl.skipDirectory( rootDirectoryAlias, relativeDirectoryPath );
+        this.fsSnapshotImpl.skipDirectory(rootDirectoryAlias, relativeDirectoryPath);
     }
 
     /**
@@ -228,9 +228,9 @@ public class FileSystemSnapshot {
      * @param relativeDirectoryPath path to this directory relative to the path of the one with provided alias
      */
     @PublicAtsApi
-    public void skipDirectoryByRegex( String rootDirectoryAlias, String relativeDirectoryPath) {
+    public void skipDirectoryByRegex( String rootDirectoryAlias, String relativeDirectoryPath ) {
 
-        this.fsSnapshotImpl.skipDirectoryByRegex( rootDirectoryAlias, relativeDirectoryPath );
+        this.fsSnapshotImpl.skipDirectoryByRegex(rootDirectoryAlias, relativeDirectoryPath);
     }
 
     /**
@@ -245,7 +245,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void skipFile( String rootDirectoryAlias, String relativeFilePath, int... skipRules ) {
 
-        this.fsSnapshotImpl.skipFile( rootDirectoryAlias, relativeFilePath, skipRules );
+        this.fsSnapshotImpl.skipFile(rootDirectoryAlias, relativeFilePath, skipRules);
     }
 
     /**
@@ -260,7 +260,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void skipFileByRegex( String rootDirectoryAlias, String relativeFilePath, int... skipRules ) {
 
-        this.fsSnapshotImpl.skipFileByRegex( rootDirectoryAlias, relativeFilePath, skipRules );
+        this.fsSnapshotImpl.skipFileByRegex(rootDirectoryAlias, relativeFilePath, skipRules);
     }
 
     /**
@@ -277,7 +277,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void checkFile( String rootDirectoryAlias, String relativeFilePath, int... checkRules ) {
 
-        this.fsSnapshotImpl.checkFile( rootDirectoryAlias, relativeFilePath, checkRules );
+        this.fsSnapshotImpl.checkFile(rootDirectoryAlias, relativeFilePath, checkRules);
     }
 
     /**
@@ -300,24 +300,24 @@ public class FileSystemSnapshot {
         // both instances are compared locally
 
         LocalFileSystemSnapshot thisLocal;
-        if( this.fsSnapshotImpl instanceof LocalFileSystemSnapshot ) {
-            thisLocal = ( LocalFileSystemSnapshot ) this.fsSnapshotImpl;
+        if (this.fsSnapshotImpl instanceof LocalFileSystemSnapshot) {
+            thisLocal = (LocalFileSystemSnapshot) this.fsSnapshotImpl;
         } else {
-            thisLocal = ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).getFileSystemSnapshot();
+            thisLocal = ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).getFileSystemSnapshot();
             // pass the agent address, there are cases we need it
-            thisLocal.setRemoteAgent( ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).getAtsAgent() );
+            thisLocal.setRemoteAgent( ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).getAtsAgent());
         }
 
         LocalFileSystemSnapshot thatLocal;
-        if( that.fsSnapshotImpl instanceof LocalFileSystemSnapshot ) {
-            thatLocal = ( LocalFileSystemSnapshot ) that.fsSnapshotImpl;
+        if (that.fsSnapshotImpl instanceof LocalFileSystemSnapshot) {
+            thatLocal = (LocalFileSystemSnapshot) that.fsSnapshotImpl;
         } else {
-            thatLocal = ( ( RemoteFileSystemSnapshot ) that.fsSnapshotImpl ).getFileSystemSnapshot();
+            thatLocal = ((RemoteFileSystemSnapshot) that.fsSnapshotImpl).getFileSystemSnapshot();
             // pass the agent address, there are cases we need it
-            thatLocal.setRemoteAgent( ( ( RemoteFileSystemSnapshot ) that.fsSnapshotImpl ).getAtsAgent() );
+            thatLocal.setRemoteAgent( ((RemoteFileSystemSnapshot) that.fsSnapshotImpl).getAtsAgent());
         }
 
-        thisLocal.compare( thatLocal );
+        thisLocal.compare(thatLocal);
     }
 
     /**
@@ -332,21 +332,21 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void loadFromLocalFile( String newSnapshotName, String sourceFile ) throws FileSystemSnapshotException {
 
-        if( this.fsSnapshotImpl instanceof LocalFileSystemSnapshot ) {
+        if (this.fsSnapshotImpl instanceof LocalFileSystemSnapshot) {
             // local file - local instance
-            ( ( LocalFileSystemSnapshot ) this.fsSnapshotImpl ).loadFromFile( sourceFile );
+            ((LocalFileSystemSnapshot) this.fsSnapshotImpl).loadFromFile(sourceFile);
 
-            if( !StringUtils.isNullOrEmpty( newSnapshotName ) ) {
+            if (!StringUtils.isNullOrEmpty(newSnapshotName)) {
                 // update snapshot name
-                ( ( LocalFileSystemSnapshot ) this.fsSnapshotImpl ).setName( newSnapshotName );
+                ((LocalFileSystemSnapshot) this.fsSnapshotImpl).setName(newSnapshotName);
             }
         } else {
             // local file must be pushed to a remote File System Snapshot instance
-            LocalFileSystemSnapshot localFSS = new LocalFileSystemSnapshot( newSnapshotName, configuration );
-            localFSS.loadFromFile( sourceFile );
+            LocalFileSystemSnapshot localFSS = new LocalFileSystemSnapshot(newSnapshotName, configuration);
+            localFSS.loadFromFile(sourceFile);
 
             // now we will replace the remote instance with the local one which was just loaded from a local file
-            ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).pushFileSystemSnapshot( localFSS );
+            ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).pushFileSystemSnapshot(localFSS);
         }
     }
 
@@ -363,15 +363,15 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void loadFromRemoteFile( String newSnapshotName, String sourceFile ) throws FileSystemSnapshotException {
 
-        if( this.fsSnapshotImpl instanceof LocalFileSystemSnapshot ) {
-            throw new FileSystemSnapshotException( "Cannot load snapshot from a remote host as this is a local File System Snapshot instance" );
+        if (this.fsSnapshotImpl instanceof LocalFileSystemSnapshot) {
+            throw new FileSystemSnapshotException("Cannot load snapshot from a remote host as this is a local File System Snapshot instance");
         }
 
         // load the snapshot
-        ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).loadFromFile( sourceFile );
+        ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).loadFromFile(sourceFile);
 
         // update the snapshot name
-        ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).setName( newSnapshotName );
+        ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).setName(newSnapshotName);
     }
 
     /**
@@ -382,13 +382,13 @@ public class FileSystemSnapshot {
     public void toLocalFile( String backupFile ) {
 
         LocalFileSystemSnapshot localFSS;
-        if( this.fsSnapshotImpl instanceof LocalFileSystemSnapshot ) {
-            localFSS = ( LocalFileSystemSnapshot ) this.fsSnapshotImpl;
+        if (this.fsSnapshotImpl instanceof LocalFileSystemSnapshot) {
+            localFSS = (LocalFileSystemSnapshot) this.fsSnapshotImpl;
         } else {
-            localFSS = ( ( RemoteFileSystemSnapshot ) this.fsSnapshotImpl ).getFileSystemSnapshot();
+            localFSS = ((RemoteFileSystemSnapshot) this.fsSnapshotImpl).getFileSystemSnapshot();
         }
 
-        localFSS.toFile( backupFile );
+        localFSS.toFile(backupFile);
     }
 
     /**
@@ -399,11 +399,11 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public void toRemoteFile( String backupFile ) {
 
-        if( this.fsSnapshotImpl instanceof LocalFileSystemSnapshot ) {
-            throw new FileSystemSnapshotException( "Cannot save on a remote host as this is a local File System Snapshot instance" );
+        if (this.fsSnapshotImpl instanceof LocalFileSystemSnapshot) {
+            throw new FileSystemSnapshotException("Cannot save on a remote host as this is a local File System Snapshot instance");
         }
 
-        ( ( RemoteFileSystemSnapshot ) fsSnapshotImpl ).toFile( backupFile );
+        ((RemoteFileSystemSnapshot) fsSnapshotImpl).toFile(backupFile);
     }
 
     /**
@@ -418,12 +418,12 @@ public class FileSystemSnapshot {
     private IFileSystemSnapshot getOperationsImplementationFor( String atsAgent, String name,
                                                                 SnapshotConfiguration configuration ) {
 
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
 
-        if( HostUtils.isLocalAtsAgent( atsAgent ) ) {
-            return new LocalFileSystemSnapshot( name, configuration );
+        if (HostUtils.isLocalAtsAgent(atsAgent)) {
+            return new LocalFileSystemSnapshot(name, configuration);
         } else {
-            return new RemoteFileSystemSnapshot( atsAgent, name, configuration );
+            return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
         }
     }
 
@@ -450,8 +450,8 @@ public class FileSystemSnapshot {
         public void skipPropertyByKeyEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                  String key ) {
 
-            this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
-                                                     MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipPropertyWithKey(rootDirectoryAlias, relativeFilePath, key,
+                                                    MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -466,8 +466,8 @@ public class FileSystemSnapshot {
         public void skipPropertyByKeyContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                      String key ) {
 
-            this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
-                                                     MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipPropertyWithKey(rootDirectoryAlias, relativeFilePath, key,
+                                                    MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -482,8 +482,8 @@ public class FileSystemSnapshot {
         public void skipPropertyByKeyMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                    String key ) {
 
-            this.fsSnapshotImpl.skipPropertyWithKey( rootDirectoryAlias, relativeFilePath, key,
-                                                     MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipPropertyWithKey(rootDirectoryAlias, relativeFilePath, key,
+                                                    MATCH_TYPE.REGEX.toString());
         }
 
         /**
@@ -498,8 +498,8 @@ public class FileSystemSnapshot {
         public void skipPropertyByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                    String value ) {
 
-            this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
-                                                       MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipPropertyWithValue(rootDirectoryAlias, relativeFilePath, value,
+                                                      MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -514,8 +514,8 @@ public class FileSystemSnapshot {
         public void skipPropertyByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                        String value ) {
 
-            this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
-                                                       MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipPropertyWithValue(rootDirectoryAlias, relativeFilePath, value,
+                                                      MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -530,8 +530,8 @@ public class FileSystemSnapshot {
         public void skipPropertyByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                      String value ) {
 
-            this.fsSnapshotImpl.skipPropertyWithValue( rootDirectoryAlias, relativeFilePath, value,
-                                                       MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipPropertyWithValue(rootDirectoryAlias, relativeFilePath, value,
+                                                      MATCH_TYPE.REGEX.toString());
         }
     }
 
@@ -561,9 +561,9 @@ public class FileSystemSnapshot {
                                                         String nodeXpath, String attributeKey,
                                                         String attributeValue ) {
 
-            this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
-                                                     attributeKey, attributeValue,
-                                                     MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipNodeByAttribute(rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                    attributeKey, attributeValue,
+                                                    MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -580,9 +580,9 @@ public class FileSystemSnapshot {
                                                             String relativeFilePath, String nodeXpath,
                                                             String attributeKey, String attributeValue ) {
 
-            this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
-                                                     attributeKey, attributeValue,
-                                                     MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipNodeByAttribute(rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                    attributeKey, attributeValue,
+                                                    MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -599,9 +599,9 @@ public class FileSystemSnapshot {
                                                           String nodeXpath, String attributeKey,
                                                           String attributeValue ) {
 
-            this.fsSnapshotImpl.skipNodeByAttribute( rootDirectoryAlias, relativeFilePath, nodeXpath,
-                                                     attributeKey, attributeValue,
-                                                     MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipNodeByAttribute(rootDirectoryAlias, relativeFilePath, nodeXpath,
+                                                    attributeKey, attributeValue,
+                                                    MATCH_TYPE.REGEX.toString());
         }
 
         /**
@@ -616,8 +616,8 @@ public class FileSystemSnapshot {
         public void skipNodeByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                String nodeXpath, String value ) {
 
-            this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                                 MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipNodeByValue(rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                                MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -632,8 +632,8 @@ public class FileSystemSnapshot {
         public void skipNodeByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                    String nodeXpath, String value ) {
 
-            this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                                 MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipNodeByValue(rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                                MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -648,8 +648,8 @@ public class FileSystemSnapshot {
         public void skipNodeByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                  String nodeXpath, String value ) {
 
-            this.fsSnapshotImpl.skipNodeByValue( rootDirectoryAlias, relativeFilePath, nodeXpath, value,
-                                                 MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipNodeByValue(rootDirectoryAlias, relativeFilePath, nodeXpath, value,
+                                                MATCH_TYPE.REGEX.toString());
         }
     }
 
@@ -676,8 +676,8 @@ public class FileSystemSnapshot {
         public void skipIniSectionEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                               String section ) {
 
-            this.fsSnapshotImpl.skipIniSection( rootDirectoryAlias, relativeFilePath, section,
-                                                MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipIniSection(rootDirectoryAlias, relativeFilePath, section,
+                                               MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -692,8 +692,8 @@ public class FileSystemSnapshot {
         public void skipIniSectionContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                   String section ) {
 
-            this.fsSnapshotImpl.skipIniSection( rootDirectoryAlias, relativeFilePath, section,
-                                                MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipIniSection(rootDirectoryAlias, relativeFilePath, section,
+                                               MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -708,8 +708,8 @@ public class FileSystemSnapshot {
         public void skipIniSectionMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                 String section ) {
 
-            this.fsSnapshotImpl.skipIniSection( rootDirectoryAlias, relativeFilePath, section,
-                                                MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipIniSection(rootDirectoryAlias, relativeFilePath, section,
+                                               MATCH_TYPE.REGEX.toString());
         }
 
         /**
@@ -725,8 +725,8 @@ public class FileSystemSnapshot {
         public void skipIniPropertyByKeyEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                     String section, String key ) {
 
-            this.fsSnapshotImpl.skipIniPropertyWithKey( rootDirectoryAlias, relativeFilePath, section, key,
-                                                        MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipIniPropertyWithKey(rootDirectoryAlias, relativeFilePath, section, key,
+                                                       MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -742,8 +742,8 @@ public class FileSystemSnapshot {
         public void skipIniPropertyByKeyContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                         String section, String key ) {
 
-            this.fsSnapshotImpl.skipIniPropertyWithKey( rootDirectoryAlias, relativeFilePath, section, key,
-                                                        MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipIniPropertyWithKey(rootDirectoryAlias, relativeFilePath, section, key,
+                                                       MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -759,8 +759,8 @@ public class FileSystemSnapshot {
         public void skipIniPropertyByKeyMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                       String section, String key ) {
 
-            this.fsSnapshotImpl.skipIniPropertyWithKey( rootDirectoryAlias, relativeFilePath, section, key,
-                                                        MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipIniPropertyWithKey(rootDirectoryAlias, relativeFilePath, section, key,
+                                                       MATCH_TYPE.REGEX.toString());
         }
 
         /**
@@ -776,8 +776,8 @@ public class FileSystemSnapshot {
         public void skipIniPropertyByValueEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                                       String section, String value ) {
 
-            this.fsSnapshotImpl.skipIniPropertyWithValue( rootDirectoryAlias, relativeFilePath, section,
-                                                          value, MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipIniPropertyWithValue(rootDirectoryAlias, relativeFilePath, section,
+                                                         value, MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -793,8 +793,8 @@ public class FileSystemSnapshot {
         public void skipIniPropertyByValueContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                           String section, String value ) {
 
-            this.fsSnapshotImpl.skipIniPropertyWithValue( rootDirectoryAlias, relativeFilePath, section,
-                                                          value, MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipIniPropertyWithValue(rootDirectoryAlias, relativeFilePath, section,
+                                                         value, MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -810,8 +810,8 @@ public class FileSystemSnapshot {
         public void skipIniPropertyByValueMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                                         String section, String value ) {
 
-            this.fsSnapshotImpl.skipIniPropertyWithValue( rootDirectoryAlias, relativeFilePath, section,
-                                                          value, MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipIniPropertyWithValue(rootDirectoryAlias, relativeFilePath, section,
+                                                         value, MATCH_TYPE.REGEX.toString());
         }
     }
 
@@ -838,8 +838,8 @@ public class FileSystemSnapshot {
         public void skipTextLineEqualsText( String rootDirectoryAlias, String relativeFilePath,
                                             String line ) {
 
-            this.fsSnapshotImpl.skipTextLine( rootDirectoryAlias, relativeFilePath, line,
-                                              MATCH_TYPE.TEXT.toString() );
+            this.fsSnapshotImpl.skipTextLine(rootDirectoryAlias, relativeFilePath, line,
+                                             MATCH_TYPE.TEXT.toString());
         }
 
         /**
@@ -854,8 +854,8 @@ public class FileSystemSnapshot {
         public void skipTextLineContainingText( String rootDirectoryAlias, String relativeFilePath,
                                                 String line ) {
 
-            this.fsSnapshotImpl.skipTextLine( rootDirectoryAlias, relativeFilePath, line,
-                                                MATCH_TYPE.CONTAINS_TEXT.toString() );
+            this.fsSnapshotImpl.skipTextLine(rootDirectoryAlias, relativeFilePath, line,
+                                             MATCH_TYPE.CONTAINS_TEXT.toString());
         }
 
         /**
@@ -870,8 +870,8 @@ public class FileSystemSnapshot {
         public void skipTextLineMatchingText( String rootDirectoryAlias, String relativeFilePath,
                                               String line ) {
 
-            this.fsSnapshotImpl.skipTextLine( rootDirectoryAlias, relativeFilePath, line,
-                                                MATCH_TYPE.REGEX.toString() );
+            this.fsSnapshotImpl.skipTextLine(rootDirectoryAlias, relativeFilePath, line,
+                                             MATCH_TYPE.REGEX.toString());
         }
     }
 }

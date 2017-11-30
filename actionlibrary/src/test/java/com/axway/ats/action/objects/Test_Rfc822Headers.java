@@ -47,25 +47,25 @@ public class Test_Rfc822Headers extends BaseTest {
     @Test
     public void parse1Reg2Att() throws Exception {
 
-        String mailMessagePath = Test_MimePackage.class.getResource( "RFC822-headers-1_Regular_2_Attachments.eml" )
+        String mailMessagePath = Test_MimePackage.class.getResource("RFC822-headers-1_Regular_2_Attachments.eml")
                                                        .getPath();
 
-        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile( mailMessagePath );
-        assertEquals( 1, mimeMessage.getRegularPartCount() );
-        assertEquals( 1, mimeMessage.getAttachmentPartCount() );
+        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile(mailMessagePath);
+        assertEquals(1, mimeMessage.getRegularPartCount());
+        assertEquals(1, mimeMessage.getAttachmentPartCount());
 
         // first attachment exists and is parsed
-        MimePart part = mimeMessage.getPart( 0, true );
-        assertTrue( part != null );
+        MimePart part = mimeMessage.getPart(0, true);
+        assertTrue(part != null);
 
         // one regular part with text
-        assertTrue( mimeMessage.getPlainTextBody()
-                               .startsWith( "This report relates to a message you sent" ) );
+        assertTrue(mimeMessage.getPlainTextBody()
+                              .startsWith("This report relates to a message you sent"));
 
         // nested MimePackage - the RFC822-headers
-        MimePackage nestedPackWithHeadersOnly = mimeMessage.getNeededMimePackage( new int[]{ 0 } );
+        MimePackage nestedPackWithHeadersOnly = mimeMessage.getNeededMimePackage(new int[]{ 0 });
         List<PackageHeader> headers = nestedPackWithHeadersOnly.getAllHeaders();
-        assertTrue( headers.size() == 31 );
+        assertTrue(headers.size() == 31);
 
         /* For test debugging
         int i = 0;
@@ -89,15 +89,15 @@ public class Test_Rfc822Headers extends BaseTest {
     @Test
     public void parse2Reg0Att() throws Exception {
 
-        String mailMessagePath = Test_MimePackage.class.getResource( "RFC822-headers-Mailgate-Notification_2_Regular_0_Attachments.eml" )
+        String mailMessagePath = Test_MimePackage.class.getResource("RFC822-headers-Mailgate-Notification_2_Regular_0_Attachments.eml")
                                                        .getPath();
 
-        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile( mailMessagePath );
-        assertEquals( 2, mimeMessage.getRegularPartCount() );
-        assertEquals( 0, mimeMessage.getAttachmentPartCount() );
+        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile(mailMessagePath);
+        assertEquals(2, mimeMessage.getRegularPartCount());
+        assertEquals(0, mimeMessage.getAttachmentPartCount());
 
-        assertNotNull( mimeMessage.getPlainTextBody() );
-        assertNotNull( mimeMessage.getHtmlTextBody() );
+        assertNotNull(mimeMessage.getPlainTextBody());
+        assertNotNull(mimeMessage.getHtmlTextBody());
     }
 
     /**
@@ -116,14 +116,14 @@ public class Test_Rfc822Headers extends BaseTest {
     @Test
     public void parseNestedNoBody() throws Exception {
 
-        String mailMessagePath = Test_MimePackage.class.getResource( "nestedMessagesNoBody.eml" ).getPath();
+        String mailMessagePath = Test_MimePackage.class.getResource("nestedMessagesNoBody.eml").getPath();
 
-        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile( mailMessagePath );
-        assertEquals( 2, mimeMessage.getRegularPartCount() );
-        assertEquals( 0, mimeMessage.getAttachmentPartCount() );
+        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile(mailMessagePath);
+        assertEquals(2, mimeMessage.getRegularPartCount());
+        assertEquals(0, mimeMessage.getAttachmentPartCount());
 
-        assertNull( mimeMessage.getPlainTextBody() ); // exists but nested 3 levels.
-        assertNull( mimeMessage.getHtmlTextBody() ); // exists but nested 3 levels.
+        assertNull(mimeMessage.getPlainTextBody()); // exists but nested 3 levels.
+        assertNull(mimeMessage.getHtmlTextBody()); // exists but nested 3 levels.
     }
 
     /**
@@ -137,14 +137,14 @@ public class Test_Rfc822Headers extends BaseTest {
     @Test
     public void parseNestedNoPlain() throws Exception {
 
-        String mailMessagePath = Test_MimePackage.class.getResource( "nestedMessagesNoPlain.eml" ).getPath();
+        String mailMessagePath = Test_MimePackage.class.getResource("nestedMessagesNoPlain.eml").getPath();
 
-        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile( mailMessagePath );
-        assertEquals( 1, mimeMessage.getRegularPartCount() );
-        assertEquals( 0, mimeMessage.getAttachmentPartCount() );
+        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile(mailMessagePath);
+        assertEquals(1, mimeMessage.getRegularPartCount());
+        assertEquals(0, mimeMessage.getAttachmentPartCount());
 
-        assertNull( mimeMessage.getPlainTextBody() ); // is missing
-        assertNotNull( mimeMessage.getHtmlTextBody() ); // exist on level 2 and it will be parsed.
+        assertNull(mimeMessage.getPlainTextBody()); // is missing
+        assertNotNull(mimeMessage.getHtmlTextBody()); // exist on level 2 and it will be parsed.
     }
 
     /**
@@ -161,14 +161,14 @@ public class Test_Rfc822Headers extends BaseTest {
     @Test
     public void getTextBody_HTMLBodyIsLocatedAfterAlternativePart() throws Exception {
 
-        String mailMessagePath = Test_MimePackage.class.getResource( "textBody_HTMLBodyIsLocatedAfterAlternativePart.eml" )
+        String mailMessagePath = Test_MimePackage.class.getResource("textBody_HTMLBodyIsLocatedAfterAlternativePart.eml")
                                                        .getPath();
 
-        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile( mailMessagePath );
-        assertEquals( 3, mimeMessage.getRegularPartCount() );
-        assertEquals( 1, mimeMessage.getAttachmentPartCount() );
+        MimePackage mimeMessage = PackageLoader.loadMimePackageFromFile(mailMessagePath);
+        assertEquals(3, mimeMessage.getRegularPartCount());
+        assertEquals(1, mimeMessage.getAttachmentPartCount());
 
-        assertEquals( "plain text on 1st level", mimeMessage.getPlainTextBody().trim() );
-        assertEquals( true, mimeMessage.getHtmlTextBody().contains( "test2" ) );
+        assertEquals("plain text on 1st level", mimeMessage.getPlainTextBody().trim());
+        assertEquals(true, mimeMessage.getHtmlTextBody().contains("test2"));
     }
 }

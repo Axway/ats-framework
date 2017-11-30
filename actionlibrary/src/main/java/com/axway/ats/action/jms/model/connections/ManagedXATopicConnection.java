@@ -28,19 +28,19 @@ public class ManagedXATopicConnection extends ManagedTopicConnection implements 
 
     public ManagedXATopicConnection( XATopicConnection connection ) {
 
-        super( connection );
+        super(connection);
         this.xaTopicConnection = connection;
     }
 
     @Override
     public XASession createXASession() throws JMSException {
 
-        return addSession( xaTopicConnection.createXASession() );
+        return addSession(xaTopicConnection.createXASession());
     }
 
     @Override
     public XATopicSession createXATopicSession() throws JMSException {
 
-        return addSession( xaTopicConnection.createXATopicSession() );
+        return addSession(xaTopicConnection.createXATopicSession());
     }
 }

@@ -28,7 +28,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class RestMediaType {
 
-    private static final Logger log                         = Logger.getLogger( RestMediaType.class );
+    private static final Logger log                         = Logger.getLogger(RestMediaType.class);
 
     /**
      * text/plain
@@ -92,19 +92,19 @@ public class RestMediaType {
 
     static String checkValueIsValid( String mediaType ) {
 
-        if( StringUtils.isNullOrEmpty( mediaType ) ) {
+        if (StringUtils.isNullOrEmpty(mediaType)) {
             return null;
         }
 
         mediaType = mediaType.trim().toLowerCase();
 
-        if( !TEXT_PLAIN.equals( mediaType ) && !TEXT_XML.equals( mediaType ) && !TEXT_HTML.equals( mediaType )
-            && !APPLICATION_JSON.equals( mediaType ) && !APPLICATION_XML.equals( mediaType )
-            && !MULTIPART_FORM_DATA.equals( mediaType ) && !APPLICATION_FORM_URLENCODED.equals( mediaType )
-            && !MULTIPART_MIXED.equals( mediaType ) && !APPLICATION_OCTET_STREAM.equals( mediaType )
-            && !APPLICATION_VND_API_JSON.equals( mediaType ) ) {
+        if (!TEXT_PLAIN.equals(mediaType) && !TEXT_XML.equals(mediaType) && !TEXT_HTML.equals(mediaType)
+            && !APPLICATION_JSON.equals(mediaType) && !APPLICATION_XML.equals(mediaType)
+            && !MULTIPART_FORM_DATA.equals(mediaType) && !APPLICATION_FORM_URLENCODED.equals(mediaType)
+            && !MULTIPART_MIXED.equals(mediaType) && !APPLICATION_OCTET_STREAM.equals(mediaType)
+            && !APPLICATION_VND_API_JSON.equals(mediaType)) {
 
-            log.warn( "'" + mediaType + "' is not a valid or supported REST media type" );
+            log.warn("'" + mediaType + "' is not a valid or supported REST media type");
         }
 
         return mediaType;
@@ -112,7 +112,7 @@ public class RestMediaType {
 
     static MediaType toMediaType( String typeAndSubtype, String charset ) {
 
-        String[] typeTokens = typeAndSubtype.split( "/" );
-        return new MediaType( typeTokens[0], typeTokens[1], charset );
+        String[] typeTokens = typeAndSubtype.split("/");
+        return new MediaType(typeTokens[0], typeTokens[1], charset);
     }
 }

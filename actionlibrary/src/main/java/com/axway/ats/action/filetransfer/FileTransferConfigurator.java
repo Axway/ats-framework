@@ -29,12 +29,12 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class FileTransferConfigurator extends AbstractConfigurator {
 
-    private static final String ATS_ADAPTERS_FILE = "/ats-adapters.properties";
+    private static final String             ATS_ADAPTERS_FILE           = "/ats-adapters.properties";
 
-    private static final String CUSTOM_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.client.";
+    private static final String             CUSTOM_FILE_TRANSFER_CLIENT = "actionlibrary.filetransfer.client.";
 
-    private Map<String, String> fileTransferClientsMap = new HashMap<String, String>();
-    
+    private Map<String, String>             fileTransferClientsMap      = new HashMap<String, String>();
+
     /**
      * The singleton instance for this configurator
      */
@@ -65,7 +65,7 @@ public class FileTransferConfigurator extends AbstractConfigurator {
 
         FileTransferConfigurator newInstance = new FileTransferConfigurator();
 
-        newInstance.addConfigFileFromClassPath( ATS_ADAPTERS_FILE, true  , false);
+        newInstance.addConfigFileFromClassPath(ATS_ADAPTERS_FILE, true, false);
         return newInstance;
     }
 
@@ -75,12 +75,12 @@ public class FileTransferConfigurator extends AbstractConfigurator {
         // We load all properties as optional. Error will be thrown when a needed property is requested, but not present.
         Map<String, String> transferClientCustomProps = null;
         try {
-            transferClientCustomProps = getProperties( CUSTOM_FILE_TRANSFER_CLIENT );
-        } catch( NoSuchPropertyException e ) {}
+            transferClientCustomProps = getProperties(CUSTOM_FILE_TRANSFER_CLIENT);
+        } catch (NoSuchPropertyException e) {}
 
-        if( transferClientCustomProps != null ) {
-            for( Entry<String, String> entry : transferClientCustomProps.entrySet() ) {
-                fileTransferClientsMap.put( entry.getKey(), entry.getValue() );
+        if (transferClientCustomProps != null) {
+            for (Entry<String, String> entry : transferClientCustomProps.entrySet()) {
+                fileTransferClientsMap.put(entry.getKey(), entry.getValue());
             }
         }
 
@@ -92,22 +92,22 @@ public class FileTransferConfigurator extends AbstractConfigurator {
      */
     public String getFileTransferClient( String customProtocol ) {
 
-        for( Entry<String, String> entry : fileTransferClientsMap.entrySet() ) {
-            if( entry.getKey().equalsIgnoreCase( CUSTOM_FILE_TRANSFER_CLIENT + customProtocol ) ) {
-                if( StringUtils.isNullOrEmpty( entry.getValue() ) ) {
-                    throw new FileTransferConfiguratorException( "Uknown custom client for " + customProtocol
-                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
-                                                                 + " file is not in the classpath or "
-                                                                 + entry.getKey()
-                                                                 + " property is missing/empty!" );
+        for (Entry<String, String> entry : fileTransferClientsMap.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(CUSTOM_FILE_TRANSFER_CLIENT + customProtocol)) {
+                if (StringUtils.isNullOrEmpty(entry.getValue())) {
+                    throw new FileTransferConfiguratorException("Uknown custom client for " + customProtocol
+                                                                + " protocol. Either " + ATS_ADAPTERS_FILE
+                                                                + " file is not in the classpath or "
+                                                                + entry.getKey()
+                                                                + " property is missing/empty!");
                 }
-                log.info( "Transfers over '" + customProtocol + "' will be served by " + entry.getValue() );
+                log.info("Transfers over '" + customProtocol + "' will be served by " + entry.getValue());
 
                 return entry.getValue();
             }
         }
 
-        throw new FileTransferConfiguratorException( "No custom client implementation for " + customProtocol
-                                                     + " protocol" );
+        throw new FileTransferConfiguratorException("No custom client implementation for " + customProtocol
+                                                    + " protocol");
     }
 }

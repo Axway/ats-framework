@@ -39,7 +39,7 @@ import com.axway.ats.harness.config.MessagesBox;
 @PublicAtsApi
 public class PackageLoader {
 
-    private static final Logger log = Logger.getLogger( PackageLoader.class );
+    private static final Logger log = Logger.getLogger(PackageLoader.class);
 
     /**
      * Private constructor to prevent instantiation
@@ -63,11 +63,11 @@ public class PackageLoader {
         String defaultMessagesBox;
         try {
             defaultMessagesBox = ActionLibraryConfigurator.getInstance().getDefaultMessagesBox();
-        } catch( ConfigurationException ce ) {
-            throw new PackageException( "Cannot read the default message box name", ce );
+        } catch (ConfigurationException ce) {
+            throw new PackageException("Cannot read the default message box name", ce);
         }
 
-        return loadMimePackageFromDb( packageId, defaultMessagesBox );
+        return loadMimePackageFromDb(packageId, defaultMessagesBox);
     }
 
     /**
@@ -85,17 +85,17 @@ public class PackageLoader {
 
         MessagesBox messagesBox;
         try {
-            messagesBox = CommonConfigurator.getInstance().getMessagesBox( messagesBoxName );
-        } catch( ConfigurationException ce ) {
-            throw new PackageException( "Cannot load data for messages box '" + messagesBoxName + "'", ce );
+            messagesBox = CommonConfigurator.getInstance().getMessagesBox(messagesBoxName);
+        } catch (ConfigurationException ce) {
+            throw new PackageException("Cannot load data for messages box '" + messagesBoxName + "'", ce);
         }
 
-        return new MimePackage( loadPackageFromDb( packageId,
-                                                   messagesBox.getHost(),
-                                                   messagesBox.getDbName(),
-                                                   messagesBox.getDbTable(),
-                                                   messagesBox.getDbUser(),
-                                                   messagesBox.getDbPass() ) );
+        return new MimePackage(loadPackageFromDb(packageId,
+                                                 messagesBox.getHost(),
+                                                 messagesBox.getDbName(),
+                                                 messagesBox.getDbTable(),
+                                                 messagesBox.getDbUser(),
+                                                 messagesBox.getDbPass()));
     }
 
     /**
@@ -109,7 +109,7 @@ public class PackageLoader {
     public static MimePackage loadMimePackageFromFile(
                                                        String fileName ) throws PackageException {
 
-        return new MimePackage( loadPackageFromFile( fileName ) );
+        return new MimePackage(loadPackageFromFile(fileName));
     }
 
     private static InputStream loadPackageFromDb(
@@ -120,40 +120,40 @@ public class PackageLoader {
                                                   String messagesUser,
                                                   String messagesPassword ) throws PackageException {
 
-        DbConnMySQL dbConnection = new DbConnMySQL( messagesHost,
-                                                    messagesDB,
-                                                    messagesUser,
-                                                    messagesPassword );
-        MysqlDbProvider dbProvider = new MysqlDbProvider( dbConnection );
+        DbConnMySQL dbConnection = new DbConnMySQL(messagesHost,
+                                                   messagesDB,
+                                                   messagesUser,
+                                                   messagesPassword);
+        MysqlDbProvider dbProvider = new MysqlDbProvider(dbConnection);
 
         try {
-            InputStream packageContent = dbProvider.selectValue( messagestable,
-                                                                 "message_id",
-                                                                 Integer.toString( packageId ),
-                                                                 "data" );
+            InputStream packageContent = dbProvider.selectValue(messagestable,
+                                                                "message_id",
+                                                                Integer.toString(packageId),
+                                                                "data");
 
-            log.info( "Successfully extracted package with id '" + packageId + "' from '" + messagestable
-                      + "' DB" );
+            log.info("Successfully extracted package with id '" + packageId + "' from '" + messagestable
+                     + "' DB");
 
             return packageContent;
-        } catch( DbRecordsException dbre ) {
-            throw new PackageException( "Package with id '" + packageId
-                                        + "' does not exist in 'messages' DB" );
-        } catch( DbException dbe ) {
-            throw new PackageException( "Could not get package with id '" + packageId
-                                        + "' from the 'messages' DB" );
+        } catch (DbRecordsException dbre) {
+            throw new PackageException("Package with id '" + packageId
+                                       + "' does not exist in 'messages' DB");
+        } catch (DbException dbe) {
+            throw new PackageException("Could not get package with id '" + packageId
+                                       + "' from the 'messages' DB");
         }
     }
 
     private static InputStream loadPackageFromFile(
                                                     String fileName ) throws PackageException {
 
-        File packageFile = new File( fileName );
+        File packageFile = new File(fileName);
         try {
-            FileInputStream fileStream = new FileInputStream( packageFile );
+            FileInputStream fileStream = new FileInputStream(packageFile);
             return fileStream;
-        } catch( FileNotFoundException fnfe ) {
-            throw new PackageException( "Package '" + fileName + "' does not exist" );
+        } catch (FileNotFoundException fnfe) {
+            throw new PackageException("Package '" + fileName + "' does not exist");
         }
     }
 }

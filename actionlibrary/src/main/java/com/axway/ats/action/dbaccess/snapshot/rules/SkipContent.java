@@ -30,7 +30,7 @@ public class SkipContent extends SkipRule {
 
     public SkipContent( String table, boolean rememberNumberOfRows ) {
 
-        super( table );
+        super(table);
 
         this.rememberNumberOfRows = rememberNumberOfRows;
     }
@@ -47,28 +47,28 @@ public class SkipContent extends SkipRule {
 
     public static SkipContent fromXmlNode( Element skipContentNode ) {
 
-        return new SkipContent( skipContentNode.getAttribute( "table" ),
-                                Boolean.parseBoolean( skipContentNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS ) ) );
+        return new SkipContent(skipContentNode.getAttribute("table"),
+                               Boolean.parseBoolean(skipContentNode.getAttribute(DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS)));
     }
 
     public void toXmlNode( Document dom, Element parentNode ) {
 
-        Element skipContentNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_CONTENT );
-        parentNode.appendChild( skipContentNode );
-        skipContentNode.setAttribute( "table", table );
-        skipContentNode.setAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS,
-                                      String.valueOf( rememberNumberOfRows ) );
+        Element skipContentNode = dom.createElement(DatabaseSnapshotUtils.NODE_SKIP_CONTENT);
+        parentNode.appendChild(skipContentNode);
+        skipContentNode.setAttribute("table", table);
+        skipContentNode.setAttribute(DatabaseSnapshotUtils.ATTR_TABLE_NUMBER_ROWS,
+                                     String.valueOf(rememberNumberOfRows));
     }
 
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder( "Table " + table + ": " );
+        StringBuilder sb = new StringBuilder("Table " + table + ": ");
 
-        if( rememberNumberOfRows ) {
-            sb.append( "remember the number of rows" );
+        if (rememberNumberOfRows) {
+            sb.append("remember the number of rows");
         } else {
-            sb.append( "do not remember the number of rows" );
+            sb.append("do not remember the number of rows");
         }
 
         return sb.toString();

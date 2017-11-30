@@ -84,7 +84,7 @@ public class RestClientConfigurator {
     public void registerProvider(
                                   Object provider ) {
 
-        providers.add( provider );
+        providers.add(provider);
     }
 
     /**
@@ -99,7 +99,7 @@ public class RestClientConfigurator {
     public void registerProviderClass(
                                        Class<?> providerClass ) {
 
-        providerClasses.add( providerClass );
+        providerClasses.add(providerClass);
     }
 
     /**
@@ -114,31 +114,30 @@ public class RestClientConfigurator {
                              String name,
                              Object value ) {
 
-        properties.put( name, value );
+        properties.put(name, value);
     }
 
     RestClientConfigurator newCopy() {
 
         RestClientConfigurator newConfigurator = new RestClientConfigurator();
 
-        
         newConfigurator.certFileName = this.certFileName;
-        
+
         newConfigurator.certPassword = this.certPassword;
-        
+
         newConfigurator.providers = new ArrayList<Object>();
-        for( Object provider : this.providers ) {
-            newConfigurator.providers.add( provider );
+        for (Object provider : this.providers) {
+            newConfigurator.providers.add(provider);
         }
 
         newConfigurator.providerClasses = new ArrayList<Class<?>>();
-        for( Class<?> providerClass : this.providerClasses ) {
-            newConfigurator.providerClasses.add( providerClass );
+        for (Class<?> providerClass : this.providerClasses) {
+            newConfigurator.providerClasses.add(providerClass);
         }
 
         newConfigurator.properties = new HashMap<String, Object>();
-        for( Entry<String, Object> propEntry : this.properties.entrySet() ) {
-            newConfigurator.properties.put( propEntry.getKey(), propEntry.getValue() );
+        for (Entry<String, Object> propEntry : this.properties.entrySet()) {
+            newConfigurator.properties.put(propEntry.getKey(), propEntry.getValue());
         }
 
         return newConfigurator;

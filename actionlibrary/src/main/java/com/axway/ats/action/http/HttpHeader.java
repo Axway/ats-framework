@@ -40,12 +40,12 @@ public class HttpHeader {
 
         this.name = name;
 
-        if( values.getClass().isArray() ) {
+        if (values.getClass().isArray()) {
             // expect array of String
-            this.values = Arrays.asList( ( String[] ) values );
+            this.values = Arrays.asList((String[]) values);
         } else {
             // expect String or String with ',' inside which divides multiple values
-            this.values = Arrays.asList( ( ( String ) values ).split( "," ) );
+            this.values = Arrays.asList( ((String) values).split(","));
         }
     }
 
@@ -60,7 +60,7 @@ public class HttpHeader {
 
         this.name = name;
         this.values = new ArrayList<String>();
-        this.values.add( value );
+        this.values.add(value);
     }
 
     /**
@@ -93,12 +93,12 @@ public class HttpHeader {
     @PublicAtsApi
     public String getValue() {
 
-        if( values == null ) {
+        if (values == null) {
             return null;
         }
 
-        if( values.size() > 0 ) {
-            return values.get( 0 );
+        if (values.size() > 0) {
+            return values.get(0);
         } else {
             return null;
         }
@@ -112,14 +112,14 @@ public class HttpHeader {
     public String getValue(
                             int index ) {
 
-        if( values == null ) {
+        if (values == null) {
             return null;
         }
 
-        if( values.size() > index ) {
-            return values.get( index );
+        if (values.size() > index) {
+            return values.get(index);
         } else {
-            throw new HttpException( "Invalid header value index " + index );
+            throw new HttpException("Invalid header value index " + index);
         }
     }
 
@@ -135,9 +135,9 @@ public class HttpHeader {
     public void addValue(
                           String value ) {
 
-        if( values == null ) {
+        if (values == null) {
             values = new ArrayList<String>();
         }
-        values.add( value );
+        values.add(value);
     }
 }

@@ -31,18 +31,18 @@ public class HttpException extends RuntimeException {
     public HttpException( String message,
                           Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 
     @PublicAtsApi
     public HttpException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     @PublicAtsApi
     public HttpException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

@@ -116,9 +116,9 @@ public class MimePackage implements Package {
      * The logger - it is initialized in the constructor, so that child classes
      * can log in the appropriate logger and not in the MimePackage logger
      */
-    private static final Logger   log                                = Logger.getLogger( MimePackage.class );
+    private static final Logger   log                                = Logger.getLogger(MimePackage.class);
 
-    private static final String CONTENT_TYPE_MULTIPART_SIGNED = "multipart/signed"; // TODO move in security package
+    private static final String   CONTENT_TYPE_MULTIPART_SIGNED      = "multipart/signed";                 // TODO move in security package
 
     /**
      * The MimeMessage instance - this is the JavaMail representation of an
@@ -199,11 +199,11 @@ public class MimePackage implements Package {
     @PublicAtsApi
     public MimePackage() throws PackageException {
 
-        this.message = new MimeMessage( Session.getInstance( new Properties() ) );
+        this.message = new MimeMessage(Session.getInstance(new Properties()));
         try {
-            this.message.setContent( new MimeMultipart() );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            this.message.setContent(new MimeMultipart());
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
         this.subjectCharset = null;
     }
@@ -220,10 +220,10 @@ public class MimePackage implements Package {
     public MimePackage( InputStream packageStream ) throws PackageException {
 
         try {
-            this.message = new MimeMessage( Session.getInstance( new Properties() ), packageStream );
+            this.message = new MimeMessage(Session.getInstance(new Properties()), packageStream);
             partOfImapFolder = message.getFolder(); // initial best effort. Null for nested or newly created MimeMessages
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
 
         decompose();
@@ -249,7 +249,7 @@ public class MimePackage implements Package {
                          MimeMessage message,
                          Folder folder ) throws PackageException {
 
-        setNestedPath( parentNestedPath, previousSiblings );
+        setNestedPath(parentNestedPath, previousSiblings);
         this.message = message;
         this.partOfImapFolder = folder;
 
@@ -272,33 +272,33 @@ public class MimePackage implements Package {
     public MimePackage getNeededMimePackage(
                                              int[] packagePath ) throws NoSuchMimePackageException {
 
-        return getNeededMimePackage( packagePath, packagePath );
+        return getNeededMimePackage(packagePath, packagePath);
     }
 
     private MimePackage getNeededMimePackage(
                                               int[] packagePath,
                                               int[] fullPackagePath ) throws NoSuchMimePackageException {
 
-        if( packagePath.length == 0 ) {
+        if (packagePath.length == 0) {
             return this;
         }
 
-        if( packagePath.length == 1 ) {
-            if( packagePath[0] >= nestedMimePackages.size() ) {
-                throw new NoSuchMimePackageException( "No nested MIME package at position '"
-                                                      + Arrays.toString( fullPackagePath ) + "'" );
+        if (packagePath.length == 1) {
+            if (packagePath[0] >= nestedMimePackages.size()) {
+                throw new NoSuchMimePackageException("No nested MIME package at position '"
+                                                     + Arrays.toString(fullPackagePath) + "'");
             }
-            return nestedMimePackages.get( packagePath[0] );
+            return nestedMimePackages.get(packagePath[0]);
         }
 
         int[] newPackagePath = new int[packagePath.length - 1];
-        System.arraycopy( packagePath, 1, newPackagePath, 0, newPackagePath.length );
+        System.arraycopy(packagePath, 1, newPackagePath, 0, newPackagePath.length);
 
-        return nestedMimePackages.get( packagePath[0] ).getNeededMimePackage( newPackagePath,
-                                                                              fullPackagePath );
+        return nestedMimePackages.get(packagePath[0]).getNeededMimePackage(newPackagePath,
+                                                                           fullPackagePath);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     @PublicAtsApi
     public List<PackageHeader> getAllHeaders() throws PackageException {
 
@@ -306,15 +306,15 @@ public class MimePackage implements Package {
             List<PackageHeader> headers = new ArrayList<PackageHeader>();
 
             Enumeration<Header> messageHeaders = message.getAllHeaders();
-            while( messageHeaders.hasMoreElements() ) {
+            while (messageHeaders.hasMoreElements()) {
                 Header messageHeader = messageHeaders.nextElement();
-                headers.add( new PackageHeader( messageHeader.getName(), messageHeader.getValue() ) );
+                headers.add(new PackageHeader(messageHeader.getName(), messageHeader.getValue()));
             }
 
             return headers;
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -328,18 +328,18 @@ public class MimePackage implements Package {
             ArrayList<InputStream> streams = new ArrayList<InputStream>();
 
             try {
-                for( MimePart part : parts ) {
-                    streams.add( part.getInputStream() );
+                for (MimePart part : parts) {
+                    streams.add(part.getInputStream());
                 }
             } finally {
                 closeStoreConnection(storeReconnected);
             }
             return streams;
 
-        } catch( MessagingException me ) {
-            throw new PackageException( "Could not read mime parts", me );
-        } catch( IOException ioe ) {
-            throw new PackageException( "Could not read mime parts", ioe );
+        } catch (MessagingException me) {
+            throw new PackageException("Could not read mime parts", me);
+        } catch (IOException ioe) {
+            throw new PackageException("Could not read mime parts", ioe);
         }
     }
 
@@ -350,18 +350,18 @@ public class MimePackage implements Package {
         try {
             storeReconnected = reconnectStoreIfClosed();
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            message.writeTo( outStream );
+            message.writeTo(outStream);
 
-            return new ByteArrayInputStream( outStream.toByteArray() );
-        } catch( MessagingException me ) {
-            throw new PackageException( "Could not write message content", me );
-        } catch( IOException ioe ) {
-            throw new PackageException( "Could not write message content", ioe );
+            return new ByteArrayInputStream(outStream.toByteArray());
+        } catch (MessagingException me) {
+            throw new PackageException("Could not write message content", me);
+        } catch (IOException ioe) {
+            throw new PackageException("Could not write message content", ioe);
         } finally {
             try {
-                closeStoreConnection( storeReconnected );
-            } catch( MessagingException ex ) {
-                log.warn( ex );
+                closeStoreConnection(storeReconnected);
+            } catch (MessagingException ex) {
+                log.warn(ex);
             }
 
         }
@@ -378,7 +378,7 @@ public class MimePackage implements Package {
     public String getHeader(
                              String header ) throws PackageException {
 
-        return getHeader( header, 0 );
+        return getHeader(header, 0);
     }
 
     /**
@@ -394,14 +394,14 @@ public class MimePackage implements Package {
                              int headerIndex ) throws PackageException {
 
         try {
-            String[] headerValues = message.getHeader( header );
-            if( headerValues != null && headerValues.length > headerIndex ) {
+            String[] headerValues = message.getHeader(header);
+            if (headerValues != null && headerValues.length > headerIndex) {
                 return headerValues[headerIndex];
             } else {
-                throw new NoSuchHeaderException( header, headerIndex );
+                throw new NoSuchHeaderException(header, headerIndex);
             }
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -410,9 +410,9 @@ public class MimePackage implements Package {
                                      String header ) throws PackageException {
 
         try {
-            return message.getHeader( header );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            return message.getHeader(header);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -426,25 +426,25 @@ public class MimePackage implements Package {
     public void tag() throws ActionException {
 
         // we use the message's sent time as a unique tag
-        String tagValue = Long.toString( Calendar.getInstance().getTimeInMillis() );
+        String tagValue = Long.toString(Calendar.getInstance().getTimeInMillis());
 
         try {
-            setHeader( "Automation-Message-Tag", tagValue );
+            setHeader("Automation-Message-Tag", tagValue);
 
             // if everything is OK, then this is our tag
             tag = tagValue;
 
-            log.info( getDescription() + " tagged with tag '" + tag + "'" );
-        } catch( PackageException e ) {
-            throw new ObjectCannotBeTaggedException( getDescription(), null, e );
+            log.info(getDescription() + " tagged with tag '" + tag + "'");
+        } catch (PackageException e) {
+            throw new ObjectCannotBeTaggedException(getDescription(), null, e);
         }
     }
 
     @PublicAtsApi
     public String getTag() throws ActionException {
 
-        if( tag == null ) {
-            throw new ObjectNotTaggedException( getDescription() );
+        if (tag == null) {
+            throw new ObjectNotTaggedException(getDescription());
         }
 
         return tag;
@@ -455,8 +455,8 @@ public class MimePackage implements Package {
 
         try {
             return message.getSubject();
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -466,7 +466,7 @@ public class MimePackage implements Package {
         String messageSubject;
         try {
             messageSubject = "MIME package with subject '" + message.getSubject() + "'";
-        } catch( MessagingException me ) {
+        } catch (MessagingException me) {
             messageSubject = "MIME package with no subject";
         }
 
@@ -487,22 +487,22 @@ public class MimePackage implements Package {
                                    RecipientType recipientType ) throws PackageException {
 
         try {
-            Address[] recipientAddresses = message.getRecipients( recipientType.toJavamailType() );
+            Address[] recipientAddresses = message.getRecipients(recipientType.toJavamailType());
 
             // return an empty string if no recipients are present
-            if( recipientAddresses == null ) {
+            if (recipientAddresses == null) {
                 return new String[]{};
             }
 
             String[] recipients = new String[recipientAddresses.length];
-            for( int i = 0; i < recipientAddresses.length; i++ ) {
+            for (int i = 0; i < recipientAddresses.length; i++) {
                 recipients[i] = recipientAddresses[i].toString();
             }
 
             return recipients;
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -518,13 +518,13 @@ public class MimePackage implements Package {
                                             RecipientType recipientType ) throws PackageException {
 
         try {
-            Address[] allAddresses = message.getRecipients( recipientType.toJavamailType() );
-            if( allAddresses == null ) {
+            Address[] allAddresses = message.getRecipients(recipientType.toJavamailType());
+            if (allAddresses == null) {
                 allAddresses = new Address[0];
             }
             return allAddresses;
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -539,9 +539,9 @@ public class MimePackage implements Package {
                             String subject ) throws PackageException {
 
         try {
-            message.setSubject( subject );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            message.setSubject(subject);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -558,10 +558,10 @@ public class MimePackage implements Package {
                             String charset ) throws PackageException {
 
         try {
-            message.setSubject( subject, charset );
+            message.setSubject(subject, charset);
             subjectCharset = charset;
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -592,28 +592,28 @@ public class MimePackage implements Package {
         try {
             InternetAddress address = new InternetAddress();
 
-            sender = sender.replaceAll( "[<>]", "" ).trim();
+            sender = sender.replaceAll("[<>]", "").trim();
 
-            boolean hasPersonal = sender.contains( " " );
-            if( hasPersonal ) {
-                newSenderAddress = sender.substring( sender.lastIndexOf( ' ' ) );
-                newSenderPersonal = sender.substring( 0, sender.lastIndexOf( ' ' ) );
-                address.setPersonal( newSenderPersonal.trim() );
+            boolean hasPersonal = sender.contains(" ");
+            if (hasPersonal) {
+                newSenderAddress = sender.substring(sender.lastIndexOf(' '));
+                newSenderPersonal = sender.substring(0, sender.lastIndexOf(' '));
+                address.setPersonal(newSenderPersonal.trim());
             } else {
                 newSenderAddress = sender;
             }
 
             // set the sender address
-            address.setAddress( newSenderAddress.trim() );
+            address.setAddress(newSenderAddress.trim());
 
-            message.setFrom( address );
+            message.setFrom(address);
 
-        } catch( ArrayIndexOutOfBoundsException aioobe ) {
-            throw new PackageException( "Sender not present" );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
-        } catch( UnsupportedEncodingException uee ) {
-            throw new PackageException( "Error setting address personal", uee );
+        } catch (ArrayIndexOutOfBoundsException aioobe) {
+            throw new PackageException("Sender not present");
+        } catch (MessagingException me) {
+            throw new PackageException(me);
+        } catch (UnsupportedEncodingException uee) {
+            throw new PackageException("Error setting address personal", uee);
         }
     }
 
@@ -631,25 +631,25 @@ public class MimePackage implements Package {
         try {
             InternetAddress address = new InternetAddress();
 
-            String[] fromHeaders = getHeaderValues( FROM_HEADER );
-            if( fromHeaders != null && fromHeaders.length > 0 ) {
+            String[] fromHeaders = getHeaderValues(FROM_HEADER);
+            if (fromHeaders != null && fromHeaders.length > 0) {
 
                 // parse the from header if such exists
                 String fromHeader = fromHeaders[0];
-                if( fromHeader != null ) {
-                    address = InternetAddress.parse( fromHeader )[0];
+                if (fromHeader != null) {
+                    address = InternetAddress.parse(fromHeader)[0];
                 }
             }
 
-            address.setPersonal( name );
-            message.setFrom( address );
+            address.setPersonal(name);
+            message.setFrom(address);
 
-        } catch( ArrayIndexOutOfBoundsException aioobe ) {
-            throw new PackageException( "Sender not present" );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
-        } catch( UnsupportedEncodingException uee ) {
-            throw new PackageException( uee );
+        } catch (ArrayIndexOutOfBoundsException aioobe) {
+            throw new PackageException("Sender not present");
+        } catch (MessagingException me) {
+            throw new PackageException(me);
+        } catch (UnsupportedEncodingException uee) {
+            throw new PackageException(uee);
         }
     }
 
@@ -664,14 +664,14 @@ public class MimePackage implements Package {
     public String getSender() throws PackageException {
 
         try {
-            String[] fromAddresses = message.getHeader( "From" );
-            if( fromAddresses == null || fromAddresses.length == 0 ) {
-                throw new PackageException( "Sender not present" );
+            String[] fromAddresses = message.getHeader("From");
+            if (fromAddresses == null || fromAddresses.length == 0) {
+                throw new PackageException("Sender not present");
             }
 
             return fromAddresses[0];
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -687,15 +687,15 @@ public class MimePackage implements Package {
 
         try {
             Address[] fromAddresses = message.getFrom();
-            if( fromAddresses == null || fromAddresses.length == 0 ) {
-                throw new PackageException( "Sender not present" );
+            if (fromAddresses == null || fromAddresses.length == 0) {
+                throw new PackageException("Sender not present");
             }
 
-            InternetAddress fromAddress = ( InternetAddress ) fromAddresses[0];
+            InternetAddress fromAddress = (InternetAddress) fromAddresses[0];
             return fromAddress.getAddress();
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -735,9 +735,9 @@ public class MimePackage implements Package {
                                   RecipientType type ) throws PackageException {
 
         try {
-            return message.getRecipients( type.toJavamailType() ).length;
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            return message.getRecipients(type.toJavamailType()).length;
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -754,15 +754,15 @@ public class MimePackage implements Package {
 
         try {
             // add the recipient
-            InternetAddress inetAddress = new InternetAddress( address );
-            message.setRecipients( javax.mail.internet.MimeMessage.RecipientType.TO,
-                                   new InternetAddress[]{ inetAddress } );
-            message.setRecipients( javax.mail.internet.MimeMessage.RecipientType.CC,
-                                   new InternetAddress[]{} );
-            message.setRecipients( javax.mail.internet.MimeMessage.RecipientType.BCC,
-                                   new InternetAddress[]{} );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            InternetAddress inetAddress = new InternetAddress(address);
+            message.setRecipients(javax.mail.internet.MimeMessage.RecipientType.TO,
+                                  new InternetAddress[]{ inetAddress });
+            message.setRecipients(javax.mail.internet.MimeMessage.RecipientType.CC,
+                                  new InternetAddress[]{});
+            message.setRecipients(javax.mail.internet.MimeMessage.RecipientType.BCC,
+                                  new InternetAddress[]{});
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -781,11 +781,11 @@ public class MimePackage implements Package {
         try {
             // add the recipient
             InternetAddress[] address = new InternetAddress[addresses.length];
-            for( int i = 0; i < addresses.length; i++ )
-                address[i] = new InternetAddress( addresses[i] );
-            message.setRecipients( type.toJavamailType(), address );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            for (int i = 0; i < addresses.length; i++)
+                address[i] = new InternetAddress(addresses[i]);
+            message.setRecipients(type.toJavamailType(), address);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -804,11 +804,11 @@ public class MimePackage implements Package {
         try {
             // add the recipient
             InternetAddress[] address = new InternetAddress[addresses.length];
-            for( int i = 0; i < addresses.length; i++ )
-                address[i] = new InternetAddress( addresses[i] );
-            message.addRecipients( type.toJavamailType(), address );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            for (int i = 0; i < addresses.length; i++)
+                address[i] = new InternetAddress(addresses[i]);
+            message.addRecipients(type.toJavamailType(), address);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -823,7 +823,7 @@ public class MimePackage implements Package {
                                  String headerName,
                                  int partNum ) throws PackageException {
 
-        return getPartHeader( headerName, partNum, 0 );
+        return getPartHeader(headerName, partNum, 0);
     }
 
     /**
@@ -843,20 +843,20 @@ public class MimePackage implements Package {
 
         try {
             String[] headers;
-            if( partNum >= parts.size() ) {
-                throw new NoSuchMimePartException( "No MIME part at position '" + partNum + "'" );
+            if (partNum >= parts.size()) {
+                throw new NoSuchMimePartException("No MIME part at position '" + partNum + "'");
             }
 
-            MimePart part = parts.get( partNum );
-            headers = part.getHeader( headerName );
+            MimePart part = parts.get(partNum);
+            headers = part.getHeader(headerName);
 
-            if( ( headers != null ) && ( headers.length > headerIndex ) ) {
+            if ( (headers != null) && (headers.length > headerIndex)) {
                 return headers[headerIndex];
             } else {
-                throw new NoSuchHeaderException( headerName, partNum, headerIndex );
+                throw new NoSuchHeaderException(headerName, partNum, headerIndex);
             }
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -875,20 +875,20 @@ public class MimePackage implements Package {
 
         try {
             String[] headers;
-            if( partNum >= parts.size() ) {
-                throw new NoSuchMimePartException( "No MIME part at position '" + partNum + "'" );
+            if (partNum >= parts.size()) {
+                throw new NoSuchMimePartException("No MIME part at position '" + partNum + "'");
             }
 
-            MimePart part = parts.get( partNum );
-            headers = part.getHeader( headerName );
+            MimePart part = parts.get(partNum);
+            headers = part.getHeader(headerName);
 
-            if( ( headers != null ) && ( headers.length > 0 ) ) {
+            if ( (headers != null) && (headers.length > 0)) {
                 return headers;
             } else {
-                throw new NoSuchHeaderException( headerName, partNum );
+                throw new NoSuchHeaderException(headerName, partNum);
             }
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -907,9 +907,9 @@ public class MimePackage implements Package {
                            String headerValue ) throws PackageException {
 
         try {
-            message.setHeader( headerName, headerValue );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            message.setHeader(headerName, headerValue);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -928,9 +928,9 @@ public class MimePackage implements Package {
                            String headerValue ) throws PackageException {
 
         try {
-            message.addHeader( headerName, headerValue );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            message.addHeader(headerName, headerValue);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -946,13 +946,13 @@ public class MimePackage implements Package {
 
         try {
             // set the priority
-            message.setHeader( "X-Priority", String.valueOf( priority.toInt() ) );
+            message.setHeader("X-Priority", String.valueOf(priority.toInt()));
 
             // set MS Outlook display-priority header
-            message.setHeader( "Importance", priority.toString() );
+            message.setHeader("Importance", priority.toString());
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -968,7 +968,7 @@ public class MimePackage implements Package {
                          String content,
                          String contentType ) throws PackageException {
 
-        addPart( content, contentType, DEFAULT_CHARSET );
+        addPart(content, contentType, DEFAULT_CHARSET);
     }
 
     /**
@@ -989,13 +989,13 @@ public class MimePackage implements Package {
         MimeBodyPart part = new MimeBodyPart();
 
         try {
-            part.setText( content, charset, contentTypeSubtype );
-            part.setDisposition( MimeBodyPart.INLINE );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            part.setText(content, charset, contentTypeSubtype);
+            part.setDisposition(MimeBodyPart.INLINE);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
 
-        addPart( part, PART_POSITION_LAST );
+        addPart(part, PART_POSITION_LAST);
     }
 
     /**
@@ -1012,7 +1012,7 @@ public class MimePackage implements Package {
                                     String plainContent,
                                     String htmlContent ) throws PackageException {
 
-        addAlternativePart( plainContent, htmlContent, DEFAULT_CHARSET );
+        addAlternativePart(plainContent, htmlContent, DEFAULT_CHARSET);
     }
 
     /**
@@ -1032,27 +1032,27 @@ public class MimePackage implements Package {
                                     String htmlContent,
                                     String charset ) throws PackageException {
 
-        MimeMultipart alternativePart = new MimeMultipart( "alternative" );
+        MimeMultipart alternativePart = new MimeMultipart("alternative");
 
         try {
             // create a new text/plain part
             MimeBodyPart plainPart = new MimeBodyPart();
-            plainPart.setText( plainContent, charset, PART_TYPE_TEXT_PLAIN );
-            plainPart.setDisposition( MimeBodyPart.INLINE );
+            plainPart.setText(plainContent, charset, PART_TYPE_TEXT_PLAIN);
+            plainPart.setDisposition(MimeBodyPart.INLINE);
 
             MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setText( htmlContent, charset, PART_TYPE_TEXT_HTML );
-            htmlPart.setDisposition( MimeBodyPart.INLINE );
+            htmlPart.setText(htmlContent, charset, PART_TYPE_TEXT_HTML);
+            htmlPart.setDisposition(MimeBodyPart.INLINE);
 
-            alternativePart.addBodyPart( plainPart, 0 );
-            alternativePart.addBodyPart( htmlPart, 1 );
+            alternativePart.addBodyPart(plainPart, 0);
+            alternativePart.addBodyPart(htmlPart, 1);
 
             MimeBodyPart mimePart = new MimeBodyPart();
-            mimePart.setContent( alternativePart );
+            mimePart.setContent(alternativePart);
 
-            addPart( mimePart, PART_POSITION_LAST );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            addPart(mimePart, PART_POSITION_LAST);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1075,21 +1075,21 @@ public class MimePackage implements Package {
         // the normalized buffer - Windows like line ending
         StringBuffer normalizedBuff = new StringBuffer();
 
-        try (BufferedReader buffReader = new BufferedReader( new java.io.FileReader( fileName ) )) {
+        try (BufferedReader buffReader = new BufferedReader(new java.io.FileReader(fileName))) {
             String currLine;
 
             do {
                 currLine = buffReader.readLine();
-                if( currLine != null ) {
-                    normalizedBuff.append( currLine );
-                    normalizedBuff.append( "\r\n" );
+                if (currLine != null) {
+                    normalizedBuff.append(currLine);
+                    normalizedBuff.append("\r\n");
                 }
-            } while( currLine != null );
+            } while (currLine != null);
 
             // add the new body part
-            addPart( normalizedBuff.toString(), contentType );
-        } catch( IOException ioe ) {
-            throw new PackageException( ioe );
+            addPart(normalizedBuff.toString(), contentType);
+        } catch (IOException ioe) {
+            throw new PackageException(ioe);
         }
     }
 
@@ -1108,14 +1108,14 @@ public class MimePackage implements Package {
         try {
             // add attachment to multipart content
             MimeBodyPart attPart = new MimeBodyPart();
-            FileDataSource ds = new FileDataSource( fileName );
-            attPart.setDataHandler( new DataHandler( ds ) );
-            attPart.setDisposition( MimeBodyPart.ATTACHMENT );
-            attPart.setFileName( ds.getName() );
+            FileDataSource ds = new FileDataSource(fileName);
+            attPart.setDataHandler(new DataHandler(ds));
+            attPart.setDisposition(MimeBodyPart.ATTACHMENT);
+            attPart.setFileName(ds.getName());
 
-            addPart( attPart, PART_POSITION_LAST );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            addPart(attPart, PART_POSITION_LAST);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1135,7 +1135,7 @@ public class MimePackage implements Package {
                                String content,
                                String fileName ) throws PackageException {
 
-        addAttachment( content, DEFAULT_CHARSET, fileName );
+        addAttachment(content, DEFAULT_CHARSET, fileName);
     }
 
     /**
@@ -1160,13 +1160,13 @@ public class MimePackage implements Package {
         try {
             // add attachment to multipart content
             MimeBodyPart attPart = new MimeBodyPart();
-            attPart.setText( content, charset, PART_TYPE_TEXT_PLAIN );
-            attPart.setDisposition( MimeBodyPart.ATTACHMENT );
-            attPart.setFileName( fileName );
+            attPart.setText(content, charset, PART_TYPE_TEXT_PLAIN);
+            attPart.setDisposition(MimeBodyPart.ATTACHMENT);
+            attPart.setFileName(fileName);
 
-            addPart( attPart, PART_POSITION_LAST );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            addPart(attPart, PART_POSITION_LAST);
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1181,27 +1181,27 @@ public class MimePackage implements Package {
                                   String folder ) throws PackageException {
 
         // fetch list of files in specified directory
-        File dir = new File( folder );
+        File dir = new File(folder);
         File[] list = dir.listFiles();
-        if( null == list ) {
-            throw new PackageException( "Could not read from directory '" + folder + "'." );
+        if (null == list) {
+            throw new PackageException("Could not read from directory '" + folder + "'.");
         } else {
             // process all files, skipping directories
-            for( int i = 0; i < list.length; i++ ) {
-                if( ( null != list[i] ) && ( !list[i].isDirectory() ) ) {
+            for (int i = 0; i < list.length; i++) {
+                if ( (null != list[i]) && (!list[i].isDirectory())) {
                     // add attachment to multipart content
                     MimeBodyPart attPart = new MimeBodyPart();
-                    FileDataSource ds = new FileDataSource( list[i].getPath() );
+                    FileDataSource ds = new FileDataSource(list[i].getPath());
 
                     try {
-                        attPart.setDataHandler( new DataHandler( ds ) );
-                        attPart.setDisposition( MimeBodyPart.ATTACHMENT );
-                        attPart.setFileName( ds.getName() );
-                    } catch( MessagingException me ) {
-                        throw new PackageException( me );
+                        attPart.setDataHandler(new DataHandler(ds));
+                        attPart.setDisposition(MimeBodyPart.ATTACHMENT);
+                        attPart.setFileName(ds.getName());
+                    } catch (MessagingException me) {
+                        throw new PackageException(me);
                     }
 
-                    addPart( attPart, PART_POSITION_LAST );
+                    addPart(attPart, PART_POSITION_LAST);
                 }
             }
         }
@@ -1217,7 +1217,7 @@ public class MimePackage implements Package {
     @PublicAtsApi
     public String getPlainTextBody() throws PackageException {
 
-        return getFirstBody( CONTENT_PART_TYPE_TEXT_PLAIN );
+        return getFirstBody(CONTENT_PART_TYPE_TEXT_PLAIN);
     }
 
     /**
@@ -1229,7 +1229,7 @@ public class MimePackage implements Package {
     @PublicAtsApi
     public String getHtmlTextBody() throws PackageException {
 
-        return getFirstBody( CONTENT_PART_TYPE_TEXT_HTML );
+        return getFirstBody(CONTENT_PART_TYPE_TEXT_HTML);
     }
 
     /**
@@ -1249,21 +1249,21 @@ public class MimePackage implements Package {
                              boolean isAttachment ) throws NoSuchMimePartException {
 
         // first check if there is part at this position at all
-        if( isAttachment ) {
-            if( partIndex >= attachmentPartIndices.size() ) {
-                throw new NoSuchMimePartException( "No attachment at position '" + partIndex + "'" );
+        if (isAttachment) {
+            if (partIndex >= attachmentPartIndices.size()) {
+                throw new NoSuchMimePartException("No attachment at position '" + partIndex + "'");
             }
         } else {
-            if( partIndex >= regularPartIndices.size() ) {
-                throw new NoSuchMimePartException( "No regular part at position '" + partIndex + "'" );
+            if (partIndex >= regularPartIndices.size()) {
+                throw new NoSuchMimePartException("No regular part at position '" + partIndex + "'");
             }
         }
 
         MimePart part;
-        if( isAttachment ) {
-            part = getPart( attachmentPartIndices.get( partIndex ) );
+        if (isAttachment) {
+            part = getPart(attachmentPartIndices.get(partIndex));
         } else {
-            part = getPart( regularPartIndices.get( partIndex ) );
+            part = getPart(regularPartIndices.get(partIndex));
         }
 
         return part;
@@ -1284,10 +1284,10 @@ public class MimePackage implements Package {
                                     int partIndex,
                                     boolean isAttachment ) throws PackageException {
 
-        if( !isAttachment ) {
-            return getRegularPartData( partIndex );
+        if (!isAttachment) {
+            return getRegularPartData(partIndex);
         } else {
-            return getAttachmentPartData( partIndex );
+            return getAttachmentPartData(partIndex);
         }
     }
 
@@ -1304,18 +1304,18 @@ public class MimePackage implements Package {
                                              int partIndex ) throws PackageException {
 
         // first check if there is part at this position at all
-        if( partIndex >= regularPartIndices.size() ) {
-            throw new NoSuchMimePartException( "No regular part at position '" + partIndex + "'" );
+        if (partIndex >= regularPartIndices.size()) {
+            throw new NoSuchMimePartException("No regular part at position '" + partIndex + "'");
         }
 
         try {
-            MimePart part = getPart( regularPartIndices.get( partIndex ) );
+            MimePart part = getPart(regularPartIndices.get(partIndex));
 
             // get the content type header
-            ContentType contentType = new ContentType( part.getContentType() );
+            ContentType contentType = new ContentType(part.getContentType());
             return contentType.getBaseType();
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1332,18 +1332,18 @@ public class MimePackage implements Package {
                                          int partIndex ) throws PackageException {
 
         // first check if there is part at this position at all
-        if( partIndex >= regularPartIndices.size() ) {
-            throw new NoSuchMimePartException( "No regular part at position '" + partIndex + "'" );
+        if (partIndex >= regularPartIndices.size()) {
+            throw new NoSuchMimePartException("No regular part at position '" + partIndex + "'");
         }
 
         try {
-            MimePart part = getPart( regularPartIndices.get( partIndex ) );
+            MimePart part = getPart(regularPartIndices.get(partIndex));
 
             // get the content type header
-            ContentType contentType = new ContentType( part.getContentType() );
-            return contentType.getParameter( "charset" );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            ContentType contentType = new ContentType(part.getContentType());
+            return contentType.getParameter("charset");
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1363,17 +1363,17 @@ public class MimePackage implements Package {
             // store should be opened for actions including getting InputStream.
             // Hence store open is not in getPart
             storeReconnected = reconnectStoreIfClosed();
-            MimePart part = getPart( partIndex, false );
+            MimePart part = getPart(partIndex, false);
             return part.getInputStream();
-        } catch( MessagingException e ) {
-            throw new PackageException( e );
-        } catch( IOException ioe ) {
-            throw new PackageException( ioe );
+        } catch (MessagingException e) {
+            throw new PackageException(e);
+        } catch (IOException ioe) {
+            throw new PackageException(ioe);
         } finally {
             try {
-                closeStoreConnection( storeReconnected );
-            } catch( MessagingException e ) {
-                log.error( e );
+                closeStoreConnection(storeReconnected);
+            } catch (MessagingException e) {
+                log.error(e);
             }
         }
     }
@@ -1392,19 +1392,19 @@ public class MimePackage implements Package {
                                        String fileName ) throws PackageException {
 
         // first check if there is part at this position at all
-        if( attachmentPartIndex >= attachmentPartIndices.size() ) {
-            throw new NoSuchMimePartException( "No attachment at position '" + attachmentPartIndex + "'" );
+        if (attachmentPartIndex >= attachmentPartIndices.size()) {
+            throw new NoSuchMimePartException("No attachment at position '" + attachmentPartIndex + "'");
         }
 
         try {
-            MimePart part = getPart( attachmentPartIndices.get( attachmentPartIndex ) );
+            MimePart part = getPart(attachmentPartIndices.get(attachmentPartIndex));
 
             // set the attachment file name
-            part.setFileName( fileName );
+            part.setFileName(fileName);
             // must save now
             this.message.saveChanges();
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1420,24 +1420,24 @@ public class MimePackage implements Package {
                                          int partIndex ) throws PackageException {
 
         // first check if there is part at this position at all
-        if( partIndex >= attachmentPartIndices.size() ) {
-            throw new NoSuchMimePartException( "No attachment at position '" + partIndex + "'" );
+        if (partIndex >= attachmentPartIndices.size()) {
+            throw new NoSuchMimePartException("No attachment at position '" + partIndex + "'");
         }
 
         try {
-            MimePart part = getPart( attachmentPartIndices.get( partIndex ) );
+            MimePart part = getPart(attachmentPartIndices.get(partIndex));
 
             // get the attachment file name
             String fileName = part.getFileName();
-            if( fileName == null ) {
-                throw new PackageException( "Could not determine file name for attachment at position "
-                                            + partIndex );
+            if (fileName == null) {
+                throw new PackageException("Could not determine file name for attachment at position "
+                                           + partIndex);
             }
 
             return fileName;
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1453,18 +1453,18 @@ public class MimePackage implements Package {
                                             int partIndex ) throws PackageException {
 
         // first check if there is part at this position at all
-        if( partIndex >= attachmentPartIndices.size() ) {
-            throw new NoSuchMimePartException( "No attachment at position '" + partIndex + "'" );
+        if (partIndex >= attachmentPartIndices.size()) {
+            throw new NoSuchMimePartException("No attachment at position '" + partIndex + "'");
         }
 
         try {
-            MimePart part = getPart( attachmentPartIndices.get( partIndex ) );
+            MimePart part = getPart(attachmentPartIndices.get(partIndex));
 
             // get the content type header
-            ContentType contentType = new ContentType( part.getContentType() );
+            ContentType contentType = new ContentType(part.getContentType());
             return contentType.getBaseType();
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1481,18 +1481,18 @@ public class MimePackage implements Package {
                                         int partIndex ) throws PackageException {
 
         // first check if there is part at this position at all
-        if( partIndex >= attachmentPartIndices.size() ) {
-            throw new NoSuchMimePartException( "No attachment at position '" + partIndex + "'" );
+        if (partIndex >= attachmentPartIndices.size()) {
+            throw new NoSuchMimePartException("No attachment at position '" + partIndex + "'");
         }
 
         try {
-            MimePart part = getPart( attachmentPartIndices.get( partIndex ) );
+            MimePart part = getPart(attachmentPartIndices.get(partIndex));
 
             // get the content type header
-            ContentType contentType = new ContentType( part.getContentType() );
-            return contentType.getParameter( "charset" );
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+            ContentType contentType = new ContentType(part.getContentType());
+            return contentType.getParameter("charset");
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -1512,15 +1512,15 @@ public class MimePackage implements Package {
             boolean storeReconnected = reconnectStoreIfClosed();
             // store should be opened for actions including getting InputStream. Hence store open is not in getPart
             try {
-                MimePart part = getPart( partIndex, true );
+                MimePart part = getPart(partIndex, true);
                 return part.getInputStream();
             } finally {
-                closeStoreConnection( storeReconnected );
+                closeStoreConnection(storeReconnected);
             }
-        } catch( MessagingException me ) {
-            throw new PackageException( "Error getting attachment data for part " + partIndex, me );
-        } catch( IOException ioe ) {
-            throw new PackageException( "Error getting attachment data for part " + partIndex, ioe );
+        } catch (MessagingException me) {
+            throw new PackageException("Error getting attachment data for part " + partIndex, me);
+        } catch (IOException ioe) {
+            throw new PackageException("Error getting attachment data for part " + partIndex, ioe);
         }
     }
 
@@ -1528,7 +1528,7 @@ public class MimePackage implements Package {
     public MimePart getAttachmentPart(
                                        int partIndex ) throws PackageException {
 
-        return getPart( partIndex, true );
+        return getPart(partIndex, true);
     }
 
     /**
@@ -1564,36 +1564,36 @@ public class MimePackage implements Package {
                                  int partIndex,
                                  boolean isAttachment ) throws PackageException {
 
-        InputStream partDataStream = getPartData( partIndex, isAttachment );
+        InputStream partDataStream = getPartData(partIndex, isAttachment);
 
-        if( partDataStream != null ) {
+        if (partDataStream != null) {
             try {
-                SeekInputStream seekDataStream = new SeekInputStream( partDataStream );
-                seekDataStream.seek( 0 );
+                SeekInputStream seekDataStream = new SeekInputStream(partDataStream);
+                seekDataStream.seek(0);
 
                 // create a new crc and reset it
                 CRC32 crc = new CRC32();
 
                 // use checked stream to get the checksum
-                CheckedInputStream stream = new CheckedInputStream( seekDataStream, crc );
+                CheckedInputStream stream = new CheckedInputStream(seekDataStream, crc);
 
                 int bufLen = 4096;
                 byte[] buffer = new byte[bufLen];
                 int numBytesRead = bufLen;
 
-                while( numBytesRead == bufLen ) {
-                    numBytesRead = stream.read( buffer, 0, bufLen );
+                while (numBytesRead == bufLen) {
+                    numBytesRead = stream.read(buffer, 0, bufLen);
                 }
 
                 long checksum = stream.getChecksum().getValue();
                 stream.close();
 
                 return checksum;
-            } catch( IOException ioe ) {
-                throw new PackageException( ioe );
+            } catch (IOException ioe) {
+                throw new PackageException(ioe);
             }
         } else {
-            throw new MimePartWithoutContentException( "MIME part does not have any content" );
+            throw new MimePartWithoutContentException("MIME part does not have any content");
         }
     }
 
@@ -1616,22 +1616,22 @@ public class MimePackage implements Package {
      */
     public SMIMESigned getSMIMESignedMessage() throws PackageException {
 
-        if( smimeSignedMessage == null && message != null ) {
+        if (smimeSignedMessage == null && message != null) {
             // smimeSignedMessage is not 'null' if the message is signed and already decrypted
             final String notASignedMessage = "The Content-Type is '"
                                              + CONTENT_TYPE_MULTIPART_SIGNED
                                              + "' but could not create SMIMESigned message";
             try {
-                if( message.isMimeType( CONTENT_TYPE_MULTIPART_SIGNED ) ) {
+                if (message.isMimeType(CONTENT_TYPE_MULTIPART_SIGNED)) {
 
-                    smimeSignedMessage = new SMIMESigned( ( MimeMultipart ) message.getContent() );
+                    smimeSignedMessage = new SMIMESigned((MimeMultipart) message.getContent());
                 }
-            } catch( MessagingException me ) {
-                throw new PackageException( "Could not get message details", me );
-            } catch( CMSException e ) {
-                throw new PackageException( notASignedMessage, e );
-            } catch( IOException e ) {
-                throw new PackageException( notASignedMessage, e );
+            } catch (MessagingException me) {
+                throw new PackageException("Could not get message details", me);
+            } catch (CMSException e) {
+                throw new PackageException(notASignedMessage, e);
+            } catch (IOException e) {
+                throw new PackageException(notASignedMessage, e);
             }
         }
 
@@ -1677,18 +1677,18 @@ public class MimePackage implements Package {
         try {
             storeReconnected = reconnectStoreIfClosed();
             // store should be opened for actions including getting InputStream. Hence store open is not in getPart
-            outStream = new FileOutputStream( new File( fileName ) );
-            message.writeTo( outStream );
-        } catch( MessagingException me ) {
-            throw new PackageException( "Could not write message content", me );
+            outStream = new FileOutputStream(new File(fileName));
+            message.writeTo(outStream);
+        } catch (MessagingException me) {
+            throw new PackageException("Could not write message content", me);
         } finally {
-            if( outStream != null ) {
+            if (outStream != null) {
                 outStream.close();
             }
             try {
-                closeStoreConnection( storeReconnected );
-            } catch( MessagingException ex ) {
-                log.warn( "Error closing IMAP connection", ex );
+                closeStoreConnection(storeReconnected);
+            } catch (MessagingException ex) {
+                log.warn("Error closing IMAP connection", ex);
             }
         }
     }
@@ -1712,42 +1712,42 @@ public class MimePackage implements Package {
             String contentDisposition = null;
             storeReconnected = reconnectStoreIfClosed();
             try {
-                if( messageContentType.startsWith( contentType ) ) {
+                if (messageContentType.startsWith(contentType)) {
                     contentDisposition = message.getDisposition();
-                    if( !Part.ATTACHMENT.equalsIgnoreCase( contentDisposition ) ) {
+                    if (!Part.ATTACHMENT.equalsIgnoreCase(contentDisposition)) {
                         // this is a plain text message
                         textBody = message.getContent().toString();
                     }
                 } else {
                     Object content = message.getContent();
-                    if( content instanceof Multipart ) {
+                    if (content instanceof Multipart) {
                         // a multi-part message
-                        Multipart parts = ( Multipart ) message.getContent();
+                        Multipart parts = (Multipart) message.getContent();
                         // first look on top level
-                        for( int i = 0; i < parts.getCount(); i++ ) {
-                            BodyPart mimePart = parts.getBodyPart( i );
-                            if( ! ( mimePart.getContent() instanceof Multipart ) ) {
-                                textBody = getBodyIfNotAttachment( mimePart, contentType );
-                                if( textBody != null ) {
+                        for (int i = 0; i < parts.getCount(); i++) {
+                            BodyPart mimePart = parts.getBodyPart(i);
+                            if (! (mimePart.getContent() instanceof Multipart)) {
+                                textBody = getBodyIfNotAttachment(mimePart, contentType);
+                                if (textBody != null) {
                                     break;
                                 }
                             }
                         }
-                        if( textBody == null ) {
+                        if (textBody == null) {
                             // not found on top level - look multipart entries
-                            for( int i = 0; i < parts.getCount(); i++ ) {
-                                BodyPart mimePart = parts.getBodyPart( i );
-                                if( mimePart.getContent() instanceof Multipart ) {
-                                    Multipart nestedParts = ( Multipart ) mimePart.getContent();
-                                    for( int m = 0; m < nestedParts.getCount(); m++ ) {
-                                        BodyPart nestedMimePart = nestedParts.getBodyPart( m );
-                                        textBody = getBodyIfNotAttachment( nestedMimePart, contentType );
-                                        if( textBody != null ) {
+                            for (int i = 0; i < parts.getCount(); i++) {
+                                BodyPart mimePart = parts.getBodyPart(i);
+                                if (mimePart.getContent() instanceof Multipart) {
+                                    Multipart nestedParts = (Multipart) mimePart.getContent();
+                                    for (int m = 0; m < nestedParts.getCount(); m++) {
+                                        BodyPart nestedMimePart = nestedParts.getBodyPart(m);
+                                        textBody = getBodyIfNotAttachment(nestedMimePart, contentType);
+                                        if (textBody != null) {
                                             break;
                                         }
                                     }
                                 }
-                                if( textBody != null ) {
+                                if (textBody != null) {
                                     break;
                                 }
                             }
@@ -1755,14 +1755,14 @@ public class MimePackage implements Package {
                     }
                 }
             } finally {
-                closeStoreConnection( storeReconnected );
+                closeStoreConnection(storeReconnected);
             }
 
             return textBody;
-        } catch( MessagingException e ) {
-            throw new PackageException( e );
-        } catch( IOException e ) {
-            throw new PackageException( e );
+        } catch (MessagingException e) {
+            throw new PackageException(e);
+        } catch (IOException e) {
+            throw new PackageException(e);
         }
     }
 
@@ -1778,12 +1778,12 @@ public class MimePackage implements Package {
                                            String contentType ) throws MessagingException, IOException {
 
         String mimePartContentType = mimePart.getContentType().toLowerCase();
-        if( mimePartContentType.startsWith( contentType ) ) { // found a part with given mime type
+        if (mimePartContentType.startsWith(contentType)) { // found a part with given mime type
             String contentDisposition = mimePart.getDisposition();
-            if( !Part.ATTACHMENT.equalsIgnoreCase( contentDisposition ) ) {
+            if (!Part.ATTACHMENT.equalsIgnoreCase(contentDisposition)) {
                 Object partContent = mimePart.getContent();
-                if( partContent instanceof InputStream ) {
-                    return IoUtils.streamToString( ( InputStream ) partContent );
+                if (partContent instanceof InputStream) {
+                    return IoUtils.streamToString((InputStream) partContent);
                 } else {
                     return partContent.toString();
                 }
@@ -1802,10 +1802,10 @@ public class MimePackage implements Package {
                                 String parentNestedPath,
                                 int siblingsIndex ) {
 
-        if( parentNestedPath == null ) {
-            this.nestedPath = String.valueOf( siblingsIndex );
+        if (parentNestedPath == null) {
+            this.nestedPath = String.valueOf(siblingsIndex);
         } else {
-            this.nestedPath = parentNestedPath + "," + String.valueOf( siblingsIndex );
+            this.nestedPath = parentNestedPath + "," + String.valueOf(siblingsIndex);
         }
     }
 
@@ -1817,10 +1817,10 @@ public class MimePackage implements Package {
     private boolean exceedsMaxNestedLevel() {
 
         boolean exceedsMaxNestedLevel = false;
-        if( nestedPath != null ) {
+        if (nestedPath != null) {
             // it is a nested package
             int maxNestedLevel = ActionLibraryConfigurator.getInstance().getMimePackageMaxNestedLevel();
-            if( nestedPath.split( "," ).length >= maxNestedLevel ) {
+            if (nestedPath.split(",").length >= maxNestedLevel) {
                 exceedsMaxNestedLevel = true;
             }
         }
@@ -1835,28 +1835,28 @@ public class MimePackage implements Package {
         attachmentPartIndices.clear();
         nestedMimePackages.clear();
 
-        parseContent( this.message );
+        parseContent(this.message);
 
-        if( log.isDebugEnabled() && nestedPath == null ) {
-            log.debug( "Loaded MIME package with content:\n" + toStringTrace( "", "" ) );
+        if (log.isDebugEnabled() && nestedPath == null) {
+            log.debug("Loaded MIME package with content:\n" + toStringTrace("", ""));
         }
     }
 
     private void parseContent(
                                MimePart part ) throws PackageException {
 
-        parseContent( part, true );
+        parseContent(part, true);
     }
 
     private void parseContent(
                                MimePart part,
                                boolean doNotParseBrokenParts ) throws PackageException {
 
-        if( exceedsMaxNestedLevel() ) {
-            if( log.isInfoEnabled() && !skippedParsingMsgIsAlreadyLogged ) {
-                log.info( "Skipping parsing of nested message parts from current MimePackage because max nested level is reached."
-                          + " Current max nesting level is "
-                          + ActionLibraryConfigurator.getInstance().getMimePackageMaxNestedLevel() );
+        if (exceedsMaxNestedLevel()) {
+            if (log.isInfoEnabled() && !skippedParsingMsgIsAlreadyLogged) {
+                log.info("Skipping parsing of nested message parts from current MimePackage because max nested level is reached."
+                         + " Current max nesting level is "
+                         + ActionLibraryConfigurator.getInstance().getMimePackageMaxNestedLevel());
                 skippedParsingMsgIsAlreadyLogged = true;
             }
             return;
@@ -1864,45 +1864,45 @@ public class MimePackage implements Package {
 
         try {
             Object content = part.getContent();
-            if( content instanceof Multipart ) {
+            if (content instanceof Multipart) {
                 // if multipart recurse through all child parts
-                MimeMultipart mimeMultipart = ( MimeMultipart ) content;
+                MimeMultipart mimeMultipart = (MimeMultipart) content;
                 int partCount = mimeMultipart.getCount();
-                for( int i = 0; i < partCount; i++ ) {
+                for (int i = 0; i < partCount; i++) {
                     try {
-                        parseContent( ( MimeBodyPart ) mimeMultipart.getBodyPart( i ) );
-                    } catch( PackageException pe ) {
-                        if( doNotParseBrokenParts ) {
-                            log.warn( "Could not parse part: "
-                                      + mimeMultipart.getBodyPart( i ).getContentType() );
+                        parseContent((MimeBodyPart) mimeMultipart.getBodyPart(i));
+                    } catch (PackageException pe) {
+                        if (doNotParseBrokenParts) {
+                            log.warn("Could not parse part: "
+                                     + mimeMultipart.getBodyPart(i).getContentType());
                         } else {
-                            log.error( "Could not parse part: "
-                                       + mimeMultipart.getBodyPart( i ).getContentType() );
-                            throw new PackageException( pe );
+                            log.error("Could not parse part: "
+                                      + mimeMultipart.getBodyPart(i).getContentType());
+                            throw new PackageException(pe);
                         }
                     }
                 }
 
-            } else if( content instanceof MimeMessage ) {
-                MimeMessage mimeMessage = ( MimeMessage ) content;
-                nestedMimePackages.add( new MimePackage( this.nestedPath,
-                                                         nestedMimePackages.size(),
-                                                         mimeMessage,
-                                                         partOfImapFolder ) );
+            } else if (content instanceof MimeMessage) {
+                MimeMessage mimeMessage = (MimeMessage) content;
+                nestedMimePackages.add(new MimePackage(this.nestedPath,
+                                                       nestedMimePackages.size(),
+                                                       mimeMessage,
+                                                       partOfImapFolder));
 
                 // if the nested message has been added as attachment, we need
                 // to treat it as such - it will not be decomposed
-                if( isPartAttachment( part ) ) {
-                    parts.add( part );
-                    attachmentPartIndices.add( parts.size() - 1 );
+                if (isPartAttachment(part)) {
+                    parts.add(part);
+                    attachmentPartIndices.add(parts.size() - 1);
                 } else {
                     try {
-                        parseContent( mimeMessage );
-                    } catch( PackageException pe ) {
-                        if( doNotParseBrokenParts ) {
-                            log.warn( "Could not parse part: " + mimeMessage.getContentID() );
+                        parseContent(mimeMessage);
+                    } catch (PackageException pe) {
+                        if (doNotParseBrokenParts) {
+                            log.warn("Could not parse part: " + mimeMessage.getContentID());
                         } else {
-                            log.error( "Could not parse part: " + mimeMessage.getContentID() );
+                            log.error("Could not parse part: " + mimeMessage.getContentID());
                             throw pe;
                         }
                     }
@@ -1911,47 +1911,47 @@ public class MimePackage implements Package {
             } else {
 
                 InternetHeaders internetHeaders = null;
-                if( part.getContentType().toLowerCase().startsWith( CONTENT_TYPE_RFC822_HEADERS ) ) {
+                if (part.getContentType().toLowerCase().startsWith(CONTENT_TYPE_RFC822_HEADERS)) {
                     try {
                         // check for "text/rfc822-headers"
-                        internetHeaders = getInternetHeaders( content );
-                    } catch( PackageException e ) {
-                        throw new PackageException( "Content type " + CONTENT_TYPE_RFC822_HEADERS
-                                                    + " is found but headers are not parsed successfully.",
-                                                    e );
+                        internetHeaders = getInternetHeaders(content);
+                    } catch (PackageException e) {
+                        throw new PackageException("Content type " + CONTENT_TYPE_RFC822_HEADERS
+                                                   + " is found but headers are not parsed successfully.",
+                                                   e);
                     }
-                    if( internetHeaders == null ) { // javax.mail implementation is not very strict
-                        log.error( "Mail part with content type " + CONTENT_TYPE_RFC822_HEADERS
-                                   + " is found but could not be parsed. Contents: " + content );
+                    if (internetHeaders == null) { // javax.mail implementation is not very strict
+                        log.error("Mail part with content type " + CONTENT_TYPE_RFC822_HEADERS
+                                  + " is found but could not be parsed. Contents: " + content);
                     }
                 }
-                if( internetHeaders != null ) {
+                if (internetHeaders != null) {
                     // the "Content-Type" is "text/rfc822-headers" and javamail returns it as InternetHeaders.
                     // this is a message with headers only, we will keep it as a
                     // nested MimePackage
                     MimePackage nestedMimePackage = new MimePackage();
-                    nestedMimePackage.setNestedPath( this.nestedPath, nestedMimePackages.size() );
+                    nestedMimePackage.setNestedPath(this.nestedPath, nestedMimePackages.size());
 
                     Enumeration<?> enumerator = internetHeaders.getAllHeaders();
-                    while( enumerator.hasMoreElements() ) {
-                        Header inetHeader = ( Header ) enumerator.nextElement();
-                        nestedMimePackage.addHeader( inetHeader.getName(), inetHeader.getValue() );
+                    while (enumerator.hasMoreElements()) {
+                        Header inetHeader = (Header) enumerator.nextElement();
+                        nestedMimePackage.addHeader(inetHeader.getName(), inetHeader.getValue());
                     }
-                    nestedMimePackages.add( nestedMimePackage );
+                    nestedMimePackages.add(nestedMimePackage);
                 } else {
                     // add the body
-                    parts.add( part );
-                    if( isPartAttachment( part ) ) {
-                        attachmentPartIndices.add( parts.size() - 1 );
+                    parts.add(part);
+                    if (isPartAttachment(part)) {
+                        attachmentPartIndices.add(parts.size() - 1);
                     } else {
-                        regularPartIndices.add( parts.size() - 1 );
+                        regularPartIndices.add(parts.size() - 1);
                     }
                 }
             }
-        } catch( MessagingException me ) {
-            throw new PackageException( "Could not parse MIME part", me );
-        } catch( IOException ioe ) {
-            throw new PackageException( "Could not parse MIME message", ioe );
+        } catch (MessagingException me) {
+            throw new PackageException("Could not parse MIME part", me);
+        } catch (IOException ioe) {
+            throw new PackageException("Could not parse MIME message", ioe);
         }
     }
 
@@ -1960,11 +1960,11 @@ public class MimePackage implements Package {
 
         try {
             String disposition = part.getDisposition();
-            if( disposition != null && disposition.equalsIgnoreCase( Part.ATTACHMENT ) ) {
+            if (disposition != null && disposition.equalsIgnoreCase(Part.ATTACHMENT)) {
                 return true;
             }
-        } catch( MessagingException me ) {
-            throw new PackageException( "Could not determine if part is an attachment", me );
+        } catch (MessagingException me) {
+            throw new PackageException("Could not determine if part is an attachment", me);
         }
 
         return false;
@@ -1974,13 +1974,13 @@ public class MimePackage implements Package {
                                                 Object partContent ) throws PackageException {
 
         InternetHeaders internetHeaders = null;
-        if( partContent instanceof InputStream ) {
+        if (partContent instanceof InputStream) {
             try {
-                InputStream is = ( InputStream ) partContent;
-                internetHeaders = new InternetHeaders( is );
-            } catch( MessagingException e ) {
+                InputStream is = (InputStream) partContent;
+                internetHeaders = new InternetHeaders(is);
+            } catch (MessagingException e) {
                 // error converting to InternetHeaders
-                throw new PackageException( "Error parsing internet headers with type rfc822-headers", e );
+                throw new PackageException("Error parsing internet headers with type rfc822-headers", e);
             }
         }
         return internetHeaders;
@@ -1992,52 +1992,52 @@ public class MimePackage implements Package {
 
         try {
             Object messageContent = message.getContent();
-            if( messageContent instanceof MimeMultipart ) {
-                MimeMultipart multipartContent = ( MimeMultipart ) messageContent;
+            if (messageContent instanceof MimeMultipart) {
+                MimeMultipart multipartContent = (MimeMultipart) messageContent;
 
                 int positionToInsertAt = position;
-                if( position > multipartContent.getCount() ) {
+                if (position > multipartContent.getCount()) {
                     positionToInsertAt = multipartContent.getCount();
                 }
-                multipartContent.addBodyPart( part, positionToInsertAt );
+                multipartContent.addBodyPart(part, positionToInsertAt);
 
                 // set back the modified content
-                message.setContent( multipartContent );
+                message.setContent(multipartContent);
 
                 // make sure all changes to the message are saved before
                 // decomposing
                 try {
                     message.saveChanges();
-                } catch( MessagingException me ) {
-                    throw new PackageException( "Could not save message changes", me );
+                } catch (MessagingException me) {
+                    throw new PackageException("Could not save message changes", me);
                 }
 
                 // we need to decompose again, as a new part has been added
                 decompose();
             } else {
                 // TODO: we can transform the part to MimeMultipart if desired
-                throw new PackageException( "Message is not multipart!" );
+                throw new PackageException("Message is not multipart!");
             }
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
-        } catch( IOException ioe ) {
-            throw new PackageException( ioe );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
+        } catch (IOException ioe) {
+            throw new PackageException(ioe);
         }
     }
 
     private MimePart getPart(
                               int index ) throws NoSuchMimePartException {
 
-        if( index >= parts.size() ) {
-            throw new NoSuchMimePartException( "No MIME part at position '" + index + "'" );
+        if (index >= parts.size()) {
+            throw new NoSuchMimePartException("No MIME part at position '" + index + "'");
         }
 
-        MimePart part = this.parts.get( index );
-        if( part != null ) {
+        MimePart part = this.parts.get(index);
+        if (part != null) {
             return part;
         } else {
-            throw new NoSuchMimePartException( "No part at position '" + index + "'" );
+            throw new NoSuchMimePartException("No part at position '" + index + "'");
         }
     }
 
@@ -2056,7 +2056,7 @@ public class MimePackage implements Package {
     public void setBody(
                          String content ) throws PackageException {
 
-        setBody( content, content );
+        setBody(content, content);
 
     }
 
@@ -2079,9 +2079,9 @@ public class MimePackage implements Package {
 
         try {
             String messageContentType = message.getContentType();
-            if( messageContentType == null ) {
+            if (messageContentType == null) {
                 // not expected as default should be "text/plain"
-                log.info( "No content type is set yet. Body of message is not changed" );
+                log.info("No content type is set yet. Body of message is not changed");
                 return;
             } else {
                 // type is not not case-sensitive as mentioned in
@@ -2089,34 +2089,34 @@ public class MimePackage implements Package {
                 messageContentType = messageContentType.toLowerCase();
             }
 
-            if( messageContentType.startsWith( CONTENT_TYPE_TEXT_PLAIN ) ) {
+            if (messageContentType.startsWith(CONTENT_TYPE_TEXT_PLAIN)) {
                 // this is a text/plain message
-                message.setContent( plainTextContent, message.getContentType()
+                message.setContent(plainTextContent, message.getContentType()
                 /* preserve any additional parameters like charset */ );
             } else {
-                if( messageContentType.startsWith( CONTENT_TYPE_MULTIPART_PREFIX ) ) {
+                if (messageContentType.startsWith(CONTENT_TYPE_MULTIPART_PREFIX)) {
                     // this is a MULTIPART message
                     try {
                         BodyPart tmpBodyPart;
-                        MimeMultipart tmpMultipartContent = ( MimeMultipart ) message.getContent();
-                        for( int index = 0; index < tmpMultipartContent.getCount(); index++ ) {
-                            tmpBodyPart = tmpMultipartContent.getBodyPart( index );
+                        MimeMultipart tmpMultipartContent = (MimeMultipart) message.getContent();
+                        for (int index = 0; index < tmpMultipartContent.getCount(); index++) {
+                            tmpBodyPart = tmpMultipartContent.getBodyPart(index);
 
-                            if( tmpBodyPart.getContentType().startsWith( CONTENT_PART_TYPE_TEXT_HTML ) ) {
+                            if (tmpBodyPart.getContentType().startsWith(CONTENT_PART_TYPE_TEXT_HTML)) {
                                 // just replace content, do not create additional part
-                                tmpBodyPart.setContent( htmlContent, tmpBodyPart.getContentType() );
+                                tmpBodyPart.setContent(htmlContent, tmpBodyPart.getContentType());
                                 // for some reason after setting content there is match for text/plain too for the same body part
                                 // so use if-else or continue
-                            } else if( tmpBodyPart.getContentType()
-                                                  .startsWith( CONTENT_PART_TYPE_TEXT_PLAIN ) ) {
+                            } else if (tmpBodyPart.getContentType()
+                                                  .startsWith(CONTENT_PART_TYPE_TEXT_PLAIN)) {
                                 // replace text part
-                                tmpBodyPart.setContent( plainTextContent, tmpBodyPart.getContentType() );
+                                tmpBodyPart.setContent(plainTextContent, tmpBodyPart.getContentType());
                                 continue;
                             }
                             // do not check content type and go to process next part
                         }
-                    } catch( IOException ioe ) {
-                        throw new PackageException( "Could not add MIME body parts", ioe );
+                    } catch (IOException ioe) {
+                        throw new PackageException("Could not add MIME body parts", ioe);
                     }
                 }
             }
@@ -2124,15 +2124,15 @@ public class MimePackage implements Package {
             // make sure all changes to the message are saved before decomposing
             try {
                 message.saveChanges();
-            } catch( MessagingException me ) {
-                throw new PackageException( "Could not save message changes", me );
+            } catch (MessagingException me) {
+                throw new PackageException("Could not save message changes", me);
             }
 
             // we need to decompose again, as a new part has been added
             decompose();
 
-        } catch( MessagingException me ) {
-            throw new PackageException( me );
+        } catch (MessagingException me) {
+            throw new PackageException(me);
         }
     }
 
@@ -2157,25 +2157,25 @@ public class MimePackage implements Package {
 
         // the folder is empty when the message is not loaded from IMAP server, but from a file
         Folder imapFolder = message.getFolder();
-        if( imapFolder == null ) {
+        if (imapFolder == null) {
             imapFolder = this.partOfImapFolder;
         } else {
             partOfImapFolder = imapFolder; // keep reference
         }
-        if( imapFolder != null ) {
+        if (imapFolder != null) {
             Store store = imapFolder.getStore();
-            if( store != null ) {
-                if( !store.isConnected() ) {
-                    log.debug( "Reconnecting store... " );
+            if (store != null) {
+                if (!store.isConnected()) {
+                    log.debug("Reconnecting store... ");
                     store.connect();
                     storeReconnected = true;
                 }
 
                 // Open folder in read-only mode
-                if( !imapFolder.isOpen() ) {
-                    log.debug( "Reopening folder " + imapFolder.getFullName()
-                               + " in order to get contents of mail message" );
-                    imapFolder.open( Folder.READ_ONLY );
+                if (!imapFolder.isOpen()) {
+                    log.debug("Reopening folder " + imapFolder.getFullName()
+                              + " in order to get contents of mail message");
+                    imapFolder.open(Folder.READ_ONLY);
                 }
             }
         }
@@ -2190,17 +2190,17 @@ public class MimePackage implements Package {
     public void closeStoreConnection(
                                       boolean storeConnected ) throws MessagingException {
 
-        if( storeConnected ) {
+        if (storeConnected) {
             // the folder is empty when the message is not loaded from IMAP server, but from a file
             Folder imapFolder = message.getFolder();
-            if( imapFolder == null ) {
+            if (imapFolder == null) {
                 imapFolder = partOfImapFolder; // in case of nested package but still originating from IMAP server
             }
-            if( imapFolder != null ) {
+            if (imapFolder != null) {
                 Store store = imapFolder.getStore();
-                if( store != null && store.isConnected() ) {
+                if (store != null && store.isConnected()) {
                     // closing store closes and its folders
-                    log.debug( "Closing store (" + store.toString() + ") and associated folders" );
+                    log.debug("Closing store (" + store.toString() + ") and associated folders");
                     store.close();
                 }
             }
@@ -2217,49 +2217,49 @@ public class MimePackage implements Package {
         final String level1 = level;
         final String level2 = "\t" + level1;
 
-        StringBuilder msg = new StringBuilder( msgString );
+        StringBuilder msg = new StringBuilder(msgString);
 
         try {
-            final String prefix = getPrefixTrace( level1, "MIME PACKAGE START: " );
-            final String contentType = normalizeNewLinesTrace( prefix, message.getContentType() ) + "\n";
-            msg.append( level1 + "MIME PACKAGE START: " + contentType );
+            final String prefix = getPrefixTrace(level1, "MIME PACKAGE START: ");
+            final String contentType = normalizeNewLinesTrace(prefix, message.getContentType()) + "\n";
+            msg.append(level1 + "MIME PACKAGE START: " + contentType);
 
-            if( this.nestedPath != null ) {
-                msg.append( level2 + "NESTED PATH: [" + nestedPath + "]\n" );
+            if (this.nestedPath != null) {
+                msg.append(level2 + "NESTED PATH: [" + nestedPath + "]\n");
             }
 
             // HEADERS
-            msg.append( addHeadersTrace( message.getAllHeaders(), level2 ) );
+            msg.append(addHeadersTrace(message.getAllHeaders(), level2));
 
-            if( this.tag != null ) {
-                msg.append( level2 + "TAG: " + tag + "\n" );
+            if (this.tag != null) {
+                msg.append(level2 + "TAG: " + tag + "\n");
             }
-            if( envelopeSender != null ) {
-                msg.append( level2 + "ENVELOP SENDER: " + envelopeSender + "\n" );
+            if (envelopeSender != null) {
+                msg.append(level2 + "ENVELOP SENDER: " + envelopeSender + "\n");
             }
-            if( this.subjectCharset != null ) {
-                msg.append( level2 + "SUBJECT CHARSET: " + subjectCharset + "\n" );
+            if (this.subjectCharset != null) {
+                msg.append(level2 + "SUBJECT CHARSET: " + subjectCharset + "\n");
             }
 
             // BODY CONTENT
             Object content = message.getContent();
-            msg.append( addContentTrace( content, level ) );
+            msg.append(addContentTrace(content, level));
 
             // NESTED MESSAGES
-            if( nestedMimePackages.size() > 0 ) {
-                for( MimePackage nestedPackage : nestedMimePackages ) {
-                    msg.append( nestedPackage.toStringTrace( "", "\t" + level ) );
+            if (nestedMimePackages.size() > 0) {
+                for (MimePackage nestedPackage : nestedMimePackages) {
+                    msg.append(nestedPackage.toStringTrace("", "\t" + level));
                 }
             }
 
-            msg.append( level1 + "MIME PACKAGE END: " + contentType + "\n" );
-        } catch( Exception e ) {
+            msg.append(level1 + "MIME PACKAGE END: " + contentType + "\n");
+        } catch (Exception e) {
             // stack trace to string
             final Writer writer = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter( writer );
-            e.printStackTrace( printWriter );
+            final PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
 
-            msg.append( "ERROR CONVERTING MIME PACKAGE TO STRING:\n" + writer.toString() );
+            msg.append("ERROR CONVERTING MIME PACKAGE TO STRING:\n" + writer.toString());
         }
 
         return msg.toString();
@@ -2271,19 +2271,19 @@ public class MimePackage implements Package {
 
         final String level1 = level;
         final String level2 = "\t" + level1;
-        final String prefix = getPrefixTrace( level1, "HEADERS START: " );
+        final String prefix = getPrefixTrace(level1, "HEADERS START: ");
 
         StringBuilder headersString = new StringBuilder();
 
         boolean hasHeaders = headers.hasMoreElements();
-        if( hasHeaders ) {
-            headersString.append( level1 + "HEADERS START:\n" );
-            while( headers.hasMoreElements() ) {
-                Header header = ( Header ) headers.nextElement();
-                headersString.append( level2 + header.getName() + ": "
-                                      + normalizeNewLinesTrace( prefix, header.getValue() ) + "\n" );
+        if (hasHeaders) {
+            headersString.append(level1 + "HEADERS START:\n");
+            while (headers.hasMoreElements()) {
+                Header header = (Header) headers.nextElement();
+                headersString.append(level2 + header.getName() + ": "
+                                     + normalizeNewLinesTrace(prefix, header.getValue()) + "\n");
             }
-            headersString.append( level1 + "HEADERS END:\n" );
+            headersString.append(level1 + "HEADERS END:\n");
         }
 
         return headersString.toString();
@@ -2297,18 +2297,18 @@ public class MimePackage implements Package {
         final String level2 = "\t" + level1;
 
         StringBuilder msg = new StringBuilder();
-        if( content instanceof String ) {
-            msg.append( level2 + "BODY STRING START:\n" );
-            msg.append( ( String ) content );
-            msg.append( level2 + "BODY STRING END:\n" );
-        } else if( content instanceof MimeMultipart ) {
-            MimeMultipart multipart = ( MimeMultipart ) content;
-            for( int i = 0; i < multipart.getCount(); i++ ) {
-                msg.append( addBodyPartTrace( multipart.getBodyPart( i ), level2 ) );
+        if (content instanceof String) {
+            msg.append(level2 + "BODY STRING START:\n");
+            msg.append((String) content);
+            msg.append(level2 + "BODY STRING END:\n");
+        } else if (content instanceof MimeMultipart) {
+            MimeMultipart multipart = (MimeMultipart) content;
+            for (int i = 0; i < multipart.getCount(); i++) {
+                msg.append(addBodyPartTrace(multipart.getBodyPart(i), level2));
             }
         } else {
-            msg.append( level2 + "*** CANNOT CONVERT UNSUPPORTED CONTENT: "
-                        + content.getClass().getCanonicalName() + " ***\n" );
+            msg.append(level2 + "*** CANNOT CONVERT UNSUPPORTED CONTENT: "
+                       + content.getClass().getCanonicalName() + " ***\n");
         }
 
         return msg.toString();
@@ -2323,11 +2323,11 @@ public class MimePackage implements Package {
 
         StringBuilder msg = new StringBuilder();
 
-        final String prefix = getPrefixTrace( level1, "BODY PART START: " );
-        final String contentType = normalizeNewLinesTrace( prefix, bodyPart.getContentType() ) + "\n";
-        msg.append( level1 + "BODY PART START: " + contentType );
-        msg.append( addHeadersTrace( bodyPart.getAllHeaders(), level2 ) );
-        msg.append( level1 + "BODY PART END: " + contentType );
+        final String prefix = getPrefixTrace(level1, "BODY PART START: ");
+        final String contentType = normalizeNewLinesTrace(prefix, bodyPart.getContentType()) + "\n";
+        msg.append(level1 + "BODY PART START: " + contentType);
+        msg.append(addHeadersTrace(bodyPart.getAllHeaders(), level2));
+        msg.append(level1 + "BODY PART END: " + contentType);
 
         return msg.toString();
     }
@@ -2336,8 +2336,8 @@ public class MimePackage implements Package {
                                            String prefix,
                                            String textToNormalize ) {
 
-        textToNormalize = textToNormalize.replaceAll( "\r\n", "\n" + prefix );
-        textToNormalize = textToNormalize.replaceAll( "\r", "\n" + prefix );
+        textToNormalize = textToNormalize.replaceAll("\r\n", "\n" + prefix);
+        textToNormalize = textToNormalize.replaceAll("\r", "\n" + prefix);
         return textToNormalize;
     }
 
@@ -2346,9 +2346,9 @@ public class MimePackage implements Package {
                                    String prefix ) {
 
         StringBuilder wholePrefix = new StringBuilder();
-        wholePrefix.append( level );
-        for( int i = 0; i < prefix.length(); i++ ) {
-            wholePrefix.append( " " );
+        wholePrefix.append(level);
+        for (int i = 0; i < prefix.length(); i++) {
+            wholePrefix.append(" ");
         }
         return wholePrefix.toString();
     }

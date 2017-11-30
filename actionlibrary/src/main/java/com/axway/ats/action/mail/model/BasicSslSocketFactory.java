@@ -42,11 +42,11 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
     public BasicSslSocketFactory() {
 
         try {
-            SSLContext sslcontext = SSLContext.getInstance( "TLS" );
-            sslcontext.init( null, new TrustManager[]{ new BasicTrustManager() }, null );
+            SSLContext sslcontext = SSLContext.getInstance("TLS");
+            sslcontext.init(null, new TrustManager[]{ new BasicTrustManager() }, null);
             factory = sslcontext.getSocketFactory();
-        } catch( Exception e ) {
-            throw new SecurityException( "Failed to instantiate SSLSocketFactory", e );
+        } catch (Exception e) {
+            throw new SecurityException("Failed to instantiate SSLSocketFactory", e);
         }
     }
 
@@ -58,7 +58,7 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
      */
     public static synchronized SSLSocketFactory getDefault() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new BasicSslSocketFactory();
         }
         return instance;
@@ -77,7 +77,7 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
                                 int i,
                                 boolean flag ) throws IOException {
 
-        return factory.createSocket( socket, s, i, flag );
+        return factory.createSocket(socket, s, i, flag);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
                                 InetAddress inaddr1,
                                 int j ) throws IOException {
 
-        return factory.createSocket( inaddr, i, inaddr1, j );
+        return factory.createSocket(inaddr, i, inaddr1, j);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
                                 InetAddress inaddr,
                                 int i ) throws IOException {
 
-        return factory.createSocket( inaddr, i );
+        return factory.createSocket(inaddr, i);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
                                 InetAddress inaddr,
                                 int j ) throws IOException {
 
-        return factory.createSocket( s, i, inaddr, j );
+        return factory.createSocket(s, i, inaddr, j);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class BasicSslSocketFactory extends SSLSocketFactory {
                                 String s,
                                 int i ) throws IOException {
 
-        return factory.createSocket( s, i );
+        return factory.createSocket(s, i);
     }
 
     @Override

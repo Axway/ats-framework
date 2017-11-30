@@ -33,7 +33,7 @@ public enum RecipientType {
 
     public Message.RecipientType toJavamailType() throws PackageException {
 
-        switch( this ){
+        switch (this) {
             case TO:
                 return Message.RecipientType.TO;
             case CC:
@@ -41,7 +41,7 @@ public enum RecipientType {
             case BCC:
                 return Message.RecipientType.BCC;
             default:
-                throw new PackageException( "Recipient type not supported: " + toString() );
+                throw new PackageException("Recipient type not supported: " + toString());
         }
     }
 }

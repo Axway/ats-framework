@@ -43,20 +43,20 @@ public class Test_ActionLibraryConfigurator extends BaseTest {
     @Test
     public void verifyInitialValues() throws ConfigurationException {
 
-        assertEquals( "messagesbox", actionLibraryConfigurator.getDefaultMessagesBox() );
+        assertEquals("messagesbox", actionLibraryConfigurator.getDefaultMessagesBox());
     }
 
     @Test
     public void verifyValuesCanBeSetAtRuntimeAndThenCleared() throws ConfigurationException {
 
-        actionLibraryConfigurator.setDefaultMessagesBox( "box1" );
+        actionLibraryConfigurator.setDefaultMessagesBox("box1");
 
-        assertEquals( "box1", actionLibraryConfigurator.getDefaultMessagesBox() );
+        assertEquals("box1", actionLibraryConfigurator.getDefaultMessagesBox());
 
         //now revert back to initial values
         actionLibraryConfigurator.clearTempProperties();
 
-        assertEquals( "messagesbox", actionLibraryConfigurator.getDefaultMessagesBox() );
+        assertEquals("messagesbox", actionLibraryConfigurator.getDefaultMessagesBox());
     }
 
 }

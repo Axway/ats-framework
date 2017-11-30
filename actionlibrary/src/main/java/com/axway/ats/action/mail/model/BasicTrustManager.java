@@ -29,14 +29,14 @@ public class BasicTrustManager implements X509TrustManager {
                                     X509Certificate[] cert,
                                     String authType ) {
 
-    // no exception is thrown, so everything is trusted
+        // no exception is thrown, so everything is trusted
     }
 
     public void checkServerTrusted(
                                     X509Certificate[] cert,
                                     String authType ) {
 
-    // no exception is thrown, so everything is trusted
+        // no exception is thrown, so everything is trusted
 
     }
 

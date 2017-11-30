@@ -29,7 +29,7 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class SmtpManager {
 
-    private static final Logger          log = Logger.getLogger( SmtpManager.class );
+    private static final Logger          log = Logger.getLogger(SmtpManager.class);
 
     private Map<Integer, SmtpConnection> connetionPool;
     private int                          connectionId;
@@ -53,7 +53,7 @@ public class SmtpManager {
                                String host,
                                int port ) {
 
-        return openConnections( host, port, 1 );
+        return openConnections(host, port, 1);
     }
 
     //--------------------------------------------------------------------------
@@ -72,7 +72,7 @@ public class SmtpManager {
                                int port,
                                String bindAddress ) {
 
-        return openConnections( host, port, 1, bindAddress );
+        return openConnections(host, port, 1, bindAddress);
     }
 
     //--------------------------------------------------------------------------
@@ -95,7 +95,7 @@ public class SmtpManager {
                                int connectionTimeout,
                                int timeout ) {
 
-        return openConnections( host, port, 1, bindAddress, connectionTimeout, timeout );
+        return openConnections(host, port, 1, bindAddress, connectionTimeout, timeout);
     }
 
     //--------------------------------------------------------------------------
@@ -113,7 +113,7 @@ public class SmtpManager {
                                 int port,
                                 int numberConnections ) {
 
-        return openConnections( host, port, numberConnections, null );
+        return openConnections(host, port, numberConnections, null);
     }
 
     //--------------------------------------------------------------------------
@@ -134,7 +134,7 @@ public class SmtpManager {
                                 int numberConnections,
                                 String bindAddress ) {
 
-        return openConnections( host, port, numberConnections, bindAddress, 0, 0 );
+        return openConnections(host, port, numberConnections, bindAddress, 0, 0);
     }
 
     /**
@@ -161,23 +161,23 @@ public class SmtpManager {
 
         try {
             //create the specified number of connections
-            while( 0 < numberConnections-- ) {
+            while (0 < numberConnections--) {
 
                 //create the new connection
-                connetionPool.put( connectionId++, new SmtpConnection( host,
-                                                                       port,
-                                                                       bindAddress,
-                                                                       connectionTimeout,
-                                                                       timeout ) );
+                connetionPool.put(connectionId++, new SmtpConnection(host,
+                                                                     port,
+                                                                     bindAddress,
+                                                                     connectionTimeout,
+                                                                     timeout));
             }
 
             return connectionId - 1;
-        } catch( Exception e ) {
+        } catch (Exception e) {
             String errorMsg = "Could not establish connection to host '" + host + "' on port '" + port + "'";
-            if( bindAddress != null ) {
+            if (bindAddress != null) {
                 errorMsg += ", binded to address '" + bindAddress + "'";
             }
-            throw new RuntimeException( errorMsg, e );
+            throw new RuntimeException(errorMsg, e);
         }
     }
 
@@ -192,12 +192,12 @@ public class SmtpManager {
                                              String host,
                                              int port ) {
 
-        if( canOpenConnection( host, port ) ) {
-            log.info( "Verified is able to establish connection to host '" + host + "' on port '" + port
-                      + "'" );
+        if (canOpenConnection(host, port)) {
+            log.info("Verified is able to establish connection to host '" + host + "' on port '" + port
+                     + "'");
         } else {
-            throw new RuntimeException( "Unable to establish connection to host '" + host + "' on port '"
-                                        + port + "' while it should" );
+            throw new RuntimeException("Unable to establish connection to host '" + host + "' on port '"
+                                       + port + "' while it should");
         }
     }
 
@@ -212,12 +212,12 @@ public class SmtpManager {
                                                 String host,
                                                 int port ) {
 
-        if( canOpenConnection( host, port ) ) {
-            throw new RuntimeException( "Was able to establish connection to host '" + host + "' on port '"
-                                        + port + "' while it should not" );
+        if (canOpenConnection(host, port)) {
+            throw new RuntimeException("Was able to establish connection to host '" + host + "' on port '"
+                                       + port + "' while it should not");
         } else {
-            log.info( "Verified is NOT able to establish connection to host '" + host + "' on port '" + port
-                      + "'" );
+            log.info("Verified is NOT able to establish connection to host '" + host + "' on port '" + port
+                     + "'");
         }
     }
 
@@ -235,11 +235,11 @@ public class SmtpManager {
          *
          * So we need to use a list of connection IDs which do not get modified
          */
-        Integer[] connectionIds = connetionPool.keySet().toArray( new Integer[connetionPool.size()] );
-        for( Integer connectionId : connectionIds ) {
-            SmtpConnection connection = connetionPool.get( connectionId );
+        Integer[] connectionIds = connetionPool.keySet().toArray(new Integer[connetionPool.size()]);
+        for (Integer connectionId : connectionIds) {
+            SmtpConnection connection = connetionPool.get(connectionId);
             connection.quit();
-            connetionPool.remove( connectionId );
+            connetionPool.remove(connectionId);
         }
     }
 
@@ -253,12 +253,12 @@ public class SmtpManager {
     public void closeConnection(
                                  int id ) {
 
-        SmtpConnection connection = this.getConnection( id );
-        if( null != connection ) {
+        SmtpConnection connection = this.getConnection(id);
+        if (null != connection) {
             connection.quit();
-            connetionPool.remove( id );
+            connetionPool.remove(id);
         } else {
-            log.warn( "Connection with id " + id + " not closed as it was not found" );
+            log.warn("Connection with id " + id + " not closed as it was not found");
         }
     }
 
@@ -274,16 +274,16 @@ public class SmtpManager {
                                   int rangeLo,
                                   int rangeHi ) {
 
-        if( rangeLo > rangeHi ) {
+        if (rangeLo > rangeHi) {
             int temp = rangeLo;
             rangeLo = rangeHi;
             rangeHi = temp;
         }
 
-        for( int i = rangeLo; i <= rangeHi; i++ ) {
+        for (int i = rangeLo; i <= rangeHi; i++) {
             //check if current connection is valid
-            if( this.getConnection( i ) == null ) {
-                throw new RuntimeException( "Connection with id '" + i + "' is invalid" );
+            if (this.getConnection(i) == null) {
+                throw new RuntimeException("Connection with id '" + i + "' is invalid");
             }
         }
     }
@@ -298,10 +298,10 @@ public class SmtpManager {
     public void verifyConnection(
                                   int... list ) {
 
-        for( int i = 0; i < list.length; i++ ) {
+        for (int i = 0; i < list.length; i++) {
             //check if current connection is valid
-            if( null == this.getConnection( list[i] ) ) {
-                throw new RuntimeException( "Connection with id '" + list[i] + "' is invalid" );
+            if (null == this.getConnection(list[i])) {
+                throw new RuntimeException("Connection with id '" + list[i] + "' is invalid");
             }
         }
     }
@@ -323,17 +323,17 @@ public class SmtpManager {
 
         //check if the connection is valid
         String result = null;
-        SmtpConnection connection = this.getConnection( id );
-        if( null != connection ) {
+        SmtpConnection connection = this.getConnection(id);
+        if (null != connection) {
             //execute the command and fetch the result
-            connection.sendCommand( command );
+            connection.sendCommand(command);
             result = connection.getLastResponse();
 
-            if( result == null ) {
-                log.debug( "No response for command: " + command );
+            if (result == null) {
+                log.debug("No response for command: " + command);
             }
         } else {
-            throw new RuntimeException( "SMTP Session was not found. Unknown ID: " + id );
+            throw new RuntimeException("SMTP Session was not found. Unknown ID: " + id);
         }
 
         return result;
@@ -351,7 +351,7 @@ public class SmtpManager {
     public SmtpConnection getConnection(
                                          int id ) {
 
-        return connetionPool.get( id );
+        return connetionPool.get(id);
     }
 
     private boolean canOpenConnection(
@@ -359,10 +359,10 @@ public class SmtpManager {
                                        int port ) {
 
         try {
-            SmtpConnection connection = new SmtpConnection( host, port );
+            SmtpConnection connection = new SmtpConnection(host, port);
             connection.quit();
             return true;
-        } catch( Exception e ) {
+        } catch (Exception e) {
             return false;
         }
     }

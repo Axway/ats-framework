@@ -33,19 +33,19 @@ public class JsonException extends RuntimeException {
     @PublicAtsApi
     public JsonException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     @PublicAtsApi
     public JsonException( Throwable arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     @PublicAtsApi
     public JsonException( String arg0,
                           Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

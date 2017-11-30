@@ -27,7 +27,7 @@ public class ManagedQueueConnection extends ManagedConnection implements QueueCo
 
     public ManagedQueueConnection( QueueConnection connection ) {
 
-        super( connection );
+        super(connection);
         this.queueConnection = connection;
     }
 
@@ -36,7 +36,7 @@ public class ManagedQueueConnection extends ManagedConnection implements QueueCo
                                             boolean transacted,
                                             int acknowledgeMode ) throws JMSException {
 
-        return addSession( queueConnection.createQueueSession( transacted, acknowledgeMode ) );
+        return addSession(queueConnection.createQueueSession(transacted, acknowledgeMode));
     }
 
     @Override
@@ -46,10 +46,10 @@ public class ManagedQueueConnection extends ManagedConnection implements QueueCo
                                                         ServerSessionPool sessionPool,
                                                         int maxMessages ) throws JMSException {
 
-        return addConnectionConsumer( queueConnection.createConnectionConsumer( queue,
-                                                                                messageSelector,
-                                                                                sessionPool,
-                                                                                maxMessages ) );
+        return addConnectionConsumer(queueConnection.createConnectionConsumer(queue,
+                                                                              messageSelector,
+                                                                              sessionPool,
+                                                                              maxMessages));
     }
 
 }

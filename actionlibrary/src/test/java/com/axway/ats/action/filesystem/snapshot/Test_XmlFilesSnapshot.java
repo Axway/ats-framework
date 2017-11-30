@@ -40,256 +40,256 @@ public class Test_XmlFilesSnapshot extends BaseTest {
 
     private static String getProjectRoot() {
 
-        String root = Test_XmlFilesSnapshot.class.getResource( "/" ).getPath();
+        String root = Test_XmlFilesSnapshot.class.getResource("/").getPath();
         do {
-            root = IoUtils.normalizeDirPath( root );
-            if( new File( root + "pom.xml" ).exists() ) {
+            root = IoUtils.normalizeDirPath(root);
+            if (new File(root + "pom.xml").exists()) {
                 return root;
             }
-        } while( ( root = new File( root ).getParent() ) != null );
+        } while ( (root = new File(root).getParent()) != null);
 
-        throw new RuntimeException( "Uable to determine the project root path." );
+        throw new RuntimeException("Uable to determine the project root path.");
     }
 
     @BeforeClass
     public static void beforeClass() {
 
         String projectRoot = getProjectRoot();
-        if( OperatingSystemType.getCurrentOsType().isWindows() ) {
+        if (OperatingSystemType.getCurrentOsType().isWindows()) {
             // remove the leading "/"
-            if( projectRoot.startsWith( "/" ) ) {
-                projectRoot = projectRoot.substring( 1 );
+            if (projectRoot.startsWith("/")) {
+                projectRoot = projectRoot.substring(1);
             }
         }
 
-        FILES_ROOT = IoUtils.normalizeUnixDir( projectRoot ) + "src/test/resources/"
-                     + Test_XmlFilesSnapshot.class.getPackage().getName().replace( '.', '/' )
+        FILES_ROOT = IoUtils.normalizeUnixDir(projectRoot) + "src/test/resources/"
+                     + Test_XmlFilesSnapshot.class.getPackage().getName().replace('.', '/')
                      + "/check_content/xml/";
 
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime( false );
-        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent( true );
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckModificationTime(false);
+        ActionLibraryConfigurator.getInstance().snapshots.setCheckXmlFilesContent(true);
     }
 
     @Test
     public void skipByAttributeValueContainsText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir3" );
-        snapshot1.xml.skipNodeByAttributeValueContainingText( "F1", "sub-dir1/file1.xml",
-                                                              "//TABLE[@name='AccountLocalKey']",
-                                                              "primaryKey", "alias" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir3");
+        snapshot1.xml.skipNodeByAttributeValueContainingText("F1", "sub-dir1/file1.xml",
+                                                             "//TABLE[@name='AccountLocalKey']",
+                                                             "primaryKey", "alias");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipByAttributeValueEqualsText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir3" );
-        snapshot1.xml.skipNodeByAttributeValueEqualsText( "F1", "sub-dir1/file1.xml",
-                                                          "//TABLE[@name='AccountLocalKey']", "primaryKey",
-                                                          "alias" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir3");
+        snapshot1.xml.skipNodeByAttributeValueEqualsText("F1", "sub-dir1/file1.xml",
+                                                         "//TABLE[@name='AccountLocalKey']", "primaryKey",
+                                                         "alias");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
-        snapshot2.xml.skipNodeByAttributeValueEqualsText( "F1", "sub-dir1/file1.xml",
-                                                          "//TABLE[@name='AccountLocalKey']", "primaryKey",
-                                                          "aliasssssss" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
+        snapshot2.xml.skipNodeByAttributeValueEqualsText("F1", "sub-dir1/file1.xml",
+                                                         "//TABLE[@name='AccountLocalKey']", "primaryKey",
+                                                         "aliasssssss");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipByAttributeValueMatchingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir3" );
-        snapshot1.xml.skipNodeByAttributeValueMatchingText( "F1", "sub-dir1/file1.xml",
-                                                            "//TABLE[@name='AccountLocalKey']", "primaryKey",
-                                                            "alias.*" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir3");
+        snapshot1.xml.skipNodeByAttributeValueMatchingText("F1", "sub-dir1/file1.xml",
+                                                           "//TABLE[@name='AccountLocalKey']", "primaryKey",
+                                                           "alias.*");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipByValueContainsText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.xml.skipNodeByValueContainingText( "F1", "sub-dir1/file1.xml",
-                                                     "//TABLE[@name='AccountLocalKey']/column_descriptions/column_description",
-                                                     "name=certPath" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.xml.skipNodeByValueContainingText("F1", "sub-dir1/file1.xml",
+                                                    "//TABLE[@name='AccountLocalKey']/column_descriptions/column_description",
+                                                    "name=certPath");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
-        snapshot2.xml.skipNodeByValueContainingText( "F1", "sub-dir1/file1.xml",
-                                                     "//TABLE[@name='AddressBookAccountSource']/column_descriptions/column_description",
-                                                     "name=id" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
+        snapshot2.xml.skipNodeByValueContainingText("F1", "sub-dir1/file1.xml",
+                                                    "//TABLE[@name='AddressBookAccountSource']/column_descriptions/column_description",
+                                                    "name=id");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipByValueEqualsTextAndMatchingText() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.xml.skipNodeByValueEqualsText( "F1", "sub-dir1/file1.xml",
-                                                 "//TABLE[@name='AccountLocalKey']/column_descriptions/column_description",
-                                                 "name=certPath, type=BLOB, auto increment=NO, default=null, nullable=NO, size=2147483647" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.xml.skipNodeByValueEqualsText("F1", "sub-dir1/file1.xml",
+                                                "//TABLE[@name='AccountLocalKey']/column_descriptions/column_description",
+                                                "name=certPath, type=BLOB, auto increment=NO, default=null, nullable=NO, size=2147483647");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
-        snapshot2.xml.skipNodeByValueMatchingText( "F1", "sub-dir1/file1.xml",
-                                                   "//TABLE[@name='AddressBookAccountSource']/column_descriptions/column_description",
-                                                   "name=id, .*" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
+        snapshot2.xml.skipNodeByValueMatchingText("F1", "sub-dir1/file1.xml",
+                                                  "//TABLE[@name='AddressBookAccountSource']/column_descriptions/column_description",
+                                                  "name=id, .*");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void skipByValueContainsText_reversedMatchers() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
-        snapshot1.xml.skipNodeByValueContainingText( "F1", "sub-dir1/file1.xml",
-                                                     "//TABLE[@name='AddressBookAccountSource']/column_descriptions/column_description",
-                                                     "name=id" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
+        snapshot1.xml.skipNodeByValueContainingText("F1", "sub-dir1/file1.xml",
+                                                    "//TABLE[@name='AddressBookAccountSource']/column_descriptions/column_description",
+                                                    "name=id");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
-        snapshot2.xml.skipNodeByValueContainingText( "F1", "sub-dir1/file1.xml",
-                                                     "//TABLE[@name='AccountLocalKey']/column_descriptions/column_description",
-                                                     "name=certPath" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
+        snapshot2.xml.skipNodeByValueContainingText("F1", "sub-dir1/file1.xml",
+                                                    "//TABLE[@name='AccountLocalKey']/column_descriptions/column_description",
+                                                    "name=certPath");
         snapshot2.takeSnapshot();
 
-        snapshot1.compare( snapshot2 );
+        snapshot1.compare(snapshot2);
     }
 
     @Test
     public void differenceInValue() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir1" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir1");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir2" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir2");
         snapshot2.takeSnapshot();
 
         try {
-            snapshot1.compare( snapshot2 );
+            snapshot1.compare(snapshot2);
             thisShouldNotBeReached();
-        } catch( FileSystemSnapshotException se ) {
-        	FileSystemEqualityState equality = se.getEqualityState();
+        } catch (FileSystemSnapshotException se) {
+            FileSystemEqualityState equality = se.getEqualityState();
 
             List<FileTrace> diffs = equality.getDifferences();
 
             // there is differences in 1 file
-            assertEquals( 1, diffs.size() );
-            FileTrace diff = diffs.get( 0 );
-            assertEquals( DifferenceType.DIFFERENT_FILES, diff.getDifferenceType() );
+            assertEquals(1, diffs.size());
+            FileTrace diff = diffs.get(0);
+            assertEquals(DifferenceType.DIFFERENT_FILES, diff.getDifferenceType());
 
             // check the differences in the first snapshot file
-            assertEquals( "snap1", diff.getFirstSnapshot() );
-            assertTrue( diff.getFirstEntityPath().endsWith( "dir1/sub-dir1/file1.xml" ) );
+            assertEquals("snap1", diff.getFirstSnapshot());
+            assertTrue(diff.getFirstEntityPath().endsWith("dir1/sub-dir1/file1.xml"));
             Map<String, String> firstSnapshotDifferencies = diff.getFirstSnapshotDifferencies();
 
-            assertEquals( 2, firstSnapshotDifferencies.size() );
+            assertEquals(2, firstSnapshotDifferencies.size());
             Object[] keys = firstSnapshotDifferencies.keySet().toArray();
             Object[] values = firstSnapshotDifferencies.values().toArray();
-            assertTrue( keys[0].toString().contains( "name=certPath" ) );
-            assertTrue( values[0].toString().contains( "YES" ) );
-            assertTrue( keys[1].toString().contains( "name=id" ) );
-            assertTrue( values[1].toString().contains( "NO" ) );
+            assertTrue(keys[0].toString().contains("name=certPath"));
+            assertTrue(values[0].toString().contains("YES"));
+            assertTrue(keys[1].toString().contains("name=id"));
+            assertTrue(values[1].toString().contains("NO"));
 
             // check the differences in the second snapshot file
-            assertTrue( diff.getSecondEntityPath().endsWith( "dir2/sub-dir1/file1.xml" ) );
-            assertEquals( "snap2", diff.getSecondSnapshot() );
+            assertTrue(diff.getSecondEntityPath().endsWith("dir2/sub-dir1/file1.xml"));
+            assertEquals("snap2", diff.getSecondSnapshot());
             Map<String, String> secondSnapshotDifferencies = diff.getSecondSnapshotDifferencies();
 
-            assertEquals( 2, secondSnapshotDifferencies.size() );
+            assertEquals(2, secondSnapshotDifferencies.size());
             keys = secondSnapshotDifferencies.keySet().toArray();
             values = secondSnapshotDifferencies.values().toArray();
-            assertTrue( keys[0].toString().contains( "name=certPath" ) );
-            assertTrue( values[0].toString().contains( "NO" ) );
-            assertTrue( keys[1].toString().contains( "name=id" ) );
-            assertTrue( values[1].toString().contains( "YES" ) );
+            assertTrue(keys[0].toString().contains("name=certPath"));
+            assertTrue(values[0].toString().contains("NO"));
+            assertTrue(keys[1].toString().contains("name=id"));
+            assertTrue(values[1].toString().contains("YES"));
         }
     }
 
     @Test
     public void differenceInAttribute() {
 
-        FileSystemSnapshot snapshot1 = new FileSystemSnapshot( "snap1" );
-        snapshot1.addDirectory( "F1", FILES_ROOT + "dir3" );
+        FileSystemSnapshot snapshot1 = new FileSystemSnapshot("snap1");
+        snapshot1.addDirectory("F1", FILES_ROOT + "dir3");
         snapshot1.takeSnapshot();
 
-        FileSystemSnapshot snapshot2 = new FileSystemSnapshot( "snap2" );
-        snapshot2.addDirectory( "F1", FILES_ROOT + "dir4" );
+        FileSystemSnapshot snapshot2 = new FileSystemSnapshot("snap2");
+        snapshot2.addDirectory("F1", FILES_ROOT + "dir4");
         snapshot2.takeSnapshot();
 
         try {
-            snapshot1.compare( snapshot2 );
+            snapshot1.compare(snapshot2);
             thisShouldNotBeReached();
-        } catch( FileSystemSnapshotException se ) {
-        	FileSystemEqualityState equality = se.getEqualityState();
+        } catch (FileSystemSnapshotException se) {
+            FileSystemEqualityState equality = se.getEqualityState();
 
             List<FileTrace> diffs = equality.getDifferences();
 
             // there is differences in 1 file
-            assertEquals( 1, diffs.size() );
-            FileTrace diff = diffs.get( 0 );
-            assertEquals( DifferenceType.DIFFERENT_FILES, diff.getDifferenceType() );
+            assertEquals(1, diffs.size());
+            FileTrace diff = diffs.get(0);
+            assertEquals(DifferenceType.DIFFERENT_FILES, diff.getDifferenceType());
 
             // check the differences in the first snapshot file
-            assertEquals( "snap1", diff.getFirstSnapshot() );
-            assertTrue( diff.getFirstEntityPath().endsWith( "dir3/sub-dir1/file1.xml" ) );
+            assertEquals("snap1", diff.getFirstSnapshot());
+            assertTrue(diff.getFirstEntityPath().endsWith("dir3/sub-dir1/file1.xml"));
             Map<String, String> firstSnapshotDifferencies = diff.getFirstSnapshotDifferencies();
 
-            assertEquals( 2, firstSnapshotDifferencies.size() );
+            assertEquals(2, firstSnapshotDifferencies.size());
             Object[] keys = firstSnapshotDifferencies.keySet().toArray();
             Object[] values = firstSnapshotDifferencies.values().toArray();
-            assertTrue( keys[0].toString().contains( "primaryKey=\"alias\"" ) );
-            assertTrue( values[0].toString().contains( "YES" ) );
-            assertTrue( keys[1].toString().contains( "primaryKey=\"aliasssssss\"" ) );
-            assertTrue( values[1].toString().contains( "NO" ) );
+            assertTrue(keys[0].toString().contains("primaryKey=\"alias\""));
+            assertTrue(values[0].toString().contains("YES"));
+            assertTrue(keys[1].toString().contains("primaryKey=\"aliasssssss\""));
+            assertTrue(values[1].toString().contains("NO"));
 
             // check the differences in the second snapshot file
-            assertTrue( diff.getSecondEntityPath().endsWith( "dir4/sub-dir1/file1.xml" ) );
-            assertEquals( "snap2", diff.getSecondSnapshot() );
+            assertTrue(diff.getSecondEntityPath().endsWith("dir4/sub-dir1/file1.xml"));
+            assertEquals("snap2", diff.getSecondSnapshot());
             Map<String, String> secondSnapshotDifferencies = diff.getSecondSnapshotDifferencies();
 
-            assertEquals( 2, secondSnapshotDifferencies.size() );
+            assertEquals(2, secondSnapshotDifferencies.size());
             keys = secondSnapshotDifferencies.keySet().toArray();
             values = secondSnapshotDifferencies.values().toArray();
-            assertTrue( keys[0].toString().contains( "primaryKey=\"alias\"" ) );
-            assertTrue( values[0].toString().contains( "NO" ) );
-            assertTrue( keys[1].toString().contains( "primaryKey=\"aliasssssss\"" ) );
-            assertTrue( values[1].toString().contains( "YES" ) );
+            assertTrue(keys[0].toString().contains("primaryKey=\"alias\""));
+            assertTrue(values[0].toString().contains("NO"));
+            assertTrue(keys[1].toString().contains("primaryKey=\"aliasssssss\""));
+            assertTrue(values[1].toString().contains("YES"));
         }
     }
 
     private void thisShouldNotBeReached() {
 
-        throw new IllegalStateException( "This is not expected" );
+        throw new IllegalStateException("This is not expected");
     }
 }

@@ -60,7 +60,7 @@ public class JmsMessageVerification {
     public static JmsMessageVerification verifyThat(
                                                      final Message message ) {
 
-        return new JmsMessageVerification( message );
+        return new JmsMessageVerification(message);
     }
 
     private final Message actualMessage;
@@ -74,10 +74,10 @@ public class JmsMessageVerification {
                                                  final Class<?> c ) {
 
         isNotNull();
-        if( c.isInstance( actualMessage ) ) {
+        if (c.isInstance(actualMessage)) {
             return this;
         }
-        throw new JmsMessageException( "Message not instance of " + c.getSimpleName() );
+        throw new JmsMessageException("Message not instance of " + c.getSimpleName());
     }
 
     private Object findProperty(
@@ -85,30 +85,30 @@ public class JmsMessageVerification {
 
         Exception jmsException = null;
         try {
-            final Object o = actualMessage.getObjectProperty( key );
-            if( o != null ) {
+            final Object o = actualMessage.getObjectProperty(key);
+            if (o != null) {
                 return o;
             }
-        } catch( final Exception e ) {
+        } catch (final Exception e) {
             jmsException = e;
         }
 
         try {
-            if( key.equals( JMS_DESTINATION ) ) {
+            if (key.equals(JMS_DESTINATION)) {
                 return actualMessage.getJMSDestination();
             }
-            if( key.equals( JMS_MESSAGE_ID ) ) {
+            if (key.equals(JMS_MESSAGE_ID)) {
                 return actualMessage.getJMSMessageID();
             }
             // might be enhanced to support different JMS providers
-        } catch( Exception e ) {
-            if( jmsException == null ) {
+        } catch (Exception e) {
+            if (jmsException == null) {
                 jmsException = e;
             }
         }
 
-        if( jmsException != null ) {
-            throw new JmsMessageException( "Failed to fetch property " + key, jmsException );
+        if (jmsException != null) {
+            throw new JmsMessageException("Failed to fetch property " + key, jmsException);
         }
         return null;
     }
@@ -121,10 +121,10 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isNull() {
 
-        if( actualMessage == null ) {
+        if (actualMessage == null) {
             return this;
         }
-        throw new JmsMessageException( "Message is not null" );
+        throw new JmsMessageException("Message is not null");
     }
 
     /**
@@ -135,10 +135,10 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isNotNull() {
 
-        if( actualMessage != null ) {
+        if (actualMessage != null) {
             return this;
         }
-        throw new JmsMessageException( "Message is null" );
+        throw new JmsMessageException("Message is null");
     }
 
     /**
@@ -149,7 +149,7 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isTextMessage() {
 
-        return isInstanceof( TextMessage.class );
+        return isInstanceof(TextMessage.class);
     }
 
     /**
@@ -160,7 +160,7 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isBytesMessage() {
 
-        return isInstanceof( BytesMessage.class );
+        return isInstanceof(BytesMessage.class);
     }
 
     /**
@@ -171,7 +171,7 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isStreamMessage() {
 
-        return isInstanceof( StreamMessage.class );
+        return isInstanceof(StreamMessage.class);
     }
 
     /**
@@ -182,7 +182,7 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isMapMessage() {
 
-        return isInstanceof( MapMessage.class );
+        return isInstanceof(MapMessage.class);
     }
 
     /**
@@ -193,7 +193,7 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public JmsMessageVerification isObjectMessage() {
 
-        return isInstanceof( ObjectMessage.class );
+        return isInstanceof(ObjectMessage.class);
     }
 
     /**
@@ -209,9 +209,9 @@ public class JmsMessageVerification {
 
         isTextMessage();
 
-        final String actualText = ( ( TextMessage ) actualMessage ).getText();
-        if( !expectedText.equals( actualText ) ) {
-            assertEqual( "message text", expectedText, actualText );
+        final String actualText = ((TextMessage) actualMessage).getText();
+        if (!expectedText.equals(actualText)) {
+            assertEqual("message text", expectedText, actualText);
         }
         return this;
     }
@@ -229,25 +229,25 @@ public class JmsMessageVerification {
                                                final Object... values ) {
 
         isNotNull();
-        final Object o = findProperty( name );
-        if( o == null ) {
-            throw new JmsMessageException( "Property '" + name + "' not found" );
+        final Object o = findProperty(name);
+        if (o == null) {
+            throw new JmsMessageException("Property '" + name + "' not found");
         }
-        if( ( values == null ) || ( values.length == 0 ) ) {
+        if ( (values == null) || (values.length == 0)) {
             return this;
         }
-        for( final Object value : values ) {
-            if( o.equals( value ) ) {
+        for (final Object value : values) {
+            if (o.equals(value)) {
                 return this;
             }
         }
 
-        if( values.length == 1 ) {
-            throw new JmsMessageException( "Invalid value of property '" + name + "': expected '" + values[0]
-                                           + "', found '" + o + "'" );
+        if (values.length == 1) {
+            throw new JmsMessageException("Invalid value of property '" + name + "': expected '" + values[0]
+                                          + "', found '" + o + "'");
         } else {
-            throw new JmsMessageException( "Invalid value of property '" + name + "': '" + o + "' not in "
-                                           + Arrays.asList( values ) + "" );
+            throw new JmsMessageException("Invalid value of property '" + name + "': '" + o + "' not in "
+                                          + Arrays.asList(values) + "");
         }
     }
 
@@ -262,16 +262,16 @@ public class JmsMessageVerification {
                                                  Map<String, ?> properties ) {
 
         isNotNull();
-        for( final Entry<String, ?> entry : properties.entrySet() ) {
+        for (final Entry<String, ?> entry : properties.entrySet()) {
             final String key = entry.getKey();
-            final Object actualObject = findProperty( key );
-            if( actualObject == null ) {
-                throw new JmsMessageException( "Property '" + key + "' not found" );
+            final Object actualObject = findProperty(key);
+            if (actualObject == null) {
+                throw new JmsMessageException("Property '" + key + "' not found");
             }
 
             Object expectedObject = entry.getValue();
-            if( !expectedObject.equals( actualObject ) ) {
-                throw new JmsMessageException( "Invalid value for property '" + key + "'" );
+            if (!expectedObject.equals(actualObject)) {
+                throw new JmsMessageException("Invalid value for property '" + key + "'");
             }
         }
         return this;
@@ -288,10 +288,10 @@ public class JmsMessageVerification {
                                                       final String... names ) {
 
         isNotNull();
-        for( final String key : names ) {
-            final Object o = findProperty( key );
-            if( o == null ) {
-                throw new JmsMessageException( "Property '" + key + "' not found" );
+        for (final String key : names) {
+            final Object o = findProperty(key);
+            if (o == null) {
+                throw new JmsMessageException("Property '" + key + "' not found");
             }
         }
         return this;
@@ -308,10 +308,10 @@ public class JmsMessageVerification {
                                                       final String... names ) {
 
         isNotNull();
-        if( names != null ) {
-            for( final String key : names ) {
-                if( findProperty( key ) != null ) {
-                    throw new JmsMessageException( "Property '" + key + "' found" );
+        if (names != null) {
+            for (final String key : names) {
+                if (findProperty(key) != null) {
+                    throw new JmsMessageException("Property '" + key + "' found");
                 }
             }
         }
@@ -325,38 +325,38 @@ public class JmsMessageVerification {
 
         MessageDigest digest;
         try {
-            digest = MessageDigest.getInstance( algorithm );
-        } catch( final NoSuchAlgorithmException e ) {
-            throw new JmsMessageException( "Failed to load " + algorithm + " algorithm: " + e );
+            digest = MessageDigest.getInstance(algorithm);
+        } catch (final NoSuchAlgorithmException e) {
+            throw new JmsMessageException("Failed to load " + algorithm + " algorithm: " + e);
         }
 
         try {
-            if( actualMessage instanceof TextMessage ) {
-                digest.update( ( ( TextMessage ) actualMessage ).getText().getBytes() );
-            } else if( actualMessage instanceof BytesMessage ) {
-                final BytesMessage m = ( BytesMessage ) actualMessage;
+            if (actualMessage instanceof TextMessage) {
+                digest.update( ((TextMessage) actualMessage).getText().getBytes());
+            } else if (actualMessage instanceof BytesMessage) {
+                final BytesMessage m = (BytesMessage) actualMessage;
                 final byte[] tmp = new byte[2048];
                 int r;
-                while( ( r = m.readBytes( tmp ) ) >= 0 ) {
-                    if( r != 0 ) {
-                        digest.update( tmp, 0, r );
+                while ( (r = m.readBytes(tmp)) >= 0) {
+                    if (r != 0) {
+                        digest.update(tmp, 0, r);
                     }
                 }
-            } else if( actualMessage instanceof StreamMessage ) {
-                final StreamMessage m = ( StreamMessage ) actualMessage;
+            } else if (actualMessage instanceof StreamMessage) {
+                final StreamMessage m = (StreamMessage) actualMessage;
                 final byte[] tmp = new byte[2048];
                 int r;
-                while( ( r = m.readBytes( tmp ) ) >= 0 ) {
-                    if( r != 0 ) {
-                        digest.update( tmp, 0, r );
+                while ( (r = m.readBytes(tmp)) >= 0) {
+                    if (r != 0) {
+                        digest.update(tmp, 0, r);
                     }
                 }
             } else {
-                throw new JmsMessageException( "Cannot determind content hash for message type : "
-                                               + actualMessage.getClass() );
+                throw new JmsMessageException("Cannot determind content hash for message type : "
+                                              + actualMessage.getClass());
             }
-        } catch( final JMSException e ) {
-            throw new JmsMessageException( "Failed to determine message " + algorithm + " hash", e );
+        } catch (final JMSException e) {
+            throw new JmsMessageException("Failed to determine message " + algorithm + " hash", e);
         }
         return digest.digest();
     }
@@ -367,7 +367,7 @@ public class JmsMessageVerification {
     @PublicAtsApi
     public byte[] getBodyMD5() {
 
-        return getBodyHash( "MD5" );
+        return getBodyHash("MD5");
     }
 
     /**
@@ -380,9 +380,9 @@ public class JmsMessageVerification {
     public JmsMessageVerification hasBodyMD5(
                                               byte[] expectedDigest ) {
 
-        assertNotNull( "MD5 parameter", expectedDigest );
-        final byte[] result = getBodyHash( "MD5" );
-        assertArrayEquals( "MD5 content differs", expectedDigest, result );
+        assertNotNull("MD5 parameter", expectedDigest);
+        final byte[] result = getBodyHash("MD5");
+        assertArrayEquals("MD5 content differs", expectedDigest, result);
         return this;
     }
 
@@ -396,14 +396,15 @@ public class JmsMessageVerification {
     public JmsMessageVerification hasBodyMD5(
                                               final String expectedHexValue ) {
 
-        assertNotNull( "MD5 string parameter", expectedHexValue );
+        assertNotNull("MD5 string parameter", expectedHexValue);
         final int len = expectedHexValue.length();
         final byte[] data = new byte[len / 2];
-        for( int i = 0; i < len; i += 2 ) {
-            data[i / 2] = ( byte ) ( ( Character.digit( expectedHexValue.charAt( i ), 16 ) << 4 ) + Character.digit( expectedHexValue.charAt( i + 1 ),
-                                                                                                                     16 ) );
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ( (Character.digit(expectedHexValue.charAt(i), 16) << 4)
+                                   + Character.digit(expectedHexValue.charAt(i + 1),
+                                                     16));
         }
-        return hasBodyMD5( data );
+        return hasBodyMD5(data);
     }
 
     private void assertEqual(
@@ -411,9 +412,9 @@ public class JmsMessageVerification {
                               String expected,
                               String actual ) {
 
-        if( !expected.equals( actual ) ) {
-            throw new JmsMessageException( "Expected " + description + " is '" + expected + "', but got '"
-                                           + actual + "'" );
+        if (!expected.equals(actual)) {
+            throw new JmsMessageException("Expected " + description + " is '" + expected + "', but got '"
+                                          + actual + "'");
         }
     }
 
@@ -421,8 +422,8 @@ public class JmsMessageVerification {
                                 String userMessage,
                                 Object expectedDigest ) {
 
-        if( expectedDigest == null ) {
-            throw new JmsMessageException( userMessage + " is NULL" );
+        if (expectedDigest == null) {
+            throw new JmsMessageException(userMessage + " is NULL");
         }
     }
 
@@ -431,8 +432,8 @@ public class JmsMessageVerification {
                                     byte[] actualArray,
                                     byte[] expectedArray ) {
 
-        if( !Arrays.equals( actualArray, expectedArray ) ) {
-            throw new JmsMessageException( userMessage );
+        if (!Arrays.equals(actualArray, expectedArray)) {
+            throw new JmsMessageException(userMessage);
         }
     }
 }

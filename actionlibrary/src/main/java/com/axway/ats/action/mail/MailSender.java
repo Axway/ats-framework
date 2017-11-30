@@ -54,13 +54,13 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class MailSender extends PackageSender {
 
-    private static final Logger             log            = Logger.getLogger( MailSender.class );
+    private static final Logger             log            = Logger.getLogger(MailSender.class);
 
     private final ActionLibraryConfigurator configurator;
 
     private Transport                       transport;
 
-    protected Session                       session;                                              // it is accessed by the derived MailTLSSender
+    protected Session                       session;                                            // it is accessed by the derived MailTLSSender
 
     private String                          mailHost;
 
@@ -85,7 +85,7 @@ public class MailSender extends PackageSender {
         configurator = ActionLibraryConfigurator.getInstance();
 
         // initialize transport
-        setMailServer( configurator.getMailHost(), configurator.getMailPort() );
+        setMailServer(configurator.getMailHost(), configurator.getMailPort());
     }
 
     /**
@@ -101,15 +101,15 @@ public class MailSender extends PackageSender {
         this.mailHost = mailHost;
         this.mailPort = mailPort;
 
-        mailProperties.put( "mail.smtp.host", this.mailHost );
-        mailProperties.put( "mail.smtp.port", this.mailPort );
+        mailProperties.put("mail.smtp.host", this.mailHost);
+        mailProperties.put("mail.smtp.port", this.mailPort);
 
         try {
             String mailLocalAddress = configurator.getMailLocalAddress();
-            if( !StringUtils.isNullOrEmpty( mailLocalAddress ) ) {
-                mailProperties.put( "mail.smtp.localaddress", mailLocalAddress );
+            if (!StringUtils.isNullOrEmpty(mailLocalAddress)) {
+                mailProperties.put("mail.smtp.localaddress", mailLocalAddress);
             }
-        } catch( NoSuchPropertyException nspe ) {
+        } catch (NoSuchPropertyException nspe) {
             // this property is optional, no issue when not present
         }
     }
@@ -128,40 +128,40 @@ public class MailSender extends PackageSender {
     @PublicAtsApi
     public void send( Package sourcePackage ) throws ActionException {
 
-        if( ! ( sourcePackage instanceof MimePackage ) ) {
-            throw new WrongPackageException( "Cannot send '" + sourcePackage.getClass().getSimpleName()
-                                             + "' packages" );
+        if (! (sourcePackage instanceof MimePackage)) {
+            throw new WrongPackageException("Cannot send '" + sourcePackage.getClass().getSimpleName()
+                                            + "' packages");
         }
 
         // initialize the SMTP session
         initSession();
 
-        MimePackage mimePackage = ( MimePackage ) sourcePackage;
+        MimePackage mimePackage = (MimePackage) sourcePackage;
 
         // tag the package
         mimePackage.tag();
 
         // sign the package if needed
-        mimePackage = sign( mimePackage );
+        mimePackage = sign(mimePackage);
 
         // encrypt the package if needed
-        mimePackage = encrypt( mimePackage );
+        mimePackage = encrypt(mimePackage);
 
         // then send
         final DELIVERY_STATE messageDeliveryState;
         try {
 
-            log.info( "Connect to mail server " + mailHost + " at port " + mailPort );
+            log.info("Connect to mail server " + mailHost + " at port " + mailPort);
             Object messageSendingMutex = new Object();
-            MailTransportListener transListener = new MailTransportListener( messageSendingMutex );
+            MailTransportListener transListener = new MailTransportListener(messageSendingMutex);
 
-            transport.addTransportListener( transListener );
+            transport.addTransportListener(transListener);
             transport.connect();
 
-            log.info( "Sending " + mimePackage.getDescription() );
-            transport.sendMessage( mimePackage.getMimeMessage(), extractAllRecipients( mimePackage ) );
+            log.info("Sending " + mimePackage.getDescription());
+            transport.sendMessage(mimePackage.getMimeMessage(), extractAllRecipients(mimePackage));
 
-            synchronized( messageSendingMutex ) {
+            synchronized (messageSendingMutex) {
 
                 /*
                  * Wait some time for message delivery.
@@ -169,25 +169,25 @@ public class MailSender extends PackageSender {
                  * We are either notified by the mail transport listener when the send has finished(successfully or not)
                  * or we have reached the wait timeout
                  */
-                messageSendingMutex.wait( configurator.getMailTimeout() );
+                messageSendingMutex.wait(configurator.getMailTimeout());
             }
 
             messageDeliveryState = transListener.getDeliveryState();
 
             transport.close();
-            transport.removeTransportListener( transListener );
-        } catch( MessagingException e ) {
-            throw new ActionException( "Could not send package", e );
-        } catch( InterruptedException e ) {
-            throw new ActionException( "Could not send package", e );
+            transport.removeTransportListener(transListener);
+        } catch (MessagingException e) {
+            throw new ActionException("Could not send package", e);
+        } catch (InterruptedException e) {
+            throw new ActionException("Could not send package", e);
         }
 
         // evaluate the mail send result
-        if( messageDeliveryState == DELIVERY_STATE.DELIVERED ) {
-            log.info( mimePackage.getDescription() + " " + messageDeliveryState );
+        if (messageDeliveryState == DELIVERY_STATE.DELIVERED) {
+            log.info(mimePackage.getDescription() + " " + messageDeliveryState);
         } else {
-            throw new ActionException( "Result of sending " + mimePackage.getDescription() + ": "
-                                       + messageDeliveryState.toString() );
+            throw new ActionException("Result of sending " + mimePackage.getDescription() + ": "
+                                      + messageDeliveryState.toString());
         }
     }
 
@@ -213,7 +213,6 @@ public class MailSender extends PackageSender {
         this.encryptor = encryptor;
     }
 
-
     /**
      * Set mail session property.<br/>
      * SMTP properties reference: https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
@@ -224,7 +223,7 @@ public class MailSender extends PackageSender {
     @PublicAtsApi
     public void setSessionProperty( Object propertyKey, Object propertyValue ) {
 
-        this.mailProperties.put( propertyKey, propertyValue );
+        this.mailProperties.put(propertyKey, propertyValue);
     }
 
     /**
@@ -235,17 +234,18 @@ public class MailSender extends PackageSender {
     private void initSession() throws ActionException {
 
         // initialize the mail session with the current properties
-        session = Session.getInstance( mailProperties );
+        session = Session.getInstance(mailProperties);
         // user can get more debug info with the session's debug mode
-        session.setDebug( configurator.getMailSessionDebugMode() );
+        session.setDebug(configurator.getMailSessionDebugMode());
 
         // initialize the SMPT transport
         try {
-            transport = session.getTransport( "smtp" );
-        } catch( NoSuchProviderException e ) {
-            throw new ActionException( e );
+            transport = session.getTransport("smtp");
+        } catch (NoSuchProviderException e) {
+            throw new ActionException(e);
         }
     }
+
     /**
      * Sign the package before sending
      *
@@ -256,8 +256,8 @@ public class MailSender extends PackageSender {
     private MimePackage sign(
                               MimePackage mimePackage ) throws ActionException {
 
-        if( signer != null ) {
-            return ( MimePackage ) signer.sign( mimePackage );
+        if (signer != null) {
+            return (MimePackage) signer.sign(mimePackage);
         } else {
             return mimePackage;
         }
@@ -273,8 +273,8 @@ public class MailSender extends PackageSender {
     private MimePackage encrypt(
                                  MimePackage mimePackage ) throws ActionException {
 
-        if( encryptor != null ) {
-            return ( MimePackage ) encryptor.encrypt( mimePackage );
+        if (encryptor != null) {
+            return (MimePackage) encryptor.encrypt(mimePackage);
         } else {
             return mimePackage;
         }
@@ -283,10 +283,10 @@ public class MailSender extends PackageSender {
     private Address[] extractAllRecipients( MimePackage mimePackage ) throws PackageException {
 
         List<Address> allRecipients = new ArrayList<Address>();
-        allRecipients.addAll( Arrays.asList( mimePackage.getRecipientAddresses( RecipientType.TO ) ) );
-        allRecipients.addAll( Arrays.asList( mimePackage.getRecipientAddresses( RecipientType.CC ) ) );
-        allRecipients.addAll( Arrays.asList( mimePackage.getRecipientAddresses( RecipientType.BCC ) ) );
+        allRecipients.addAll(Arrays.asList(mimePackage.getRecipientAddresses(RecipientType.TO)));
+        allRecipients.addAll(Arrays.asList(mimePackage.getRecipientAddresses(RecipientType.CC)));
+        allRecipients.addAll(Arrays.asList(mimePackage.getRecipientAddresses(RecipientType.BCC)));
 
-        return allRecipients.toArray( new Address[allRecipients.size()] );
+        return allRecipients.toArray(new Address[allRecipients.size()]);
     }
 }

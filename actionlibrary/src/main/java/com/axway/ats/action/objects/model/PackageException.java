@@ -17,22 +17,22 @@ package com.axway.ats.action.objects.model;
 
 import com.axway.ats.action.model.ActionException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class PackageException extends ActionException {
 
     public PackageException( String message ) {
 
-        super( message );
+        super(message);
     }
 
     public PackageException( Throwable cause ) {
 
-        super( cause );
+        super(cause);
     }
 
     public PackageException( String message,
                              Throwable cause ) {
 
-        super( message, cause );
+        super(message, cause);
     }
 }

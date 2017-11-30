@@ -40,18 +40,18 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                   String... commandArguments ) {
 
         this.atsAgent = atsAgent;
-        this.remoteProcessOperations = new InternalProcessOperations( atsAgent );
+        this.remoteProcessOperations = new InternalProcessOperations(atsAgent);
         try {
-            this.internalId = this.remoteProcessOperations.initProcessExecutor( command, commandArguments );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            this.internalId = this.remoteProcessOperations.initProcessExecutor(command, commandArguments);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
     @Override
     public void execute() {
 
-        execute( true );
+        execute(true);
     }
 
     @Override
@@ -59,15 +59,15 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                          boolean waitForCompletion ) {
 
         try {
-            this.remoteProcessOperations.startProcess( internalId,
-                                                       workDirectory,
-                                                       standardOutputFile,
-                                                       errorOutputFile,
-                                                       logStandardOutput,
-                                                       logErrorOutput,
-                                                       waitForCompletion );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            this.remoteProcessOperations.startProcess(internalId,
+                                                      workDirectory,
+                                                      standardOutputFile,
+                                                      errorOutputFile,
+                                                      logStandardOutput,
+                                                      logErrorOutput,
+                                                      waitForCompletion);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -75,9 +75,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public void kill() {
 
         try {
-            this.remoteProcessOperations.killProcess( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            this.remoteProcessOperations.killProcess(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -85,9 +85,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public void killAll() {
 
         try {
-            this.remoteProcessOperations.killProcessAndItsChildren( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            this.remoteProcessOperations.killProcessAndItsChildren(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -95,9 +95,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public int getProcessId() {
 
         try {
-            return this.remoteProcessOperations.getProcessId( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getProcessId(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -105,9 +105,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public int getExitCode() {
 
         try {
-            return this.remoteProcessOperations.getProcessExitCode( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getProcessExitCode(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -115,9 +115,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getStandardOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessStandardOutput( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getProcessStandardOutput(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -125,9 +125,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getErrorOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessErrorOutput( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getProcessErrorOutput(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -172,9 +172,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                 String variableValue ) {
 
         try {
-            this.remoteProcessOperations.setEnvVariable( internalId, variableName, variableValue );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            this.remoteProcessOperations.setEnvVariable(internalId, variableName, variableValue);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -184,9 +184,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                      String variableValueToAppend ) {
 
         try {
-            this.remoteProcessOperations.appendToEnvVariable( internalId, variableName, variableValueToAppend );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            this.remoteProcessOperations.appendToEnvVariable(internalId, variableName, variableValueToAppend);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -195,9 +195,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                   String variableName ) {
 
         try {
-            return this.remoteProcessOperations.getEnvVariable( internalId, variableName );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getEnvVariable(internalId, variableName);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -205,9 +205,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getCurrentStandardOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessCurrentStandardOutput( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getProcessCurrentStandardOutput(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -215,9 +215,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getCurrentErrorOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessCurrentErrorOutput( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.getProcessCurrentErrorOutput(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -225,9 +225,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public boolean isStandardOutputFullyRead() {
 
         try {
-            return this.remoteProcessOperations.isStandardOutputFullyRead( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.isStandardOutputFullyRead(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -235,9 +235,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public boolean isErrorOutputFullyRead() {
 
         try {
-            return this.remoteProcessOperations.isErrorOutputFullyRead( internalId );
-        } catch( AgentException e ) {
-            throw new ProcessExecutorException( e );
+            return this.remoteProcessOperations.isErrorOutputFullyRead(internalId);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
         }
     }
 
@@ -255,9 +255,9 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     protected void finalize() throws Throwable {
 
         TestcaseStateEventsDispacher.getInstance()
-                                    .cleanupInternalObjectResources( atsAgent,
-                                                                     CallerRelatedInfoRepository.KEY_PROCESS_EXECUTOR
-                                                                             + internalId );
+                                    .cleanupInternalObjectResources(atsAgent,
+                                                                    CallerRelatedInfoRepository.KEY_PROCESS_EXECUTOR
+                                                                              + internalId);
 
         super.finalize();
     }

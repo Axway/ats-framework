@@ -31,7 +31,7 @@ public class RestHeader extends HttpHeader {
     public RestHeader( String name,
                        List<String> values ) {
 
-        super( name, values );
+        super(name, values);
     }
 
     /**
@@ -42,14 +42,14 @@ public class RestHeader extends HttpHeader {
     public String getValue(
                             int index ) {
 
-        if( values == null ) {
+        if (values == null) {
             return null;
         }
 
-        if( values.size() > index ) {
-            return values.get( index );
+        if (values.size() > index) {
+            return values.get(index);
         } else {
-            throw new RestException( "Invalid header value index " + index );
+            throw new RestException("Invalid header value index " + index);
         }
     }
 
@@ -58,10 +58,10 @@ public class RestHeader extends HttpHeader {
                                            List<Object> objects ) {
 
         List<String> values = new ArrayList<String>();
-        for( Object object : objects ) {
-            values.add( object.toString() );
+        for (Object object : objects) {
+            values.add(object.toString());
         }
 
-        return new RestHeader( name, values );
+        return new RestHeader(name, values);
     }
 }

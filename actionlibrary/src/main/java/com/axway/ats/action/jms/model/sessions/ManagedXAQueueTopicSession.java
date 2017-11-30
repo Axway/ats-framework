@@ -29,30 +29,30 @@ public class ManagedXAQueueTopicSession extends ManagedSession implements XASess
 
     public ManagedXAQueueTopicSession( final Session session ) {
 
-        super( session );
+        super(session);
     }
 
     @Override
     public Session getSession() throws JMSException {
 
-        return addSession( ( ( XASession ) session ).getSession() );
+        return addSession( ((XASession) session).getSession());
     }
 
     @Override
     public XAResource getXAResource() {
 
-        return ( ( XASession ) session ).getXAResource();
+        return ((XASession) session).getXAResource();
     }
 
     @Override
     public TopicSession getTopicSession() throws JMSException {
 
-        return addSession( ( ( XATopicSession ) session ).getTopicSession() );
+        return addSession( ((XATopicSession) session).getTopicSession());
     }
 
     @Override
     public QueueSession getQueueSession() throws JMSException {
 
-        return addSession( ( ( XAQueueSession ) session ).getQueueSession() );
+        return addSession( ((XAQueueSession) session).getQueueSession());
     }
 }

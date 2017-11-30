@@ -33,19 +33,19 @@ public class VerificationException extends RuntimeException {
     @PublicAtsApi
     public VerificationException( String arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     @PublicAtsApi
     public VerificationException( Throwable arg0 ) {
 
-        super( arg0 );
+        super(arg0);
     }
 
     @PublicAtsApi
     public VerificationException( String arg0,
-                          Throwable arg1 ) {
+                                  Throwable arg1 ) {
 
-        super( arg0, arg1 );
+        super(arg0, arg1);
     }
 }

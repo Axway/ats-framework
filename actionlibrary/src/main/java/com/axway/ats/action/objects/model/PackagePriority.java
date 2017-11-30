@@ -35,12 +35,12 @@ public enum PackagePriority {
         String lowerCaseStr = super.toString().toLowerCase();
 
         //only the first character should be upper case
-        return lowerCaseStr.substring( 0, 1 ).toUpperCase() + lowerCaseStr.substring( 1 );
+        return lowerCaseStr.substring(0, 1).toUpperCase() + lowerCaseStr.substring(1);
     }
 
     public int toInt() throws PackageException {
 
-        switch( this ){
+        switch (this) {
             case LOW:
                 return 3;
             case NORMAL:
@@ -48,7 +48,7 @@ public enum PackagePriority {
             case HIGH:
                 return 1;
             default:
-                throw new PackageException( "Unsupported priority: " + this );
+                throw new PackageException("Unsupported priority: " + this);
         }
     }
 }

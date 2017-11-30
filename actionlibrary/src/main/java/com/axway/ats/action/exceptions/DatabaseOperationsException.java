@@ -33,9 +33,9 @@ public class DatabaseOperationsException extends RuntimeException {
      */
     @PublicAtsApi
     public DatabaseOperationsException( String message,
-                                               Exception e ) {
+                                        Exception e ) {
 
-        super( message, e );
+        super(message, e);
     }
 
     /**
@@ -46,16 +46,17 @@ public class DatabaseOperationsException extends RuntimeException {
     @PublicAtsApi
     public DatabaseOperationsException( Exception e ) {
 
-        super( e );
+        super(e);
     }
 
     /**
      * Constructor
      * 
      * @param message
-     */@PublicAtsApi
+     */
+    @PublicAtsApi
     public DatabaseOperationsException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

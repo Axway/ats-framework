@@ -18,11 +18,11 @@ package com.axway.ats.action.filetransfer;
 /**
  * Indicates a problem reading a property for a custom file transfer client 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( "serial")
 public class FileTransferConfiguratorException extends RuntimeException {
 
     public FileTransferConfiguratorException( String message ) {
 
-        super( message );
+        super(message);
     }
 }

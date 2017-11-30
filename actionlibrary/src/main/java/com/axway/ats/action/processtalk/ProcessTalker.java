@@ -58,7 +58,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public ProcessTalker( String atsAgent, String command ) throws ProcessTalkException {
 
-        this.processTalker = getOperationsImplementationFor( atsAgent, command );
+        this.processTalker = getOperationsImplementationFor(atsAgent, command);
     }
 
     /**
@@ -72,9 +72,9 @@ public class ProcessTalker {
     public ProcessTalker( String atsAgent, String command,
                           int defaultTimeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker = getOperationsImplementationFor( atsAgent, command );
+        this.processTalker = getOperationsImplementationFor(atsAgent, command);
 
-        setDefaultOperationTimeout( defaultTimeoutSeconds );
+        setDefaultOperationTimeout(defaultTimeoutSeconds);
     }
 
     /**
@@ -86,7 +86,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public ProcessTalker( String command ) throws ProcessTalkException {
 
-        this.processTalker = getOperationsImplementationFor( null, command );
+        this.processTalker = getOperationsImplementationFor(null, command);
     }
 
     /**
@@ -99,9 +99,9 @@ public class ProcessTalker {
     @PublicAtsApi
     public ProcessTalker( String command, int defaultTimeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker = getOperationsImplementationFor( null, command );
+        this.processTalker = getOperationsImplementationFor(null, command);
 
-        setDefaultOperationTimeout( defaultTimeoutSeconds );
+        setDefaultOperationTimeout(defaultTimeoutSeconds);
     }
 
     /**
@@ -113,7 +113,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void setCommand( String command ) throws ProcessTalkException {
 
-        this.processTalker.setCommand( command );
+        this.processTalker.setCommand(command);
     }
 
     /**
@@ -130,7 +130,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void setDefaultOperationTimeout( int defaultTimeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.setDefaultOperationTimeout( defaultTimeoutSeconds );
+        this.processTalker.setDefaultOperationTimeout(defaultTimeoutSeconds);
     }
 
     /**
@@ -169,7 +169,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expect( String pattern ) throws ProcessTalkException {
 
-        this.processTalker.expect( pattern );
+        this.processTalker.expect(pattern);
     }
 
     /**
@@ -183,7 +183,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expect( String pattern, int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expect( pattern, timeoutSeconds );
+        this.processTalker.expect(pattern, timeoutSeconds);
     }
 
     /**
@@ -196,10 +196,10 @@ public class ProcessTalker {
      */
     @PublicAtsApi
     public void expectErr(
-                        String pattern,
-                        int timeoutSeconds ) throws ProcessTalkException {
+                           String pattern,
+                           int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectErr( pattern, timeoutSeconds );
+        this.processTalker.expectErr(pattern, timeoutSeconds);
     }
 
     /**
@@ -211,7 +211,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectByRegex( String pattern ) throws ProcessTalkException {
 
-        this.processTalker.expectByRegex( pattern );
+        this.processTalker.expectByRegex(pattern);
     }
 
     /**
@@ -224,7 +224,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectByRegex( String pattern, int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectByRegex( pattern, timeoutSeconds );
+        this.processTalker.expectByRegex(pattern, timeoutSeconds);
     }
 
     /**
@@ -236,10 +236,10 @@ public class ProcessTalker {
      */
     @PublicAtsApi
     public void expectErrByRegex(
-                               String pattern,
-                               int timeoutSeconds ) throws ProcessTalkException {
+                                  String pattern,
+                                  int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectErrByRegex( pattern, timeoutSeconds );
+        this.processTalker.expectErrByRegex(pattern, timeoutSeconds);
     }
 
     /**
@@ -253,7 +253,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public int expectAny( String[] patterns ) throws ProcessTalkException {
 
-        return this.processTalker.expectAny( patterns );
+        return this.processTalker.expectAny(patterns);
     }
 
     /**
@@ -268,7 +268,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public int expectAny( String[] patterns, int timeoutSeconds ) throws ProcessTalkException {
 
-        return this.processTalker.expectAny( patterns, timeoutSeconds );
+        return this.processTalker.expectAny(patterns, timeoutSeconds);
     }
 
     /**
@@ -282,10 +282,10 @@ public class ProcessTalker {
      */
     @PublicAtsApi
     public int expectErrAny(
-                          String[] patterns,
-                          int timeoutSeconds ) throws ProcessTalkException {
+                             String[] patterns,
+                             int timeoutSeconds ) throws ProcessTalkException {
 
-        return this.processTalker.expectErrAny( patterns, timeoutSeconds );
+        return this.processTalker.expectErrAny(patterns, timeoutSeconds);
     }
 
     /**
@@ -299,7 +299,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public int expectAnyByRegex( String[] regexPatterns ) throws ProcessTalkException {
 
-        return this.processTalker.expectAnyByRegex( regexPatterns );
+        return this.processTalker.expectAnyByRegex(regexPatterns);
     }
 
     /**
@@ -314,7 +314,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public int expectAnyByRegex( String[] regexPatterns, int timeoutSeconds ) throws ProcessTalkException {
 
-        return this.processTalker.expectAnyByRegex( regexPatterns, timeoutSeconds );
+        return this.processTalker.expectAnyByRegex(regexPatterns, timeoutSeconds);
     }
 
     /**
@@ -328,10 +328,10 @@ public class ProcessTalker {
      */
     @PublicAtsApi
     public int expectErrAnyByRegex(
-                                 String[] regexPatterns,
-                                 int timeoutSeconds ) throws ProcessTalkException {
+                                    String[] regexPatterns,
+                                    int timeoutSeconds ) throws ProcessTalkException {
 
-        return this.processTalker.expectErrAnyByRegex( regexPatterns, timeoutSeconds );
+        return this.processTalker.expectErrAnyByRegex(regexPatterns, timeoutSeconds);
     }
 
     /**
@@ -344,7 +344,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectAll( String[] patterns ) throws ProcessTalkException {
 
-        this.processTalker.expectAll( patterns );
+        this.processTalker.expectAll(patterns);
     }
 
     /**
@@ -358,7 +358,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectAll( String[] patterns, int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectAll( patterns, timeoutSeconds );
+        this.processTalker.expectAll(patterns, timeoutSeconds);
     }
 
     /**
@@ -373,7 +373,7 @@ public class ProcessTalker {
     public void expectErrAll( String[] patterns,
                               int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectErrAll( patterns, timeoutSeconds );
+        this.processTalker.expectErrAll(patterns, timeoutSeconds);
     }
 
     /**
@@ -386,7 +386,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectAllByRegex( String[] regexPatterns ) throws ProcessTalkException {
 
-        this.processTalker.expectAllByRegex( regexPatterns );
+        this.processTalker.expectAllByRegex(regexPatterns);
     }
 
     /**
@@ -400,7 +400,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectAllByRegex( String[] regexPatterns, int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectAllByRegex( regexPatterns, timeoutSeconds );
+        this.processTalker.expectAllByRegex(regexPatterns, timeoutSeconds);
     }
 
     /**
@@ -413,10 +413,10 @@ public class ProcessTalker {
      */
     @PublicAtsApi
     public void expectErrAllByRegex(
-                                  String[] regexPatterns,
-                                  int timeoutSeconds ) throws ProcessTalkException {
+                                     String[] regexPatterns,
+                                     int timeoutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectErrAllByRegex( regexPatterns, timeoutSeconds );
+        this.processTalker.expectErrAllByRegex(regexPatterns, timeoutSeconds);
     }
 
     /**
@@ -428,7 +428,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void send( String text ) throws ProcessTalkException {
 
-        this.processTalker.send( text );
+        this.processTalker.send(text);
     }
 
     /**
@@ -457,7 +457,7 @@ public class ProcessTalker {
     public void sendEnterKeyInLoop( String intermediatePattern, String finalPattern,
                                     int maxLoopTimes ) throws ProcessTalkException {
 
-        this.processTalker.sendEnterKeyInLoop( intermediatePattern, finalPattern, maxLoopTimes );
+        this.processTalker.sendEnterKeyInLoop(intermediatePattern, finalPattern, maxLoopTimes);
     }
 
     /**
@@ -480,7 +480,7 @@ public class ProcessTalker {
     @PublicAtsApi
     public void expectClose( int timeOutSeconds ) throws ProcessTalkException {
 
-        this.processTalker.expectClose( timeOutSeconds );
+        this.processTalker.expectClose(timeOutSeconds);
     }
 
     @PublicAtsApi
@@ -520,12 +520,12 @@ public class ProcessTalker {
 
     private IProcessTalker getOperationsImplementationFor( String atsAgent, String command ) {
 
-        atsAgent = HostUtils.getAtsAgentIpAndPort( atsAgent );
+        atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
 
-        if( HostUtils.isLocalAtsAgent( atsAgent ) ) {
-            return new LocalProcessTalker( command );
+        if (HostUtils.isLocalAtsAgent(atsAgent)) {
+            return new LocalProcessTalker(command);
         } else {
-            return new RemoteProcessTalker( atsAgent, command );
+            return new RemoteProcessTalker(atsAgent, command);
         }
     }
 }

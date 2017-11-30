@@ -257,23 +257,23 @@ public class HttpBodyPart {
 
         ContentType contentTypeObject = constructContentTypeObject();
 
-        if( filePath != null ) { // FILE part
-            if( contentTypeObject != null ) {
-                return new FileBody( new File( filePath ), contentTypeObject );
+        if (filePath != null) { // FILE part
+            if (contentTypeObject != null) {
+                return new FileBody(new File(filePath), contentTypeObject);
             } else {
-                return new FileBody( new File( filePath ) );
+                return new FileBody(new File(filePath));
             }
-        } else if( content != null ) { // TEXT part
-            if( contentTypeObject != null ) {
-                return new StringBody( content, contentTypeObject );
+        } else if (content != null) { // TEXT part
+            if (contentTypeObject != null) {
+                return new StringBody(content, contentTypeObject);
             } else {
-                return new StringBody( content, ContentType.TEXT_PLAIN );
+                return new StringBody(content, ContentType.TEXT_PLAIN);
             }
         } else { // BYTE ARRAY part
-            if( contentTypeObject != null ) {
-                return new ByteArrayBody( this.fileBytes, contentTypeObject, fileName );
+            if (contentTypeObject != null) {
+                return new ByteArrayBody(this.fileBytes, contentTypeObject, fileName);
             } else {
-                return new ByteArrayBody( this.fileBytes, fileName );
+                return new ByteArrayBody(this.fileBytes, fileName);
             }
         }
     }
@@ -281,11 +281,11 @@ public class HttpBodyPart {
     private ContentType constructContentTypeObject() {
 
         ContentType _contentType = null;
-        if( contentType != null ) {
-            if( charset != null ) {
-                _contentType = ContentType.create( contentType, charset );
+        if (contentType != null) {
+            if (charset != null) {
+                _contentType = ContentType.create(contentType, charset);
             } else {
-                _contentType = ContentType.create( contentType );
+                _contentType = ContentType.create(contentType);
             }
         }
 

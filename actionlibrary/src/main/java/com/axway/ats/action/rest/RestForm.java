@@ -52,15 +52,15 @@ public class RestForm {
                                   String parameterName,
                                   String parameterValue ) {
 
-        parameters.put( parameterName, parameterValue );
+        parameters.put(parameterName, parameterValue);
         return this;
     }
 
     Form getForm() {
 
         Form form = new Form();
-        for( Entry<String, String> pramEntry : parameters.entrySet() ) {
-            form.param( pramEntry.getKey(), pramEntry.getValue() );
+        for (Entry<String, String> pramEntry : parameters.entrySet()) {
+            form.param(pramEntry.getKey(), pramEntry.getValue());
         }
 
         return form;

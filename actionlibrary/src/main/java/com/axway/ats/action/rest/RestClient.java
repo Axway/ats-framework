@@ -101,7 +101,7 @@ public class RestClient {
 
     private int                        debugLevel                     = RESTDebugLevel.TARGET_URI;
 
-    private static final Logger        log                            = Logger.getLogger( RestClient.class );
+    private static final Logger        log                            = Logger.getLogger(RestClient.class);
 
     private Client                     client;
 
@@ -165,7 +165,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient() {
 
-        this( null );
+        this(null);
     }
 
     /**
@@ -176,7 +176,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient( String uri ) {
 
-        setURI( uri );
+        setURI(uri);
 
         initInternalVariables();
     }
@@ -197,13 +197,13 @@ public class RestClient {
          * the connection stays open until you finish reading from the InputStream.
          * In that case, the InputStream or the Response should be closed manually at the end of reading from InputStream.
          */
-        if( this.client != null ) {
+        if (this.client != null) {
             this.client.close();
             /* After invoking close() on the JerseyClient instance,
              * we must remove it from the map,
              * because all of its resources are deallocated and the client is not usable anymore
             */
-            clients.remove( finalClientIdKey );
+            clients.remove(finalClientIdKey);
         }
     }
 
@@ -225,19 +225,19 @@ public class RestClient {
         newClient.password = this.password;
 
         newClient.resourcePath = new ArrayList<String>();
-        for( String path : this.resourcePath ) {
-            newClient.resourcePath.add( path );
+        for (String path : this.resourcePath) {
+            newClient.resourcePath.add(path);
         }
 
         newClient.requestHeaders = new HashMap<String, List<Object>>();
-        for( Entry<String, List<Object>> entry : this.requestHeaders.entrySet() ) {
-            newClient.requestHeaders.put( entry.getKey(), entry.getValue() );
+        for (Entry<String, List<Object>> entry : this.requestHeaders.entrySet()) {
+            newClient.requestHeaders.put(entry.getKey(), entry.getValue());
         }
 
         newClient.requestParameters = new HashMap<String, List<String>>();
-        for( Entry<String, List<String>> requestParameterEntry : this.requestParameters.entrySet() ) {
-            newClient.requestParameters.put( requestParameterEntry.getKey(),
-                                             new ArrayList<String>( requestParameterEntry.getValue() ) );
+        for (Entry<String, List<String>> requestParameterEntry : this.requestParameters.entrySet()) {
+            newClient.requestParameters.put(requestParameterEntry.getKey(),
+                                            new ArrayList<String>(requestParameterEntry.getValue()));
         }
 
         newClient.requestMediaType = this.requestMediaType;
@@ -249,8 +249,8 @@ public class RestClient {
         newClient.clientConfigurator = this.clientConfigurator.newCopy();
 
         newClient.cookies = new ArrayList<Cookie>();
-        for( Cookie cookie : this.cookies ) {
-            newClient.cookies.add( cookie );
+        for (Cookie cookie : this.cookies) {
+            newClient.cookies.add(cookie);
         }
 
         newClient.supportedProtocols = this.supportedProtocols;
@@ -265,29 +265,29 @@ public class RestClient {
 
         ActionLibraryConfigurator actionLibraryConfigurator = ActionLibraryConfigurator.getInstance();
 
-        if( !actionLibraryConfigurator.getRestKeepResourcePath() ) {
+        if (!actionLibraryConfigurator.getRestKeepResourcePath()) {
             resourcePath.clear();
         }
-        if( !actionLibraryConfigurator.getRestKeepRequestHeaders() ) {
+        if (!actionLibraryConfigurator.getRestKeepRequestHeaders()) {
             requestHeaders.clear();
         }
-        if( !actionLibraryConfigurator.getRestKeepRequestParameters() ) {
+        if (!actionLibraryConfigurator.getRestKeepRequestParameters()) {
             requestParameters.clear();
         }
 
         // request media type
-        if( !actionLibraryConfigurator.getRestKeepRequestMediaType() ) {
-            requestMediaType = RestMediaType.checkValueIsValid( actionLibraryConfigurator.getRestDefaultRequestMediaType() );
+        if (!actionLibraryConfigurator.getRestKeepRequestMediaType()) {
+            requestMediaType = RestMediaType.checkValueIsValid(actionLibraryConfigurator.getRestDefaultRequestMediaType());
         }
-        if( !actionLibraryConfigurator.getRestKeepRequestMediaCharset() ) {
+        if (!actionLibraryConfigurator.getRestKeepRequestMediaCharset()) {
             requestMediaCharset = actionLibraryConfigurator.getRestDefaultRequestMediaCharset();
         }
 
         // response media type
-        if( !actionLibraryConfigurator.getRestKeepResponseMediaType() ) {
-            responseMediaType = RestMediaType.checkValueIsValid( actionLibraryConfigurator.getRestDefaultResponseMediaType() );
+        if (!actionLibraryConfigurator.getRestKeepResponseMediaType()) {
+            responseMediaType = RestMediaType.checkValueIsValid(actionLibraryConfigurator.getRestDefaultResponseMediaType());
         }
-        if( !actionLibraryConfigurator.getRestKeepResponseMediaCharset() ) {
+        if (!actionLibraryConfigurator.getRestKeepResponseMediaCharset()) {
             responseMediaCharset = actionLibraryConfigurator.getRestDefaultResponseMediaCharset();
         }
     }
@@ -370,16 +370,16 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addResourcePath( String... resourcePathArray ) {
 
-        if( resourcePathArray != null ) {
-            for( String resourcePathToken : resourcePathArray ) {
-                for( String token : resourcePathToken.split( "/" ) ) {
-                    if( token.length() > 0 ) {
-                        this.resourcePath.add( token );
+        if (resourcePathArray != null) {
+            for (String resourcePathToken : resourcePathArray) {
+                for (String token : resourcePathToken.split("/")) {
+                    if (token.length() > 0) {
+                        this.resourcePath.add(token);
                     }
                 }
             }
         } else {
-            log.warn( "Null provided as resource path to add. Skipped" );
+            log.warn("Null provided as resource path to add. Skipped");
         }
 
         return this;
@@ -396,15 +396,15 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestHeader( String name, String value ) {
 
-        if( hasHeader( name ) ) {
-            List<Object> values = new ArrayList<>( requestHeaders.get( name ) );
-            values.add( value );
-            requestHeaders.replace( name, values );
+        if (hasHeader(name)) {
+            List<Object> values = new ArrayList<>(requestHeaders.get(name));
+            values.add(value);
+            requestHeaders.replace(name, values);
 
         } else {
             List<Object> values = new ArrayList<>();
-            values.add( value );
-            requestHeaders.put( name, values );
+            values.add(value);
+            requestHeaders.put(name, values);
         }
 
         return this;
@@ -421,15 +421,15 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestHeader( String name, int value ) {
 
-        if( hasHeader( name ) ) {
-            List<Object> values = new ArrayList<>( requestHeaders.get( name ) );
-            values.add( value );
-            requestHeaders.replace( name, values );
+        if (hasHeader(name)) {
+            List<Object> values = new ArrayList<>(requestHeaders.get(name));
+            values.add(value);
+            requestHeaders.replace(name, values);
 
         } else {
             List<Object> values = new ArrayList<>();
-            values.add( value );
-            requestHeaders.put( name, values );
+            values.add(value);
+            requestHeaders.put(name, values);
         }
 
         return this;
@@ -446,15 +446,15 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestHeader( String name, long value ) {
 
-        if( hasHeader( name ) ) {
-            List<Object> values = new ArrayList<>( requestHeaders.get( name ) );
-            values.add( value );
-            requestHeaders.replace( name, values );
+        if (hasHeader(name)) {
+            List<Object> values = new ArrayList<>(requestHeaders.get(name));
+            values.add(value);
+            requestHeaders.replace(name, values);
 
         } else {
             List<Object> values = new ArrayList<>();
-            values.add( value );
-            requestHeaders.put( name, values );
+            values.add(value);
+            requestHeaders.put(name, values);
         }
 
         return this;
@@ -474,17 +474,17 @@ public class RestClient {
 
         Iterator<String> keys = this.requestHeaders.keySet().iterator();
 
-        while( keys.hasNext() ) {
+        while (keys.hasNext()) {
             String key = keys.next();
-            if( key.equalsIgnoreCase( name ) ) {
+            if (key.equalsIgnoreCase(name)) {
                 keys.remove();
                 atLeastOneHeaderFound = true;
             }
         }
 
-        if( !atLeastOneHeaderFound ) {
-            log.warn( "Header with name '" + name
-                      + "' will not be removed since it was not found in request headers." );
+        if (!atLeastOneHeaderFound) {
+            log.warn("Header with name '" + name
+                     + "' will not be removed since it was not found in request headers.");
         }
 
         return this;
@@ -502,10 +502,10 @@ public class RestClient {
 
         Iterator<String> keys = this.requestHeaders.keySet().iterator();
 
-        while( keys.hasNext() ) {
+        while (keys.hasNext()) {
             String key = keys.next();
-            for( String name : names ) {
-                if( key.equalsIgnoreCase( name ) ) {
+            for (String name : names) {
+                if (key.equalsIgnoreCase(name)) {
                     keys.remove();
                 }
             }
@@ -531,11 +531,11 @@ public class RestClient {
 
         List<String> valuesList = new ArrayList<String>();
 
-        for( String value : values ) {
-            valuesList.add( value );
+        for (String value : values) {
+            valuesList.add(value);
         }
 
-        requestParameters.put( name, valuesList );
+        requestParameters.put(name, valuesList);
 
         return this;
     }
@@ -554,7 +554,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestParameter( String name, List<String> values ) {
 
-        requestParameters.put( name, values );
+        requestParameters.put(name, values);
 
         return this;
     }
@@ -572,8 +572,8 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addRequestParameters( Map<String, List<String>> requestParameters ) {
 
-        for( Entry<String, List<String>> valueEntry : requestParameters.entrySet() ) {
-            this.requestParameters.put( valueEntry.getKey(), valueEntry.getValue() );
+        for (Entry<String, List<String>> valueEntry : requestParameters.entrySet()) {
+            this.requestParameters.put(valueEntry.getKey(), valueEntry.getValue());
         }
 
         return this;
@@ -591,16 +591,16 @@ public class RestClient {
 
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
-        while( keys.hasNext() ) {
+        while (keys.hasNext()) {
             String key = keys.next();
-            if( key.equals( name ) ) {
+            if (key.equals(name)) {
                 keys.remove();
                 return this;
             }
         }
 
-        log.warn( "Parameter with name '" + name
-                  + "' will not be removed since it was not found in request parameters." );
+        log.warn("Parameter with name '" + name
+                 + "' will not be removed since it was not found in request parameters.");
 
         return this;
 
@@ -618,10 +618,10 @@ public class RestClient {
 
         Iterator<String> keys = this.requestParameters.keySet().iterator();
 
-        while( keys.hasNext() ) {
+        while (keys.hasNext()) {
             String key = keys.next();
-            for( String name : names ) {
-                if( key.equals( name ) ) {
+            for (String name : names) {
+                if (key.equals(name)) {
                     keys.remove();
                 }
             }
@@ -640,7 +640,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient addCookie( Cookie cookie ) {
 
-        this.cookies.add( cookie );
+        this.cookies.add(cookie);
 
         return this;
     }
@@ -669,7 +669,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient setRequestMediaType( String mediaType ) {
 
-        this.requestMediaType = RestMediaType.checkValueIsValid( mediaType );
+        this.requestMediaType = RestMediaType.checkValueIsValid(mediaType);
 
         return this;
     }
@@ -687,7 +687,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient setRequestMediaType( String mediaType, String mediaCharset ) {
 
-        this.requestMediaType = RestMediaType.checkValueIsValid( mediaType );
+        this.requestMediaType = RestMediaType.checkValueIsValid(mediaType);
         this.requestMediaCharset = mediaCharset;
 
         return this;
@@ -704,7 +704,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient setResponseMediaType( String mediaType ) {
 
-        this.responseMediaType = RestMediaType.checkValueIsValid( mediaType );
+        this.responseMediaType = RestMediaType.checkValueIsValid(mediaType);
 
         return this;
     }
@@ -721,7 +721,7 @@ public class RestClient {
     @PublicAtsApi
     public RestClient setResponseMediaType( String mediaType, String mediaCharset ) {
 
-        this.responseMediaType = RestMediaType.checkValueIsValid( mediaType );
+        this.responseMediaType = RestMediaType.checkValueIsValid(mediaType);
         this.responseMediaCharset = mediaCharset;
 
         return this;
@@ -736,7 +736,7 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse execute( String httpMethod ) {
 
-        return execute( httpMethod, null );
+        return execute(httpMethod, null);
     }
 
     /**
@@ -750,25 +750,25 @@ public class RestClient {
     public RestResponse execute( String httpMethod, Object bodyContent ) {
 
         // execute HTTP method
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "execute " + httpMethod
-                                                                           + " against" );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("execute " + httpMethod
+                                                                          + " against");
         RestResponse response;
-        if( bodyContent != null ) {
-            if( ( "put".equalsIgnoreCase( httpMethod ) || "post".equalsIgnoreCase( httpMethod ) )
-                && StringUtils.isNullOrEmpty( requestMediaType ) ) {
-                throw new RestException( "Content type is not set! Content type is mandatory for PUT and POST." );
+        if (bodyContent != null) {
+            if ( ("put".equalsIgnoreCase(httpMethod) || "post".equalsIgnoreCase(httpMethod))
+                 && StringUtils.isNullOrEmpty(requestMediaType)) {
+                throw new RestException("Content type is not set! Content type is mandatory for PUT and POST.");
             }
 
-            response = new RestResponse( invocationBuilder.method( httpMethod,
-                                                                   Entity.entity( getActualBodyObject( bodyContent ),
-                                                                                  RestMediaType.toMediaType( requestMediaType,
-                                                                                                             requestMediaCharset ) ),
-                                                                   Response.class ) );
+            response = new RestResponse(invocationBuilder.method(httpMethod,
+                                                                 Entity.entity(getActualBodyObject(bodyContent),
+                                                                               RestMediaType.toMediaType(requestMediaType,
+                                                                                                         requestMediaCharset)),
+                                                                 Response.class));
         } else {
-            response = new RestResponse( invocationBuilder.method( httpMethod, Response.class ) );
+            response = new RestResponse(invocationBuilder.method(httpMethod, Response.class));
         }
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -784,10 +784,10 @@ public class RestClient {
     public RestResponse get() {
 
         // execute GET
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "GET from" );
-        RestResponse response = new RestResponse( invocationBuilder.get() );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("GET from");
+        RestResponse response = new RestResponse(invocationBuilder.get());
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -804,22 +804,22 @@ public class RestClient {
     public RestResponse postObject( Object object ) {
 
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "POST object to" );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST object to");
         RestResponse response;
-        if( object != null ) {
-            if( StringUtils.isNullOrEmpty( requestMediaType ) ) {
-                throw new RestException( "Content type is not set! Content type is mandatory for POST." );
+        if (object != null) {
+            if (StringUtils.isNullOrEmpty(requestMediaType)) {
+                throw new RestException("Content type is not set! Content type is mandatory for POST.");
             }
-            response = new RestResponse( invocationBuilder.method( "POST",
-                                                                   Entity.entity( getActualBodyObject( object ),
-                                                                                  RestMediaType.toMediaType( requestMediaType,
-                                                                                                             requestMediaCharset ) ),
-                                                                   Response.class ) );
+            response = new RestResponse(invocationBuilder.method("POST",
+                                                                 Entity.entity(getActualBodyObject(object),
+                                                                               RestMediaType.toMediaType(requestMediaType,
+                                                                                                         requestMediaCharset)),
+                                                                 Response.class));
         } else {
-            response = new RestResponse( invocationBuilder.method( "POST", Response.class ) );
+            response = new RestResponse(invocationBuilder.method("POST", Response.class));
         }
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -836,11 +836,11 @@ public class RestClient {
     public RestResponse postForm( RestForm restForm ) {
 
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "POST form to" );
-        RestResponse response = new RestResponse( invocationBuilder.post( Entity.entity( restForm.getForm(),
-                                                                                         MediaType.APPLICATION_FORM_URLENCODED_TYPE ) ) );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST form to");
+        RestResponse response = new RestResponse(invocationBuilder.post(Entity.entity(restForm.getForm(),
+                                                                                      MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -857,22 +857,22 @@ public class RestClient {
     public RestResponse putObject( Object object ) {
 
         // execute PUT
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT object to" );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to");
         RestResponse response;
-        if( object != null ) {
-            if( StringUtils.isNullOrEmpty( requestMediaType ) ) {
-                throw new RestException( "Content type is not set! Content type is mandatory for PUT." );
+        if (object != null) {
+            if (StringUtils.isNullOrEmpty(requestMediaType)) {
+                throw new RestException("Content type is not set! Content type is mandatory for PUT.");
             }
-            response = new RestResponse( invocationBuilder.method( "PUT",
-                                                                   Entity.entity( getActualBodyObject( object ),
-                                                                                  RestMediaType.toMediaType( requestMediaType,
-                                                                                                             requestMediaCharset ) ),
-                                                                   Response.class ) );
+            response = new RestResponse(invocationBuilder.method("PUT",
+                                                                 Entity.entity(getActualBodyObject(object),
+                                                                               RestMediaType.toMediaType(requestMediaType,
+                                                                                                         requestMediaCharset)),
+                                                                 Response.class));
         } else {
-            response = new RestResponse( invocationBuilder.method( "PUT", Response.class ) );
+            response = new RestResponse(invocationBuilder.method("PUT", Response.class));
         }
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -889,11 +889,11 @@ public class RestClient {
     public RestResponse putForm( RestForm restForm ) {
 
         // execute PUT
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to" );
-        RestResponse response = new RestResponse( invocationBuilder.put( Entity.entity( restForm.getForm(),
-                                                                                        MediaType.APPLICATION_FORM_URLENCODED_TYPE ) ) );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT form to");
+        RestResponse response = new RestResponse(invocationBuilder.put(Entity.entity(restForm.getForm(),
+                                                                                     MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -909,10 +909,10 @@ public class RestClient {
     public RestResponse delete() {
 
         // execute DELETE
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "DELETE from" );
-        RestResponse response = new RestResponse( invocationBuilder.delete() );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("DELETE from");
+        RestResponse response = new RestResponse(invocationBuilder.delete());
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -921,13 +921,13 @@ public class RestClient {
 
     private Object getActualBodyObject( Object bodyContent ) {
 
-        if( bodyContent != null ) {
-            if( bodyContent instanceof RestForm ) {
-                return ( ( RestForm ) bodyContent ).getForm();
-            } else if( bodyContent instanceof JsonText ) {
-                return ( ( JsonText ) bodyContent ).toString();
-            } else if( bodyContent instanceof XmlText ) {
-                return ( ( XmlText ) bodyContent ).toString();
+        if (bodyContent != null) {
+            if (bodyContent instanceof RestForm) {
+                return ((RestForm) bodyContent).getForm();
+            } else if (bodyContent instanceof JsonText) {
+                return ((JsonText) bodyContent).toString();
+            } else if (bodyContent instanceof XmlText) {
+                return ((XmlText) bodyContent).toString();
             }
         }
 
@@ -964,116 +964,116 @@ public class RestClient {
     public void setVerboseMode( int level ) {
 
         debugLevel = level;
-        if( debugLevel != RESTDebugLevel.NONE && debugLevel != RESTDebugLevel.TARGET_URI ) {
+        if (debugLevel != RESTDebugLevel.NONE && debugLevel != RESTDebugLevel.TARGET_URI) {
             requestFilterNeedsRegistration = true;
         }
     }
 
     private Invocation.Builder constructInvocationBuilder( String descriptionToken ) {
 
-        if( StringUtils.isNullOrEmpty( this.uri ) ) {
-            throw new IllegalArgumentException( "Null or empty target URI. Please specify a valid one" );
+        if (StringUtils.isNullOrEmpty(this.uri)) {
+            throw new IllegalArgumentException("Null or empty target URI. Please specify a valid one");
         }
 
         URL url;
         try {
-            url = new URL( this.uri );
-        } catch( MalformedURLException e ) {
-            throw new IllegalArgumentException( "Please specify a valid URI. You have provided '" + this.uri
-                                                + "'" );
+            url = new URL(this.uri);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Please specify a valid URI. You have provided '" + this.uri
+                                               + "'");
         }
 
         // remember these client id keys in order to work around a Jersey memory leak
         List<String> clientIdKeys = new ArrayList<String>();
 
-        clientIdKeys.add( "host_base_path=" + url.getProtocol() + "://" + url.getHost() + ":"
-                          + url.getPort() );
+        clientIdKeys.add("host_base_path=" + url.getProtocol() + "://" + url.getHost() + ":"
+                         + url.getPort());
 
         // create the client builder
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
 
-        if( this.uri.startsWith( "https" ) ) {
+        if (this.uri.startsWith("https")) {
             // configure Trust-all SSL context
 
-            SSLContext sslContext = SslUtils.getSSLContext( clientConfigurator.getCertificateFileName(),
-                                                            clientConfigurator.getCertificateFilePassword(),
-                                                            supportedProtocols[0] );
+            SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
+                                                           clientConfigurator.getCertificateFilePassword(),
+                                                           supportedProtocols[0]);
 
-            clientBuilder = clientBuilder.sslContext( sslContext )
-                                         .hostnameVerifier( new SslUtils.DefaultHostnameVerifier() );
-            clientIdKeys.add( "cert_file=" + clientConfigurator.getCertificateFileName() );
+            clientBuilder = clientBuilder.sslContext(sslContext)
+                                         .hostnameVerifier(new SslUtils.DefaultHostnameVerifier());
+            clientIdKeys.add("cert_file=" + clientConfigurator.getCertificateFileName());
         }
 
         // attach any configuration providers instances or classes
         // (e.g. features or individual entity providers, filters or interceptors)
-        for( Object provider : clientConfigurator.getProviders() ) {
-            clientBuilder.register( provider );
-            clientIdKeys.add( provider.getClass().getName() );
+        for (Object provider : clientConfigurator.getProviders()) {
+            clientBuilder.register(provider);
+            clientIdKeys.add(provider.getClass().getName());
         }
-        for( Class<?> providerClass : clientConfigurator.getProviderClasses() ) {
-            clientBuilder.register( providerClass );
-            clientIdKeys.add( providerClass.getName() );
+        for (Class<?> providerClass : clientConfigurator.getProviderClasses()) {
+            clientBuilder.register(providerClass);
+            clientIdKeys.add(providerClass.getName());
         }
 
         // attach any configuration properties
         Map<String, Object> properties = clientConfigurator.getProperties();
-        for( Entry<String, Object> propertyEntry : properties.entrySet() ) {
-            clientBuilder.property( propertyEntry.getKey(), propertyEntry.getValue() );
-            clientIdKeys.add( propertyEntry.getKey() + "=" + propertyEntry.getValue() );
+        for (Entry<String, Object> propertyEntry : properties.entrySet()) {
+            clientBuilder.property(propertyEntry.getKey(), propertyEntry.getValue());
+            clientIdKeys.add(propertyEntry.getKey() + "=" + propertyEntry.getValue());
         }
 
         // basic authorization
-        if( username != null ) {
-            clientIdKeys.add( "user=" + username );
-            clientIdKeys.add( "password=" + password );
-            clientBuilder.register( HttpAuthenticationFeature.basic( username, password ) );
+        if (username != null) {
+            clientIdKeys.add("user=" + username);
+            clientIdKeys.add("password=" + password);
+            clientBuilder.register(HttpAuthenticationFeature.basic(username, password));
         }
 
         // now create the client
-        client = getClient( clientIdKeys, clientBuilder );
-        if( requestFilterNeedsRegistration && !requestFilterAlreadyRegistered ) {
+        client = getClient(clientIdKeys, clientBuilder);
+        if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
-            client.register( requestFilter );
+            client.register(requestFilter);
             requestFilterNeedsRegistration = false;
             requestFilterAlreadyRegistered = true;
         }
 
-        WebTarget webTarget = client.target( this.uri );
+        WebTarget webTarget = client.target(this.uri);
 
         // navigate to internal resource
-        for( String token : resourcePath ) {
-            webTarget = webTarget.path( token );
+        for (String token : resourcePath) {
+            webTarget = webTarget.path(token);
         }
 
         // add request parameters
-        for( Entry<String, List<String>> requestParamEntry : requestParameters.entrySet() ) {
-            for( String requestParamValue : requestParamEntry.getValue() ) {
-                webTarget = webTarget.queryParam( requestParamEntry.getKey(), requestParamValue );
+        for (Entry<String, List<String>> requestParamEntry : requestParameters.entrySet()) {
+            for (String requestParamValue : requestParamEntry.getValue()) {
+                webTarget = webTarget.queryParam(requestParamEntry.getKey(), requestParamValue);
             }
         }
-        if( ( debugLevel & RESTDebugLevel.TARGET_URI ) == RESTDebugLevel.TARGET_URI ) {
-            log.info( "We will " + descriptionToken + " " + webTarget.getUri() );
+        if ( (debugLevel & RESTDebugLevel.TARGET_URI) == RESTDebugLevel.TARGET_URI) {
+            log.info("We will " + descriptionToken + " " + webTarget.getUri());
         }
 
         Invocation.Builder invocationBuilder = webTarget.request();
 
         // set response media type
-        if( !StringUtils.isNullOrEmpty( responseMediaType ) ) {
-            invocationBuilder = invocationBuilder.accept( RestMediaType.toMediaType( responseMediaType,
-                                                                                     responseMediaCharset ) );
+        if (!StringUtils.isNullOrEmpty(responseMediaType)) {
+            invocationBuilder = invocationBuilder.accept(RestMediaType.toMediaType(responseMediaType,
+                                                                                   responseMediaCharset));
         }
 
         // add request headers
-        for( Entry<String, List<Object>> requestHeaderEntry : requestHeaders.entrySet() ) {
+        for (Entry<String, List<Object>> requestHeaderEntry : requestHeaders.entrySet()) {
             List<Object> headerValues = requestHeaderEntry.getValue();
-            for ( Object headerValue : headerValues ) {
-                invocationBuilder.header( requestHeaderEntry.getKey(), headerValue );
+            for (Object headerValue : headerValues) {
+                invocationBuilder.header(requestHeaderEntry.getKey(), headerValue);
             }
         }
 
         // add request cookies
-        for( Cookie cookie : cookies ) {
-            invocationBuilder.cookie( cookie );
+        for (Cookie cookie : cookies) {
+            invocationBuilder.cookie(cookie);
         }
 
         return invocationBuilder;
@@ -1082,48 +1082,48 @@ public class RestClient {
     private Client getClient( List<String> clientIdKeys, ClientBuilder newClientBuilder ) {
 
         // sort so can get same key for same inputs
-        Collections.sort( clientIdKeys );
+        Collections.sort(clientIdKeys);
         finalClientIdKey = clientIdKeys.toString();
 
-        Client client = clients.get( finalClientIdKey );
-        if( client == null ) {
+        Client client = clients.get(finalClientIdKey);
+        if (client == null) {
             // no appropriate client, create one
             client = newClientBuilder.build();
-            clients.put( finalClientIdKey, client );
+            clients.put(finalClientIdKey, client);
         }
         return client;
     }
 
     private void logRESTResponse( RestResponse response ) {
 
-        if( debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI ) {
+        if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI) {
             return;
         }
 
         StringBuilder responseMessage = new StringBuilder();
-        responseMessage.append( "Receiving the following response: \n" );
-        if( ( debugLevel & RESTDebugLevel.HEADERS ) == RESTDebugLevel.HEADERS ) {
+        responseMessage.append("Receiving the following response: \n");
+        if ( (debugLevel & RESTDebugLevel.HEADERS) == RESTDebugLevel.HEADERS) {
 
-            for( RestHeader headerName : response.getHeaders() ) {
-                responseMessage.append( headerName.getKey() + ": " + headerName.getValue() + "\n" );
+            for (RestHeader headerName : response.getHeaders()) {
+                responseMessage.append(headerName.getKey() + ": " + headerName.getValue() + "\n");
             }
         }
-        if( ( debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY
-            && response.getContentLength() != -1 ) {
+        if ( (debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY
+             && response.getContentLength() != -1) {
             //log response body
-            if( response.getContentLength() <= RestResponse.MAX_RESPONSE_SIZE ) {
-                responseMessage.append( "Body: " + response.getBodyAsString() + "\n" );
+            if (response.getContentLength() <= RestResponse.MAX_RESPONSE_SIZE) {
+                responseMessage.append("Body: " + response.getBodyAsString() + "\n");
             } else {
                 // if the content-length is greater than RESTResponse.MAX_RESPONSE_SIZE, truncate the response's body
-                responseMessage.append( "Body: "
-                                        + response.getBodyAsString().substring( 0,
-                                                                                RestResponse.MAX_RESPONSE_SIZE )
-                                        + "... [Response body truncated.]" + "\n" );
+                responseMessage.append("Body: "
+                                       + response.getBodyAsString().substring(0,
+                                                                              RestResponse.MAX_RESPONSE_SIZE)
+                                       + "... [Response body truncated.]" + "\n");
             }
         }
-        if( responseMessage.length() > 0 ) {
-            responseMessage.delete( responseMessage.length() - 1, responseMessage.length() );
-            log.info( responseMessage );
+        if (responseMessage.length() > 0) {
+            responseMessage.delete(responseMessage.length() - 1, responseMessage.length());
+            log.info(responseMessage);
         }
     }
 
@@ -1134,45 +1134,45 @@ public class RestClient {
     */
     private boolean hasHeader( String name ) {
 
-        if( StringUtils.isNullOrEmpty( name ) ) {
-            throw new RestException( "Error while adding request header. Header name/key is null or empty." );
+        if (StringUtils.isNullOrEmpty(name)) {
+            throw new RestException("Error while adding request header. Header name/key is null or empty.");
         }
 
-        return requestHeaders.containsKey( name );
+        return requestHeaders.containsKey(name);
     }
 
     private class RequestFilter implements ClientRequestFilter {
 
-        private Logger log = Logger.getLogger( RestClient.class );
+        private Logger log = Logger.getLogger(RestClient.class);
 
         @Override
         public void filter( ClientRequestContext context ) throws IOException {
 
-            if( debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI ) {
+            if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI) {
                 return;
             }
 
             MultivaluedMap<String, Object> reqHeaders = context.getHeaders();
             StringBuilder requestMessage = new StringBuilder();
-            requestMessage.append( "Sending the following request: \n" );
-            if( ( debugLevel & RESTDebugLevel.HEADERS ) == RESTDebugLevel.HEADERS ) {
-                requestMessage.append( context.getMethod() + " " + context.getUri() + " \n" );
+            requestMessage.append("Sending the following request: \n");
+            if ( (debugLevel & RESTDebugLevel.HEADERS) == RESTDebugLevel.HEADERS) {
+                requestMessage.append(context.getMethod() + " " + context.getUri() + " \n");
 
-                for( Entry<String, List<Object>> reqHeaderEntry : reqHeaders.entrySet() ) {
-                    requestMessage.append( reqHeaderEntry.getKey() + ": "
-                                           + Arrays.toString( reqHeaderEntry.getValue().toArray() ) + " \n" );
+                for (Entry<String, List<Object>> reqHeaderEntry : reqHeaders.entrySet()) {
+                    requestMessage.append(reqHeaderEntry.getKey() + ": "
+                                          + Arrays.toString(reqHeaderEntry.getValue().toArray()) + " \n");
                 }
             }
-            if( ( debugLevel & RESTDebugLevel.BODY ) == RESTDebugLevel.BODY && context.hasEntity() ) {
+            if ( (debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY && context.hasEntity()) {
                 //log request body
                 Object entity = context.getEntity();
-                if( entity instanceof Form ) {
-                    requestMessage.append( "Body: " + ( ( Form ) entity ).asMap() );
+                if (entity instanceof Form) {
+                    requestMessage.append("Body: " + ((Form) entity).asMap());
                 } else {
-                    requestMessage.append( "Body: " + entity.toString() );
+                    requestMessage.append("Body: " + entity.toString());
                 }
             }
-            log.info( requestMessage );
+            log.info(requestMessage);
         }
 
     }

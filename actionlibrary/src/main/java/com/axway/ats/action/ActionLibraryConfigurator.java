@@ -28,64 +28,64 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class ActionLibraryConfigurator extends AbstractConfigurator {
 
-    private static final String              PROPERTIES_FILE_NAME                       = "/ats.actionlibrary.properties";
+    private static final String              PROPERTIES_FILE_NAME                         = "/ats.actionlibrary.properties";
 
     //the configuration keys
-    private static final String              PACKAGE_LOADER_DEFAULT_BOX_KEY             = "actionlibrary.packageloader.defaultbox";
+    private static final String              PACKAGE_LOADER_DEFAULT_BOX_KEY               = "actionlibrary.packageloader.defaultbox";
 
-    private static final String              FILE_TRANSFER_VERBOSE_MODE                 = "actionlibrary.filetransfer.verbosemode";
-    private static final String              FILE_TRANSFER_CONNECTION_TIMEOUT           = "actionlibrary.filetransfer.connection.timeout";
-    private static final String              FILE_TRANSFER_CONNECTION_INTERVAL          = "actionlibrary.filetransfer.connection.interval";
-    private static final String              FILE_TRANSFER_CONNECTION_INITIAL_DELAY     = "actionlibrary.filetransfer.connection.initialdelay";
+    private static final String              FILE_TRANSFER_VERBOSE_MODE                   = "actionlibrary.filetransfer.verbosemode";
+    private static final String              FILE_TRANSFER_CONNECTION_TIMEOUT             = "actionlibrary.filetransfer.connection.timeout";
+    private static final String              FILE_TRANSFER_CONNECTION_INTERVAL            = "actionlibrary.filetransfer.connection.interval";
+    private static final String              FILE_TRANSFER_CONNECTION_INITIAL_DELAY       = "actionlibrary.filetransfer.connection.initialdelay";
 
-    private static final String              FILE_SYSTEM_COPY_FILE_START_PORT           = "actionlibrary.filesystem.copyfile.start.port";
-    private static final String              FILE_SYSTEM_COPY_FILE_END_PORT             = "actionlibrary.filesystem.copyfile.end.port";
+    private static final String              FILE_SYSTEM_COPY_FILE_START_PORT             = "actionlibrary.filesystem.copyfile.start.port";
+    private static final String              FILE_SYSTEM_COPY_FILE_END_PORT               = "actionlibrary.filesystem.copyfile.end.port";
 
-    private static final String              MAIL_HOST                                  = "actionlibrary.mail.host";
-    private static final String              MAIL_PORT                                  = "actionlibrary.mail.port";
-    private static final String              MAIL_TIMEOUT                               = "actionlibrary.mail.timeout";
-    private static final String              MAIL_LOCAL_ADDRESS                         = "actionlibrary.mail.localaddress";
+    private static final String              MAIL_HOST                                    = "actionlibrary.mail.host";
+    private static final String              MAIL_PORT                                    = "actionlibrary.mail.port";
+    private static final String              MAIL_TIMEOUT                                 = "actionlibrary.mail.timeout";
+    private static final String              MAIL_LOCAL_ADDRESS                           = "actionlibrary.mail.localaddress";
 
-    private static final String              MAIL_SESSION_DEBUG_MODE                    = "actionlibrary.mail.session.debug";
+    private static final String              MAIL_SESSION_DEBUG_MODE                      = "actionlibrary.mail.session.debug";
 
-    private static final String              MIMEPACKAGE_MAX_NESTED_LEVEL               = "actionlibrary.mimepackage.maxnestedlevel";
+    private static final String              MIMEPACKAGE_MAX_NESTED_LEVEL                 = "actionlibrary.mimepackage.maxnestedlevel";
 
-    private static final String              FILE_SNAPSHOT_CHECK_MODIFICATION_TIME      = "actionlibrary.filesnapshot.check.modificationtime";
-    private static final String              FILE_SNAPSHOT_CHECK_SIZE                   = "actionlibrary.filesnapshot.check.size";
-    private static final String              FILE_SNAPSHOT_CHECK_MD5                    = "actionlibrary.filesnapshot.check.md5";
-    private static final String              FILE_SNAPSHOT_CHECK_PERMISSIONS            = "actionlibrary.filesnapshot.check.permissions";
-    private static final String              FILE_SNAPSHOT_SUPPORT_HIDDEN               = "actionlibrary.filesnapshot.support.hidden";
+    private static final String              FILE_SNAPSHOT_CHECK_MODIFICATION_TIME        = "actionlibrary.filesnapshot.check.modificationtime";
+    private static final String              FILE_SNAPSHOT_CHECK_SIZE                     = "actionlibrary.filesnapshot.check.size";
+    private static final String              FILE_SNAPSHOT_CHECK_MD5                      = "actionlibrary.filesnapshot.check.md5";
+    private static final String              FILE_SNAPSHOT_CHECK_PERMISSIONS              = "actionlibrary.filesnapshot.check.permissions";
+    private static final String              FILE_SNAPSHOT_SUPPORT_HIDDEN                 = "actionlibrary.filesnapshot.support.hidden";
     private static final String              FILE_SNAPSHOT_CHECK_PROPERTIES_FILES_CONTENT = "actionlibrary.filesnapshot.check.properties.content";
-    private static final String              FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT      = "actionlibrary.filesnapshot.check.xml.content";
-    private static final String              FILE_SNAPSHOT_CHECK_INI_FILES_CONTENT      = "actionlibrary.filesnapshot.check.ini.content";
-    private static final String              FILE_SNAPSHOT_CHECK_TEXT_FILES_CONTENT     = "actionlibrary.filesnapshot.check.text.content";
-    private static final String              FILE_SNAPSHOT_INI_FILES_SECTION_START_CHAR = "actionlibrary.filesnapshot.ini.section.start.char";
-    private static final String              FILE_SNAPSHOT_INI_FILES_COMMENT_START_CHAR = "actionlibrary.filesnapshot.ini.comment.start.char";
-    private static final String              FILE_SNAPSHOT_INI_FILES_DELIMETER_CHAR     = "actionlibrary.filesnapshot.ini.delimeter.char";
-    private static final String              FILE_SNAPSHOT_XML_FILE_EXTENSIONS          = "actionlibrary.filesnapshot.xml.file.types";
-    private static final String              FILE_SNAPSHOT_PROPERTIES_FILE_EXTENSIONS   = "actionlibrary.filesnapshot.properties.file.types";
-    private static final String              FILE_SNAPSHOT_INI_FILE_EXTENSIONS          = "actionlibrary.filesnapshot.ini.file.types";
-    private static final String              FILE_SNAPSHOT_TEXT_FILE_EXTENSIONS         = "actionlibrary.filesnapshot.text.file.types";
+    private static final String              FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT        = "actionlibrary.filesnapshot.check.xml.content";
+    private static final String              FILE_SNAPSHOT_CHECK_INI_FILES_CONTENT        = "actionlibrary.filesnapshot.check.ini.content";
+    private static final String              FILE_SNAPSHOT_CHECK_TEXT_FILES_CONTENT       = "actionlibrary.filesnapshot.check.text.content";
+    private static final String              FILE_SNAPSHOT_INI_FILES_SECTION_START_CHAR   = "actionlibrary.filesnapshot.ini.section.start.char";
+    private static final String              FILE_SNAPSHOT_INI_FILES_COMMENT_START_CHAR   = "actionlibrary.filesnapshot.ini.comment.start.char";
+    private static final String              FILE_SNAPSHOT_INI_FILES_DELIMETER_CHAR       = "actionlibrary.filesnapshot.ini.delimeter.char";
+    private static final String              FILE_SNAPSHOT_XML_FILE_EXTENSIONS            = "actionlibrary.filesnapshot.xml.file.types";
+    private static final String              FILE_SNAPSHOT_PROPERTIES_FILE_EXTENSIONS     = "actionlibrary.filesnapshot.properties.file.types";
+    private static final String              FILE_SNAPSHOT_INI_FILE_EXTENSIONS            = "actionlibrary.filesnapshot.ini.file.types";
+    private static final String              FILE_SNAPSHOT_TEXT_FILE_EXTENSIONS           = "actionlibrary.filesnapshot.text.file.types";
 
-    private static final String              REST_DEFAULT_REQUEST_MEDIA_TYPE            = "actionlibrary.rest.default.request.media.type";
-    private static final String              REST_DEFAULT_REQUEST_MEDIA_CHARSET         = "actionlibrary.rest.default.request.media.charset";
-    private static final String              REST_DEFAULT_RESPONSE_MEDIA_TYPE           = "actionlibrary.rest.default.response.media.type";
-    private static final String              REST_DEFAULT_RESPONSE_MEDIA_CHARSET        = "actionlibrary.rest.default.response.media.charset";
+    private static final String              REST_DEFAULT_REQUEST_MEDIA_TYPE              = "actionlibrary.rest.default.request.media.type";
+    private static final String              REST_DEFAULT_REQUEST_MEDIA_CHARSET           = "actionlibrary.rest.default.request.media.charset";
+    private static final String              REST_DEFAULT_RESPONSE_MEDIA_TYPE             = "actionlibrary.rest.default.response.media.type";
+    private static final String              REST_DEFAULT_RESPONSE_MEDIA_CHARSET          = "actionlibrary.rest.default.response.media.charset";
 
-    private static final String              REST_KEEP_REQUEST_MEDIA_TYPE               = "actionlibrary.rest.keep.request.media.type";
-    private static final String              REST_KEEP_REQUEST_MEDIA_CHARSET            = "actionlibrary.rest.keep.request.media.charset";
-    private static final String              REST_KEEP_RESPONSE_MEDIA_TYPE              = "actionlibrary.rest.keep.response.media.type";
-    private static final String              REST_KEEP_RESPONSE_MEDIA_CHARSET           = "actionlibrary.rest.keep.response.media.charset";
-    private static final String              REST_KEEP_RESOURCE_PATH                    = "actionlibrary.rest.keep.response.resource.path";
-    private static final String              REST_KEEP_REQUEST_HEADERS                  = "actionlibrary.rest.keep.request.headers";
-    private static final String              REST_KEEP_REQUEST_PARAMETERS               = "actionlibrary.rest.keep.request.parameters";
+    private static final String              REST_KEEP_REQUEST_MEDIA_TYPE                 = "actionlibrary.rest.keep.request.media.type";
+    private static final String              REST_KEEP_REQUEST_MEDIA_CHARSET              = "actionlibrary.rest.keep.request.media.charset";
+    private static final String              REST_KEEP_RESPONSE_MEDIA_TYPE                = "actionlibrary.rest.keep.response.media.type";
+    private static final String              REST_KEEP_RESPONSE_MEDIA_CHARSET             = "actionlibrary.rest.keep.response.media.charset";
+    private static final String              REST_KEEP_RESOURCE_PATH                      = "actionlibrary.rest.keep.response.resource.path";
+    private static final String              REST_KEEP_REQUEST_HEADERS                    = "actionlibrary.rest.keep.request.headers";
+    private static final String              REST_KEEP_REQUEST_PARAMETERS                 = "actionlibrary.rest.keep.request.parameters";
 
-    private static final String              HTTP_KEEP_REQUEST_HEADERS                  = "actionlibrary.http.keep.request.headers";
-    private static final String              HTTP_KEEP_REQUEST_PARAMETERS               = "actionlibrary.http.keep.request.parameters";
-    private static final String              HTTP_KEEP_REQUEST_BODY                     = "actionlibrary.http.keep.request.body";
+    private static final String              HTTP_KEEP_REQUEST_HEADERS                    = "actionlibrary.http.keep.request.headers";
+    private static final String              HTTP_KEEP_REQUEST_PARAMETERS                 = "actionlibrary.http.keep.request.parameters";
+    private static final String              HTTP_KEEP_REQUEST_BODY                       = "actionlibrary.http.keep.request.body";
 
-    public FileSnapshots snapshots = new FileSnapshots();
-            
+    public FileSnapshots                     snapshots                                    = new FileSnapshots();
+
     /**
      * The singleton instance for this configurator
      */
@@ -96,14 +96,14 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         super();
 
         //add the resource to the repository
-        addConfigFileFromClassPath( configurationSource, true, false );
+        addConfigFileFromClassPath(configurationSource, true, false);
     }
 
     @PublicAtsApi
     public static synchronized ActionLibraryConfigurator getInstance() {
 
-        if( instance == null ) {
-            instance = new ActionLibraryConfigurator( PROPERTIES_FILE_NAME );
+        if (instance == null) {
+            instance = new ActionLibraryConfigurator(PROPERTIES_FILE_NAME);
         }
         instance.reloadData();
 
@@ -118,7 +118,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getDefaultMessagesBox() {
 
-        return getProperty( PACKAGE_LOADER_DEFAULT_BOX_KEY );
+        return getProperty(PACKAGE_LOADER_DEFAULT_BOX_KEY);
     }
 
     /**
@@ -130,7 +130,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setDefaultMessagesBox(
                                        String defaultMessageBox ) {
 
-        setTempProperty( PACKAGE_LOADER_DEFAULT_BOX_KEY, defaultMessageBox );
+        setTempProperty(PACKAGE_LOADER_DEFAULT_BOX_KEY, defaultMessageBox);
     }
 
     /**
@@ -141,7 +141,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getFileTransferVerboseMode() {
 
-        return getBooleanProperty( FILE_TRANSFER_VERBOSE_MODE );
+        return getBooleanProperty(FILE_TRANSFER_VERBOSE_MODE);
     }
 
     /**
@@ -153,7 +153,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferVerboseMode(
                                             boolean verboseMode ) {
 
-        setTempProperty( FILE_TRANSFER_VERBOSE_MODE, Boolean.toString( verboseMode ) );
+        setTempProperty(FILE_TRANSFER_VERBOSE_MODE, Boolean.toString(verboseMode));
     }
 
     /**
@@ -164,7 +164,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getFileTransferConnectionTimeout() {
 
-        return getLongProperty( FILE_TRANSFER_CONNECTION_TIMEOUT );
+        return getLongProperty(FILE_TRANSFER_CONNECTION_TIMEOUT);
     }
 
     /**
@@ -176,7 +176,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferConnectionTimeout(
                                                   long timeout ) {
 
-        setTempProperty( FILE_TRANSFER_CONNECTION_TIMEOUT, Long.toString( timeout ) );
+        setTempProperty(FILE_TRANSFER_CONNECTION_TIMEOUT, Long.toString(timeout));
     }
 
     /**
@@ -188,7 +188,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferConnectionInterval(
                                                    long interval ) {
 
-        setTempProperty( FILE_TRANSFER_CONNECTION_INTERVAL, Long.toString( interval ) );
+        setTempProperty(FILE_TRANSFER_CONNECTION_INTERVAL, Long.toString(interval));
     }
 
     /**
@@ -199,7 +199,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getFileTransferConnectionInterval() {
 
-        return getLongProperty( FILE_TRANSFER_CONNECTION_INTERVAL );
+        return getLongProperty(FILE_TRANSFER_CONNECTION_INTERVAL);
     }
 
     /**
@@ -211,7 +211,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferConnectionInitialDelay(
                                                        long delay ) {
 
-        setTempProperty( FILE_TRANSFER_CONNECTION_INITIAL_DELAY, Long.toString( delay ) );
+        setTempProperty(FILE_TRANSFER_CONNECTION_INITIAL_DELAY, Long.toString(delay));
     }
 
     /**
@@ -222,9 +222,9 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getFileTransferConnectionInitialDelay() {
 
-        return getLongProperty( FILE_TRANSFER_CONNECTION_INITIAL_DELAY );
+        return getLongProperty(FILE_TRANSFER_CONNECTION_INITIAL_DELAY);
     }
-    
+
     /**
      * Set the default HTTPS encryption protocols, for example "TLSv1.2".
      * You can specify more than one by using ',' as a delimiter
@@ -235,7 +235,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferDefaultHttpsEncryptionProtocols(
                                                                 String protocols ) {
 
-        CoreLibraryConfigurator.getInstance().setFileTransferDefaultHttpsEncryptionProtocols( protocols );
+        CoreLibraryConfigurator.getInstance().setFileTransferDefaultHttpsEncryptionProtocols(protocols);
     }
 
     /**
@@ -259,7 +259,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setFileTransferDefaultHttpsCipherSuites(
                                                          String cipherSuites ) {
 
-        CoreLibraryConfigurator.getInstance().setFileTransferDefaultHttpsCipherSuites( cipherSuites );
+        CoreLibraryConfigurator.getInstance().setFileTransferDefaultHttpsCipherSuites(cipherSuites);
     }
 
     /**
@@ -283,7 +283,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setCopyFileStartPort(
                                       int startPort ) {
 
-        setTempProperty( FILE_SYSTEM_COPY_FILE_START_PORT, Integer.toString( startPort ) );
+        setTempProperty(FILE_SYSTEM_COPY_FILE_START_PORT, Integer.toString(startPort));
     }
 
     /**
@@ -294,7 +294,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getCopyFileStartPort() {
 
-        return getProperty( FILE_SYSTEM_COPY_FILE_START_PORT );
+        return getProperty(FILE_SYSTEM_COPY_FILE_START_PORT);
     }
 
     /**
@@ -307,7 +307,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setCopyFileEndPort(
                                     int endPort ) {
 
-        setTempProperty( FILE_SYSTEM_COPY_FILE_END_PORT, Integer.toString( endPort ) );
+        setTempProperty(FILE_SYSTEM_COPY_FILE_END_PORT, Integer.toString(endPort));
     }
 
     /**
@@ -318,7 +318,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getCopyFileEndPort() {
 
-        return getProperty( FILE_SYSTEM_COPY_FILE_END_PORT );
+        return getProperty(FILE_SYSTEM_COPY_FILE_END_PORT);
     }
 
     /**
@@ -330,7 +330,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setMailHost(
                              String mailHost ) {
 
-        setTempProperty( MAIL_HOST, mailHost );
+        setTempProperty(MAIL_HOST, mailHost);
     }
 
     /**
@@ -341,7 +341,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getMailHost() {
 
-        return getProperty( MAIL_HOST );
+        return getProperty(MAIL_HOST);
     }
 
     /**
@@ -353,7 +353,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setMailPort(
                              long mailPort ) {
 
-        setTempProperty( MAIL_PORT, Long.toString( mailPort ) );
+        setTempProperty(MAIL_PORT, Long.toString(mailPort));
     }
 
     /**
@@ -364,7 +364,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getMailPort() {
 
-        return getLongProperty( MAIL_PORT );
+        return getLongProperty(MAIL_PORT);
     }
 
     /**
@@ -377,7 +377,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setMailTimeout(
                                 long mailTimeout ) {
 
-        setTempProperty( MAIL_TIMEOUT, Long.toString( mailTimeout ) );
+        setTempProperty(MAIL_TIMEOUT, Long.toString(mailTimeout));
     }
 
     /**
@@ -391,7 +391,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setMailLocalAddress(
                                      String localAddress ) {
 
-        setTempProperty( MAIL_LOCAL_ADDRESS, localAddress );
+        setTempProperty(MAIL_LOCAL_ADDRESS, localAddress);
     }
 
     /**
@@ -401,7 +401,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public String getMailLocalAddress() {
 
-        return getProperty( MAIL_LOCAL_ADDRESS );
+        return getProperty(MAIL_LOCAL_ADDRESS);
     }
 
     /**
@@ -413,7 +413,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public long getMailTimeout() {
 
-        return getLongProperty( MAIL_TIMEOUT );
+        return getLongProperty(MAIL_TIMEOUT);
     }
 
     /**
@@ -425,7 +425,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setMailSessionDebugMode(
                                          boolean debugMode ) {
 
-        setTempProperty( MAIL_SESSION_DEBUG_MODE, Boolean.toString( debugMode ) );
+        setTempProperty(MAIL_SESSION_DEBUG_MODE, Boolean.toString(debugMode));
     }
 
     /**
@@ -436,7 +436,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public boolean getMailSessionDebugMode() {
 
-        return getBooleanProperty( MAIL_SESSION_DEBUG_MODE );
+        return getBooleanProperty(MAIL_SESSION_DEBUG_MODE);
     }
 
     /**
@@ -447,7 +447,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     @PublicAtsApi
     public int getMimePackageMaxNestedLevel() {
 
-        return getIntegerProperty( MIMEPACKAGE_MAX_NESTED_LEVEL );
+        return getIntegerProperty(MIMEPACKAGE_MAX_NESTED_LEVEL);
     }
 
     /**
@@ -459,189 +459,189 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     public void setMimePackageMaxNestedLevel(
                                               int maxNestedLevel ) {
 
-        setTempProperty( MIMEPACKAGE_MAX_NESTED_LEVEL, Integer.toString( maxNestedLevel ) );
+        setTempProperty(MIMEPACKAGE_MAX_NESTED_LEVEL, Integer.toString(maxNestedLevel));
     }
 
     @PublicAtsApi
     public String getRestDefaultRequestMediaType() {
 
-        return getProperty( REST_DEFAULT_REQUEST_MEDIA_TYPE );
+        return getProperty(REST_DEFAULT_REQUEST_MEDIA_TYPE);
     }
 
     @PublicAtsApi
     public void setRestDefaultRequestMediaType(
                                                 String mediaType ) {
 
-        setTempProperty( REST_DEFAULT_REQUEST_MEDIA_TYPE, mediaType );
+        setTempProperty(REST_DEFAULT_REQUEST_MEDIA_TYPE, mediaType);
     }
 
     @PublicAtsApi
     public String getRestDefaultRequestMediaCharset() {
 
-        return getProperty( REST_DEFAULT_REQUEST_MEDIA_CHARSET );
+        return getProperty(REST_DEFAULT_REQUEST_MEDIA_CHARSET);
     }
 
     @PublicAtsApi
     public void setRestDefaultRequestMediaCharset(
                                                    String mediaType ) {
 
-        setTempProperty( REST_DEFAULT_REQUEST_MEDIA_CHARSET, mediaType );
+        setTempProperty(REST_DEFAULT_REQUEST_MEDIA_CHARSET, mediaType);
     }
 
     @PublicAtsApi
     public String getRestDefaultResponseMediaType() {
 
-        return getProperty( REST_DEFAULT_RESPONSE_MEDIA_TYPE );
+        return getProperty(REST_DEFAULT_RESPONSE_MEDIA_TYPE);
     }
 
     @PublicAtsApi
     public void setRestDefaultResponseMediaType(
                                                  String mediaType ) {
 
-        setTempProperty( REST_DEFAULT_RESPONSE_MEDIA_TYPE, mediaType );
+        setTempProperty(REST_DEFAULT_RESPONSE_MEDIA_TYPE, mediaType);
     }
 
     @PublicAtsApi
     public String getRestDefaultResponseMediaCharset() {
 
-        return getProperty( REST_DEFAULT_RESPONSE_MEDIA_CHARSET );
+        return getProperty(REST_DEFAULT_RESPONSE_MEDIA_CHARSET);
     }
 
     @PublicAtsApi
     public void setRestDefaultResponseMediaCharset(
                                                     String mediaType ) {
 
-        setTempProperty( REST_DEFAULT_RESPONSE_MEDIA_CHARSET, mediaType );
+        setTempProperty(REST_DEFAULT_RESPONSE_MEDIA_CHARSET, mediaType);
     }
 
     @PublicAtsApi
     public boolean getRestKeepRequestMediaType() {
 
-        return getBooleanProperty( REST_KEEP_REQUEST_MEDIA_TYPE );
+        return getBooleanProperty(REST_KEEP_REQUEST_MEDIA_TYPE);
     }
 
     @PublicAtsApi
     public void setRestKeepRequestMediaType(
                                              boolean keepRequestMediaType ) {
 
-        setTempProperty( REST_KEEP_REQUEST_MEDIA_TYPE, Boolean.toString( keepRequestMediaType ) );
+        setTempProperty(REST_KEEP_REQUEST_MEDIA_TYPE, Boolean.toString(keepRequestMediaType));
     }
 
     @PublicAtsApi
     public boolean getRestKeepRequestMediaCharset() {
 
-        return getBooleanProperty( REST_KEEP_REQUEST_MEDIA_CHARSET );
+        return getBooleanProperty(REST_KEEP_REQUEST_MEDIA_CHARSET);
     }
 
     @PublicAtsApi
     public void setRestKeepRequestMediaCharset(
                                                 boolean keepRequestMediaCharset ) {
 
-        setTempProperty( REST_KEEP_REQUEST_MEDIA_CHARSET, Boolean.toString( keepRequestMediaCharset ) );
+        setTempProperty(REST_KEEP_REQUEST_MEDIA_CHARSET, Boolean.toString(keepRequestMediaCharset));
     }
 
     @PublicAtsApi
     public boolean getRestKeepResponseMediaType() {
 
-        return getBooleanProperty( REST_KEEP_RESPONSE_MEDIA_TYPE );
+        return getBooleanProperty(REST_KEEP_RESPONSE_MEDIA_TYPE);
     }
 
     @PublicAtsApi
     public void setRestKeepResponseMediaType(
                                               boolean keepResponseMediaType ) {
 
-        setTempProperty( REST_KEEP_RESPONSE_MEDIA_TYPE, Boolean.toString( keepResponseMediaType ) );
+        setTempProperty(REST_KEEP_RESPONSE_MEDIA_TYPE, Boolean.toString(keepResponseMediaType));
     }
 
     @PublicAtsApi
     public boolean getRestKeepResponseMediaCharset() {
 
-        return getBooleanProperty( REST_KEEP_RESPONSE_MEDIA_CHARSET );
+        return getBooleanProperty(REST_KEEP_RESPONSE_MEDIA_CHARSET);
     }
 
     @PublicAtsApi
     public void setRestKeepResponseMediaCharset(
                                                  boolean keepResponseMediaCharset ) {
 
-        setTempProperty( REST_KEEP_RESPONSE_MEDIA_CHARSET, Boolean.toString( keepResponseMediaCharset ) );
+        setTempProperty(REST_KEEP_RESPONSE_MEDIA_CHARSET, Boolean.toString(keepResponseMediaCharset));
     }
 
     @PublicAtsApi
     public boolean getRestKeepResourcePath() {
 
-        return getBooleanProperty( REST_KEEP_RESOURCE_PATH );
+        return getBooleanProperty(REST_KEEP_RESOURCE_PATH);
     }
 
     @PublicAtsApi
     public void setRestKeepResourcePath(
                                          boolean keepResourcePath ) {
 
-        setTempProperty( REST_KEEP_RESOURCE_PATH, Boolean.toString( keepResourcePath ) );
+        setTempProperty(REST_KEEP_RESOURCE_PATH, Boolean.toString(keepResourcePath));
     }
 
     @PublicAtsApi
     public boolean getRestKeepRequestHeaders() {
 
-        return getBooleanProperty( REST_KEEP_REQUEST_HEADERS );
+        return getBooleanProperty(REST_KEEP_REQUEST_HEADERS);
     }
 
     @PublicAtsApi
     public void setRestKeepRequestHeaders(
                                            boolean keepRequestHeaders ) {
 
-        setTempProperty( REST_KEEP_REQUEST_HEADERS, Boolean.toString( keepRequestHeaders ) );
+        setTempProperty(REST_KEEP_REQUEST_HEADERS, Boolean.toString(keepRequestHeaders));
     }
 
     @PublicAtsApi
     public boolean getRestKeepRequestParameters() {
 
-        return getBooleanProperty( REST_KEEP_REQUEST_PARAMETERS );
+        return getBooleanProperty(REST_KEEP_REQUEST_PARAMETERS);
     }
 
     @PublicAtsApi
     public void setRestKeepRequestParameters(
                                               boolean keepRequestParameters ) {
 
-        setTempProperty( REST_KEEP_REQUEST_PARAMETERS, Boolean.toString( keepRequestParameters ) );
+        setTempProperty(REST_KEEP_REQUEST_PARAMETERS, Boolean.toString(keepRequestParameters));
     }
 
     @PublicAtsApi
     public boolean getHttpKeepRequestHeaders() {
 
-        return getBooleanProperty( HTTP_KEEP_REQUEST_HEADERS );
+        return getBooleanProperty(HTTP_KEEP_REQUEST_HEADERS);
     }
 
     @PublicAtsApi
     public void setHttpKeepRequestHeaders(
                                            boolean keepRequestHeaders ) {
 
-        setTempProperty( HTTP_KEEP_REQUEST_HEADERS, Boolean.toString( keepRequestHeaders ) );
+        setTempProperty(HTTP_KEEP_REQUEST_HEADERS, Boolean.toString(keepRequestHeaders));
     }
 
     @PublicAtsApi
     public boolean getHttpKeepRequestParameters() {
 
-        return getBooleanProperty( HTTP_KEEP_REQUEST_PARAMETERS );
+        return getBooleanProperty(HTTP_KEEP_REQUEST_PARAMETERS);
     }
 
     @PublicAtsApi
     public void setHttpKeepRequestParameters(
                                               boolean keepRequestParameters ) {
 
-        setTempProperty( HTTP_KEEP_REQUEST_PARAMETERS, Boolean.toString( keepRequestParameters ) );
+        setTempProperty(HTTP_KEEP_REQUEST_PARAMETERS, Boolean.toString(keepRequestParameters));
     }
 
     @PublicAtsApi
     public boolean getHttpKeepRequestBody() {
 
-        return getBooleanProperty( HTTP_KEEP_REQUEST_BODY );
+        return getBooleanProperty(HTTP_KEEP_REQUEST_BODY);
     }
 
     @PublicAtsApi
     public void setHttpKeepRequestBody(
                                         boolean keepRequestBody ) {
 
-        setTempProperty( HTTP_KEEP_REQUEST_BODY, Boolean.toString( keepRequestBody ) );
+        setTempProperty(HTTP_KEEP_REQUEST_BODY, Boolean.toString(keepRequestBody));
     }
 
     /**
@@ -653,8 +653,8 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         public boolean getCheckModificationTime() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_MODIFICATION_TIME );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_MODIFICATION_TIME);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -662,16 +662,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckModificationTime( boolean checkModificationTime ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_MODIFICATION_TIME,
-                             Boolean.toString( checkModificationTime ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_MODIFICATION_TIME,
+                            Boolean.toString(checkModificationTime));
         }
 
         @PublicAtsApi
         public boolean getCheckFileSize() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_SIZE );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_SIZE);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -679,15 +679,15 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckFileSize( boolean checkSize ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_SIZE, Boolean.toString( checkSize ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_SIZE, Boolean.toString(checkSize));
         }
 
         @PublicAtsApi
         public boolean getCheckFileMd5() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_MD5 );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_MD5);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -695,15 +695,15 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckFileMd5( boolean checkMd5 ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_MD5, Boolean.toString( checkMd5 ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_MD5, Boolean.toString(checkMd5));
         }
 
         @PublicAtsApi
         public boolean getCheckFilePermissions() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_PERMISSIONS );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_PERMISSIONS);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -711,15 +711,15 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckFilePermissions( boolean checkPermissions ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_PERMISSIONS, Boolean.toString( checkPermissions ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_PERMISSIONS, Boolean.toString(checkPermissions));
         }
 
         @PublicAtsApi
         public boolean getSupportHiddenFiles() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_SUPPORT_HIDDEN );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_SUPPORT_HIDDEN);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -727,15 +727,15 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setSupportHiddenFiles( boolean supportHiddenFiles ) {
 
-            setTempProperty( FILE_SNAPSHOT_SUPPORT_HIDDEN, Boolean.toString( supportHiddenFiles ) );
+            setTempProperty(FILE_SNAPSHOT_SUPPORT_HIDDEN, Boolean.toString(supportHiddenFiles));
         }
 
         @PublicAtsApi
         public boolean getCheckPropertiesFilesContent() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_PROPERTIES_FILES_CONTENT );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_PROPERTIES_FILES_CONTENT);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -743,16 +743,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckPropertiesFilesContent( boolean checkPropertiesFilesContent ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_PROPERTIES_FILES_CONTENT,
-                             Boolean.toString( checkPropertiesFilesContent ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_PROPERTIES_FILES_CONTENT,
+                            Boolean.toString(checkPropertiesFilesContent));
         }
 
         @PublicAtsApi
         public boolean getCheckXmlFilesContent() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -760,16 +760,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckXmlFilesContent( boolean checkXmlFilesContent ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT,
-                             Boolean.toString( checkXmlFilesContent ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_XML_FILES_CONTENT,
+                            Boolean.toString(checkXmlFilesContent));
         }
 
         @PublicAtsApi
         public boolean getCheckIniFilesContent() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_INI_FILES_CONTENT );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_INI_FILES_CONTENT);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -777,17 +777,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckIniFilesContent( boolean checkIniFilesContent ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_INI_FILES_CONTENT,
-                             Boolean.toString( checkIniFilesContent ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_INI_FILES_CONTENT,
+                            Boolean.toString(checkIniFilesContent));
         }
-        
 
         @PublicAtsApi
         public boolean getCheckTextFilesContent() {
 
             try {
-                return getBooleanProperty( FILE_SNAPSHOT_CHECK_TEXT_FILES_CONTENT );
-            } catch( NoSuchPropertyException nspe ) {
+                return getBooleanProperty(FILE_SNAPSHOT_CHECK_TEXT_FILES_CONTENT);
+            } catch (NoSuchPropertyException nspe) {
                 return true;
             }
         }
@@ -795,16 +794,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setCheckTextFilesContent( boolean checkTextFilesContent ) {
 
-            setTempProperty( FILE_SNAPSHOT_CHECK_TEXT_FILES_CONTENT,
-                             Boolean.toString( checkTextFilesContent ) );
+            setTempProperty(FILE_SNAPSHOT_CHECK_TEXT_FILES_CONTENT,
+                            Boolean.toString(checkTextFilesContent));
         }
 
         @PublicAtsApi
         public char getIniFilesStartSectionChar() {
 
             try {
-                return getCharProperty( FILE_SNAPSHOT_INI_FILES_SECTION_START_CHAR );
-            } catch( NoSuchPropertyException nspe ) {
+                return getCharProperty(FILE_SNAPSHOT_INI_FILES_SECTION_START_CHAR);
+            } catch (NoSuchPropertyException nspe) {
                 return '['; // use default char
             }
         }
@@ -812,16 +811,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setIniFilesStartSectionChar( char startSectionChar ) {
 
-            setTempProperty( FILE_SNAPSHOT_INI_FILES_SECTION_START_CHAR,
-                             Character.toString( startSectionChar ) );
+            setTempProperty(FILE_SNAPSHOT_INI_FILES_SECTION_START_CHAR,
+                            Character.toString(startSectionChar));
         }
 
         @PublicAtsApi
         public char getIniFilesStartCommentChar() {
 
             try {
-                return getCharProperty( FILE_SNAPSHOT_INI_FILES_COMMENT_START_CHAR );
-            } catch( NoSuchPropertyException nspe ) {
+                return getCharProperty(FILE_SNAPSHOT_INI_FILES_COMMENT_START_CHAR);
+            } catch (NoSuchPropertyException nspe) {
                 return '#'; // use default char
             }
         }
@@ -829,16 +828,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setIniFilesStartCommentChar( char startCommentChar ) {
 
-            setTempProperty( FILE_SNAPSHOT_INI_FILES_COMMENT_START_CHAR,
-                             Character.toString( startCommentChar ) );
+            setTempProperty(FILE_SNAPSHOT_INI_FILES_COMMENT_START_CHAR,
+                            Character.toString(startCommentChar));
         }
 
         @PublicAtsApi
         public char getIniFilesDelimeterChar() {
 
             try {
-                return getCharProperty( FILE_SNAPSHOT_INI_FILES_DELIMETER_CHAR );
-            } catch( NoSuchPropertyException nspe ) {
+                return getCharProperty(FILE_SNAPSHOT_INI_FILES_DELIMETER_CHAR);
+            } catch (NoSuchPropertyException nspe) {
                 return '='; // use default char
             }
         }
@@ -846,7 +845,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         @PublicAtsApi
         public void setIniFilesDelimeterChar( char delimeterChar ) {
 
-            setTempProperty( FILE_SNAPSHOT_INI_FILES_DELIMETER_CHAR, Character.toString( delimeterChar ) );
+            setTempProperty(FILE_SNAPSHOT_INI_FILES_DELIMETER_CHAR, Character.toString(delimeterChar));
         }
 
         /**
@@ -854,8 +853,8 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
          */
         public String getPropertiesFileExtensions() {
 
-            String extensions = getOptionalProperty( FILE_SNAPSHOT_PROPERTIES_FILE_EXTENSIONS );
-            if( StringUtils.isNullOrEmpty( extensions ) ) {
+            String extensions = getOptionalProperty(FILE_SNAPSHOT_PROPERTIES_FILE_EXTENSIONS);
+            if (StringUtils.isNullOrEmpty(extensions)) {
                 return "";
             } else {
                 return extensions;
@@ -870,16 +869,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         public void setPropertiesFileExtensions( String[] extensions ) {
 
             StringBuilder extensionsList = new StringBuilder();
-            for( String extension : extensions ) {
-                if( StringUtils.isNullOrEmpty( extension ) || extension.contains( "," ) ) {
-                    throw new ConfigurationException( "File types cannot be empty nor can contain the ',' character. You have supplied '"
-                                                      + extension + "," );
+            for (String extension : extensions) {
+                if (StringUtils.isNullOrEmpty(extension) || extension.contains(",")) {
+                    throw new ConfigurationException("File types cannot be empty nor can contain the ',' character. You have supplied '"
+                                                     + extension + ",");
                 }
-                extensionsList.append( extension ).append( "," );
+                extensionsList.append(extension).append(",");
             }
 
-            setTempProperty( FILE_SNAPSHOT_PROPERTIES_FILE_EXTENSIONS,
-                             extensionsList.substring( 0, extensionsList.length() - 1 ) );
+            setTempProperty(FILE_SNAPSHOT_PROPERTIES_FILE_EXTENSIONS,
+                            extensionsList.substring(0, extensionsList.length() - 1));
         }
 
         /**
@@ -887,7 +886,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
          */
         public String getXmlFileExtensions() {
 
-            return getOptionalProperty( FILE_SNAPSHOT_XML_FILE_EXTENSIONS );
+            return getOptionalProperty(FILE_SNAPSHOT_XML_FILE_EXTENSIONS);
         }
 
         /**
@@ -898,16 +897,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         public void setXmlFileExtensions( String[] extensions ) {
 
             StringBuilder extensionsList = new StringBuilder();
-            for( String extension : extensions ) {
-                if( StringUtils.isNullOrEmpty( extension ) || extension.contains( "," ) ) {
-                    throw new ConfigurationException( "File types cannot be empty nor can contain the ',' character. You have supplied '"
-                                                      + extension + "," );
+            for (String extension : extensions) {
+                if (StringUtils.isNullOrEmpty(extension) || extension.contains(",")) {
+                    throw new ConfigurationException("File types cannot be empty nor can contain the ',' character. You have supplied '"
+                                                     + extension + ",");
                 }
-                extensionsList.append( extension ).append( "," );
+                extensionsList.append(extension).append(",");
             }
 
-            setTempProperty( FILE_SNAPSHOT_XML_FILE_EXTENSIONS,
-                             extensionsList.substring( 0, extensionsList.length() - 1 ) );
+            setTempProperty(FILE_SNAPSHOT_XML_FILE_EXTENSIONS,
+                            extensionsList.substring(0, extensionsList.length() - 1));
         }
 
         /**
@@ -915,8 +914,8 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
          */
         public String getIniFileExtensions() {
 
-            String extensions = getOptionalProperty( FILE_SNAPSHOT_INI_FILE_EXTENSIONS );
-            if( StringUtils.isNullOrEmpty( extensions ) ) {
+            String extensions = getOptionalProperty(FILE_SNAPSHOT_INI_FILE_EXTENSIONS);
+            if (StringUtils.isNullOrEmpty(extensions)) {
                 return "";
             } else {
                 return extensions;
@@ -931,16 +930,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         public void setIniFileExtensions( String... extensions ) {
 
             StringBuilder extensionsList = new StringBuilder();
-            for( String extension : extensions ) {
-                if( StringUtils.isNullOrEmpty( extension ) || extension.contains( "," ) ) {
-                    throw new ConfigurationException( "File types cannot be empty nor can contain the ',' character. You have supplied '"
-                                                      + extension + "," );
+            for (String extension : extensions) {
+                if (StringUtils.isNullOrEmpty(extension) || extension.contains(",")) {
+                    throw new ConfigurationException("File types cannot be empty nor can contain the ',' character. You have supplied '"
+                                                     + extension + ",");
                 }
-                extensionsList.append( extension.trim().toLowerCase() ).append( "," );
+                extensionsList.append(extension.trim().toLowerCase()).append(",");
             }
 
-            setTempProperty( FILE_SNAPSHOT_INI_FILE_EXTENSIONS,
-                             extensionsList.substring( 0, extensionsList.length() - 1 ) );
+            setTempProperty(FILE_SNAPSHOT_INI_FILE_EXTENSIONS,
+                            extensionsList.substring(0, extensionsList.length() - 1));
         }
 
         /**
@@ -948,8 +947,8 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
          */
         public String getTextFileExtensions() {
 
-            String extensions = getOptionalProperty( FILE_SNAPSHOT_TEXT_FILE_EXTENSIONS );
-            if( StringUtils.isNullOrEmpty( extensions ) ) {
+            String extensions = getOptionalProperty(FILE_SNAPSHOT_TEXT_FILE_EXTENSIONS);
+            if (StringUtils.isNullOrEmpty(extensions)) {
                 return "";
             } else {
                 return extensions;
@@ -964,16 +963,16 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
         public void setTextFileExtensions( String... extensions ) {
 
             StringBuilder extensionsList = new StringBuilder();
-            for( String extension : extensions ) {
-                if( StringUtils.isNullOrEmpty( extension ) || extension.contains( "," ) ) {
-                    throw new ConfigurationException( "File types cannot be empty nor can contain the ',' character. You have supplied '"
-                                                      + extension + "," );
+            for (String extension : extensions) {
+                if (StringUtils.isNullOrEmpty(extension) || extension.contains(",")) {
+                    throw new ConfigurationException("File types cannot be empty nor can contain the ',' character. You have supplied '"
+                                                     + extension + ",");
                 }
-                extensionsList.append( extension.trim().toLowerCase() ).append( "," );
+                extensionsList.append(extension.trim().toLowerCase()).append(",");
             }
 
-            setTempProperty( FILE_SNAPSHOT_TEXT_FILE_EXTENSIONS,
-                             extensionsList.substring( 0, extensionsList.length() - 1 ) );
+            setTempProperty(FILE_SNAPSHOT_TEXT_FILE_EXTENSIONS,
+                            extensionsList.substring(0, extensionsList.length() - 1));
         }
     }
 

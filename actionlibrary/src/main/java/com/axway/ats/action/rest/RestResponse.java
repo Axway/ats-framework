@@ -41,9 +41,9 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class RestResponse {
 
-    private static final Logger log               = Logger.getLogger( RestResponse.class );
+    private static final Logger log               = Logger.getLogger(RestResponse.class);
 
-    public static final int     MAX_RESPONSE_SIZE = 10485760;                              //10MB
+    public static final int     MAX_RESPONSE_SIZE = 10485760;                            //10MB
 
     private Response            response;
 
@@ -90,7 +90,7 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        return response.readEntity( String.class );
+        return response.readEntity(String.class);
     }
 
     /**
@@ -104,7 +104,7 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        return response.readEntity( theClass );
+        return response.readEntity(theClass);
     }
 
     /**
@@ -117,13 +117,13 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        String jsonText = response.readEntity( String.class );
-        if( !StringUtils.isNullOrEmpty( jsonText ) ) {
+        String jsonText = response.readEntity(String.class);
+        if (!StringUtils.isNullOrEmpty(jsonText)) {
 
-            return new JsonText( jsonText.trim() );
+            return new JsonText(jsonText.trim());
         } else {
-            log.warn( "JSON response is empty, we return a null " + JsonText.class.getSimpleName()
-                      + " object" );
+            log.warn("JSON response is empty, we return a null " + JsonText.class.getSimpleName()
+                     + " object");
             return null;
         }
     }
@@ -139,13 +139,13 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        String xmlText = response.readEntity( String.class );
-        if( !StringUtils.isNullOrEmpty( xmlText ) ) {
+        String xmlText = response.readEntity(String.class);
+        if (!StringUtils.isNullOrEmpty(xmlText)) {
 
-            return new XmlText( xmlText.trim() );
+            return new XmlText(xmlText.trim());
         } else {
-            log.warn( "JSON response is empty, we return a null " + XmlText.class.getSimpleName()
-                      + " object" );
+            log.warn("JSON response is empty, we return a null " + XmlText.class.getSimpleName()
+                     + " object");
             return null;
         }
     }
@@ -161,7 +161,7 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        return response.readEntity( InputStream.class );
+        return response.readEntity(InputStream.class);
     }
 
     /**
@@ -175,11 +175,11 @@ public class RestResponse {
         List<RestHeader> headers = new ArrayList<RestHeader>();
 
         MultivaluedMap<String, Object> respHeaders = response.getHeaders();
-        for( Entry<String, List<Object>> respHeaderEntry : respHeaders.entrySet() ) {
-            headers.add( RestHeader.constructRESTHeader( respHeaderEntry.getKey(), respHeaderEntry.getValue() ) );
+        for (Entry<String, List<Object>> respHeaderEntry : respHeaders.entrySet()) {
+            headers.add(RestHeader.constructRESTHeader(respHeaderEntry.getKey(), respHeaderEntry.getValue()));
         }
 
-        return headers.toArray( new RestHeader[headers.size()] );
+        return headers.toArray(new RestHeader[headers.size()]);
     }
 
     /**
@@ -193,9 +193,9 @@ public class RestResponse {
     public RestHeader getHeader( String name ) {
 
         MultivaluedMap<String, Object> respHeaders = response.getHeaders();
-        for( String hName : respHeaders.keySet() ) {
-            if( hName.equalsIgnoreCase( name ) ) {
-                return ( RestHeader.constructRESTHeader( name, respHeaders.get( name ) ) );
+        for (String hName : respHeaders.keySet()) {
+            if (hName.equalsIgnoreCase(name)) {
+                return (RestHeader.constructRESTHeader(name, respHeaders.get(name)));
             }
         }
 
@@ -214,13 +214,13 @@ public class RestResponse {
     public String[] getHeaderValues( String name ) {
 
         MultivaluedMap<String, Object> respHeaders = response.getHeaders();
-        for( String hName : respHeaders.keySet() ) {
-            if( hName.equalsIgnoreCase( name ) ) {
+        for (String hName : respHeaders.keySet()) {
+            if (hName.equalsIgnoreCase(name)) {
                 List<String> values = new ArrayList<String>();
-                for( Object valueObject : respHeaders.get( name ) ) {
-                    values.add( valueObject.toString() );
+                for (Object valueObject : respHeaders.get(name)) {
+                    values.add(valueObject.toString());
                 }
-                return values.toArray( new String[values.size()] );
+                return values.toArray(new String[values.size()]);
             }
         }
 
@@ -234,7 +234,7 @@ public class RestResponse {
     public NewCookie[] getNewCookies() {
 
         Collection<NewCookie> newCookies = response.getCookies().values();
-        return newCookies.toArray( new NewCookie[newCookies.size()] );
+        return newCookies.toArray(new NewCookie[newCookies.size()]);
     }
 
     /**
@@ -247,16 +247,16 @@ public class RestResponse {
     @PublicAtsApi
     public RestResponse verifyHeader( String header, String value ) {
 
-        RestHeader response = getHeader( header );
+        RestHeader response = getHeader(header);
 
-        if( response == null ) {
-            throw new VerificationException( "Header \"" + header + "\" does not exist in the response!" );
+        if (response == null) {
+            throw new VerificationException("Header \"" + header + "\" does not exist in the response!");
         }
 
-        if( !response.getValue().equals( value ) ) {
-            throw new VerificationException( "Header name \"" + header + "\" with value \"" + value
-                                             + "\" is not the same as in the header: \""
-                                             + response.getValue() );
+        if (!response.getValue().equals(value)) {
+            throw new VerificationException("Header name \"" + header + "\" with value \"" + value
+                                            + "\" is not the same as in the header: \""
+                                            + response.getValue());
         }
 
         return this;
@@ -273,14 +273,14 @@ public class RestResponse {
     @PublicAtsApi
     public RestResponse verifyJsonBody( String keyPath, String value ) {
 
-        String valueString = getBodyAsJson().get( keyPath ).toString();
-        if( valueString == null ) {
-            throw new VerificationException( "Key \"" + keyPath + "\" not found" );
+        String valueString = getBodyAsJson().get(keyPath).toString();
+        if (valueString == null) {
+            throw new VerificationException("Key \"" + keyPath + "\" not found");
         }
 
-        if( !valueString.equals( value ) ) {
-            throw new VerificationException( "Key \"" + keyPath + "\" has the value of \"" + valueString
-                                             + "\" while it is expected to be \"" + value + "\"" );
+        if (!valueString.equals(value)) {
+            throw new VerificationException("Key \"" + keyPath + "\" has the value of \"" + valueString
+                                            + "\" while it is expected to be \"" + value + "\"");
         }
 
         return this;
@@ -298,13 +298,13 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        String responseBody = response.readEntity( String.class );
+        String responseBody = response.readEntity(String.class);
 
-        if( responseBody != null && responseBody.indexOf( responseBodyPart ) >= 0 ) {
+        if (responseBody != null && responseBody.indexOf(responseBodyPart) >= 0) {
             return this;
         }
-        throw new VerificationException( "The given response part \"" + responseBodyPart
-                                         + "\" does not present in the real response body" );
+        throw new VerificationException("The given response part \"" + responseBodyPart
+                                        + "\" does not present in the real response body");
     }
 
     /**
@@ -319,14 +319,14 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        String responseBody = response.readEntity( String.class );
+        String responseBody = response.readEntity(String.class);
 
-        if( responseBody != null ) {
-            if( responseBody.equals( body ) )
+        if (responseBody != null) {
+            if (responseBody.equals(body))
                 return this;
         }
-        throw new VerificationException( "The given body \"" + body
-                                         + "\" does not match the real response body" );
+        throw new VerificationException("The given body \"" + body
+                                        + "\" does not match the real response body");
     }
 
     /**
@@ -341,14 +341,14 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        String responseBody = response.readEntity( String.class );
+        String responseBody = response.readEntity(String.class);
 
-        if( responseBody != null ) {
-            if( Pattern.compile( responseBodyRegex ).matcher( responseBody ).find() )
+        if (responseBody != null) {
+            if (Pattern.compile(responseBodyRegex).matcher(responseBody).find())
                 return this;
         }
-        throw new VerificationException( "The given regex \"" + responseBodyRegex
-                                         + "\" does not match the body" );
+        throw new VerificationException("The given regex \"" + responseBodyRegex
+                                        + "\" does not match the body");
     }
 
     /**
@@ -360,11 +360,11 @@ public class RestResponse {
     @PublicAtsApi
     public RestResponse verifyStatusCode( int statusCode ) {
 
-        if( response.getStatus() == statusCode )
+        if (response.getStatus() == statusCode)
             return this;
 
-        throw new VerificationException( "You expect " + statusCode + " but the actual status code is: "
-                                         + response.getStatus() );
+        throw new VerificationException("You expect " + statusCode + " but the actual status code is: "
+                                        + response.getStatus());
     }
 
     /**
@@ -378,11 +378,11 @@ public class RestResponse {
     public RestResponse verifyStatusMessage( String statusMessage ) {
 
         String realStatusMessage = response.getStatusInfo().toString();
-        if( realStatusMessage.equalsIgnoreCase( statusMessage ) )
+        if (realStatusMessage.equalsIgnoreCase(statusMessage))
             return this;
 
-        throw new VerificationException( "Expected status message \"" + statusMessage
-                                         + "\",real status message \"" + realStatusMessage + "\"" );
+        throw new VerificationException("Expected status message \"" + statusMessage
+                                        + "\",real status message \"" + realStatusMessage + "\"");
     }
 
     private void checkResponseBodyStatus() {
@@ -390,7 +390,7 @@ public class RestResponse {
         /* prevents java.lang.IllegalStateException: Entity input stream has already been closed. 
          * if the file size is less than MAX_RESPONSE_SIZE
         */
-        if( response.getLength() < MAX_RESPONSE_SIZE ) {
+        if (response.getLength() < MAX_RESPONSE_SIZE) {
             response.bufferEntity();
         }
     }

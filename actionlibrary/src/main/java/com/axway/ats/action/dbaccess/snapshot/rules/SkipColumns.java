@@ -35,17 +35,17 @@ public class SkipColumns extends SkipRule {
 
     public SkipColumns( String table ) {
 
-        super( table );
+        super(table);
 
         columnsToSkip = new HashSet<String>();
     }
 
     public SkipColumns( String table, String... columnsToSkip ) {
 
-        this( table );
+        this(table);
 
-        for( String column : columnsToSkip ) {
-            this.columnsToSkip.add( column );
+        for (String column : columnsToSkip) {
+            this.columnsToSkip.add(column);
         }
     }
 
@@ -66,8 +66,8 @@ public class SkipColumns extends SkipRule {
      */
     public boolean isSkipColumn( String column ) {
 
-        for( String columnToSkip : columnsToSkip ) {
-            if( columnToSkip.equalsIgnoreCase( column ) ) {
+        for (String columnToSkip : columnsToSkip) {
+            if (columnToSkip.equalsIgnoreCase(column)) {
                 return true;
             }
         }
@@ -77,7 +77,7 @@ public class SkipColumns extends SkipRule {
 
     public void addColumnToSkip( String columnName ) {
 
-        columnsToSkip.add( columnName );
+        columnsToSkip.add(columnName);
     }
 
     public Set<String> getColumnsToSkip() {
@@ -87,11 +87,11 @@ public class SkipColumns extends SkipRule {
 
     public static SkipColumns fromXmlNode( Element skipColumnNode ) {
 
-        SkipColumns skipColumns = new SkipColumns( skipColumnNode.getAttribute( DatabaseSnapshotUtils.ATTR_TABLE_NAME ) );
+        SkipColumns skipColumns = new SkipColumns(skipColumnNode.getAttribute(DatabaseSnapshotUtils.ATTR_TABLE_NAME));
 
-        List<Element> columnNodes = DatabaseSnapshotUtils.getChildrenByTagName( skipColumnNode, "column" );
-        for( Element columnNode : columnNodes ) {
-            skipColumns.columnsToSkip.add( columnNode.getTextContent() );
+        List<Element> columnNodes = DatabaseSnapshotUtils.getChildrenByTagName(skipColumnNode, "column");
+        for (Element columnNode : columnNodes) {
+            skipColumns.columnsToSkip.add(columnNode.getTextContent());
         }
 
         return skipColumns;
@@ -99,30 +99,30 @@ public class SkipColumns extends SkipRule {
 
     public void toXmlNode( Document dom, Element parentNode ) {
 
-        Element skipColumnsNode = dom.createElement( DatabaseSnapshotUtils.NODE_SKIP_COLUMNS );
-        parentNode.appendChild( skipColumnsNode );
-        skipColumnsNode.setAttribute( "table", table );
+        Element skipColumnsNode = dom.createElement(DatabaseSnapshotUtils.NODE_SKIP_COLUMNS);
+        parentNode.appendChild(skipColumnsNode);
+        skipColumnsNode.setAttribute("table", table);
 
         // append columns to skip
-        for( String column : columnsToSkip ) {
-            Element columnNode = dom.createElement( "column" );
-            columnNode.setTextContent( column );
-            skipColumnsNode.appendChild( columnNode );
+        for (String column : columnsToSkip) {
+            Element columnNode = dom.createElement("column");
+            columnNode.setTextContent(column);
+            skipColumnsNode.appendChild(columnNode);
         }
     }
 
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder( "Table " + table + ": " );
+        StringBuilder sb = new StringBuilder("Table " + table + ": ");
 
-        if( isSkipWholeTable() ) {
-            sb.append( "skip whole table" );
+        if (isSkipWholeTable()) {
+            sb.append("skip whole table");
         } else {
-            sb.append( "skip columns: " );
-            for( String column : columnsToSkip ) {
-                sb.append( column );
-                sb.append( ", " );
+            sb.append("skip columns: ");
+            for (String column : columnsToSkip) {
+                sb.append(column);
+                sb.append(", ");
             }
         }
 
