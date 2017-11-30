@@ -3,7 +3,7 @@
 *.xml text eol=crlf
 *.xsd -text
 *.bat text eol=crlf
-*.sh text eol=crlf
+*.sh text eol=lf
 *.txt text eol=crlf
 .template -text
 *.version text eol=crlf
