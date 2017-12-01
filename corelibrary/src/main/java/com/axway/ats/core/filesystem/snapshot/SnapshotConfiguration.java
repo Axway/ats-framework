@@ -73,6 +73,31 @@ public class SnapshotConfiguration implements Serializable {
         iniFilesDelimiter = '=';
     }
 
+    public SnapshotConfiguration newCopy() {
+
+        SnapshotConfiguration copy = new SnapshotConfiguration();
+
+        copy.checkModificationTime = checkModificationTime;
+        copy.checkSize = checkSize;
+        copy.checkMD5 = checkMD5;
+        copy.checkPermissions = checkPermissions;
+        copy.supportHidden = supportHidden;
+
+        copy.checkPropertiesFilesContent = checkPropertiesFilesContent;
+        copy.propertiesFileExtensions = propertiesFileExtensions;
+
+        copy.checkXmlFilesContent = checkXmlFilesContent;
+        copy.xmlFileExtensions = xmlFileExtensions;
+
+        copy.checkIniFilesContent = checkIniFilesContent;
+        copy.iniFileExtensions = iniFileExtensions;
+
+        copy.checkTextFilesContent = checkTextFilesContent;
+        copy.textFileExtensions = textFileExtensions;
+
+        return copy;
+    }
+
     public enum FileType {
         REGULAR, XML, PROPERTIES, INI, TEXT
     }

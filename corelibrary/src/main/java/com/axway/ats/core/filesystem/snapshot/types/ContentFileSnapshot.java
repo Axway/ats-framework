@@ -29,15 +29,15 @@ public abstract class ContentFileSnapshot extends FileSnapshot {
     public ContentFileSnapshot( SnapshotConfiguration configuration, String path, FindRules fileRule ) {
         // we are interested in file content
         // do not check MD5 and size
-        super(configuration.setCheckMD5(false).setCheckSize(false), path, fileRule);
+        super(configuration.newCopy().setCheckMD5(false).setCheckSize(false), path, fileRule);
     }
 
     ContentFileSnapshot( String path, long size, long timeModified, String md5, String permissions ) {
         super(path, size, timeModified, md5, permissions);
 
         if (configuration != null) {
-            configuration.setCheckMD5(false);
-            configuration.setCheckSize(false);
+            configuration.newCopy().setCheckMD5(false);
+            configuration.newCopy().setCheckSize(false);
         }
     }
 
