@@ -113,6 +113,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                      * If we fail here, it does not make sense to run tests at all
                      */
                     System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + ": "
                                        + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Waiting for "
                                        + event.getClass().getSimpleName()
                                        + " event completion");
@@ -132,6 +133,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                      * the END_RUN event is the last one in the queue
                      */
                     System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + ": "
                                        + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Waiting for "
                                        + event.getClass().getSimpleName()
                                        + " event completion");
@@ -193,12 +195,14 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 wait(timeout);
                 if (System.currentTimeMillis() - startTime > timeout - 100) {
                     System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                       + ": "
                                        + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "The expected "
                                        + event.getClass().getSimpleName()
                                        + " logging event did not complete in " + timeout + " ms");
                 }
             } catch (InterruptedException ie) {
                 throw new DbAppenederException(TimeUtils.getFormattedDateTillMilliseconds()
+                                               + ": "
                                                + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                                + "Main thread interrupted while waiting for event "
                                                + event.getClass().getSimpleName(), ie);

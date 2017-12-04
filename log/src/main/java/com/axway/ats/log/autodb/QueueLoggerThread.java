@@ -70,7 +70,9 @@ public class QueueLoggerThread extends Thread {
     @Override
     public void run() {
 
-        System.out.println(TimeUtils.getFormattedDateTillMilliseconds() + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+        System.out.println(TimeUtils.getFormattedDateTillMilliseconds() 
+                           + ": " 
+                           + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                            + " Started logger thread named '"
                            + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
                            + " events. Batch mode is " + (isBatchMode
@@ -91,6 +93,7 @@ public class QueueLoggerThread extends Thread {
             } catch (InterruptedException ie) {
                 // NOTE: In this method we talk to the user using console only as we cannot send it to the log DB
                 System.err.println(TimeUtils.getFormattedDateTillMilliseconds()
+                                   + ": "
                                    + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                    + "Logging thread is interrupted and will stop logging.");
                 break;
@@ -115,6 +118,7 @@ public class QueueLoggerThread extends Thread {
 
                             System.err.println(ExceptionUtils.getExceptionMsg(le,
                                                                               TimeUtils.getFormattedDateTillMilliseconds()
+                                                                                  + ": "
                                                                                   + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                                                                   + "Error running "
                                                                                   + eventType
@@ -131,6 +135,7 @@ public class QueueLoggerThread extends Thread {
                         // case providing FQDN in the log4j.xml makes the DB logging impossible
                         System.err.println(ExceptionUtils.getExceptionMsg(e,
                                                                           TimeUtils.getFormattedDateTillMilliseconds()
+                                                                             + ": "
                                                                              + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                                                              + "Error processing log event"));
 
@@ -143,6 +148,7 @@ public class QueueLoggerThread extends Thread {
                     if (logEventRequest != null) {
                         System.err.println(ExceptionUtils.getExceptionMsg(e,
                                                                           TimeUtils.getFormattedDateTillMilliseconds()
+                                                                             + ": "   
                                                                              + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                                                              + "Error processing log event "
                                                                              + logEventRequest.getEvent()
@@ -153,6 +159,7 @@ public class QueueLoggerThread extends Thread {
                         // Then we tried to flush the current events, but this was not successful, so came here.
                         System.err.println(ExceptionUtils.getExceptionMsg(e,
                                                                           TimeUtils.getFormattedDateTillMilliseconds()
+                                                                             + ": "
                                                                              + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                                                              + "Error processing log events in batch mode"));
                     }

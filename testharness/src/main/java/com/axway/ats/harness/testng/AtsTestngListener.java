@@ -757,7 +757,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             Throwable failureException = testResult.getThrowable();
             if (failureException instanceof AssertionError) {
                 if (failureException.getMessage() != null) {
-                    logger.error(ExceptionUtils.getExceptionMsg(failureException, failureException.getMessage()));
+                    logger.error(ExceptionUtils.getExceptionMsg(failureException));
                 } else {
                     logger.error("Received java.lang.AssertionError with null message");
                 }
