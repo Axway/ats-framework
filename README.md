@@ -2,7 +2,7 @@
 [![GitHub version](https://badge.fury.io/gh/Axway%2Fats-framework.svg)](https://badge.fury.io/gh/Axway%2Fats-framework)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-**The Axway Automated Testing System** (ATS) is a Java open source testing framework. It was initialy developed for the testing needs of most of the Axway products.
+**The Axway Automated Testing System** (ATS) is a Java open source testing framework. It was initially developed for the testing needs of most of the Axway products.
 
 ATS **key features** include:
 <ul>
@@ -15,7 +15,7 @@ ATS **key features** include:
   <li>Consolidated reporting allowing easy test result analyzes</li>
   <li>Ability to freely mix ATS code with your own code</li>
   <li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li>
-  <li>Some functionallities can also be used by non-java projects</li>
+  <li>Some functionalities can also be used by non-java projects</li>
 </ul>
 
 **Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
