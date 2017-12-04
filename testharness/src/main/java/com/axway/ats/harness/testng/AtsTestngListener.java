@@ -45,6 +45,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.utils.ClasspathUtils;
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
@@ -756,7 +757,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             Throwable failureException = testResult.getThrowable();
             if (failureException instanceof AssertionError) {
                 if (failureException.getMessage() != null) {
-                    logger.error(failureException.getMessage());
+                    logger.error(ExceptionUtils.getExceptionMsg(failureException, failureException.getMessage()));
                 } else {
                     logger.error("Received java.lang.AssertionError with null message");
                 }
@@ -769,7 +770,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             // end test case
             logger.endTestcase(TestCaseResult.FAILED);
         } catch (Exception e) {
-            logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngTestListener@onTestFailure", e);
+            logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngListener@endTestcaseWithFailureStatus", e);
         }
 
     }
@@ -793,7 +794,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             // end test case
             logger.endTestcase(TestCaseResult.PASSED);
         } catch (Exception e) {
-            logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngTestListener@onTestSuccess", e);
+            logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngListener@endTestcaseWithSuccessStatus", e);
         }
 
     }
