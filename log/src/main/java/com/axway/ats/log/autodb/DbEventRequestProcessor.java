@@ -460,7 +460,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
             //output the run id in the console, so it can be used for results
             System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                               + "*** ATS *** Started a new RUN in Test Explorer's database with id: "
+                               + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                               + "Started a new RUN in Test Explorer's database with id: "
                                + newRunId);
         } else {
             // we already had a run, now we will join to the previous run
@@ -471,7 +472,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
             //output the run id in the console, so it can be used for results
             System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                               + "*** ATS *** Joined an existing RUN in Test Explorer's database with id: "
+                               + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                               + "Joined an existing RUN in Test Explorer's database with id: "
                                + newRunId);
         }
 

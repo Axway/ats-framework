@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
+import com.axway.ats.core.utils.StringUtils;
 
 /**
  * Utilities to close Database connection, statement
@@ -69,7 +70,7 @@ public class DbUtils {
                 resultSet.close();
             }
         } catch (SQLException sqle) {
-            String msg = "Error closing resultset connection";
+            String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Error closing resultset connection";
             log.error(getFullSqlException(msg, sqle));
         }
     }
@@ -80,14 +81,14 @@ public class DbUtils {
         try {
             if (connection != null) {
                 if (connection.isClosed()) {
-                    String msg = "SQL connection is already closed";
+                    String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +"SQL connection is already closed";
                     System.out.println(msg);
                 } else {
                     connection.close();
                 }
             }
         } catch (SQLException sqle) {
-            String msg = "Error closing database connection";
+            String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +"Error closing database connection";
             // TODO - first print to console on new object and then log4j
             log.error(getFullSqlException(msg, sqle));
         }

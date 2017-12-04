@@ -31,6 +31,7 @@ import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
@@ -1534,13 +1535,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             sanityRun = true;
 
             String javaFrameworkVersion = AtsVersion.getAtsVersion();
-            System.out.println("*** ATS *** ATS framework version is '" + javaFrameworkVersion + "'");
+            System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "ATS framework version is '"
+                               + javaFrameworkVersion + "'");
 
-            System.out.println("*** ATS *** Checking for ATS log database connection with the following parameters: "
+            System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                               + "Checking for ATS log database connection with the following parameters: "
                                + connection.toString());
 
             String databaseVersion = getDatabaseVersion();
-            System.out.println("*** ATS *** ATS Log database version is '" + databaseVersion + "'");
+            System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "ATS Log database version is '"
+                               + databaseVersion + "'");
 
             if (!javaFrameworkVersion.equalsIgnoreCase(databaseVersion)) {
                 System.out.println("*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion

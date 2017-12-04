@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.exceptions.LoggingException;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
@@ -69,7 +70,8 @@ public class QueueLoggerThread extends Thread {
     @Override
     public void run() {
 
-        System.out.println(TimeUtils.getFormattedDateTillMilliseconds() + " Started logger thread named '"
+        System.out.println(TimeUtils.getFormattedDateTillMilliseconds() + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                           + " Started logger thread named '"
                            + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
                            + " events. Batch mode is " + (isBatchMode
                                                                       ? "enabled"
@@ -89,7 +91,8 @@ public class QueueLoggerThread extends Thread {
             } catch (InterruptedException ie) {
                 // NOTE: In this method we talk to the user using console only as we cannot send it to the log DB
                 System.err.println(TimeUtils.getFormattedDateTillMilliseconds()
-                                   + "*** ATS *** Logging thread is interrupted and will stop logging.");
+                                   + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                                   + "Logging thread is interrupted and will stop logging.");
                 break;
             } catch (Exception e) {
                 if (e instanceof LoggingException && logEventRequest != null) {
@@ -112,7 +115,8 @@ public class QueueLoggerThread extends Thread {
 
                             System.err.println(ExceptionUtils.getExceptionMsg(le,
                                                                               TimeUtils.getFormattedDateTillMilliseconds()
-                                                                                  + " *** ATS *** Error running "
+                                                                                  + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                                                                                  + "Error running "
                                                                                   + eventType
                                                                                   + " event"));
 
@@ -127,7 +131,8 @@ public class QueueLoggerThread extends Thread {
                         // case providing FQDN in the log4j.xml makes the DB logging impossible
                         System.err.println(ExceptionUtils.getExceptionMsg(e,
                                                                           TimeUtils.getFormattedDateTillMilliseconds()
-                                                                             + "*** ATS *** Error processing log event"));
+                                                                             + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                                                                             + "Error processing log event"));
 
                         isUnableToConnect = true;
                     }
@@ -138,7 +143,8 @@ public class QueueLoggerThread extends Thread {
                     if (logEventRequest != null) {
                         System.err.println(ExceptionUtils.getExceptionMsg(e,
                                                                           TimeUtils.getFormattedDateTillMilliseconds()
-                                                                             + "*** ATS *** Error processing log event "
+                                                                             + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                                                                             + "Error processing log event "
                                                                              + logEventRequest.getEvent()
                                                                                               .getMessage()));
                     } else {
@@ -147,7 +153,8 @@ public class QueueLoggerThread extends Thread {
                         // Then we tried to flush the current events, but this was not successful, so came here.
                         System.err.println(ExceptionUtils.getExceptionMsg(e,
                                                                           TimeUtils.getFormattedDateTillMilliseconds()
-                                                                             + "*** ATS *** Error processing log events in batch mode"));
+                                                                             + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                                                                             + "Error processing log events in batch mode"));
                     }
                 }
             }
