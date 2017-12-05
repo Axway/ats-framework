@@ -36,6 +36,7 @@ import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.OracleColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 
 /**
  * Provides Oracle specific database queries.
@@ -43,6 +44,8 @@ import com.axway.ats.core.utils.IoUtils;
 public class OracleDbProvider extends AbstractDbProvider {
 
     private static final Logger log = Logger.getLogger(OracleDbProvider.class);
+    
+    private final String INDEX_KEY_DELIMITER = "__";
 
     /**
      * Constructor to create authenticated connection to a database.
@@ -195,35 +198,47 @@ public class OracleDbProvider extends AbstractDbProvider {
         sql.append(" AND TABLE_NAME='" + tableName + "'");
         sql.append(" AND ais.INDEX_NAME NOT LIKE 'SYS_%'"); // skip system indexes
 
-        String indexName = null;
         Map<String, String> indexes = new HashMap<>();
         for (DbRecordValuesList valueList : select(sql.toString())) {
             StringBuilder info = new StringBuilder();
             boolean firstTime = true;
+            String indexKey = null;
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
+                
                 if ("INDEX_NAME".equalsIgnoreCase(name)) {
-                    indexName = value;
+                    if (StringUtils.isNullOrEmpty(indexKey)) {
+                        indexKey = value;
+                    } else {
+                        indexKey += INDEX_KEY_DELIMITER + value;
+                    }
+                }
+                
+                if ("PARTITION_NAME".equalsIgnoreCase(name)) {
+                    if (StringUtils.isNullOrEmpty(indexKey)) {
+                        indexKey = value;
+                    } else {
+                        indexKey += INDEX_KEY_DELIMITER + value;
+                    }
+                }
+                
+                if (firstTime) {
+                    firstTime = false;
+                    info.append(name + "=" + value);
                 } else {
                     info.append(", " + name + "=" + value);
-                    if (firstTime) {
-                        firstTime = false;
-                        info.append(name + "=" + value);
-                    } else {
-                        info.append(", " + name + "=" + value);
-                    }
                 }
             }
 
-            if (indexName == null) {
-                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+            if (indexKey == null) {
+                indexKey = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
                 log.warn("IndexName column not found in query polling for index properties:\nQuery: "
                          + sql.toString() + "\nQuery result: " + valueList.toString()
-                         + "\nWe will use the following as an index name: " + indexName);
+                         + "\nWe will use the following as an index name: " + indexKey);
             }
 
-            indexes.put(indexName, info.toString());
+            indexes.put(indexKey, info.toString());
         }
 
         return indexes;

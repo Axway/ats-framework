@@ -142,12 +142,12 @@ public class DatabaseSnapshot {
      * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
      * 
      * @param table table name
-     * @param columns column
+     * @param column column
      */
     @PublicAtsApi
-    public void skipTableColumn( String table, String columns ) {
+    public void skipTableColumn( String table, String column ) {
 
-        skipColumnsPerTable.put(table.toLowerCase(), new SkipColumns(table, columns));
+        skipColumnsPerTable.put(table.toLowerCase(), new SkipColumns(table, column));
     }
 
     /**
@@ -310,7 +310,7 @@ public class DatabaseSnapshot {
 
         // load info about all present tables
         tables = dbProvider.getTableDescriptions(getSkippedTables());
-        if (tables.size() == 1) {
+        if (tables.size() == 0) {
             log.warn("No tables found for snapshot [" + name + "]");
         }
 
