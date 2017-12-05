@@ -8,8 +8,14 @@ function toggle_ul_elements() {
 			$(itm).siblings('p.expand_sign').click();
 			var ul_parent =  $(itm).parent().parent();
 			$(ul_parent).parents('ul > li').children('p.expand_sign').click();
-		}
+			// highlight the document we came from
+			$(itm).attr('style','background-color: yellow');
+			setTimeout(function() {
+					$(itm).attr('style','background-color: white');
+				}, 3000);
+			}
 	});
+	
 }
                 
 function expand_or_collapse_ul_element(expand_sign_element) {
