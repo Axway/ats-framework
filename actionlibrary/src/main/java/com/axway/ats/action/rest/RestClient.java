@@ -399,7 +399,8 @@ public class RestClient {
         if (hasHeader(name)) {
             List<Object> values = new ArrayList<>(requestHeaders.get(name));
             values.add(value);
-            requestHeaders.replace(name, values);
+            requestHeaders.remove(name);
+            requestHeaders.put(name, values);
 
         } else {
             List<Object> values = new ArrayList<>();
@@ -424,7 +425,8 @@ public class RestClient {
         if (hasHeader(name)) {
             List<Object> values = new ArrayList<>(requestHeaders.get(name));
             values.add(value);
-            requestHeaders.replace(name, values);
+            requestHeaders.remove(name);
+            requestHeaders.put(name, values);
 
         } else {
             List<Object> values = new ArrayList<>();
@@ -449,7 +451,8 @@ public class RestClient {
         if (hasHeader(name)) {
             List<Object> values = new ArrayList<>(requestHeaders.get(name));
             values.add(value);
-            requestHeaders.replace(name, values);
+            requestHeaders.remove(name);
+            requestHeaders.put(name, values);
 
         } else {
             List<Object> values = new ArrayList<>();
