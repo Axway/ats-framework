@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.exceptions.DbException;

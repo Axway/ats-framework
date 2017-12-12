@@ -58,8 +58,8 @@
         <apache.xercesImpl.version>2.10.0</apache.xercesImpl.version>
 
         <!-- Needed for jTDS -->
-        <apache.commons-dbcp.version>1.4</apache.commons-dbcp.version>
-        <apache.commons-pool.version>1.5.5</apache.commons-pool.version>
+        <apache.commons-dbcp.version>2.11</apache.commons-dbcp.version>
+        <apache.commons-pool.version>2.4.3</apache.commons-pool.version>
         <commons-io.version>2.4</commons-io.version>
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
         <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->

@@ -18,6 +18,7 @@ package com.axway.ats.core.dbaccess.mssql;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import com.axway.ats.core.BaseTest;
@@ -45,7 +46,7 @@ public class Test_DbConnSQLServer extends BaseTest {
 
         DbConnSQLServer dbConnection = new DbConnSQLServer("host", "db", "user", "pass");
 
-        assertEquals(org.apache.commons.dbcp.BasicDataSource.class, dbConnection.getDataSource().getClass());
+        assertEquals(BasicDataSource.class, dbConnection.getDataSource().getClass());
     }
 
 }

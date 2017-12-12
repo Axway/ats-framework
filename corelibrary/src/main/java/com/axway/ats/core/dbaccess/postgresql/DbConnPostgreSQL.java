@@ -15,17 +15,19 @@
  */
 package com.axway.ats.core.dbaccess.postgresql;
 
+import java.io.PrintWriter;
 import java.sql.Driver;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnPostgreSQL extends DbConnection {
 
@@ -117,20 +119,44 @@ public class DbConnPostgreSQL extends DbConnection {
 
         // PostgreSQL does not provide connection pool (as of version 42.1.3) so make one using Apache Commons DBCP 
         ds = new BasicDataSource();
-        ds.setMaxWait(60 * 1000); // wait 60 sec for new connection
-        //ds.setMaxActive( -1 );
-        //ds.setMaxIdle( 1000 );
+
+        int maxTotal = 8;
+        String maxTotalString = System.getProperty("dbcp.maxTotal");
+        if (!StringUtils.isNullOrEmpty(maxTotalString)) {
+            maxTotal = Integer.parseInt(maxTotalString);
+        }
+        ds.setMaxTotal(maxTotal);
+        log.info(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +" Max number of active connections is " + maxTotal);
+
+        long maxWaitMillis = 60 * 1000; // wait 60 sec for new connection
+        String maxWaitMillisString = System.getProperty("dbcp.maxWaitMillis");
+        if (!StringUtils.isNullOrEmpty(maxWaitMillisString)) {
+            maxWaitMillis = Integer.parseInt(maxWaitMillisString);
+        }
+        ds.setMaxWaitMillis(maxWaitMillis);
+        log.info(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +" Connection creation wait is " + maxWaitMillis
+                 + " msec");
 
         String logAbandoned = System.getProperty("dbcp.logAbandoned");
         if (logAbandoned != null && ("true".equalsIgnoreCase(logAbandoned))
             || "1".equalsIgnoreCase(logAbandoned)) {
-            log.info("Will log abandoned connections if not cleaned in 120 sec");
+            String removeAbandonedTimeoutString = System.getProperty("dbcp.removeAbandonedTimeout");
+            int removeAbandonedTimeout = (int) ds.getMaxWaitMillis() / (2 * 1000);
+            if (!StringUtils.isNullOrEmpty(removeAbandonedTimeoutString)) {
+                removeAbandonedTimeout = Integer.parseInt(removeAbandonedTimeoutString);
+            }
+            log.info(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +" Will log and remove abandoned connections if not cleaned in " + removeAbandonedTimeout
+                     + " sec");
             // log not closed connections
-            ds.setRemoveAbandoned(true);
             ds.setLogAbandoned(true); // issue stack trace of not closed connection
-            ds.setRemoveAbandonedTimeout(120); // 120 sec - 2 min
+            ds.setAbandonedUsageTracking(true);
+            ds.setLogExpiredConnections(true);
+            ds.setRemoveAbandonedTimeout(removeAbandonedTimeout);
+            ds.setValidationQuery("SELECT 1");
+            ds.setRemoveAbandonedOnBorrow(true);
+            ds.setRemoveAbandonedOnMaintenance(true);
+            ds.setAbandonedLogWriter(new PrintWriter(System.err));
         }
-
         ds.setDriverClassName(getDriverClass().getName());
         ds.setUsername(user);
         ds.setPassword(password);
