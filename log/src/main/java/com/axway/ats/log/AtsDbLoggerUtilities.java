@@ -22,7 +22,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.function.Consumer;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -182,13 +182,10 @@ public class AtsDbLoggerUtilities {
 
         if (response.getStatusLine().getStatusCode() != 200) {
             try {
-                IOUtils.readLines(response.getEntity().getContent()).forEach(new Consumer<String>() {
-                    @Override
-                    public void accept( String t ) {
-
-                        logger.info(t);
-                    }
-                });
+                List<String> lines = IOUtils.readLines(response.getEntity().getContent());
+                for (String line : lines) {
+                    logger.info(line);
+                }
             } catch (Exception e) {
                 logger.error("unable to read response entity", e);
             }
