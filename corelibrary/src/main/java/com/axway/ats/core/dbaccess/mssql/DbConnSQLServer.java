@@ -218,11 +218,11 @@ public class DbConnSQLServer extends DbConnection {
                 ds.setAbandonedUsageTracking(true);
                 ds.setLogExpiredConnections(true);
                 ds.setRemoveAbandonedTimeout(removeAbandonedTimeout);
-                ds.setValidationQuery("SELECT 1");
                 ds.setRemoveAbandonedOnBorrow(true);
                 ds.setRemoveAbandonedOnMaintenance(true);
                 ds.setAbandonedLogWriter(new PrintWriter(System.err));
             }
+            ds.setValidationQuery("SELECT 1");
             ds.setDriverClassName(getDriverClass().getName());
             ds.setUsername(user);
             ds.setPassword(password);
