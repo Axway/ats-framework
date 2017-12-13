@@ -18,8 +18,8 @@ package com.axway.ats.environment.database;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -66,8 +66,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         isJDBC4 = checkDriverVersion(dbProvider);
     }
 
-    public void restore(
-                         String backupFileName ) throws DatabaseEnvironmentCleanupException {
+    public void restore( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         BufferedReader backupReader = null;
         Connection connection = null;
@@ -205,7 +204,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      List<ColumnDescription> columns,
                                      DbTable table,
                                      DbRecordValuesList[] records,
-                                     FileWriter fileWriter ) throws IOException {
+                                     Writer fileWriter ) throws IOException {
 
         if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
@@ -275,8 +274,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     @Override
-    protected void writeDeleteStatements(
-                                          FileWriter fileWriter ) throws IOException {
+    protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
 
         if (this.includeDeleteStatements) {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
@@ -291,8 +289,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     // escapes the characters in the value string, according to the MySQL manual. This
     // method escape each symbol *even* if the symbol itself is part of an escape sequence
-    protected String escapeValue(
-                                  String fieldValue ) {
+    protected String escapeValue( String fieldValue ) {
 
         StringBuilder result = new StringBuilder();
         for (char currentCharacter : fieldValue.toCharArray()) {
@@ -389,8 +386,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         return "";
     }
 
-    private boolean checkDriverVersion(
-                                        MysqlDbProvider dbProvider ) {
+    private boolean checkDriverVersion( MysqlDbProvider dbProvider ) {
 
         try {
             Connection connection = dbProvider.getConnection();

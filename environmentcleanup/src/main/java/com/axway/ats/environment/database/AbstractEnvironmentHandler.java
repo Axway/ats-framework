@@ -15,9 +15,11 @@
  */
 package com.axway.ats.environment.database;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -82,15 +84,14 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @throws DatabaseEnvironmentCleanupException  if the backup file cannot be created
      * @see com.axway.ats.environment.database.model.BackupHandler#createBackup(java.lang.String)
      */
-    public void createBackup(
-                              String backupFileName ) throws DatabaseEnvironmentCleanupException {
+    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         // reset flag, so delete statements will be inserted
         this.deleteStatementsInserted = false;
 
-        FileWriter fileWriter = null;
+        BufferedWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter(new File(backupFileName));
+            fileWriter = new BufferedWriter(new FileWriter(new File(backupFileName)));
             log.debug("Dumping database backup to file '" + backupFileName + "'");
 
             writeBackupToFile(fileWriter);
@@ -117,7 +118,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @param backupFileName backup file name
      */
     private void markBackupFileAsDamaged(
-                                          FileWriter fileWriter,
+                                          Writer fileWriter,
                                           String backupFileName ) {
 
         try {
@@ -151,10 +152,9 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @throws DbException on error reading from the database
      * @throws ParseException
      */
-    protected void writeBackupToFile(
-                                      FileWriter fileWriter ) throws IOException,
-                                                              DatabaseEnvironmentCleanupException,
-                                                              DbException, ParseException {
+    protected void writeBackupToFile( Writer fileWriter ) throws IOException,
+                                                          DatabaseEnvironmentCleanupException,
+                                                          DbException, ParseException {
 
         if (disableForeignKeys) {
             fileWriter.write(disableForeignKeyChecksStart());
@@ -212,10 +212,9 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                                               List<ColumnDescription> columnsToSelect,
                                               DbTable dbTable,
                                               DbRecordValuesList[] records,
-                                              FileWriter fileWriter ) throws IOException, ParseException;
+                                              Writer fileWriter ) throws IOException, ParseException;
 
-    protected String getColumnsString(
-                                       List<ColumnDescription> columns ) {
+    protected String getColumnsString( List<ColumnDescription> columns ) {
 
         StringBuilder columnsBuilder = new StringBuilder();
 
@@ -256,8 +255,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @param dbTable   an instance of DbTable describing the database table
      * @see com.axway.ats.environment.database.model.BackupHandler#addTable(com.axway.ats.environment.database.model.DbTable)
      */
-    public void addTable(
-                          DbTable dbTable ) {
+    public void addTable( DbTable dbTable ) {
 
         if (dbTables.containsKey(dbTable.getTableName())) {
             log.warn("DB table with name '" + dbTable.getTableName()
@@ -275,8 +273,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @param foreignKeyCheck   enable or disable
      * @see com.axway.ats.environment.database.model.BackupHandler#setForeignKeyCheck(boolean)
      */
-    public void setForeignKeyCheck(
-                                    boolean foreignKeyCheck ) {
+    public void setForeignKeyCheck( boolean foreignKeyCheck ) {
 
         this.disableForeignKeys = foreignKeyCheck;
 
@@ -290,8 +287,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @param includeDeleteStatements   enable or disable
      * @see com.axway.ats.environment.database.model.BackupHandler#setIncludeDeleteStatements(boolean)
      */
-    public void setIncludeDeleteStatements(
-                                            boolean includeDeleteStatements ) {
+    public void setIncludeDeleteStatements( boolean includeDeleteStatements ) {
 
         this.includeDeleteStatements = includeDeleteStatements;
 
@@ -305,15 +301,13 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @param lockTables    enable or disable
      * @see com.axway.ats.environment.database.model.BackupHandler#setLockTables(boolean)
      */
-    public void setLockTables(
-                               boolean lockTables ) {
+    public void setLockTables( boolean lockTables ) {
 
         this.addLocks = lockTables;
 
     }
 
-    protected abstract void writeDeleteStatements(
-                                                   FileWriter fileWriter ) throws IOException;
+    protected abstract void writeDeleteStatements( Writer fileWriter ) throws IOException;
 
     /**
      * Release the database connection

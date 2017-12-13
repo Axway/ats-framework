@@ -18,8 +18,8 @@ package com.axway.ats.environment.database;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -114,7 +114,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                                      List<ColumnDescription> columns,
                                      DbTable table,
                                      DbRecordValuesList[] records,
-                                     FileWriter fileWriter ) throws IOException, ParseException {
+                                     Writer fileWriter ) throws IOException, ParseException {
 
         // TODO : exclusive table locks START
 
@@ -239,8 +239,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     @Override
-    protected void writeDeleteStatements(
-                                          FileWriter fileWriter ) throws IOException {
+    protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
 
         if (this.includeDeleteStatements) {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
@@ -319,8 +318,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     /**
      * @see com.axway.ats.environment.database.model.RestoreHandler#restore(java.lang.String)
      */
-    public void restore(
-                         String backupFileName ) throws DatabaseEnvironmentCleanupException {
+    public void restore( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         BufferedReader backupReader = null;
         Connection connection = null;
