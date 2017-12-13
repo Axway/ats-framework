@@ -35,6 +35,7 @@ import com.axway.ats.agent.webapp.client.AgentException_Exception;
 import com.axway.ats.agent.webapp.client.AgentService;
 import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
+import com.axway.ats.core.AtsVersion;
 import com.axway.ats.junit.BaseTestWebapps;
 
 @RunWith( PowerMockRunner.class)
@@ -58,7 +59,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
 
         expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
         expect(mockAgentServicePool.getClient("10.0.0.2")).andReturn(mockAgentService);
-        mockAgentService.pushConfiguration(isA(byte[].class));
+        expect(mockAgentService.pushConfiguration(isA(byte[].class))).andReturn(AtsVersion.getAtsVersion());
 
         replayAll();
 
