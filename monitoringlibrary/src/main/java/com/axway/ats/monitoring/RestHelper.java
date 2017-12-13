@@ -39,6 +39,8 @@ public class RestHelper {
 
     public static final String INITIALIZE_DB_CONNECTION_RELATIVE_URI          = "/initializeDbConnection";
 
+    public static final String GET_AGENT_VERSION_RELATIVE_URI                 = "/getAgentVersion";
+
     public static final String JOIN_TESTCASE_RELATIVE_URI                     = "/joinTestcase";
 
     public static final String INITIALIZE_MONITORING_RELATIVE_URI             = "/initializeMonitoring";
@@ -67,6 +69,7 @@ public class RestHelper {
 
     private RestClient         restClient;
     private String             uid;
+    private String             agentVersion;
 
     public RestHelper() {}
 
@@ -80,6 +83,8 @@ public class RestHelper {
 
         if (relativeRestUri.endsWith(INITIALIZE_DB_CONNECTION_RELATIVE_URI)) {
             jsonBody = JsonMonitoringUtils.constructInitializeDbConnectionJson(values);
+        } else if (relativeRestUri.endsWith(GET_AGENT_VERSION_RELATIVE_URI)) {
+            jsonBody = JsonMonitoringUtils.constructGetAgentVersionJson(values);
         } else if (relativeRestUri.endsWith(JOIN_TESTCASE_RELATIVE_URI)) {
             jsonBody = JsonMonitoringUtils.constructJoinTestcaseJson(values);
         } else if (relativeRestUri.endsWith(INITIALIZE_MONITORING_RELATIVE_URI)) {
@@ -116,6 +121,10 @@ public class RestHelper {
         if (relativeRestUri.endsWith(INITIALIZE_DB_CONNECTION_RELATIVE_URI)) {
             this.uid = response.getBodyAsJson().getString(ApplicationContext.ATS_UID_SESSION_TOKEN);
             synchronizeUidWithLocalOne();
+        }
+
+        if (relativeRestUri.endsWith(GET_AGENT_VERSION_RELATIVE_URI)) {
+            this.agentVersion = response.getBodyAsJson().getString("agent_version");
         }
 
         return response;
@@ -213,6 +222,11 @@ public class RestHelper {
             throw new RuntimeException("Could not disconnect, because RestClient is not initialized.");
         }
 
+    }
+
+    public String getAgentVersion() {
+
+        return this.agentVersion;
     }
 
 }

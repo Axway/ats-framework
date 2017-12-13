@@ -24,6 +24,8 @@ import java.util.Map;
 public class JsonMonitoringUtils {
 
     public static final String   INITIALIZE_DB_CONNECTION_ACTION_NAME    = "Initialize Db Connection";
+    
+    public static final String   GET_AGENT_VERSION_ACTION_NAME           = "Get Agent Version";
 
     public static final String   INITIALIZE_MONITORING_ACTION_NAME       = "Initialize Monitoring";
 
@@ -101,6 +103,12 @@ public class JsonMonitoringUtils {
 
         return constructJson(INITIALIZE_DB_CONNECTION_ACTION_NAME, INITIALIZE_DB_CONNECTION_KEYS, values);
     }
+    
+    public static String constructGetAgentVersionJson(
+                                                   Object[] values ) throws IllegalArgumentException {
+
+       return constructJson(GET_AGENT_VERSION_ACTION_NAME, UID_ONLY_KEYS, values);
+   }
 
     public static String constructJoinTestcaseJson(
                                                     Object[] values ) throws IllegalArgumentException {

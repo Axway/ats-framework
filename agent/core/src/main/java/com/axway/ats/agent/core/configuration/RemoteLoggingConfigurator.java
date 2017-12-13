@@ -99,8 +99,8 @@ public class RemoteLoggingConfigurator implements Configurator {
 
                     }
 
-                    //set the effective logging level for threshold if such is not set
-                    if (appenderConfiguration.getLoggingThreshold() == null) {
+                    //set the effective logging level for threshold if new one is set
+                    if (appenderConfiguration.getLoggingThreshold() != log.getLevel()) {
 
                         /*
                          * Log4j is deprecating the Priority class used by setLoggingThreshold,

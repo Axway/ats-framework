@@ -22,13 +22,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.monitoring.MonitoringException;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.utils.HostUtils;
@@ -660,9 +659,39 @@ public class SystemMonitor {
             // the agent was not configured, so configure it
             this.configuredAgents.add(monitoredHost);
             initializeDbConnection(monitoredHost);
+            checkAgentVersion(monitoredHost);
             joinTestcase(monitoredHost);
             initializeMonitoring(monitoredHost);
         }
+    }
+
+    private void checkAgentVersion( String monitoredHost ) {
+
+        String agentVersion = getAgentVersion(monitoredHost);
+        String atsVersion = AtsVersion.getAtsVersion();
+        if (!atsVersion.equals(agentVersion)) {
+            log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
+                     + " with ATS agent version " + agentVersion + " located at '"
+                     + HostUtils.getAtsAgentIpAndPort(monitoredHost)
+                     + "'. This might cause incompatibility problems!");
+        }
+
+    }
+
+    private String getAgentVersion( String monitoredHost ) {
+
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                                                     RestHelper.GET_AGENT_VERSION_RELATIVE_URI,
+                                                     "There were errors while getting ATS Agent version",
+                                                     new Object[]{ null });
+
+        if (!StringUtils.isNullOrEmpty(errorMsg)) {
+            throw new MonitoringException(errorMsg);
+        }
+
+        return this.restHelpers.get(monitoredHost).getAgentVersion();
+
     }
 
     /**

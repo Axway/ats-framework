@@ -52,6 +52,7 @@ import com.axway.ats.agent.core.monitoring.queue.QueueExecutionStatistics;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.core.threads.ThreadsPerCaller;
@@ -668,7 +669,7 @@ public class AgentWsImpl {
      */
     @SuppressWarnings( "unchecked")
     @WebMethod
-    public void pushConfiguration(
+    public String pushConfiguration(
                                    @WebParam( name = "configurators") byte[] serializedConfigurators ) throws AgentException {
 
         final String caller = getCaller();
@@ -718,6 +719,8 @@ public class AgentWsImpl {
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
+        
+        return AtsVersion.getAtsVersion();
     }
 
     /**
@@ -729,7 +732,7 @@ public class AgentWsImpl {
 
         return System.getProperty(AtsSystemProperties.AGENT_HOME_FOLDER);
     }
-
+    
     @WebMethod
     public synchronized int getNumberPendingLogEvents() throws AgentException {
 
