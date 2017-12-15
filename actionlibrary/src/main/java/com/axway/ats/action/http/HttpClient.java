@@ -35,6 +35,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,9 +71,11 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
@@ -80,11 +83,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
@@ -97,6 +102,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.gss.GssClient;
 import com.axway.ats.core.gss.spnego.SPNegoSchemeFactory;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.SslUtils;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
@@ -213,21 +219,25 @@ public class HttpClient {
         public static final int ALL     = HEADERS | BODY;
     }
 
-    private int                       debugLevel            = HttpDebugLevel.NONE;
+    protected int                     debugLevel            = HttpDebugLevel.NONE;
 
-    private String                    url;
+    protected boolean                 isOverSsl;
+    protected String                  url;
     private String                    actualUrl;
     private List<String>              resourcePath          = new ArrayList<String>();
 
-    private int                       connectTimeoutSeconds = 0;
-    private int                       readTimeoutSeconds    = 0;
-
+    // Basic authentication info
     protected AuthType                authType              = AuthType.demand;
-    // Basic authorization info
     protected String                  username;
     protected String                  password;
 
-    private CloseableHttpClient       httpClient;
+    protected CloseableHttpClient     httpClient;
+    protected HttpClientContext       httpContext           = HttpClientContext.create();
+
+    // socket settings
+    protected int                     connectTimeoutSeconds = 0;
+    protected int                     readTimeoutSeconds    = 0;
+    protected int                     socketBufferSize      = 0;
 
     // the request body(in single or many parts)
     private HttpEntity                requestBody;
@@ -235,7 +245,7 @@ public class HttpClient {
 
     private Map<String, List<String>> requestParameters     = new HashMap<String, List<String>>();
 
-    private List<HttpHeader>          requestHeaders        = new ArrayList<HttpHeader>();
+    protected List<HttpHeader>        requestHeaders        = new ArrayList<HttpHeader>();
     private List<HttpHeader>          actualRequestHeaders  = new ArrayList<HttpHeader>();
 
     // For SSL
@@ -294,6 +304,8 @@ public class HttpClient {
     public void setURL( String url ) {
 
         this.url = url;
+
+        this.isOverSsl = url.toLowerCase().startsWith("https");
     }
 
     /**
@@ -713,7 +725,8 @@ public class HttpClient {
         FileInputStream fis = null;
         try {
             clientSSLKeyStorePassword = password;
-            clientSSLKeyStore = KeyStore.getInstance("PKCS12");
+            clientSSLKeyStore = SslUtils.loadKeystore(clientSSLCertificateP12File.getAbsolutePath(),
+                                                      password);
             fis = new FileInputStream(clientSSLCertificateP12File);
             clientSSLKeyStore.load(fis, clientSSLKeyStorePassword.toCharArray());
 
@@ -971,6 +984,65 @@ public class HttpClient {
     }
 
     /**
+     * Add Cookie
+     *
+     * @param name cookie name
+     * @param value cookie value
+     * @param domain cookie domain
+     * @param isSecure whether the cookie is secure or not
+     * @param expirationDate cookie expiration date
+     * @param path cookie path
+     */
+    public void addCookie( String name, String value, String domain, String path, Date expirationDate,
+                           boolean isSecure ) {
+
+        BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
+        if (cookieStore == null) {
+            cookieStore = new BasicCookieStore();
+            httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+        }
+
+        BasicClientCookie cookie = new BasicClientCookie(name, value);
+        cookie.setDomain(domain);
+        cookie.setPath(path);
+        cookie.setExpiryDate(expirationDate);
+        cookie.setSecure(isSecure);
+        cookieStore.addCookie(cookie);
+    }
+
+    /**
+     * Remove a Cookie by name and path
+     *
+     * @param name cookie name
+     * @param path cookie path
+     */
+    public void removeCookie( String name, String path ) {
+
+        BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
+        if (cookieStore != null) {
+
+            List<Cookie> cookies = cookieStore.getCookies();
+            cookieStore.clear();
+            for (Cookie cookie : cookies) {
+                if (!cookie.getName().equals(name) || !cookie.getPath().equals(path)) {
+                    cookieStore.addCookie(cookie);
+                }
+            }
+        }
+    }
+
+    /**
+     * Clear all cookies
+     */
+    public void clearCookies() {
+
+        BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
+        if (cookieStore != null) {
+            cookieStore.clear();
+        }
+    }
+
+    /**
      * Send the request to the endpoint using a HTTP POST.
      *
      * @return The response
@@ -1061,18 +1133,10 @@ public class HttpClient {
         super.finalize();
     }
 
-    /**
-     * Main execute method that sends request and receives response.
-     *
-     * @param method The POST/PUT etc. method
-     * @return The response
-     * @throws HttpException
-     */
-    private HttpResponse execute( HttpRequestBase httpMethod ) throws HttpException {
+    protected void initialzeHttpClient() {
 
-        HttpClientContext localContext = null;
+        HttpClientBuilder httpClientBuilder = HttpClients.custom();
         if (httpClient == null) {
-            HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
             // Add this interceptor to get the values of all HTTP headers in the request.
             // Some of them are provided by the user while others are generated by Apache HTTP Components.
@@ -1093,38 +1157,57 @@ public class HttpClient {
 
             });
 
-            // Setup authentication
-            if (!StringUtils.isNullOrEmpty(username)) {
-                localContext = setupAuthentication(httpClientBuilder);
+            // connect and read timeouts
+            httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
+                                                                   .setConnectTimeout(connectTimeoutSeconds
+                                                                                      * 1000)
+                                                                   .setSocketTimeout(readTimeoutSeconds
+                                                                                     * 1000)
+                                                                   .build());
+
+            // socket buffer size
+            if (this.socketBufferSize > 0) {
+                httpClientBuilder.setDefaultSocketConfig(SocketConfig.custom()
+                                                                     .setRcvBufSize(this.socketBufferSize)
+                                                                     .setSndBufSize(this.socketBufferSize)
+                                                                     .build());
             }
 
-            // Setup SSL
-            if (url.toLowerCase().startsWith("https")) {
+            // SSL
+            if (isOverSsl) {
                 setupSSL(httpClientBuilder);
-            }
-
-            // SocketConfig socketConfig = SocketConfig.copy( SocketConfig.DEFAULT )
-            //     .setSoTimeout( socket_timeout ).setTcpNoDelay( true ).setSoReuseAddress( true ).build();
-            // httpClientBuilder.setDefaultSocketConfig( socketConfig );
-
-            // all important options are set, now build the HTTP client
-            if (AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST != null
-                && AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT != null) {
-
-                HttpHost proxy = new HttpHost(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST,
-                                              Integer.parseInt(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
-                DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
-                httpClient = httpClientBuilder.setRoutePlanner(routePlanner).build();
-            } else {
-                httpClient = httpClientBuilder.build();
             }
         }
 
-        // Setup read and connect timeouts
-        httpMethod.setConfig(RequestConfig.custom()
-                                          .setSocketTimeout(readTimeoutSeconds * 1000)
-                                          .setConnectTimeout(connectTimeoutSeconds * 1000)
-                                          .build());
+        // setup authentication
+        if (!StringUtils.isNullOrEmpty(username)) {
+            setupAuthentication(httpClientBuilder);
+        }
+
+        // set proxy
+        if (AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST != null
+            && AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT != null) {
+
+            HttpHost proxy = new HttpHost(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST,
+                                          Integer.parseInt(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
+            DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+            httpClientBuilder.setRoutePlanner(routePlanner);
+        }
+
+        // now build the client after we have already set everything needed on the client builder
+        httpClient = httpClientBuilder.build();
+    }
+
+    /**
+     * Main execute method that sends request and receives response.
+     *
+     * @param method The POST/PUT etc. method
+     * @return The response
+     * @throws HttpException
+     */
+    private HttpResponse execute( HttpRequestBase httpMethod ) throws HttpException {
+
+        initialzeHttpClient();
 
         // Add HTTP headers
         addHeadersToHttpMethod(httpMethod);
@@ -1185,7 +1268,7 @@ public class HttpClient {
 
         // Send the request as POST/GET etc. and return response.
         try {
-            return httpClient.execute(httpMethod, responseHandler, localContext);
+            return httpClient.execute(httpMethod, responseHandler, httpContext);
         } catch (IOException e) {
             throw new HttpException("Exception occurred sending message to URL '" + actualUrl
                                     + "' with a read timeout of " + readTimeoutSeconds
@@ -1265,7 +1348,7 @@ public class HttpClient {
      * Pass the user-specified HTTP headers to the Apache HTTP Components
      * method object.
      */
-    private void addHeadersToHttpMethod( HttpRequestBase httpMethod ) {
+    protected void addHeadersToHttpMethod( HttpRequestBase httpMethod ) {
 
         for (HttpHeader header : requestHeaders) {
             for (String value : header.getValues()) {
@@ -1313,14 +1396,12 @@ public class HttpClient {
      * @return The context
      * @throws HttpException
      */
-    private HttpClientContext setupAuthentication( HttpClientBuilder httpClientBuilder ) throws HttpException {
-
-        HttpClientContext localContext = null;
+    private void setupAuthentication( HttpClientBuilder httpClientBuilder ) throws HttpException {
 
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
                                      new UsernamePasswordCredentials(username, password));
-        httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
+        httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
 
         if (authType == AuthType.always) {
             AuthCache authCache = new BasicAuthCache();
@@ -1337,9 +1418,7 @@ public class HttpClient {
             authCache.put(target, basicAuth);
 
             // Add AuthCache to the execution context
-            localContext = HttpClientContext.create();
-            localContext.setAuthCache(authCache);
-
+            httpContext.setAuthCache(authCache);
         } else {
             if (!StringUtils.isNullOrEmpty(kerberosServicePrincipalName)) {
                 GssClient gssClient = new GssClient(username, password, kerberosClientKeytab, krb5ConfFile);
@@ -1352,8 +1431,6 @@ public class HttpClient {
                 httpClientBuilder.setDefaultAuthSchemeRegistry(authSchemeRegistry);
             }
         }
-
-        return localContext;
     }
 
     /**
@@ -1368,17 +1445,22 @@ public class HttpClient {
         try {
             SSLContextBuilder sslContextBuilder = SSLContexts.custom();
 
-            sslContextBuilder.loadTrustMaterial(convertToKeyStore(trustedServerCertificates),
-                                                new TrustStrategy() {
+            // set trust material
+            if (trustedServerCertificates != null && trustedServerCertificates.length > 0) {
+                sslContextBuilder.loadTrustMaterial(convertToKeyStore(trustedServerCertificates),
+                                                    new TrustStrategy() {
 
-                                                    @Override
-                                                    public boolean isTrusted( X509Certificate[] chain,
-                                                                              String authType ) throws CertificateException {
+                                                        @Override
+                                                        public boolean isTrusted( X509Certificate[] chain,
+                                                                                  String authType ) throws CertificateException {
 
-                                                        return checkIsTrusted(chain);
-                                                    }
-                                                });
+                                                            return checkIsTrusted(chain);
+                                                        }
+                                                    });
 
+            }
+
+            // set key material
             if (clientSSLKeyStore != null) {
                 sslContextBuilder.loadKeyMaterial(clientSSLKeyStore,
                                                   clientSSLKeyStorePassword.toCharArray());

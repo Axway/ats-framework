@@ -118,6 +118,11 @@
             <artifactId>ats-log</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-actionlibrary</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- <dependency> -->
         <!-- <groupId>com.axway.ats.framework</groupId> -->
         <!-- <artifactId>ats-testharness</artifactId> -->

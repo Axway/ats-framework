@@ -36,13 +36,10 @@ import org.powermock.reflect.Whitebox;
 
 import com.axway.ats.action.BaseTest;
 import com.axway.ats.action.filesystem.FileSystemOperations;
-import com.axway.ats.action.filetransfer.FileTransferClient;
-import com.axway.ats.action.filetransfer.FileTransferConfigurator;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.common.filetransfer.TransferProtocol;
 import com.axway.ats.common.system.OperatingSystemType;
-import com.axway.ats.core.filetransfer.ClientFactory;
 import com.axway.ats.core.filetransfer.FtpClient;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.validation.exceptions.InvalidInputArgumentsException;

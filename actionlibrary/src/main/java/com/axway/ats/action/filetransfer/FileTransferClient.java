@@ -20,14 +20,12 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
+import com.axway.ats.action.http.FileTransferHttpClient;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.common.filetransfer.TransferProtocol;
-import com.axway.ats.core.filetransfer.ClientFactory;
 import com.axway.ats.core.filetransfer.FtpsClient;
-import com.axway.ats.core.filetransfer.HttpClient;
-import com.axway.ats.core.filetransfer.HttpsClient;
 import com.axway.ats.core.filetransfer.SftpClient;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.utils.IoUtils;
@@ -57,7 +55,7 @@ public class FileTransferClient {
 
     /** Constants for setting FTPS connection type. */
     @PublicAtsApi
-    public static final String    FTPS_CONNNECTION_TYPE                            = FtpsClient.FTPS_CONNECTION_TYPE;                            // duplicate in order to prevent reverse reference from CoreLibrary to ActionLibrary
+    public static final String    FTPS_CONNNECTION_TYPE                            = FtpsClient.FTPS_CONNECTION_TYPE;                             // duplicate in order to prevent reverse reference from CoreLibrary to ActionLibrary
     @PublicAtsApi
     public static final Integer   FTPS_CONNNECTION_TYPE__IMPLICIT                  = FtpsClient.FTPS_CONNECTION_TYPE__IMPLICIT;
     @PublicAtsApi
@@ -78,17 +76,17 @@ public class FileTransferClient {
 
     /** Property for customizing the HTTP/HTTPS client's socket buffer in bytes */
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_SOCKET_BUFFER_SIZE                    = HttpClient.HTTP_HTTPS_SOCKET_BUFFER_SIZE;
+    public final static String    HTTP_HTTPS_SOCKET_BUFFER_SIZE                    = FileTransferHttpClient.SOCKET_BUFFER_SIZE;
     /**
      * Constants for setting HTTP/HTTPS client's upload method.
      * The default value is PUT
      */
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_UPLOAD_METHOD                         = HttpClient.HTTP_HTTPS_UPLOAD_METHOD;
+    public final static String    HTTP_HTTPS_UPLOAD_METHOD                         = FileTransferHttpClient.UPLOAD_METHOD;
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_UPLOAD_METHOD__PUT                    = HttpClient.HTTP_HTTPS_UPLOAD_METHOD__PUT;
+    public final static String    HTTP_HTTPS_UPLOAD_METHOD__PUT                    = FileTransferHttpClient.UPLOAD_METHOD__PUT;
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_UPLOAD_METHOD__POST                   = HttpClient.HTTP_HTTPS_UPLOAD_METHOD__POST;
+    public final static String    HTTP_HTTPS_UPLOAD_METHOD__POST                   = FileTransferHttpClient.UPLOAD_METHOD__POST;
 
     /**
      * By default the HTTP/HTTPS client will first try to do the transfer without passing user credentials,
@@ -96,38 +94,30 @@ public class FileTransferClient {
      * This constant allows forcing the client to pass the user credentials with the very first headers.
      */
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION       = HttpClient.HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION;
+    public final static String    HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION       = FileTransferHttpClient.PREEMPTIVE_BASIC_AUTHENTICATION;
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE = HttpClient.HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE;
+    public final static String    HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE = FileTransferHttpClient.PREEMPTIVE_BASIC_AUTHENTICATION__TRUE;
 
     /**
      * Allows adding HTTP headers to the HTTP/S requests.
      * The values passed must be in the form '<header key>:<header value>'
      */
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_REQUEST_HEADER                        = HttpClient.HTTP_HTTPS_REQUEST_HEADER;
+    public final static String    HTTP_HTTPS_REQUEST_HEADER                        = FileTransferHttpClient.REQUEST_HEADER;
 
     /**
      * By the default the content type header on upload is set to "application/octet-stream".
      * This constant allows setting some other value for this header.
      */
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_UPLOAD_CONTENT_TYPE                   = HttpClient.HTTP_HTTPS_UPLOAD_CONTENT_TYPE;
+    public final static String    HTTP_HTTPS_UPLOAD_CONTENT_TYPE                   = FileTransferHttpClient.UPLOAD_CONTENT_TYPE;
 
     /**
      * Property to specify time in milliseconds for socket read timeout. By default there is no timeout and client waits indefinitely.
      * Value could be specified either as Integer object or String representing the number.
      */
     @PublicAtsApi
-    public final static String    HTTP_HTTPS_SOCKET_READ_TIMEOUT                   = HttpClient.HTTP_HTTPS_SOCKET_READ_TIMEOUT;
-
-    /** HTTPS encryption protocol. You can specify more than one using ',' as separator */
-    @PublicAtsApi
-    public static final String    HTTPS_ENCRYPTION_PROTOCOLS                       = HttpsClient.HTTPS_ENCRYPTION_PROTOCOLS;
-
-    /** HTTPS cipher suite. You can specify more than one using ',' as separator */
-    @PublicAtsApi
-    public static final String    HTTPS_CIPHER_SUITES                              = HttpsClient.HTTPS_CIPHER_SUITES;
+    public final static String    HTTP_HTTPS_SOCKET_READ_TIMEOUT                   = FileTransferHttpClient.SOCKET_READ_TIMEOUT;
 
     protected IFileTransferClient client                                           = null;
 
@@ -552,7 +542,7 @@ public class FileTransferClient {
      *
      * @return the internal object handling the actual operations
      */
-    public Object getInternalObject() {
+    public IFileTransferClient getInternalObject() {
 
         return this.client;
     }

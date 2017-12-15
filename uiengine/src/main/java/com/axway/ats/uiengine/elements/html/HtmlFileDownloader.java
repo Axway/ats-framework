@@ -15,14 +15,12 @@
  */
 package com.axway.ats.uiengine.elements.html;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 
-import com.axway.ats.core.filetransfer.HttpsClient;
+import com.axway.ats.action.http.FileTransferHttpClient;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.uiengine.AbstractHtmlDriver;
@@ -33,14 +31,12 @@ import com.axway.ats.uiengine.internal.driver.InternalObjectsEnum;
 
 public class HtmlFileDownloader {
 
-    private static final Logger log                             = Logger.getLogger(HtmlFileDownloader.class);
+    private WebDriver webDriver;
+    private String    downloadDir                     = UiEngineConfigurator.getInstance()
+                                                                            .getBrowserDownloadDir();
 
-    private WebDriver           webDriver;
-    private String              downloadDir                     = UiEngineConfigurator.getInstance()
-                                                                                      .getBrowserDownloadDir();
-
-    private boolean             mimicWebDriverCookieState       = true;
-    private int                 httpStatusOfLastDownloadAttempt = 0;
+    private boolean   mimicWebDriverCookieState       = true;
+    private int       httpStatusOfLastDownloadAttempt = 0;
 
     public HtmlFileDownloader( AbstractHtmlDriver browserDriver ) {
 
@@ -126,40 +122,36 @@ public class HtmlFileDownloader {
 
         URL url = new URL(downloadUrl);
         String fileName = url.getPath();
+        String remoteFilePath = null;
         if (fileName.indexOf('/') > -1) {
-            fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+            int separator = fileName.lastIndexOf('/');
+            remoteFilePath = fileName.substring(0, separator + 1);
+            fileName = fileName.substring(separator + 1);
         }
 
-        HttpsClient httpsClient = new HttpsClient();
-        httpsClient.connect(url.getHost());
+        FileTransferHttpClient transferClient = new FileTransferHttpClient();
+        transferClient.connect(url.getHost(), null, null);
 
         if (this.mimicWebDriverCookieState) {
 
             for (org.openqa.selenium.Cookie cookie : this.webDriver.manage().getCookies()) {
 
-                httpsClient.addCookie(cookie.getName(), cookie.getValue(), cookie.getDomain(),
-                                      cookie.getPath(), cookie.getExpiry(), cookie.isSecure());
+                transferClient.addCookie(cookie.getName(), cookie.getValue(), cookie.getDomain(),
+                                         cookie.getPath(), cookie.getExpiry(), cookie.isSecure());
             }
             if (this.webDriver instanceof org.openqa.selenium.phantomjs.PhantomJSDriver
                 && System.getProperty(PhantomJsDriver.HTTP_ONLY_COOKIES_PROPERTY) != null) {
 
                 for (org.openqa.selenium.Cookie cookie : PhantomJsDriver.getHttpOnlyCookies()) {
 
-                    httpsClient.addCookie(cookie.getName(), cookie.getValue(), cookie.getDomain(),
-                                          cookie.getPath(), cookie.getExpiry(), cookie.isSecure());
+                    transferClient.addCookie(cookie.getName(), cookie.getValue(), cookie.getDomain(),
+                                             cookie.getPath(), cookie.getExpiry(), cookie.isSecure());
                 }
             }
         }
 
-        File downloadedFile = new File(this.downloadDir + fileName);
-        log.debug("Downloading file: " + downloadedFile.getName());
-        org.apache.commons.io.FileUtils.copyInputStreamToFile(httpsClient.performGetRequest(url.getFile()),
-                                                              downloadedFile);
+        transferClient.downloadFile(this.downloadDir + fileName, remoteFilePath, fileName);
 
-        String downloadedFileAbsolutePath = downloadedFile.getAbsolutePath();
-        log.debug("File downloaded to '" + downloadedFileAbsolutePath + "'");
-
-        return downloadedFileAbsolutePath;
+        return this.downloadDir + fileName;
     }
-
 }

@@ -346,12 +346,11 @@ public class SslUtils {
             log.debug("Load keystore '" + keystoreFile + "' file with '" + keystorePassword + "' password");
         }
 
-        boolean keystoreLoaded = false;
         KeyStore keystore = null;
         try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
             keystore = KeyStore.getInstance("JKS");
             keystore.load(fis, keystorePassword.toCharArray());
-            keystoreLoaded = true;
+            return keystore;
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 log.debug("Error loading JKS keystore '" + keystoreFile + "' file with '" + keystorePassword
@@ -359,26 +358,20 @@ public class SslUtils {
             }
         }
 
-        if (!keystoreLoaded) {
-            try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
-                keystore = KeyStore.getInstance("PKCS12");
-                keystore.load(fis, keystorePassword.toCharArray());
-                keystoreLoaded = true;
-            } catch (Exception e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Error loading PKCS12 keystore '" + keystoreFile + "' file with '"
-                              + keystorePassword + "' password. Maybe its type is not PKCS12:\n"
-                              + e.getMessage());
-                }
+        try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
+            keystore = KeyStore.getInstance("PKCS12");
+            keystore.load(fis, keystorePassword.toCharArray());
+            return keystore;
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                log.debug("Error loading PKCS12 keystore '" + keystoreFile + "' file with '"
+                          + keystorePassword + "' password. Maybe its type is not PKCS12:\n"
+                          + e.getMessage());
             }
         }
 
-        if (!keystoreLoaded) {
-            throw new RuntimeException("Error loading keystore '" + keystoreFile + "' file with '"
-                                       + keystorePassword + "' password");
-        } else {
-            return keystore;
-        }
+        throw new RuntimeException("Error loading keystore '" + keystoreFile + "' file with '"
+                                   + keystorePassword + "' password");
     }
 
     /**
