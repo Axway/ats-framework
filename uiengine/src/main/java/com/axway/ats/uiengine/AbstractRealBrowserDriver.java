@@ -193,7 +193,6 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
                     profile.setPreference("plugin.state.flash", 2); // set to  "Always Activate"
 
                     profile.setAcceptUntrustedCertificates(true);
-                    profile.setEnableNativeEvents(true);
                 }
 
                 DesiredCapabilities capabilities = DesiredCapabilities.firefox();
