@@ -667,7 +667,7 @@ public class SystemMonitor {
 
     private void checkAgentVersion( String monitoredHost ) {
 
-        String agentVersion = getAgentVersion(monitoredHost);
+        String agentVersion = this.restHelpers.get(monitoredHost).getAgentVersion();
         String atsVersion = AtsVersion.getAtsVersion();
         if (!atsVersion.equals(agentVersion)) {
             log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
@@ -678,21 +678,6 @@ public class SystemMonitor {
 
     }
 
-    private String getAgentVersion( String monitoredHost ) {
-
-        String errorMsg = performMonitoringOperation(monitoredHost,
-                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                                                     RestHelper.GET_AGENT_VERSION_RELATIVE_URI,
-                                                     "There were errors while getting ATS Agent version",
-                                                     new Object[]{ null });
-
-        if (!StringUtils.isNullOrEmpty(errorMsg)) {
-            throw new MonitoringException(errorMsg);
-        }
-
-        return this.restHelpers.get(monitoredHost).getAgentVersion();
-
-    }
 
     /**
      * Removes the PassiveDbAppender on the agent, that was appended via

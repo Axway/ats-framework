@@ -41,6 +41,7 @@ import com.axway.ats.agent.webapp.restservice.model.pojo.BasePojo;
 import com.axway.ats.agent.webapp.restservice.model.pojo.DbConnectionPojo;
 import com.axway.ats.agent.webapp.restservice.model.pojo.ErrorPojo;
 import com.axway.ats.agent.webapp.restservice.model.pojo.JoinTestcasePojo;
+import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
@@ -120,7 +121,9 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         }
 
         String uid = dbConnectionPojo.getUid();
-        return Response.ok("{\"" + ApplicationContext.ATS_UID_SESSION_TOKEN + "\": " + "\"" + uid + "\"}")
+        String agentVersion = AtsVersion.getAtsVersion();
+        return Response.ok("{\"" + ApplicationContext.ATS_UID_SESSION_TOKEN + "\": " + "\"" + uid + "\",\""
+                           + "agent_version" + "\": " + "\"" + agentVersion + "\"}")
                        .build();
     }
 
