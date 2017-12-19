@@ -147,6 +147,9 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         this.username = username;
         this.password = password;
 
+        // set the URL as it is needed in some cases by the parent class methods
+        setURL(constructRemoteHostUrl("", ""));
+
         boolean needToInitializeClient = true;
         if (clientId != null) {
             // there's been a previous connection

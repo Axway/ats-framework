@@ -1458,6 +1458,18 @@ public class HttpClient {
                                                         }
                                                     });
 
+            } else {
+                // no trust material provided, we will trust no matter the remote party
+                sslContextBuilder.loadTrustMaterial(
+                                                    new TrustStrategy() {
+                                                        @Override
+                                                        public boolean
+                                                                isTrusted( X509Certificate[] chain,
+                                                                           String authType ) throws CertificateException {
+
+                                                            return true;
+                                                        }
+                                                    });
             }
 
             // set key material
