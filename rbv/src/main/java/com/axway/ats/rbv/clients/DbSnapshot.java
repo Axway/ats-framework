@@ -140,7 +140,7 @@ public class DbSnapshot extends DbVerification {
     @PublicAtsApi
     public boolean verifyDatabaseUpdated() throws RbvException {
 
-        verifyObjectExists();
+        verifyExists();
 
         //FIXME: change the method to void once everyone
         //removes their asserts

@@ -620,7 +620,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFileCheckRule();
 
-        List<MetaData> matchedMetaData = verifyObjectExists();
+        List<MetaData> matchedMetaData = verifyExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
         for (int i = 0; i < matchedMetaData.size(); i++) {
@@ -643,7 +643,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFileCheckRule();
 
-        verifyObjectDoesNotExist();
+        verifyDoesNotExist();
     }
 
     /**
@@ -661,7 +661,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFileCheckRule();
 
-        List<MetaData> matchedMetaData = verifyObjectAlwaysExists();
+        List<MetaData> matchedMetaData = verifyAlwaysExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
         for (int i = 0; i < matchedMetaData.size(); i++) {
@@ -685,7 +685,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFileCheckRule();
 
-        verifyObjectNeverExists();
+        verifyNeverExists();
     }
 
     /**
@@ -702,7 +702,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFolderCheckRule();
 
-        List<MetaData> matchedMetaData = verifyObjectExists();
+        List<MetaData> matchedMetaData = verifyExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
         for (int i = 0; i < matchedMetaData.size(); i++) {
@@ -725,7 +725,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFolderCheckRule();
 
-        verifyObjectDoesNotExist();
+        verifyDoesNotExist();
     }
 
     /**
@@ -743,7 +743,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFolderCheckRule();
 
-        List<MetaData> matchedMetaData = verifyObjectAlwaysExists();
+        List<MetaData> matchedMetaData = verifyAlwaysExists();
 
         FilePackage[] matchedFilePackages = new FilePackage[matchedMetaData.size()];
         for (int i = 0; i < matchedMetaData.size(); i++) {
@@ -767,7 +767,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         addFolderCheckRule();
 
-        verifyObjectNeverExists();
+        verifyNeverExists();
     }
 
     @Override

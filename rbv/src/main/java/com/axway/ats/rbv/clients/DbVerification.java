@@ -520,7 +520,7 @@ public class DbVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void verifyDbDataExists() throws RbvException {
 
-        verifyObjectExists();
+        verifyExists();
     }
 
     /**
@@ -534,7 +534,7 @@ public class DbVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void verifyDbDataDoesNotExist() throws RbvException {
 
-        verifyObjectDoesNotExist();
+        verifyDoesNotExist();
     }
 
     /**
@@ -549,7 +549,7 @@ public class DbVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void verifyDbDataAlwaysExists() throws RbvException {
 
-        verifyObjectAlwaysExists();
+        verifyAlwaysExists();
     }
 
     /**
@@ -563,7 +563,7 @@ public class DbVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void verifyDbDataNeverExists() throws RbvException {
 
-        verifyObjectNeverExists();
+        verifyNeverExists();
     }
 
     @Override

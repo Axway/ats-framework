@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,67 +49,67 @@ public abstract class VerificationSkeleton {
     }
 
     /**
-     * Verify the specified Object exists.
-     * <br><b>Note:</b> It returns the matched object back to the user in case 
-     * user wants to extract some data from it. 
-     * 
+     * Verify the specified object exists.
+     * <br><b>Note:</b> It returns the matched object back to the user in case
+     * user wants to extract some data from it.
+     *
      * <li> At the first successful poll - it will succeed
      * <li> At unsuccessful poll - it will retry until all polling attempts are over
-     * 
+     *
      * @return the matched object
      * @throws RbvException
      */
-    protected List<MetaData> verifyObjectExists() throws RbvException {
+    protected List<MetaData> verifyExists() throws RbvException {
 
         return verify(true, true, false);
     }
 
     /**
      * Verify the Object does not exist
-     * 
+     *
      * <li> At the first successful poll - it will succeed
      * <li> At unsuccessful poll - it will retry until all polling attempts are over
-     *  
+     *
      * @throws RbvException
      */
-    protected void verifyObjectDoesNotExist() throws RbvException {
+    protected void verifyDoesNotExist() throws RbvException {
 
         verify(false, true, false);
     }
 
     /**
      * Verify the Object exists for the whole polling duration
-     * 
-     * <li> At successful poll - it will retry until all polling attempts are over 
+     *
+     * <li> At successful poll - it will retry until all polling attempts are over
      * <li> At unsuccessful poll - it will fail
-     * 
+     *
      * @throws RbvException
      */
-    protected List<MetaData> verifyObjectAlwaysExists() throws RbvException {
+    protected List<MetaData> verifyAlwaysExists() throws RbvException {
 
         return verify(true, false, true);
     }
 
     /**
      * Verify the Object does not exist for the whole polling duration
-     * 
-     * <li> At successful poll - it will retry until all polling attempts are over 
+     *
+     * <li> At successful poll - it will retry until all polling attempts are over
      * <li> At unsuccessful poll - it will fail
-     * 
+     *
      * @throws RbvException
      */
-    protected void verifyObjectNeverExists() throws RbvException {
+    protected void verifyNeverExists() throws RbvException {
 
         verify(false, false, true);
     }
 
     /**
      * Verify that all rules match using the given expected result
-     * 
+     *
      * @param expectedResult the expected result
      * @param endOnFirstMatch end on first match or keep testing until all polling attempts are exhausted
      * @param endOnFirstFailure end or first failure or keep testing until all polling attempts are exhausted
-     * 
+     *
      * @return the matched meta data
      * @throws RbvException on error doing the verifications
      */
@@ -165,9 +165,9 @@ public abstract class VerificationSkeleton {
     }
 
     /**
-     * Set polling initial delay for the current instance only, 
+     * Set polling initial delay for the current instance only,
      * set negative value to use the default value as defined in the RBV Configuration
-     * 
+     *
      * @param pollingInitialDelay the initial delay in milliseconds
      */
     @PublicAtsApi
@@ -177,9 +177,9 @@ public abstract class VerificationSkeleton {
     }
 
     /**
-     * Set polling attempts for the current instance only, 
+     * Set polling attempts for the current instance only,
      * set negative value to use the default value as defined in the RBV Configuration
-     * 
+     *
      * @param pollingAttempts the number of attempts
      */
     @PublicAtsApi
@@ -189,9 +189,9 @@ public abstract class VerificationSkeleton {
     }
 
     /**
-     * Set polling interval for the current instance only, 
+     * Set polling interval for the current instance only,
      * set negative value to use the default value as defined in the RBV Configuration
-     * 
+     *
      * @param pollingInterval the interval between attempts in milliseconds
      */
     @PublicAtsApi
@@ -201,9 +201,9 @@ public abstract class VerificationSkeleton {
     }
 
     /**
-     * Set polling timeout for the current instance only, 
+     * Set polling timeout for the current instance only,
      * set negative value to use the default value as defined in the RBV Configuration
-     * 
+     *
      * @param pollingTimeout the polling timeout in milliseconds
      */
     @PublicAtsApi
@@ -214,7 +214,7 @@ public abstract class VerificationSkeleton {
 
     /**
      * Get the name of the monitor
-     * 
+     *
      * @return the name of the monitor used
      */
     protected abstract String getMonitorName();

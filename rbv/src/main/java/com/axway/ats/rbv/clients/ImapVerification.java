@@ -646,7 +646,7 @@ public class ImapVerification extends VerificationSkeleton {
     @PublicAtsApi
     public MimePackage verifyMessageExists() throws RbvException {
 
-        List<MetaData> matchedMetaData = verifyObjectExists();
+        List<MetaData> matchedMetaData = verifyExists();
 
         // At this place we know the verification succeeded and there is exactly one MimePackage matched
         return ((ImapMetaData) matchedMetaData.get(0)).getMimePackage();
@@ -664,7 +664,7 @@ public class ImapVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void verifyMessageDoesNotExist() throws RbvException {
 
-        verifyObjectDoesNotExist();
+        verifyDoesNotExist();
     }
 
     /**
@@ -681,7 +681,7 @@ public class ImapVerification extends VerificationSkeleton {
     @PublicAtsApi
     public MimePackage verifyMessageAlwaysExists() throws RbvException {
 
-        List<MetaData> matchedMetaData = verifyObjectAlwaysExists();
+        List<MetaData> matchedMetaData = verifyAlwaysExists();
 
         // At this place we know the verification succeeded and there is exactly one MimePackage matched
         return ((ImapMetaData) matchedMetaData.get(0)).getMimePackage();
@@ -699,7 +699,7 @@ public class ImapVerification extends VerificationSkeleton {
     @PublicAtsApi
     public void verifyMessageNeverExists() throws RbvException {
 
-        verifyObjectNeverExists();
+        verifyNeverExists();
     }
 
     @Override
