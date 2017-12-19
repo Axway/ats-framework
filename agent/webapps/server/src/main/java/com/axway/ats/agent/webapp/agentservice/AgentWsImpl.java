@@ -665,6 +665,7 @@ public class AgentWsImpl {
      * Apply client configuration to the server
      *
      * @param configurators the serialized configurators to be applied
+     * @return the agent version
      * @throws AgentException on error
      */
     @SuppressWarnings( "unchecked")
