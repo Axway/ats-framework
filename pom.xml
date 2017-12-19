@@ -22,6 +22,7 @@
         <module>actionlibrary</module>
         <module>uiengine</module>
         <module>rbv</module>
+        <module>utilities</module>
     </modules>
 
     <properties>
