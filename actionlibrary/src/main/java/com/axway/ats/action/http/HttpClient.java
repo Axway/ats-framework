@@ -1705,7 +1705,7 @@ public class HttpClient {
 
     /**
      * Log the request/response data you need.
-     * For example:<pre>client.setHTTPDebug(HTTPDebugLevel.ALL)</pre>
+     * For example:<pre>client.setVerboseMode(HttpDebugLevel.ALL)</pre>
      *
      * @param level HTTP debug level. Use constants in {@link HttpDebugLevel}
      */

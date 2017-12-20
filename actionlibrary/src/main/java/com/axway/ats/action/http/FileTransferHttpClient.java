@@ -34,6 +34,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+import com.axway.ats.action.http.HttpClient.HttpDebugLevel;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
@@ -122,7 +123,20 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
 
         super.isOverSsl = isOverSsl;
 
-        invalidateInternalClient();
+        boolean didChange = false;
+        if (isOverSsl && this.url.toLowerCase().startsWith("http://")) {
+            // change to SSL
+            this.url = "https" + this.url.substring(4, this.url.length());
+            didChange = true;
+        } else if (!isOverSsl && this.url.toLowerCase().startsWith("https://")) {
+            // change to plain HTTP
+            this.url = "http" + this.url.substring(5, this.url.length());
+            didChange = true;
+        }
+
+        if (didChange) {
+            invalidateInternalClient();
+        }
     }
 
     /**
@@ -145,7 +159,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         }
 
         // calculate client id, so can distinguish between clients with different connection parameters
-        String newClientId = "host-" + hostname + "_user-" + username + "_pass-" + password;
+        String newClientId = "host-" + hostname + "_port-" + port + "_user-" + username + "_pass-" + password;
 
         this.hostname = hostname;
         this.username = username;
@@ -525,11 +539,9 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     @Override
     public void setDebugMode( boolean turnDebug ) {
 
-        if (turnDebug) {
-            debugLevel = HttpClient.HttpDebugLevel.ALL;
-        } else {
-            debugLevel = HttpClient.HttpDebugLevel.NONE;
-        }
+        setVerboseMode(turnDebug
+                                 ? HttpClient.HttpDebugLevel.ALL
+                                 : HttpClient.HttpDebugLevel.NONE);
     }
 
     private String constructRemoteHostUrl( String remoteDir, String remoteFile ) {
