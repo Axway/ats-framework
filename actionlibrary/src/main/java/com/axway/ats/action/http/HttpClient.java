@@ -219,34 +219,35 @@ public class HttpClient {
         public static final int ALL     = HEADERS | BODY;
     }
 
-    protected int                     debugLevel            = HttpDebugLevel.NONE;
+    protected int                     debugLevel                      = HttpDebugLevel.NONE;
 
     protected boolean                 isOverSsl;
     protected String                  url;
     private String                    actualUrl;
-    private List<String>              resourcePath          = new ArrayList<String>();
+    private List<String>              resourcePath                    = new ArrayList<String>();
 
     // Basic authentication info
-    protected AuthType                authType              = AuthType.demand;
+    protected AuthType                authType                        = AuthType.demand;
     protected String                  username;
     protected String                  password;
 
     protected CloseableHttpClient     httpClient;
-    protected HttpClientContext       httpContext           = HttpClientContext.create();
+    protected HttpClientContext       httpContext                     = HttpClientContext.create();
+    private boolean                   needsInternalClientInialization = true;                               // helps initializing the internal client only when needed
 
     // socket settings
-    protected int                     connectTimeoutSeconds = 0;
-    protected int                     readTimeoutSeconds    = 0;
-    protected int                     socketBufferSize      = 0;
+    protected int                     connectTimeoutSeconds           = 0;
+    protected int                     readTimeoutSeconds              = 0;
+    protected int                     socketBufferSize                = 0;
 
     // the request body(in single or many parts)
     private HttpEntity                requestBody;
-    private List<HttpBodyPart>        requestBodyParts      = new ArrayList<HttpBodyPart>();
+    private List<HttpBodyPart>        requestBodyParts                = new ArrayList<HttpBodyPart>();
 
-    private Map<String, List<String>> requestParameters     = new HashMap<String, List<String>>();
+    private Map<String, List<String>> requestParameters               = new HashMap<String, List<String>>();
 
-    protected List<HttpHeader>        requestHeaders        = new ArrayList<HttpHeader>();
-    private List<HttpHeader>          actualRequestHeaders  = new ArrayList<HttpHeader>();
+    protected List<HttpHeader>        requestHeaders                  = new ArrayList<HttpHeader>();
+    private List<HttpHeader>          actualRequestHeaders            = new ArrayList<HttpHeader>();
 
     // For SSL
     // The trusted SSL certificates.
@@ -256,7 +257,7 @@ public class HttpClient {
     private KeyStore                  clientSSLKeyStore;
     private String                    clientSSLKeyStorePassword;
 
-    private String[]                  supportedProtocols    = new String[]{ "TLSv1.2" };
+    private String[]                  supportedProtocols              = new String[]{ "TLSv1.2" };
     private String[]                  supportedCipherSuites;
 
     // For Kerberos i.e. SPNEGO
@@ -272,9 +273,9 @@ public class HttpClient {
     /**
      * True if the trustedServerCertificates a chain with root CA at end of array.
      */
-    boolean                           isChain               = false;
+    boolean                           isChain                         = false;
 
-    private static final Logger       log                   = Logger.getLogger(HttpClient.class);
+    private static final Logger       log                             = Logger.getLogger(HttpClient.class);
 
     /**
      * Constructor.
@@ -306,6 +307,8 @@ public class HttpClient {
         this.url = url;
 
         this.isOverSsl = url.toLowerCase().startsWith("https");
+
+        invalidateInternalClient();
     }
 
     /**
@@ -410,6 +413,8 @@ public class HttpClient {
 
         this.connectTimeoutSeconds = connectTimeoutSeconds;
         this.readTimeoutSeconds = readTimeoutSeconds;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -565,6 +570,8 @@ public class HttpClient {
         this.username = username;
         this.password = password;
         this.authType = authType;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -579,6 +586,8 @@ public class HttpClient {
 
         this.username = username;
         this.password = password;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -595,6 +604,8 @@ public class HttpClient {
 
         this.username = username;
         this.kerberosClientKeytab = keytab;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -658,6 +669,8 @@ public class HttpClient {
     public void setTrustedServerSSLCertificate( File trustedServerSSLCertificateFile ) throws HttpException {
 
         trustedServerCertificates = new X509Certificate[]{ convertFileToX509Certificate(trustedServerSSLCertificateFile) };
+
+        invalidateInternalClient();
     }
 
     /**
@@ -675,6 +688,8 @@ public class HttpClient {
     @PublicAtsApi
     public boolean
             setTrustedServerSSLCertificates( Collection<File> trustedServerSSLCertificateFiles ) throws HttpException {
+
+        invalidateInternalClient();
 
         trustedServerCertificates = new X509Certificate[trustedServerSSLCertificateFiles.size()];
         int i = 0;
@@ -721,6 +736,8 @@ public class HttpClient {
     @PublicAtsApi
     public void setClientSSLCertificate( File clientSSLCertificateP12File,
                                          String password ) throws HttpException {
+
+        invalidateInternalClient();
 
         FileInputStream fis = null;
         try {
@@ -1122,6 +1139,8 @@ public class HttpClient {
     public void close() {
 
         IoUtils.closeStream(this.httpClient, "Failed to close HttpClient");
+
+        invalidateInternalClient();
     }
 
     @Override
@@ -1133,50 +1152,65 @@ public class HttpClient {
         super.finalize();
     }
 
-    protected void initialzeHttpClient() {
+    /**
+     * Causes the internal client to be (re)initialized on
+     * the next HTTP call 
+     */
+    protected void invalidateInternalClient() {
 
+        this.needsInternalClientInialization = true;
+    }
+
+    protected void initialzeInternalClient() {
+
+        if (!needsInternalClientInialization) {
+            // internal client is already initialized
+            return;
+        }
+
+        // release any resources if this client was already used
+        close();
+
+        // rebuild the client
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
-        if (httpClient == null) {
 
-            // Add this interceptor to get the values of all HTTP headers in the request.
-            // Some of them are provided by the user while others are generated by Apache HTTP Components.
-            httpClientBuilder.addInterceptorLast(new HttpRequestInterceptor() {
-                @Override
-                public void process( HttpRequest request, HttpContext context ) throws HttpException,
-                                                                                IOException {
+        // Add this interceptor to get the values of all HTTP headers in the request.
+        // Some of them are provided by the user while others are generated by Apache HTTP Components.
+        httpClientBuilder.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process( HttpRequest request, HttpContext context ) throws HttpException,
+                                                                            IOException {
 
-                    Header[] requestHeaders = request.getAllHeaders();
-                    actualRequestHeaders = new ArrayList<HttpHeader>();
-                    for (Header header : requestHeaders) {
-                        addHeaderToList(actualRequestHeaders, header.getName(), header.getValue());
-                    }
-                    if (debugLevel != HttpDebugLevel.NONE) {
-                        logHTTPRequest(requestHeaders, request);
-                    }
+                Header[] requestHeaders = request.getAllHeaders();
+                actualRequestHeaders = new ArrayList<HttpHeader>();
+                for (Header header : requestHeaders) {
+                    addHeaderToList(actualRequestHeaders, header.getName(), header.getValue());
                 }
-
-            });
-
-            // connect and read timeouts
-            httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
-                                                                   .setConnectTimeout(connectTimeoutSeconds
-                                                                                      * 1000)
-                                                                   .setSocketTimeout(readTimeoutSeconds
-                                                                                     * 1000)
-                                                                   .build());
-
-            // socket buffer size
-            if (this.socketBufferSize > 0) {
-                httpClientBuilder.setDefaultSocketConfig(SocketConfig.custom()
-                                                                     .setRcvBufSize(this.socketBufferSize)
-                                                                     .setSndBufSize(this.socketBufferSize)
-                                                                     .build());
+                if (debugLevel != HttpDebugLevel.NONE) {
+                    logHTTPRequest(requestHeaders, request);
+                }
             }
+        });
 
-            // SSL
-            if (isOverSsl) {
-                setupSSL(httpClientBuilder);
-            }
+        // connect and read timeouts
+        httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
+                                                               .setConnectTimeout(connectTimeoutSeconds
+                                                                                  * 1000)
+                                                               .setSocketTimeout(readTimeoutSeconds
+                                                                                 * 1000)
+                                                               .build());
+
+        // socket buffer size
+        if (this.socketBufferSize > 0) {
+            httpClientBuilder.setDefaultSocketConfig(SocketConfig.custom()
+                                                                 .setRcvBufSize(this.socketBufferSize)
+                                                                 .setSndBufSize(this.socketBufferSize)
+                                                                 .build());
+        }
+
+        // SSL
+        if (isOverSsl) {
+            setupSSL(httpClientBuilder);
         }
 
         // setup authentication
@@ -1196,6 +1230,9 @@ public class HttpClient {
 
         // now build the client after we have already set everything needed on the client builder
         httpClient = httpClientBuilder.build();
+
+        // do not come here again until not needed
+        needsInternalClientInialization = false;
     }
 
     /**
@@ -1207,7 +1244,7 @@ public class HttpClient {
      */
     private HttpResponse execute( HttpRequestBase httpMethod ) throws HttpException {
 
-        initialzeHttpClient();
+        initialzeInternalClient();
 
         // Add HTTP headers
         addHeadersToHttpMethod(httpMethod);
@@ -1499,6 +1536,8 @@ public class HttpClient {
     public void setSupportedProtocols( String[] supportedProtocols ) {
 
         this.supportedProtocols = supportedProtocols;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -1517,6 +1556,8 @@ public class HttpClient {
     public void setSupportedCipherSuites( String[] supportedCipherSuites ) {
 
         this.supportedCipherSuites = supportedCipherSuites;
+
+        invalidateInternalClient();
     }
 
     /**

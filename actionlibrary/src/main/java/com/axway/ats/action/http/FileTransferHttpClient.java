@@ -109,6 +109,8 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         this.contentType = ContentType.APPLICATION_OCTET_STREAM;
 
         this.socketBufferSize = DEFAULT_SOCKET_BUFFER_SIZE;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -119,6 +121,8 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     public void setOverSsl( boolean isOverSsl ) {
 
         super.isOverSsl = isOverSsl;
+
+        invalidateInternalClient();
     }
 
     /**
@@ -162,7 +166,8 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         }
 
         if (needToInitializeClient) {
-            initialzeHttpClient();
+            invalidateInternalClient();
+            initialzeInternalClient();
             this.clientId = newClientId; // remember the client id for future connections
         }
     }
@@ -362,6 +367,8 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     public void setConnectionTimeout( int newValue ) {
 
         this.connectTimeoutSeconds = newValue;
+
+        invalidateInternalClient();
     }
 
     @Override
@@ -426,6 +433,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
                 throw new IllegalArgumentException(errorMsg);
             } else {
                 this.socketBufferSize = _socketBufferSize;
+                invalidateInternalClient();
             }
         } else if (SOCKET_READ_TIMEOUT.equals(key)) {
             final String errorMsg = "A non negative integer value is expected for parameter with key " + key
@@ -446,6 +454,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
                 throw new IllegalArgumentException(errorMsg);
             } else {
                 this.readTimeoutSeconds = _socketTimeout;
+                invalidateInternalClient();
             }
         } else if (UPLOAD_METHOD.equals(key)) {
             String _uploadMethod = value.toString();
@@ -461,6 +470,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
             authType = PREEMPTIVE_BASIC_AUTHENTICATION__TRUE.equalsIgnoreCase(value.toString())
                                                                                                 ? AuthType.always
                                                                                                 : AuthType.demand;
+            invalidateInternalClient();
         } else if (UPLOAD_CONTENT_TYPE.equals(key)) {
             String _contentType = value.toString();
             if (!StringUtils.isNullOrEmpty(_contentType)) {
