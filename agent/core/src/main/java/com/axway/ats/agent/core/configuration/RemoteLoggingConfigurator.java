@@ -100,7 +100,8 @@ public class RemoteLoggingConfigurator implements Configurator {
                     }
 
                     //set the effective logging level for threshold if new one is set
-                    if (appenderConfiguration.getLoggingThreshold() != log.getLevel()) {
+                    if (appenderConfiguration.getLoggingThreshold() == null
+                        || appenderConfiguration.getLoggingThreshold().toInt() != atsDbLogLevel) {
 
                         /*
                          * Log4j is deprecating the Priority class used by setLoggingThreshold,
@@ -158,15 +159,6 @@ public class RemoteLoggingConfigurator implements Configurator {
                 }
             }
 
-            final String caller = ThreadsPerCaller.getCaller();
-
-            //create the new appender
-            PassiveDbAppender attachedAppender = new PassiveDbAppender(caller);
-            attachedAppender.setAppenderConfig(appenderConfiguration);
-            //use a default pattern, as we log in the db
-            attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
-            attachedAppender.activateOptions();
-
             //attach the appender to the logging system
             Category log;
             if ("root".equals(appenderLogger)) {
@@ -176,6 +168,16 @@ public class RemoteLoggingConfigurator implements Configurator {
             }
 
             log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
+            
+            final String caller = ThreadsPerCaller.getCaller();
+
+            //create the new appender
+            PassiveDbAppender attachedAppender = new PassiveDbAppender(caller);
+            attachedAppender.setAppenderConfig(appenderConfiguration);
+            //use a default pattern, as we log in the db
+            attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
+            attachedAppender.activateOptions();
+
             log.addAppender(attachedAppender);
         }
 
