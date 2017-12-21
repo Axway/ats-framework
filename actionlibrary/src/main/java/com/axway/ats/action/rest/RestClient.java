@@ -386,7 +386,8 @@ public class RestClient {
     }
 
     /**
-     * Add a header to the request
+     * Add a header to the request. Existing header values are kept.
+     * If you want to overwrite existing header then use setRequestHeader() method
      *
      * @param name header name
      * @param value header value
@@ -418,7 +419,9 @@ public class RestClient {
      * @param value header value
      *
      * @return this client's instance
+     * @deprecated
      */
+    @Deprecated
     @PublicAtsApi
     public RestClient addRequestHeader( String name, int value ) {
 
@@ -444,7 +447,9 @@ public class RestClient {
      * @param value header value
      *
      * @return this client's instance
+     * @deprecated
      */
+    @Deprecated
     @PublicAtsApi
     public RestClient addRequestHeader( String name, long value ) {
 
@@ -457,6 +462,29 @@ public class RestClient {
         } else {
             List<Object> values = new ArrayList<>();
             values.add(value);
+            requestHeaders.put(name, values);
+        }
+
+        return this;
+    }
+
+    /**
+     * Set header to the request. If there is already such header then it is overwritten.
+     *
+     * @param name header name
+     * @param value header value
+     *
+     * @return this client's instance
+     */
+    @PublicAtsApi
+    public RestClient setRequestHeader( String name, String value ) {
+
+        List<Object> values = new ArrayList<>();
+        values.add(value);
+        if (hasHeader(name)) {
+            requestHeaders.remove(name);
+            requestHeaders.put(name, values);
+        } else {
             requestHeaders.put(name, values);
         }
 
@@ -1130,7 +1158,7 @@ public class RestClient {
         }
     }
 
-    /** 
+    /**
      * Checks if request header with the given key/name has already been added
      * @param name the header key/name
      * @return true if header with that key/name was already added, false otherwise
