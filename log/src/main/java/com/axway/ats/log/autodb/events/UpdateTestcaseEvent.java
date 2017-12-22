@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,6 @@ package com.axway.ats.log.autodb.events;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.core.utils.StringUtils;
-import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.model.LoggingEventType;
 
@@ -44,7 +43,7 @@ public class UpdateTestcaseEvent extends StartTestCaseEvent {
                                 long timestamp ) {
 
         super(loggerFQCN, logger,
-              "Update testcase with id '" + ActiveDbAppender.getCurrentInstance().getTestCaseId() + "'",
+              "Update testcase with id '" + testcaseId + "'",
               suiteFullName, suiteSimpleName, scenarioName, inputArguments, scenarioDescription,
               LoggingEventType.UPDATE_TEST_CASE);
 
