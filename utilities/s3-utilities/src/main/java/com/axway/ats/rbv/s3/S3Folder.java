@@ -40,20 +40,22 @@ public class S3Folder implements Matchable {
     private boolean                   isOpen;
     private String                    path;
     private String                    fileName;
+    private boolean searchRecursively;
 
     private S3Operations              s3Operations;
     private HashMap<String, MetaData> allMetaData;
     private List<MetaData>            newMetaData;
+
 
     S3Folder( S3SearchTerm s3SearchTerm ) {
 
         this.isOpen = false;
         this.path = s3SearchTerm.getDirectory();
         this.fileName = s3SearchTerm.getFileName();
+        this.searchRecursively = s3SearchTerm.isRecursive();
 
         this.s3Operations = new S3Operations(s3SearchTerm.getEndpoint(), s3SearchTerm.getAccessKey(),
-                                             s3SearchTerm.getSecretKey(),
-                                             s3SearchTerm.getBucketName());
+                                             s3SearchTerm.getSecretKey(), s3SearchTerm.getBucketName());
         this.allMetaData = new HashMap<String, MetaData>();
         this.newMetaData = new ArrayList<MetaData>();
     }
@@ -85,7 +87,7 @@ public class S3Folder implements Matchable {
             throw new MatchableNotOpenException("S3 folder is not open");
         }
 
-        return "Total files: " + allMetaData.size() + ", new files: " + newMetaData.size();
+        return "Total objects: " + allMetaData.size() + ", new objects: " + newMetaData.size();
     }
 
     public List<MetaData> getAllMetaData() throws RbvException {
@@ -106,7 +108,7 @@ public class S3Folder implements Matchable {
         //fetch dir contents recursively
         List<S3ObjectInfo> s3ObjectsList;
         try {
-            s3ObjectsList = this.s3Operations.list(path, fileName, false);
+            s3ObjectsList = this.s3Operations.list(path, fileName, searchRecursively);
         } catch (Exception e) {
             final String notExistMessageSuffix = "does not exist";
             String exMessage = e.getMessage();
@@ -130,8 +132,8 @@ public class S3Folder implements Matchable {
                 String hashKey = getUniqueIdentifier(s3Object);
                 MetaData metaData = new MetaData();
                 metaData.putProperty(S3MetaData.BUCKET_NAME, s3Object.getBucketName());
-                metaData.putProperty(S3MetaData.MD5, s3Object.getMd5());
                 metaData.putProperty(S3MetaData.FILE_NAME, s3Object.getName());
+                metaData.putProperty(S3MetaData.MD5, s3Object.getMd5());
                 metaData.putProperty(S3MetaData.LAST_MODIFIED, s3Object.getLastModified());
                 metaData.putProperty(S3MetaData.SIZE, s3Object.getSize());
 

@@ -41,35 +41,33 @@ public class S3Verification extends VerificationSkeleton {
      * Construct S3 object verification client to Amazon S3 storage.
      * For custom endpoint use the other constructor at
      * {@link #S3Verification(String, String, String, String, String, String, boolean)}
-     * @param accessKey
-     * @param secretKey
-     * @param bucketName
-     * @param directory
-     * @param fileName
-     * @param recursive
-     * @throws RbvException
+     * @param accessKey credentials
+     * @param secretKey credentials
+     * @param bucketName name of the bucket to be used
+     * @param directory base directory. Should not start with slash and root bucket directory is just empty string
+     * @param objectName object name/key to be found
+     * @param recursive should search for match be done recursively
      */
     @PublicAtsApi
     public S3Verification( String accessKey,
                            String secretKey,
                            String bucketName,
                            String directory,
-                           String fileName,
-                           boolean recursive ) throws RbvException {
+                           String objectName,
+                           boolean recursive ) {
 
-        this(null, accessKey, secretKey, bucketName, directory, fileName, recursive);
+        this(null, accessKey, secretKey, bucketName, directory, objectName, recursive);
     }
 
     /**
      * Construct S3 object verification client to custom endpoint, Amazon-S3 compliant endpoint
      * @param endpoint Custom endpoint with protocol (http or https ), hostname and port.
-     * @param accessKey
-     * @param secretKey
-     * @param bucketName
-     * @param directory
-     * @param fileName
-     * @param recursive
-     * @throws RbvException
+     * @param accessKey credentials
+     * @param secretKey credentials
+     * @param bucketName name of the bucket to be used
+     * @param directory base directory. Should not start with slash and root bucket directory is just empty string
+     * @param objectName object name/key to be found
+     * @param recursive should search for match be done recursively
      */
     @PublicAtsApi
     public S3Verification( String endpoint, String accessKey, String secretKey, String bucketName,

@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -129,7 +129,8 @@ public class S3Operations {
 
     /**
      * Get list of of elements matching the specified prefix and pattern
-     * @param folderPrefix common prefix of paths that all elements should have (like directory)
+     * @param folderPrefix common prefix of paths that all elements should have (like directory). Use empty string
+     *        when you want search from top of the bucket, i.e. "/" should not be used in front
      * @param searchPattern pattern to match - could be object/file name or some regular expression (RegEx)
      * @param searchRecursively should search be recursive
      *
@@ -164,7 +165,7 @@ public class S3Operations {
         AmazonS3 s3Client = getClient();
         // TODO: check for direct method
         // remove all Objects before deleting the bucket
-        for (S3ObjectInfo element : listBucket("/", ".*", true)) {
+        for (S3ObjectInfo element : listBucket("" /* all */, ".*", true)) {
             deleteObject(element.getName());
         }
 
@@ -257,14 +258,14 @@ public class S3Operations {
     /**
      * Upload a text file
      *
-     * @param bucketName the bucket where the file should be uploaded
-     * @param keyName
+     * @param objectName the object name ( key) for uploaded data
      * @param sourceFile the file, that should be uploaded
      */
     @PublicAtsApi
-    public void uploadAsText( String keyName, String sourceFile ) {
-        try{
-            getClient().putObject(bucketName, keyName, fileToString(sourceFile));
+    public void uploadAsText( String objectName, String sourceFile ) {
+
+        try {
+            getClient().putObject(bucketName, objectName, fileToString(sourceFile));
         } catch (Exception e) {
             handleExeption(e, "Upload error. If error persists check your endpoint, credentials and permissions.");
         }
@@ -302,6 +303,7 @@ public class S3Operations {
      * @param sourceInputStream the InputStream of the data that should be uploaded. It might be closed after reading.
      */
     public void uploadFile( String targetObjectName, InputStream sourceInputStream ) {
+
         try {
             getClient().putObject(bucketName, targetObjectName, sourceInputStream, null);
         } catch (Exception e) {
@@ -350,7 +352,7 @@ public class S3Operations {
             }
         } catch (Exception e) {
             handleExeption(e, "Error while downloading object " + remoteObjectName + " to local file " + localFileName
-                           + ". If error persists check your endpoint, credentials and permissions.");
+                              + ". If error persists check your endpoint, credentials and permissions.");
         }
         LOG.info("S3 object '" + remoteObjectName + "; is downloaded successfully from bucket '" + bucketName
                  + "' to file " + localFileName);
@@ -491,8 +493,8 @@ public class S3Operations {
      * @param searchedFile
      * @return
      */
-    private S3ObjectSummary getBucketElement( String folderPrefix,
-                                              String searchString, boolean recursive, String searchedFile ) {
+    private S3ObjectSummary getBucketElement( String folderPrefix, String searchString, boolean recursive,
+                                              String searchedFile ) {
 
         if (folderPrefix.startsWith("/")) {
             folderPrefix = folderPrefix.substring(1, folderPrefix.length());
@@ -507,12 +509,14 @@ public class S3Operations {
                 for (Iterator<?> iterator = objectListing.getObjectSummaries()
                                                          .iterator(); iterator.hasNext();) {
                     S3ObjectSummary el = (S3ObjectSummary) iterator.next();
-                    if (searchedFile.equals(el.getKey())
+                    if (searchedFile.equals(el.getKey())) {
+                            return el;
+                    }
+                    /*if (searchedFile.equals(el.getKey())
                         && isImmediateDescendant(folderPrefix, "/" + el.getKey(), searchString, recursive)) {
                         return el;
-                    }
+                    }*/
                 }
-
                 // are there more results to retrieve( paging)
                 if (objectListing.isTruncated()) {
                     objectListing = s3Client.listNextBatchOfObjects(objectListing);
@@ -524,7 +528,6 @@ public class S3Operations {
             handleExeption(e, "Get S3 object error.");
         }
 
-
         return null;
     }
 
@@ -535,21 +538,23 @@ public class S3Operations {
      * @param recursive
      * @return
      */
-    private List<S3ObjectInfo> listBucket( String folderPrefix, String searchString,
-                                           boolean recursive ) {
+    private List<S3ObjectInfo> listBucket( String folderPrefix, String searchString, boolean recursive ) {
 
         List<S3ObjectInfo> allListElements = new ArrayList<S3ObjectInfo>();
 
-        if (!folderPrefix.startsWith("/")) {
-            folderPrefix = "/" + folderPrefix;
-        }
-
-        ObjectListing objectListing = getClient().listObjects(bucketName);
+        //Alternative but not documented in S3 API: getClient().listObjectsV2(bucket, "prefix")
+        ObjectListing objectListing = getClient().listObjects(bucketName, folderPrefix);
+        int i = 0;
+        Pattern searchStringPattern = Pattern.compile(searchString);
         while (true) {
             for (Iterator<?> iterator = objectListing.getObjectSummaries()
                                                      .iterator(); iterator.hasNext();) {
                 S3ObjectSummary objectSummary = (S3ObjectSummary) iterator.next();
-                if (isImmediateDescendant(folderPrefix, "/" + objectSummary.getKey(), searchString, recursive)) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("listObjects(" +(++i) +"): " +  objectSummary.toString());
+                }
+                //TODO: optimize if search for .* in root and recursively: listObjects(bucketName)
+                if (isImmediateDescendant(folderPrefix, objectSummary.getKey(), searchStringPattern, recursive)) {
                     allListElements.add(new S3ObjectInfo(objectSummary));
                 }
             }
@@ -565,21 +570,20 @@ public class S3Operations {
         return allListElements;
     }
 
-    private boolean isImmediateDescendant( String prefix, String key, String searchString,
+    private boolean isImmediateDescendant( String pathPrefix, String key, Pattern searchStringPattern,
                                            boolean recursive ) {
 
-        // check if the file is in the root directory
-        if (!key.startsWith(prefix)) {
+        // check if the file is in the specified directory (prefix) or beneath
+        if (!key.startsWith(pathPrefix)) {
             return false;
         }
 
-        Pattern pattern = Pattern.compile(searchString);
-        String keyNameSuffix = key.substring(prefix.length());
+        String keyNameSuffix = key.substring(pathPrefix.length());
         String[] fileTokens = keyNameSuffix.split("/");
 
         if (!recursive) {
             if (fileTokens.length == 1) {
-                Matcher matcher = pattern.matcher(fileTokens[0]);
+                Matcher matcher = searchStringPattern.matcher(fileTokens[0]);
                 // check if the pattern matches the given search value
                 if (!matcher.find()) {
                     return false;
@@ -589,7 +593,7 @@ public class S3Operations {
             }
         } else {
             for (String fileToken : fileTokens) {
-                Matcher matcher = pattern.matcher(fileToken);
+                Matcher matcher = searchStringPattern.matcher(fileToken);
                 // check if the pattern matches the given search value
                 if (!matcher.find()) {
                     return false;
