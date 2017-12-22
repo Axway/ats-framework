@@ -387,12 +387,13 @@ public class RestClient {
 
     /**
      * Add a header to the request. Existing header values are kept.
-     * If you want to overwrite existing header then use setRequestHeader() method
-     *
+     * If you want to overwrite existing header then use setRequestHeader method
+     * 
      * @param name header name
      * @param value header value
      *
      * @return this client's instance
+     * @see #setRequestHeader(String, String) setRequestHeader(String, String) method
      */
     @PublicAtsApi
     public RestClient addRequestHeader( String name, String value ) {
@@ -415,10 +416,13 @@ public class RestClient {
     /**
      * Add a INT header to the request
      *
+     * This method is deprecated in order to shorten the list of public methods.
+     *
      * @param name header name
      * @param value header value
      *
      * @return this client's instance
+     * @see #addRequestHeader(String, String) addRequestHeader(String, String)
      * @deprecated
      */
     @Deprecated
@@ -443,10 +447,13 @@ public class RestClient {
     /**
      * Add a LONG header to the request
      *
+     * This method is deprecated in order to shorten the list of public methods.
+     * 
      * @param name header name
      * @param value header value
      *
      * @return this client's instance
+     * @see #addRequestHeader(String, String) addRequestHeader(String, String)
      * @deprecated
      */
     @Deprecated
@@ -481,12 +488,7 @@ public class RestClient {
 
         List<Object> values = new ArrayList<>();
         values.add(value);
-        if (hasHeader(name)) {
-            requestHeaders.remove(name);
-            requestHeaders.put(name, values);
-        } else {
-            requestHeaders.put(name, values);
-        }
+        requestHeaders.put(name, values);
 
         return this;
     }
