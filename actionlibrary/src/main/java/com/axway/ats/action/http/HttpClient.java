@@ -33,6 +33,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -221,10 +222,12 @@ public class HttpClient {
 
     protected int                     debugLevel                      = HttpDebugLevel.NONE;
 
-    protected boolean                 isOverSsl;
     protected String                  url;
+    private String                    host;
+    private int                       port;
     private String                    actualUrl;
     private List<String>              resourcePath                    = new ArrayList<String>();
+    protected boolean                 isOverSsl;
 
     // Basic authentication info
     protected AuthType                authType                        = AuthType.demand;
@@ -233,7 +236,7 @@ public class HttpClient {
 
     protected CloseableHttpClient     httpClient;
     protected HttpClientContext       httpContext                     = HttpClientContext.create();
-    private boolean                   needsInternalClientInialization = true;                               // helps initializing the internal client only when needed
+    protected boolean                 needsInternalClientInialization = true;                               // helps initializing the internal client only when needed
 
     // socket settings
     protected int                     connectTimeoutSeconds           = 0;
@@ -249,12 +252,13 @@ public class HttpClient {
     protected List<HttpHeader>        requestHeaders                  = new ArrayList<HttpHeader>();
     private List<HttpHeader>          actualRequestHeaders            = new ArrayList<HttpHeader>();
 
-    // For SSL
     // The trusted SSL certificates.
     private X509Certificate[]         trustedServerCertificates;
+
     // For mutual SSL, the client-side SSL private key and certificate.
     private X509Certificate[]         clientSSLCertificateChain;
     private KeyStore                  clientSSLKeyStore;
+    protected String                  clientSSLKeystoreFile;
     private String                    clientSSLKeyStorePassword;
 
     private String[]                  supportedProtocols              = new String[]{ "TLSv1.2" };
@@ -306,9 +310,17 @@ public class HttpClient {
 
         this.url = url;
 
-        this.isOverSsl = url.toLowerCase().startsWith("https");
+        // validate the URL
+        URL uri;
+        try {
+            uri = new URL(url);
+        } catch (MalformedURLException e) {
+            throw new HttpException("Exception occurred creating URL from '" + url + "'", e);
+        }
 
-        invalidateInternalClient();
+        this.host = uri.getHost();
+        this.port = uri.getPort();
+        this.isOverSsl = uri.getProtocol().equalsIgnoreCase("https");
     }
 
     /**
@@ -411,10 +423,13 @@ public class HttpClient {
     @PublicAtsApi
     public void setTimeouts( int connectTimeoutSeconds, int readTimeoutSeconds ) {
 
-        this.connectTimeoutSeconds = connectTimeoutSeconds;
-        this.readTimeoutSeconds = readTimeoutSeconds;
+        if (this.connectTimeoutSeconds != connectTimeoutSeconds || this.readTimeoutSeconds != readTimeoutSeconds) {
 
-        invalidateInternalClient();
+            this.connectTimeoutSeconds = connectTimeoutSeconds;
+            this.readTimeoutSeconds = readTimeoutSeconds;
+
+            invalidateInternalClient();
+        }
     }
 
     /**
@@ -567,11 +582,15 @@ public class HttpClient {
     @PublicAtsApi
     public void setAuthorization( String username, String password, AuthType authType ) {
 
-        this.username = username;
-        this.password = password;
-        this.authType = authType;
+        if (!StringUtils.equals(this.username, username) || !StringUtils.equals(this.password, password)
+            || this.authType != authType) {
 
-        invalidateInternalClient();
+            this.username = username;
+            this.password = password;
+            this.authType = authType;
+
+            invalidateInternalClient();
+        }
     }
 
     /**
@@ -584,10 +603,13 @@ public class HttpClient {
     @PublicAtsApi
     public void setAuthorization( String username, String password ) {
 
-        this.username = username;
-        this.password = password;
+        if (!StringUtils.equals(this.username, username) || !StringUtils.equals(this.password, password)) {
 
-        invalidateInternalClient();
+            this.username = username;
+            this.password = password;
+
+            invalidateInternalClient();
+        }
     }
 
     /**
@@ -604,8 +626,6 @@ public class HttpClient {
 
         this.username = username;
         this.kerberosClientKeytab = keytab;
-
-        invalidateInternalClient();
     }
 
     /**
@@ -737,11 +757,18 @@ public class HttpClient {
     public void setClientSSLCertificate( File clientSSLCertificateP12File,
                                          String password ) throws HttpException {
 
+        if (clientSSLCertificateP12File.getAbsolutePath().equals(this.clientSSLKeystoreFile)) {
+            // nothing has really changed
+            return;
+        }
+
         invalidateInternalClient();
+
+        this.clientSSLKeystoreFile = clientSSLCertificateP12File.getAbsolutePath();
+        this.clientSSLKeyStorePassword = password;
 
         FileInputStream fis = null;
         try {
-            clientSSLKeyStorePassword = password;
             clientSSLKeyStore = SslUtils.loadKeystore(clientSSLCertificateP12File.getAbsolutePath(),
                                                       password);
             fis = new FileInputStream(clientSSLCertificateP12File);
@@ -1010,6 +1037,7 @@ public class HttpClient {
      * @param expirationDate cookie expiration date
      * @param path cookie path
      */
+    @PublicAtsApi
     public void addCookie( String name, String value, String domain, String path, Date expirationDate,
                            boolean isSecure ) {
 
@@ -1033,6 +1061,7 @@ public class HttpClient {
      * @param name cookie name
      * @param path cookie path
      */
+    @PublicAtsApi
     public void removeCookie( String name, String path ) {
 
         BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
@@ -1051,6 +1080,7 @@ public class HttpClient {
     /**
      * Clear all cookies
      */
+    @PublicAtsApi
     public void clearCookies() {
 
         BasicCookieStore cookieStore = (BasicCookieStore) httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
@@ -1068,9 +1098,11 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse post() throws HttpException {
 
-        HttpPost method = new HttpPost(constructURI());
+        final URI uri = constructURI();
+        HttpPost method = new HttpPost(uri);
         constructRequestBody();
-        log.info("We will POST object to " + constructURI());
+
+        log.info("We will POST object to " + uri);
         method.setEntity(requestBody);
         return execute(method);
     }
@@ -1084,9 +1116,11 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse put() throws HttpException {
 
-        HttpPut method = new HttpPut(constructURI());
+        final URI uri = constructURI();
+        HttpPut method = new HttpPut(uri);
         constructRequestBody();
-        log.info("We will PUT object to " + constructURI());
+
+        log.info("We will PUT object to " + uri);
         method.setEntity(requestBody);
         return execute(method);
     }
@@ -1100,8 +1134,10 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse get() throws HttpException {
 
-        HttpGet method = new HttpGet(constructURI());
-        log.info("We will GET from " + constructURI());
+        final URI uri = constructURI();
+        HttpGet method = new HttpGet(uri);
+
+        log.info("We will GET from " + uri);
         return execute(method);
     }
 
@@ -1114,8 +1150,10 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse delete() throws HttpException {
 
-        HttpDelete method = new HttpDelete(constructURI());
-        log.info("We will DELETE from " + constructURI());
+        final URI uri = constructURI();
+        HttpDelete method = new HttpDelete(uri);
+
+        log.info("We will DELETE from " + uri);
         return execute(method);
     }
 
@@ -1128,19 +1166,26 @@ public class HttpClient {
     @PublicAtsApi
     public HttpResponse head() throws HttpException {
 
-        HttpHead method = new HttpHead(constructURI());
+        final URI uri = constructURI();
+        HttpHead method = new HttpHead(uri);
+
+        log.info("We will run a HEAD request from " + uri);
         return execute(method);
     }
 
     /**
-     * Close HttpClient
+     * Close HttpClient stream and releases any system resources associated with it
      */
     @PublicAtsApi
     public void close() {
 
-        IoUtils.closeStream(this.httpClient, "Failed to close HttpClient");
+        if (this.httpClient != null) {
 
-        invalidateInternalClient();
+            IoUtils.closeStream(this.httpClient, "Failed to close HttpClient");
+
+            this.httpClient = null;
+            invalidateInternalClient();
+        }
     }
 
     @Override
@@ -1154,7 +1199,10 @@ public class HttpClient {
 
     /**
      * Causes the internal client to be (re)initialized on
-     * the next HTTP call 
+     * the next HTTP call.
+     * 
+     * TODO: There are some cases when this method is called even 
+     * if no real change is made to the configuration
      */
     protected void invalidateInternalClient() {
 
@@ -1442,16 +1490,12 @@ public class HttpClient {
 
         if (authType == AuthType.always) {
             AuthCache authCache = new BasicAuthCache();
-            // Generate BASIC scheme object and add it to the local
-            // auth cache
+            // Generate BASIC scheme object and add it to the local auth cache
             BasicScheme basicAuth = new BasicScheme();
-            URL uri = null;
-            try {
-                uri = new URL(url);
-            } catch (MalformedURLException e) {
-                throw new HttpException("Exception occurred creating URL from '" + url + "'.", e);
-            }
-            HttpHost target = new HttpHost(uri.getHost(), uri.getPort(), uri.getProtocol());
+
+            HttpHost target = new HttpHost(host, port, isOverSsl
+                                                                 ? "https"
+                                                                 : "http");
             authCache.put(target, basicAuth);
 
             // Add AuthCache to the execution context
@@ -1533,17 +1577,24 @@ public class HttpClient {
      *
      * @param supportedProtocols array of supported protocols to use like {"TLSv1", "TLSv1.1", "TLSv1.2"}
      */
+    @PublicAtsApi
     public void setSupportedProtocols( String[] supportedProtocols ) {
 
-        this.supportedProtocols = supportedProtocols;
+        // do a very basic check whether a change is made
+        if (!Arrays.toString(supportedProtocols)
+                   .equalsIgnoreCase(Arrays.toString(this.supportedProtocols))) {
 
-        invalidateInternalClient();
+            this.supportedProtocols = supportedProtocols;
+
+            invalidateInternalClient();
+        }
     }
 
     /**
      * Get the supported protocols
      * @return
      */
+    @PublicAtsApi
     public String[] getSupportedProtocols() {
 
         return this.supportedProtocols;
@@ -1553,17 +1604,24 @@ public class HttpClient {
      * Set the supported SSL Cipher Suites
      * @param supportedCipherSuites
      */
+    @PublicAtsApi
     public void setSupportedCipherSuites( String[] supportedCipherSuites ) {
 
-        this.supportedCipherSuites = supportedCipherSuites;
+        // do a very basic check whether a change is made
+        if (!Arrays.toString(supportedCipherSuites)
+                   .equalsIgnoreCase(Arrays.toString(this.supportedCipherSuites))) {
 
-        invalidateInternalClient();
+            this.supportedCipherSuites = supportedCipherSuites;
+
+            invalidateInternalClient();
+        }
     }
 
     /**
      * Get the supported SSL Cipher Suites
      * @return
      */
+    @PublicAtsApi
     public String[] getSupportedCipherSuites() {
 
         return this.supportedCipherSuites;

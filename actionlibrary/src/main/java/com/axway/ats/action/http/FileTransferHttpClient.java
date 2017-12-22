@@ -34,7 +34,6 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
-import com.axway.ats.action.http.HttpClient.HttpDebugLevel;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
@@ -76,8 +75,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     private final static int    SOCKET_BUFFER_SIZE_MAX_VALUE          = 4 * 1024 * 1024;
     private final static int    DEFAULT_SOCKET_BUFFER_SIZE            = 8196;
 
-    // internal client id used to determine if another internal client is needed
-    private String              clientId;
+    private String              connectionDescription;
 
     /**
      * Basic constructor. URL will be provided later.
@@ -142,6 +140,8 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     /**
      * Connect to a remote host using basic authentication.
      * 
+     * Will disconnect first, if already connected.
+     * 
      * @param hostname the host to connect to
      * @param username the user name
      * @param password the password for the provided user name
@@ -151,43 +151,32 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     @Override
     public void connect( String hostname, String username, String password ) throws FileTransferException {
 
+        connectionDescription = hostname + " on port " + this.port;
         if (username != null) {
-            log.info("Connecting to " + hostname + " on port " + this.port + " using username " + username
-                     + " and password " + password);
-        } else {
-            log.info("Connecting to " + hostname + " on port " + this.port);
+            connectionDescription += ", username " + username + " and password " + password;
+        } else if (clientSSLKeystoreFile != null) {
+            connectionDescription += ", login certificate from "
+                                     + clientSSLKeystoreFile;
         }
-
-        // calculate client id, so can distinguish between clients with different connection parameters
-        String newClientId = "host-" + hostname + "_port-" + port + "_user-" + username + "_pass-" + password;
+        log.info("Connecting to " + connectionDescription);
 
         this.hostname = hostname;
         this.username = username;
         this.password = password;
 
-        // set the URL as it is needed in some cases by the parent class methods
-        setURL(constructRemoteHostUrl("", ""));
-
-        boolean needToInitializeClient = true;
-        if (clientId != null) {
-            // there's been a previous connection
-            if (!newClientId.equalsIgnoreCase(clientId)) {
-                // the previous connection used different parameters, we have to disconnect 
-                disconnect();
-            } else {
-                needToInitializeClient = false;
-            }
+        if (httpClient != null) {
+            log.warn("You called connect on already connected client. We will disconnect first.");
+            disconnect();
         }
 
-        if (needToInitializeClient) {
-            invalidateInternalClient();
-            initialzeInternalClient();
-            this.clientId = newClientId; // remember the client id for future connections
-        }
+        invalidateInternalClient();
+        initialzeInternalClient();
     }
 
     /**
-     * Connect to a remote host using secure authentication
+     * Connect to a remote host using secure authentication.
+     * 
+     * Will disconnect first, if already connected.
      *
      * @param hostname the host to connect to
      * @param keystoreFile the file containing the key store
@@ -206,7 +195,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     }
 
     /**
-     * Disconnect
+     * Disconnect and release any allocated resources
      * 
      * @throws FileTransferException
      */
@@ -215,15 +204,8 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     public void disconnect() throws FileTransferException {
 
         if (this.httpClient != null) {
-            // when the client instance is no longer needed, shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            try {
-                this.httpClient.close();
-            } catch (IOException ioe) {
-                throw new FileTransferException("Client instance was not closed.", ioe);
-            } finally {
-                this.httpClient = null;
-            }
+            log.info("Disconnecting from " + connectionDescription);
+            close();
         }
     }
 

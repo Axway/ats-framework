@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
-    public static final String ATS_CONSOLE_MESSAGE_PREFIX = "*** ATS *** ";
-    
+    public static final String   ATS_CONSOLE_MESSAGE_PREFIX       = "*** ATS *** ";
+
     // Max sizes when parsing method's input arguments
     private static final int     METHOD_ARGS__MAX_NUMBER_ELEMENTS = 10;
     private static final int     METHOD_ARGS__MAX_ELEMENT_LENGTH  = 100;
@@ -62,6 +62,18 @@ public class StringUtils {
         } else {
             return string1.equals(string2);
         }
+    }
+
+    /**
+     * Tests if 2 strings are equal. Works OK when null string is passed 
+     * 
+     * @param string1
+     * @param string2
+     * @return
+     */
+    public static boolean equals( String string1, String string2 ) {
+
+        return org.apache.commons.lang3.StringUtils.equals(string1, string2);
     }
 
     /**
