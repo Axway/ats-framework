@@ -20,45 +20,40 @@ import com.axway.ats.rbv.storage.SearchTerm;
 
 public class S3SearchTerm implements SearchTerm {
 
-    private String  bucketName;
-    private String  accessKey;
-    private String  secretKey;
     private String  endpoint;
+    private String  secretKey;
+    private String  accessKey;
+    private String  region;
+    private String  bucketName;
     private String  directory;
     private String  fileName;
     private boolean recursive;
 
-    public S3SearchTerm( String accessKey,
-                         String secretKey,
-                         String bucketName,
-                         String directory,
-                         String fileName,
-                         boolean recursive ) {
+    public S3SearchTerm( String accessKey, String secretKey,  String bucketName,
+                         String directory, String fileName, boolean recursive ) {
 
-        this( accessKey, secretKey, null, bucketName, directory, fileName, recursive );
+        this( null, accessKey, secretKey, null, bucketName, directory, fileName, recursive );
     }
 
-    public S3SearchTerm( String endpoint,
-                         String accessKey,
-                         String secretKey,
-                         String bucketName,
-                         String directory,
-                         String fileName,
-                         boolean recursive ) {
+
+    public S3SearchTerm( String endpoint, String accessKey, String secretKey, String region,
+                         String bucketName, String directory, String fileName, boolean recursive ) {
 
         this.endpoint = endpoint;
-        this.bucketName = bucketName;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
+        this.region = region;
+        this.bucketName = bucketName;
         this.directory = directory;
         this.fileName = fileName;
         this.recursive = recursive;
     }
 
-    public String getBucketName() {
+    public String getEndpoint() {
 
-        return bucketName;
+        return endpoint;
     }
+
 
     public String getAccessKey() {
 
@@ -70,10 +65,16 @@ public class S3SearchTerm implements SearchTerm {
         return secretKey;
     }
 
-    public String getEndpoint() {
+    public String getRegion() {
 
-        return endpoint;
+        return region;
     }
+
+    public String getBucketName() {
+
+        return bucketName;
+    }
+
 
     public String getDirectory() {
 

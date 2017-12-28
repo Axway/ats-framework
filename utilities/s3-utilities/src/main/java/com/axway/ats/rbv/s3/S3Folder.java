@@ -40,12 +40,11 @@ public class S3Folder implements Matchable {
     private boolean                   isOpen;
     private String                    path;
     private String                    fileName;
-    private boolean searchRecursively;
+    private boolean                   searchRecursively;
 
     private S3Operations              s3Operations;
     private HashMap<String, MetaData> allMetaData;
     private List<MetaData>            newMetaData;
-
 
     S3Folder( S3SearchTerm s3SearchTerm ) {
 
@@ -55,7 +54,8 @@ public class S3Folder implements Matchable {
         this.searchRecursively = s3SearchTerm.isRecursive();
 
         this.s3Operations = new S3Operations(s3SearchTerm.getEndpoint(), s3SearchTerm.getAccessKey(),
-                                             s3SearchTerm.getSecretKey(), s3SearchTerm.getBucketName());
+                                             s3SearchTerm.getSecretKey(), s3SearchTerm.getRegion(),
+                                             s3SearchTerm.getBucketName());
         this.allMetaData = new HashMap<String, MetaData>();
         this.newMetaData = new ArrayList<MetaData>();
     }

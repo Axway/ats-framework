@@ -49,11 +49,7 @@ public class S3Verification extends VerificationSkeleton {
      * @param recursive should search for match be done recursively
      */
     @PublicAtsApi
-    public S3Verification( String accessKey,
-                           String secretKey,
-                           String bucketName,
-                           String directory,
-                           String objectName,
+    public S3Verification( String accessKey, String secretKey,  String bucketName, String directory, String objectName,
                            boolean recursive ) {
 
         this(null, accessKey, secretKey, bucketName, directory, objectName, recursive);
@@ -73,13 +69,32 @@ public class S3Verification extends VerificationSkeleton {
     public S3Verification( String endpoint, String accessKey, String secretKey, String bucketName,
                            String directory, String fileName, boolean recursive) {
 
+        this(endpoint, accessKey, secretKey, null, bucketName, directory, fileName, recursive);
+    }
+
+    /**
+     * Construct S3 object verification client to custom endpoint, Amazon-S3 compliant endpoint
+     * @param endpoint Custom endpoint with protocol (http or https ), hostname and port.
+     * @param accessKey credentials
+     * @param secretKey credentials
+     * @param region name of the S3 storage region like
+     *           <a href="http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">these</a> Amazon ones.
+     *           Null means default region.
+     * @param bucketName name of the bucket to be used
+     * @param directory base directory. Should not start with slash and root bucket directory is just empty string
+     * @param objectName object name/key to be found
+     * @param recursive should search for match be done recursively
+     */
+    @PublicAtsApi
+    public S3Verification( String endpoint, String accessKey, String secretKey, String region,
+                           String bucketName, String directory, String fileName, boolean recursive) {
+
         super();
-        // TODO: add region support
         this.monitorName += accessKey;
 
         S3Storage storage = new S3Storage();
-        folder = storage.getFolder(new S3SearchTerm(endpoint, accessKey, secretKey, bucketName, directory, fileName,
-                                                    recursive));
+        folder = storage.getFolder(new S3SearchTerm(endpoint, accessKey, secretKey, region, bucketName,
+                                                    directory, fileName, recursive));
         this.executor = new MetaExecutor();
     }
 
