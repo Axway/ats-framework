@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -120,6 +121,8 @@ public class Test_FTPClient extends BaseTest {
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)).andReturn(true);
 
@@ -140,6 +143,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -161,6 +166,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, CUSTOM_PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -180,6 +187,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(CUSTOM_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -213,6 +222,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -235,6 +246,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)).andReturn(true);
@@ -258,6 +271,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -283,6 +298,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -326,6 +343,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -370,6 +389,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -410,6 +431,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -449,6 +472,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -473,6 +498,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -512,6 +539,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -550,6 +579,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
@@ -581,6 +612,8 @@ public class Test_FTPClient extends BaseTest {
 
         mockFtp.setConnectTimeout(DEFAULT_TIMEOUT);
         mockFtp.connect(HOSTNAME, PORT_NUMBER);
+        mockFtp.setAutodetectUTF8(false);
+        EasyMock.expectLastCall().once();
         expect(mockFtp.login(USERNAME, PASSWORD)).andReturn(true);
         mockFtp.enterLocalPassiveMode();
         expect(mockFtp.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)).andReturn(true);
