@@ -27,11 +27,13 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
+import com.axway.ats.core.CoreLibraryConfigurator;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.filetransfer.model.TransferListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
 import com.axway.ats.core.filetransfer.model.ftp.SynchronizationFtpTransferListener;
+import com.axway.ats.core.utils.StringUtils;
 /**
  * The {@link FtpClient} uses the Apache Commons Net component suite for Java
  * ( https://commons.apache.org/proper/commons-net/ ) to initiate and execute FTP
@@ -103,6 +105,35 @@ public class FtpClient extends AbstractFileTransferClient implements IFileTransf
         // make new FTP object for every new connection
         disconnect();
         this.ftpConnection = new org.apache.commons.net.ftp.FTPClient();
+
+        /* 
+         * When uploading/downloading file with encoding that the server does not, the server will return 452.
+         * So we have to either set the control encoding to UTF-8 (or the one that is desired), or if the needed encoding is UTF-8,
+         * set the UTF-8 autodetect to true
+        */
+        String controlEncoding = CoreLibraryConfigurator.getInstance().getFtpControlEncoding();
+        boolean autodetectUTF8 = Boolean.valueOf(CoreLibraryConfigurator.getInstance().getFtpAutodetectUTF8());
+
+        if (!StringUtils.isNullOrEmpty(controlEncoding)) {
+            this.ftpConnection.setControlEncoding(controlEncoding);
+            if (log.isDebugEnabled()) {
+                log.debug("Control encoding is set to " + controlEncoding);
+            }
+
+        }
+
+        this.ftpConnection.setAutodetectUTF8(autodetectUTF8);
+        if (log.isDebugEnabled()) {
+            log.debug("Autodetect for UTF-8 is " + ( (autodetectUTF8)
+                                                                      ? "enabled"
+                                                                      : "disabled"));
+        }
+
+        if (!"UTF-8".equalsIgnoreCase(controlEncoding) && autodetectUTF8) {
+            log.warn("Autodetecting UTF-8 is enabled, but additionaly, the control encoding is set to '"
+                     + controlEncoding + "'. UTF-8 will be used.");
+        }
+
         if (this.listener != null) {
             this.listener.setResponses(new ArrayList<String>());
             this.ftpConnection.addProtocolCommandListener( ((FtpResponseListener) listener));
