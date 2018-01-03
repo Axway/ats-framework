@@ -41,12 +41,18 @@ public class ActiveDbAppender extends AbstractDbAppender {
      * We must wait for some event to be processed by the logging thread.
      * This is the time we wait for event processing.
      */
-    private static long             EVENT_WAIT_TIMEOUT                       = 60 * 1000;
-    private static long             EVENT_WAIT_LONG_TIMEOUT                  = 15 * 60 * 1000;
+    private static final long       EVENT_WAIT_TIMEOUT                       = 60 * 1000;
+    private static final long       EVENT_WAIT_LONG_TIMEOUT                  = 15 * 60 * 1000;
     private static ActiveDbAppender instance                                 = null;
 
     /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
     public static boolean           isBeforeAndAfterMessagesLoggingSupported = false;
+
+    /* 
+     * Sometimes the main thread needs to wait until the logger thread has processed the log event.
+     * We use this mutex for synchronization aid. 
+     */
+    private Object                  listenerMutex                            = new Object();
 
     /**
      * Constructor
@@ -60,7 +66,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     @Override
     protected EventRequestProcessorListener getEventRequestProcessorListener() {
 
-        return new SimpleEventRequestProcessorListener();
+        return new SimpleEventRequestProcessorListener(listenerMutex);
     }
 
     /* (non-Javadoc)
@@ -107,6 +113,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     return;
                 }
                 case START_RUN:
+
                     /* We synchronize the run start:
                      *      Here we make sure we are able to connect to the log DB.
                      *      We also check the integrity of the DB schema.
@@ -178,7 +185,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     private void waitForEventToBeExecuted( LogEventRequest packedEvent, LoggingEvent event,
                                            boolean waitMoreTime ) {
 
-        synchronized (this) {
+        synchronized (listenerMutex) {
 
             //we need to wait for the event to be handled
             queue.add(packedEvent);
@@ -192,7 +199,9 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 if (waitMoreTime) {
                     timeout = EVENT_WAIT_LONG_TIMEOUT;
                 }
-                wait(timeout);
+
+                listenerMutex.wait(timeout);
+
                 if (System.currentTimeMillis() - startTime > timeout - 100) {
                     System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
                                        + ": "
@@ -298,26 +307,31 @@ public class ActiveDbAppender extends AbstractDbAppender {
      */
     private class SimpleEventRequestProcessorListener implements EventRequestProcessorListener {
 
+        private Object listenerMutex;
+
+        SimpleEventRequestProcessorListener( Object listenerMutex ) {
+            this.listenerMutex = listenerMutex;
+        }
+
         public void onRunStarted() {
 
-            synchronized (ActiveDbAppender.this) {
-                ActiveDbAppender.this.notifyAll();
+            synchronized (listenerMutex) {
+                listenerMutex.notifyAll();
             }
         }
 
         public void onRunFinished() {
 
-            synchronized (ActiveDbAppender.this) {
-                ActiveDbAppender.this.notifyAll();
+            synchronized (listenerMutex) {
+                listenerMutex.notifyAll();
             }
         }
 
         public void onTestcaseStarted() {
 
-            synchronized (ActiveDbAppender.this) {
-                ActiveDbAppender.this.notifyAll();
+            synchronized (listenerMutex) {
+                listenerMutex.notifyAll();
             }
         }
     }
-
 }

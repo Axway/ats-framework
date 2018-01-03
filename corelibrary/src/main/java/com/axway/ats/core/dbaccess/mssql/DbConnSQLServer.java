@@ -23,10 +23,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.StringUtils;
@@ -178,6 +178,9 @@ public class DbConnSQLServer extends DbConnection {
         }
     }
 
+    /**
+     * NOTE: This method must not use log4j for logging as this may cause locking issues
+     */
     @Override
     public DataSource getDataSource() {
 
@@ -186,22 +189,26 @@ public class DbConnSQLServer extends DbConnection {
             // jTDS does not provide connection pool so make one using Apache Commons DBCP
             ds = new BasicDataSource();
 
-            int maxTotal = 8;
-            String maxTotalString = System.getProperty("dbcp.maxTotal");
-            if (!StringUtils.isNullOrEmpty(maxTotalString)) {
-                maxTotal = Integer.parseInt(maxTotalString);
+            // max number of active connections
+            Integer maxTotal = AtsSystemProperties.getPropertyAsNumber("dbcp.maxTotal");
+            if (maxTotal == null) {
+                maxTotal = 8;
+            } else {
+                System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Max number of active connections is "
+                                   + maxTotal);
             }
             ds.setMaxTotal(maxTotal);
-            log.info(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +" Max number of active connections is " + maxTotal);
 
-            long maxWaitMillis = 60 * 1000; // wait 60 sec for new connection
-            String maxWaitMillisString = System.getProperty("dbcp.maxWaitMillis");
-            if (!StringUtils.isNullOrEmpty(maxWaitMillisString)) {
-                maxWaitMillis = Integer.parseInt(maxWaitMillisString);
+            // wait time for new connection
+            Integer maxWaitMillis = AtsSystemProperties.getPropertyAsNumber("dbcp.maxWaitMillis");
+            if (maxWaitMillis == null) {
+                maxWaitMillis = 60 * 1000;
+            } else {
+                System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Connection creation wait is "
+                                   + maxWaitMillis
+                                   + " msec");
             }
             ds.setMaxWaitMillis(maxWaitMillis);
-            log.info(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +" Connection creation wait is " + maxWaitMillis
-                     + " msec");
 
             String logAbandoned = System.getProperty("dbcp.logAbandoned");
             if (logAbandoned != null && ("true".equalsIgnoreCase(logAbandoned))
@@ -211,8 +218,10 @@ public class DbConnSQLServer extends DbConnection {
                 if (!StringUtils.isNullOrEmpty(removeAbandonedTimeoutString)) {
                     removeAbandonedTimeout = Integer.parseInt(removeAbandonedTimeoutString);
                 }
-                log.info(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +" Will log and remove abandoned connections if not cleaned in " + removeAbandonedTimeout
-                         + " sec");
+                System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
+                                   + "Will log and remove abandoned connections if not cleaned in "
+                                   + removeAbandonedTimeout
+                                   + " sec");
                 // log not closed connections
                 ds.setLogAbandoned(true); // issue stack trace of not closed connection
                 ds.setAbandonedUsageTracking(true);

@@ -81,14 +81,14 @@ public class DbUtils {
         try {
             if (connection != null) {
                 if (connection.isClosed()) {
-                    String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +"SQL connection is already closed";
+                    String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "SQL connection is already closed";
                     System.out.println(msg);
                 } else {
                     connection.close();
                 }
             }
         } catch (SQLException sqle) {
-            String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX +"Error closing database connection";
+            String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Error closing database connection";
             // TODO - first print to console on new object and then log4j
             log.error(getFullSqlException(msg, sqle));
         }
@@ -138,31 +138,28 @@ public class DbUtils {
      * */
     public static boolean isMSSQLDatabaseAvailable( String dbHost, String dbName, String dbUser, String dbPassword ) {
 
-        DbConnSQLServer conn = null;
+        Connection sqlConnection = null;
+        DbConnSQLServer sqlServerConnection = null;
         PreparedStatement ps = null;
 
         try {
-            conn = new DbConnSQLServer(dbHost, dbName, dbUser, dbPassword);
-            Connection c = conn.getDataSource().getConnection();
-            ps = c.prepareStatement("SELECT value FROM tInternal WHERE [key] = 'version'");
+            sqlServerConnection = new DbConnSQLServer(dbHost, dbName, dbUser, dbPassword);
+            sqlConnection = sqlServerConnection.getDataSource().getConnection();
+            ps = sqlConnection.prepareStatement("SELECT value FROM tInternal WHERE [key] = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
                 throw new Exception("Could not fetch the database version from MSSQL database using URL '"
-                                    + conn.getURL() + "'");
+                                    + sqlServerConnection.getURL() + "'");
             }
             return true;
         } catch (Exception e) {
             return false;
         } finally {
             closeStatement(ps);
-            try {
-                closeConnection(conn.getDataSource().getConnection());
-            } catch (SQLException e) {
-                //log.error( "Could not close connection to MSSQL database using URL '" + conn.getURL() + "'" );
-            }
+            closeConnection(sqlConnection);
         }
     }
 
@@ -177,31 +174,28 @@ public class DbUtils {
     public static boolean isPostgreSQLDatabaseAvailable( String dbHost, String dbName, String dbUser,
                                                          String dbPassword ) {
 
-        DbConnPostgreSQL conn = null;
+        Connection sqlConnection = null;
+        DbConnPostgreSQL postgreConnection = null;
         PreparedStatement ps = null;
 
         try {
-            conn = new DbConnPostgreSQL(dbHost, dbName, dbUser, dbPassword);
-            Connection c = conn.getDataSource().getConnection();
-            ps = c.prepareStatement("SELECT value FROM \"tInternal\" WHERE key = 'version'");
+            postgreConnection = new DbConnPostgreSQL(dbHost, dbName, dbUser, dbPassword);
+            sqlConnection = postgreConnection.getDataSource().getConnection();
+            ps = sqlConnection.prepareStatement("SELECT value FROM \"tInternal\" WHERE key = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
                 throw new Exception("Could not fetch the database version from PostgreSQL database using URL '"
-                                    + conn.getURL() + "'");
+                                    + postgreConnection.getURL() + "'");
             }
             return true;
         } catch (Exception e) {
             return false;
         } finally {
             closeStatement(ps);
-            try {
-                closeConnection(conn.getDataSource().getConnection());
-            } catch (SQLException e) {
-                //log.error( "Could not close connection to PostgreSQL database using URL '" + conn.getURL() + "'" );
-            }
+            closeConnection(sqlConnection);
         }
     }
 
