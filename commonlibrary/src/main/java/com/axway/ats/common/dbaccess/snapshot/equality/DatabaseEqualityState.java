@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 
 /**
  * This structure says how equal the snapshots are
@@ -360,7 +361,7 @@ public class DatabaseEqualityState {
             tablesPerSnapshot.put(table, indexesPerTable);
         }
 
-        indexesPerTable.add("name=" + indexName + index);
+        indexesPerTable.add(DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME + "=" + indexName + ", " + index);
     }
 
     /**

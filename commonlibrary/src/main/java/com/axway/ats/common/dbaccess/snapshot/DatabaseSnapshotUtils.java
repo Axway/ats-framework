@@ -50,7 +50,7 @@ public class DatabaseSnapshotUtils {
 
     public static final String            NODE_INDEXES               = "indexes";
     public static final String            NODE_INDEX                 = "index";
-    public static final String            ATTR_NODE_INDEX_KEY        = "key";
+    public static final String            ATTR_NODE_INDEX_NAME       = "name";
 
     public static final String            NODE_ROW                   = "row";
 
