@@ -16,6 +16,7 @@
 package com.axway.ats.agent.core.exceptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.axway.ats.core.utils.HostUtils;
@@ -136,40 +137,13 @@ public class InternalComponentException extends AgentException {
     private static String reduceStackTraceLenth(
                                                  List<StringBuilder> causesList ) {
 
-        StringBuilder resizedStackTrace = new StringBuilder();
-        resizedStackTrace.append(causesList.get(0));
-        for (int i = 0; i < causesList.size() - 1; i++) {
-            String[] outerCause = causesList.get(i).toString().split("\n");
-            String[] innerCause = causesList.get(i + 1).toString().split("\n");
-
-            StringBuilder temp = new StringBuilder();
-            for (int j = 0; j < outerCause.length; j++) {
-
-                if (StringUtils.isNullOrEmpty(outerCause[j])) {
-                    // one of the lists has no more elements, we stop
-                    continue;
-                }
-
-                for (int k = 0; k < innerCause.length; k++) {
-                    if (!outerCause[j].equals(innerCause[k])) {
-                        temp.append(innerCause[k]).append("\n");
-                    } else {
-                        temp.append("\t...\n");
-                        resizedStackTrace.append(temp);
-                        temp = new StringBuilder();
-                        break;
-                    }
-                }
-
-                if (temp.length() > 0) {
-                    temp.setLength(0);
-                } else {
-                    break;
-                }
-            }
+        StringBuilder reducedStackTrace = new StringBuilder();
+        
+        for (StringBuilder cause : causesList) {
+            reducedStackTrace.append(cause);
         }
-
-        return resizedStackTrace.toString();
+        
+        return reducedStackTrace.toString();
     }
 
     public String getComponentName() {
