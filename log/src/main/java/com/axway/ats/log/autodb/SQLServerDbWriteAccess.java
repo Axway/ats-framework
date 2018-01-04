@@ -30,6 +30,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
@@ -41,6 +42,8 @@ import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
 
 public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
+
+    private AtsConsoleLogger             atsConsoleLogger   = new AtsConsoleLogger(getClass());
 
     // the checkpoint log level
     protected static CheckpointLogLevel  checkpointLogLevel = CheckpointLogLevel.SHORT;
@@ -1535,21 +1538,20 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             sanityRun = true;
 
             String javaFrameworkVersion = AtsVersion.getAtsVersion();
-            System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "ATS framework version is '"
-                               + javaFrameworkVersion + "'");
+            atsConsoleLogger.info("ATS framework version is '"
+                                  + javaFrameworkVersion + "'");
 
-            System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
-                               + "Checking for ATS log database connection with the following parameters: "
-                               + connection.toString());
+            atsConsoleLogger.info("Checking for ATS log database connection with the following parameters: "
+                                  + connection.toString());
 
             String databaseVersion = getDatabaseVersion();
-            System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "ATS Log database version is '"
-                               + databaseVersion + "'");
+            atsConsoleLogger.info("ATS Log database version is '"
+                                  + databaseVersion + "'");
 
             if (!javaFrameworkVersion.equalsIgnoreCase(databaseVersion)) {
-                System.out.println("*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion
-                                   + " with Log database version " + databaseVersion
-                                   + ". This might cause incompatibility problems!");
+                atsConsoleLogger.warn("You are using ATS version " + javaFrameworkVersion
+                                      + " with Log database version " + databaseVersion
+                                      + ". This might cause incompatibility problems!");
             }
 
             originalAutoCommitState = connection.getAutoCommit();
@@ -1633,7 +1635,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
         } catch (SQLException sqle) {
             String errorMessage = "Unable to insert sanity check sample data";
-            System.err.println(DbUtils.getFullSqlException(errorMessage, sqle));
+            atsConsoleLogger.error(DbUtils.getFullSqlException(errorMessage, sqle));
             dbae = new DatabaseAccessException(errorMessage, sqle);
         } finally {
 
@@ -1651,7 +1653,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 }
             } catch (SQLException sqle) {
                 String errorMessage = "Unable to revert sanity check data";
-                System.err.println(DbUtils.getFullSqlException(errorMessage, sqle));
+                atsConsoleLogger.error(DbUtils.getFullSqlException(errorMessage, sqle));
                 if (dbae == null) {
                     dbae = new DatabaseAccessException(errorMessage, sqle);
                 } else {
@@ -1665,8 +1667,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                     }
                 } catch (SQLException e) { // do not hide the possible exception
                                            // in the rollback() catch block
-                    System.err.println(DbUtils.getFullSqlException("Could not restore connection's autocommit state",
-                                                                   e));
+                    atsConsoleLogger.error(DbUtils.getFullSqlException("Could not restore connection's autocommit state",
+                                                                       e));
                 } finally {
                     DbUtils.closeConnection(connection);
                 }
@@ -1885,9 +1887,9 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             cacheBirthTime = 0;
 
             if (isMonitorEventsQueue) {
-                System.out.println(TimeUtils.getFormattedDateTillMilliseconds() + " Flushed "
-                                   + batchCheckpoints + " checkpoints and " + batchMessages + " messages in "
-                                   + (System.currentTimeMillis() - batchStartTime) + " ms");
+                atsConsoleLogger.info("Flushed "
+                                      + batchCheckpoints + " checkpoints and " + batchMessages + " messages in "
+                                      + (System.currentTimeMillis() - batchStartTime) + " ms");
             }
         }
 
@@ -1936,18 +1938,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(e,
-                                                                      "Commit failed while inserting "
-                                                                         + numberCachedRunMessages
-                                                                         + " run messages in one transaction"));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
+                                                                          "Commit failed while inserting "
+                                                                             + numberCachedRunMessages
+                                                                             + " run messages in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
-                                                                      "Commit and rollback both failed while inserting "
-                                                                                         + numberCachedRunMessages
-                                                                                         + " run messages in one transaction."
-                                                                                         + " Following is the rollback exception ..."));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                          "Commit and rollback both failed while inserting "
+                                                                                             + numberCachedRunMessages
+                                                                                             + " run messages in one transaction."
+                                                                                             + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
@@ -1983,18 +1985,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(e,
-                                                                      "Commit failed while inserting "
-                                                                         + numberCachedSuiteMessages
-                                                                         + " suite messages in one transaction"));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
+                                                                          "Commit failed while inserting "
+                                                                             + numberCachedSuiteMessages
+                                                                             + " suite messages in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
-                                                                      "Commit and rollback both failed while inserting "
-                                                                                         + numberCachedSuiteMessages
-                                                                                         + " suite messages in one transaction."
-                                                                                         + " Following is the rollback exception ..."));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                          "Commit and rollback both failed while inserting "
+                                                                                             + numberCachedSuiteMessages
+                                                                                             + " suite messages in one transaction."
+                                                                                             + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
@@ -2030,18 +2032,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(e,
-                                                                      "Commit failed while inserting "
-                                                                         + numberCachedTestcaseMessages
-                                                                         + " testcase messages in one transaction"));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
+                                                                          "Commit failed while inserting "
+                                                                             + numberCachedTestcaseMessages
+                                                                             + " testcase messages in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
-                                                                      "Commit and rollback both failed while inserting "
-                                                                                         + numberCachedTestcaseMessages
-                                                                                         + " testcase messages in one transaction."
-                                                                                         + " Following is the rollback exception ..."));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                          "Commit and rollback both failed while inserting "
+                                                                                             + numberCachedTestcaseMessages
+                                                                                             + " testcase messages in one transaction."
+                                                                                             + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {
@@ -2077,18 +2079,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(e,
-                                                                      "Commit failed while inserting "
-                                                                         + numberCachedCheckpoints
-                                                                         + " checkpoints in one transaction"));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
+                                                                          "Commit failed while inserting "
+                                                                             + numberCachedCheckpoints
+                                                                             + " checkpoints in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    System.err.println(ExceptionUtils.getExceptionMsg(rollbackException,
-                                                                      "Commit and rollback both failed while inserting "
-                                                                                         + numberCachedCheckpoints
-                                                                                         + " checkpoints in one transaction."
-                                                                                         + " Following is the rollback exception ..."));
+                    atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(rollbackException,
+                                                                          "Commit and rollback both failed while inserting "
+                                                                                             + numberCachedCheckpoints
+                                                                                             + " checkpoints in one transaction."
+                                                                                             + " Following is the rollback exception ..."));
                     rollbackException.printStackTrace();
                 }
             } finally {

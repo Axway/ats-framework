@@ -22,6 +22,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.LogEventRequest;
@@ -36,6 +37,8 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  * It works on the Test Executor side.
  */
 public class ActiveDbAppender extends AbstractDbAppender {
+
+    private AtsConsoleLogger        atsConsoleLogger                         = new AtsConsoleLogger(getClass());
 
     /**
      * We must wait for some event to be processed by the logging thread.
@@ -119,11 +122,9 @@ public class ActiveDbAppender extends AbstractDbAppender {
                      *      We also check the integrity of the DB schema.
                      * If we fail here, it does not make sense to run tests at all
                      */
-                    System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                                       + ": "
-                                       + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Waiting for "
-                                       + event.getClass().getSimpleName()
-                                       + " event completion");
+                    atsConsoleLogger.info("Waiting for "
+                                          + event.getClass().getSimpleName()
+                                          + " event completion");
 
                     // create the queue logging thread and the DbEventRequestProcessor
                     if (queueLogger == null) {
@@ -139,11 +140,9 @@ public class ActiveDbAppender extends AbstractDbAppender {
                      * the JVM will not be shutdown prior to committing all events in the DB, as
                      * the END_RUN event is the last one in the queue
                      */
-                    System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                                       + ": "
-                                       + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Waiting for "
-                                       + event.getClass().getSimpleName()
-                                       + " event completion");
+                    atsConsoleLogger.info("Waiting for "
+                                          + event.getClass().getSimpleName()
+                                          + " event completion");
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
@@ -203,16 +202,13 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 listenerMutex.wait(timeout);
 
                 if (System.currentTimeMillis() - startTime > timeout - 100) {
-                    System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                                       + ": "
-                                       + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "The expected "
-                                       + event.getClass().getSimpleName()
-                                       + " logging event did not complete in " + timeout + " ms");
+                    atsConsoleLogger.warn("The expected "
+                                          + event.getClass().getSimpleName()
+                                          + " logging event did not complete in " + timeout + " ms");
                 }
             } catch (InterruptedException ie) {
                 throw new DbAppenederException(TimeUtils.getFormattedDateTillMilliseconds()
                                                + ": "
-                                               + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
                                                + "Main thread interrupted while waiting for event "
                                                + event.getClass().getSimpleName(), ie);
             }

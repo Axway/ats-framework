@@ -29,6 +29,7 @@ import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
@@ -47,6 +48,8 @@ import com.axway.ats.core.utils.StringUtils;
  */
 
 public class DbConnSQLServer extends DbConnection {
+
+    private static final AtsConsoleLogger      atsConsoleLogger                      = new AtsConsoleLogger(DbConnSQLServer.class);
 
     private static final Logger                log                                   = Logger.getLogger(DbConnSQLServer.class);
 
@@ -194,8 +197,8 @@ public class DbConnSQLServer extends DbConnection {
             if (maxTotal == null) {
                 maxTotal = 8;
             } else {
-                System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Max number of active connections is "
-                                   + maxTotal);
+                atsConsoleLogger.info("Max number of active connections is "
+                                      + maxTotal);
             }
             ds.setMaxTotal(maxTotal);
 
@@ -204,9 +207,9 @@ public class DbConnSQLServer extends DbConnection {
             if (maxWaitMillis == null) {
                 maxWaitMillis = 60 * 1000;
             } else {
-                System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Connection creation wait is "
-                                   + maxWaitMillis
-                                   + " msec");
+                atsConsoleLogger.info("Connection creation wait is "
+                                      + maxWaitMillis
+                                      + " msec");
             }
             ds.setMaxWaitMillis(maxWaitMillis);
 
@@ -218,10 +221,10 @@ public class DbConnSQLServer extends DbConnection {
                 if (!StringUtils.isNullOrEmpty(removeAbandonedTimeoutString)) {
                     removeAbandonedTimeout = Integer.parseInt(removeAbandonedTimeoutString);
                 }
-                System.out.println(StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
-                                   + "Will log and remove abandoned connections if not cleaned in "
-                                   + removeAbandonedTimeout
-                                   + " sec");
+                atsConsoleLogger.info(
+                                      "Will log and remove abandoned connections if not cleaned in "
+                                      + removeAbandonedTimeout
+                                      + " sec");
                 // log not closed connections
                 ds.setLogAbandoned(true); // issue stack trace of not closed connection
                 ds.setAbandonedUsageTracking(true);

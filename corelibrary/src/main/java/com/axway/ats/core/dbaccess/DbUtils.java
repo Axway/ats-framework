@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
-import com.axway.ats.core.utils.StringUtils;
+import com.axway.ats.core.log.AtsConsoleLogger;
 
 /**
  * Utilities to close Database connection, statement
@@ -36,7 +36,9 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class DbUtils {
 
-    private static final Logger log = Logger.getLogger(DbUtils.class);
+    private static final AtsConsoleLogger atsConsoleLogger = new AtsConsoleLogger(DbUtils.class);
+
+    private static final Logger           log = Logger.getLogger(DbUtils.class);
 
     /**
      * Closes JDBC statement and open ResultSet without throwing exception. If there is one it is just logged.
@@ -70,7 +72,7 @@ public class DbUtils {
                 resultSet.close();
             }
         } catch (SQLException sqle) {
-            String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Error closing resultset connection";
+            String msg = "Error closing resultset connection";
             log.error(getFullSqlException(msg, sqle));
         }
     }
@@ -81,14 +83,14 @@ public class DbUtils {
         try {
             if (connection != null) {
                 if (connection.isClosed()) {
-                    String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "SQL connection is already closed";
-                    System.out.println(msg);
+                    String msg = "SQL connection is already closed";
+                    atsConsoleLogger.warn(msg);
                 } else {
                     connection.close();
                 }
             }
         } catch (SQLException sqle) {
-            String msg = StringUtils.ATS_CONSOLE_MESSAGE_PREFIX + "Error closing database connection";
+            String msg = "Error closing database connection";
             // TODO - first print to console on new object and then log4j
             log.error(getFullSqlException(msg, sqle));
         }

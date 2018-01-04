@@ -40,8 +40,8 @@ import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.StringUtils;
-import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Testcase;
@@ -80,6 +80,8 @@ import com.axway.ats.log.autodb.model.IDbWriteAccess;
 import com.axway.ats.log.model.SystemLogLevel;
 
 public class DbEventRequestProcessor implements EventRequestProcessor {
+
+    private AtsConsoleLogger              atsConsoleLogger           = new AtsConsoleLogger(DbEventRequestProcessor.class);
 
     /**
      * The configuration for this appender
@@ -459,11 +461,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                          startRunEvent.getHostName(), true);
 
             //output the run id in the console, so it can be used for results
-            System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                               + ": "
-                               + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
-                               + "Started a new RUN in Test Explorer's database with id: "
-                               + newRunId);
+            atsConsoleLogger.info(
+                                  "Started a new RUN in Test Explorer's database with id: "
+                                  + newRunId);
         } else {
             // we already had a run, now we will join to the previous run
             // we will update the name of the run only
@@ -472,11 +472,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             newRunId = previousRunId;
 
             //output the run id in the console, so it can be used for results
-            System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                               + ": "
-                               + StringUtils.ATS_CONSOLE_MESSAGE_PREFIX
-                               + "Joined an existing RUN in Test Explorer's database with id: "
-                               + newRunId);
+            atsConsoleLogger.info("Joined an existing RUN in Test Explorer's database with id: "
+                                  + newRunId);
         }
 
         eventProcessorState.setRunId(newRunId);

@@ -76,6 +76,7 @@ import org.fest.swing.fixture.WindowFixture;
 import org.fest.swing.format.Formatting;
 import org.fest.swing.timing.Timeout;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.uiengine.configuration.UiEngineConfigurator;
 import com.axway.ats.uiengine.elements.UiElement;
@@ -86,9 +87,11 @@ import com.axway.ats.uiengine.internal.driver.SwingDriverInternal;
 
 public class SwingElementLocator {
 
-    private static final Logger                                               log           = Logger.getLogger(SwingElementLocator.class);
+    private static final AtsConsoleLogger                                     atsConsoleLogger = new AtsConsoleLogger(SwingElementLocator.class);
 
-    public static Map<Class<? extends UiElement>, Class<? extends Component>> componentsMap = new HashMap<Class<? extends UiElement>, Class<? extends Component>>();
+    private static final Logger                                               log              = Logger.getLogger(SwingElementLocator.class);
+
+    public static Map<Class<? extends UiElement>, Class<? extends Component>> componentsMap    = new HashMap<Class<? extends UiElement>, Class<? extends Component>>();
 
     public static ComponentFixture<? extends Component> findFixture(
                                                                      UiElement uiElement ) {
@@ -658,7 +661,7 @@ public class SwingElementLocator {
                     if (!component.getClass().getName().equals(swingClass.getName())) {
                         logEntry += "\t(extends " + swingClass.getName() + ")";
                     }
-                    System.out.println(logEntry);
+                    atsConsoleLogger.info(logEntry);
                 }
             }
 

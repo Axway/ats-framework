@@ -29,7 +29,7 @@ import org.junit.runner.notification.RunListener;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
-import com.axway.ats.core.utils.TimeUtils;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.model.TestCaseResult;
@@ -44,34 +44,36 @@ import com.axway.ats.log.model.TestCaseResult;
 @PublicAtsApi
 public class AtsJunitTestListener extends RunListener {
 
-    private static final Logger      log                              = Logger.getLogger(AtsJunitTestListener.class);
+    private static final AtsConsoleLogger atsConsoleLogger                 = new AtsConsoleLogger(AtsJunitTestListener.class);
 
-    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger("com.axway.ats");
+    private static final Logger           log                              = Logger.getLogger(AtsJunitTestListener.class);
 
-    private static final String      MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
+    private static final AtsDbLogger      logger                           = AtsDbLogger.getLogger("com.axway.ats");
 
-    private static final String      MSG__TEST_FAILED                 = "[JUnit]: TEST FAILED";
+    private static final String           MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
 
-    private static final String      MSG__TEST_FAILED_ASSERTION_ERROR = "[JUnit]: ASSERTION ERROR. TEST FAILED";
+    private static final String           MSG__TEST_FAILED                 = "[JUnit]: TEST FAILED";
 
-    private static final String      MSG__TEST_IGNORED                = "[JUnit]: TEST IGNORED due to @Ignore annotation";
+    private static final String           MSG__TEST_FAILED_ASSERTION_ERROR = "[JUnit]: ASSERTION ERROR. TEST FAILED";
+
+    private static final String           MSG__TEST_IGNORED                = "[JUnit]: TEST IGNORED due to @Ignore annotation";
 
     /**
      * Keeps track of last suite name (class with test methods)
      */
-    private static String            lastSuiteName;
+    private static String                 lastSuiteName;
 
     /**
      * Keeps track of last started method. Used because listener is not notified for successfully ended method.
      * Only testFinished is invoked then and {@link Description} does not provide test result status.
      */
-    private String                   lastStartedMethod;
+    private String                        lastStartedMethod;
 
     /**
      * keep status about last running method because there is not notification that test passes.
      * If test finishes and this is not set to true (in testFailure()) than it is assumed that the test has passed.
      */
-    private boolean                  lastStartedMethodIsFailing;
+    private boolean                       lastStartedMethodIsFailing;
 
     /**
     *
@@ -169,11 +171,10 @@ public class AtsJunitTestListener extends RunListener {
                 try {
                     logger.fatal(msg, e);
                 } catch (Exception e1) {
-                    System.err.println(TimeUtils.getFormattedDateTillMilliseconds()
-                                       + "UNEXPECTED EXCEPTION IN JUnit AutoLogTestListener@testFinished");
+                    atsConsoleLogger.error("UNEXPECTED EXCEPTION IN JUnit AutoLogTestListener@testFinished");
                     e.printStackTrace();
                     // log in console because DB logging might fail
-                    System.err.println("The message above could not be logged:");
+                    atsConsoleLogger.error("The message above could not be logged:");
                     e1.printStackTrace();
                 }
             }

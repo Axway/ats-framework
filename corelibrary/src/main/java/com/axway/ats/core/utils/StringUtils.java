@@ -28,8 +28,6 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
-    public static final String   ATS_CONSOLE_MESSAGE_PREFIX       = "*** ATS *** ";
-
     // Max sizes when parsing method's input arguments
     private static final int     METHOD_ARGS__MAX_NUMBER_ELEMENTS = 10;
     private static final int     METHOD_ARGS__MAX_ELEMENT_LENGTH  = 100;

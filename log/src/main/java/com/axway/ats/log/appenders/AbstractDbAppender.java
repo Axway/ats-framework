@@ -22,6 +22,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
@@ -39,6 +40,8 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  * messages into it. It works on the Test Executor side.
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
+
+    private AtsConsoleLogger                      atsConsoleLogger          = new AtsConsoleLogger(getClass());
 
     /**
      * The appender's data for the current thread
@@ -177,10 +180,9 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
                 } else {
                     minRemainingQueueCapacity = Math.min(minRemainingQueueCapacity, queue.remainingCapacity());
                 }
-                System.out.println(TimeUtils.getFormattedDateTillMilliseconds()
-                                   + " Remaining queue capacity is " + queue.remainingCapacity()
-                                   + " out of " + (queue.remainingCapacity() + queue.size())
-                                   + ". Bottom remaining capacity is " + minRemainingQueueCapacity);
+                atsConsoleLogger.info("Remaining queue capacity is " + queue.remainingCapacity()
+                                      + " out of " + (queue.remainingCapacity() + queue.size())
+                                      + ". Bottom remaining capacity is " + minRemainingQueueCapacity);
                 lastQueueCapacityTick = newTick;
             }
         }

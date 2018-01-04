@@ -18,6 +18,8 @@ package com.axway.ats.core;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
+
 /**
  * A file in the root of the classpath with name "ats.version"
  * is expected to contain just one line which is the version
@@ -40,7 +42,9 @@ public class AtsVersion {
         } catch (Exception e) {
             ATS_FRAMEWORK_VERSION = "";
 
-            System.err.println("*** ATS WARNING *** Unknown ATS framework version. Following is the error reading the internal version of the ATS framework");
+            AtsConsoleLogger atsConsoleLogger = new AtsConsoleLogger(AtsVersion.class);
+
+            atsConsoleLogger.warn("Unknown ATS framework version. Following is the error reading the internal version of the ATS framework");
             e.printStackTrace();
         }
     }

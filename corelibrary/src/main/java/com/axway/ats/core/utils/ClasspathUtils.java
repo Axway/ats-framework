@@ -35,10 +35,14 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
+
 /**
  * Utility class for inspecting the classpath
  */
 public class ClasspathUtils {
+
+    private AtsConsoleLogger          atsConsoleLogger = new AtsConsoleLogger(getClass());
 
     private static final Logger       log              = Logger.getLogger(ClasspathUtils.class);
 
@@ -172,14 +176,14 @@ public class ClasspathUtils {
                                   + "Otherwise it should cause no logging into the agent log file. Currently Log4j is found at: "
                                   + loadedJarEntry.getValue();
                 log.warn(errorMsg);
-                System.err.println(errorMsg);
+                atsConsoleLogger.warn(errorMsg);
             }
             if (PROBLEMATIC_JARS.contains(loadedJarEntry.getKey())) {
                 String errorMsg = "The following libraries " + loadedJarEntry.getKey() + " located in "
                                   + loadedJarEntry.getValue()
                                   + ". These different jars can cause issues.";
                 log.warn(errorMsg);
-                System.err.println(errorMsg);
+                atsConsoleLogger.warn(errorMsg);
             }
         }
         log.warn(logMessage);
