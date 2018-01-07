@@ -12,7 +12,6 @@
     <name>ATS-Agent-WebApp-TomcatContainer</name>
     
     <properties>
-    	<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
     	<org.glassfish.jersey.jersey-server.version>2.3.1</org.glassfish.jersey.jersey-server.version>
     </properties>
 
