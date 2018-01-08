@@ -728,6 +728,16 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                 log.debug("Creating file: " + fileName + " with size: " + fileSize
                                           + " bytes");
 
+                                // check if file's directory (full directory path) exists
+                                // if not, try to create all missing parent directories
+                                if (!file.getParentFile().exists()) {
+                                    // the file's parent directory does not exist
+                                    if (!file.getParentFile().mkdirs()) {
+                                        throw new IOException("Could not create parent directories of file '" + file
+                                                              + "'");
+                                    }
+                                }
+                                
                                 try {
                                     fos = new FileOutputStream(file, false);
                                 } catch (IOException e) {
@@ -2238,7 +2248,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
              * getCanonicalPath() does not append slash or backslash at the end of the filepath, so we manually append it
              * This is done, because later, this slash or backslash is needed, when constructing the target file name
              */
-            fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
+            if (!fromDirName.endsWith(AtsSystemProperties.SYSTEM_FILE_SEPARATOR)) {
+                fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
+            }
+            if (!toDirName.endsWith("/") && !toDirName.endsWith("\\")) {
+                toDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
+            }
             for (File file : files) {
                 checkFileExistence(file);
 
@@ -2254,7 +2269,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                      * whereas, Linux, thinks \\ or \ is part of the filename.
                      * ( ../path/to/file -> saved as ../path/to/\file )
                      */
-                    toFileName += "/";
+
                     sendFilesToSocketStream(file.listFiles(),
                                             file.getCanonicalPath(),
                                             toFileName,
