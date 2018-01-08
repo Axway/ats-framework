@@ -88,6 +88,7 @@
         <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
         <org.apache.commons.commons-lang3.version>3.1</org.apache.commons.commons-lang3.version>
         <org.glassfish.jersey.jersey-client.version>2.22.2</org.glassfish.jersey.jersey-client.version>
+        <org.glassfish.jersey.jersey-server.version>2.22.2</org.glassfish.jersey.jersey-server.version>
         <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
         <com.jcraft.jsch.version>0.1.50</com.jcraft.jsch.version>
 

@@ -11,10 +11,6 @@
     <name>ATS-Agent-WebApp-JBossContainer</name>
     <packaging>war</packaging>
     
-    <properties>
-    	<org.glassfish.jersey.jersey-server.version>2.3.1</org.glassfish.jersey.jersey-server.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin> <!-- extract WSDL from ats-agent-webapp-server -->
