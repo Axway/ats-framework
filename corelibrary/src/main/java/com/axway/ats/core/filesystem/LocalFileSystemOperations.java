@@ -47,8 +47,10 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.UserPrincipal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -62,7 +64,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -140,17 +141,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * Random generator used by the createFile and createBinaryFile
      */
     private static final Random              randomGenerator                      = new Random();
-
-    /**
-     * Pattern for 'ls' command output. Containing 3 groups - permissions, group and user
-     *
-     * NOTE: There may be a symbol ('.' or '+') after the permissions part, if SELinux coverage is available.
-     * The character can be:
-     *      ' ' (blank) no SELinux coverage
-     *      '.' (dot) ordinary SELinux context only
-     *      '+' (plus) SELinux ACLs or other things beyond ordinary context
-     */
-    private static final Pattern             longListingPattern                   = Pattern.compile("[a-z\\-]{1}([rwxtTsS\\-]{9})[\\.\\+]?\\s+\\d+\\s+([^\\s]+)\\s+([^\\s]+)\\s+\\d+.*");
 
     // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs. Instance should be Hashtable to synchronize access operations;
     private Map<Integer, FileTransferStatus> fileTransferStates                   = new Hashtable<Integer, FileTransferStatus>();
@@ -1970,7 +1960,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         String[] command = new String[]{ "/bin/sh",
                                          "-c",
                                          "chown " + String.valueOf(userId) + ":" + String.valueOf(groupId)
-                                               + " '" + filename + "'" };;
+                                               + " '" + filename + "'" };
 
         String[] result = executeExternalProcess(command);
 
@@ -1990,11 +1980,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String filename ) {
 
         try {
-            String[] stats = getFileStats(filename, true);
-            return Long.parseLong(stats[1]);
+            Integer uid = ( Integer ) Files.getAttribute( new File( filename ).toPath(), "unix:uid",
+                                                          LinkOption.NOFOLLOW_LINKS );
+            return uid.longValue();
 
-        } catch (Exception e) {
-            throw new FileSystemOperationException("Could not get UID for '" + filename + "'", e);
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Could not get UID for '" + filename + "'", e );
         }
     }
 
@@ -2008,11 +1999,13 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            String[] stats = getFileStats(filename, false);
-            return stats[1];
+            UserPrincipal owner = Files.readAttributes( new File( filename ).toPath(),
+                                                        PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS )
+                                       .owner();
+            return owner.getName();
 
-        } catch (Exception e) {
-            throw new FileSystemOperationException("Could not get owner for '" + filename + "'", e);
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Could not get owner for '" + filename + "'", e );
         }
     }
 
@@ -2026,11 +2019,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            String[] stats = getFileStats(filename, true);
-            return Long.parseLong(stats[2]);
+            Integer gid = ( Integer ) Files.getAttribute( new File( filename ).toPath(), "unix:gid",
+                                                          LinkOption.NOFOLLOW_LINKS );
+            return gid.longValue();
 
-        } catch (Exception e) {
-            throw new FileSystemOperationException("Could not get GID for '" + filename + "'", e);
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Could not get GID for '" + filename + "'", e );
         }
     }
 
@@ -2044,54 +2038,15 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            String[] stats = getFileStats(filename, false);
-            return stats[2];
+            GroupPrincipal group = Files.readAttributes( new File( filename ).toPath(),
+                                                         PosixFileAttributes.class,
+                                                         LinkOption.NOFOLLOW_LINKS )
+                                        .group();
+            return group.getName();
 
-        } catch (Exception e) {
-            throw new FileSystemOperationException("Could not get group for '" + filename + "'", e);
+        } catch( Exception e ) {
+            throw new FileSystemOperationException( "Could not get group for '" + filename + "'", e );
         }
-    }
-
-    /**
-     *
-     * @param filename the target file name
-     * @return file/directory statistics in format: String[] { permissions (octal format), uid, gid } eg. [ "644", "0", "100" ]
-     * @throws FileSystemOperationException
-     */
-    private String[] getFileStats(
-                                   String filename,
-                                   boolean numericUidAndGid ) throws FileSystemOperationException,
-                                                              IOException {
-
-        filename = IoUtils.normalizeFilePath(filename, osType);
-        File file = new File(filename);
-        checkFileExistence(file);
-        String command = file.isDirectory()
-                                            ? "ls -ld "
-                                            : "ls -la ";
-        if (numericUidAndGid) {
-            command = command.trim() + "n ";
-        }
-
-        String[] commandTokens = new String[]{ "/bin/sh", "-c", command + "'" + filename + "' 2>&1" };
-        String[] result = executeExternalProcess(commandTokens);
-
-        String[] lines = result[0].split("\n");
-        for (String line : lines) {
-            line = line.trim();
-            if (line.endsWith(filename) || line.contains(" " + filename + " ")) {
-                Matcher m = longListingPattern.matcher(line);
-                if (m.matches()) {
-                    return new String[]{ m.group(1), m.group(2), m.group(3) };
-                }
-            }
-        }
-
-        throw new FileSystemOperationException("Could not get statistics for '" + filename + "' file"
-                                               + "\nby running the following command: "
-                                               + Arrays.toString(commandTokens)
-                                               + "\nCould not parse the result form the 'ls' command! Result: \n"
-                                               + result[0]);
     }
 
     /**
@@ -2249,7 +2204,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
              * This is done, because later, this slash or backslash is needed, when constructing the target file name
              */
             if (!fromDirName.endsWith(AtsSystemProperties.SYSTEM_FILE_SEPARATOR)) {
-                fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
+            fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
             }
             if (!toDirName.endsWith("/") && !toDirName.endsWith("\\")) {
                 toDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
