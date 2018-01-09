@@ -454,6 +454,8 @@ public class DatabaseEqualityState {
 
             // cycle all entities
             for (String entityAsString : allEntitiesAsStrings) {
+                // remove the starting and ending marker
+                entityAsString = entityAsString.substring( 2, entityAsString.length() - 2 );
                 String[] entityAttributesAsString = entityAsString.split(delimeter);
 
                 // cycle all attributes of one entity
