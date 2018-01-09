@@ -24,15 +24,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
-
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.BackwardCompatibility;
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
@@ -42,7 +42,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public abstract class AbstractDbAccess {
 
-    protected final Logger               log;
+    protected final AtsConsoleLogger     log;
 
     public static final String           UNABLE_TO_CONNECT_ERRROR = "Unable to connect to log DB";
 
@@ -97,7 +97,7 @@ public abstract class AbstractDbAccess {
 
     public AbstractDbAccess( DbConnection dbConnection ) {
 
-        this.log = Logger.getLogger(this.getClass());
+        this.log = new AtsConsoleLogger(getClass());
 
         this.dbConnectionFactory = dbConnection;
     }
@@ -196,7 +196,7 @@ public abstract class AbstractDbAccess {
             } catch (NumberFormatException nfe) {
                 throw new NumberFormatException("Error parsing DB internalVersion");
             } catch (Exception e) {
-                log.debug("Error fetching DB internalVersion", e);
+                log.debug(ExceptionUtils.getExceptionMsg(e, "Error fetching DB internalVersion"));
                 dbInternalVersion = 0;
             } finally {
                 DbUtils.close(connection, statement);
@@ -249,7 +249,7 @@ public abstract class AbstractDbAccess {
             } catch (NumberFormatException nfe) {
                 throw new NumberFormatException("Error parsing DB initialVersion");
             } catch (Exception e) {
-                log.debug("Error fetching DB initialVersion", e);
+                log.debug(ExceptionUtils.getExceptionMsg(e, "Error fetching DB initialVersion"));
                 dbInitialVersion = 0;
             } finally {
                 DbUtils.closeResultSet(rs);
@@ -369,8 +369,6 @@ public abstract class AbstractDbAccess {
 
     protected void logQuerySuccess( String query, String entities, int records ) {
 
-        if (log.isDebugEnabled()) {
-            log.debug(query + "\nFetched " + records + " " + entities);
-        }
+        log.debug(query + "\nFetched " + records + " " + entities);
     }
 }

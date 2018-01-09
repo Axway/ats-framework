@@ -23,7 +23,6 @@ import org.apache.log4j.Layout;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.log.AtsConsoleLogger;
-import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.LogEventRequest;
@@ -41,7 +40,7 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
 
-    private AtsConsoleLogger                      atsConsoleLogger          = new AtsConsoleLogger(getClass());
+    protected AtsConsoleLogger                    atsConsoleLogger          = new AtsConsoleLogger(getClass());
 
     /**
      * The appender's data for the current thread

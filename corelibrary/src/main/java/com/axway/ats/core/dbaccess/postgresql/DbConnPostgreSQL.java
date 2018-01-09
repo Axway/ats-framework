@@ -32,26 +32,26 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnPostgreSQL extends DbConnection {
 
-    private AtsConsoleLogger    atsConsoleLogger       = new AtsConsoleLogger(getClass());
-
-    public static final String  DATABASE_TYPE          = "PostgreSQL";
+    public static final String            DATABASE_TYPE          = "PostgreSQL";
 
     /**
      * Default DB port
      */
-    public static final int     DEFAULT_PORT           = 5432;
+    public static final int               DEFAULT_PORT           = 5432;
+
+    private static final AtsConsoleLogger log                    = new AtsConsoleLogger(DbConnPostgreSQL.class);
 
     /**
      * The JDBC PostgreSQL prefix string
      */
-    private static final String JDBC_POSTGRESQL_PREFIX = "jdbc:postgresql://";
+    private static final String           JDBC_POSTGRESQL_PREFIX = "jdbc:postgresql://";
 
-    private BasicDataSource     ds;
+    private BasicDataSource               ds;
 
     /**
      * The connection URL
      */
-    private String              url;
+    private String                        url;
 
     /**
      * Constructor
@@ -129,8 +129,8 @@ public class DbConnPostgreSQL extends DbConnection {
         if (maxTotal == null) {
             maxTotal = 8;
         } else {
-            atsConsoleLogger.info("Max number of active connections is "
-                                  + maxTotal);
+            log.info("Max number of active connections is "
+                     + maxTotal);
         }
         ds.setMaxTotal(maxTotal);
 
@@ -139,9 +139,9 @@ public class DbConnPostgreSQL extends DbConnection {
         if (maxWaitMillis == null) {
             maxWaitMillis = 60 * 1000;
         } else {
-            atsConsoleLogger.info("Connection creation wait is "
-                                  + maxWaitMillis
-                                  + " msec");
+            log.info("Connection creation wait is "
+                     + maxWaitMillis
+                     + " msec");
         }
         ds.setMaxWaitMillis(maxWaitMillis);
 
@@ -153,10 +153,10 @@ public class DbConnPostgreSQL extends DbConnection {
             if (!StringUtils.isNullOrEmpty(removeAbandonedTimeoutString)) {
                 removeAbandonedTimeout = Integer.parseInt(removeAbandonedTimeoutString);
             }
-            atsConsoleLogger.info(
-                                  "Will log and remove abandoned connections if not cleaned in "
-                                  + removeAbandonedTimeout
-                                  + " sec");
+            log.info(
+                     "Will log and remove abandoned connections if not cleaned in "
+                     + removeAbandonedTimeout
+                     + " sec");
             // log not closed connections
             ds.setLogAbandoned(true); // issue stack trace of not closed connection
             ds.setAbandonedUsageTracking(true);

@@ -23,8 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
-
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -36,9 +34,7 @@ import com.axway.ats.core.log.AtsConsoleLogger;
  */
 public class DbUtils {
 
-    private static final AtsConsoleLogger atsConsoleLogger = new AtsConsoleLogger(DbUtils.class);
-
-    private static final Logger           log = Logger.getLogger(DbUtils.class);
+    private static final AtsConsoleLogger log = new AtsConsoleLogger(DbUtils.class);
 
     /**
      * Closes JDBC statement and open ResultSet without throwing exception. If there is one it is just logged.
@@ -60,7 +56,7 @@ public class DbUtils {
                 statement.close();
             }
         } catch (SQLException e) {
-            log.error("Could not close SQL statement", e);
+            log.error(getFullSqlException("Could not close SQL statement", e));
         }
     }
 
@@ -84,7 +80,7 @@ public class DbUtils {
             if (connection != null) {
                 if (connection.isClosed()) {
                     String msg = "SQL connection is already closed";
-                    atsConsoleLogger.warn(msg);
+                    log.warn(msg);
                 } else {
                     connection.close();
                 }

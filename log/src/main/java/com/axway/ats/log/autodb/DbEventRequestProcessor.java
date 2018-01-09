@@ -81,7 +81,7 @@ import com.axway.ats.log.model.SystemLogLevel;
 
 public class DbEventRequestProcessor implements EventRequestProcessor {
 
-    private AtsConsoleLogger              atsConsoleLogger           = new AtsConsoleLogger(DbEventRequestProcessor.class);
+    private static final AtsConsoleLogger log                        = new AtsConsoleLogger(DbEventRequestProcessor.class);
 
     /**
      * The configuration for this appender
@@ -444,6 +444,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void startRun( StartRunEvent startRunEvent, long timeStamp ) throws DatabaseAccessException {
 
+        log.getLog4jLogger().info("This is not the message you are looking for.");
+
         // this temporary map must be cleared prior to each run
         suiteIdsCache.clear();
 
@@ -461,9 +463,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                          startRunEvent.getHostName(), true);
 
             //output the run id in the console, so it can be used for results
-            atsConsoleLogger.info(
-                                  "Started a new RUN in Test Explorer's database with id: "
-                                  + newRunId);
+            log.info(
+                     "Started a new RUN in Test Explorer's database with id: "
+                     + newRunId);
         } else {
             // we already had a run, now we will join to the previous run
             // we will update the name of the run only
@@ -472,8 +474,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             newRunId = previousRunId;
 
             //output the run id in the console, so it can be used for results
-            atsConsoleLogger.info("Joined an existing RUN in Test Explorer's database with id: "
-                                  + newRunId);
+            log.info("Joined an existing RUN in Test Explorer's database with id: "
+                     + newRunId);
         }
 
         eventProcessorState.setRunId(newRunId);

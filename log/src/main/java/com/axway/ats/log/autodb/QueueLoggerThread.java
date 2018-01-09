@@ -21,14 +21,10 @@ package com.axway.ats.log.autodb;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
-import com.axway.ats.core.utils.StringUtils;
-import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.exceptions.LoggingException;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessor;
@@ -39,9 +35,7 @@ import com.axway.ats.log.autodb.model.LoggingEventType;
  */
 public class QueueLoggerThread extends Thread {
 
-    private AtsConsoleLogger                    atsConsoleLogger  = new AtsConsoleLogger(getClass());
-
-    final static Logger                         log               = Logger.getLogger(QueueLoggerThread.class);
+    final static AtsConsoleLogger               log               = new AtsConsoleLogger(QueueLoggerThread.class);
     private EventRequestProcessor               eventProcessor;
     private LoggingException                    loggingException;
 
@@ -73,12 +67,12 @@ public class QueueLoggerThread extends Thread {
     @Override
     public void run() {
 
-        atsConsoleLogger.info(
-                              "Started logger thread named '"
-                              + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
-                              + " events. Batch mode is " + (isBatchMode
-                                                                         ? "enabled"
-                                                                         : "disabled"));
+        log.info(
+                 "Started logger thread named '"
+                 + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
+                 + " events. Batch mode is " + (isBatchMode
+                                                            ? "enabled"
+                                                            : "disabled"));
         while (true) {
             LogEventRequest logEventRequest = null;
             try {
@@ -93,8 +87,8 @@ public class QueueLoggerThread extends Thread {
                 eventProcessor.processEventRequest(logEventRequest);
             } catch (InterruptedException ie) {
                 // NOTE: In this method we talk to the user using console only as we cannot send it to the log DB
-                atsConsoleLogger.error(
-                                       "Logging thread is interrupted and will stop logging.");
+                log.error(
+                          "Logging thread is interrupted and will stop logging.");
                 break;
             } catch (Exception e) {
                 if (e instanceof LoggingException && logEventRequest != null) {
@@ -115,10 +109,10 @@ public class QueueLoggerThread extends Thread {
                             || eventType == LoggingEventType.JOIN_TEST_CASE
                             || eventType == LoggingEventType.START_CHECKPOINT) {
 
-                            atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(le,
-                                                                                  "Error running "
-                                                                                      + eventType
-                                                                                      + " event"));
+                            log.error(ExceptionUtils.getExceptionMsg(le,
+                                                                     "Error running "
+                                                                         + eventType
+                                                                         + " event"));
 
                             synchronized (this) {
                                 this.loggingException = le;
@@ -129,8 +123,8 @@ public class QueueLoggerThread extends Thread {
                         // We do not log the no connectivity problem on each failure, we do it just once.
                         // This case is likely to happen on a remote Agent host without set DNS servers - in such
                         // case providing FQDN in the log4j.xml makes the DB logging impossible
-                        atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
-                                                                              "Error processing log event"));
+                        log.error(ExceptionUtils.getExceptionMsg(e,
+                                                                 "Error processing log event"));
 
                         isUnableToConnect = true;
                     }
@@ -139,16 +133,16 @@ public class QueueLoggerThread extends Thread {
                     // we expect to get here when hit some very unusual errors
 
                     if (logEventRequest != null) {
-                        atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
-                                                                              "Error processing log event "
-                                                                                 + logEventRequest.getEvent()
-                                                                                                  .getMessage()));
+                        log.error(ExceptionUtils.getExceptionMsg(e,
+                                                                 "Error processing log event "
+                                                                    + logEventRequest.getEvent()
+                                                                                     .getMessage()));
                     } else {
                         // The 'log event request' object is null because timed out while waiting for it from the queue.
                         // This happens when running in batch mode.
                         // Then we tried to flush the current events, but this was not successful, so came here.
-                        atsConsoleLogger.error(ExceptionUtils.getExceptionMsg(e,
-                                                                              "Error processing log events in batch mode"));
+                        log.error(ExceptionUtils.getExceptionMsg(e,
+                                                                 "Error processing log events in batch mode"));
                     }
                 }
             }

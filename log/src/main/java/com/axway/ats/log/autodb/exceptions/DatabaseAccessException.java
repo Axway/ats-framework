@@ -17,12 +17,12 @@ package com.axway.ats.log.autodb.exceptions;
 
 import java.sql.SQLException;
 
-import com.axway.ats.core.log.AtsConsoleLogger;
+import org.apache.log4j.Logger;
 
 @SuppressWarnings( "serial")
 public class DatabaseAccessException extends LoggingException {
 
-    private AtsConsoleLogger atsConsoleLogger = new AtsConsoleLogger(getClass());
+    private static final Logger log = Logger.getLogger(DatabaseAccessException.class);
 
     public DatabaseAccessException( String message ) {
 
@@ -35,9 +35,9 @@ public class DatabaseAccessException extends LoggingException {
 
         if (cause instanceof java.sql.SQLException) {
 
-            atsConsoleLogger.error("Got SQL exception while trying to work with ATS logging DB: "
-                                   + message);
-            atsConsoleLogger.error("Printing exception chain: ");
+            log.error("Got SQL exception while trying to work with ATS logging DB: "
+                      + message);
+            log.error("Printing exception chain: ");
 
             SQLException next = (SQLException) cause;
             while (next != null) {
@@ -49,10 +49,10 @@ public class DatabaseAccessException extends LoggingException {
 
     private SQLException printStackTrace( SQLException sqle ) {
 
-        atsConsoleLogger.error("SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
-                               + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode());
+        log.error("SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
+                  + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode());
         sqle.printStackTrace();
-        atsConsoleLogger.error("------------------------------------------------");
+        log.error("------------------------------------------------");
 
         return sqle.getNextException();
     }

@@ -126,7 +126,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
                 } catch (NumberFormatException nfe) {
                     run.hostName = "";
-                    log.warn("Error parsing dbInternalVersion. ", nfe);
+                    log.getLog4jLogger().warn("Error parsing dbInternalVersion. ", nfe);
                 }
 
                 if (rs.getTimestamp("dateStart") != null) {
@@ -241,7 +241,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
                 } catch (NumberFormatException nfe) {
                     suite.runId = "";
-                    log.warn("Error parsing dbInternalVersion. ", nfe);
+                    log.getLog4jLogger().warn("Error parsing dbInternalVersion. ", nfe);
                 }
                 suite.name = rs.getString("name");
 
@@ -279,7 +279,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
                 } catch (NumberFormatException nfe) {
                     suite.packageName = "";
-                    log.warn("Error parsing dbInternalVersion. ", nfe);
+                    log.getLog4jLogger().warn("Error parsing dbInternalVersion. ", nfe);
                 }
 
                 suites.add(suite);

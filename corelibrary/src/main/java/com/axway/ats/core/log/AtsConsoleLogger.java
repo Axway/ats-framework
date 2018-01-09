@@ -15,13 +15,15 @@
  */
 package com.axway.ats.core.log;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 
 /**
- * This class logs messages to STDOUT and STDERR streams only.
+ * This class logs messages to STDOUT streams only.
+ * Use this class when logging via Apache's Log4J will cause re-entrance to AbstractDbAppender@append() when the main thread is blocked
  * */
 public class AtsConsoleLogger {
 
@@ -33,16 +35,13 @@ public class AtsConsoleLogger {
 
     private StringBuilder      sb                         = new StringBuilder();
 
-    private class Level {
+    private Logger             logger;
 
-        public static final String FATAL = "FATAL";
-        public static final String ERROR = "ERROR";
-        public static final String WARN  = "WARN";
-        public static final String INFO  = "INFO";
-        public static final String DEBUG = "DEBUG";
-        public static final String TRACE = "TRACE";
-
-    }
+    /**
+     * Current level of the logger
+     * If it is null, the Logger.getRootLogger().getLevel() value is used
+     * */
+    public static Level        level                      = null;
 
     /**
      * Construct new AtsConsoleLogger
@@ -52,37 +51,99 @@ public class AtsConsoleLogger {
 
         this.callingClass = callingClass;
 
+        this.logger = Logger.getLogger(callingClass);
+
         this.classNameTokens = this.callingClass.getName().split("\\.");
     }
 
     public void fatal( String message ) {
 
-        log(Level.FATAL, message);
+        String logLevel = "FATAL";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, message);
+        }
+
     }
 
     public void error( String message ) {
 
-        log(Level.ERROR, message);
+        String logLevel = "ERROR";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, message);
+        }
+
     }
 
     public void warn( String message ) {
 
-        log(Level.WARN, message);
+        String logLevel = "WARN";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, message);
+        }
+
     }
 
     public void info( String message ) {
 
-        log(Level.INFO, message);
+        String logLevel = "INFO";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, message);
+        }
+
     }
 
     public void debug( String message ) {
 
-        log(Level.DEBUG, message);
+        String logLevel = "DEBUG";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, message);
+        }
+
     }
 
     public void trace( String message ) {
 
-        log(Level.TRACE, message);
+        String logLevel = "TRACE";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, message);
+        }
+
+    }
+
+    public Logger getLog4jLogger() {
+
+        return logger;
+
+    }
+
+    /*
+     * Log message without log level
+     * */
+    public void log( String message ) {
+
+        log("", message); // this message will be logged without log level
+    }
+
+    private boolean isLogLevelEnabled( String level ) {
+
+        if (AtsConsoleLogger.level != null) {
+
+            if (Level.toLevel(level).isGreaterOrEqual(AtsConsoleLogger.level)) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return Logger.getRootLogger().isEnabledFor(Level.toLevel(level));
+        }
+
     }
 
     private void log( String level, String message ) {
@@ -92,11 +153,13 @@ public class AtsConsoleLogger {
 
         String now = TimeUtils.getFormattedDateTillMilliseconds();
 
-        if (level.length() < 5) { // 5 is the max number of chars for level ID String (ERROR, TRACE, DEBUG)
-            // in order to preserve some kind of padding, if the level ID String is shorted, add additional space char after it
-            sb.append(level.toUpperCase()).append(" ").append(" ");
-        } else {
-            sb.append(level.toUpperCase()).append(" ");
+        if (!StringUtils.isNullOrEmpty(level)) {
+            if (level.length() < 5) { // 5 is the max number of chars for level ID String (ERROR, TRACE, DEBUG)
+                // in order to preserve some kind of padding, if the level ID String is shorter, add additional space char after it
+                sb.append(level.toUpperCase()).append(" ").append(" ");
+            } else {
+                sb.append(level.toUpperCase()).append(" ");
+            }
         }
 
         sb.append(now).append(" ");
@@ -111,11 +174,7 @@ public class AtsConsoleLogger {
 
         sb.append(": ").append(message);
 
-        if (level.equalsIgnoreCase(Level.ERROR) || level.equalsIgnoreCase(Level.FATAL)) {
-            System.err.println(sb.toString());
-        } else {
-            System.out.println(sb.toString());
-        }
+        System.out.println(sb.toString());
 
     }
 

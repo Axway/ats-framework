@@ -23,13 +23,13 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
@@ -49,9 +49,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnSQLServer extends DbConnection {
 
-    private static final AtsConsoleLogger      atsConsoleLogger                      = new AtsConsoleLogger(DbConnSQLServer.class);
-
-    private static final Logger                log                                   = Logger.getLogger(DbConnSQLServer.class);
+    private static final AtsConsoleLogger      log                                   = new AtsConsoleLogger(DbConnSQLServer.class);
 
     private static final String                JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
     /**
@@ -197,8 +195,8 @@ public class DbConnSQLServer extends DbConnection {
             if (maxTotal == null) {
                 maxTotal = 8;
             } else {
-                atsConsoleLogger.info("Max number of active connections is "
-                                      + maxTotal);
+                log.info("Max number of active connections is "
+                         + maxTotal);
             }
             ds.setMaxTotal(maxTotal);
 
@@ -207,9 +205,9 @@ public class DbConnSQLServer extends DbConnection {
             if (maxWaitMillis == null) {
                 maxWaitMillis = 60 * 1000;
             } else {
-                atsConsoleLogger.info("Connection creation wait is "
-                                      + maxWaitMillis
-                                      + " msec");
+                log.info("Connection creation wait is "
+                         + maxWaitMillis
+                         + " msec");
             }
             ds.setMaxWaitMillis(maxWaitMillis);
 
@@ -221,10 +219,10 @@ public class DbConnSQLServer extends DbConnection {
                 if (!StringUtils.isNullOrEmpty(removeAbandonedTimeoutString)) {
                     removeAbandonedTimeout = Integer.parseInt(removeAbandonedTimeoutString);
                 }
-                atsConsoleLogger.info(
-                                      "Will log and remove abandoned connections if not cleaned in "
-                                      + removeAbandonedTimeout
-                                      + " sec");
+                log.info(
+                         "Will log and remove abandoned connections if not cleaned in "
+                         + removeAbandonedTimeout
+                         + " sec");
                 // log not closed connections
                 ds.setLogAbandoned(true); // issue stack trace of not closed connection
                 ds.setAbandonedUsageTracking(true);
@@ -396,7 +394,7 @@ public class DbConnSQLServer extends DbConnection {
             try {
                 jdbcDriverClass = (Class<? extends Driver>) Class.forName(className);
             } catch (ClassNotFoundException e) {
-                log.error(null, e); // Not expected. Already checked in loadClass()
+                log.error(ExceptionUtils.getExceptionMsg(e)); // Not expected. Already checked in loadClass()
             } catch (ClassCastException e) {
                 throw new DbException("Class with name '" + className
                                       + "' is not a valid java.sql.Driver class");
@@ -420,7 +418,7 @@ public class DbConnSQLServer extends DbConnection {
             try {
                 jdbcDataSourceClass = (Class<? extends DataSource>) Class.forName(className);
             } catch (ClassNotFoundException e) {
-                log.error(null, e); // Not expected. Already checked in loadClass()
+                log.error(ExceptionUtils.getExceptionMsg(e)); // Not expected. Already checked in loadClass()
             } catch (ClassCastException e) {
                 throw new DbException("Class with name '" + className
                                       + "' is not a valid javax.sql.DataSource class");
@@ -443,8 +441,8 @@ public class DbConnSQLServer extends DbConnection {
             Class.forName(someClass); // try to load the class
             return true;
         } catch (ClassNotFoundException e) {
-            log.error("Could not load DB access related class '" + someClass
-                      + "'. Check that it is specified correctly and that it is in the classpath", e);
+            log.error(ExceptionUtils.getExceptionMsg(e, "Could not load DB access related class '" + someClass
+                                                        + "'. Check that it is specified correctly and that it is in the classpath"));
             return false;
         }
     }

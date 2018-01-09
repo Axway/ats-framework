@@ -19,11 +19,11 @@ package com.axway.ats.log.appenders;
 import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
-import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.LogEventRequest;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
@@ -37,8 +37,6 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  * It works on the Test Executor side.
  */
 public class ActiveDbAppender extends AbstractDbAppender {
-
-    private AtsConsoleLogger        atsConsoleLogger                         = new AtsConsoleLogger(getClass());
 
     /**
      * We must wait for some event to be processed by the logging thread.
@@ -93,6 +91,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
             switch (dbLoggingEvent.getEventType()) {
 
                 case START_TEST_CASE: {
+
                     // on Test Executor side we block until the test case start is committed in the DB
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
@@ -126,6 +125,12 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                           + event.getClass().getSimpleName()
                                           + " event completion");
 
+                    /** disable root logger's logging in order to prevent deadlock **/
+                    Level level = Logger.getRootLogger().getLevel();
+                    Logger.getRootLogger().setLevel(Level.OFF);
+
+                    AtsConsoleLogger.level = level;
+
                     // create the queue logging thread and the DbEventRequestProcessor
                     if (queueLogger == null) {
                         initializeDbLogging();
@@ -133,6 +138,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, false);
                     //this event has already been through the queue
+
+                    /*Revert Logger's level*/
+                    Logger.getRootLogger().setLevel(level);
+                    AtsConsoleLogger.level = null;
+
                     return;
                 case END_RUN: {
                     /* We synchronize the run end.
@@ -144,7 +154,17 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                           + event.getClass().getSimpleName()
                                           + " event completion");
 
+                    /** disable root logger's logging in order to prevent deadlock **/
+                    level = Logger.getRootLogger().getLevel();
+                    Logger.getRootLogger().setLevel(Level.OFF);
+
+                    AtsConsoleLogger.level = level;
+
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
+
+                    /*Revert Logger's level*/
+                    Logger.getRootLogger().setLevel(level);
+                    AtsConsoleLogger.level = null;
 
                     //this event has already been through the queue
                     return;

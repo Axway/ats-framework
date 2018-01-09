@@ -42,9 +42,9 @@ public class AtsVersion {
         } catch (Exception e) {
             ATS_FRAMEWORK_VERSION = "";
 
-            AtsConsoleLogger atsConsoleLogger = new AtsConsoleLogger(AtsVersion.class);
+            AtsConsoleLogger logger = new AtsConsoleLogger(AtsVersion.class);
 
-            atsConsoleLogger.warn("Unknown ATS framework version. Following is the error reading the internal version of the ATS framework");
+            logger.warn("Unknown ATS framework version. Following is the error reading the internal version of the ATS framework");
             e.printStackTrace();
         }
     }
