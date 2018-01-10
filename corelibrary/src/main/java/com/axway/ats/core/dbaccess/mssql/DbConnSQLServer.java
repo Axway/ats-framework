@@ -29,7 +29,6 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.log.AtsConsoleLogger;
-import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
@@ -394,7 +393,7 @@ public class DbConnSQLServer extends DbConnection {
             try {
                 jdbcDriverClass = (Class<? extends Driver>) Class.forName(className);
             } catch (ClassNotFoundException e) {
-                log.error(ExceptionUtils.getExceptionMsg(e)); // Not expected. Already checked in loadClass()
+                log.error(e); // Not expected. Already checked in loadClass()
             } catch (ClassCastException e) {
                 throw new DbException("Class with name '" + className
                                       + "' is not a valid java.sql.Driver class");
@@ -418,7 +417,7 @@ public class DbConnSQLServer extends DbConnection {
             try {
                 jdbcDataSourceClass = (Class<? extends DataSource>) Class.forName(className);
             } catch (ClassNotFoundException e) {
-                log.error(ExceptionUtils.getExceptionMsg(e)); // Not expected. Already checked in loadClass()
+                log.error(e); // Not expected. Already checked in loadClass()
             } catch (ClassCastException e) {
                 throw new DbException("Class with name '" + className
                                       + "' is not a valid javax.sql.DataSource class");
@@ -441,8 +440,8 @@ public class DbConnSQLServer extends DbConnection {
             Class.forName(someClass); // try to load the class
             return true;
         } catch (ClassNotFoundException e) {
-            log.error(ExceptionUtils.getExceptionMsg(e, "Could not load DB access related class '" + someClass
-                                                        + "'. Check that it is specified correctly and that it is in the classpath"));
+            log.error("Could not load DB access related class '" + someClass
+                      + "'. Check that it is specified correctly and that it is in the classpath", e);
             return false;
         }
     }

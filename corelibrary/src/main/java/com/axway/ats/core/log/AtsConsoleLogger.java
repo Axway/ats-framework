@@ -18,6 +18,7 @@ package com.axway.ats.core.log;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.utils.TimeUtils;
 
@@ -66,12 +67,32 @@ public class AtsConsoleLogger {
 
     }
 
+    public void error( Throwable e ) {
+
+        String logLevel = "ERROR";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, ExceptionUtils.getExceptionMsg(e));
+        }
+
+    }
+
     public void error( String message ) {
 
         String logLevel = "ERROR";
 
         if (isLogLevelEnabled(logLevel)) {
             log(logLevel, message);
+        }
+
+    }
+
+    public void error( String message, Throwable e ) {
+
+        String logLevel = "ERROR";
+
+        if (isLogLevelEnabled(logLevel)) {
+            log(logLevel, ExceptionUtils.getExceptionMsg(e, message));
         }
 
     }
