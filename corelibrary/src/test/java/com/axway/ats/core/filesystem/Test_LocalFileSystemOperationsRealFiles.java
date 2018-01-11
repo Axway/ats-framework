@@ -18,9 +18,7 @@ package com.axway.ats.core.filesystem;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -161,7 +159,9 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         if( realOsType.isUnix() ) {
 
             LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-            assertEquals( "0664", localFileSystemOperations.getFilePermissions( file.getPath() ) );
+            String[] stats = getFileStats( file.getAbsolutePath(), true );
+            assertEquals( convertToOctalPermissions( stats[0] ),
+                          localFileSystemOperations.getFilePermissions( file.getPath() ) );
         } else {
             log.warn( "Test 'getFilePermissionsPositive' is unable to pass on Windows, so it will be skipped!" );
         }
