@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.axway.ats.rbv.client;
+package com.axway.ats.rbv.clients;
 
 import java.util.Date;
 import java.util.List;
@@ -33,6 +33,15 @@ import com.axway.ats.rbv.s3.rules.FileMd5S3Rule;
 import com.axway.ats.rbv.s3.rules.FileModtimeS3Rule;
 import com.axway.ats.rbv.s3.rules.FileSizeS3Rule;
 
+/**
+ *
+ * S3 storage verification client.
+ * Could be used for Amazon S3 and compatible storages.
+ * For examples and details refer to ATS framework guide
+ * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">here</a>
+ *
+ */
+@PublicAtsApi
 public class S3Verification extends VerificationSkeleton {
 
     private String monitorName = "s3_monitor_";
