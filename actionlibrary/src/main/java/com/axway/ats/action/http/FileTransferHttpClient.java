@@ -51,9 +51,6 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
 
     private static final Logger log                                   = Logger.getLogger(FileTransferHttpClient.class);
 
-    private String              hostname;
-    private int                 port;
-
     private static final int    DEFAULT_HTTP_PORT                     = 80;
 
     public final static String  UPLOAD_METHOD                         = "HTTP_HTTPS_UPLOAD_METHOD";
@@ -160,7 +157,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         }
         log.info("Connecting to " + connectionDescription);
 
-        this.hostname = hostname;
+        this.host = hostname;
         this.username = username;
         this.password = password;
 
@@ -272,7 +269,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         }
 
         log.info("Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
-                 + this.hostname);
+                 + this.host);
     }
 
     /**
@@ -341,7 +338,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         }
 
         log.info("Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "' at "
-                 + this.hostname);
+                 + this.host);
     }
 
     @Override
@@ -531,7 +528,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         return "http" + (isOverSsl
                                    ? "s"
                                    : "")
-               + "://" + this.hostname + ":" + this.port + getPathPlusFile(remoteDir, remoteFile);
+               + "://" + this.host + ":" + this.port + getPathPlusFile(remoteDir, remoteFile);
     }
 
     /**

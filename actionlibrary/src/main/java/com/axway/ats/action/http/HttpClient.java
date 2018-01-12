@@ -223,8 +223,8 @@ public class HttpClient {
     protected int                     debugLevel                      = HttpDebugLevel.NONE;
 
     protected String                  url;
-    private String                    host;
-    private int                       port;
+    protected String                  host;
+    protected int                     port;
     private String                    actualUrl;
     private List<String>              resourcePath                    = new ArrayList<String>();
     protected boolean                 isOverSsl;
