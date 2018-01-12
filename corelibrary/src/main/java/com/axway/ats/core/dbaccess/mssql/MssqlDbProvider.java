@@ -222,7 +222,6 @@ public class MssqlDbProvider extends AbstractDbProvider {
                 if ("Name".equalsIgnoreCase(name)) {
                     indexName = value;
                 } else {
-                    info.append(", " + name + "=" + value);
                     if (firstTime) {
                         firstTime = false;
                         info.append(name + "=" + value);

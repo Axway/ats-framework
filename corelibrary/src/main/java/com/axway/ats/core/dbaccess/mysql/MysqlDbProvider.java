@@ -137,7 +137,6 @@ public class MysqlDbProvider extends AbstractDbProvider {
                 if ("INDEX_NAME".equalsIgnoreCase(name)) {
                     indexName = value;
                 } else {
-                    info.append(", " + name + "=" + value);
                     if (firstTime) {
                         firstTime = false;
                         info.append(name + "=" + value);
