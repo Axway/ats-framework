@@ -150,6 +150,7 @@ public class S3Operations {
     @PublicAtsApi
     public void deleteObject( String objectName ) {
 
+        AmazonS3 s3Client = getClient();
         s3Client.deleteObject(bucketName, objectName);
         LOG.info("Deleted object '" + objectName + "' from bucket '" + bucketName + "'");
     }
