@@ -1130,16 +1130,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         endTimestamp = inUTC(endTimestamp);
 
         final int indexRowsInserted = 8;
+        int responseTime = ( int ) ( endTimestamp - runningCheckpointInfo.getStartTimestamp() );
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
-
+            
             callableStatement = connection.prepareCall("{ call sp_end_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }");
             callableStatement.setInt(1, runningCheckpointInfo.getCheckpointSummaryId());
             callableStatement.setInt(2, runningCheckpointInfo.getCheckpointId());
-            callableStatement.setInt(3,
-                                     (int) (endTimestamp - runningCheckpointInfo.getStartTimestamp()));
+            callableStatement.setInt(3, responseTime >= 0 ? responseTime : 0 );
             callableStatement.setLong(4, transferSize);
             callableStatement.setInt(5, result);
             callableStatement.setInt(6, checkpointLogLevel.toInt());
