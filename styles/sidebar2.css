@@ -1,0 +1,389 @@
+body {
+	background: #F3F4F4;
+}
+
+.wrapper {
+	display: grid;
+	grid-row-gap: 10px;
+	grid-auto-columns: 20%;
+	grid-auto-rows: 45px;
+}
+
+.header {
+	grid-column: 1;
+	grid-row: 1;
+	grid-column-end: 6;
+}
+
+.sidebar {
+	grid-column: 1;
+	grid-row: 2;
+	min-height: 830px;
+	resize: none;
+	overflow-x: auto;
+	background: #ffffff;
+}
+
+.main_content {
+	grid-column: 2;
+	grid-row: 2;
+	grid-column-end: 6;
+	padding-left: 5px;
+	overflow-y: auto;
+	min-height: 830px;
+	background: #E9EAEA;
+}
+
+.footer {
+	grid-column: 1;
+	grid-row: 17;
+	grid-column-end: 6;
+}
+
+.axway_logo {
+	margin-top: 0px;
+	margin-left: 0px;
+}
+
+.axway_title {
+	font-size: 24px;
+}
+
+
+.sidebar-entry-level-0-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-0-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-0-text {
+	display: block;
+}
+
+.sidebar-entry-level-0-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-0-text-expanded:before {
+	content: url('../images/icons/chevron-down.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-1-text-collapsed {
+	display: none;
+	padding-left: 10px;
+}
+
+.sidebar-entry-level-1-text-expanded {
+	display: none;
+	padding-left: 10px;
+}
+
+.sidebar-entry-level-1-text-none {
+	display: none;
+	padding-left: 10px;
+}
+
+.sidebar-entry-level-1-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-1-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-1-text-none:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-1-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-1-text-expanded:before {
+	 content: url('../images/icons/chevron-down.svg');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-1-text-none:before {
+	 content: url('../images/icons/chevron-none.png');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-2-text-collapsed {
+	display: none;
+	padding-left: 20px;
+}
+
+.sidebar-entry-level-2-text-expanded {
+	display: none;
+	padding-left: 20px;
+}
+
+.sidebar-entry-level-2-text-none {
+	display: none;
+	padding-left: 20px;
+}
+
+.sidebar-entry-level-2-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-2-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-2-text-none:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-2-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-2-text-expanded:before {
+	 content: url('../images/icons/chevron-down.svg');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-2-text-none:before {
+	 content: url('../images/icons/chevron-none.png');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-3-text-collapsed {
+	display: none;
+	padding-left: 30px;
+}
+
+.sidebar-entry-level-3-text-expanded {
+	display: none;
+	padding-left: 30px;
+}
+
+.sidebar-entry-level-3-text-none {
+	display: none;
+	padding-left: 30px;
+}
+
+.sidebar-entry-level-3-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-3-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-3-text-none:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-3-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-3-text-expanded:before {
+	 content: url('../images/icons/chevron-down.svg');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-3-text-none:before {
+	 content: url('../images/icons/chevron-none.png');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-4-text-collapsed {
+	display: none;
+	padding-left: 40px;
+}
+
+.sidebar-entry-level-4-text-expanded {
+	display: none;
+	padding-left: 40px;
+}
+
+.sidebar-entry-level-4-text-none {
+	display: none;
+	padding-left: 40px;
+}
+
+.sidebar-entry-level-4-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-4-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-4-text-none:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-4-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-4-text-expanded:before {
+	 content: url('../images/icons/chevron-down.svg');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-4-text-none:before {
+	 content: url('../images/icons/chevron-none.png');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+
+
+
+
+.sidebar-entry-level-5-text-collapsed {
+	display: none;
+	padding-left: 50px;
+}
+
+.sidebar-entry-level-5-text-expanded {
+	display: none;
+	padding-left: 50px;
+}
+
+.sidebar-entry-level-5-text-none {
+	display: none;
+	padding-left: 50px;
+}
+
+.sidebar-entry-level-5-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-5-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-5-text-none:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-5-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-5-text-expanded:before {
+	 content: url('../images/icons/chevron-down.svg');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-5-text-none:before {
+	 content: url('../images/icons/chevron-none.png');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-6-text-collapsed {
+	display: none;
+	padding-left: 60px;
+}
+
+.sidebar-entry-level-6-text-expanded {
+	display: none;
+	padding-left: 60px;
+}
+
+.sidebar-entry-level-6-text-none {
+	display: none;
+	padding-left: 60px;
+}
+
+.sidebar-entry-level-6-text-collapsed:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-6-text-expanded:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-6-text-none:hover {
+	background: #E9EAEA;
+	cursor: pointer;
+}
+
+.sidebar-entry-level-6-text-collapsed:before {
+	content: url('../images/icons/chevron-right.svg');
+	position: relative;
+	top: 7px;
+	left: 0px;
+}
+
+.sidebar-entry-level-6-text-expanded:before {
+	 content: url('../images/icons/chevron-down.svg');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
+
+.sidebar-entry-level-6-text-none:before {
+	 content: url('../images/icons/chevron-none.png');
+	 position: relative;
+	 top: 7px;
+	 left: 0px;
+}
