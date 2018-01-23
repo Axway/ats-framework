@@ -84,27 +84,34 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         }
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test
     public void setFileUidNegativeNoSuchFile() throws Exception {
 
         if( realOsType.isUnix() ) {
-            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-            localFileSystemOperations.setFileUID( "fakeFile.txt", 123 );
+            try {
+                LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+                localFileSystemOperations.setFileUID( "fakeFile.txt", 123 );
+            } catch( Exception e ) {
+                assertEquals( FileDoesNotExistException.class.getName(), e.getClass().getName() );
+            }
         } else {
             log.warn( "Test 'setFileUidNegativeNoSuchFile' is unable to pass on Windows, so it will be skipped!" );
         }
     }
 
-    @Test(expected = FileDoesNotExistException.class)
+    @Test
     public void setFilePermissionsNoSuchFile() throws Exception {
 
         if( realOsType.isUnix() ) {
-            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-            localFileSystemOperations.setFilePermissions( "fakeFile.txt", "511" );
+            try {
+                LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+                localFileSystemOperations.setFilePermissions( "fakeFile.txt", "511" );
+            } catch( Exception e ) {
+                assertEquals( FileDoesNotExistException.class.getName(), e.getClass().getName() );
+            }
         } else {
             log.warn( "Test 'setFilePermissionsNoSuchFile' is unable to pass on Windows, so it will be skipped!" );
         }
-
     }
 
     @Ignore
