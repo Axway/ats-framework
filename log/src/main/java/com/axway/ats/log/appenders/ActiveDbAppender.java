@@ -98,10 +98,20 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     // remember the test case id, which we will later pass to ATS agent
                     testCaseState.setTestcaseId(eventProcessor.getTestCaseId());
 
+                    // clear last testcase id
+                    testCaseState.clearLastExecutedTestcaseId();
+
                     //this event has already been through the queue
                     return;
                 }
                 case END_TEST_CASE: {
+                    
+                    // on Test Executor side we block until the test case start is committed in the DB
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
+
+                    // remember the last executed test case id
+                    testCaseState.setLastExecutedTestcaseId(testCaseState.getTestcaseId());
+
                     // clear test case id
                     testCaseState.clearTestcaseId();
                     // now pass the event to the queue
@@ -344,6 +354,13 @@ public class ActiveDbAppender extends AbstractDbAppender {
         }
 
         public void onTestcaseStarted() {
+
+            synchronized (listenerMutex) {
+                listenerMutex.notifyAll();
+            }
+        }
+        
+        public void onTestcaseFinished() {
 
             synchronized (listenerMutex) {
                 listenerMutex.notifyAll();

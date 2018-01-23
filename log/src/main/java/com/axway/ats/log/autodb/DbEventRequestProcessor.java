@@ -171,11 +171,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private boolean                       afterMethodMode            = false;
 
     /*
-     * Keeps the ID of the last ended testcase, regardless of the testcase result (e.g. PASSED,FAILED,SKIPPED) 
-     * */
-    private int                           lastEndedTestcaseId        = -1;
-
-    /*
      * Keeps the ID of the last ended suite
      * */
     private int                           lastEndedSuiteId           = -1;
@@ -267,6 +262,11 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     public int getTestCaseId() {
 
         return eventProcessorState.getTestCaseId();
+    }
+
+    public int getLastExecutedTestCaseId() {
+
+        return eventProcessorState.getLastExecutedTestCaseId();
     }
 
     public void processEventRequest( LogEventRequest eventRequest ) throws LoggingException {
@@ -641,7 +641,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             if (!this.deletedTestcases.contains(eventProcessorState.getTestCaseId())) {
                 dbAccess.endTestCase(endTestCaseEvent.getTestCaseResult().toInt(), timeStamp,
                                      eventProcessorState.getTestCaseId(), true);
-                lastEndedTestcaseId = eventProcessorState.getTestCaseId();
             }
         } finally {
             // even when this DB entity could not finish due to error,
@@ -649,8 +648,14 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             // so next sub-entities do not go into this one
             eventProcessorState.setLifeCycleState(LifeCycleState.SUITE_STARTED);
 
+            eventProcessorState.getTestCaseState().setLastExecutedTestcaseId(eventProcessorState.getTestCaseId());
             eventProcessorState.getTestCaseState().clearTestcaseId();
             eventProcessorState.getLoadQueuesState().clearAll();
+
+            //unblock the main thread which is waiting for the completion of this event
+            if (listener != null) {
+                listener.onTestcaseFinished();
+            }
         }
     }
 
@@ -662,8 +667,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         String testcaseName = updateTestcaseEvent.getTestcaseName();
         String userNote = updateTestcaseEvent.getUserNote();
         int testcaseResult = updateTestcaseEvent.getTestcaseResult();
+        /*
+         * It is possible, albeit very unusual, that both testcaseId and lastExecutedTestcaseId are -1
+         * Maybe an additional check is needed, before invoking dbAccess.updateTestcase()
+         * */
         int testcaseId = (getTestCaseId() == -1)
-                                                 ? lastEndedTestcaseId
+                                                 ? getLastExecutedTestCaseId()
                                                  : getTestCaseId();
 
         dbAccess.updateTestcase(suiteFullName, scenarioName, scenarioDescription,
@@ -938,7 +947,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         } else if (eventProcessorState.getLifeCycleState() == LifeCycleState.TEST_CASE_STARTED || afterMethodMode) {
 
             final int testcaseId = (afterMethodMode)
-                                                     ? lastEndedTestcaseId
+                                                     ? getLastExecutedTestCaseId()
                                                      : eventProcessorState.getTestCaseId();
             if (!deletedTestcases.contains(testcaseId)) {
                 Level level = event.getLevel();

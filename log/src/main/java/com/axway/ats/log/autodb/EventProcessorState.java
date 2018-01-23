@@ -121,6 +121,11 @@ public class EventProcessorState {
 
         return testCaseState.getTestcaseId();
     }
+    
+    public int getLastExecutedTestCaseId() {
+
+        return testCaseState.getLastExecutedTestcaseId();
+    }
 
     public TestCaseState getTestCaseState() {
 

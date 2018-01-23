@@ -345,6 +345,14 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         return eventProcessor.getTestCaseId();
     }
+    
+    /**
+     * @return the last executed, regardless of the finish status (e.g passed/failed/skipped), testcase ID
+     * */
+    public int getLastExecutedTestCaseId() {
+
+        return eventProcessor.getLastExecutedTestCaseId();
+    }
 
     public boolean getEnableCheckpoints() {
 

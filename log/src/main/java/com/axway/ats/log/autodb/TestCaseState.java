@@ -19,12 +19,14 @@ public class TestCaseState {
 
     private static final int UNKNOWN_TESTCASE_ID = -1;
 
+    private int              lastExecutedTestcaseId;
     private int              testcaseId;
     private int              runId;
 
     public TestCaseState() {
 
         clearTestcaseId();
+        clearLastExecutedTestcaseId();
     }
 
     public int getRunId() {
@@ -48,9 +50,24 @@ public class TestCaseState {
         this.testcaseId = testcaseId;
     }
 
+    public int getLastExecutedTestcaseId() {
+
+        return lastExecutedTestcaseId;
+    }
+
+    public void setLastExecutedTestcaseId( int lastExecutedTestcaseId ) {
+
+        this.lastExecutedTestcaseId = lastExecutedTestcaseId;
+    }
+
     public void clearTestcaseId() {
 
         this.testcaseId = UNKNOWN_TESTCASE_ID;
+    }
+
+    public void clearLastExecutedTestcaseId() {
+
+        this.lastExecutedTestcaseId = UNKNOWN_TESTCASE_ID;
     }
 
     public boolean isInitialized() {
@@ -63,7 +80,8 @@ public class TestCaseState {
                            Object that ) {
 
         if (that != null && that instanceof TestCaseState) {
-            return this.testcaseId == ((TestCaseState) that).testcaseId;
+            return this.testcaseId == ((TestCaseState) that).testcaseId
+                   && this.lastExecutedTestcaseId == ((TestCaseState) that).lastExecutedTestcaseId;
         }
         return false;
     }

@@ -43,11 +43,13 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
 @PublicAtsApi
 public class AtsDbLoggerUtilities {
 
-    private static final Logger logger         = Logger.getLogger(AtsDbLoggerUtilities.class);
+    private static final Logger logger                     = Logger.getLogger(AtsDbLoggerUtilities.class);
 
-    private final long          MAX_FILE_SIZE  = 10 * 1024 * 1024;                                             // 10MB
+    private final long          MAX_FILE_SIZE              = 10 * 1024 * 1024;                                                 // 10MB
 
-    private static String       ERR_MSG_PREFIX = "Cannot not attach file \"{FILE}\" to the current testcase: ";
+    private static String       ERR_MSG_PREFIX             = "Cannot attach file \"{FILE}\" to the testcase \"{testcaseID}\" ";
+
+    private static int          DEFAULT_TEST_EXPLORER_PORT = 80;
 
     /**
      * Attach a local file to the current test case in the Test Explorer DB.
@@ -55,7 +57,7 @@ public class AtsDbLoggerUtilities {
      * </br>The file must not be bigger than 10MB
      * 
      * @param fileLocation the absolute path to the file
-     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-3.11.0" etc.
+     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
      * @return TRUE if the operation was successful and false if not. A warning will be logged on failure.
      */
     @PublicAtsApi
@@ -63,7 +65,7 @@ public class AtsDbLoggerUtilities {
                                             String fileLocation,
                                             String testExplorerContextName ) {
 
-        return attachFileToCurrentTest(fileLocation, testExplorerContextName, 80);
+        return attachFileToCurrentTest(fileLocation, testExplorerContextName, DEFAULT_TEST_EXPLORER_PORT);
     }
 
     /**
@@ -71,7 +73,7 @@ public class AtsDbLoggerUtilities {
      * </br>The file must not be bigger than 10MB
      * 
      * @param fileLocation the absolute path to the file
-     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-3.11.0" etc.
+     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
      * @param testExplorerPort the port of the web application, e.g. 8080
      * @return TRUE if the operation was successful and false if not. A warning will be logged on failure.
      */
@@ -81,8 +83,46 @@ public class AtsDbLoggerUtilities {
                                             String testExplorerContextName,
                                             int testExplorerPort ) {
 
+        return attachFileToTestcase(ActiveDbAppender.getCurrentInstance().getTestCaseId(), fileLocation,
+                                    testExplorerContextName, testExplorerPort);
+    }
+
+    /**
+     * Attach a local file to the a testcase in the Test Explorer DB.
+     * </br>It is expected to have Test Explorer running on port 80.
+     * </br>The file must not be bigger than 10MB
+     * 
+     * @param testcaseId the testcase id to which the file will be attached
+     * @param fileLocation the absolute path to the file
+     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
+     * @return TRUE if the operation was successful and false if not. A warning will be logged on failure.
+     */
+    @PublicAtsApi
+    public boolean attachFileToTestcase( int testcaseId,
+                                         String fileLocation,
+                                         String testExplorerContextName ) {
+
+        return attachFileToTestcase(testcaseId, fileLocation, testExplorerContextName, DEFAULT_TEST_EXPLORER_PORT);
+    }
+
+    /**
+     * Attach a local file to the a testcase in the Test Explorer DB.
+     * </br>The file must not be bigger than 10MB
+     * 
+     * @param testcaseId the testcase id to which the file will be attached
+     * @param fileLocation the absolute path to the file
+     * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
+     * @param testExplorerPort the port of the web application, e.g. 8080
+     * @return TRUE if the operation was successful and false if not. A warning will be logged on failure.
+     */
+    @PublicAtsApi
+    public boolean attachFileToTestcase( int testcaseId,
+                                         String fileLocation,
+                                         String testExplorerContextName,
+                                         int testExplorerPort ) {
+
         fileLocation = fileLocation.replace("\\", "/");
-        ERR_MSG_PREFIX = ERR_MSG_PREFIX.replace("{FILE}", fileLocation);
+        ERR_MSG_PREFIX = ERR_MSG_PREFIX.replace("{FILE}", fileLocation).replace("{testcaseID}", testcaseId + "");
 
         if (!checkFileExist(fileLocation)) {
             return false;
@@ -99,7 +139,10 @@ public class AtsDbLoggerUtilities {
 
         final int runId = dbAppender.getRunId();
         final int suiteId = dbAppender.getSuiteId();
-        final int testcaseId = dbAppender.getTestCaseId();
+
+        /* since the user provide testcase ID,
+         * do we have to check if that testcase ID, refers to a testcase, which is related to the current run and suite
+        */
 
         if (runId < 1 || suiteId < 1 || testcaseId < 1) {
             logger.warn(ERR_MSG_PREFIX
@@ -135,7 +178,7 @@ public class AtsDbLoggerUtilities {
 
             HttpEntity entity = builder.build();
             post.setEntity(entity);
-            return checkPostExecutedSuccessfully(client.execute(post), fileLocation);
+            return checkPostExecutedSuccessfully(client.execute(post), fileLocation, testcaseId);
         } catch (FileNotFoundException fnfe) {
             logger.warn(ERR_MSG_PREFIX + "it does not exist on the local file system", fnfe);
             return false;
@@ -149,6 +192,7 @@ public class AtsDbLoggerUtilities {
             logger.warn(ERR_MSG_PREFIX + "Upload to \"" + url + "\" failed", ioe);
             return false;
         }
+
     }
 
     private boolean checkFileExist(
@@ -178,7 +222,8 @@ public class AtsDbLoggerUtilities {
 
     private boolean checkPostExecutedSuccessfully(
                                                    HttpResponse response,
-                                                   String fileLocation ) {
+                                                   String fileLocation,
+                                                   int testcaseId ) {
 
         if (response.getStatusLine().getStatusCode() != 200) {
             try {
@@ -193,7 +238,7 @@ public class AtsDbLoggerUtilities {
                         + "\" will not be attached to the current test, due to error in saving the file. ");
             return false;
         } else {
-            logger.info("Successfully attached \"" + fileLocation + "\" to the current Test Explorer testcase");
+            logger.info("Successfully attached \"" + fileLocation + "\" to testcase with id \"" + testcaseId + "\"");
             return true;
         }
 

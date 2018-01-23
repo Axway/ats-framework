@@ -31,7 +31,12 @@ public interface EventRequestProcessorListener {
     public void onRunFinished();
 
     /**
-     * This method will be called when the test cases starts
+     * This method will be called when the test case starts
      */
     public void onTestcaseStarted();
+    
+    /**
+     * This method will be called when the test case finishes
+     */
+    public void onTestcaseFinished();
 }
