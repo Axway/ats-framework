@@ -39,8 +39,38 @@
        <li>File and folders - using the <strong> <em>FileSystemVerification</em> </strong> class</li> 
        <li>Databases - using the <strong> <em>DbVerification</em> </strong> class</li> 
        <li>Mail in IMAP folders - using the <strong> <em>ImapVerification</em> </strong> class</li> 
+       <li>Objects in S3 storage buckets - using <strong>S3Verification</strong> class</li> 
        <li>Your own custom objects</li> 
       </ul> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="Commontestverifications-RBV-engineTheRBVEngine"><span class="confluence-anchor-link" id="Commontestverifications-RBV-engine"></span>The RBV Engine</h1> 
+      <p>One of the main <em>RBV</em> features is that it has an internal engine which not only checks if the requested conditions are met, but it also re-tries as many times as needed.</p> 
+      <p>Imagine your are expecting some file to appear at some remote server, but the file will probably not appear at the very first time you check. In such case you need to check a few times before giving up.</p> 
+      <p><em>RBV</em> does all checks several times with a specific interval between the checks. You can change the polling configuration at run-time using the <em>RbvConfigurator</em> class. For example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RbvConfigurator rbvConfigurator = RbvConfigurator.getInstance();
+
+// number of maximum polls
+rbvConfigurator.setPollingAttempts( 10 );
+
+// you can put some initial delay before the first poll(in ms).
+// Imagine you are sure the requested file will not appear before the first minute, 
+// it does not make sense to keep polling prior the first minute is over
+rbvConfigurator.setPollingInitialDelay( 60 * 1000 );
+
+// the interval(in ms) between each poll
+rbvConfigurator.setPollingInterval( 500 );
+</pre> 
+       </div> 
+      </div> 
+      <p>The above code will cause maximum 10 polling attempts with 0.5 seconds interval between each two attempts and the first poll will be happen after 1 minute</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <pre>RbvConfigurator keeps the default settings. But if needed, you can them overwrite for some particular instances.</pre> 
+       </div> 
+      </div> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="Commontestverifications-Filesystemverifications">File system verifications</h1> 
@@ -58,7 +88,7 @@ fsVerification.verifyFileExists();
       <p>The above code will check whether some file exists on some remote host. If does not exists on the first poll, RBV will try over and over until the file is found or until all attempts are exhausted.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>If you want to work locally, use the constructor which does not specify a remote host ip</p> 
+        <p>If you want to work locally, use the constructor which does not specify a remote host IP</p> 
        </div> 
       </div> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
@@ -123,34 +153,23 @@ imapVerification.verifyMessageExists();
       <p class="confluence-link"><a href="IMAP-verifications.html">Here</a> you can see more complex examples</p> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="Commontestverifications-TheRBVEngine">The RBV Engine</h1> 
-      <p>One of the main <em>RBV</em> features is that it has an internal engine which not only checks if the requested conditions are met, but it also re-tries as many times as needed.</p> 
-      <p>Imagine your are expecting some file to appear at some remote server, but the file will probably not appear at the very first time you check. In such case you need to check a few times before giving up.</p> 
-      <p><em>RBV</em> does all checks several times with a specific interval between the checks. You can change the polling configuration at run-time using the <em>RbvConfigurator</em> class. For example:</p> 
+      <h1 id="Commontestverifications-Remotestorage(S3)verifications">Remote storage (S3) verifications</h1> 
+      <p><span class="confluence-anchor-link" id="Commontestverifications-Remotestorageverifications"></span></p> 
+      <p>Here is some very basic check on remote Amazon Simple Storage Service (S3) compatible services</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RbvConfigurator rbvConfigurator = RbvConfigurator.getInstance();
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.S3Verification;
 
-// number of maximum polls
-rbvConfigurator.setPollingAttempts( 10 );
-
-// you can put some initial delay before the first poll(in ms).
-// Imagine you are sure the requested file will not appear before the first minute, 
-// it does not make sense to keep polling prior the first minute is over
-rbvConfigurator.setPollingInitialDelay( 60 * 1000 );
-
-// the interval(in ms) between each poll
-rbvConfigurator.setPollingInterval( 500 );
+S3Verification s3Verification = new S3Verification( ENDPOINT, ACCESS_KEY, SECRET_KEY, BUCKET_NAME, BASE_DIR, OBJECT_NAME, true /* isRecursive */ );
+s3Verification.checkMd5( "560bba529205da4d92bebb026b2e6e8b" );
+s3Verification.verifyObjectExists();
 </pre> 
        </div> 
       </div> 
-      <p>The above code will cause maximum 10 polling attempts with 0.5 seconds interval between each two attempts and the first poll will be happen after 1 minute</p> 
-      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
-       <div class="confluence-information-macro-body"> 
-        <pre>RbvConfigurator keeps the default settings. But if needed, you can them overwrite for some particular instances.</pre> 
-       </div> 
-      </div> 
-      <p>&nbsp;</p> 
+      <p>The above code will check whether object named OBJECT_NAME exists <strong>and</strong> is with given MD5 at some endpoint (remote host). If does not exists on the first poll or checksum does not match then RBV will try over and over until the object is found or until all attempts are exhausted.</p> 
+      <p><br></p> 
+      <p class="confluence-link"><a href="140917035.html">Here</a> you can see more details.</p> 
+      <p class="confluence-link"><br></p> 
       <hr> 
       <h1 id="Commontestverifications-Setconfigurationsettingsforthecurrentverificationinstance">Set configuration settings for the current verification instance</h1> 
       <p>Using the following methods you can change configuration settings, just for the current verification instance. <br>These methods are accessible for File system, IMAP and Database verification instances.</p> 

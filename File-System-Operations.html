@@ -22,7 +22,7 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <p>Introduction</p> 
+      <h1 id="FileSystemOperations-Introduction">Introduction</h1> 
       <p>Using the <strong> <em>FileSystemOperations</em> </strong>class you can do lots of different tasks on any type of file system on any host. Some of these tasks are:</p> 
       <ul style="list-style-type: square;"> 
        <li><span>create file in variety of ways</span></li> 
@@ -32,8 +32,20 @@
        <li><span>read the whole file content</span></li> 
        <li><span> <span>extract content from a file in a way similar to the Linux grep command</span> </span></li> 
        <li><span>read the new file content - useful for watching log files</span></li> 
-       <li><span>copy files/directories</span></li> 
+       <li><span>copy files/directories</span><br><span><br></span></li> 
       </ul> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <p class="title">Dependency note</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>This functionality is part of ATS Action library module. In order to use it you have to import it into classpath. For Maven the dependency needed is:</p> 
+        <pre> &lt;dependency&gt;</pre> 
+        <pre>&nbsp;&nbsp;&nbsp; &lt;groupId&gt;com.axway.ats.framework&lt;/groupId&gt;</pre> 
+        <pre>&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;ats-actionlibrary&lt;/artifactId&gt;</pre> 
+        <pre>&nbsp;&nbsp;&nbsp; &lt;version&gt;${ats.version}&lt;/version&gt; &lt;!-- set specific ATS version in ats.version property. Example: 4.0.3 --&gt;</pre> 
+        <pre> &lt;/dependency&gt;</pre> 
+       </div> 
+      </div> 
       <p><span><br></span></p> 
       <hr> 
       <h1 id="FileSystemOperations-FirstmakeaninstanceoftheFileSystemOperationsclass:">First make an instance of the <em>FileSystemOperations</em> class:</h1> 
@@ -69,10 +81,13 @@
       <p><br></p> 
       <hr> 
       <h1 id="FileSystemOperations-Examples">Examples</h1> 
-      <p>Following are some example of what you can do with this class. For the full list please check the code or javadoc.</p> 
+      <p>Following are some example of what you can do with this class. For the full list please check the code or JavaDoc.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// Make an instance of this class
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.filesystem.FileSystemOperations;
+...
+
+// Make an instance of this class
 FileSystemOperations fileOperations = new FileSystemOperations( SERVER_IP );
 
 // create a remote folder

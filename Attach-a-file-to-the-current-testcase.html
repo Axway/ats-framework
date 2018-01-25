@@ -41,13 +41,13 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
       <p>where</p> 
       <ul style="list-style-type: square;"> 
        <li>the first argument is the <em>absolute file location</em> on the local file system</li> 
-       <li>the second argument is <em>the name of the TestExplorer application context</em> e.g. for <a class="external-link" href="http://192.168.1.100/TestExplorer-4.0.2" rel="nofollow">http://192.168.1.100/TestExplorer-4.0.2</a> the TestExplorer's name is "<em><span style="line-height: 1.42857;">TestExplorer-4.0.2</span></em>". The Test Explorer hostname is automatically resolved from your <em>log4j.xml</em> where you have already defined for DB logging settings.</li> 
+       <li>the second argument is <em>the name of the TestExplorer application context</em> e.g. for <a class="external-link" href="http://192.168.1.100/TestExplorer-4.0.2" rel="nofollow">http://192.168.1.100/TestExplorer-4.0.2</a> the TestExplorer's name is "<em> <span style="line-height: 1.42857;">TestExplorer-4.0.2</span> </em>". The Test Explorer hostname is automatically resolved from your <em>log4j.xml</em> where you have already defined for DB logging settings.</li> 
        <li>an optional third argument is the port at which Test Explorer is running. If not specified, the default value used is 80</li> 
       </ul> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="Attachafiletothecurrenttestcase-HereishowitmightlooklikeinTestExplorer:">Here is how it might look like in Test Explorer:</h1> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="7"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span></p> 
       <p>As you can see we have an additional <em>Attachments</em> panel.</p> 
       <p>If you click on a button with the name of your file, its content is displayed. Of course this is meaningful for text files.</p> 
       <p>No matter if the file is text or binary, you can always download the file by clicking its link so can examine it with an appropriate viewer on your PC.</p> 
@@ -121,7 +121,22 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
         // if needed, you can check where the file was attached successfully</pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Attachafiletothecurrenttestcase-Attachingafiletoaspecifictestcase">Attaching a file to a specific testcase</h1> 
+      <p>By default, the file will be attached to the currently running testcase.</p> 
+      <p>However, there might be cases when you want to attach the file after the test has already completed, so there isn't a current testcase. In such case you can get the id of the last executed testcase and give it to the attach method:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get the the ID of the last executed testcase as it is in the Test Explorer DB
+int lastExecutedTestcaseId = ActiveDbAppender.getCurrentInstance().getLastExecutedTestCaseId();
+
+// now call the attach method
+new AtsDbLoggerUtilities().attachFileToTestcase( lastExecutedTestcaseId, "C:\\logFiles\\log.txt", "TestExplorer-4.0.0-2" );</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Test-logging.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

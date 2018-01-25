@@ -62,7 +62,7 @@ FirefoxDriver driver = UiDriver.getFirefoxDriver( "SOME URL" );
 driver.start();
 
 // 3. get the engine to work with
-RealHtmlEngine engine = browserDriver.getHtmlEngine();
+RealHtmlEngine engine = driver.getHtmlEngine();
 
 // 4. specify the file describing the UI components we want to work with
 engine.loadMapFile( "MyUiComponents.map", "login" );

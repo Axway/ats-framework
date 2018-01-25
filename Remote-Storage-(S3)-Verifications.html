@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Remote Storage (S3) Verifications</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+       <li> <span><a href="Common-test-verifications.html">Common test verifications</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Remote Storage (S3) Verifications </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="RemoteStorage(S3)Verifications-Introduction">Introduction</h1> 
+      <p><br></p> 
+      <p>This page shows how you can verify whether some <em>object (file) </em>is present at some Amazon S3-compatible storage.</p> 
+      <p>As in <a href="Common-test-verifications.html">other</a> RBV components the benefit is that verification client retries (verifies) as many times as needed in order to check that expected condition <strong>is</strong> or <strong>becomes</strong> true.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RemoteStorage(S3)Verifications-Constructingtheverificationobject">Constructing the verification object</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.rbv.clients.S3Verification;
+
+// Make an instance of the verification object.
+S3Verification s3Verification = new S3Verification( endpoint, accessKey, secretKey, bucketName, basePath, objName, isRecursive );</pre> 
+       </div> 
+      </div> 
+      <p class="auto-cursor-target">This instance constructs verification object for checks:</p> 
+      <ul style="list-style-type: square;"> 
+       <li>at specified <em>endpoint</em> and <em>bucketName</em></li> 
+       <li>about <em>objName</em> which should exist in <em>basePath</em> "directory" or some some sub-directory. <br><em>Note</em> that directories are not real but emulated in Amazon S3 storage and default separator is "/" (slash).&nbsp;</li> 
+      </ul> 
+      <p>&nbsp;What this object should have as properties is specified by verification rules mentioned in next section.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RemoteStorage(S3)Verifications-Addverificationrules">Add verification rules</h1> 
+      <p><br></p> 
+      <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need.</p> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// check the size of the object in bytes
+s3Verification.checkSize( 62 );
+// alternatively use s3Verification.checkSizeDifferent( 123 );
+
+// verify the file MD5 sum by providing the exact sum
+s3Verification.checkMd5( "560bba529205da4d92bebb026b2e6e8b" );
+
+// verify last modification timestamp
+s3Verification.checkModificationTime( expectedTime );</pre> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>So far we have just specified what kind of object (file) we are interested in.</p> 
+        <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods</p> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RemoteStorage(S3)Verifications-Verifythatobjectexists">Verify that object exists</h1> 
+      <p><br></p> 
+      <p>Keep polling until expected set of rules becomes true, i.e. object is (or not) present and all property checks are met.</p> 
+      <p>Fail if the searched file is not found for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">s3Verification.verifyObjectExists();
+</pre> 
+       </div> 
+      </div> 
+      <p>Upon successful checks test continues. If not all of the rules match within the expected time frame then an exception will be thrown and test fails.</p> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RemoteStorage(S3)Verifications-Verifythatobjectdoesnotexist">Verify that object does not exist</h1> 
+      <p>Keep polling until verify the searched object<strong> is NOT present</strong>.</p> 
+      <p>Fail if the searched object is present for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">s3Verification.verifyObjectDoesNotExist();
+</pre> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RemoteStorage(S3)Verifications-Verifythatobjectalwaysexists">Verify that object always exists</h1> 
+      <p>The next code will succeed if the searched object<strong> is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">s3Verification.verifyObjectAlwaysExists();
+</pre> 
+       </div> 
+      </div> 
+      <p>&nbsp;</p> 
+      <hr> 
+      <h1 id="RemoteStorage(S3)Verifications-Verifythatobjectneverexists">Verify that object never exists</h1> 
+      <p>The next code will succeed if the searched object <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">s3Verification.verifyObjectNeverExist();
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>   
+ </body>
+</html>
