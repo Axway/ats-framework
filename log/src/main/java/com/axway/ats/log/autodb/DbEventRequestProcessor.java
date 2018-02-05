@@ -1161,10 +1161,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         PreparedStatement stmt = null;
 
         Run run = new Run();
-
+        
+        Connection tmpConn = null;
+        
         try {
 
-            Connection tmpConn = ConnectionPool.getConnection(dbConnection);
+            tmpConn = ConnectionPool.getConnection(dbConnection);
 
             stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId="
                                             + eventProcessorState.getRunId());
@@ -1186,6 +1188,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             }
 
         } finally {
+            DbUtils.closeConnection(tmpConn);
             DbUtils.closeStatement(stmt);
         }
 
