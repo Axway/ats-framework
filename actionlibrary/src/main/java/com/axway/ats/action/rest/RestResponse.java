@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -96,7 +97,7 @@ public class RestResponse {
     /**
      * Return the response body as any java Object
      *
-     * @param theClass the type of the object to return
+     * @param theClass the class of the object to return
      * @return the body as an object
      */
     @PublicAtsApi
@@ -105,6 +106,20 @@ public class RestResponse {
         checkResponseBodyStatus();
 
         return response.readEntity(theClass);
+    }
+    
+    /**
+     * Return the response body as any java Object
+     *
+     * @param theType the generic type of the object to return
+     * @return the body as an object
+     */
+    @PublicAtsApi
+    public <T> T getBodyAsObject( GenericType<T> theType ) {
+
+        checkResponseBodyStatus();
+
+        return response.readEntity( theType );
     }
 
     /**
