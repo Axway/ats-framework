@@ -41,7 +41,11 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -62,7 +66,7 @@ import com.axway.ats.core.utils.IoUtils;
  */
 @PublicAtsApi
 public class S3Operations {
-
+    
     private static final Logger LOG = Logger.getLogger(S3Operations.class);
 
     private String              accessKey;
@@ -103,7 +107,8 @@ public class S3Operations {
             throw new IllegalArgumentException("Bucket name should not be null");
         }
         this.bucketName = bucketName;
-        // TODO - create/build S3Client here
+        
+        s3Client = getClient();
     }
 
     /**
@@ -123,7 +128,6 @@ public class S3Operations {
     @PublicAtsApi
     public boolean doesBucketExist( String bucketName ) {
 
-        AmazonS3 s3Client = getClient();
         return s3Client.doesBucketExistV2(bucketName);
     }
 
@@ -150,11 +154,29 @@ public class S3Operations {
     @PublicAtsApi
     public void deleteObject( String objectName ) {
 
-        AmazonS3 s3Client = getClient();
         s3Client.deleteObject(bucketName, objectName);
         LOG.info("Deleted object '" + objectName + "' from bucket '" + bucketName + "'");
     }
+    
+    /**
+     * Delete multiple objects
+     * @param object names/keys of the objects to be deleted
+     */
+    @PublicAtsApi
+    public void deleteObjects( List<String> objectsList ) {
 
+        List<KeyVersion> keys = new ArrayList<KeyVersion>( objectsList.size() );
+        for( String key : objectsList ) {
+            keys.add( new KeyVersion( key ) );
+            LOG.info( "Deleted object '" + key + "' from bucket '" + bucketName + "'" );
+        }
+
+        // remove all Objects before deleting the bucket
+        DeleteObjectsRequest request = new DeleteObjectsRequest( bucketName );
+        request.withKeys( keys );
+        s3Client.deleteObjects( request );
+    }  
+    
     /**
      * Delete the bucket specified in constructor
      *
@@ -163,15 +185,16 @@ public class S3Operations {
     @PublicAtsApi
     public void deleteBucket() throws S3OperationException {
 
-        AmazonS3 s3Client = getClient();
-        // TODO: check for direct method
-        // remove all Objects before deleting the bucket
-        for (S3ObjectInfo element : listBucket("" /* all */, ".*", true)) {
-            deleteObject(element.getName());
+        List<String> keys = new ArrayList<String>();
+        for( S3ObjectInfo s3Element : listBucket( "" /* all */, ".*", true ) ) {
+            keys.add( s3Element.getName() );
         }
 
-        s3Client.deleteBucket(bucketName);
-        LOG.info("Deleted bucket '" + bucketName + "'");
+        // remove all Objects before deleting the bucket
+        deleteObjects( keys );
+
+        s3Client.deleteBucket( bucketName );
+        LOG.info( "Deleted bucket '" + bucketName + "'" );
     }
 
     /**
@@ -183,7 +206,7 @@ public class S3Operations {
     public void createBucket() {
 
         LOG.info("Create Bucket '" + bucketName + "'");
-        getClient().createBucket(bucketName);
+        s3Client.createBucket(bucketName);
     }
 
     /**
@@ -194,12 +217,19 @@ public class S3Operations {
     @PublicAtsApi
     public S3ObjectInfo getFileMetadata( String fileName ) {
 
-        S3ObjectSummary element = getBucketElement("", ".*", true, fileName);
-        if (element != null) {
-            S3ObjectInfo s3Info = new S3ObjectInfo(element);
+        S3Object element = s3Client.getObject( bucketName, fileName );
+        if( element != null ) {
+            ObjectMetadata metaData = element.getObjectMetadata();
+            S3ObjectInfo s3Info = new S3ObjectInfo();
+            s3Info.setBucketName( fileName );
+            s3Info.setLastModified( metaData.getLastModified() );
+            s3Info.setMd5( metaData.getETag() );
+            s3Info.setName( element.getKey() );
+            s3Info.setSize( metaData.getContentLength() );
+
             return s3Info;
         } else {
-            throw new NoSuchElementException("File with name '" + fileName + "' does not exist!");
+            throw new NoSuchElementException( "File with name '" + fileName + "' does not exist!" );
         }
     }
 
@@ -212,11 +242,11 @@ public class S3Operations {
     @PublicAtsApi
     public long getFileSize( String objectName ) {
 
-        S3ObjectSummary element = getBucketElement("", ".*", true, objectName);
-        if (element != null) {
-            return element.getSize();
+        S3Object element = s3Client.getObject( bucketName, objectName );
+        if( element != null ) {
+            return element.getObjectMetadata().getContentLength();
         } else {
-            throw new NoSuchElementException("Object with name '" + objectName + "' does not exist!");
+            throw new NoSuchElementException( "Object with name '" + objectName + "' does not exist!" );
         }
     }
 
@@ -230,11 +260,11 @@ public class S3Operations {
     @PublicAtsApi
     public String getFileMD5( String objectName ) {
 
-        S3ObjectSummary element = getBucketElement("", ".*", true, objectName);
-        if (element != null) {
-            return element.getETag();
+        S3Object element = s3Client.getObject( bucketName, objectName );
+        if( element != null ) {
+            return element.getObjectMetadata().getETag();
         } else {
-            throw new NoSuchElementException("Object with name '" + objectName + "' does not exist!");
+            throw new NoSuchElementException( "Object with name '" + objectName + "' does not exist!" );
         }
     }
 
@@ -247,12 +277,12 @@ public class S3Operations {
     @PublicAtsApi
     public Date getFileModificationTime( String objectName ) {
 
-        S3ObjectSummary element = getBucketElement("", ".*", true, objectName);
-        if (element != null) {
-            return element.getLastModified();
+        S3Object element = s3Client.getObject( bucketName, objectName );
+        if( element != null ) {
+            return element.getObjectMetadata().getLastModified();
         } else {
-            throw new NoSuchElementException("Object with name '" + objectName + "' is not found in bucket '"
-                                             + bucketName + "'!");
+            throw new NoSuchElementException( "Object with name '" + objectName + "' is not found in bucket '"
+                                              + bucketName + "'!" );
         }
     }
 
@@ -266,7 +296,7 @@ public class S3Operations {
     public void uploadAsText( String objectName, String sourceFile ) {
 
         try {
-            getClient().putObject(bucketName, objectName, fileToString(sourceFile));
+            s3Client.putObject(bucketName, objectName, fileToString(sourceFile));
         } catch (Exception e) {
             handleExeption(e, "Upload error. If error persists check your endpoint, credentials and permissions.");
         }
@@ -289,7 +319,7 @@ public class S3Operations {
             LOG.debug("Start uploading file '" + sourceFileName + "' to bucket '" + bucketName + "'");
         }
         try {
-            getClient().putObject(bucketName, targetObjectName, new File(sourceFileName));
+            s3Client.putObject(bucketName, targetObjectName, new File(sourceFileName));
         } catch (Exception e) {
             handleExeption(e, "File upload error. If error persists check your endpoint, credentials and permissions.");
         }
@@ -306,7 +336,7 @@ public class S3Operations {
     public void uploadFile( String targetObjectName, InputStream sourceInputStream ) {
 
         try {
-            getClient().putObject(bucketName, targetObjectName, sourceInputStream, null);
+            s3Client.putObject(bucketName, targetObjectName, sourceInputStream, null);
         } catch (Exception e) {
             handleExeption(e, "File upload error. If error persists check your endpoint, credentials and permissions.");
         }
@@ -322,8 +352,6 @@ public class S3Operations {
     @PublicAtsApi
     public void download( String remoteObjectName, String localFileName ) throws S3OperationException,
                                                                           IllegalArgumentException {
-
-        AmazonS3 s3Client = getClient();
 
         localFileName = IoUtils.normalizeFilePath(localFileName);
         String localDirName = IoUtils.getFilePath(localFileName);
@@ -371,8 +399,6 @@ public class S3Operations {
     @PublicAtsApi
     public InputStream download( String objectName ) {
 
-        AmazonS3 s3Client = getClient();
-
         S3Object o = s3Client.getObject(bucketName, objectName);
         return o.getObjectContent();
     }
@@ -387,8 +413,6 @@ public class S3Operations {
     @PublicAtsApi
     public void move( String fromBucket, String toBucket, String file ) {
 
-        AmazonS3 s3Client = getClient();
-
         try {
             s3Client.copyObject(fromBucket, file, toBucket, file);
             s3Client.deleteObject(fromBucket, file);
@@ -396,7 +420,7 @@ public class S3Operations {
             handleExeption(e, "S3 object move error");
         }
     }
-
+    
     /**
      * Handle exceptions of Amazon APIs
      */
@@ -487,52 +511,6 @@ public class S3Operations {
     }
 
     /**
-     * Used for S3Operations only methods
-     * @param folderPrefix should be full path w/o "/" in front
-     * @param searchString
-     * @param recursive
-     * @param searchedFile
-     * @return
-     */
-    private S3ObjectSummary getBucketElement( String folderPrefix, String searchString, boolean recursive,
-                                              String searchedFile ) {
-
-        if (folderPrefix.startsWith("/")) {
-            folderPrefix = folderPrefix.substring(1, folderPrefix.length());
-            LOG.warn("Folder prefix argument should not start with slash \"/\". It is cut to " + folderPrefix);
-        }
-
-        // TODO: optimize this to directly getObject() and then retrieve needed metadata or use key directly as prefix
-        //s3Client.getObject(bucketName, searchedFile).getObjectMetadata().
-        try {
-            ObjectListing objectListing = getClient().listObjects(bucketName, searchedFile);
-            while (true) { // reused block for multiple matches
-                for (Iterator<?> iterator = objectListing.getObjectSummaries()
-                                                         .iterator(); iterator.hasNext();) {
-                    S3ObjectSummary el = (S3ObjectSummary) iterator.next();
-                    if (searchedFile.equals(el.getKey())) {
-                            return el;
-                    }
-                    /*if (searchedFile.equals(el.getKey())
-                        && isImmediateDescendant(folderPrefix, "/" + el.getKey(), searchString, recursive)) {
-                        return el;
-                    }*/
-                }
-                // are there more results to retrieve( paging)
-                if (objectListing.isTruncated()) {
-                    objectListing = s3Client.listNextBatchOfObjects(objectListing);
-                } else {
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            handleExeption(e, "Get S3 object error.");
-        }
-
-        return null;
-    }
-
-    /**
      *
      * @param folderPrefix
      * @param searchString
@@ -544,64 +522,37 @@ public class S3Operations {
         List<S3ObjectInfo> allListElements = new ArrayList<S3ObjectInfo>();
 
         //Alternative but not documented in S3 API: getClient().listObjectsV2(bucket, "prefix")
-        ObjectListing objectListing = getClient().listObjects(bucketName, folderPrefix);
+        ListObjectsRequest request = new ListObjectsRequest( bucketName, folderPrefix, null, recursive
+                                                                                                       ? null
+                                                                                                       : "/",
+                                                             null );
+        ObjectListing objectListing = s3Client.listObjects( request );
         int i = 0;
-        Pattern searchStringPattern = Pattern.compile(searchString);
-        while (true) {
-            for (Iterator<?> iterator = objectListing.getObjectSummaries()
-                                                     .iterator(); iterator.hasNext();) {
-                S3ObjectSummary objectSummary = (S3ObjectSummary) iterator.next();
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("listObjects(" +(++i) +"): " +  objectSummary.toString());
+        Pattern searchStringPattern = Pattern.compile( searchString );
+        while( true ) {
+            for( Iterator<?> iterator = objectListing.getObjectSummaries().iterator(); iterator.hasNext(); ) {
+                S3ObjectSummary objectSummary = ( S3ObjectSummary ) iterator.next();
+                if( LOG.isTraceEnabled() ) {
+                    LOG.trace( "listObjects(" + ( ++i ) + "): " + objectSummary.toString() );
                 }
-                //TODO: optimize if search for .* in root and recursively: listObjects(bucketName)
-                if (isImmediateDescendant(folderPrefix, objectSummary.getKey(), searchStringPattern, recursive)) {
-                    allListElements.add(new S3ObjectInfo(objectSummary));
+
+                String[] fileTokens = objectSummary.getKey().split( "/" );
+                String s3Object = fileTokens[fileTokens.length - 1];
+
+                Matcher matcher = searchStringPattern.matcher( s3Object );
+                if( matcher.find() ) {
+                    allListElements.add( new S3ObjectInfo( objectSummary ) );
                 }
             }
 
             // more objectListing retrieve?
-            if (objectListing.isTruncated()) {
-                objectListing = s3Client.listNextBatchOfObjects(objectListing);
+            if( objectListing.isTruncated() ) {
+                objectListing = s3Client.listNextBatchOfObjects( objectListing );
             } else {
                 break;
             }
         }
 
         return allListElements;
-    }
-
-    private boolean isImmediateDescendant( String pathPrefix, String key, Pattern searchStringPattern,
-                                           boolean recursive ) {
-
-        // check if the file is in the specified directory (prefix) or beneath
-        if (!key.startsWith(pathPrefix)) {
-            return false;
-        }
-
-        String keyNameSuffix = key.substring(pathPrefix.length());
-        String[] fileTokens = keyNameSuffix.split("/");
-
-        if (!recursive) {
-            if (fileTokens.length == 1) {
-                Matcher matcher = searchStringPattern.matcher(fileTokens[0]);
-                // check if the pattern matches the given search value
-                if (!matcher.find()) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            for (String fileToken : fileTokens) {
-                Matcher matcher = searchStringPattern.matcher(fileToken);
-                // check if the pattern matches the given search value
-                if (!matcher.find()) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }
