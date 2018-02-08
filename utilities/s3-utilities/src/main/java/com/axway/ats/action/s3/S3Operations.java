@@ -422,6 +422,22 @@ public class S3Operations {
     }
     
     /**
+     * Empty the specified folder
+     */
+    @PublicAtsApi
+    public void cleanupFolder( String folderName ) {
+
+        List<String> folderElements = new ArrayList<String>();
+        // remove all Objects in the pointed directory
+        for( S3ObjectInfo element : listBucket( folderName, ".*", true ) ) {
+            if( !element.getName().equals( folderName ) )
+                folderElements.add( element.getName() );
+        }
+
+        deleteObjects( folderElements );
+    }
+
+    /**
      * Handle exceptions of Amazon APIs
      */
     private void handleExeption( Exception e, String optionalMsg ) throws S3OperationException {
