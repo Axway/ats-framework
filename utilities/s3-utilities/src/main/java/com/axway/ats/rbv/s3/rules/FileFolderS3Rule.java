@@ -15,20 +15,16 @@
  */
 package com.axway.ats.rbv.s3.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.RbvException;
-import com.axway.ats.rbv.rules.AbstractRule;
 import com.axway.ats.rbv.rules.Rule;
 import com.axway.ats.rbv.s3.S3MetaData;
 
 /**
  *  This {@link Rule} help identify files from folders
  */
-public class FileFolderS3Rule extends AbstractRule {
+public class FileFolderS3Rule extends AbstractS3Rule {
 
     private boolean isFileExpected;
 
@@ -87,17 +83,5 @@ public class FileFolderS3Rule extends AbstractRule {
                                                                : "folder" )
                                   .append( "'" )
                                   .toString();
-    }
-
-    public List<String> getMetaDataKeys() {
-
-        List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( S3MetaData.BUCKET_NAME );
-        metaKeys.add( S3MetaData.MD5 );
-        metaKeys.add( S3MetaData.FILE_NAME );
-        metaKeys.add( S3MetaData.LAST_MODIFIED );
-        metaKeys.add( S3MetaData.SIZE );
-
-        return metaKeys;
     }
 }

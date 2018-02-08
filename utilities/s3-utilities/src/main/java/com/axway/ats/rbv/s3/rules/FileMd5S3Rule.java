@@ -15,18 +15,15 @@
  */
 package com.axway.ats.rbv.s3.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.RbvException;
-import com.axway.ats.rbv.rules.AbstractRule;
 import com.axway.ats.rbv.s3.S3MetaData;
 
-public class FileMd5S3Rule extends AbstractRule {
+public class FileMd5S3Rule extends AbstractS3Rule {
 
     protected String  srcMD5;
+    protected String  destMD5;
 
     public FileMd5S3Rule( String md5sum, String ruleName, boolean expectedResult ) {
 
@@ -45,8 +42,10 @@ public class FileMd5S3Rule extends AbstractRule {
         if( destMD5 == null ) {
             return false;
         }
-
-        actualResult = !StringUtils.isNullOrEmpty( ( String ) destMD5 ) && destMD5.equals( this.srcMD5 );
+        
+        if( !StringUtils.isNullOrEmpty( ( String ) destMD5 ) ) {
+            actualResult = destMD5.equals( this.srcMD5 );
+        }
 
         return actualResult;
     }
@@ -57,18 +56,6 @@ public class FileMd5S3Rule extends AbstractRule {
         return "which expects file with MD5 sum " + ( getExpectedResult()
                                                                           ? ""
                                                                           : "different than " )
-               + "'" + this.srcMD5 + "'";
-    }
-
-    public List<String> getMetaDataKeys() {
-
-        List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( S3MetaData.BUCKET_NAME );
-        metaKeys.add( S3MetaData.MD5 );
-        metaKeys.add( S3MetaData.FILE_NAME );
-        metaKeys.add( S3MetaData.LAST_MODIFIED );
-        metaKeys.add( S3MetaData.SIZE );
-
-        return metaKeys;
+               + "'" + this.srcMD5 + "' and real md5 '" + this.destMD5 + "'";
     }
 }

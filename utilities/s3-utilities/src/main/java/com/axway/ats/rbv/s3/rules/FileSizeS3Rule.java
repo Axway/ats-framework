@@ -16,18 +16,15 @@
 
 package com.axway.ats.rbv.s3.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.RbvException;
-import com.axway.ats.rbv.rules.AbstractRule;
 import com.axway.ats.rbv.s3.S3MetaData;
 
-public class FileSizeS3Rule extends AbstractRule {
+public class FileSizeS3Rule extends AbstractS3Rule {
 
     private long srcSize;
-
+    private long destSize;
+    
     /**
      * Match with the specified size
      *
@@ -54,7 +51,7 @@ public class FileSizeS3Rule extends AbstractRule {
             return false;
         }
 
-        long destSize = ( Long ) size;
+        destSize = ( Long ) size;
 
         actuaResult = this.srcSize == destSize;
         return actuaResult;
@@ -66,18 +63,6 @@ public class FileSizeS3Rule extends AbstractRule {
         return "which expects file with size " + ( getExpectedResult()
                                                                        ? ""
                                                                        : "different than " )
-               + "'" + this.srcSize + "'";
-    }
-    
-    public List<String> getMetaDataKeys() {
-        
-        List<String> metaKeys = new ArrayList<String>();
-        metaKeys.add( S3MetaData.BUCKET_NAME );
-        metaKeys.add( S3MetaData.MD5 );
-        metaKeys.add( S3MetaData.FILE_NAME );
-        metaKeys.add( S3MetaData.LAST_MODIFIED );
-        metaKeys.add( S3MetaData.SIZE );
-        
-        return metaKeys;
+               + "'" + this.srcSize + "' and actual size '" + this.destSize + "'";
     }
 }
