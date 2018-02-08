@@ -27,6 +27,7 @@ import com.axway.ats.rbv.s3.S3MetaData;
 public class FileModtimeS3Rule extends AbstractRule {
 
     protected long srcModtime;
+    private long actualTime;
 
     /**
      * Match with the specified size
@@ -53,8 +54,9 @@ public class FileModtimeS3Rule extends AbstractRule {
         if( modTime == null ) {
             return false;
         }
-
-        actualResult = ( ( Date ) modTime ).getTime() == this.srcModtime;
+        
+        actualTime = ( ( Date ) modTime ).getTime() / 1000;
+        actualResult = actualTime * 1000 == this.srcModtime;
 
         return actualResult;
     }
@@ -64,7 +66,7 @@ public class FileModtimeS3Rule extends AbstractRule {
 
         return "which expects file with mod time " + ( getExpectedResult()
                                                                            ? ""
-                                                                           : "different than " )
+                                                                           : " different than " )
                + "'" + this.srcModtime + "'";
     }
 

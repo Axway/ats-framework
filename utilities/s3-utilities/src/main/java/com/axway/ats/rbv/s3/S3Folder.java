@@ -155,7 +155,7 @@ public class S3Folder implements Matchable {
 
         Date modTime = s3Object.getLastModified();
         // TODO optionally add bucket name
-        return new StringBuilder().append(fileName).append(".").append(modTime).toString();
+        return new StringBuilder().append(s3Object.getName()).append(".").append(modTime).toString();
 
     }
 
