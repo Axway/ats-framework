@@ -444,8 +444,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void startRun( StartRunEvent startRunEvent, long timeStamp ) throws DatabaseAccessException {
 
-        log.getLog4jLogger().info("This is not the message you are looking for.");
-
         // this temporary map must be cleared prior to each run
         suiteIdsCache.clear();
 
