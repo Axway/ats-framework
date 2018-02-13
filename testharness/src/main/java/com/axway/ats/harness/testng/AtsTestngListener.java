@@ -501,17 +501,18 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
 
         // 2. TestNG @Test annotation
-        Test testngDescription = testCaseMethod.getAnnotation(Test.class);
-        if (testngDescription != null && testngDescription.description().length() > 0) {
-            return testngDescription.description();
-        }
-
-        // 3. Javadoc for this test method
-        if (javaFileContent == null) {
-            saveJavaFileContent(testClass);
-        }
-        if (javaFileContent != null) {
-            return parseFileForJavadoc(javaFileContent, testName);
+        Test testngDescription = testCaseMethod.getAnnotation( Test.class );
+        if( testngDescription != null ) {
+            if( testngDescription.description().length() > 0 ) {
+                return testngDescription.description();
+            }
+            // 3. Javadoc for this test method
+            if( javaFileContent == null ) {
+                saveJavaFileContent( testClass );
+            }
+            if( javaFileContent != null ) {
+                return parseFileForJavadoc( javaFileContent, testName );
+            }
         }
 
         return null;
