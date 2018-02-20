@@ -1066,7 +1066,7 @@ public class RestClient {
 
         // now create the client
         client = getClient(clientIdKeys, clientBuilder);
-        client.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
+        client.property( ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, suppresHttpComplianceValidation );
         if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
             client.register(requestFilter);
