@@ -593,15 +593,15 @@ public class AtsJvmMonitor extends PerformanceMonitor {
                             ReadingBean reading,
                             String jvmPort ) {
 
-        String jvmName = reading.getName().substring(6);
+        String readingName = reading.getName().substring(6);
         String jvmAlias = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_ALIAS);
         if (!StringUtils.isNullOrEmpty(jvmAlias)) {
-            jvmName = " [JVM] " + jvmAlias;
+            readingName = " [JVM] " + jvmAlias + ": " + readingName;
         } else {
-            jvmName = " [JVM] p" + jvmPort + ": " + jvmName;
+            readingName = " [JVM] p" + jvmPort + ": " + readingName;
         }
 
-        return jvmName;
+        return readingName;
     }
 
     @Override
