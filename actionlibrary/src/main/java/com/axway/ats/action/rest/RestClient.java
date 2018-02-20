@@ -923,12 +923,20 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse putForm( RestForm restForm ) {
 
-        // execute PUT
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to", false );
-        RestResponse response = new RestResponse(invocationBuilder.put(Entity.entity(restForm.getForm(),
-                                                                                     MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
+        RestResponse response;
 
-        logRESTResponse(response);
+        // execute PUT
+        if( restForm != null ) {
+            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to", false );
+            response = new RestResponse( invocationBuilder.put( Entity.entity( restForm.getForm(),
+                                                                               MediaType.APPLICATION_FORM_URLENCODED_TYPE ) ) );
+
+        } else {
+            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to", true );
+            response = new RestResponse( invocationBuilder.put( null ) );
+        }
+
+        logRESTResponse( response );
         initInternalVariables();
 
         // return response
@@ -1066,6 +1074,7 @@ public class RestClient {
 
         // now create the client
         client = getClient(clientIdKeys, clientBuilder);
+        // add ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION property to disable certain HTTP compliance checks
         client.property( ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, suppresHttpComplianceValidation );
         if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
