@@ -43,6 +43,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
@@ -783,8 +784,8 @@ public class RestClient {
     public RestResponse execute( String httpMethod, Object bodyContent ) {
 
         // execute HTTP method
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("execute " + httpMethod
-                                                                          + " against");
+        Invocation.Builder invocationBuilder = constructInvocationBuilder( "execute " + httpMethod
+                                                                           + " against", false );
         RestResponse response;
         if (bodyContent != null) {
             if ( ("put".equalsIgnoreCase(httpMethod) || "post".equalsIgnoreCase(httpMethod))
@@ -817,7 +818,7 @@ public class RestClient {
     public RestResponse get() {
 
         // execute GET
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("GET from");
+        Invocation.Builder invocationBuilder = constructInvocationBuilder( "GET from", false );
         RestResponse response = new RestResponse(invocationBuilder.get());
 
         logRESTResponse(response);
@@ -837,7 +838,7 @@ public class RestClient {
     public RestResponse postObject( Object object ) {
 
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST object to");
+        Invocation.Builder invocationBuilder = constructInvocationBuilder( "POST object to", false );
         RestResponse response;
         if (object != null) {
             if (StringUtils.isNullOrEmpty(requestMediaType)) {
@@ -869,7 +870,7 @@ public class RestClient {
     public RestResponse postForm( RestForm restForm ) {
 
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST form to");
+        Invocation.Builder invocationBuilder = constructInvocationBuilder( "POST form to", false );
         RestResponse response = new RestResponse(invocationBuilder.post(Entity.entity(restForm.getForm(),
                                                                                       MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
 
@@ -890,9 +891,9 @@ public class RestClient {
     public RestResponse putObject( Object object ) {
 
         // execute PUT
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to");
         RestResponse response;
         if (object != null) {
+            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT object to", false );
             if (StringUtils.isNullOrEmpty(requestMediaType)) {
                 throw new RestException("Content type is not set! Content type is mandatory for PUT.");
             }
@@ -902,7 +903,8 @@ public class RestClient {
                                                                                                          requestMediaCharset)),
                                                                  Response.class));
         } else {
-            response = new RestResponse(invocationBuilder.method("PUT", Response.class));
+            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT object to", true );
+            response = new RestResponse( invocationBuilder.method( "PUT", Response.class ) );
         }
 
         logRESTResponse(response);
@@ -922,7 +924,7 @@ public class RestClient {
     public RestResponse putForm( RestForm restForm ) {
 
         // execute PUT
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT form to");
+        Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to", false );
         RestResponse response = new RestResponse(invocationBuilder.put(Entity.entity(restForm.getForm(),
                                                                                      MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
 
@@ -942,7 +944,7 @@ public class RestClient {
     public RestResponse delete() {
 
         // execute DELETE
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("DELETE from");
+        Invocation.Builder invocationBuilder = constructInvocationBuilder( "DELETE from", false );
         RestResponse response = new RestResponse(invocationBuilder.delete());
 
         logRESTResponse(response);
@@ -1002,7 +1004,7 @@ public class RestClient {
         }
     }
 
-    private Invocation.Builder constructInvocationBuilder( String descriptionToken ) {
+    private Invocation.Builder constructInvocationBuilder( String descriptionToken, boolean suppresHttpComplianceValidation ) {
 
         if (StringUtils.isNullOrEmpty(this.uri)) {
             throw new IllegalArgumentException("Null or empty target URI. Please specify a valid one");
@@ -1064,6 +1066,7 @@ public class RestClient {
 
         // now create the client
         client = getClient(clientIdKeys, clientBuilder);
+        client.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
         if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
             client.register(requestFilter);
