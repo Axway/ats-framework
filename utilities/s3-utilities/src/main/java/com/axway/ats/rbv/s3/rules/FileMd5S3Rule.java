@@ -23,7 +23,7 @@ import com.axway.ats.rbv.s3.S3MetaData;
 public class FileMd5S3Rule extends AbstractS3Rule {
 
     protected String  srcMD5;
-    protected String  destMD5;
+    protected Object  destMD5;
 
     public FileMd5S3Rule( String md5sum, String ruleName, boolean expectedResult ) {
 
@@ -38,7 +38,7 @@ public class FileMd5S3Rule extends AbstractS3Rule {
         boolean actualResult = false;
 
         //get the file from the meta data
-        Object destMD5 = metaData.getProperty( S3MetaData.MD5 );
+        destMD5 = metaData.getProperty( S3MetaData.MD5 );
         if( destMD5 == null ) {
             return false;
         }

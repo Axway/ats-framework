@@ -52,8 +52,9 @@ public class FileModtimeS3Rule extends AbstractS3Rule {
             return false;
         }
         
-        actualTime = ( ( Date ) modTime ).getTime() / 1000;
-        actualResult = actualTime * 1000 == this.srcModtime;
+        // nullifying the last 3 digits, so it will return the same result as from S3Operations method getObject() 
+        actualTime = ( ( ( Date ) modTime ).getTime() / 1000 ) * 1000;
+        actualResult = actualTime == this.srcModtime;
 
         return actualResult;
     }
