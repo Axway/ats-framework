@@ -41,13 +41,13 @@ public class TypeRegex extends TypeString {
     private static final String IPv4_EXPRESSION                           = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
 
     // String constant for hostname validity check expression
-    private static final String HOSTNAME_EXPRESSION                       = "^[\\p{L}]+[\\p{L}\\d\\_\\.\\-]*([^\\P{L}]+|[\\d]+)$";
+    private static final String HOSTNAME_EXPRESSION                       = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$";
 
     // String constant for domain name validity check expression
-    private static final String DOMAIN_ONLY_EXPRESSION                    = "^[a-zA-Z]+([a-zA-Z0-9_\\-]*?\\.)+[a-zA-Z]{2,8}$";
+    private static final String DOMAIN_ONLY_EXPRESSION                    = "^[a-zA-Z0-9]+([a-zA-Z0-9_\\-]*?\\.)+[a-zA-Z0-9]{2,8}$";
 
     // String constant for domains and sub-domains validity check expression
-    private static final String DOMAIN_OR_SUBDOMAIN_EXPRESSION            = "\\.?([a-zA-Z0-9_\\-]+?\\.)+[a-zA-Z]{2,3}$";
+    private static final String DOMAIN_OR_SUBDOMAIN_EXPRESSION            = "\\.?([a-zA-Z0-9_\\-]+?\\.)+[a-zA-Z0-9]{2,7}$";
 
     /**
      * Regular expression pattern string to validate dates in the format "d/m/y" from 1/1/1600 - 31/12/9999.

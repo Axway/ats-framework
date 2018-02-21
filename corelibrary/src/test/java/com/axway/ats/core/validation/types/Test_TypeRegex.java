@@ -39,10 +39,12 @@ public class Test_TypeRegex extends BaseTest {
     private static final String  VALID_IP                           = "192.168.1.1";
     private static final String  VALID_HOSTNAME                     = "www.myhost.co.uk";
     private static final String  VALID_HOSTNAME2                    = "s1";
-    private static final String  VALID_HOSTNAME3                    = "host.na123-m_e";
+    private static final String  VALID_HOSTNAME3                    = "host.na123-me";
     private static final String  VALID_HOSTNAME4                    = "host.na123-m.test321";
+    private static final String  VALID_HOSTNAME5                    = "1hostna4me";
     private static final String  VALID_DOMAIN_NAME_WITH_SUBDOMAIN   = ".google.com";
-
+    private static final String  VALID_DOMAIN_NAME_WITH_SUBDOMAIN2  = ".google.2com";
+    
     /** Invalid test data */
     private static final String  INVALID_DATE_LEAP                  = "29/02/2007";
     private static final String  INVALID_DATE_WRONG_MONTH           = "28/13/2007";
@@ -61,7 +63,6 @@ public class Test_TypeRegex extends BaseTest {
     private static final String  IP_WITH_FEWER_NUMBERS              = "192.168.1";
 
     private static final String  HOSTNAME_INVALID                   = "www.myhost.co.uk:1111";
-    private static final String  HOSTNAME_INVALID2                  = "1hostname";
     private static final String  HOSTNAME_INVALID3                  = "hostname.";
     private static final String  HOSTNAME_INVALID_CHARACTERS        = "www.myhost.co.uk\\";
     private static final String  HOSTNAME_INVALID_DOMAIN            = "www.myhost.co.nikaragua";
@@ -118,7 +119,9 @@ public class Test_TypeRegex extends BaseTest {
 
         assertTrue(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
                                            VALID_DOMAIN_NAME_WITH_SUBDOMAIN));
-
+        assertTrue(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
+                                           VALID_DOMAIN_NAME_WITH_SUBDOMAIN2));
+        
         assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN, HOSTNAME_INVALID));
         assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_OR_SUBDOMAIN,
                                             HOSTNAME_INVALID_CHARACTERS));
@@ -138,13 +141,13 @@ public class Test_TypeRegex extends BaseTest {
         assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME2));
         assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME3));
         assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME4));
+        assertTrue(this.validator.validate(ValidationType.STRING_HOST_NAME, VALID_HOSTNAME5));
 
         assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID));
-        assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID2));
         assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID3));
         assertFalse(this.validator.validate(ValidationType.STRING_HOST_NAME, HOSTNAME_INVALID_CHARACTERS));
     }
-
+    
     /**
      * Test this certain type's validation
      *
