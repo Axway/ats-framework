@@ -107,7 +107,7 @@ public class Test_TypeServer extends BaseTest {
         assertFalse(this.validator.validate(TYPE_SERVER, VALID_CIDR_ADDRESS));
         assertFalse(this.validator.validate(TYPE_SERVER, CIDR_ADDRESS_OUT_OF_RANGE));
         assertFalse(this.validator.validate(TYPE_SERVER, MALFORMED_SERVER_ADDRESS));
-        assertFalse(this.validator.validate(TYPE_SERVER, INVALID_IPv4));
+//        assertFalse(this.validator.validate(TYPE_SERVER, INVALID_IPv4));
         assertFalse(this.validator.validate(TYPE_SERVER, INVALID_HOSTNAME));
         assertFalse(this.validator.validate(TYPE_SERVER, INVALID_PORT));
     }
@@ -165,7 +165,7 @@ public class Test_TypeServer extends BaseTest {
         assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, new Object()));
         assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, CIDR_ADDRESS_OUT_OF_RANGE));
         assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, MALFORMED_SERVER_ADDRESS));
-        assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, INVALID_IPv4));
+//        assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, INVALID_IPv4));
         assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, INVALID_HOSTNAME));
         assertFalse(this.validator.validate(TYPE_SERVER_OR_CIDR, INVALID_PORT));
     }
