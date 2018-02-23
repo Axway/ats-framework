@@ -58,6 +58,18 @@ public class SslUtils {
 
     private static final Logger log                = Logger.getLogger(SslUtils.class);
 
+    private static final String DEFAULT_PROTOCOL   = "TLS";
+    
+    // not lazy but not size consuming
+    private static SslUtils     instance           = new SslUtils();
+    
+    private static boolean      bcProviderAlreadyRegisteredAsFirst = false;
+    
+    private static SSLContext   trustAllSSlContext;
+    
+    // in this list are collected all created keystore files during THIS run
+    private static List<String> availableKeyStores = new ArrayList<String>();
+
     /**
      * Hostname verifier.
      */
@@ -68,15 +80,7 @@ public class SslUtils {
      */
     private TrustManager[]      trustManagers;
 
-    // not lazy but not size consuming
-    private static SslUtils     instance           = new SslUtils();
 
-    private static SSLContext   trustAllSSlContext;
-
-    // in this list are collected all created keystore files during THIS run
-    private static List<String> availableKeyStores = new ArrayList<String>();
-
-    private static final String DEFAULT_PROTOCOL   = "TLS";
 
     private SslUtils() {
 
@@ -507,25 +511,28 @@ public class SslUtils {
     }
 
     /**
-     * Registers Bouncy Castle as first security provider before any other providers 
-     * coming with the java runtime.
+     * Registers Bouncy Castle (BC) as <em>first security provider</em> before any other providers 
+     * coming with the Java runtime. This is done once, if not already applied.
      * </br>ATS calls this method internally when it is supposed to be needed.
      * 
      * </br></br><b>Note:</b> This is a static operation. All working threads will be affected. 
      * The method itself is not thread-safe.
      * 
-     * </br></br><b>Note:</b> It does not duplicate if already available.
+     * </br></br><b>Note:</b> Effective set of provider is done only once per Java runtime. 
+     *   Currently subsequent invocations do not check whether provider is removed meanwhile and 
+     *   this way could be forcefully set other security provider.  
      */
     public static void registerBCProvider() {
+        if (bcProviderAlreadyRegisteredAsFirst) {
+            return; // do nothing. Provider is already registered as first one.
+        }
 
         boolean needToInsert = true;
         boolean needToRemove = false;
 
-        Provider bcProvider = new BouncyCastleProvider();
         Provider[] providers = Security.getProviders();
-
         for (int i = 0; i < providers.length; i++) {
-            if (providers[i].getName().equalsIgnoreCase(bcProvider.getName())) {
+            if (providers[i].getName().equalsIgnoreCase(BouncyCastleProvider.PROVIDER_NAME)) {
                 if (i == 0) {
                     needToInsert = false;
                 } else {
@@ -537,10 +544,11 @@ public class SslUtils {
 
         if (needToInsert) {
             if (needToRemove) {
-                Security.removeProvider(bcProvider.getName());
+                Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
             }
+            Provider bcProvider = new BouncyCastleProvider();
             Security.insertProviderAt(bcProvider, 1);
-
+            bcProviderAlreadyRegisteredAsFirst = true;
             log.info("Bouncy Castle security provider is registered as first in the list of available providers");
         }
     }
@@ -550,12 +558,11 @@ public class SslUtils {
      */
     public static void unregisterBCProvider() {
 
-        final String bcProviderName = new BouncyCastleProvider().getName();
         Provider[] providers = Security.getProviders();
 
         for (int i = 0; i < providers.length; i++) {
-            if (providers[i].getName().equalsIgnoreCase(bcProviderName)) {
-                Security.removeProvider(bcProviderName);
+            if (providers[i].getName().equalsIgnoreCase(BouncyCastleProvider.PROVIDER_NAME)) {
+                Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
                 log.info("Bouncy Castle security provider is unregistered from the list of available providers");
                 return;
             }

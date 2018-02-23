@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -171,7 +172,7 @@ public class SMimePackageEncryptor implements PackageEncryptor {
     }
 
     static {
-        SslUtils.registerBCProvider();
+        SslUtils.registerBCProvider(); // register only once
     }
 
     /**
@@ -248,10 +249,6 @@ public class SMimePackageEncryptor implements PackageEncryptor {
 
     @PublicAtsApi
     public Package encrypt( Package source ) throws ActionException {
-
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
 
         try {
             MimeMessage encryptedMessage = new MimeMessage(Session.getInstance(new Properties()));
@@ -337,7 +334,6 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             }
         }
         try {
-            Security.addProvider(new BouncyCastleProvider());
             KeyStore ks = getKeystore();
             RecipientId recId = new JceKeyTransRecipientId((X509Certificate) ks.getCertificate(aliasOrCN));
 
@@ -538,10 +534,6 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             }
         }
 
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-
         SMIMESigned signedMessage = getSMIMESignedMessage(sourcePackage);
         if (signedMessage == null) {
             throw new ActionException("The message is not signed");
@@ -637,14 +629,13 @@ public class SMimePackageEncryptor implements PackageEncryptor {
             KeyStore keystore = null;
             if (PKCS12_KEYSTORE_TYPE.equalsIgnoreCase(keystoreType)) {
 
-                // use BoncyCastle provider
-                BouncyCastleProvider bcProvider = new BouncyCastleProvider();
-                try {
-                    Security.addProvider(bcProvider);
-                    keystore = KeyStore.getInstance(keystoreType, bcProvider);
-                } finally {
-                    Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
+                Provider bcProvider = (BouncyCastleProvider) Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
+                if (bcProvider == null || ! (bcProvider instanceof BouncyCastleProvider)) {
+                    throw new RuntimeException("BounceCastle security provider seems not to be registered anymore "
+                                               + "as it is done on SMimePackageEncryptor loading. It is required in order to use secure "
+                                               + "mail operations");
                 }
+                keystore = KeyStore.getInstance(keystoreType, bcProvider);
             } else {
 
                 keystore = KeyStore.getInstance(keystoreType);

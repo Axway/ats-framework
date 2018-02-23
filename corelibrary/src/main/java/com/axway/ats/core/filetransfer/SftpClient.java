@@ -36,6 +36,7 @@ import com.axway.ats.core.filetransfer.model.ftp.SftpFileTransferProgressMonitor
 import com.axway.ats.core.filetransfer.model.ftp.SftpListener;
 import com.axway.ats.core.filetransfer.model.ftp.SynchronizationSftpTransferListener;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.SslUtils;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -49,19 +50,18 @@ import com.jcraft.jsch.SftpException;
  */
 public class SftpClient extends AbstractFileTransferClient {
 
+    public static final String                  SFTP_USERNAME                       = "SFTP_USERNAME";
+    public static final String                  SFTP_CIPHERS                        = "SFTP_CIPHERS";
+    private static final Logger                 log                                 = Logger.getLogger(SftpClient.class);
+    private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = 
+            "Use one of the SFTP_* constatns for key and values in GenericFileTransferClient class";
+
     private JSch                                jsch                                = null;
     private Session                             session                             = null;
     private ChannelSftp                         channel                             = null;
 
     private SftpFileTransferProgressMonitor     debugProgressMonitor                = null;
     private SynchronizationSftpTransferListener synchronizationSftpTransferListener = null;
-
-    private static final Logger                 log                                 = Logger.getLogger(SftpClient.class);
-
-    private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in GenericFileTransferClient class";
-
-    public static final String                  SFTP_USERNAME                       = "SFTP_USERNAME";
-    public static final String                  SFTP_CIPHERS                        = "SFTP_CIPHERS";
 
     private List<SshCipher>                     ciphers;
 
@@ -72,6 +72,11 @@ public class SftpClient extends AbstractFileTransferClient {
     private String                              keystorePassword;
     private String                              publicKeyAlias;
 
+    
+    static {
+        // Adds *once* BoncyCastle provider as the first one, before any default JRE providers.
+        SslUtils.registerBCProvider();
+    }
     /**
      * Constructor
      *
@@ -79,34 +84,6 @@ public class SftpClient extends AbstractFileTransferClient {
     public SftpClient() {
 
         super();
-
-        // Add BoncyCastle provider as the first one, before any default JRE providers.
-        // We remove it first, because in case the provider is already present as not-the-first-one,
-        // the insertion will not do any change
-
-        boolean needToInsert = true;
-        boolean needToRemove = false;
-
-        Provider bcProvider = new BouncyCastleProvider();
-        Provider[] providers = Security.getProviders();
-
-        for (int i = 0; i < providers.length; i++) {
-            if (providers[i].getName().equalsIgnoreCase(bcProvider.getName())) {
-                if (i == 0) {
-                    needToInsert = false;
-                } else {
-                    needToRemove = true;
-                }
-                break;
-            }
-        }
-
-        if (needToInsert) {
-            if (needToRemove) {
-                Security.removeProvider(bcProvider.getName());
-            }
-            Security.insertProviderAt(bcProvider, 1);
-        }
     }
 
     @Override
@@ -162,8 +139,9 @@ public class SftpClient extends AbstractFileTransferClient {
 
         this.jsch = new JSch();
 
-        /* if debug mode is true, we log messages from all levels */
-        /* NOTE: Due to logging being global (static), if one thread enables debug mode, all threads will log messages,
+        /* if debug mode is true, we log messages from all levels 
+         * NOTE: Due to logging being global (static), if one thread enables debug mode, 
+         * all threads will log messages,
          * and if another thread disables it, logging will be stopped for all threads,
          * until at least one thread enables it again
          */
