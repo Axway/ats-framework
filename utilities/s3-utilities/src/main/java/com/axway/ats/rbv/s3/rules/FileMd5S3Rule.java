@@ -22,29 +22,29 @@ import com.axway.ats.rbv.s3.S3MetaData;
 
 public class FileMd5S3Rule extends AbstractS3Rule {
 
-    protected String  srcMD5;
-    protected Object  destMD5;
+    protected String  expectedMD5;
+    protected String  currentMD5;
 
     public FileMd5S3Rule( String md5sum, String ruleName, boolean expectedResult ) {
 
         super( ruleName, expectedResult, MetaData.class );
 
-        this.srcMD5 = md5sum;
+        this.expectedMD5 = md5sum;
     }
-
+    
     @Override
     public boolean performMatch( MetaData metaData ) throws RbvException {
 
         boolean actualResult = false;
 
         //get the file from the meta data
-        destMD5 = metaData.getProperty( S3MetaData.MD5 );
-        if( destMD5 == null ) {
+        currentMD5 = (String) metaData.getProperty( S3MetaData.MD5 );
+        if( currentMD5 == null ) {
             return false;
         }
         
-        if( !StringUtils.isNullOrEmpty( ( String ) destMD5 ) ) {
-            actualResult = destMD5.equals( this.srcMD5 );
+        if( !StringUtils.isNullOrEmpty( currentMD5 ) ) {
+            actualResult = currentMD5.equals( this.expectedMD5 );
         }
 
         return actualResult;
@@ -56,6 +56,6 @@ public class FileMd5S3Rule extends AbstractS3Rule {
         return "which expects file with MD5 sum " + ( getExpectedResult()
                                                                           ? ""
                                                                           : "different than " )
-               + "'" + this.srcMD5 + "' and real md5 '" + this.destMD5 + "'";
+               + "'" + this.expectedMD5 + "' and actual MD5 is '" + this.currentMD5 + "'";
     }
 }

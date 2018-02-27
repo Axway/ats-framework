@@ -24,7 +24,7 @@ public class FileSizeS3Rule extends AbstractS3Rule {
 
     private long srcSize;
     private long destSize;
-    
+
     /**
      * Match with the specified size
      *
@@ -34,7 +34,7 @@ public class FileSizeS3Rule extends AbstractS3Rule {
      */
     public FileSizeS3Rule( long size, String ruleName, boolean expectedResult ) {
 
-        super( ruleName, expectedResult, MetaData.class );
+        super(ruleName, expectedResult, MetaData.class);
 
         this.srcSize = size;
     }
@@ -45,13 +45,13 @@ public class FileSizeS3Rule extends AbstractS3Rule {
         boolean actuaResult = false;
 
         //get the file from the meta data
-        Object size = metaData.getProperty( S3MetaData.SIZE );
+        Object size = metaData.getProperty(S3MetaData.SIZE);
 
-        if( size == null ) {
+        if (size == null) {
             return false;
         }
 
-        destSize = ( Long ) size;
+        destSize = (Long) size;
 
         actuaResult = this.srcSize == destSize;
         return actuaResult;
@@ -60,9 +60,9 @@ public class FileSizeS3Rule extends AbstractS3Rule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with size " + ( getExpectedResult()
-                                                                       ? ""
-                                                                       : "different than " )
-               + "'" + this.srcSize + "' and actual size '" + this.destSize + "'";
+        return "which expects file with size " + (getExpectedResult()
+                                                                      ? ""
+                                                                      : "different than ")
+               + "'" + this.srcSize + "' and current actual size is '" + this.destSize + "'";
     }
 }

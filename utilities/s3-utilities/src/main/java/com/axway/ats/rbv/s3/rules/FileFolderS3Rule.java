@@ -66,7 +66,8 @@ public class FileFolderS3Rule extends AbstractS3Rule {
             // get the file from the meta data
             Object file = metaData.getProperty( S3MetaData.FILE_NAME );
 
-            if( file != null && !StringUtils.isNullOrEmpty( ( String ) file ) && this.isFileExpected ) {
+            if( file != null && !StringUtils.isNullOrEmpty( ( String ) file ) 
+                    && this.isFileExpected ) {
                 return true;
             }
         }

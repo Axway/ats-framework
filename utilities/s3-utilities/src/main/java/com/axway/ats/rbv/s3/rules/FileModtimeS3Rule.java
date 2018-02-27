@@ -24,10 +24,10 @@ import com.axway.ats.rbv.s3.S3MetaData;
 public class FileModtimeS3Rule extends AbstractS3Rule {
 
     protected long srcModtime;
-    private long actualTime;
+    private long actualTime; // in ms but rounded to 1 sec
 
     /**
-     * Match with the specified size
+     * Match with the specified modification time
      *
      * @param log            The logging object
      * @param sName            The name of the matcher - used for logging
@@ -62,9 +62,9 @@ public class FileModtimeS3Rule extends AbstractS3Rule {
     @Override
     protected String getRuleDescription() {
 
-        return "which expects file with mod time " + ( getExpectedResult()
+        return "which expects file with modification time " + ( getExpectedResult()
                                                                            ? ""
                                                                            : " different than " )
-               + "'" + this.srcModtime + "' and actual mod time '" + this.actualTime + "'";
+               + "'" + this.srcModtime + "' and actual modification time '" + this.actualTime + "'";
     }
 }

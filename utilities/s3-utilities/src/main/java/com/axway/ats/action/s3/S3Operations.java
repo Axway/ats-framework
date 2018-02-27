@@ -173,11 +173,14 @@ public class S3Operations {
 
     /**
      * Delete multiple objects
-     * @param object names/keys of the objects to be deleted
+     * @param object list of names/keys of the objects to be deleted
      */
     @PublicAtsApi
     public void deleteObjects( List<String> objectsList ) {
 
+        if (objectsList == null || objectsList.isEmpty()) {
+            return;
+        }
         List<KeyVersion> keys = new ArrayList<KeyVersion>(objectsList.size());
         for (String key : objectsList) {
             keys.add(new KeyVersion(key));
@@ -601,7 +604,7 @@ public class S3Operations {
     /**
      *
      * @param folderPrefix
-     * @param searchString
+     * @param searchString what pattern to be matched. If null it means all, i.e. &quot;.*&quot;
      * @param recursive
      * 
      * @return
@@ -620,6 +623,9 @@ public class S3Operations {
         try {
             ObjectListing objectListing = s3Client.listObjects(request);
             int i = 0;
+            if (searchString == null) {
+                searchString = ".*"; // any string
+            }
             Pattern searchStringPattern = Pattern.compile(searchString);
             while (true) {
                 for (Iterator<?> iterator = objectListing.getObjectSummaries().iterator(); iterator.hasNext();) {
