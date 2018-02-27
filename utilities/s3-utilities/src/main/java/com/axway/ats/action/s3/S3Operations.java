@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.MultiObjectDeleteException;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
@@ -66,7 +68,7 @@ import com.axway.ats.core.utils.IoUtils;
  */
 @PublicAtsApi
 public class S3Operations {
-    
+
     private static final Logger LOG = Logger.getLogger(S3Operations.class);
 
     private String              accessKey;
@@ -107,15 +109,17 @@ public class S3Operations {
             throw new IllegalArgumentException("Bucket name should not be null");
         }
         this.bucketName = bucketName;
-        
+
         s3Client = getClient();
     }
 
     /**
      * Check current specified bucket (the one in constructor) for existence
+     * 
+     * @throws S3OperationException in case of an error
      */
     @PublicAtsApi
-    public boolean doesBucketExist() {
+    public boolean doesBucketExist() throws S3OperationException {
 
         return doesBucketExist(this.bucketName);
     }
@@ -128,7 +132,12 @@ public class S3Operations {
     @PublicAtsApi
     public boolean doesBucketExist( String bucketName ) {
 
-        return s3Client.doesBucketExistV2(bucketName);
+        try {
+            return s3Client.doesBucketExistV2(bucketName);
+        } catch (Exception e) {
+            handleExeption(e, "Could not check whether S3 bucket '" + bucketName + "' exists.");
+        }
+        return false;
     }
 
     /**
@@ -154,10 +163,14 @@ public class S3Operations {
     @PublicAtsApi
     public void deleteObject( String objectName ) {
 
-        s3Client.deleteObject(bucketName, objectName);
+        try {
+            s3Client.deleteObject(bucketName, objectName);
+        } catch (Exception e) {
+            handleExeption(e, "Error deleting object with key " + objectName);
+        }
         LOG.info("Deleted object '" + objectName + "' from bucket '" + bucketName + "'");
     }
-    
+
     /**
      * Delete multiple objects
      * @param object names/keys of the objects to be deleted
@@ -165,18 +178,23 @@ public class S3Operations {
     @PublicAtsApi
     public void deleteObjects( List<String> objectsList ) {
 
-        List<KeyVersion> keys = new ArrayList<KeyVersion>( objectsList.size() );
-        for( String key : objectsList ) {
-            keys.add( new KeyVersion( key ) );
-            LOG.info( "Deleted object '" + key + "' from bucket '" + bucketName + "'" );
+        List<KeyVersion> keys = new ArrayList<KeyVersion>(objectsList.size());
+        for (String key : objectsList) {
+            keys.add(new KeyVersion(key));
         }
 
-        // remove all Objects before deleting the bucket
-        DeleteObjectsRequest request = new DeleteObjectsRequest( bucketName );
-        request.withKeys( keys );
-        s3Client.deleteObjects( request );
-    }  
-    
+        DeleteObjectsRequest request = new DeleteObjectsRequest(bucketName);
+        request.withKeys(keys);
+        try {
+            s3Client.deleteObjects(request);
+        } catch (MultiObjectDeleteException e) {
+            handleMultiDeleteExceptionDetails(e);
+        } catch (AmazonClientException e) {
+            handleExeption(e, "Error deleting multiple objects");
+        }
+        LOG.info("Deleted " + objectsList.size() + " objects from bucket '" + bucketName + "'");
+    }
+
     /**
      * Delete the bucket specified in constructor
      *
@@ -186,15 +204,19 @@ public class S3Operations {
     public void deleteBucket() throws S3OperationException {
 
         List<String> keys = new ArrayList<String>();
-        for( S3ObjectInfo s3Element : listBucket( "" /* all */, ".*", true ) ) {
-            keys.add( s3Element.getName() );
+        for (S3ObjectInfo s3Element : listBucket("" /* all */, ".*", true)) {
+            keys.add(s3Element.getName());
         }
 
         // remove all Objects before deleting the bucket
-        deleteObjects( keys );
+        deleteObjects(keys);
 
-        s3Client.deleteBucket( bucketName );
-        LOG.info( "Deleted bucket '" + bucketName + "'" );
+        try {
+            s3Client.deleteBucket(bucketName);
+        } catch (Exception e) {
+            handleExeption(e, "Error deleting S3 bucket named '" + bucketName + "'");
+        }
+        LOG.info("Deleted bucket '" + bucketName + "'");
     }
 
     /**
@@ -205,8 +227,12 @@ public class S3Operations {
     @PublicAtsApi
     public void createBucket() {
 
-        LOG.info("Create Bucket '" + bucketName + "'");
-        s3Client.createBucket(bucketName);
+        try {
+            s3Client.createBucket(bucketName);
+        } catch (Exception e) {
+            handleExeption(e, "Error creating S3 bucket named '" + bucketName + "'");
+        }
+        LOG.info("Created bucket '" + bucketName + "'");
     }
 
     /**
@@ -217,20 +243,25 @@ public class S3Operations {
     @PublicAtsApi
     public S3ObjectInfo getFileMetadata( String fileName ) {
 
-        S3Object element = s3Client.getObject( bucketName, fileName );
-        if( element != null ) {
-            ObjectMetadata metaData = element.getObjectMetadata();
-            S3ObjectInfo s3Info = new S3ObjectInfo();
-            s3Info.setBucketName( fileName );
-            s3Info.setLastModified( metaData.getLastModified() );
-            s3Info.setMd5( metaData.getETag() );
-            s3Info.setName( element.getKey() );
-            s3Info.setSize( metaData.getContentLength() );
+        try {
+            S3Object element = s3Client.getObject(bucketName, fileName);
+            if (element != null) {
+                ObjectMetadata metaData = element.getObjectMetadata();
+                S3ObjectInfo s3Info = new S3ObjectInfo();
+                s3Info.setBucketName(fileName);
+                s3Info.setLastModified(metaData.getLastModified());
+                s3Info.setMd5(metaData.getETag());
+                s3Info.setName(element.getKey());
+                s3Info.setSize(metaData.getContentLength());
 
-            return s3Info;
-        } else {
-            throw new NoSuchElementException( "File with name '" + fileName + "' does not exist!" );
+                return s3Info;
+            } else {
+                throw new NoSuchElementException("File with name '" + fileName + "' does not exist!");
+            }
+        } catch (Exception e) {
+            handleExeption(e, "Could not retrieve metadata for S3 object with key '" + fileName + "'");
         }
+        return null;
     }
 
     /**
@@ -242,11 +273,17 @@ public class S3Operations {
     @PublicAtsApi
     public long getFileSize( String objectName ) {
 
-        S3Object element = s3Client.getObject( bucketName, objectName );
-        if( element != null ) {
-            return element.getObjectMetadata().getContentLength();
-        } else {
-            throw new NoSuchElementException( "Object with name '" + objectName + "' does not exist!" );
+        try {
+            S3Object element = s3Client.getObject(bucketName, objectName);
+            if (element != null) {
+                return element.getObjectMetadata().getContentLength();
+            } else {
+                throw new NoSuchElementException("Object with name '" + objectName
+                                                 + "' does not exist or has not set size yet!");
+            }
+        } catch (Exception e) {
+            handleExeption(e, "Could get size for S3 object with key '" + objectName + "'");
+            return -1; // needed because of compiler limitation. Above handleException() always throws exception 
         }
     }
 
@@ -260,11 +297,17 @@ public class S3Operations {
     @PublicAtsApi
     public String getFileMD5( String objectName ) {
 
-        S3Object element = s3Client.getObject( bucketName, objectName );
-        if( element != null ) {
-            return element.getObjectMetadata().getETag();
-        } else {
-            throw new NoSuchElementException( "Object with name '" + objectName + "' does not exist!" );
+        try {
+            S3Object element = s3Client.getObject(bucketName, objectName);
+
+            if (element != null) {
+                return element.getObjectMetadata().getETag();
+            } else {
+                throw new NoSuchElementException("Object with name '" + objectName + "' does not exist!");
+            }
+        } catch (Exception e) {
+            handleExeption(e, "Could get MD5 for S3 object with key '" + objectName + "'");
+            return null; // needed because of compiler limitation. Above handleException() always throws exception 
         }
     }
 
@@ -277,26 +320,34 @@ public class S3Operations {
     @PublicAtsApi
     public Date getFileModificationTime( String objectName ) {
 
-        S3Object element = s3Client.getObject( bucketName, objectName );
-        if( element != null ) {
-            return element.getObjectMetadata().getLastModified();
-        } else {
-            throw new NoSuchElementException( "Object with name '" + objectName + "' is not found in bucket '"
-                                              + bucketName + "'!" );
+        try {
+            S3Object element = s3Client.getObject(bucketName, objectName);
+
+            if (element != null) {
+                return element.getObjectMetadata().getLastModified();
+            } else {
+                throw new NoSuchElementException("Object with name '" + objectName + "' is not found in bucket '"
+                                                 + bucketName + "'!");
+            }
+        } catch (Exception e) {
+            handleExeption(e, "Could get modification time for S3 object with key '" + objectName + "'");
+            return null; // needed because of compiler limitation. Above handleException() always throws exception 
         }
     }
 
     /**
-     * Upload a text file
+     * Upload a text file with client line endings
      *
      * @param objectName the object name ( key) for uploaded data
-     * @param sourceFile the file, that should be uploaded
+     * @param sourceFileName the file, that should be uploaded
      */
     @PublicAtsApi
-    public void uploadAsText( String objectName, String sourceFile ) {
+    public void uploadAsText( String objectName, String sourceFileName ) {
 
         try {
-            s3Client.putObject(bucketName, objectName, fileToString(sourceFile));
+            s3Client.putObject(bucketName, objectName, fileToString(sourceFileName));
+            LOG.info("Uploaded file '" + sourceFileName + "' as object named '" + objectName + "' into bucket "
+                     + bucketName);
         } catch (Exception e) {
             handleExeption(e, "Upload error. If error persists check your endpoint, credentials and permissions.");
         }
@@ -338,7 +389,8 @@ public class S3Operations {
         try {
             s3Client.putObject(bucketName, targetObjectName, sourceInputStream, null);
         } catch (Exception e) {
-            handleExeption(e, "File upload error. If error persists check your endpoint, credentials and permissions.");
+            handleExeption(e, "Upload error for target object '" + targetObjectName
+                              + "'. If error persists check your endpoint, credentials and permissions.");
         }
     }
 
@@ -399,8 +451,13 @@ public class S3Operations {
     @PublicAtsApi
     public InputStream download( String objectName ) {
 
-        S3Object o = s3Client.getObject(bucketName, objectName);
-        return o.getObjectContent();
+        try {
+            S3Object o = s3Client.getObject(bucketName, objectName);
+            return o.getObjectContent();
+        } catch (Exception e) {
+            handleExeption(e, "Could get contents for S3 object with key '" + objectName + "'");
+            return null; // needed because of compiler limitation. Above handleException() always throws exception 
+        }
     }
 
     /**
@@ -420,21 +477,25 @@ public class S3Operations {
             handleExeption(e, "S3 object move error");
         }
     }
-    
+
     /**
-     * Empty the specified folder
+     * Delete all objects with keys having this prefix.
+     * Directory (object with this exact key) is not removed, i.e. this method 
+     * acts like <code>cleanupFolder()</code>
+     * 
+     * @param prefixName the common prefix which keys should have
      */
     @PublicAtsApi
-    public void cleanupFolder( String folderName ) {
+    public void deleteAll( String prefixName ) {
 
         List<String> folderElements = new ArrayList<String>();
         // remove all Objects in the pointed directory
-        for( S3ObjectInfo element : listBucket( folderName, ".*", true ) ) {
-            if( !element.getName().equals( folderName ) )
-                folderElements.add( element.getName() );
+        for (S3ObjectInfo element : listBucket(prefixName, ".*", true)) {
+            if (!element.getName().equals(prefixName))
+                folderElements.add(element.getName());
         }
 
-        deleteObjects( folderElements );
+        deleteObjects(folderElements);
     }
 
     /**
@@ -463,6 +524,17 @@ public class S3Operations {
             sb.append(e.getMessage()); // normal exception
         }
         throw new S3OperationException(sb.toString(), e);
+    }
+
+    private String handleMultiDeleteExceptionDetails( MultiObjectDeleteException de ) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Error deleting multiple objects. Details:\n");
+        sb.append("Details: " + de.getErrorMessage() + ")\n");
+        sb.append("Successfully deleted objects: " + Arrays.toString(de.getDeletedObjects().toArray()) + "\n");
+        // TODO: DeleteError does not overwrite toString(). Optionally get messages only 
+        sb.append("Deletion errors: " + de.getErrors().size());
+        throw new S3OperationException(sb.toString(), de);
     }
 
     /**
@@ -531,44 +603,52 @@ public class S3Operations {
      * @param folderPrefix
      * @param searchString
      * @param recursive
+     * 
      * @return
+     * @throws S3OperationException in case of an error from server
      */
     private List<S3ObjectInfo> listBucket( String folderPrefix, String searchString, boolean recursive ) {
 
         List<S3ObjectInfo> allListElements = new ArrayList<S3ObjectInfo>();
 
         //Alternative but not documented in S3 API: getClient().listObjectsV2(bucket, "prefix")
-        ListObjectsRequest request = new ListObjectsRequest( bucketName, folderPrefix, null, recursive
-                                                                                                       ? null
-                                                                                                       : "/",
-                                                             null );
-        ObjectListing objectListing = s3Client.listObjects( request );
-        int i = 0;
-        Pattern searchStringPattern = Pattern.compile( searchString );
-        while( true ) {
-            for( Iterator<?> iterator = objectListing.getObjectSummaries().iterator(); iterator.hasNext(); ) {
-                S3ObjectSummary objectSummary = ( S3ObjectSummary ) iterator.next();
-                if( LOG.isTraceEnabled() ) {
-                    LOG.trace( "listObjects(" + ( ++i ) + "): " + objectSummary.toString() );
+        ListObjectsRequest request = new ListObjectsRequest(bucketName, folderPrefix, null, recursive
+                                                                                                      ? null
+                                                                                                      : "/",
+                                                            null);
+
+        try {
+            ObjectListing objectListing = s3Client.listObjects(request);
+            int i = 0;
+            Pattern searchStringPattern = Pattern.compile(searchString);
+            while (true) {
+                for (Iterator<?> iterator = objectListing.getObjectSummaries().iterator(); iterator.hasNext();) {
+                    S3ObjectSummary objectSummary = (S3ObjectSummary) iterator.next();
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("listObjects(" + (++i) + "): " + objectSummary.toString());
+                    }
+
+                    String[] fileTokens = objectSummary.getKey().split("/");
+                    String s3Object = fileTokens[fileTokens.length - 1];
+
+                    Matcher matcher = searchStringPattern.matcher(s3Object);
+                    if (matcher.find()) {
+                        allListElements.add(new S3ObjectInfo(objectSummary));
+                    }
                 }
 
-                String[] fileTokens = objectSummary.getKey().split( "/" );
-                String s3Object = fileTokens[fileTokens.length - 1];
-
-                Matcher matcher = searchStringPattern.matcher( s3Object );
-                if( matcher.find() ) {
-                    allListElements.add( new S3ObjectInfo( objectSummary ) );
+                // more objectListing retrieve?
+                if (objectListing.isTruncated()) {
+                    objectListing = s3Client.listNextBatchOfObjects(objectListing);
+                } else {
+                    break;
                 }
             }
-
-            // more objectListing retrieve?
-            if( objectListing.isTruncated() ) {
-                objectListing = s3Client.listNextBatchOfObjects( objectListing );
-            } else {
-                break;
-            }
+        } catch (AmazonClientException e) {
+            throw new S3OperationException(e);
         }
 
         return allListElements;
     }
+
 }
