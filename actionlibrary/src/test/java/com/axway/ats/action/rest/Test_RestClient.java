@@ -28,7 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.axway.ats.action.BaseTest;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+@PowerMockIgnore("javax.management.*")
 public class Test_RestClient extends BaseTest {
 
     private String[]            supportedProtocols;
