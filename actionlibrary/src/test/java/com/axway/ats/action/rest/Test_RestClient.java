@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.axway.ats.action.BaseTest;
+import com.axway.ats.core.utils.SslUtils;
 
 public class Test_RestClient extends BaseTest {
 
@@ -41,6 +42,10 @@ public class Test_RestClient extends BaseTest {
     private List<Object>        providers;
     private String              certFileName;
     private String              certPassword;
+    
+    static {
+        SslUtils.unregisterBCProvider();
+    }
 
     @Before
     public void before() {
