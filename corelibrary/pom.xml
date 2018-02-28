@@ -143,11 +143,11 @@
 			<version>${org.bouncycastle.version}</version>
 		</dependency>
 		<!-- Used to read content from PEM files for SFTP connections -->
-		<dependency>
+		<!-- dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>${org.bouncycastle.version}</version>
-		</dependency>
+		</dependency -->
 		<dependency>
 			<groupId>com.datastax.cassandra</groupId>
 			<artifactId>cassandra-driver-core</artifactId>
