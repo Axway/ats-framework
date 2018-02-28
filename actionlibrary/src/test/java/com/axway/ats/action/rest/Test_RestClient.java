@@ -30,7 +30,7 @@ import org.junit.Test;
 import com.axway.ats.action.BaseTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
-@PowerMockIgnore({"java.net.ssl", "javax.security.*"})
+@PowerMockIgnore({"java.net.ssl", "javax.security.*", "com.sun.*", "javax.management.*", "org.apache.http.conn.ssl.*"})
 public class Test_RestClient extends BaseTest {
 
     private String[]            supportedProtocols;
