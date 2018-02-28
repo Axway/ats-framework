@@ -69,7 +69,7 @@ public class Test_RestClient extends BaseTest {
     /**
      * Verify the copied instance of RESTClient, copy also all original instance properties 
      */
-    @Test
+    //@Test
     public void testCopy() {
 
         // create RESTClientConfigurator instance and set any custom properties to it
