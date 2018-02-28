@@ -931,63 +931,84 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     @Override
-    public void replaceTextInFile(
-                                   String fileName,
-                                   String searchString,
-                                   String newString,
-                                   boolean isRegex ) {
+    public void replaceTextInFile( String fileName, String searchString, String newString, boolean isRegex ) {
+
+        Map<String, String> tokensMap = new HashMap<>();
+        tokensMap.put( searchString, newString );
+
+        replaceTextInFile( fileName, tokensMap, isRegex );
+    }
+
+    @Override
+    public void replaceTextInFile( String fileName, Map<String, String> searchTokens, boolean isRegex ) {
 
         BufferedReader inFileReader = null;
         BufferedWriter outFileWriter = null;
 
         File inputFile = null;
         File outputFile = null;
+        StringBuilder info = new StringBuilder();
+
+        for( String token : searchTokens.keySet() ) {
+            info.append( token );
+            info.append( "," );
+        }
+        info = info.deleteCharAt( info.length() - 1 );
+
         try {
             try {
-                inputFile = new File(fileName);
-                outputFile = new File(fileName + "_" + System.currentTimeMillis() + ".tmp");
+                inputFile = new File( fileName );
+                outputFile = new File( fileName + "_" + System.currentTimeMillis() + ".tmp" );
 
-                inFileReader = new BufferedReader(new FileReader(inputFile));
-                outFileWriter = new BufferedWriter(new FileWriter(outputFile, false));
+                inFileReader = new BufferedReader( new FileReader( inputFile ) );
+                outFileWriter = new BufferedWriter( new FileWriter( outputFile, false ) );
 
                 String currentLine = inFileReader.readLine();
-                while (currentLine != null) {
+                while( currentLine != null ) {
 
-                    if (isRegex) {
-                        outFileWriter.write(currentLine.replaceAll(searchString, newString));
-                    } else {
-                        outFileWriter.write(currentLine.replace(searchString, newString));
+                    for( Entry<String, String> tokens : searchTokens.entrySet() ) {
+                        if( isRegex ) {
+                            currentLine = currentLine.replaceAll( tokens.getKey(), tokens.getValue() );
+                        } else {
+                            currentLine = currentLine.replace( tokens.getKey(), tokens.getValue() );
+                        }
                     }
+                    outFileWriter.write( currentLine );
                     outFileWriter.newLine();
 
                     //read a new line
                     currentLine = inFileReader.readLine();
                 }
 
-                log.info("Successfully replaced all instances of '" + searchString + "' in file '" + fileName
-                         + "'");
+                log.info( "Successfully replaced all" + ( isRegex
+                                                                  ? " regular expression"
+                                                                  : "" )
+                          + " instances of '" + info.toString() + "' in file '" + fileName + "'" );
             } finally {
-                IoUtils.closeStream(inFileReader);
-                IoUtils.closeStream(outFileWriter);
+                IoUtils.closeStream( inFileReader );
+                IoUtils.closeStream( outFileWriter );
             }
 
             //after we are finished, rename the temporary file to the original one
-            if (OperatingSystemType.getCurrentOsType().isUnix()) {
+            if( OperatingSystemType.getCurrentOsType().isUnix() ) {
 
                 // getting original file permissions before overriding operation
-                String permissions = getFilePermissions(inputFile.getCanonicalPath());
+                String permissions = getFilePermissions( inputFile.getCanonicalPath() );
 
-                renameFile(outputFile.getCanonicalPath(), fileName, true);
+                renameFile( outputFile.getCanonicalPath(), fileName, true );
                 // restoring file permissions
-                setFilePermissions(fileName, permissions);
+                setFilePermissions( fileName, permissions );
             } else {
 
-                renameFile(outputFile.getCanonicalPath(), fileName, true);
+                renameFile( outputFile.getCanonicalPath(), fileName, true );
             }
-        } catch (IOException ioe) {
+        } catch( IOException ioe ) {
 
-            throw new FileSystemOperationException("Unable to replace text '" + searchString + "' in file '"
-                                                   + fileName + "'", ioe);
+            throw new FileSystemOperationException( "Unable to replace" + ( isRegex
+                                                                                    ? " regular expression"
+                                                                                    : "" )
+                                                    + " instances of '" + info.toString() + "' in file '"
+                                                    + fileName + "'", ioe );
         }
     }
 

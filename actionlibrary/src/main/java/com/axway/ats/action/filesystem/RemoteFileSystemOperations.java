@@ -18,6 +18,9 @@ package com.axway.ats.action.filesystem;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.agent.components.system.operations.clients.InternalFileSystemOperations;
@@ -756,6 +759,30 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
                                                 .append(this.atsAgent)
                                                 .toString();
             throw new FileSystemOperationException(message, e);
+        }
+    }
+    
+    @Override
+    public void replaceTextInFile( String fileName, Map<String, String> searchTokens, boolean isRegex ) {
+
+        try {
+            remoteFileSystemOperations.replaceTextInFile( fileName, searchTokens, isRegex );
+        } catch( Exception e ) {
+
+            StringBuilder messageBuilder = new StringBuilder().append( "Unable to replace text '" );
+            for( String token : searchTokens.keySet() ) {
+                messageBuilder.append( token );
+                messageBuilder.append( "," );
+            }
+            messageBuilder = messageBuilder.deleteCharAt( messageBuilder.length() - 1 );
+
+            messageBuilder.append( "'" )
+                          .append( " in file '" )
+                          .append( fileName )
+                          .append( "' on " )
+                          .append( this.atsAgent )
+                          .toString();
+            throw new FileSystemOperationException( messageBuilder.toString(), e );
         }
     }
 

@@ -896,22 +896,47 @@ public class FileSystemOperations {
      * @param isRegex if the searched text is a regular expression
      */
     @PublicAtsApi
-    public void
-            replaceTextInFile( @Validate( name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath,
-                               @Validate( name = "searchText", type = ValidationType.STRING_NOT_EMPTY) String searchText,
-                               @Validate( name = "newText", type = ValidationType.NONE) String newText,
-                               @Validate( name = "isRegex", type = ValidationType.NONE) boolean isRegex ) {
+    public void replaceTextInFile(
+                                   @Validate(name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath,
+                                   @Validate(name = "searchText", type = ValidationType.STRING_NOT_EMPTY) String searchText,
+                                   @Validate(name = "newText", type = ValidationType.NONE) String newText,
+                                   @Validate(name = "isRegex", type = ValidationType.NONE) boolean isRegex ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters(new Object[]{ filePath, searchText, newText, isRegex });
+        new Validator().validateMethodParameters( new Object[]{ filePath, searchText, newText, isRegex } );
 
         // execute action
-        IFileSystemOperations operations = getOperationsImplementationFor(atsAgent);
-        operations.replaceTextInFile(filePath, searchText, newText, isRegex);
+        IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
+        operations.replaceTextInFile( filePath, searchText, newText, isRegex );
 
         // log the result of the operation
-        log.info("Successfully replaced text '" + searchText + "' with '" + newText + "' in file '"
-                 + filePath + "'" + getHostDescriptionSuffix());
+        log.info( "Successfully replaced text '" + searchText + "' with '" + newText + "' in file '"
+                  + filePath + "'" + getHostDescriptionSuffix() );
+    }
+
+    /**
+     * Replaces specific texts in file. Supports regular expressions
+     *
+     * @param filePath the file to work with
+     * @param searchTokens a map in the form <text to replace, replacement text>
+     * @param isRegex if the searched texts are regular expressions
+     */
+    @PublicAtsApi
+    public void replaceTextInFile(
+                                   @Validate(name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath,
+                                   @Validate(name = "searchTokens", type = ValidationType.NOT_NULL) Map<String, String> searchTokens,
+                                   @Validate(name = "isRegex", type = ValidationType.NONE) boolean isRegex ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters( new Object[]{ filePath, searchTokens, isRegex } );
+
+        // execute action
+        IFileSystemOperations operations = getOperationsImplementationFor( atsAgent );
+        operations.replaceTextInFile( filePath, searchTokens, isRegex );
+
+        // log the result of the operation
+        log.info( "Successfully replaced all tokens in file '" + filePath + "'"
+                  + getHostDescriptionSuffix() );
     }
 
     /**

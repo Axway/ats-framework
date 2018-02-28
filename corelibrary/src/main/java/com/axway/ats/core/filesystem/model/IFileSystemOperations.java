@@ -16,6 +16,7 @@
 package com.axway.ats.core.filesystem.model;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
 import com.axway.ats.common.filesystem.FileMatchInfo;
@@ -165,11 +166,9 @@ public interface IFileSystemOperations {
                             String fileName,
                             String encoding );
 
-    public void replaceTextInFile(
-                                   String fileName,
-                                   String searchString,
-                                   String newString,
-                                   boolean isRegex );
+    public void replaceTextInFile( String fileName, String searchString, String newString, boolean isRegex );
+
+    public void replaceTextInFile( String fileName, Map<String, String> searchTokens, boolean isRegex );
 
     public FileMatchInfo findTextInFileAfterGivenPosition(
                                                            String fileName,
