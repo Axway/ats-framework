@@ -41,7 +41,7 @@ import java.util.Set;
 
 import org.apache.commons.net.util.Base64;
 import org.apache.log4j.Logger;
-import org.bouncycastle.openssl.PEMWriter;
+//import org.bouncycastle.openssl.PEMWriter;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.SshCipher;
@@ -174,10 +174,10 @@ public class SftpClient extends AbstractFileTransferClient {
 
             this.session.setPassword(this.password);
 
-            if (!StringUtils.isNullOrEmpty(this.keyStoreFile)) {
+            /*if (!StringUtils.isNullOrEmpty(this.keyStoreFile)) {
                 byte[] privateKeyContent = getPrivateKeyContent();
                 this.jsch.addIdentity("client_prvkey", privateKeyContent, null, null);
-            }
+            }*/
 
             //The internally used client version 'SSH-2.0-JSCH-0.1.54' needs to be changed to 'SSH-2.0-OpenSSH_2.5.3'
             this.session.setClientVersion("SSH-2.0-OpenSSH_2.5.3");
@@ -316,7 +316,7 @@ public class SftpClient extends AbstractFileTransferClient {
 
     }
 
-    private byte[] getPrivateKeyContent() throws Exception {
+    /*private byte[] getPrivateKeyContent() throws Exception {
 
         try {
             KeyStore keyStore = SslUtils.loadKeystore(keyStoreFile, keyStorePassword);
@@ -338,7 +338,7 @@ public class SftpClient extends AbstractFileTransferClient {
             throw new Exception("Could not get private key content", e);
         }
 
-    }
+    }*/
 
     @Override
     public void disconnect() throws FileTransferException {
