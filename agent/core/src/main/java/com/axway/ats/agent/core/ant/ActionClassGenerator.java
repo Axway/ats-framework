@@ -169,7 +169,7 @@ class ActionClassGenerator {
                 continue;
             }
 
-            String targetActionClassPackage = originalTargetPackage;
+            String targetActionClassPackage = actionClass.getPackage().getName();
 
             log.info("Source package: " + originalSourcePackage);
 
