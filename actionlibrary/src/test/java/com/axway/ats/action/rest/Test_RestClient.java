@@ -43,9 +43,9 @@ public class Test_RestClient extends BaseTest {
     private String              certFileName;
     private String              certPassword;
     
-    /*static {
+    static {
         SslUtils.unregisterBCProvider();
-    }*/
+    }
 
     @Before
     public void before() {
