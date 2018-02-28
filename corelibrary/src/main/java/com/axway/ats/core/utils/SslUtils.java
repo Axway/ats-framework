@@ -598,6 +598,7 @@ public class SslUtils {
         for (int i = 0; i < providers.length; i++) {
             if (providers[i].getName().equalsIgnoreCase(BouncyCastleProvider.PROVIDER_NAME)) {
                 Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
+                bcProviderAlreadyRegisteredAsFirst = false;
                 log.info("Bouncy Castle security provider is unregistered from the list of available providers");
                 return;
             }
