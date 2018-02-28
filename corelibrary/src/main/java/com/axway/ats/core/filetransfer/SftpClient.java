@@ -41,7 +41,7 @@ import java.util.Set;
 
 import org.apache.commons.net.util.Base64;
 import org.apache.log4j.Logger;
-//import org.bouncycastle.openssl.PEMWriter;
+import org.bouncycastle.openssl.PEMWriter;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.SshCipher;
