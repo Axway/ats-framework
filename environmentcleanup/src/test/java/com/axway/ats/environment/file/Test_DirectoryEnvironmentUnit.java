@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.axway.ats.core.utils.IoUtils;
@@ -132,7 +131,6 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
         Assert.assertTrue(dirEnvUnit.restore());
     }
 
-    @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void restoreNotNeeded() throws EnvironmentCleanupException {
 
@@ -145,7 +143,6 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
         Assert.assertFalse(dirEnvUnit.restore());
     }
 
-    @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void restore_aNewFileMustBeDeleted() throws EnvironmentCleanupException, IOException {
 
@@ -160,7 +157,6 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
         Assert.assertTrue(dirEnvUnit.restore());
     }
 
-    @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void restore_aNewSubdirMustBeDeleted() throws EnvironmentCleanupException, IOException {
 
@@ -192,7 +188,6 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
         //        assertTrue( fileEnvUnit.restore() );
     }
 
-    @Ignore // TODO - investigate failing error. It is just on CI machine, only when run from Jenkins
     @Test
     public void useTempBackupDir() throws Exception {
 

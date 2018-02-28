@@ -107,6 +107,7 @@ public class Test_TypeRegex extends BaseTest {
     @Test
     public void testDomainValidation() throws Exception {
 
+        assertTrue(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, VALID_HOSTNAME ));
         assertTrue(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, VALID_HOSTNAME7 ));
 
         assertFalse(this.validator.validate(ValidationType.STRING_DOMAIN_NAME, HOSTNAME_INVALID));
