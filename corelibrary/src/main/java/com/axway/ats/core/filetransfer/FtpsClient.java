@@ -19,23 +19,32 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.net.ProtocolCommandListener;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
-import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.filetransfer.model.TransferListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
 import com.axway.ats.core.filetransfer.model.ftp.SynchronizationFtpTransferListener;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.SslUtils;
+import com.axway.ats.core.utils.StringUtils;
 
 /**
  * The {@link FtpsClient} uses the Apache Commons Net component suite for Java
@@ -45,13 +54,9 @@ import com.axway.ats.core.utils.SslUtils;
  * The current implementation does *not* verify the server certificate against a
  * local trusted CA store!
  */
-public class FtpsClient extends AbstractFileTransferClient implements IFileTransferClient {
+public class FtpsClient extends AbstractFileTransferClient {
 
     private org.apache.commons.net.ftp.FTPSClient ftpsConnection                 = null;
-    @SuppressWarnings( "unused")
-    private String                                keystorePassphrase             = null;
-    @SuppressWarnings( "unused")
-    private String                                keystoreFile                   = null;
 
     private static final Logger                   log                            = Logger.getLogger(FtpsClient.class);
 
@@ -69,6 +74,19 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
 
     private boolean                               implicit                       = false;
     private String                                protocol                       = "TLSv1.2";
+
+    private String                                keyStoreFile;
+    private String                                keyStorePassword;
+
+    private String                                trustStoreFile;
+    private String                                trustStorePassword;
+
+    private String                                trustedServerSSLCerfiticateFile;
+
+    static {
+        // Adds *once* BoncyCastle provider as the first one, before any default JRE providers.
+        SslUtils.registerBCProvider();
+    }
 
     /**
      * Constructor
@@ -126,53 +144,65 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
         log.info("Connecting to " + hostname + " on port " + this.port + " using username " + userName
                  + " and password " + password);
 
-        performConnect(hostname, userName, password, null, null);
+        if (!StringUtils.isNullOrEmpty(this.keyStoreFile)) {
+            log.info("Keystore location set to '" + this.keyStoreFile + "'");
+        }
+
+        if (!StringUtils.isNullOrEmpty(this.trustStoreFile)) {
+            log.info("Truststore location set to '" + this.trustStoreFile + "'");
+        }
+
+        if (!StringUtils.isNullOrEmpty(this.trustedServerSSLCerfiticateFile)) {
+            log.info("Trust server certificate set to '" + this.trustedServerSSLCerfiticateFile + "'");
+        }
+
+        performConnect(hostname, userName, password);
     }
 
     @Override
-    public void connect(
-                         String hostname,
-                         String keystoreFile,
-                         String keystorePassword,
+    public void connect( String hostname, String keystoreFile, String keystorePassword,
                          String publicKeyAlias ) throws FileTransferException {
 
-        log.info("Connecting to " + hostname + " on port " + this.port + " using keystore file "
-                 + keystoreFile + " and public key alias " + publicKeyAlias);
+        throw new FileTransferException("Not implemented");
 
-        performConnect(hostname, publicKeyAlias, null, keystoreFile, keystorePassword);
     }
 
     private void performConnect(
                                  String hostname,
                                  String userName,
-                                 String password,
-                                 String keystoreFile,
-                                 String keystorePassword ) throws FileTransferException {
+                                 String password ) throws FileTransferException {
 
-        // make new FTP object for every new connection
-        disconnect();
-        applyCustomProperties();
-
-        //this.ftpsConnection = new FTPSClient( this.protocol, this.implicit);
-        this.ftpsConnection = new org.apache.commons.net.ftp.FTPSClient(this.implicit,
-                                                                        SslUtils.getSSLContext(keystoreFile,
-                                                                                               keystorePassword,
-                                                                                               this.protocol));
-        if (this.listener != null) {
-            this.listener.setResponses(new ArrayList<String>());
-            this.ftpsConnection.addProtocolCommandListener( ((FtpResponseListener) listener));
-        }
-        /* if debug mode is true, we log messages from all levels */
-        if (isDebugMode()) {
-            this.ftpsConnection.addProtocolCommandListener(new FtpListener());
-        }
         try {
+
+            // make new FTP object for every new connection
+            disconnect();
+            applyCustomProperties();
+            SSLContext sslContext = null;
+
+            try {
+                sslContext = createSSLContext();
+            } catch (Exception e) {
+                throw new Exception("Error while creating SSL context", e);
+            }
+
+            //this.ftpsConnection = new FTPSClient( this.protocol, this.implicit);
+            this.ftpsConnection = new org.apache.commons.net.ftp.FTPSClient(this.implicit, sslContext);
+
+            if (this.listener != null) {
+                this.listener.setResponses(new ArrayList<String>());
+                this.ftpsConnection.addProtocolCommandListener( ((FtpResponseListener) listener));
+            }
+            /* if debug mode is true, we log messages from all levels */
+            if (isDebugMode()) {
+                this.ftpsConnection.addProtocolCommandListener(new FtpListener());
+            }
+
             this.ftpsConnection.setConnectTimeout(this.timeout);
             // connect to the host
             this.ftpsConnection.connect(hostname, this.port);
             // login to the host
             if (!this.ftpsConnection.login(userName, password)) {
-                throw new Exception("Invallid username and/or password");
+                throw new Exception("Invallid username and/or password. ");
             }
             // set transfer mode
             if (this.transferMode == TransferMode.ASCII) {
@@ -191,6 +221,53 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
             log.error(errMessage, e);
             throw new FileTransferException(e);
         }
+    }
+
+    private SSLContext createSSLContext() throws Exception {
+
+        SSLContextBuilder sslContextBuilder = SSLContextBuilder.create();
+        sslContextBuilder.useProtocol(protocol);
+
+        // add key store
+        if (!StringUtils.isNullOrEmpty(keyStoreFile)) {
+            // if bouncy castle provider is set as the first one,
+            // then the sslContextBuilder try to load the key store from a JKS format,
+            // that's why instead we load the key store ourselves and provide it to the builder
+            sslContextBuilder.loadKeyMaterial(SslUtils.loadKeystore(keyStoreFile, keyStorePassword),
+                                              keyStorePassword.toCharArray());
+
+        }
+
+        // add trust store
+        if (!StringUtils.isNullOrEmpty(trustStoreFile)) {
+            /** load the trust store **/
+            KeyStore trustStore = SslUtils.loadKeystore(trustStoreFile,
+                                                        trustStorePassword);
+
+            sslContextBuilder.loadTrustMaterial(trustStore,
+                                                /**
+                                                 * for better error message logging, we provide custom TrustStrategy, instead of the default one
+                                                 * */
+                                                new DefaultTrustStrategy(trustStore));
+        } else if (!StringUtils.isNullOrEmpty(trustedServerSSLCerfiticateFile)) {
+            // load the client certificate content
+            final X509Certificate trustedServerCertificate = SslUtils.convertFileToX509Certificate(new File(this.trustedServerSSLCerfiticateFile));
+            // create trust store and add the client certificate
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            trustStore.load(null);
+            trustStore.setCertificateEntry("client_certificate", trustedServerCertificate);
+            // add the trust store to the SSL builder
+            sslContextBuilder.loadTrustMaterial(trustStore,
+                                                /**
+                                                 * for better error message logging, we provide custom TrustStrategy, instead of the default one
+                                                 * */
+                                                new DefaultTrustStrategy(trustStore));
+        } else {
+            // since no trust store is specified, we will trust all certificates
+            sslContextBuilder.loadTrustMaterial(new TrustAllTrustStrategy());
+        }
+
+        return sslContextBuilder.build();
     }
 
     /**
@@ -277,8 +354,11 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
             fis = new FileInputStream(new File(localFile));
             if (!this.ftpsConnection.storeFile(remoteFileAbsPath, fis)) {
                 throw new FileTransferException("Unable to store " + localFile + " to "
-                                                + this.ftpsConnection.getPassiveHost() + " as a" + remoteDir
-                                                + "/" + remoteFile);
+                                                + this.ftpsConnection.getPassiveHost() + " as a "
+                                                + (remoteDir.endsWith("/")
+                                                                           ? remoteDir
+                                                                           : remoteDir + "/")
+                                                + remoteFile);
             }
         } catch (Exception e) {
             log.error("Unable to upload file!", e);
@@ -438,6 +518,179 @@ public class FtpsClient extends AbstractFileTransferClient implements IFileTrans
             log.debug("Using by default the FTPS connection type AUTH_TLS");
             implicit = false;
             protocol = "TLSv1.2";
+        }
+
+    }
+
+    /**
+     * Set a client key store which will be used for authentication
+     * @param keystoreFile the key store file path ( Must be in JKS or PKCS12 format )
+     * @param keystorePassword the key store password
+     * **/
+    @Override
+    public void setKeystore( String keystoreFile, String keystorePassword, String alias ) {
+
+        this.keyStoreFile = keystoreFile;
+        this.keyStorePassword = keystorePassword;
+    }
+
+    /**
+     * Set a client trust store which will be used for validating trust server certificates
+     * @param truststoreFile the trust store file path ( Must be in JKS or PKCS12 format )
+     * @param truststorePassword the trust store password
+     * 
+     * <p><b>Note that call to this method will override any effect from both this method and setTrustedServerSSLCertificate</b></p>
+     * **/
+    @Override
+    public void setTrustStore( String truststoreFile, String truststorePassword ) {
+
+        this.trustStoreFile = truststoreFile;
+        this.trustStorePassword = truststorePassword;
+
+        // invalidate any previously set trust server certificate
+        if (!StringUtils.isNullOrEmpty(this.trustedServerSSLCerfiticateFile)) {
+            log.warn("Previously set trust server certificate '" + this.trustedServerSSLCerfiticateFile
+                     + "' will be overridden and only certificates from truststore '" + truststoreFile
+                     + "' will be used for validation");
+            this.trustedServerSSLCerfiticateFile = null;
+        }
+
+    }
+
+    /**
+     * Set a client certificate which will be used for authentication
+     * @param certificateFile the trust server certificate file path (must be a .PEM file)
+     * 
+     * <p><b>Note that call to this method will override any effect from both this method and setTrustStore</b></p>
+     * **/
+    @Override
+    public void setTrustedServerSSLCertificate( String certificateFile ) {
+
+        this.trustedServerSSLCerfiticateFile = certificateFile;
+
+        // invalidate any previously set trust store
+        if (!StringUtils.isNullOrEmpty(this.trustStoreFile)) {
+            log.warn("Previously set trust store '" + this.trustStoreFile
+                     + "' will be overridden and only the certificate '" + trustedServerSSLCerfiticateFile
+                     + "' will be used for validation");
+            this.trustStoreFile = null;
+            this.trustStorePassword = null;
+        }
+    }
+
+    /**
+     * This method exposes the underlying FTPS client.
+     * Since the implementation can be change at any time, users must not use this method directly.
+     * */
+    public org.apache.commons.net.ftp.FTPSClient getInternalFtpsClient() {
+
+        return ftpsConnection;
+
+    }
+
+    private String printCertificateInfo( X509Certificate cert ) {
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("  Checking SSL Server certificate :\n")
+          .append("  Subject DN: " + cert.getSubjectDN() + "\n")
+          .append("  Signature Algorithm: " + cert.getSigAlgName() + "\n")
+          .append("  Valid from: " + cert.getNotBefore() + "\n")
+          .append("  Valid until: " + cert.getNotAfter() + "\n")
+          .append("  Issuer: " + cert.getIssuerDN() + "\n");
+
+        return sb.toString();
+    }
+
+    /**
+     * Trust Strategy that trust all of the certificates in the presented trust store
+     * */
+    class DefaultTrustStrategy implements TrustStrategy {
+
+        private List<Certificate> certificates = new ArrayList<Certificate>();
+
+        public DefaultTrustStrategy( KeyStore trustStore ) throws Exception {
+            /** get all certificates from the trust store **/
+            Enumeration<String> aliases = trustStore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (trustStore.isCertificateEntry(alias)) {
+                    /** the alias points to a certificate **/
+                    certificates.add(trustStore.getCertificate(alias));
+                } else {
+                    /** the alias does not point to a certificate, 
+                     * but this may mean that it points to a private-public key pair or a certificate chain 
+                     */
+                    Certificate certificate = trustStore.getCertificate(alias);
+                    if (certificate != null) {
+                        /**
+                         * the certificate was extracted from a private-public key entry
+                         * */
+                        certificates.add(certificate);
+                    } else {
+                        /**
+                         * the alias points to a certificate chain
+                         * */
+                        Certificate[] chain = trustStore.getCertificateChain(alias);
+                        for (Certificate cert : chain) {
+                            certificates.add(cert);
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean isTrusted( X509Certificate[] chain, String authType ) throws CertificateException {
+
+            for (X509Certificate presentedCert : chain) {
+
+                if (log.isDebugEnabled()) {
+                    String certificateInformation = printCertificateInfo(presentedCert);
+                    log.debug(certificateInformation);
+                }
+
+                try {
+                    presentedCert.checkValidity(); // throws exception
+                } catch (Exception e) {
+                    log.error("Certificate invalid.", e);
+                    return false;
+                }
+
+                for (Certificate trustedServerCertificate : certificates) {
+                    if (presentedCert.equals(trustedServerCertificate)) {
+                        if (!log.isDebugEnabled()) {
+                            /*
+                             * DEBUG level is not enabled, so the certificate information was not previously logged
+                             * */
+                            String certificateInformation = printCertificateInfo(presentedCert);
+                            log.info(certificateInformation);
+                        }
+                        log.info("Server certificate trusted.");
+                        return true;
+                    } else {
+
+                    }
+                }
+
+            }
+
+            //log.error("The presented trust store certificates could not match any of the server provided ones");
+            throw new CertificateException("The presented trust store certificates could not match any of the server provided ones");
+            //return false;
+        }
+
+    }
+
+    /**
+     * TrustStrategy that trust any/all certificate/s
+     * **/
+    class TrustAllTrustStrategy implements TrustStrategy {
+
+        @Override
+        public boolean isTrusted( X509Certificate[] chain, String authType ) throws CertificateException {
+
+            return true;
         }
 
     }

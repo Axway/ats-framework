@@ -20,6 +20,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -39,6 +45,7 @@ import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.SslUtils;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
@@ -556,5 +563,62 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         if (httpClient == null) {
             throw new FileTransferException("Http client is not initialized. Was a connect method invoked?");
         }
+    }
+
+    @Override
+    public void setKeystore( String keystoreFile, String keystorePassword, String keyAlias ) {
+
+        setClientSSLCertificate(new File(keystoreFile), keystorePassword);
+
+    }
+
+    @Override
+    public void setTrustStore( String truststoreFile, String truststorePassword ) {
+
+        try {
+            KeyStore trustStore = SslUtils.loadKeystore(truststoreFile, truststorePassword);
+            List<Certificate> certificates = new ArrayList<Certificate>();
+            /** get all certificates from the trust store **/
+            Enumeration<String> aliases = trustStore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (trustStore.isCertificateEntry(alias)) {
+                    /** the alias points to a certificate **/
+                    certificates.add(trustStore.getCertificate(alias));
+                } else {
+                    /** the alias does not point to a certificate, 
+                     * but this may mean that it points to a private-public key pair or certificate chain 
+                     */
+                    Certificate certificate = trustStore.getCertificate(alias);
+                    if (certificate != null) {
+                        /**
+                         * the certificate was extracted from a private-public key entry
+                         * */
+                        certificates.add(certificate);
+                    } else {
+                        /**
+                         * the alias points to a certificate chain
+                         * */
+                        Certificate[] chain = trustStore.getCertificateChain(alias);
+                        for (Certificate cert : chain) {
+                            certificates.add(cert);
+                        }
+                    }
+                }
+            }
+
+            trustedServerCertificates = new X509Certificate[certificates.size()];
+            certificates.toArray(trustedServerCertificates);
+        } catch (Exception e) {
+            throw new HttpException("Unable to load all certificates from the trust store", e);
+        }
+
+    }
+
+    @Override
+    public void setTrustedServerSSLCertificate( String certificateFile ) {
+
+        setTrustedServerSSLCertificate(new File(certificateFile));
+
     }
 }

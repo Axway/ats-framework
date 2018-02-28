@@ -18,6 +18,8 @@ package com.axway.ats.core.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -28,6 +30,7 @@ import java.security.Provider;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -45,6 +48,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -338,9 +342,40 @@ public class SslUtils {
     }
 
     /**
+     * Converts a .pem or .der file to a X509Certificate.
+     *
+     * @param pemFile
+     * @return An X509Certificate object
+     * @throws Exception 
+     * @throws HttpException
+     */
+    public static X509Certificate convertFileToX509Certificate( File pemFile ) throws Exception {
+
+        InputStream is = null;
+        try {
+            is = new FileInputStream(pemFile);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) cf.generateCertificate(is);
+        } catch (Exception e) {
+            throw new Exception("Failed to convert file '" + ( (pemFile != null)
+                                                                                 ? pemFile
+                                                                                 : "null")
+                                + "' to X509 certificate.", e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+        }
+    }
+
+    /**
      * Load a keystore
      * 
-     * @param keystoreFile
+     * @param keystoreFile ( Must be in JKS or PKCS12 format )
      * @param keystorePassword
      * @return
      */
@@ -358,7 +393,7 @@ public class SslUtils {
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 log.debug("Error loading JKS keystore '" + keystoreFile + "' file with '" + keystorePassword
-                          + "' password. Maybe its type is not JKS:\n" + e.getMessage());
+                          + "' password. Maybe its type is not JKS:\n" + e);
             }
         }
 
@@ -370,7 +405,7 @@ public class SslUtils {
             if (log.isDebugEnabled()) {
                 log.debug("Error loading PKCS12 keystore '" + keystoreFile + "' file with '"
                           + keystorePassword + "' password. Maybe its type is not PKCS12:\n"
-                          + e.getMessage());
+                          + e);
             }
         }
 

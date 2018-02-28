@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.core.CoreLibraryConfigurator;
-import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.filetransfer.model.TransferListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
@@ -39,7 +38,7 @@ import com.axway.ats.core.utils.StringUtils;
  * ( https://commons.apache.org/proper/commons-net/ ) to initiate and execute FTP
  * connections to a remote server.
  */
-public class FtpClient extends AbstractFileTransferClient implements IFileTransferClient {
+public class FtpClient extends AbstractFileTransferClient {
 
     private org.apache.commons.net.ftp.FTPClient ftpConnection = null;
     private static final Logger                  log           = Logger.getLogger(FtpClient.class);
@@ -182,7 +181,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFileTransf
                          String keystorePassword,
                          String publicKeyAlias ) throws FileTransferException {
 
-        throw new FileTransferException("Not implemented");
+        throw new FileTransferException("Not Supported");
 
     }
 
@@ -386,6 +385,27 @@ public class FtpClient extends AbstractFileTransferClient implements IFileTransf
         List<String> responses = this.listener.getResponses();
 
         return responses.toArray(new String[responses.size()]);
+    }
+
+    @Override
+    public void setKeystore( String keystoreFile, String keystorePassword, String alias ) {
+
+        throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
+
+    }
+
+    @Override
+    public void setTrustStore( String truststoreFile, String truststorePassword ) {
+
+        throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
+
+    }
+
+    @Override
+    public void setTrustedServerSSLCertificate( String certificateFile ) {
+
+        throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
+
     }
 
 }

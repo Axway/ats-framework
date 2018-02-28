@@ -111,6 +111,27 @@ public interface IFileTransferClient {
                                       int newValue );
 
     /**
+     * Set a client key store which will be used for authentication
+     * @param keystoreFile the key store file path ( Must be in JKS or PKCS12 format )
+     * @param keystorePassword the key store password
+     * @param alias the private key alias ( Currently this parameter is used only for SFTP operations, for other cases, you may pass null as well)
+     * **/
+    public void setKeystore( String keystoreFile, String keystorePassword, String alias );
+
+    /**
+     * Set the client trust store which will be used for validating trust server certificates
+     * @param truststoreFile the trust store file path ( Must be in JKS or PKCS12 format )
+     * @param truststorePassword the trust store password
+     * **/
+    public void setTrustStore( String truststoreFile, String truststorePassword );
+
+    /**
+     * Set the trust store certificate which will be used for connection/session validation
+     * @param certificateFile the trust server certificate file path ( Must be in .PEM format )
+     * **/
+    public void setTrustedServerSSLCertificate( String certificateFile );
+
+    /**
      * Execute some custom command. This is specific for each protocol and remote server.
      * 
      * @param command the command to run

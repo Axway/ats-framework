@@ -23,6 +23,7 @@ import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.action.http.FileTransferHttpClient;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filetransfer.FileTransferException;
+import com.axway.ats.common.filetransfer.SshCipher;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.common.filetransfer.TransferProtocol;
 import com.axway.ats.core.filetransfer.FtpsClient;
@@ -70,7 +71,7 @@ public class FileTransferClient {
     /** Username when authenticating over SFTP. If not specified, the public key alias name is used instead of a user name */
     @PublicAtsApi
     public static final String    SFTP_USERNAME                                    = SftpClient.SFTP_USERNAME;
-    /** Accepts SFTP {@link SSHCipher} or {@link SSHCipher}s array. Only the specified ciphers will be used */
+    /** Accepts SFTP {@link SshCipher} or {@link SshCipher}s array. Only the specified ciphers will be used */
     @PublicAtsApi
     public static final String    SFTP_CIPHERS                                     = SftpClient.SFTP_CIPHERS;
 
@@ -231,6 +232,43 @@ public class FileTransferClient {
         new Validator().validateMethodParameters(new Object[]{ port });
 
         this.client.setCustomPort(port);
+    }
+
+    /**
+     * Set the client key store which will be used for authentication
+     * @param keystoreFile the key store file path ( Must be in JKS or PKCS12 format ) 
+     * @param keystorePassword the key store password
+     * @param alias the private key alias ( Currently this parameter is used only for SFTP operations, for other cases you may pass null as well )
+     * **/
+    @PublicAtsApi
+    public void setKeystore( String keystoreFile, String keystorePassword, String alias ) {
+
+        this.client.setKeystore(keystoreFile, keystorePassword, alias);
+    }
+
+    /**
+     * Set the client trust store which will be used for validating trust server certificates
+     * @param truststoreFile the trust store file path ( Must be in JKS or PKCS12 format ) 
+     * @param truststorePassword the trust store password
+     * 
+     * <p><b>Note that call to this method will override any effect from both this method and setTrustedServerSSLCertificate</b></p>
+     * **/
+    @PublicAtsApi
+    public void setTruststore( String truststoreFile, String truststorePassword ) {
+
+        this.client.setTrustStore(truststoreFile, truststorePassword);
+    }
+
+    /**
+     * Set the trust store certificate which will be used for connection/session validation
+     * @param certificateFile the trust server certificate file path ( Must be in .PEM format )
+     * 
+     * <p><b>Note that call to this method will override any effect from both this method and setTruststore</b></p>
+     * **/
+    @PublicAtsApi
+    public void setTrustedServerSSLCertificate( String certificateFile ) {
+
+        this.client.setTrustedServerSSLCertificate(certificateFile);
     }
 
     // -------------------- ACTIONS --------------------
@@ -460,14 +498,16 @@ public class FileTransferClient {
     private void doConnect( String hostname, String userName, String password ) {
 
         // connect using base authentication
+        Throwable throwable = null;
         try {
             this.client.connect(hostname, userName, password);
             return;
         } catch (FileTransferException e) {
+            throwable = e;
             log.error("Connection attempt failed", e);
         }
 
-        throw new FileTransferException("Could not connect. Look up the reason in the log.");
+        throw new FileTransferException("Could not connect. Look up the reason in the log.", (Exception) throwable);
     }
 
     /**
@@ -493,14 +533,16 @@ public class FileTransferClient {
                                                                privateKeyAlias });
 
         // connect using base authentication
+        Throwable throwable = null;
         try {
             this.client.connect(hostname, keystoreFile, keystorePassword, privateKeyAlias);
             return;
         } catch (FileTransferException e) {
+            throwable = e;
             log.error("Connection attempt failed", e);
         }
 
-        throw new FileTransferException("Could not connect. Look up the reason in the log.");
+        throw new FileTransferException("Could not connect. Look up the reason in the log.", (Exception) throwable);
     }
 
     /**

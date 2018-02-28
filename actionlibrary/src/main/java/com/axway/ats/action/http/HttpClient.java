@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,7 +29,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -253,7 +251,7 @@ public class HttpClient {
     private List<HttpHeader>          actualRequestHeaders            = new ArrayList<HttpHeader>();
 
     // The trusted SSL certificates.
-    private X509Certificate[]         trustedServerCertificates;
+    protected X509Certificate[]       trustedServerCertificates;
 
     // For mutual SSL, the client-side SSL private key and certificate.
     private X509Certificate[]         clientSSLCertificateChain;
@@ -688,7 +686,12 @@ public class HttpClient {
     @PublicAtsApi
     public void setTrustedServerSSLCertificate( File trustedServerSSLCertificateFile ) throws HttpException {
 
-        trustedServerCertificates = new X509Certificate[]{ convertFileToX509Certificate(trustedServerSSLCertificateFile) };
+        try {
+            trustedServerCertificates = new X509Certificate[]{ SslUtils.convertFileToX509Certificate(trustedServerSSLCertificateFile) };
+        } catch (Exception e) {
+            throw new HttpException("Unable to set trusted server certificate from '"
+                                    + trustedServerSSLCertificateFile.getAbsolutePath() + "'", e);
+        }
 
         invalidateInternalClient();
     }
@@ -713,8 +716,14 @@ public class HttpClient {
 
         trustedServerCertificates = new X509Certificate[trustedServerSSLCertificateFiles.size()];
         int i = 0;
+
         for (File file : trustedServerSSLCertificateFiles) {
-            trustedServerCertificates[i++] = convertFileToX509Certificate(file);
+            try {
+                trustedServerCertificates[i++] = SslUtils.convertFileToX509Certificate(file);
+            } catch (Exception e) {
+                throw new HttpException("Unable to set trusted server certificate from '"
+                                        + file.getAbsolutePath() + "'", e);
+            }
         }
 
         // Check if the certificates are a chain, if they are then
@@ -1625,36 +1634,6 @@ public class HttpClient {
     public String[] getSupportedCipherSuites() {
 
         return this.supportedCipherSuites;
-    }
-
-    /**
-     * Converts a .pem or .der file to a X509Certificate.
-     *
-     * @param pemFile
-     * @return An X509Certificate object
-     * @throws HttpException
-     */
-    private X509Certificate convertFileToX509Certificate( File pemFile ) throws HttpException {
-
-        InputStream is = null;
-        try {
-            is = new FileInputStream(pemFile);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) cf.generateCertificate(is);
-        } catch (Exception e) {
-            throw new HttpException("Failed to convert file '" + ( (pemFile != null)
-                                                                                     ? pemFile
-                                                                                     : "null")
-                                    + "' to X509 certificate.", e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    log.error(e);
-                }
-            }
-        }
     }
 
     /**
