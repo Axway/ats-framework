@@ -27,9 +27,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,14 +89,14 @@ public class Test_FTPSClient extends BaseTest {
     }
 
     @Before
-    public void makeMeHappy() {
+    public void makeMeHappy() throws KeyManagementException, NoSuchAlgorithmException {
 
-        mockFtp = createMock(org.apache.commons.net.ftp.FTPSClient.class);
+        mockFtp = createMock(org.apache.commons.net.ftp.FTPSClient.class, SSLContextBuilder.create().build());
         testObject = new FtpsClient();
         testObject.setCustomPort(PORT_NUMBER);
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testConnectBinary() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -114,7 +118,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testConnectAscii() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -133,7 +137,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testDisconnect() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -156,7 +160,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testConnectCustomPort() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -175,7 +179,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testConnectCustomTimeout() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -195,20 +199,20 @@ public class Test_FTPSClient extends BaseTest {
     }
 
     @Test( expected = RuntimeException.class)
-    public void testSecureConnect() throws AssertionError {
+    public void testSecureConnect() throws UnknownHostException {
 
         testObject.connect(HOSTNAME, KEYSTORE_FILE, KEYSTORE_PASSWORD, ALIAS);
     }
 
     @Test( expected = FileTransferException.class)
-    public void testConnectNegative() throws AssertionError {
+    public void testConnectNegative() throws UnknownHostException {
 
         FtpsClient client = new FtpsClient();
         client.setCustomPort(PORT_NUMBER);
         client.connect(HOSTNAME, USERNAME, PASSWORD);
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testChangeModeASCII() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -230,7 +234,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testChangeModeBinary() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -253,7 +257,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testChangeModeNegative() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -278,7 +282,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testDownload() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -304,7 +308,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testDownloadException() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -325,7 +329,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testUpload() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -351,7 +355,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testUploadException() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -372,7 +376,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testStartUploadAndPauseThenResume() throws Exception {
 
         // connect
@@ -414,7 +418,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testStartUploadAndPauseException() throws Exception {
 
         // connect
@@ -446,7 +450,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testStartUploadAndPauseTwice() throws Exception {
 
         // connect
@@ -485,7 +489,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testResumeWOStartUploadAndPause() throws Exception {
 
         // connect
@@ -509,7 +513,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testStartUploadAndPauseThenUpload() throws Exception {
 
         // connect
@@ -548,7 +552,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testStartUploadAndPauseThenDownload() throws Exception {
 
         // connect
@@ -587,7 +591,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testGatherResponses() throws Exception {
 
         expectNew(org.apache.commons.net.ftp.FTPSClient.class).andReturn(mockFtp);
@@ -613,7 +617,7 @@ public class Test_FTPSClient extends BaseTest {
         verifyAll();
     }
 
-    @Test( expected = AssertionError.class)
+    @Test( expected = UnknownHostException.class)
     public void testGetResponses() throws Exception {
 
         FtpResponseListener listener = new FtpResponseListener();
