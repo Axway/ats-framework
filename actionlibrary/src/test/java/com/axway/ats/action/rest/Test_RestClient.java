@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import com.axway.ats.action.BaseTest;
@@ -42,13 +43,14 @@ public class Test_RestClient extends BaseTest {
     private List<Object>        providers;
     private String              certFileName;
     private String              certPassword;
-    
-    static {
-        SslUtils.unregisterBCProvider();
-    }
 
     @Before
     public void before() {
+        /**
+            MockClassLoader loads one class from two different places before and after BCProvider is registered.
+            So here we unregister that provider and in the @After method below, we register it again
+        */
+        SslUtils.unregisterBCProvider();
 
         supportedProtocols = new String[5];
         supportedProtocols[0] = "prt_1";
@@ -69,6 +71,11 @@ public class Test_RestClient extends BaseTest {
 
         certFileName = "certFileName";
         certPassword = "certPassword";
+    }
+    
+    @After
+    public void after() {
+        SslUtils.registerBCProvider();
     }
 
     /**
