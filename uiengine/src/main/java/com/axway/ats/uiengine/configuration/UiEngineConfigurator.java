@@ -170,7 +170,8 @@ public class UiEngineConfigurator extends AbstractConfigurator {
         try {
             return getIntegerProperty(PROPERTY_BROWSER_ACTION_TIMEOUT);
         } catch (NoSuchPropertyException nspe) {
-            return -1;
+            log.info( "Setting default page load time to 60 seconds." );
+            return 60;
         }
     }
 

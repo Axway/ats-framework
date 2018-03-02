@@ -107,6 +107,13 @@
             <groupId>com.axway.ats.framework</groupId>
             <artifactId>ats-core</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+	            <!-- Excluding guava version from io.appium because it is too old -->
+            	<exclusion>
+            		<groupId>com.google.guava</groupId>
+            		<artifactId>guava</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.axway.ats.framework</groupId>
@@ -220,6 +227,11 @@
                 <exclusion> <!-- Currently depending on gson-2.2.4, but working fine with 2.3.1 (tested) -->
                     <groupId>com.google.code.gson</groupId>
                     <artifactId>gson</artifactId>
+                </exclusion>
+                <!-- Excluding guava version from io.appium because it is too old -->
+                <exclusion>
+                	<groupId>com.google.guava</groupId>
+                	<artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
