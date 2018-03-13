@@ -41,7 +41,8 @@ public class TypeRegex extends TypeString {
     private static final String IPv4_EXPRESSION                           = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
 
     // String constant for hostname validity check expression
-    private static final String HOSTNAME_EXPRESSION                       = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9_\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$";
+    // underscore (_) is allowed for WINDOWS names and backward-compatibility reasons
+    private static final String HOSTNAME_EXPRESSION                       = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9_\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9_\\-]*[A-Za-z0-9])$";
 
     // String constant for domain name validity check expression
     private static final String DOMAIN_ONLY_EXPRESSION                    = "^[a-zA-Z0-9]+([a-zA-Z0-9_\\-]*?\\.)+[a-zA-Z0-9]{2,8}$";
