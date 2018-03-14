@@ -16,7 +16,6 @@
 package com.axway.ats.agent.core.exceptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.axway.ats.core.utils.HostUtils;
@@ -83,6 +82,11 @@ public class InternalComponentException extends AgentException {
         // if chained agents are used this line could already be appended, so we check it
         String locationErrorMsg = "\n[" + HostUtils.getLocalHostIP() + " stacktrace]";
         String formattedExceptionMsg = exc.getMessage();
+        
+        if(StringUtils.isNullOrEmpty(formattedExceptionMsg)) {
+            formattedExceptionMsg = "Caught an Exception without message details";
+        }
+        
         if (!formattedExceptionMsg.trim().endsWith(locationErrorMsg)) {
             formattedExceptionMsg = formatMessage(formattedExceptionMsg + locationErrorMsg);
         } else {
@@ -90,7 +94,7 @@ public class InternalComponentException extends AgentException {
         }
 
         // append the exception type and the formated exception message 
-        causes.append("\t").append(exc.getClass().getName()).append(formattedExceptionMsg);
+        causes.append("\t").append(exc.getClass().getName()+": ").append(formattedExceptionMsg);
 
         do {
             for (StackTraceElement sck : exc.getStackTrace()) {
