@@ -189,12 +189,12 @@ public class DbConnPostgreSQL extends DbConnection {
     @Override
     public void disconnect() {
 
-        try {
-            ds.close();
-        } catch (Exception e) {
-            throw new DbException("Unable to close database source", e);
+        if( ds != null ) {
+            try {
+                ds.close();
+            } catch (Exception e) {
+                throw new DbException("Unable to close database source", e);
+            }
         }
-
     }
-
 }
