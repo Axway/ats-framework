@@ -294,10 +294,12 @@ public class DbConnOracle extends DbConnection {
     @Override
     public void disconnect() {
 
-        try {
-            dataSource.close();
-        } catch (SQLException e) {
-            throw new DbException("Unable to close database source", e);
+        if( dataSource != null ) {
+            try {
+                dataSource.close();
+            } catch (SQLException e) {
+                throw new DbException("Unable to close database source", e);
+            }
         }
     }
 }
