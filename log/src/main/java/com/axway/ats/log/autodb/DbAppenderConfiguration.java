@@ -23,6 +23,8 @@ import java.io.Serializable;
 import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 
 /**
@@ -33,6 +35,7 @@ public class DbAppenderConfiguration implements Serializable {
     private static final long  serialVersionUID                      = 4786587768915142179L;
     //connection parameters
     private String             host;
+    private String             port;
     private String             database;
     private String             user;
     private String             password;
@@ -59,6 +62,17 @@ public class DbAppenderConfiguration implements Serializable {
         if (host != null) {
             this.host = host;
         }
+    }
+
+    public String getPort() {
+
+        return port;
+    }
+
+    public void setPort( String port ) {
+
+        this.port = port;
+
     }
 
     public String getDatabase() {
@@ -180,6 +194,12 @@ public class DbAppenderConfiguration implements Serializable {
             throw new InvalidAppenderConfigurationException("host");
         }
 
+        if (port == null) {
+            new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. We will set it to the default one for MSSQL databases ("
+                                                  + DbConnSQLServer.DEFAULT_PORT + ")");
+            port = String.valueOf(DbConnSQLServer.DEFAULT_PORT);
+        }
+
         if (database == null) {
             throw new InvalidAppenderConfigurationException("database");
         }
@@ -206,6 +226,10 @@ public class DbAppenderConfiguration implements Serializable {
 
         DbAppenderConfiguration otherConfig = (DbAppenderConfiguration) obj;
         if (host != null && !host.equals(otherConfig.host)) {
+            return false;
+        }
+
+        if (port != null && !port.equals(otherConfig.port)) {
             return false;
         }
 

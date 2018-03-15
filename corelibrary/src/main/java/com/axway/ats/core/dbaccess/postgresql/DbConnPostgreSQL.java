@@ -32,7 +32,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnPostgreSQL extends DbConnection {
 
-    public static final String            DATABASE_TYPE          = "PostgreSQL";
+    public static final String            DATABASE_TYPE          = "POSTGRESQL";
 
     /**
      * Default DB port
@@ -78,12 +78,31 @@ public class DbConnPostgreSQL extends DbConnection {
     public DbConnPostgreSQL( String host, String db, String user, String password,
                              Map<String, Object> customProperties ) {
 
-        super(DATABASE_TYPE, host, db, user, password, customProperties);
+        this(host, DEFAULT_PORT, db, user, password, customProperties);
+
+    }
+
+    /**
+     * Constructor
+     *
+     * @param host host
+     * @param port the database port
+     * @param db database name
+     * @param user login user name
+     * @param password login password
+     * @param customProperties map of custom properties
+     */
+    public DbConnPostgreSQL( String host, int port, String db, String user, String password,
+                             Map<String, Object> customProperties ) {
+
+        super(DATABASE_TYPE, host, port, db, user, password, customProperties);
 
         url = new StringBuilder().append(JDBC_POSTGRESQL_PREFIX)
                                  .append(host)
                                  .append(":")
-                                 .append(port)
+                                 // because the port can be changed after execution of the parent constructor, 
+                                 // use this.port, instead of port
+                                 .append(this.port)
                                  .append("/")
                                  .append(db)
                                  .toString();
@@ -92,14 +111,19 @@ public class DbConnPostgreSQL extends DbConnection {
     @Override
     protected void initializeCustomProperties( Map<String, Object> customProperties ) {
 
-        this.port = DEFAULT_PORT;
-
         if (customProperties != null && !customProperties.isEmpty()) {
             //read the port if such is set
             Object portValue = customProperties.get(DbKeys.PORT_KEY);
             if (portValue != null) {
+                if (this.port != -1 && this.port != DEFAULT_PORT) {
+                    log.warn("New port value found in custom properties. Old value will be overridden");
+                }
                 this.port = (Integer) portValue;
             }
+        }
+
+        if (this.port < 1) {
+            this.port = DEFAULT_PORT;
         }
 
     }

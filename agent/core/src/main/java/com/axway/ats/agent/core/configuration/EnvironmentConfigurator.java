@@ -97,6 +97,7 @@ public class EnvironmentConfigurator implements Configurator {
                         customProperties.put(DbKeys.PORT_KEY, newDbPort);
                         DbConnection newDbConnection = DatabaseProviderFactory.createDbConnection(dbConnection.getDbType(),
                                                                                                   newDbHost,
+                                                                                                  -1,
                                                                                                   newDbName,
                                                                                                   newDbUserName,
                                                                                                   newDbUserPassword,

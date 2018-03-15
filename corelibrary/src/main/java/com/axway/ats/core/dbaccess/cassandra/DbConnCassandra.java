@@ -20,6 +20,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
+
 import com.axway.ats.common.dbaccess.CassandraKeys;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.DbConnection;
@@ -28,6 +30,8 @@ import com.axway.ats.core.dbaccess.DbConnection;
  * Connection descriptor for Cassandra databases 
  */
 public class DbConnCassandra extends DbConnection {
+
+    private static Logger      log           = Logger.getLogger(DbConnCassandra.class);
 
     private boolean            allowFiltering;
 
@@ -50,7 +54,23 @@ public class DbConnCassandra extends DbConnection {
     public DbConnCassandra( String host, String db, String user, String password,
                             Map<String, Object> customProperties ) {
 
-        super(DATABASE_TYPE, host, db, user, password, customProperties);
+        this(host, DEFAULT_PORT, db, user, password, customProperties);
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param host host
+     * @param port port
+     * @param db database name
+     * @param user user name
+     * @param password user password
+     * @param customProperties map of custom properties
+     */
+    public DbConnCassandra( String host, int port, String db, String user, String password,
+                            Map<String, Object> customProperties ) {
+
+        super(DATABASE_TYPE, host, port, db, user, password, customProperties);
     }
 
     public int getPort() {
@@ -66,12 +86,13 @@ public class DbConnCassandra extends DbConnection {
     @Override
     protected void initializeCustomProperties( Map<String, Object> customProperties ) {
 
-        this.port = DEFAULT_PORT;
-
         if (customProperties != null && !customProperties.isEmpty()) {
             //read the port if such is set
             Object portValue = customProperties.get(DbKeys.PORT_KEY);
             if (portValue != null) {
+                if (this.port != -1 && this.port != DEFAULT_PORT) {
+                    log.warn("New port value found in custom properties. Old value will be overridden");
+                }
                 this.port = (Integer) portValue;
             }
 
@@ -79,6 +100,10 @@ public class DbConnCassandra extends DbConnection {
             if (allowFilteringValue != null) {
                 this.allowFiltering = (Boolean) allowFilteringValue;
             }
+        }
+
+        if (this.port < 1) {
+            this.port = DEFAULT_PORT;
         }
     }
 

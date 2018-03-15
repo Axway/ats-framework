@@ -189,29 +189,36 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         this.isBatchMode = isBatchMode;
 
         if (DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
+                                             Integer.parseInt(appenderConfig.getPort()),
                                              appenderConfig.getDatabase(),
                                              appenderConfig.getUser(),
                                              appenderConfig.getPassword())) {
 
-            this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(), appenderConfig.getDatabase(),
-                                                    appenderConfig.getUser(), appenderConfig.getPassword());
+            this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
+                                                    Integer.parseInt(appenderConfig.getPort()),
+                                                    appenderConfig.getDatabase(),
+                                                    appenderConfig.getUser(), appenderConfig.getPassword(), null);
 
             //create the db access layer
             this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
 
         } else if (DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+                                                         Integer.parseInt(appenderConfig.getPort()),
                                                          appenderConfig.getDatabase(),
                                                          appenderConfig.getUser(),
                                                          appenderConfig.getPassword())) {
 
-            this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(), appenderConfig.getDatabase(),
-                                                     appenderConfig.getUser(), appenderConfig.getPassword());
+            this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
+                                                     Integer.parseInt(appenderConfig.getPort()),
+                                                     appenderConfig.getDatabase(),
+                                                     appenderConfig.getUser(), appenderConfig.getPassword(), null);
 
             //create the db access layer
             this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
 
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost()
+            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                            + (!StringUtils.isNullOrEmpty(appenderConfig.getPort()) ? appenderConfig.getPort() : "")
                             + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
             throw new DatabaseAccessException(errMsg);
         }
@@ -1159,9 +1166,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         PreparedStatement stmt = null;
 
         Run run = new Run();
-        
+
         Connection tmpConn = null;
-        
+
         try {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);

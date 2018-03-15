@@ -56,8 +56,31 @@ public abstract class DbConnection {
                             String password,
                             Map<String, Object> customProperties ) {
 
+        this(dbType, host, -1, db, user, password, customProperties);
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param dbType the database type
+     * @param host database host
+     * @param port the database port
+     * @param db database name
+     * @param user database user
+     * @param password database user-password
+     * @param customProperties list of custom properties
+     */
+    protected DbConnection( String dbType,
+                            String host,
+                            int port,
+                            String db,
+                            String user,
+                            String password,
+                            Map<String, Object> customProperties ) {
+
         this.dbType = dbType;
         this.host = host;
+        this.port = port;
         this.db = db;
         this.user = user;
         this.password = password;

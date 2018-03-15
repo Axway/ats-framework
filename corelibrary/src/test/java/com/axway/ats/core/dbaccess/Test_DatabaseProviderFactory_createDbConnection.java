@@ -28,6 +28,7 @@ import com.axway.ats.core.BaseTest;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 
 public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
@@ -36,6 +37,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         DbConnMySQL dbConnection = (DbConnMySQL) DatabaseProviderFactory.createDbConnection(DbConnMySQL.DATABASE_TYPE,
                                                                                             "host",
+                                                                                            DbConnMySQL.DEFAULT_PORT,
                                                                                             "db",
                                                                                             "user",
                                                                                             "pass");
@@ -45,7 +47,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("db", dbConnection.getDb());
         assertEquals("user", dbConnection.getUser());
         assertEquals("pass", dbConnection.getPassword());
-        assertEquals("jdbc:mysql://host:3306/db", dbConnection.getURL());
+        assertEquals("jdbc:mysql://host:" + DbConnMySQL.DEFAULT_PORT + "/db", dbConnection.getURL());
     }
 
     @Test
@@ -53,6 +55,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         DbConnSQLServer dbConnection = (DbConnSQLServer) DatabaseProviderFactory.createDbConnection(DbConnSQLServer.DATABASE_TYPE,
                                                                                                     "host",
+                                                                                                    DbConnSQLServer.DEFAULT_PORT,
                                                                                                     "db",
                                                                                                     "user",
                                                                                                     "pass");
@@ -62,7 +65,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("db", dbConnection.getDb());
         assertEquals("user", dbConnection.getUser());
         assertEquals("pass", dbConnection.getPassword());
-        assertEquals("jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL());
+        assertEquals("jdbc:jtds:sqlserver://host:" + DbConnSQLServer.DEFAULT_PORT + "/db", dbConnection.getURL());
     }
 
     @Test
@@ -70,6 +73,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         DbConnOracle dbConnection = (DbConnOracle) DatabaseProviderFactory.createDbConnection(DbConnOracle.DATABASE_TYPE,
                                                                                               "host",
+                                                                                              DbConnOracle.DEFAULT_PORT,
                                                                                               "db",
                                                                                               "user",
                                                                                               "pass");
@@ -79,8 +83,27 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("db", dbConnection.getDb());
         assertEquals("user", dbConnection.getUser());
         assertEquals("pass", dbConnection.getPassword());
-        assertEquals("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=1521))(CONNECT_DATA=(SID=ORCL)))",
+        assertEquals("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT="
+                     + DbConnOracle.DEFAULT_PORT + "))(CONNECT_DATA=(SID=ORCL)))",
                      dbConnection.getURL());
+    }
+    
+    @Test
+    public void createPostgreSQLNoCustom() {
+
+        DbConnPostgreSQL dbConnection = (DbConnPostgreSQL) DatabaseProviderFactory.createDbConnection(DbConnPostgreSQL.DATABASE_TYPE,
+                                                                                              "host",
+                                                                                              DbConnPostgreSQL.DEFAULT_PORT,
+                                                                                              "db",
+                                                                                              "user",
+                                                                                              "pass");
+
+        assertEquals(DbConnPostgreSQL.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:postgresql://host:" + DbConnPostgreSQL.DEFAULT_PORT + "/db", dbConnection.getURL());
     }
 
     @Test
@@ -91,6 +114,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         DbConnMySQL dbConnection = (DbConnMySQL) DatabaseProviderFactory.createDbConnection(DbConnMySQL.DATABASE_TYPE,
                                                                                             "host",
+                                                                                            DbConnMySQL.DEFAULT_PORT,
                                                                                             "db",
                                                                                             "user",
                                                                                             "pass",
@@ -111,6 +135,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         DbConnSQLServer dbConnection = (DbConnSQLServer) DatabaseProviderFactory.createDbConnection(DbConnSQLServer.DATABASE_TYPE,
                                                                                                     "host",
+                                                                                                    DbConnSQLServer.DEFAULT_PORT,
                                                                                                     "db",
                                                                                                     "user",
                                                                                                     "pass",
@@ -121,7 +146,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("db", dbConnection.getDb());
         assertEquals("user", dbConnection.getUser());
         assertEquals("pass", dbConnection.getPassword());
-        assertEquals("jdbc:jtds:sqlserver://host:1433/db", dbConnection.getURL());
+        assertEquals("jdbc:jtds:sqlserver://host:"+DbConnSQLServer.DEFAULT_PORT+"/db", dbConnection.getURL());
     }
 
     @Test
@@ -133,6 +158,7 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
 
         DbConnOracle dbConnection = (DbConnOracle) DatabaseProviderFactory.createDbConnection(DbConnOracle.DATABASE_TYPE,
                                                                                               "host",
+                                                                                              -1,
                                                                                               "db",
                                                                                               "user",
                                                                                               "pass",
@@ -145,6 +171,28 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("pass", dbConnection.getPassword());
         assertEquals("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=host)(PORT=123))(CONNECT_DATA=(SID=sid1)))",
                      dbConnection.getURL());
+    }
+    
+    @Test
+    public void createPostgreSqlWithCustomProperties() {
+
+        Map<String, Object> customProperties = new HashMap<String, Object>();
+        customProperties.put(DbKeys.PORT_KEY, 123);
+
+        DbConnPostgreSQL dbConnection = (DbConnPostgreSQL) DatabaseProviderFactory.createDbConnection(DbConnPostgreSQL.DATABASE_TYPE,
+                                                                                            "host",
+                                                                                            DbConnPostgreSQL.DEFAULT_PORT,
+                                                                                            "db",
+                                                                                            "user",
+                                                                                            "pass",
+                                                                                            customProperties);
+
+        assertEquals(DbConnPostgreSQL.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:postgresql://host:123/db", dbConnection.getURL());
     }
 
 }

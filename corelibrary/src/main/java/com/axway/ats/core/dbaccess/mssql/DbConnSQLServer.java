@@ -141,18 +141,41 @@ public class DbConnSQLServer extends DbConnection {
                             String password,
                             Map<String, Object> customProperties ) {
 
-        super(DATABASE_TYPE, host, db, user, password, customProperties);
+        this(host, DEFAULT_PORT, db, user, password, customProperties);
+
+    }
+
+    /**
+     * Constructor
+     *
+     * @param host host
+     * @param port the database port
+     * @param db database name
+     * @param user login user name
+     * @param password login password
+     * @param customProperties map of custom connection properties
+     */
+    public DbConnSQLServer( String host,
+                            int port,
+                            String db,
+                            String user,
+                            String password,
+                            Map<String, Object> customProperties ) {
+
+        super(DATABASE_TYPE, host, port, db, user, password, customProperties);
         updateConnectionSettings();
 
         if (!useSSL) {
-            url.append(jdbcDriverPrefix).append(host).append(":").append(port);
+            // because the port can be changed after execution of the parent constructor, use this.port, instead of port
+            url.append(jdbcDriverPrefix).append(host).append(":").append(this.port);
 
             if (db != null) {
                 url.append("/").append(db);
             }
         } else {
             // url prefix is missing the ':jtds:' part in SSL connection
-            url.append("jdbc:sqlserver://").append(host).append(":").append(port);
+            // because the port can be changed after execution of the parent constructor, use this.port, instead of port
+            url.append("jdbc:sqlserver://").append(host).append(":").append(this.port);
 
             if (db != null) {
                 url.append(";databaseName=")
@@ -166,15 +189,30 @@ public class DbConnSQLServer extends DbConnection {
     protected void initializeCustomProperties(
                                                Map<String, Object> properties ) {
 
-        this.port = DEFAULT_PORT;
+        if (properties != null) {
 
-        if (properties != null && properties.containsKey(DbKeys.USE_SECURE_SOCKET)
-            && "true".equals(properties.get(DbKeys.USE_SECURE_SOCKET))) {
-            useSSL = true;
+            if (properties.containsKey(DbKeys.USE_SECURE_SOCKET)
+                && "true".equals(properties.get(DbKeys.USE_SECURE_SOCKET))) {
+                useSSL = true;
+            }
+
+            //read the port if such is set
+            Object portValue = properties.get(DbKeys.PORT_KEY);
+            if (portValue != null) {
+                if (this.port != -1 && this.port != DEFAULT_PORT) {
+                    log.warn("New port value found in custom properties. Old value will be overridden");
+                }
+                this.port = (Integer) portValue;
+            }
+
         }
 
         if (useSSL == null) {
             useSSL = false;
+        }
+
+        if (this.port < 1) {
+            this.port = DEFAULT_PORT;
         }
     }
 

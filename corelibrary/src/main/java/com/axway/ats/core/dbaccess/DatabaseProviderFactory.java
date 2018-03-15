@@ -42,6 +42,8 @@ import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlProvider;
 import com.axway.ats.core.reflect.AmbiguousMethodException;
 import com.axway.ats.core.reflect.MethodFinder;
 import com.axway.ats.core.utils.XmlUtils;
@@ -181,29 +183,32 @@ public class DatabaseProviderFactory {
         // load a common ATS supported data provider
         switch (dbType) {
             case DbConnSQLServer.DATABASE_TYPE:
-                dbProvider = new MssqlDbProvider((DbConnSQLServer) createDbConnection(dbType, dbHost,
-                                                                                      dbName, dbUser,
-                                                                                      dbPass,
+                dbProvider = new MssqlDbProvider((DbConnSQLServer) createDbConnection(dbType, dbHost, dbPort,
+                                                                                      dbName, dbUser, dbPass,
                                                                                       customProperties));
                 break;
 
+            case DbConnPostgreSQL.DATABASE_TYPE:
+                dbProvider = new PostgreSqlProvider((DbConnPostgreSQL) createDbConnection(dbType, dbHost, dbPort,
+                                                                                          dbName, dbUser, dbPass,
+                                                                                          customProperties));
+                break;
+
             case DbConnMySQL.DATABASE_TYPE:
-                dbProvider = new MysqlDbProvider((DbConnMySQL) createDbConnection(dbType, dbHost, dbName,
-                                                                                  dbUser, dbPass,
+                dbProvider = new MysqlDbProvider((DbConnMySQL) createDbConnection(dbType, dbHost, dbPort,
+                                                                                  dbName, dbUser, dbPass,
                                                                                   customProperties));
                 break;
 
             case DbConnOracle.DATABASE_TYPE:
-                dbProvider = new OracleDbProvider((DbConnOracle) createDbConnection(dbType, dbHost,
-                                                                                    dbName, dbUser,
-                                                                                    dbPass,
+                dbProvider = new OracleDbProvider((DbConnOracle) createDbConnection(dbType, dbHost, dbPort,
+                                                                                    dbName, dbUser, dbPass,
                                                                                     customProperties));
                 break;
 
             case DbConnCassandra.DATABASE_TYPE:
-                dbProvider = new CassandraDbProvider((DbConnCassandra) createDbConnection(dbType, dbHost,
-                                                                                          dbName, dbUser,
-                                                                                          dbPass,
+                dbProvider = new CassandraDbProvider((DbConnCassandra) createDbConnection(dbType, dbHost, dbPort,
+                                                                                          dbName, dbUser, dbPass,
                                                                                           customProperties));
                 break;
             default: {
@@ -298,10 +303,10 @@ public class DatabaseProviderFactory {
      *            the login password
      * @return database connection descriptor
      */
-    public static DbConnection createDbConnection( String dbType, String host, String database, String user,
+    public static DbConnection createDbConnection( String dbType, String host, int port, String database, String user,
                                                    String password ) {
 
-        return createDbConnection(dbType, host, database, user, password, null);
+        return createDbConnection(dbType, host, port, database, user, password, null);
     }
 
     /**
@@ -315,23 +320,26 @@ public class DatabaseProviderFactory {
      * @param customProperties a set of custom properties for the connection
      * @return database connection descriptor
      */
-    public static DbConnection createDbConnection( String dbType, String host, String database, String user,
+    public static DbConnection createDbConnection( String dbType, String host, int port, String database, String user,
                                                    String password, Map<String, Object> customProperties ) {
 
         dbType = dbType.toUpperCase();
 
         switch (dbType) {
             case DbConnMySQL.DATABASE_TYPE: {
-                return new DbConnMySQL(host, database, user, password, customProperties);
+                return new DbConnMySQL(host, port, database, user, password, customProperties);
             }
             case DbConnSQLServer.DATABASE_TYPE: {
-                return new DbConnSQLServer(host, database, user, password, customProperties);
+                return new DbConnSQLServer(host, port, database, user, password, customProperties);
+            }
+            case DbConnPostgreSQL.DATABASE_TYPE: {
+                return new DbConnPostgreSQL(host, port, database, user, password, customProperties);
             }
             case DbConnOracle.DATABASE_TYPE: {
-                return new DbConnOracle(host, database, user, password, customProperties);
+                return new DbConnOracle(host, port, database, user, password, customProperties);
             }
             case DbConnCassandra.DATABASE_TYPE: {
-                return new DbConnCassandra(host, database, user, password, customProperties);
+                return new DbConnCassandra(host, port, database, user, password, customProperties);
             }
             default: {
                 // should never happen

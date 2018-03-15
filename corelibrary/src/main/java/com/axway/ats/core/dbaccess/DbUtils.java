@@ -129,19 +129,20 @@ public class DbUtils {
     /**
      * Checks if ATS Log MSSQL database is available for connection
      * @param dbHost the database host
+     * @param dbPort the database port
      * @param dbName the database name
      * @param dbUser the database user name used for login
      * @param dbPassword the database password used for login
      * @return true if MSSQL database is available
      * */
-    public static boolean isMSSQLDatabaseAvailable( String dbHost, String dbName, String dbUser, String dbPassword ) {
+    public static boolean isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser, String dbPassword ) {
 
         Connection sqlConnection = null;
         DbConnSQLServer sqlServerConnection = null;
         PreparedStatement ps = null;
 
         try {
-            sqlServerConnection = new DbConnSQLServer(dbHost, dbName, dbUser, dbPassword);
+            sqlServerConnection = new DbConnSQLServer(dbHost, dbPort, dbName, dbUser, dbPassword, null);
             sqlConnection = sqlServerConnection.getDataSource().getConnection();
             ps = sqlConnection.prepareStatement("SELECT value FROM tInternal WHERE [key] = 'version'");
             ResultSet rs = ps.executeQuery();
@@ -164,12 +165,13 @@ public class DbUtils {
     /**
     * Check if ATS log PostgreSQL database is available for connection
     * @param dbHost the database host
+    * @param dbPort the database port
     * @param dbName the database name
     * @param dbUser the database user name used for login
     * @param dbPassword the database password used for login
     * @return true if PostgreSQL database is available
     * */
-    public static boolean isPostgreSQLDatabaseAvailable( String dbHost, String dbName, String dbUser,
+    public static boolean isPostgreSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
                                                          String dbPassword ) {
 
         Connection sqlConnection = null;
@@ -177,7 +179,7 @@ public class DbUtils {
         PreparedStatement ps = null;
 
         try {
-            postgreConnection = new DbConnPostgreSQL(dbHost, dbName, dbUser, dbPassword);
+            postgreConnection = new DbConnPostgreSQL(dbHost, dbPort, dbName, dbUser, dbPassword, null);
             sqlConnection = postgreConnection.getDataSource().getConnection();
             ps = sqlConnection.prepareStatement("SELECT value FROM \"tInternal\" WHERE key = 'version'");
             ResultSet rs = ps.executeQuery();

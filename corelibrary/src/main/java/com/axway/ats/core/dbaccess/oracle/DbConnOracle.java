@@ -114,7 +114,24 @@ public class DbConnOracle extends DbConnection {
     public DbConnOracle( String host, String schemaName, String user, String password,
                          Map<String, Object> customProperties ) {
 
-        super(DATABASE_TYPE, host, schemaName, user, password, customProperties);
+        this(host, DEFAULT_PORT, schemaName, user, password, customProperties);
+
+    }
+
+    /**
+     * Constructor
+     *
+     * @param host host
+     * @param port port
+     * @param schemaName the name of the Oracle schema
+     * @param user login user name
+     * @param password login password
+     * @param customProperties map of custom properties
+     */
+    public DbConnOracle( String host, int port, String schemaName, String user, String password,
+                         Map<String, Object> customProperties ) {
+
+        super(DATABASE_TYPE, host, port, schemaName, user, password, customProperties);
 
         //set the URL
         if (this.sid != null) {
@@ -183,6 +200,9 @@ public class DbConnOracle extends DbConnection {
             //read the PORT if such is set
             Object portValue = customProperties.get(DbKeys.PORT_KEY);
             if (portValue != null) {
+                if (this.port != -1 && this.port != DEFAULT_PORT) {
+                    log.warn("New port value found in custom properties. Old value will be overridden");
+                }
                 this.port = (Integer) portValue;
             }
         }

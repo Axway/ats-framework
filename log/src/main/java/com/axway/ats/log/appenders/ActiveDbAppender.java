@@ -260,6 +260,16 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         appenderConfig.setHost(host);
     }
+    
+    public String getPort() {
+
+        return appenderConfig.getPort();
+    }
+    
+    public void setPort(String port) {
+
+        appenderConfig.setPort(port);
+    }
 
     public String getDatabase() {
 

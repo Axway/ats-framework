@@ -580,7 +580,7 @@ public class ConfigurationParser {
                                      + " is specified.");
         }
 
-        return DatabaseProviderFactory.createDbConnection(dbType, host, database, user, password,
+        return DatabaseProviderFactory.createDbConnection(dbType, host, -1, database, user, password,
                                                           customProperties);
     }
 

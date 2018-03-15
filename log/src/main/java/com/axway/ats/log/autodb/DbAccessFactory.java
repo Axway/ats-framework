@@ -47,29 +47,33 @@ public class DbAccessFactory {
 
         DbConnection dbConnection = null;
         if (DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getHost(),
+                                             Integer.parseInt(loggingAppender.getPort()),
                                              loggingAppender.getDatabase(),
                                              loggingAppender.getUser(),
                                              loggingAppender.getPassword())) {
 
             // Create DB connection based on the log4j system settings
             dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
+                                               Integer.parseInt(loggingAppender.getPort()),
                                                loggingAppender.getDatabase(),
                                                loggingAppender.getUser(),
-                                               loggingAppender.getPassword());
+                                               loggingAppender.getPassword(), null);
 
             // Create the database access layer
             return new SQLServerDbWriteAccess(dbConnection, false);
 
         } else if (DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getHost(),
+                                                         Integer.parseInt(loggingAppender.getPort()),
                                                          loggingAppender.getDatabase(),
                                                          loggingAppender.getUser(),
                                                          loggingAppender.getPassword())) {
 
             // Create DB connection based on the log4j system settings
             dbConnection = new DbConnPostgreSQL(loggingAppender.getHost(),
+                                                Integer.parseInt(loggingAppender.getPort()),
                                                 loggingAppender.getDatabase(),
                                                 loggingAppender.getUser(),
-                                                loggingAppender.getPassword());
+                                                loggingAppender.getPassword(), null);
 
             // Create the database access layer
             return new PGDbWriteAccess(dbConnection, false);
@@ -104,29 +108,33 @@ public class DbAccessFactory {
 
         DbConnection dbConnection = null;
         if (DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
+                                             Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
                                              loggingAppender.getAppenderConfig().getDatabase(),
                                              loggingAppender.getAppenderConfig().getUser(),
                                              loggingAppender.getAppenderConfig().getPassword())) {
 
             // Create DB connection based on the log4j system settings
             dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
+                                               Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
                                                loggingAppender.getAppenderConfig().getDatabase(),
                                                loggingAppender.getAppenderConfig().getUser(),
-                                               loggingAppender.getAppenderConfig().getPassword());
+                                               loggingAppender.getAppenderConfig().getPassword(), null);
 
             // Create the database access layer
             return new SQLServerDbWriteAccess(dbConnection, false);
 
         } else if (DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
+                                                         Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
                                                          loggingAppender.getAppenderConfig().getDatabase(),
                                                          loggingAppender.getAppenderConfig().getUser(),
                                                          loggingAppender.getAppenderConfig().getPassword())) {
 
             // Create DB connection based on the log4j system settings
             dbConnection = new DbConnPostgreSQL(loggingAppender.getAppenderConfig().getHost(),
+                                                Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
                                                 loggingAppender.getAppenderConfig().getDatabase(),
                                                 loggingAppender.getAppenderConfig().getUser(),
-                                                loggingAppender.getAppenderConfig().getPassword());
+                                                loggingAppender.getAppenderConfig().getPassword(), null);
 
             // Create the database access layer
             return new PGDbWriteAccess(dbConnection, false);
