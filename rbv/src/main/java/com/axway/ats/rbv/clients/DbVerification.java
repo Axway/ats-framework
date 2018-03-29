@@ -28,6 +28,8 @@ import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlProvider;
 import com.axway.ats.harness.config.TestBox;
 import com.axway.ats.rbv.db.DbEncryptor;
 import com.axway.ats.rbv.db.DbSearchTerm;
@@ -155,6 +157,9 @@ public class DbVerification extends VerificationSkeleton {
                                                                    user,
                                                                    password,
                                                                    customProperties));
+                break;
+            case DbConnPostgreSQL.DATABASE_TYPE:
+                dbProvider = new PostgreSqlProvider(new DbConnPostgreSQL(host, database, user, password));
                 break;
             default:
                 throw new RbvException("DB Provider '" + dbType + "' not supported!");
