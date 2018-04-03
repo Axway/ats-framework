@@ -375,18 +375,16 @@ public class ContainerStarter {
 
     private static List<InetAddress> getAllIPAddresses() {
 
-        String LOCAL_HOST_NAME = "localhost";
-        String LOCAL_HOST_IPv4 = "127.0.0.1";
-        String LOCAL_HOST_IPv6 = "::1";
-
         List<InetAddress> ipList = new ArrayList<InetAddress>();
         try {
 
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
+            log.debug( "---> Start Iterating All Network Interfaces!" );
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
                 if (!netInterface.isLoopback()) {
+                    log.debug( "---> Start Iterating Interface '" + netInterface.getName() + "'!" );
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
                     InetAddress ipAddress = null;
@@ -395,9 +393,7 @@ public class ContainerStarter {
 
                         if (ipAddress instanceof java.net.Inet4Address) {
                             Inet4Address ipv4 = (Inet4Address) ipAddress;
-                            if (!ipv4.isLoopbackAddress()
-                                && !LOCAL_HOST_NAME.equals(ipv4.getCanonicalHostName())
-                                && !LOCAL_HOST_IPv4.equals(ipv4.getCanonicalHostName())) {
+                            if (!ipv4.isLoopbackAddress()) {
                                 // we found an appropriate IPv4 address
                                 ipList.add(ipv4);
                             }
@@ -405,8 +401,7 @@ public class ContainerStarter {
                         {
                             Inet6Address ipv6 = (Inet6Address) ipAddress;
                             // FIXME: currently we do not filter out the temporary IPv6 addresses
-                            if (!ipv6.isLinkLocalAddress()
-                                && !LOCAL_HOST_IPv6.equals(ipv6.getCanonicalHostName())) {
+                            if (!ipv6.isLinkLocalAddress()) {
                                 // We found an appropriate IPv6 address. Remember it, but keep searching for an appropriate IPv4 address.
                                 ipList.add(ipv6);
                             }
@@ -414,6 +409,7 @@ public class ContainerStarter {
                     }
                 }
             }
+            log.debug( "---> Finish Iterating All Network Interfaces!" );
         } catch (SocketException se) {
             log.error("Error obtaining the local host address", se);
         }
