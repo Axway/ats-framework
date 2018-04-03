@@ -121,7 +121,7 @@ public class EventProcessorState {
 
         return testCaseState.getTestcaseId();
     }
-    
+
     public int getLastExecutedTestCaseId() {
 
         return testCaseState.getLastExecutedTestcaseId();
@@ -141,5 +141,16 @@ public class EventProcessorState {
     public LoadQueuesState getLoadQueuesState() {
 
         return loadQueuesState;
+    }
+
+    public void injectRunInformation( EventProcessorState processorStateWithRunInfo ) {
+
+        if( processorStateWithRunInfo != null ) {
+            this.lifeCycleState=processorStateWithRunInfo.lifeCycleState;
+            this.runId = processorStateWithRunInfo.runId;
+            this.runName = processorStateWithRunInfo.runName;
+            this.runDescription = processorStateWithRunInfo.runDescription;
+            this.runUserNote = processorStateWithRunInfo.runUserNote;
+        }
     }
 }

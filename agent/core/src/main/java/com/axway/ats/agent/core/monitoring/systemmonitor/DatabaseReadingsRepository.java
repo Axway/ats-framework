@@ -59,7 +59,7 @@ public class DatabaseReadingsRepository {
         Logger log = Logger.getLogger(DatabaseReadingsRepository.class);
 
         if (dbAccess == null) {
-            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender(ThreadsPerCaller.getCaller());
+            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender();
         }
 
         for (ReadingBean reading : readings) {

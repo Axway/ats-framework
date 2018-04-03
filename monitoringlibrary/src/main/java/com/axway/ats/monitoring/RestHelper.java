@@ -20,13 +20,28 @@ import java.io.IOException;
 
 import com.axway.ats.action.rest.RestClient;
 import com.axway.ats.action.rest.RestClient.RESTDebugLevel;
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
 import com.axway.ats.action.rest.RestMediaType;
 import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.core.context.ApplicationContext;
+||||||| merged common ancestors
+import com.axway.ats.agent.core.context.ApplicationContext;
+=======
+import com.axway.ats.action.rest.RestMediaType;
+import com.axway.ats.action.rest.RestResponse;
+>>>>>>> Initial commit for running tests in parallel
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
+import com.axway.ats.core.monitoring.MonitoringException;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.IoUtils;
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
 import com.axway.ats.log.appenders.ActiveDbAppender;
+||||||| merged common ancestors
+import com.axway.ats.action.rest.RestMediaType;
+import com.axway.ats.action.rest.RestResponse;
+=======
+>>>>>>> Initial commit for running tests in parallel
 
 /**
  * This class is used to keep track of information, needed for each monitoring
@@ -72,7 +87,8 @@ public class RestHelper {
 
     public RestHelper() {}
 
-    public RestResponse post( String atsAgentIp, String baseRestUri, String relativeRestUri, Object[] values ) {
+    public RestResponse post( String atsAgentIp, String baseRestUri, String relativeRestUri, Object[] values,
+                              String description ) {
 
         // check if ActiveDbAppender is attached
         if (!ActiveDbAppender.isAttached) {
@@ -118,9 +134,16 @@ public class RestHelper {
                                                "relativeRestUri does not lead to existing REST method. Please consult the documentation.");
         }
 
-        response = this.restClient.postObject(jsonBody);
+        response = this.restClient.postObject( jsonBody );
+        if( response.getStatusCode() != javax.ws.rs.core.Response.Status.OK.getStatusCode() ) {
+            throw new MonitoringException( description + " failed with code " + response.getStatusCode()
+                                           + "\nResponse body is:\n" + ( response != null
+                                                                                          ? response.getBodyAsString()
+                                                                                          : "" ) );
+        }
 
         if (relativeRestUri.endsWith(INITIALIZE_DB_CONNECTION_RELATIVE_URI)) {
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
             if (response.getStatusCode() == 200) {
                 this.uid = response.getBodyAsJson().getString(ApplicationContext.ATS_UID_SESSION_TOKEN);
                 this.agentVersion = response.getBodyAsJson().getString("agent_version");
@@ -131,10 +154,18 @@ public class RestHelper {
                 throw new RuntimeException(errorMessage);
             }
 
+||||||| merged common ancestors
+            this.uid = response.getBodyAsJson().getString(ApplicationContext.ATS_UID_SESSION_TOKEN);
+            this.agentVersion = response.getBodyAsJson().getString("agent_version");
+            synchronizeUidWithLocalOne();
+=======
+            this.uid = response.getBodyAsJson().getString(ExecutorUtils.ATS_RANDOM_TOKEN);
+            this.agentVersion = response.getBodyAsJson().getString("agent_version");
+//            synchronizeUidWithLocalOne();
+>>>>>>> Initial commit for running tests in parallel
         }
 
         return response;
-
     }
 
     /**
@@ -216,8 +247,8 @@ public class RestHelper {
         this.restClient.setRequestMediaType(RestMediaType.APPLICATION_JSON);
         this.restClient.setResponseMediaType(RestMediaType.APPLICATION_JSON);
         // set ATS_UID header
-        synchronizeUidWithLocalOne();
-        this.restClient.addRequestHeader(ApplicationContext.ATS_UID_SESSION_TOKEN, this.uid);
+//        synchronizeUidWithLocalOne();
+        this.restClient.addRequestHeader(ExecutorUtils.ATS_RANDOM_TOKEN, this.uid);
     }
 
     public void disconnect() {

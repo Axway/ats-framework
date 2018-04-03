@@ -16,14 +16,12 @@
 package com.axway.ats.action.filesystem;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.agent.components.system.operations.clients.InternalFileSystemOperations;
+import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.common.filesystem.EndOfLineStyle;
 import com.axway.ats.common.filesystem.FileMatchInfo;
 import com.axway.ats.common.filesystem.FileSystemOperationException;
@@ -44,15 +42,27 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     private InternalFileSystemOperations remoteFileSystemOperations;
     private LocalFileSystemOperations    localFileSystemOperations;
 
+    
+    /*
+     * This constructor is used only for by the unit/mock tests
+     * */
+    @SuppressWarnings("unused")
+    private RemoteFileSystemOperations() throws AgentException {
+        this.atsAgent = "local.host";
+        this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
+        this.localFileSystemOperations = new LocalFileSystemOperations();
+    }
+    
     /**
      * Constructor
      *
      * @param atsAgent
      */
-    public RemoteFileSystemOperations( String atsAgent ) {
+    public RemoteFileSystemOperations( String atsAgent ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
+        this.remoteFileSystemOperations.initialize();
         this.localFileSystemOperations = new LocalFileSystemOperations();
     }
 
@@ -630,10 +640,10 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
 
     public String[] getLastLinesFromFile( String fileName, int numLinesToRead ) {
 
-        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1);
+        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1.name());
     }
 
-    public String[] getLastLinesFromFile( String fileName, int numLinesToRead, Charset chartset ) {
+    public String[] getLastLinesFromFile( String fileName, int numLinesToRead, String charset ) {
 
         try {
             return remoteFileSystemOperations.getLastLines(fileName, numLinesToRead);

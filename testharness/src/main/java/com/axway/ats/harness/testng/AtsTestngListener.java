@@ -28,8 +28,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,10 +58,16 @@ import com.axway.ats.log.model.TestCaseResult;
 
 public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener2 {
 
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
     /** Skip checking whether ActiveDbAppender is attached. 
      *  This is done in order to enable execution of tests when that appender is not attached/presented
      * */
     private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats", true);
+||||||| merged common ancestors
+    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats");
+=======
+    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger( "com.axway.ats" );
+>>>>>>> Initial commit for running tests in parallel
 
     private static final String      MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
 
@@ -76,17 +84,50 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private String                   javaFileContent;
     private String                   projectSourcesFolder;
 
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
     /* keeps track if the current testcase name */
     private String                   currentTestcaseName                   = null;
     /* keeps track if the current suite name */
     private static String            currentSuiteName                      = null;
+||||||| merged common ancestors
+    /* keeps track if the current testcase name */
+    private String                   currentTestcaseName                   = null;
+    /* keeps track if the current suite name */
+    private String                   currentSuiteName                      = null;
+=======
+    private Map<String, Channel>     channels;
+>>>>>>> Initial commit for running tests in parallel
 
-    /* keeps track of the test result for the last ended testcase */
-    private int                      lastTestcaseResult                    = -1;
+    private class Channel {
+
+        /* keeps track if the current testcase name */
+        String currentTestcaseName = null;
+
+        /* keeps track if the current suite name */
+        String currentSuiteName    = null;
+
+        /* keeps track of the test result for the last ended testcase */
+        int    lastTestcaseResult  = -1;
+    }
+
+    private Channel getChannel() {
+
+        String threadId = Thread.currentThread().getName();
+
+        Channel channel = channels.get( threadId );
+        if( channel == null ) {
+            channel = new Channel();
+            channels.put( threadId, channel );
+        }
+
+        return channel;
+    }
 
     public AtsTestngListener() {
 
         ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = true;
+
+        channels = new HashMap<>();
     }
 
     @Override
@@ -98,99 +139,107 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     @Override
     public void beforeInvocation( IInvokedMethod method, ITestResult testResult, ITestContext context ) {
 
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
         if (!ActiveDbAppender.isAttached) {
             return;
         }
         
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
+||||||| merged common ancestors
+        if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
+=======
+        Channel channel = getChannel();
+>>>>>>> Initial commit for running tests in parallel
 
-            if (method.getTestMethod().isBeforeClassConfiguration()) { // check if method is @BeforeClass
+        if( method.isConfigurationMethod() ) { // check if method is @BeforeXXX or @AfterXXX
 
-                if (currentSuiteName == null) {
+            if( method.getTestMethod().isBeforeClassConfiguration() ) { // check if method is @BeforeClass
+
+                if( channel.currentSuiteName == null ) {
 
                     // start suite
-                    startSuite(testResult);
+                    startSuite( channel, testResult );
 
-                } else if (!currentSuiteName.equals(testResult.getTestClass()
-                                                              .getRealClass()
-                                                              .getSimpleName())) {
+                } else if( !channel.currentSuiteName.equals( testResult.getTestClass()
+                                                                       .getRealClass()
+                                                                       .getSimpleName() ) ) {
 
-                    endSuite(); // end previously started suite
-                    startSuite(testResult); // start new suite
+                    endSuite( channel ); // end previously started suite
+                    startSuite( channel, testResult ); // start new suite
 
                 }
 
-            } else if (method.getTestMethod().isBeforeMethodConfiguration()) { // check if method is @BeforeMethod
+            } else if( method.getTestMethod().isBeforeMethodConfiguration() ) { // check if method is @BeforeMethod
 
-                if (currentSuiteName == null) {
+                if( channel.currentSuiteName == null ) {
 
                     // start suite
-                    startSuite(testResult);
+                    startSuite( channel, testResult );
 
-                } else if (!currentSuiteName.equals(testResult.getTestClass()
-                                                              .getRealClass()
-                                                              .getSimpleName())) {
+                } else if( !channel.currentSuiteName.equals( testResult.getTestClass()
+                                                                       .getRealClass()
+                                                                       .getSimpleName() ) ) {
 
-                    endSuite(); // end previously started suite
-                    startSuite(testResult); // start new suite
+                    endSuite( channel ); // end previously started suite
+                    startSuite( channel, testResult ); // start new suite
 
                 }
 
-                if (currentTestcaseName == null) {
+                if( channel.currentTestcaseName == null ) {
 
                     // start testcase
-                    startTestcase(testResult);
+                    startTestcase( channel, testResult );
 
                 }
 
-                logger.info("[TESTNG]: Start @BeforeMethod '" + testResult.getTestClass().getRealClass()
-                            + "@" + method.getTestMethod().getMethodName() + "'");
+                logger.info( "[TESTNG]: Start @BeforeMethod '" + testResult.getTestClass().getRealClass()
+                             + "@" + method.getTestMethod().getMethodName() + "'" );
 
-            } else if (method.getTestMethod().isAfterMethodConfiguration()) { // check if method is @AfterMethod
+            } else if( method.getTestMethod().isAfterMethodConfiguration() ) { // check if method is @AfterMethod
 
                 logger.startAfterMethod();
 
-                logger.info("[TESTNG]: Start @AfterMethod '" + testResult.getTestClass().getRealClass() + "@"
-                            + method.getTestMethod().getMethodName() + "'");
+                logger.info( "[TESTNG]: Start @AfterMethod '" + testResult.getTestClass().getRealClass() + "@"
+                             + method.getTestMethod().getMethodName() + "'" );
 
-            } else if (method.getTestMethod().isAfterClassConfiguration()) { // check if method is @AfterClass
+            } else if( method.getTestMethod().isAfterClassConfiguration() ) { // check if method is @AfterClass
 
-                if (currentSuiteName == null) {
+                if( channel.currentSuiteName == null ) {
 
                     logger.startAfterClass();
                 }
 
-            } else if (method.getTestMethod().isAfterSuiteConfiguration()) { // check if method is @AfterSuite
+            } else if( method.getTestMethod().isAfterSuiteConfiguration() ) { // check if method is @AfterSuite
 
                 logger.startAfterSuite();
             }
 
-        } else if (method.isTestMethod()) { // check if method is not @BeforeXXX or @AfterXXX
+        } else if( method.isTestMethod() ) { // check if method is not @BeforeXXX or @AfterXXX
 
-            if (method.getTestMethod().isTest()) { // check if method is @Test
+            if( method.getTestMethod().isTest() ) { // check if method is @Test
 
-                if (currentSuiteName == null) {
+                if( channel.currentSuiteName == null ) {
 
                     // start suite
-                    startSuite(testResult);
+                    startSuite( channel, testResult );
 
-                } else if (!currentSuiteName.equals(testResult.getTestClass()
-                                                              .getRealClass()
-                                                              .getSimpleName())) {
+                } else if( !channel.currentSuiteName.equals( testResult.getTestClass()
+                                                                       .getRealClass()
+                                                                       .getSimpleName() ) ) {
 
-                    endSuite(); // end previously started suite
-                    startSuite(testResult); // start new suite
+                    endSuite( channel ); // end previously started suite
+                    startSuite( channel, testResult ); // start new suite
 
                 }
 
-                if (currentTestcaseName == null) {
+                if( channel.currentTestcaseName == null ) {
 
                     // start testcase
-                    startTestcase(testResult);
+                    startTestcase( channel, testResult );
                 } else {
 
                     // update testcase
-                    updateTestcase(testResult);
+                    updateTestcase( channel, testResult );
                 }
             }
         }
@@ -203,92 +252,94 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             return;
         }
 
-        if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
+        Channel channel = getChannel();
 
-            if (method.getTestMethod().isBeforeMethodConfiguration()) { // check if method is @BeforeMethod
+        if( method.isConfigurationMethod() ) { // check if method is @BeforeXXX or @AfterXXX
 
-                logger.info("[TESTNG]: End @BeforeMethod '" + testResult.getTestClass().getRealClass() + "@"
-                            + method.getTestMethod().getMethodName() + "'");
+            if( method.getTestMethod().isBeforeMethodConfiguration() ) { // check if method is @BeforeMethod
 
-            } else if (method.getTestMethod().isAfterMethodConfiguration()) { // check if method is @AfterMethod
+                logger.info( "[TESTNG]: End @BeforeMethod '" + testResult.getTestClass().getRealClass() + "@"
+                             + method.getTestMethod().getMethodName() + "'" );
 
-                if (currentTestcaseName != null) {
+            } else if( method.getTestMethod().isAfterMethodConfiguration() ) { // check if method is @AfterMethod
 
-                    if (testResult.getStatus() == ITestResult.SUCCESS) {
+                if( channel.currentTestcaseName != null ) {
 
-                        endTestcaseWithSuccessStatus(testResult);
+                    if( testResult.getStatus() == ITestResult.SUCCESS ) {
 
-                    } else if (testResult.getStatus() == ITestResult.FAILURE) {
+                        endTestcaseWithSuccessStatus( channel, testResult );
 
-                        endTestcaseWithFailureStatus(testResult);
+                    } else if( testResult.getStatus() == ITestResult.FAILURE ) {
 
-                    } else if (testResult.getStatus() == ITestResult.SKIP) {
+                        endTestcaseWithFailureStatus( channel, testResult );
 
-                        endTestcaseWithSkipStatus(testResult, context);
+                    } else if( testResult.getStatus() == ITestResult.SKIP ) {
+
+                        endTestcaseWithSkipStatus( channel, testResult, context );
                     }
                 }
 
-                if (lastTestcaseResult == TestCaseResult.PASSED.toInt()) {
+                if( channel.lastTestcaseResult == TestCaseResult.PASSED.toInt() ) {
                     // the last testcase passed, but if the after method failed or was skipped, 
                     // the testcase should use the after methods result
 
-                    switch (testResult.getStatus()) {
+                    switch( testResult.getStatus() ){
                         case ITestResult.SUCCESS:
                             // the after method and the testcase has the same test result status,
                             // so do not change anything
                             break;
                         case ITestResult.FAILURE:
-                            lastTestcaseResult = TestCaseResult.FAILED.toInt();
+                            channel.lastTestcaseResult = TestCaseResult.FAILED.toInt();
                             break;
                         case ITestResult.SKIP:
-                            lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
+                            channel.lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
                             break;
                         default:
-                            throw new RuntimeException("The result of the @AfterMethod is unsupported by ATS");
+                            throw new RuntimeException( "The result of the @AfterMethod is unsupported by ATS" );
                     }
 
-                } else if (lastTestcaseResult == TestCaseResult.SKIPPED.toInt()) {
+                } else if( channel.lastTestcaseResult == TestCaseResult.SKIPPED.toInt() ) {
                     // the testcase was skipped
 
-                    if (testResult.getStatus() == ITestResult.FAILURE) {
+                    if( testResult.getStatus() == ITestResult.FAILURE ) {
                         // change the testcase result, only if the after method had failed
-                        lastTestcaseResult = TestCaseResult.FAILED.toInt();
+                        channel.lastTestcaseResult = TestCaseResult.FAILED.toInt();
                     }
 
-                } else if (lastTestcaseResult == TestCaseResult.FAILED.toInt()) {
+                } else if( channel.lastTestcaseResult == TestCaseResult.FAILED.toInt() ) {
                     // do nothing, the testcase failed and a failed testcase should it be
                 } else {
                     // should not happen, as before reaching this part of the code, a testcase has to be ended
                     // but, just in case, throw an Exception
-                    throw new RuntimeException("It seems that there is no previously ended testcase. Last testcase result is '"
-                                               + -1 + "', which is not a valid TestcaseResult value");
+                    throw new RuntimeException( "It seems that there is no previously ended testcase. Last testcase result is '"
+                                                + -1 + "', which is not a valid TestcaseResult value" );
                 }
 
-                if (testResult.getStatus() == ITestResult.FAILURE) {
+                if( testResult.getStatus() == ITestResult.FAILURE ) {
 
                     // log the Throwable object from the @AfterMethod
-                    logger.error(testResult.getThrowable().getMessage(), testResult.getThrowable());
+                    logger.error( testResult.getThrowable().getMessage(), testResult.getThrowable() );
 
                 }
 
-                logger.info("[TESTNG]: End @AfterMethod '" + testResult.getTestClass().getRealClass() + "@"
-                            + method.getTestMethod().getMethodName() + "'");
+                logger.info( "[TESTNG]: End @AfterMethod '" + testResult.getTestClass().getRealClass() + "@"
+                             + method.getTestMethod().getMethodName() + "'" );
 
                 logger.endAfterMethod();
 
                 // set new end timestamp and result for the current testcase
                 // by passing -1, the DbEventRequestProcessor will decide the testcasseId
-                logger.updateTestcase(-1, null, null, null, null, null, lastTestcaseResult);
+                logger.updateTestcase( -1, null, null, null, null, null, channel.lastTestcaseResult );
 
-            } else if (method.getTestMethod().isAfterSuiteConfiguration()) { // check if method is @AfterSuite
+            } else if( method.getTestMethod().isAfterSuiteConfiguration() ) { // check if method is @AfterSuite
 
                 logger.endAfterSuite();
 
-            } else if (method.getTestMethod().isAfterClassConfiguration()) { // check if method is @AfterClass
+            } else if( method.getTestMethod().isAfterClassConfiguration() ) { // check if method is @AfterClass
 
-                if (currentSuiteName != null) {
+                if( channel.currentSuiteName != null ) {
 
-                    endSuite();
+                    endSuite( channel );
 
                 } else {
 
@@ -298,26 +349,29 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 }
 
             }
-        } else if (method.isTestMethod()) {
+        } else if( method.isTestMethod() ) {
 
-            if (method.getTestMethod().isTest()) { // check if method is @Test
+            if( method.getTestMethod().isTest() ) { // check if method is @Test
 
-                if (testResult.getStatus() == ITestResult.SUCCESS) {
+                if( testResult.getStatus() == ITestResult.SUCCESS ) {
 
-                    endTestcaseWithSuccessStatus(testResult);
+                    endTestcaseWithSuccessStatus( channel, testResult );
 
-                } else if (testResult.getStatus() == ITestResult.FAILURE) {
+                } else if( testResult.getStatus() == ITestResult.FAILURE ) {
 
-                    endTestcaseWithFailureStatus(testResult);
+                    endTestcaseWithFailureStatus( channel, testResult );
 
-                } else if (testResult.getStatus() == ITestResult.SKIP) {
+                } else if( testResult.getStatus() == ITestResult.SKIP ) {
 
-                    endTestcaseWithSkipStatus(testResult, context);
+                    endTestcaseWithSkipStatus( channel, testResult, context );
                 }
             }
         }
     }
 
+    /**
+     * Start new RUN
+     */
     @Override
     public void onStart( ISuite suite ) {
         
@@ -327,7 +381,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         // get the run name specified by the user
         String runName = CommonConfigurator.getInstance().getRunName();
-        if (runName.equals(CommonConfigurator.DEFAULT_RUN_NAME)) {
+        if( runName.equals( CommonConfigurator.DEFAULT_RUN_NAME ) ) {
             // the user did not specify a run name, use the one from TestNG
             runName = suite.getName();
         }
@@ -338,20 +392,23 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             InetAddress addr = InetAddress.getLocalHost();
             hostNameIp = addr.getHostName() + "/" + addr.getHostAddress();
 
-        } catch (UnknownHostException uhe) {
+        } catch( UnknownHostException uhe ) {
             hostNameIp = null;
         }
 
-        logger.startRun(runName, CommonConfigurator.getInstance().getOsName(),
-                        CommonConfigurator.getInstance().getProductName(),
-                        CommonConfigurator.getInstance().getVersionName(),
-                        CommonConfigurator.getInstance().getBuildName(), hostNameIp);
+        logger.startRun( runName, CommonConfigurator.getInstance().getOsName(),
+                         CommonConfigurator.getInstance().getProductName(),
+                         CommonConfigurator.getInstance().getVersionName(),
+                         CommonConfigurator.getInstance().getBuildName(), hostNameIp );
 
         logSystemInformation();
         logClassPath();
 
     }
 
+    /**
+     * End the RUN
+     */
     @Override
     public void onFinish( ISuite suite ) {
         
@@ -359,9 +416,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             return;
         }
 
-        if (currentSuiteName != null) {
-
-            endSuite();
+        // call end suite on all channels
+        for( Entry<String, Channel> entry : channels.entrySet() ) {
+            endSuite( entry.getKey(), entry.getValue() );
         }
 
         // end the run
@@ -373,50 +430,50 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         StringBuilder systemInformation = new StringBuilder();
 
-        appendMessage(systemInformation, "ATS version: '", AtsVersion.getAtsVersion());
-        appendMessage(systemInformation, " os.name: '", (String) System.getProperty("os.name"));
-        appendMessage(systemInformation, " os.arch: '", (String) System.getProperty("os.arch"));
-        appendMessage(systemInformation, " java.version: '",
-                      (String) System.getProperty("java.version"));
-        appendMessage(systemInformation, " java.home: '", (String) System.getProperty("java.home"));
+        appendMessage( systemInformation, "ATS version: '", AtsVersion.getAtsVersion() );
+        appendMessage( systemInformation, " os.name: '", ( String ) System.getProperty( "os.name" ) );
+        appendMessage( systemInformation, " os.arch: '", ( String ) System.getProperty( "os.arch" ) );
+        appendMessage( systemInformation, " java.version: '",
+                       ( String ) System.getProperty( "java.version" ) );
+        appendMessage( systemInformation, " java.home: '", ( String ) System.getProperty( "java.home" ) );
 
         List<String> ipList = new ArrayList<String>();
-        for (InetAddress ip : HostUtils.getAllIpAddresses()) {
-            ipList.add(ip.getHostAddress());
+        for( InetAddress ip : HostUtils.getAllIpAddresses() ) {
+            ipList.add( ip.getHostAddress() );
         }
 
-        appendMessage(systemInformation, " IP addresses: '", ipList.toString());
+        appendMessage( systemInformation, " IP addresses: '", ipList.toString() );
 
-        logger.info("System information : " + systemInformation.toString());
+        logger.info( "System information : " + systemInformation.toString() );
     }
 
     private void logClassPath() {
 
         // print JVM classpath if user has enabled it
-        if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__CLASSPATH_ON_START, false)) {
+        if( AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__CLASSPATH_ON_START, false ) ) {
 
             StringBuilder classpath = new StringBuilder();
 
-            classpath.append(" Test Executor classpath on \"");
-            classpath.append(HostUtils.getLocalHostIP());
-            classpath.append("\" : \n");
-            classpath.append(new ClasspathUtils().getClassPathDescription());
+            classpath.append( " Test Executor classpath on \"" );
+            classpath.append( HostUtils.getLocalHostIP() );
+            classpath.append( "\" : \n" );
+            classpath.append( new ClasspathUtils().getClassPathDescription() );
 
-            logger.info(classpath, true);
+            logger.info( classpath, true );
         }
     }
 
     private void appendMessage( StringBuilder message, String valueDesc, String value ) {
 
-        if (!StringUtils.isNullOrEmpty(value)) {
-            if (message.length() > 0) {
-                message.append(",");
+        if( !StringUtils.isNullOrEmpty( value ) ) {
+            if( message.length() > 0 ) {
+                message.append( "," );
             }
-            message.append(valueDesc + value + "'");
+            message.append( valueDesc + value + "'" );
         }
     }
 
-    private void startSuite( ITestResult testResult ) {
+    private void startSuite( Channel channel, ITestResult testResult ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
@@ -425,48 +482,48 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         /* if the TestNG tests are presented in the default package
          * set the package name to 'default'
          */
-        String packageName = (testClass.getPackage() != null)
-                                                              ? testClass.getPackage().getName()
-                                                              : "default";
+        String packageName = ( testClass.getPackage() != null )
+                                                                ? testClass.getPackage().getName()
+                                                                : "default";
 
         // clear the previously saved java file content, since a new suite is about to start
         javaFileContent = null;
 
-        currentSuiteName = suiteSimpleName;//testResult.getTestClass().getRealClass().getName();
+        channel.currentSuiteName = suiteSimpleName;//testResult.getTestClass().getRealClass().getName();
 
-        logger.startSuite(packageName, suiteSimpleName);
+        logger.startSuite( packageName, suiteSimpleName );
 
     }
 
-    private void startTestcase( ITestResult testResult ) {
+    private void startTestcase( Channel channel, ITestResult testResult ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
         String suiteFullName = testClass.getName();
         String suiteSimpleName = testClass.getSimpleName();
 
-        String testName = getTestName(testResult);
-        String testInputArguments = getTestInputArguments(testResult);
-        String testDescription = getTestDescription(testClass, suiteFullName, testName, testResult);
+        String testName = getTestName( testResult );
+        String testInputArguments = getTestInputArguments( testResult );
+        String testDescription = getTestDescription( testClass, suiteFullName, testName, testResult );
 
         // save the current testcase name
-        currentTestcaseName = testResult.getMethod().toString();
+        channel.currentTestcaseName = testResult.getMethod().toString();
         //clear the last saved testcase result, since a new testcase is about to start
-        lastTestcaseResult = -1;
+        channel.lastTestcaseResult = -1;
 
         // start test case
-        logger.startTestcase(suiteFullName, suiteSimpleName, testName, testInputArguments, testDescription);
-        addScenarioMetainfo(testResult);
+        logger.startTestcase( suiteFullName, suiteSimpleName, testName, testInputArguments, testDescription );
+        addScenarioMetainfo( testResult );
 
         // send TestStart event to all ATS agents
         TestcaseStateEventsDispacher.getInstance().onTestStart();
 
         String testStartMessage = "[TestNG]: Starting " + suiteFullName + "@" + testName + testInputArguments;
         int passedRuns = RetryAnalyzer.getNumberPassedRuns();
-        if (passedRuns < 1) {
-            logger.info(testStartMessage);
+        if( passedRuns < 1 ) {
+            logger.info( testStartMessage );
         } else {
-            logger.warn(testStartMessage + " for " + (passedRuns + 1) + " time");
+            logger.warn( testStartMessage + " for " + ( passedRuns + 1 ) + " time" );
         }
 
     }
@@ -477,8 +534,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         // check if there is a description annotation and get the test name
         Method testCaseMethod = result.getMethod().getConstructorOrMethod().getMethod();
-        Description testCaseDescription = testCaseMethod.getAnnotation(Description.class);
-        if (testCaseDescription != null && testCaseDescription.name().length() > 0) {
+        Description testCaseDescription = testCaseMethod.getAnnotation( Description.class );
+        if( testCaseDescription != null && testCaseDescription.name().length() > 0 ) {
             testName = testCaseDescription.name();
         }
 
@@ -490,19 +547,19 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         StringBuilder inputArguments = new StringBuilder();
 
         Object[] inputArgs = result.getParameters();
-        inputArguments.append("( ");
-        if (inputArgs != null && inputArgs.length > 0) {
-            for (Object inputArg : inputArgs) {
-                if (inputArg == null) {
-                    inputArguments.append("null");
+        inputArguments.append( "( " );
+        if( inputArgs != null && inputArgs.length > 0 ) {
+            for( Object inputArg : inputArgs ) {
+                if( inputArg == null ) {
+                    inputArguments.append( "null" );
                 } else {
-                    inputArguments.append(inputArg.toString());
+                    inputArguments.append( inputArg.toString() );
                 }
-                inputArguments.append(", ");
+                inputArguments.append( ", " );
             }
-            inputArguments.delete(inputArguments.length() - 2, inputArguments.length() - 1); //removing the last comma
+            inputArguments.delete( inputArguments.length() - 2, inputArguments.length() - 1 ); //removing the last comma
         }
-        inputArguments.append(")");
+        inputArguments.append( ")" );
 
         return inputArguments.toString();
     }
@@ -514,8 +571,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         Method testCaseMethod = result.getMethod().getConstructorOrMethod().getMethod();
 
         // 1. in ATS @Description annotation
-        Description atsDescription = testCaseMethod.getAnnotation(Description.class);
-        if (atsDescription != null && atsDescription.description().length() > 0) {
+        Description atsDescription = testCaseMethod.getAnnotation( Description.class );
+        if( atsDescription != null && atsDescription.description().length() > 0 ) {
             return atsDescription.description();
         }
 
@@ -545,70 +602,70 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private void saveJavaFileContent( Class<?> testClass ) {
 
         String suiteName = testClass.getName();
-        String javaFileName = suiteName.replace('.', '/') + JAVA_FILE_EXTENSION;
+        String javaFileName = suiteName.replace( '.', '/' ) + JAVA_FILE_EXTENSION;
         String sourceFolderLocation = "jar";
         InputStream fileStream;
 
         try {
-            fileStream = testClass.getClassLoader().getResourceAsStream(javaFileName); // if source is also copied in classpath (i.e. next to class file)
-            if (fileStream != null) {
-                javaFileContent = IoUtils.streamToString(fileStream);
+            fileStream = testClass.getClassLoader().getResourceAsStream( javaFileName ); // if source is also copied in classpath (i.e. next to class file)
+            if( fileStream != null ) {
+                javaFileContent = IoUtils.streamToString( fileStream );
 
                 return;
             } else {
-                sourceFolderLocation = AtsSystemProperties.getPropertyAsString(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
-                if (sourceFolderLocation == null) {
+                sourceFolderLocation = AtsSystemProperties.getPropertyAsString( AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION );
+                if( sourceFolderLocation == null ) {
                     Map<String, String> envMap = System.getenv();
-                    sourceFolderLocation = envMap.get(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
+                    sourceFolderLocation = envMap.get( AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION );
                 }
-                if (sourceFolderLocation == null) {
-                    if (projectSourcesFolder != null) {
+                if( sourceFolderLocation == null ) {
+                    if( projectSourcesFolder != null ) {
                         sourceFolderLocation = projectSourcesFolder;
                     } else {
 
-                        URI uri = new URI(testClass.getClassLoader().getResource(".").getPath());
+                        URI uri = new URI( testClass.getClassLoader().getResource( "." ).getPath() );
                         URI parentUri = uri;
                         String pathToMainFolder = "src/main/java";
                         String pathToTestFolder = "src/test/java";
 
-                        for (int i = 3; i > 0; i--) {//we try maximum 3 level up in the directory
+                        for( int i = 3; i > 0; i-- ) {//we try maximum 3 level up in the directory
 
-                            parentUri = parentUri.resolve("..");
-                            if (new File(parentUri + "src/").exists()) {
+                            parentUri = parentUri.resolve( ".." );
+                            if( new File( parentUri + "src/" ).exists() ) {
                                 break;
                             }
                         }
 
                         String filePath = parentUri.toString() + pathToTestFolder + "/" + javaFileName;
-                        File javaFile = new File(filePath);
+                        File javaFile = new File( filePath );
 
-                        if (javaFile.exists()) {
+                        if( javaFile.exists() ) {
                             sourceFolderLocation = parentUri + pathToTestFolder;
                             projectSourcesFolder = pathToTestFolder;
                         } else {
                             filePath = parentUri.toString() + pathToMainFolder + "/" + javaFileName;
-                            javaFile = new File(filePath);
+                            javaFile = new File( filePath );
 
-                            if (javaFile.exists()) {
+                            if( javaFile.exists() ) {
                                 sourceFolderLocation = parentUri + pathToMainFolder;
                                 projectSourcesFolder = sourceFolderLocation;
                             }
                         }
-                        logger.debug("Source location is set to : " + projectSourcesFolder);
+                        logger.debug( "Source location is set to : " + projectSourcesFolder );
                     }
                 }
             }
             // We may also search the Java file with full package path in ./src/main/java and ./src/test/java
-            if (sourceFolderLocation != null) {
+            if( sourceFolderLocation != null ) {
 
-                javaFileContent = IoUtils.streamToString(new FileInputStream(sourceFolderLocation + "/"
-                                                                             + javaFileName));
+                javaFileContent = IoUtils.streamToString( new FileInputStream( sourceFolderLocation + "/"
+                                                                               + javaFileName ) );
             } else {
-                logger.debug(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION
-                             + " variable is wrong or not set");
+                logger.debug( AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION
+                              + " variable is wrong or not set" );
             }
-        } catch (Exception e) {
-            logger.error("File " + javaFileName + " was not found in " + sourceFolderLocation, e);
+        } catch( Exception e ) {
+            logger.error( "File " + javaFileName + " was not found in " + sourceFolderLocation, e );
         }
     }
 
@@ -622,30 +679,30 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     public static String parseFileForJavadoc( String javaFileContent, String testName ) {
 
         BufferedReader reader = null;
-        Deque<String> fileChunk = new ArrayDeque<String>(20);
-        Pattern p = Pattern.compile("\\s*public\\s+void\\s+" + testName + "\\(.*");
+        Deque<String> fileChunk = new ArrayDeque<String>( 20 );
+        Pattern p = Pattern.compile( "\\s*public\\s+void\\s+" + testName + "\\(.*" );
         Matcher m;
 
         try {
-            reader = new BufferedReader(new StringReader(javaFileContent));
+            reader = new BufferedReader( new StringReader( javaFileContent ) );
             String line;
-            while ( (line = reader.readLine()) != null) {
-                m = p.matcher(line);
-                if (m.matches()) {
+            while( ( line = reader.readLine() ) != null ) {
+                m = p.matcher( line );
+                if( m.matches() ) {
                     // method found
-                    String javadoc = getJavadoc(fileChunk);
-                    if (javadoc != null) {
+                    String javadoc = getJavadoc( fileChunk );
+                    if( javadoc != null ) {
                         return javadoc;
                     } else {
                         return null;
                     }
                 }
-                fileChunk.add(line);
+                fileChunk.add( line );
             }
-        } catch (Exception e) {
-            logger.error("Unable to obtain the javadoc for " + testName, e);
+        } catch( Exception e ) {
+            logger.error( "Unable to obtain the javadoc for " + testName, e );
         } finally {
-            IoUtils.closeStream(reader, null);
+            IoUtils.closeStream( reader, null );
         }
         return null;
     }
@@ -661,49 +718,49 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         try {
             StringBuilder javadoc = new StringBuilder();
             boolean javadocFound = false;
-            while (!fileChunk.isEmpty()) {
+            while( !fileChunk.isEmpty() ) {
                 String line = fileChunk.pollLast().trim();
-                if (!javadocFound && !line.startsWith("@") && !line.endsWith("*/")) {
+                if( !javadocFound && !line.startsWith( "@" ) && !line.endsWith( "*/" ) ) {
                     return null;
                 }
-                if (line.endsWith("*/")) {
+                if( line.endsWith( "*/" ) ) {
                     javadocFound = true;
-                } else if (javadocFound) {
-                    if (line.startsWith("*")) {
-                        line = line.substring(1);
-                    } else if (line.startsWith("/**")) {
+                } else if( javadocFound ) {
+                    if( line.startsWith( "*" ) ) {
+                        line = line.substring( 1 );
+                    } else if( line.startsWith( "/**" ) ) {
                         return javadoc.toString();
                     }
-                    if ("(non-Javadoc)".equals(line)) {
+                    if( "(non-Javadoc)".equals( line ) ) {
                         return null;
                     }
-                    javadoc.insert(0, line + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                    javadoc.insert( 0, line + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
                 }
             }
-        } catch (Exception e) {
-            logger.error("Exception occured during parsing for javadoc", e);
+        } catch( Exception e ) {
+            logger.error( "Exception occured during parsing for javadoc", e );
         }
         return null;
     }
 
-    private void updateTestcase( ITestResult testResult ) {
+    private void updateTestcase( Channel channel, ITestResult testResult ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
         String suiteFullName = testClass.getName();
         String suiteSimpleName = testClass.getSimpleName();
-        String testName = getTestName(testResult);
-        String testInputArguments = getTestInputArguments(testResult);
-        String testDescription = getTestDescription(testClass, suiteFullName, testName, testResult);
+        String testName = getTestName( testResult );
+        String testInputArguments = getTestInputArguments( testResult );
+        String testDescription = getTestDescription( testClass, suiteFullName, testName, testResult );
 
-        currentTestcaseName = testResult.getMethod().toString();
+        channel.currentTestcaseName = testResult.getMethod().toString();
 
-        logger.info("[TESTNG]: Start @Test '" + testResult.getTestClass().getRealClass() + "@"
-                    + testResult.getName() + "'");
+        logger.info( "[TESTNG]: Start @Test '" + testResult.getTestClass().getRealClass() + "@"
+                     + testResult.getName() + "'" );
 
         // by passing -1, the DbEventRequestProcessor will decide the testcasseId
-        logger.updateTestcase(-1, suiteFullName, suiteSimpleName, testName, testInputArguments,
-                              testDescription, lastTestcaseResult);
+        logger.updateTestcase( -1, suiteFullName, suiteSimpleName, testName, testInputArguments,
+                               testDescription, channel.lastTestcaseResult );
 
     }
 
@@ -718,103 +775,103 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         // Add TestNG groups as meta info, they come from the @Test annotation
         Method testCaseMethod = testResult.getMethod().getConstructorOrMethod().getMethod();
 
-        Test testAnnotation = testCaseMethod.getAnnotation(Test.class);
-        if (testAnnotation != null) {
+        Test testAnnotation = testCaseMethod.getAnnotation( Test.class );
+        if( testAnnotation != null ) {
 
             // first clear all existing meta info
             logger.clearScenarioMetainfo();
 
             // then add the new meta info
             String[] groups = testAnnotation.groups();
-            if (groups != null && groups.length > 0) {
-                for (String group : groups) {
-                    logger.addScenarioMetainfo("group", group);
+            if( groups != null && groups.length > 0 ) {
+                for( String group : groups ) {
+                    logger.addScenarioMetainfo( "group", group );
                 }
             }
         }
     }
 
-    private void endTestcaseWithSkipStatus( ITestResult testResult, ITestContext context ) {
+    private void endTestcaseWithSkipStatus( Channel channel, ITestResult testResult, ITestContext context ) {
 
         //Check if the test was successfully started, if not - make it started and then end it with failure
         String testName = testResult.getMethod().toString();
-        if (!testName.equals(currentTestcaseName)) {
-            startTestcase(testResult);
+        if( !testName.equals( channel.currentTestcaseName ) ) {
+            startTestcase( channel, testResult );
         }
 
         sendTestEndEventToAgents();
 
-        if (configurationError(context)) {
+        if( configurationError( context ) ) {
             // test is skipped due to configuration error
-            logger.info(MSG__TEST_SKIPPED_CONFIGURATION, testResult.getThrowable());
-        } else if (dependencyError(testResult, context)) {
+            logger.info( MSG__TEST_SKIPPED_CONFIGURATION, testResult.getThrowable() );
+        } else if( dependencyError( testResult, context ) ) {
             // test is skipped due to dependency error
-            logger.info(MSG__TEST_SKIPPED_DEPENDENCY, testResult.getThrowable());
+            logger.info( MSG__TEST_SKIPPED_DEPENDENCY, testResult.getThrowable() );
         } else {
             // we do not know the exact problem
-            logger.fatal(MSG__TEST_SKIPPED_UNRECOGNIZED_REASON, testResult.getThrowable());
+            logger.fatal( MSG__TEST_SKIPPED_UNRECOGNIZED_REASON, testResult.getThrowable() );
         }
 
-        currentTestcaseName = null;
-        lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
+        channel.currentTestcaseName = null;
+        channel.lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
         // end test case
-        logger.endTestcase(TestCaseResult.SKIPPED);
+        logger.endTestcase( TestCaseResult.SKIPPED );
 
     }
 
-    private void endTestcaseWithFailureStatus( ITestResult testResult ) {
+    private void endTestcaseWithFailureStatus( Channel channel, ITestResult testResult ) {
 
         try {
             //Check if the test was successfully started, if not - make it started and then end it with failure
             String testName = testResult.getMethod().toString();
-            if (!testName.equals(currentTestcaseName)) {
-                startTestcase(testResult);
+            if( !testName.equals( channel.currentTestcaseName ) ) {
+                startTestcase( channel, testResult );
             }
 
             sendTestEndEventToAgents();
 
             // if this is an assertion error, we need to log it
             Throwable failureException = testResult.getThrowable();
-            if (failureException instanceof AssertionError) {
-                if (failureException.getMessage() != null) {
-                    logger.error(ExceptionUtils.getExceptionMsg(failureException));
+            if( failureException instanceof AssertionError ) {
+                if( failureException.getMessage() != null ) {
+                    logger.error( ExceptionUtils.getExceptionMsg( failureException ) );
                 } else {
-                    logger.error("Received java.lang.AssertionError with null message");
+                    logger.error( "Received java.lang.AssertionError with null message" );
                 }
             } else {
-                logger.error(MSG__TEST_FAILED, testResult.getThrowable());
+                logger.error( MSG__TEST_FAILED, testResult.getThrowable() );
             }
 
-            currentTestcaseName = null;
-            lastTestcaseResult = TestCaseResult.FAILED.toInt();
+            channel.currentTestcaseName = null;
+            channel.lastTestcaseResult = TestCaseResult.FAILED.toInt();
             // end test case
-            logger.endTestcase(TestCaseResult.FAILED);
-        } catch (Exception e) {
-            logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngListener@endTestcaseWithFailureStatus", e);
+            logger.endTestcase( TestCaseResult.FAILED );
+        } catch( Exception e ) {
+            logger.fatal( "UNEXPECTED EXCEPTION IN AtsTestngListener@endTestcaseWithFailureStatus", e );
         }
 
     }
 
-    private void endTestcaseWithSuccessStatus( ITestResult testResult ) {
+    private void endTestcaseWithSuccessStatus( Channel channel, ITestResult testResult ) {
 
         sendTestEndEventToAgents();
         boolean shouldTestFail = TestcaseStateEventsDispacher.getInstance().hasAnyQueueFailed();
-        if (shouldTestFail) {
-            logger.warn("At least one queue in test failed");
-            testResult.setStatus(ITestResult.FAILURE);
-            endTestcaseWithFailureStatus(testResult);
+        if( shouldTestFail ) {
+            logger.warn( "At least one queue in test failed" );
+            testResult.setStatus( ITestResult.FAILURE );
+            endTestcaseWithFailureStatus( channel, testResult );
             return;
         }
-        logger.info(MSG__TEST_PASSED);
+        logger.info( MSG__TEST_PASSED );
 
         try {
 
-            currentTestcaseName = null;
-            lastTestcaseResult = TestCaseResult.PASSED.toInt();
+            channel.currentTestcaseName = null;
+            channel.lastTestcaseResult = TestCaseResult.PASSED.toInt();
             // end test case
-            logger.endTestcase(TestCaseResult.PASSED);
-        } catch (Exception e) {
-            logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngListener@endTestcaseWithSuccessStatus", e);
+            logger.endTestcase( TestCaseResult.PASSED );
+        } catch( Exception e ) {
+            logger.fatal( "UNEXPECTED EXCEPTION IN AtsTestngListener@endTestcaseWithSuccessStatus", e );
         }
 
     }
@@ -822,21 +879,21 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private boolean dependencyError( ITestResult testResult, ITestContext context ) {
 
         String[] dependentMethods = testResult.getMethod().getMethodsDependedUpon();
-        List<ITestResult> failedTests = Arrays.asList(context.getFailedTests()
-                                                             .getAllResults()
-                                                             .toArray(new ITestResult[context.getFailedTests()
-                                                                                             .getAllResults()
-                                                                                             .size()]));
-        for (String dependentMethod : dependentMethods) {
-            for (ITestResult failedTestResult : failedTests) {
-                String failedMethodName = new StringBuilder().append(failedTestResult.getTestClass()
-                                                                                     .getName())
-                                                             .append(".")
-                                                             .append(failedTestResult.getName())
+        List<ITestResult> failedTests = Arrays.asList( context.getFailedTests()
+                                                              .getAllResults()
+                                                              .toArray( new ITestResult[context.getFailedTests()
+                                                                                               .getAllResults()
+                                                                                               .size()] ) );
+        for( String dependentMethod : dependentMethods ) {
+            for( ITestResult failedTestResult : failedTests ) {
+                String failedMethodName = new StringBuilder().append( failedTestResult.getTestClass()
+                                                                                      .getName() )
+                                                             .append( "." )
+                                                             .append( failedTestResult.getName() )
                                                              .toString();
-                if (failedMethodName.equals(dependentMethod)) {
-                    logger.error("Dependent method '" + dependentMethod + "' failed!",
-                                 failedTestResult.getThrowable());
+                if( failedMethodName.equals( dependentMethod ) ) {
+                    logger.error( "Dependent method '" + dependentMethod + "' failed!",
+                                  failedTestResult.getThrowable() );
                     return true;
                 }
             }
@@ -848,14 +905,14 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private boolean configurationError( ITestContext context ) {
 
         // check if this is a configuration issue
-        List<ITestResult> failedConfigurations = Arrays.asList(context.getFailedConfigurations()
-                                                                      .getAllResults()
-                                                                      .toArray(new ITestResult[context.getFailedConfigurations()
-                                                                                                      .getAllResults()
-                                                                                                      .size()]));
-        for (ITestResult failedResult : failedConfigurations) {
-            if (failedResult.getThrowable() != null) {
-                logger.fatal("Configuration failed!", failedResult.getThrowable());
+        List<ITestResult> failedConfigurations = Arrays.asList( context.getFailedConfigurations()
+                                                                       .getAllResults()
+                                                                       .toArray( new ITestResult[context.getFailedConfigurations()
+                                                                                                        .getAllResults()
+                                                                                                        .size()] ) );
+        for( ITestResult failedResult : failedConfigurations ) {
+            if( failedResult.getThrowable() != null ) {
+                logger.fatal( "Configuration failed!", failedResult.getThrowable() );
                 return true;
             }
         }
@@ -865,18 +922,37 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     private void sendTestEndEventToAgents() {
 
-        if (ActiveDbAppender.getCurrentInstance() != null) {
+        if( ActiveDbAppender.getCurrentInstance() != null ) {
             // send TestEnd event to all ATS agents
             TestcaseStateEventsDispacher.getInstance().onTestEnd();
         }
     }
 
-    private void endSuite() {
+    /**
+     * End the current suite.
+     * 
+     * Seems to come here when tests are executed by single thread only.
+     * All suites are ended without the last one.
+     * The last suite is ended on ending the run.
+     * 
+     * @param channel
+     */
+    private void endSuite( Channel channel ) {
 
-        // end the current suite
-        currentSuiteName = null;
+        channel.currentSuiteName = null;
         logger.endSuite();
-
     }
 
+    /**
+     * End a suite for a particular channel.
+     * Called just before ending a run.
+     * 
+     * @param threadName
+     * @param channel
+     */
+    private void endSuite( String threadName, Channel channel ) {
+
+        channel.currentSuiteName = null;
+        logger.endSuite( threadName );
+    }
 }

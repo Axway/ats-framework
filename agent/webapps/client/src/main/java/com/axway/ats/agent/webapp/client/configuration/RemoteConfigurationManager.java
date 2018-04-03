@@ -52,7 +52,7 @@ public class RemoteConfigurationManager {
         AgentConfigurationLandscape.getInstance( atsAgent ).cacheConfigurator( configurator );
         
         // get the client instance
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         List<Configurator> configurators = new ArrayList<Configurator>();
         configurators.add(configurator);

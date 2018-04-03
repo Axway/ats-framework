@@ -174,10 +174,8 @@ public class RemoteLoggingConfigurator implements Configurator {
 
             log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
             
-            final String caller = ThreadsPerCaller.getCaller();
-
             //create the new appender
-            PassiveDbAppender attachedAppender = new PassiveDbAppender(caller);
+            PassiveDbAppender attachedAppender = new PassiveDbAppender();
             attachedAppender.setAppenderConfig(appenderConfiguration);
             //use a default pattern, as we log in the db
             attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
@@ -212,7 +210,7 @@ public class RemoteLoggingConfigurator implements Configurator {
 
         needsToConfigureDbAppender = false;
         if (appenderConfiguration != null) {
-            PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance(caller);
+            PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance();
             if (dbAppender == null || !dbAppender.getAppenderConfig().equals(appenderConfiguration)) {
                 // we did not have a DB appender
                 // or the DB appender configuration is changed
@@ -292,7 +290,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                 log = Logger.getLogger(appenderLogger);
             }
 
-            Appender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+            Appender dbAppender = PassiveDbAppender.getCurrentInstance();
             if (dbAppender != null) {
                 //close the appender
                 dbAppender.close();

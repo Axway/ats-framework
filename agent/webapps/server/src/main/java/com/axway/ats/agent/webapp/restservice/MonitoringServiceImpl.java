@@ -61,12 +61,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                           @Context HttpServletRequest request,
                                           BasePojo basePojo ) {
 
-        final String caller = getCaller(request, basePojo, false);
+        final String caller = getCaller(request, basePojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, basePojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -92,12 +92,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                               @Context HttpServletRequest request,
                                               ScheduleSystemMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -126,12 +126,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                         @Context HttpServletRequest request,
                                         ScheduleMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -166,11 +166,11 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                                @Context HttpServletRequest request,
                                                ScheduleProcessMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -204,11 +204,11 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                                     @Context HttpServletRequest request,
                                                     ScheduleProcessMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -243,12 +243,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                            @Context HttpServletRequest request,
                                            ScheduleJvmMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -283,12 +283,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                                  @Context HttpServletRequest request,
                                                  ScheduleCustomJvmMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -323,12 +323,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                           @Context HttpServletRequest request,
                                           BasePojo basePojo ) {
 
-        final String caller = getCaller(request, basePojo, false);
+        final String caller = getCaller(request, basePojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, basePojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -355,12 +355,12 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                      @Context HttpServletRequest request,
                                      StartMonitoringPojo monitoringPojo ) {
 
-        final String caller = getCaller(request, monitoringPojo, false);
+        final String caller = getCaller(request, monitoringPojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
 
-            SessionData sd = getSessionData(request, monitoringPojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
@@ -392,10 +392,10 @@ public class MonitoringServiceImpl extends BaseRestServiceImpl {
                                     @Context HttpServletRequest request,
                                     BasePojo basePojo ) {
 
-        final String caller = getCaller(request, basePojo, false);
+        final String caller = getCaller(request, basePojo);
         ThreadsPerCaller.registerThread(caller);
         try {
-            SessionData sd = getSessionData(request, basePojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
