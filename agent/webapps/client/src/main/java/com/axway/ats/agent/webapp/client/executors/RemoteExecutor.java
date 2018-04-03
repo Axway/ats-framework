@@ -34,6 +34,7 @@ import com.axway.ats.agent.webapp.client.ArgumentWrapper;
 import com.axway.ats.agent.webapp.client.InternalComponentException;
 import com.axway.ats.agent.webapp.client.InternalComponentException_Exception;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
 
 /**
@@ -43,6 +44,7 @@ import com.axway.ats.core.utils.HostUtils;
 public class RemoteExecutor extends AbstractClientExecutor {
 
     protected String atsAgent;
+    protected String atsAgentSessionId;
 
     /**
      * @param atsAgent the remote agent address
@@ -64,6 +66,8 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
         // we assume the ATS Agent address here comes with IP and PORT
         this.atsAgent = atsAgent;
+        this.atsAgentSessionId = ExecutorUtils.createExecutorId( atsAgent,
+                                                                      Thread.currentThread().getName() );
 
         if (configureAgent) {
             //configure the remote executor(an ATS agent)
@@ -114,7 +118,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
         }
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgentSessionId);
 
         try {
             //FIXME: swap with ActionWrapper
@@ -159,7 +163,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException {
 
         try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+            AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
             //FIXME: swap with ActionWrapper
             return agentServicePort.isComponentLoaded(actionRequest.getComponentName());
@@ -172,7 +176,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public String getAgentHome() throws AgentException {
 
         try {
-            return AgentServicePool.getInstance().getClient(atsAgent).getAgentHome();
+            return AgentServicePool.getInstance().getClientForHost(atsAgent).getAgentHome();
         } catch (Exception e) {
             throw new AgentException(e.getMessage(), e);
         }
@@ -180,29 +184,29 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     public List<String> getClassPath() throws AgentException {
 
-        return AgentServicePool.getInstance().getClient(atsAgent).getClassPath();
+        return AgentServicePool.getInstance().getClientForHost(atsAgent).getClassPath();
     }
 
     public void logClassPath() throws AgentException {
 
-        AgentServicePool.getInstance().getClient(atsAgent).logClassPath();
+        AgentServicePool.getInstance().getClientForHost(atsAgent).logClassPath();
     }
 
     public List<String> getDuplicatedJars() throws AgentException {
 
-        return AgentServicePool.getInstance().getClient(atsAgent).getDuplicatedJars();
+        return AgentServicePool.getInstance().getClientForHost(atsAgent).getDuplicatedJars();
     }
 
     public void logDuplicatedJars() throws AgentException {
 
-        AgentServicePool.getInstance().getClient(atsAgent).logDuplicatedJars();
+        AgentServicePool.getInstance().getClientForHost(atsAgent).logDuplicatedJars();
     }
 
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
         try {
-            return AgentServicePool.getInstance().getClient(atsAgent).getNumberPendingLogEvents();
+            return AgentServicePool.getInstance().getClientForHost(atsAgent).getNumberPendingLogEvents();
         } catch (Exception e) {
             return -1;
         }
@@ -213,7 +217,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
                          String folderPath ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         try {
             agentServicePort.restoreEnvironment(componentName, environmentName, folderPath);
@@ -230,7 +234,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public void restoreAll( String environmentName ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         try {
             //passing null will clean all components
@@ -249,7 +253,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
                         String folderPath ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         try {
             agentServicePort.backupEnvironment(componentName, environmentName, folderPath);
@@ -266,7 +270,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     public void backupAll( String environmentName ) throws AgentException {
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         try {
             //passing null will backup all components
@@ -294,7 +298,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
          */
 
         //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgentSessionId);
 
         try {
             log.info("Waiting until all queues on host '" + atsAgent + "' finish execution");

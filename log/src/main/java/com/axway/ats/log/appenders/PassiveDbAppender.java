@@ -23,13 +23,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
-import com.axway.ats.log.autodb.LogEventRequest;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
-import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
-import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
-import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 
 /**
  * This appender is capable of arranging the database storage and storing messages into it.
@@ -42,40 +39,18 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  */
 public class PassiveDbAppender extends AbstractDbAppender {
 
-    /* 
-     * The caller this appender is serving.
-     * We are calling this constructor in a way which guarantees the provided caller is not null
-     */
-    private String caller;
-
     /**
      * Constructor
      */
-    public PassiveDbAppender( String caller ) {
+    public PassiveDbAppender() {
 
         super();
-
-        this.caller = caller;
-    }
-
-    @Override
-    protected EventRequestProcessorListener getEventRequestProcessorListener() {
-
-        return null;
-    }
-
-    public String getCaller() {
-
-        return caller;
     }
 
     @Override
     public void activateOptions() {
 
         super.activateOptions();
-
-        // create the queue logging thread and the DbEventRequestProcessor
-        initializeDbLogging();
     }
 
     /* (non-Javadoc)
@@ -85,70 +60,26 @@ public class PassiveDbAppender extends AbstractDbAppender {
     protected void append(
                            LoggingEvent event ) {
 
-        if (!doWeServiceThisCaller()) {
+        if( ThreadsPerCaller.getCaller() == null ) {
             return;
         }
 
-        if (event instanceof AbstractLoggingEvent) {
-            AbstractLoggingEvent dbLoggingEvent = (AbstractLoggingEvent) event;
-            switch (dbLoggingEvent.getEventType()) {
+        // Remember the caller prior passing this event to the logging queue.
+        // We use the log4j's map inside, this is some kind of misuse. 
+        event.setProperty( ExecutorUtils.ATS_RANDOM_TOKEN, ThreadsPerCaller.getCaller() );
 
-                case JOIN_TEST_CASE: {
-                    // remember test case id
-                    testCaseState.setTestcaseId( ((JoinTestCaseEvent) event).getTestCaseState()
-                                                                            .getTestcaseId());
-                    break;
-                }
-                case LEAVE_TEST_CASE: {
-                    // clear test case id
-                    testCaseState.clearTestcaseId();
-                    break;
-                }
-                default:
-                    // do nothing about this event
-                    break;
-            }
-        }
-
-        // All events from all threads come into here
-        long eventTimestamp;
-        if (event instanceof AbstractLoggingEvent) {
-            eventTimestamp = ((AbstractLoggingEvent) event).getTimestamp();
-        } else {
-            eventTimestamp = System.currentTimeMillis();
-        }
-        LogEventRequest packedEvent = new LogEventRequest(Thread.currentThread().getName(), // Remember which thread this event belongs to
-                                                          event,
-                                                          eventTimestamp); // Remember the event time
-
-        passEventToLoggerQueue(packedEvent);
+        getDbChannel( null ).append( event );
     }
 
-    public GetCurrentTestCaseEvent getCurrentTestCaseState(
-                                                            GetCurrentTestCaseEvent event ) {
+    @Override
+    public GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event ) {
 
-        if (!doWeServiceThisCaller()) {
+        if( ThreadsPerCaller.getCaller() == null ) {
             return null;
         } else {
-            event.setTestCaseState(testCaseState);
+            event.setTestCaseState( getDbChannel( null ).testCaseState );
             return event;
         }
-    }
-
-    private boolean doWeServiceThisCaller() {
-
-        final String caller = ThreadsPerCaller.getCaller();
-        if (caller == null) {
-            // unknown caller, skip this event
-            return false;
-        }
-
-        if (!this.caller.equals(caller)) {
-            // this appender is not serving this caller, skip this event
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -157,19 +88,16 @@ public class PassiveDbAppender extends AbstractDbAppender {
      *
      * @return the current DB appender instance
      */
-    @SuppressWarnings( "unchecked")
-    public static PassiveDbAppender getCurrentInstance(
-                                                        String caller ) {
+    @SuppressWarnings("unchecked")
+    public static PassiveDbAppender getCurrentInstance() {
 
         Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        while (appenders.hasMoreElements()) {
+        while( appenders.hasMoreElements() ) {
             Appender appender = appenders.nextElement();
 
-            if (appender instanceof PassiveDbAppender) {
-                PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
-                if (passiveAppender.getCaller().equals(caller)) {
-                    return passiveAppender;
-                }
+            if( appender instanceof PassiveDbAppender ) {
+                PassiveDbAppender passiveAppender = ( PassiveDbAppender ) appender;
+                return passiveAppender;
             }
         }
 
@@ -182,11 +110,19 @@ public class PassiveDbAppender extends AbstractDbAppender {
     public void setTestcaseState(
                                   TestCaseState testCaseState ) {
 
-        this.testCaseState = testCaseState;
+        getDbChannel( null ).testCaseState = testCaseState;
     }
 
     public DbEventRequestProcessor getDbEventRequestProcessor() {
 
-        return this.eventProcessor;
+        return getDbChannel( null ).eventProcessor;
+    }
+
+    @Override
+    protected String getDbChannelKey( LoggingEvent event ) {
+
+        // Works on Agent side
+        // Have a channel per caller(Host name + Random key + Thread name)
+        return ThreadsPerCaller.getCaller();
     }
 }

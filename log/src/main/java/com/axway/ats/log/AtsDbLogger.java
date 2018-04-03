@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
@@ -71,15 +72,14 @@ import com.axway.ats.log.model.TestCaseResult;
 public class AtsDbLogger {
 
     private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
-    
+
     /**
      * Flag that is used to log WARN for not attached ATS DB logger only once
      */
     private static boolean isWarningMessageLogged = false;
-
     protected Logger            logger;
 
-    private AtsDbLogger( Logger logger, boolean skipAppenderCheck) {
+    private AtsDbLogger( Logger logger, boolean skipAppenderCheck ) {
 
         this.logger = logger;
         // check if the ActiveDbAppender is specified in log4j.xml
@@ -115,9 +115,9 @@ public class AtsDbLogger {
      * @param skipAppenderCheck enable/disable check for availability of db appender
      * 
      *
-     * */
+     **/
     public static synchronized AtsDbLogger getLogger(
-                                                      String name, boolean skipAppenderCheck) {
+                                                      String name, boolean skipAppenderCheck ) {
 
         return new AtsDbLogger(Logger.getLogger(name), skipAppenderCheck);
     }
@@ -128,7 +128,7 @@ public class AtsDbLogger {
      * @param skipAppenderCheck enable/disable check for availability of db appender
      * */
     public static synchronized AtsDbLogger getLogger(
-                                                      Logger logger,  boolean skipAppenderCheck ) {
+                                                      Logger logger, boolean skipAppenderCheck ) {
 
         return new AtsDbLogger(logger, skipAppenderCheck);
     }
@@ -511,6 +511,18 @@ public class AtsDbLogger {
     }
 
     /**
+     * End the current suite
+     */
+    public void endSuite( String threadName ) {
+
+        // We need to attach this event to the provided thread
+        EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
+        event.setProperty(ExecutorUtils.ATS_RANDOM_TOKEN, threadName);
+
+        sendEvent(event);
+    }
+
+    /**
      * Clear all meta info about a scenario.
      */
     public void clearScenarioMetainfo() {
@@ -854,17 +866,18 @@ public class AtsDbLogger {
      *
      * @param testCaseState the state of the test case to join to
      */
-    public void joinTestCase(
-                              TestCaseState testCaseState ) {
+    public void joinTestCase( TestCaseState testCaseState, String executorId ) {
 
+        // Happens on Agent side.
         sendEvent(new JoinTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testCaseState));
     }
 
     /**
      * Leave the test case to which we have joined
      */
-    public void leaveTestCase() {
+    public void leaveTestCase( String executorId ) {
 
+        // Happens on Agent side.
         sendEvent(new LeaveTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
     }
 

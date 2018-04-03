@@ -58,7 +58,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
     public void pushConfigurationPositive() throws AgentException, AgentException_Exception {
 
         expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
-        expect(mockAgentServicePool.getClient("10.0.0.2")).andReturn(mockAgentService);
+        expect(mockAgentServicePool.getClientForHost("10.0.0.2")).andReturn(mockAgentService);
         expect(mockAgentService.pushConfiguration(isA(byte[].class))).andReturn(AtsVersion.getAtsVersion());
 
         replayAll();
@@ -77,7 +77,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
     public void pushConfigurationNegativeException() throws AgentException, AgentException_Exception {
 
         expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
-        expect(mockAgentServicePool.getClient("10.0.0.3")).andReturn(mockAgentService);
+        expect(mockAgentServicePool.getClientForHost("10.0.0.3")).andReturn(mockAgentService);
         mockAgentService.pushConfiguration(isA(byte[].class));
         expectLastCall().andThrow(new AgentException_Exception("test",
                                                                new com.axway.ats.agent.webapp.client.AgentException()));
@@ -95,7 +95,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
     public void pushConfigurationNegativeRuntimeException() throws AgentException, AgentException_Exception {
 
         expect(AgentServicePool.getInstance()).andReturn(mockAgentServicePool);
-        expect(mockAgentServicePool.getClient("10.0.0.3")).andReturn(mockAgentService);
+        expect(mockAgentServicePool.getClientForHost("10.0.0.3")).andReturn(mockAgentService);
         mockAgentService.pushConfiguration(isA(byte[].class));
         expectLastCall().andThrow(new RuntimeException());
 

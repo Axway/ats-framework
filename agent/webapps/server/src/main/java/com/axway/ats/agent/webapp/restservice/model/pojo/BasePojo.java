@@ -19,6 +19,8 @@ public class BasePojo {
 
     protected String uid;
 
+    protected String threadId;
+
     public BasePojo() {
 
     }
@@ -32,10 +34,18 @@ public class BasePojo {
         return uid;
     }
 
-    public void setUid(
-                        String uid ) {
+    public void setUid( String uid ) {
 
         this.uid = uid;
     }
+    
+    public String getThreadId() {
 
+        return threadId;
+    }
+
+    public void setThreadId( String threadId ) {
+
+        this.threadId = threadId;
+    }
 }

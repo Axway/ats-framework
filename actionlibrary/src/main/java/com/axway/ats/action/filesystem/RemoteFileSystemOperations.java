@@ -19,8 +19,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.agent.components.system.operations.clients.InternalFileSystemOperations;

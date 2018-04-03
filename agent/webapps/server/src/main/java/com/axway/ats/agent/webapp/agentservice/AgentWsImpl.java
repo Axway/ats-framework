@@ -41,7 +41,6 @@ import com.axway.ats.agent.core.action.CallerRelatedInfoRepository;
 import com.axway.ats.agent.core.configuration.AgentConfigurator;
 import com.axway.ats.agent.core.configuration.ConfigurationManager;
 import com.axway.ats.agent.core.configuration.Configurator;
-import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.agent.core.exceptions.ActionExecutionException;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.exceptions.InternalComponentException;
@@ -57,6 +56,7 @@ import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.PassiveDbAppender;
@@ -66,18 +66,19 @@ import com.axway.ats.log.autodb.TestCaseState;
  * Implementation of all public web methods used to communicate
  * with the ATS Agent.
  */
-@WebService( name = "AgentService", targetNamespace = "http://agentservice/", serviceName = "AgentService", portName = "AgentServicePort")
+@WebService(name = "AgentService", targetNamespace = "http://agentservice/", serviceName = "AgentService", portName = "AgentServicePort")
 public class AgentWsImpl {
 
-    /** skip check whether ActiveDbAppender appender is presented in the test executors log4j.xml in order to execute actions,
-     * even if such appender is not presented
-     */
-    private static final AtsDbLogger log                               = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.agentservice", true);
+	/** skip check whether ActiveDbAppender appender is presented in the test executors log4j.xml in order to execute actions,
+	 *  even if such appender is not presented
+	 */
+    private static final AtsDbLogger log                                    = AtsDbLogger.getLogger( "com.axway.ats.agent.webapp.agentservice" );
 
-    private static int               lastRunId                         = -1;
+    private static int               lastRunId                              = -1;
 
-    // flag to not log an error too often
-    private static boolean           alreadyLoggedErrorAboutSessionUid = false;
+    // flags to not log errors too often
+    private static boolean           alreadyLoggedErrorAboutSessionUid      = false;
+    private static boolean           alreadyLoggedErrorAboutSessionThreadId = false;
 
     @Resource
     private WebServiceContext        wsContext;
@@ -96,23 +97,23 @@ public class AgentWsImpl {
     public void onTestStart(
                              @WebParam( name = "testCaseState") TestCaseState testCaseState ) throws AgentException {
 
-        if (testCaseState == null) {
+        if( testCaseState == null ) {
             // the user has not initialized our DB appender on the Test Executor side
             return;
         }
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
             // cancel all action tasks, that are started on an agent, locate on the current caller host.
             // current caller and the agent must have the same IP, in order for queue to be cancelled
-            MultiThreadedActionHandler.cancellAllQueuesFromAgent(caller);
+            MultiThreadedActionHandler.cancellAllQueuesFromAgent( caller );
 
             // get the current state on the remote machine
             TestCaseState currentState = log.getCurrentTestCaseState();
             boolean joinToNewTescase = true;
-            if (currentState != null && currentState.isInitialized()) {
+            if( currentState != null && currentState.isInitialized() ) {
                 /* This agent is already configured.
                  *
                  * Now check if the state is the same as the new one, this would mean we are trying to
@@ -122,25 +123,25 @@ public class AgentWsImpl {
                  * If the state is different, we hit an error which means this agent did not get On Test End event
                  * for the previous test case.
                  */
-                if (!currentState.equals(testCaseState)) {
+                if( !currentState.equals( testCaseState ) ) {
 
-                    log.error("This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
-                              + " Now we cancel any further logging from the agent.");
-                    log.leaveTestCase();
+                    log.error( "This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
+                               + " Now we cancel any further logging from the agent." );
+                    log.leaveTestCase( caller );
                 } else {
                     joinToNewTescase = false;
 
                 }
             }
 
-            if (joinToNewTescase) {
+            if( joinToNewTescase ) {
                 // connect to the new test case
-                log.joinTestCase(testCaseState);
+                log.joinTestCase( testCaseState, caller );
 
                 // take care of chained ATS agents(if there are any)
                 TestcaseStateEventsDispacher.getInstance().onTestStart();
             }
-            logClassPath(testCaseState);
+            logClassPath( testCaseState );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -153,15 +154,15 @@ public class AgentWsImpl {
     public void onTestEnd() {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         TestCaseState currentState = log.getCurrentTestCaseState();
         try {
             /* If the agent is not configured, this means we are coming here for second time during same test.
              * Ignore this event.
              */
-            if (currentState != null && currentState.isInitialized()) {
-                log.leaveTestCase();
+            if( currentState != null && currentState.isInitialized() ) {
+                log.leaveTestCase( caller );
 
                 // take care of chained ATS agents(if there are any)
                 TestcaseStateEventsDispacher.getInstance().onTestEnd();
@@ -175,17 +176,17 @@ public class AgentWsImpl {
                                TestCaseState testCaseState ) {
 
         // this check is made so we log the classpath just once per run
-        if (testCaseState.getRunId() != lastRunId) {
+        if( testCaseState.getRunId() != lastRunId ) {
 
             lastRunId = testCaseState.getRunId();
             StringBuilder classpath = new StringBuilder();
 
-            classpath.append("ATS Agent classpath on \"");
-            classpath.append(HostUtils.getLocalHostIP());
-            classpath.append("\" : \n");
-            classpath.append(new ClasspathUtils().getClassPathDescription());
+            classpath.append( "ATS Agent classpath on \"" );
+            classpath.append( HostUtils.getLocalHostIP() );
+            classpath.append( "\" : \n" );
+            classpath.append( new ClasspathUtils().getClassPathDescription() );
 
-            log.info(classpath, true);
+            log.info( classpath, true );
         }
     }
 
@@ -200,7 +201,7 @@ public class AgentWsImpl {
 
         String caller = getCaller();
 
-        CallerRelatedInfoRepository.getInstance(caller).removeObject(internalObjectResourceId);
+        CallerRelatedInfoRepository.getInstance( caller ).removeObject( internalObjectResourceId );
     }
 
     /**
@@ -216,23 +217,23 @@ public class AgentWsImpl {
     @WebMethod
     public byte[] executeAction(
                                  @WebParam( name = "componentName") String componentName,
-                                 @WebParam( name = "actionName") String actionName,
-                                 @WebParam( name = "args") ArgumentWrapper[] args ) throws AgentException,
-                                                                                    InternalComponentException {
+                           @WebParam(name = "actionName") String actionName,
+                           @WebParam(name = "args") ArgumentWrapper[] args ) throws AgentException,
+                                                                             InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            Object result = executeAction(caller, componentName, actionName, args);
+            Object result = executeAction( caller, componentName, actionName, args );
 
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-            objectOutStream.writeObject(result);
+            ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
+            objectOutStream.writeObject( result );
 
             return byteOutStream.toByteArray();
-        } catch (Exception e) {
-            handleExceptions(e);
+        } catch( Exception e ) {
+            handleExceptions( e );
 
             // should never reach this line because handleExceptions() will
             // always throw
@@ -261,24 +262,24 @@ public class AgentWsImpl {
                                                            ClassNotFoundException {
 
         Object[] arguments = null;
-        if (args == null) { // Apache CXF impl. provides null instead of empty array
+        if( args == null ) { // Apache CXF impl. provides null instead of empty array
             arguments = new Object[0];
         } else {
             int numArguments = args.length;
             arguments = new Object[numArguments];
 
             // unwrap the action arguments
-            for (int i = 0; i < numArguments; i++) {
+            for( int i = 0; i < numArguments; i++ ) {
                 ArgumentWrapper argWrapper = args[i];
 
-                ByteArrayInputStream byteInStream = new ByteArrayInputStream(argWrapper.getArgumentValue());
-                ObjectInputStream objectInStream = new ObjectInputStream(byteInStream);
+                ByteArrayInputStream byteInStream = new ByteArrayInputStream( argWrapper.getArgumentValue() );
+                ObjectInputStream objectInStream = new ObjectInputStream( byteInStream );
 
                 arguments[i] = objectInStream.readObject();
             }
         }
 
-        return ActionHandler.executeAction(caller, componentName, actionName, arguments);
+        return ActionHandler.executeAction( caller, componentName, actionName, arguments );
     }
 
     /**
@@ -292,14 +293,14 @@ public class AgentWsImpl {
                                       @WebParam( name = "componentName") String componentName ) {
 
         String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            boolean isLoaded = ActionHandler.isComponentLoaded(caller, componentName);
-            log.info("Agent component '" + componentName + "' is " + (isLoaded
-                                                                               ? ""
-                                                                               : "not ")
-                     + "loaded for caller with IP " + caller);
+            boolean isLoaded = ActionHandler.isComponentLoaded( caller, componentName );
+            log.info( "Agent component '" + componentName + "' is " + ( isLoaded
+                                                                                 ? ""
+                                                                                 : "not " )
+                      + "loaded for caller with IP " + caller );
             return isLoaded;
         } finally {
             ThreadsPerCaller.unregisterThread();
@@ -322,20 +323,20 @@ public class AgentWsImpl {
     @WebMethod
     public void restoreEnvironment(
                                     @WebParam( name = "componentName") String componentName,
-                                    @WebParam( name = "environmentName") String environmentName,
-                                    @WebParam( name = "folderPath") String folderPath ) throws AgentException,
-                                                                                        InternalComponentException {
+                                @WebParam(name = "environmentName") String environmentName,
+                                @WebParam(name = "folderPath") String folderPath ) throws AgentException,
+                                                                                   InternalComponentException {
 
         try {
-            if (componentName == null) {
+            if( componentName == null ) {
                 // clean for all components
-                EnvironmentHandler.getInstance().restoreAll(environmentName);
+                EnvironmentHandler.getInstance().restoreAll( environmentName );
             } else {
-                EnvironmentHandler.getInstance().restore(componentName, environmentName, folderPath);
+                EnvironmentHandler.getInstance().restore( componentName, environmentName, folderPath );
             }
 
-        } catch (Exception e) {
-            handleExceptions(e);
+        } catch( Exception e ) {
+            handleExceptions( e );
         }
     }
 
@@ -352,20 +353,20 @@ public class AgentWsImpl {
     @WebMethod
     public void backupEnvironment(
                                    @WebParam( name = "componentName") String componentName,
-                                   @WebParam( name = "environmentName") String environmentName,
-                                   @WebParam( name = "folderPath") String folderPath ) throws AgentException,
-                                                                                       InternalComponentException {
+                               @WebParam(name = "environmentName") String environmentName,
+                               @WebParam(name = "folderPath") String folderPath ) throws AgentException,
+                                                                                  InternalComponentException {
 
         try {
-            if (componentName == null) {
+            if( componentName == null ) {
                 // backup for all components
-                EnvironmentHandler.getInstance().backupAll(environmentName);
+                EnvironmentHandler.getInstance().backupAll( environmentName );
             } else {
-                EnvironmentHandler.getInstance().backup(componentName, environmentName, folderPath);
+                EnvironmentHandler.getInstance().backup( componentName, environmentName, folderPath );
             }
 
-        } catch (Exception e) {
-            handleExceptions(e);
+        } catch( Exception e ) {
+            handleExceptions( e );
         }
     }
 
@@ -383,20 +384,20 @@ public class AgentWsImpl {
     @WebMethod
     public void scheduleActionsInMultipleThreads(
                                                   @WebParam( name = "name") String queueName,
-                                                  @WebParam( name = "queueId") int queueId,
-                                                  @WebParam( name = "actions") ActionWrapper[] actions,
-                                                  @WebParam( name = "serializedThreadingPattern") byte[] serializedThreadingPattern,
-                                                  @WebParam( name = "serializedLoaderDataConfig") byte[] serializedLoaderDataConfig,
-                                                  boolean isUseSynchronizedIterations ) throws AgentException,
-                                                                                        InternalComponentException {
+                                              @WebParam(name = "queueId") int queueId,
+                                              @WebParam(name = "actions") ActionWrapper[] actions,
+                                              @WebParam(name = "serializedThreadingPattern") byte[] serializedThreadingPattern,
+                                              @WebParam(name = "serializedLoaderDataConfig") byte[] serializedLoaderDataConfig,
+                                              boolean isUseSynchronizedIterations ) throws AgentException,
+                                                                                    InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
             ArrayList<ActionRequest> actionRequests = new ArrayList<ActionRequest>();
 
-            for (ActionWrapper actionWrapper : actions) {
+            for( ActionWrapper actionWrapper : actions ) {
 
                 List<ArgumentWrapper> args = actionWrapper.getArgs();
 
@@ -404,34 +405,34 @@ public class AgentWsImpl {
                 Object[] arguments = new Object[numArguments];
 
                 // unwrap the action arguments
-                for (int i = 0; i < numArguments; i++) {
-                    ArgumentWrapper argWrapper = args.get(i);
+                for( int i = 0; i < numArguments; i++ ) {
+                    ArgumentWrapper argWrapper = args.get( i );
 
-                    ByteArrayInputStream byteInStream = new ByteArrayInputStream(argWrapper.getArgumentValue());
-                    ObjectInputStream objectInStream = new ObjectInputStream(byteInStream);
+                    ByteArrayInputStream byteInStream = new ByteArrayInputStream( argWrapper.getArgumentValue() );
+                    ObjectInputStream objectInStream = new ObjectInputStream( byteInStream );
 
                     arguments[i] = objectInStream.readObject();
                 }
 
                 // construct the action request
-                ActionRequest actionRequest = new ActionRequest(actionWrapper.getComponentName(),
+                ActionRequest actionRequest = new ActionRequest( actionWrapper.getComponentName(),
                                                                 actionWrapper.getActionName(),
                                                                 arguments);
-                actionRequests.add(actionRequest);
+                actionRequests.add( actionRequest );
             }
 
             ByteArrayInputStream byteInStream;
             ObjectInputStream objectInStream;
 
             // de-serialize the threading configuration
-            byteInStream = new ByteArrayInputStream(serializedThreadingPattern);
-            objectInStream = new ObjectInputStream(byteInStream);
-            ThreadingPattern threadingPattern = (ThreadingPattern) objectInStream.readObject();
+            byteInStream = new ByteArrayInputStream( serializedThreadingPattern );
+            objectInStream = new ObjectInputStream( byteInStream );
+            ThreadingPattern threadingPattern = ( ThreadingPattern ) objectInStream.readObject();
 
             // de-serialize the loader data configuration
-            byteInStream = new ByteArrayInputStream(serializedLoaderDataConfig);
-            objectInStream = new ObjectInputStream(byteInStream);
-            LoaderDataConfig loaderDataConfig = (LoaderDataConfig) objectInStream.readObject();
+            byteInStream = new ByteArrayInputStream( serializedLoaderDataConfig );
+            objectInStream = new ObjectInputStream( byteInStream );
+            LoaderDataConfig loaderDataConfig = ( LoaderDataConfig ) objectInStream.readObject();
 
             MultiThreadedActionHandler.getInstance(caller).scheduleActions(caller,
                                                                            queueName,
@@ -439,9 +440,9 @@ public class AgentWsImpl {
                                                                            actionRequests,
                                                                            threadingPattern,
                                                                            loaderDataConfig,
-                                                                           isUseSynchronizedIterations);
-        } catch (Exception e) {
-            handleExceptions(e);
+                                                        isUseSynchronizedIterations );
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -458,18 +459,18 @@ public class AgentWsImpl {
     @WebMethod
     public void startQueue(
                             @WebParam( name = "name") String queueName ) throws AgentException,
-                                                                         InternalComponentException {
+                                                                        InternalComponentException {
 
         // initialize the structure which will keep info about the execution results of this queue
-        QueueExecutionStatistics.getInstance().initActionExecutionResults(queueName);
+        QueueExecutionStatistics.getInstance().initActionExecutionResults( queueName );
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            MultiThreadedActionHandler.getInstance(caller).startQueue(queueName);
-        } catch (Exception e) {
-            handleExceptions(e);
+            MultiThreadedActionHandler.getInstance( caller ).startQueue( queueName );
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -485,15 +486,15 @@ public class AgentWsImpl {
     @WebMethod
     public void resumeQueue(
                              @WebParam( name = "name") String queueName ) throws AgentException,
-                                                                          InternalComponentException {
+                                                                         InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            MultiThreadedActionHandler.getInstance(caller).resumeQueue(queueName);
-        } catch (Exception e) {
-            handleExceptions(e);
+            MultiThreadedActionHandler.getInstance( caller ).resumeQueue( queueName );
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -509,12 +510,12 @@ public class AgentWsImpl {
     public void cancelAllQueues() throws AgentException, InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            MultiThreadedActionHandler.getInstance(caller).cancelAllQueues();
-        } catch (Exception e) {
-            handleExceptions(e);
+            MultiThreadedActionHandler.getInstance( caller ).cancelAllQueues();
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -529,15 +530,15 @@ public class AgentWsImpl {
     @WebMethod
     public void cancelQueue(
                              @WebParam( name = "name") String queueName ) throws AgentException,
-                                                                          InternalComponentException {
+                                                                         InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            MultiThreadedActionHandler.getInstance(caller).cancelQueue(queueName);
-        } catch (Exception e) {
-            handleExceptions(e);
+            MultiThreadedActionHandler.getInstance( caller ).cancelQueue( queueName );
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -554,9 +555,9 @@ public class AgentWsImpl {
                                    @WebParam( name = "name") String queueName ) {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
-        return MultiThreadedActionHandler.getInstance(caller).isQueueRunning(queueName);
+        return MultiThreadedActionHandler.getInstance( caller ).isQueueRunning( queueName );
     }
 
     /**
@@ -571,15 +572,15 @@ public class AgentWsImpl {
     @WebMethod
     public boolean waitUntilQueueIsPaused(
                                            @WebParam( name = "name") String queueName ) throws AgentException,
-                                                                                        InternalComponentException {
+                                                                                InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            return MultiThreadedActionHandler.getInstance(caller).waitUntilQueueIsPaused(queueName);
-        } catch (Exception e) {
-            handleExceptions(e);
+            return MultiThreadedActionHandler.getInstance( caller ).waitUntilQueueIsPaused( queueName );
+        } catch( Exception e ) {
+            handleExceptions( e );
 
             // can't come here
             return false;
@@ -598,15 +599,15 @@ public class AgentWsImpl {
     @WebMethod
     public void waitUntilQueueFinish(
                                       @WebParam( name = "name") String queueName ) throws AgentException,
-                                                                                   InternalComponentException {
+                                                                                  InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            MultiThreadedActionHandler.getInstance(caller).waitUntilQueueFinish(queueName);
-        } catch (Exception e) {
-            handleExceptions(e);
+            MultiThreadedActionHandler.getInstance( caller ).waitUntilQueueFinish( queueName );
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -622,12 +623,12 @@ public class AgentWsImpl {
     public void waitUntilAllQueuesFinish() throws AgentException, InternalComponentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            MultiThreadedActionHandler.getInstance(caller).waitUntilAllQueuesFinish();
-        } catch (Exception e) {
-            handleExceptions(e);
+            MultiThreadedActionHandler.getInstance( caller ).waitUntilAllQueuesFinish();
+        } catch( Exception e ) {
+            handleExceptions( e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -650,13 +651,13 @@ public class AgentWsImpl {
 
         try {
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-            objectOutStream.writeObject(QueueExecutionStatistics.getInstance()
-                                                                .getActionExecutionResults(queueName));
+            ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
+            objectOutStream.writeObject( QueueExecutionStatistics.getInstance()
+                                                                 .getActionExecutionResults( queueName ) );
 
             return byteOutStream.toByteArray();
-        } catch (Exception e) {
-            handleExceptions(e);
+        } catch( Exception e ) {
+            handleExceptions( e );
 
             // should never reach this line because handleExceptions() will
             // always throw but the compiler is not aware of this
@@ -671,59 +672,59 @@ public class AgentWsImpl {
      * @return the agent version
      * @throws AgentException on error
      */
-    @SuppressWarnings( "unchecked")
+    @SuppressWarnings("unchecked")
     @WebMethod
     public String pushConfiguration(
                                    @WebParam( name = "configurators") byte[] serializedConfigurators ) throws AgentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(serializedConfigurators);
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream( serializedConfigurators );
         ObjectInputStream objectInStream;
 
         try {
-            objectInStream = new ObjectInputStream(byteInStream);
+            objectInStream = new ObjectInputStream( byteInStream );
 
-            List<Configurator> configurators = (List<Configurator>) objectInStream.readObject();
+            List<Configurator> configurators = ( List<Configurator> ) objectInStream.readObject();
 
             // Check if AgentConfigurator is set. In such case we will need to reload the
             // Agent components as this configuration defines the way Agent components are loaded.
             boolean needToReloadComponents = false;
-            for (Configurator configurator : configurators) {
-                if (configurator instanceof AgentConfigurator) {
+            for( Configurator configurator : configurators ) {
+                if( configurator instanceof AgentConfigurator ) {
                     needToReloadComponents = true;
                     break;
                 }
             }
 
-            if (needToReloadComponents) {
+            if( needToReloadComponents ) {
                 // the already loaded Agent components are first unloaded
                 MainComponentLoader.getInstance().destroy();
 
                 // the initialization procedure will implicitly apply the new configurations
                 // and then will load up again the Agent components
-                MainComponentLoader.getInstance().initialize(configurators);
+                MainComponentLoader.getInstance().initialize( configurators );
             } else {
                 // just apply the configurations
-                ConfigurationManager.getInstance().apply(configurators);
+                ConfigurationManager.getInstance().apply( configurators );
             }
-        } catch (IOException ioe) {
+        } catch( IOException ioe ) {
             final String msg = "IO error while serializing configurators";
-            log.error(msg, ioe); // log on the monitored machine
-            throw new AgentException(msg, ioe);
-        } catch (ClassNotFoundException cnfe) {
+            log.error( msg, ioe ); // log on the monitored machine
+            throw new AgentException( msg, ioe );
+        } catch( ClassNotFoundException cnfe ) {
             final String msg = "Could not deserialize configurators";
-            log.error(msg, cnfe); // log on the monitored machine
-            throw new AgentException(msg, cnfe);
-        } catch (Exception e) {
+            log.error( msg, cnfe ); // log on the monitored machine
+            throw new AgentException( msg, cnfe );
+        } catch( Exception e ) {
             final String msg = "Error applying configurators";
-            log.error(msg, e); // log on the monitored machine
-            throw new AgentException(msg, e);
+            log.error( msg, e ); // log on the monitored machine
+            throw new AgentException( msg, e );
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
-        
+
         return AtsVersion.getAtsVersion();
     }
 
@@ -734,19 +735,19 @@ public class AgentWsImpl {
     @WebMethod
     public String getAgentHome() throws AgentException {
 
-        return System.getProperty(AtsSystemProperties.AGENT_HOME_FOLDER);
+        return System.getProperty( AtsSystemProperties.AGENT_HOME_FOLDER );
     }
-    
+
     @WebMethod
     public synchronized int getNumberPendingLogEvents() throws AgentException {
 
         final String caller = getCaller();
-        ThreadsPerCaller.registerThread(caller);
+        ThreadsPerCaller.registerThread( caller );
 
         try {
-            PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance(caller);
+            PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance();
 
-            if (appender != null) {
+            if( appender != null ) {
                 return appender.getNumberPendingLogEvents();
             }
         } finally {
@@ -803,52 +804,64 @@ public class AgentWsImpl {
 
         MessageContext msgx = wsContext.getMessageContext();
 
-        HttpServletRequest request = ((HttpServletRequest) msgx.get(MessageContext.SERVLET_REQUEST));
+        String remoteHost = ( ( HttpServletRequest ) msgx.get( MessageContext.SERVLET_REQUEST ) ).getRemoteAddr();
+
+        Map<String, List<String>> headers = ( Map<String, List<String>> ) msgx.get( MessageContext.HTTP_REQUEST_HEADERS );
 
         String uid = "";
         try {
-            Map<String, List<String>> headers = (Map<String, List<String>>) msgx.get(MessageContext.HTTP_REQUEST_HEADERS);
-            uid = headers.get(ApplicationContext.ATS_UID_SESSION_TOKEN).get(0);
-        } catch (Exception e) {
-            if (!alreadyLoggedErrorAboutSessionUid) {
-                log.warn("Could not get ATS UID for call from " + request.getRemoteAddr()
-                         + ". This error will not be logged again before Agent restart.", e);
+            uid = headers.get( ExecutorUtils.ATS_RANDOM_TOKEN ).get( 0 );
+        } catch( Exception e ) {
+            if( !alreadyLoggedErrorAboutSessionUid ) {
+                log.warn( "Could not get ATS UID for call from " + remoteHost
+                          + ". This error will not be logged again before Agent restart.", e );
                 alreadyLoggedErrorAboutSessionUid = true;
             }
         }
 
-        return "<Caller: " + request.getRemoteAddr() + "; ATS UID: " + uid + ">";
+        String threadId = "";
+        try {
+            threadId = headers.get( ExecutorUtils.ATS_THREAD_ID ).get( 0 );
+        } catch( Exception e ) {
+            if( !alreadyLoggedErrorAboutSessionThreadId ) {
+                log.warn( "Could not get Thread Id for call from " + remoteHost
+                          + ". This error will not be logged again before Agent restart.", e );
+                alreadyLoggedErrorAboutSessionThreadId = true;
+            }
+        }
+
+        return ExecutorUtils.createExecutorId( remoteHost, uid, threadId );
     }
 
     private void handleExceptions(
                                    Exception e ) throws AgentException, InternalComponentException {
 
-        if (e instanceof InternalComponentException) {
-            InternalComponentException ice = (InternalComponentException) e;
+        if( e instanceof InternalComponentException ) {
+            InternalComponentException ice = ( InternalComponentException ) e;
 
             // this was an internal component exception so we
             // need to log it on the server, otherwise we loose the stack trace
-            if (ice.getCause() instanceof InterruptedException) {
-                log.error("InterruptedException exception: ", ice.getCause());
+            if( ice.getCause() instanceof InterruptedException ) {
+                log.error( "InterruptedException exception: ", ice.getCause() );
             } else {
-                log.error("Internal component exception: ", ice.getCause());
+                log.error( "Internal component exception: ", ice.getCause() );
             }
 
             throw ice;
 
-        } else if (e instanceof AgentException) {
+        } else if( e instanceof AgentException ) {
 
             // log the stack trace
-            log.error("Agent exception: ", e);
+            log.error( "Agent exception: ", e );
 
             // need to create a new instance of the parent class, otherwise it will not be
             // correctly handled by JAXB
-            throw new AgentException(e.getMessage());
+            throw new AgentException( e.getMessage() );
 
         } else {
             // all other exceptions should be logged and wrapped to AgentException
-            log.error("Unhandled exception thrown during action execution", e);
-            throw new AgentException(e.getMessage());
+            log.error( "Unhandled exception thrown during action execution", e );
+            throw new AgentException( e.getMessage() );
         }
     }
 }

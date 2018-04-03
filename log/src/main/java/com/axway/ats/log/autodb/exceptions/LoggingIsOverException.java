@@ -13,27 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.agent.core.context;
+package com.axway.ats.log.autodb.exceptions;
 
-/**
- * Application wide context accessible by all ATS Agent components.
- * 
- * Currently all shared data is defined in the parent class.
- */
-public class ApplicationContext extends Context {
+@SuppressWarnings( "serial")
+public class LoggingIsOverException extends RuntimeException {
 
-    private static ApplicationContext appContext;
+    public LoggingIsOverException( String message ) {
 
-    private ApplicationContext() {
-
-    }
-
-    public static synchronized ApplicationContext getInstance() {
-
-        if( appContext == null ) {
-            appContext = new ApplicationContext();
-        }
-
-        return appContext;
+        super(message);
     }
 }
