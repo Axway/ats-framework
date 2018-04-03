@@ -76,7 +76,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     /* keeps track if the current testcase name */
     private String                   currentTestcaseName                   = null;
     /* keeps track if the current suite name */
-    private String                   currentSuiteName                      = null;
+    private static String            currentSuiteName                      = null;
 
     /* keeps track of the test result for the last ended testcase */
     private int                      lastTestcaseResult                    = -1;
