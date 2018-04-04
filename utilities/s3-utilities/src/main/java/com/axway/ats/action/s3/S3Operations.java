@@ -483,10 +483,9 @@ public class S3Operations {
 
     /**
      * Delete all objects with keys having this prefix.
-     * Directory (object with this exact key) is not removed, i.e. this method 
-     * acts like <code>cleanupFolder()</code>
+     * Directory (object with this exact key) is not removed
      * 
-     * @param prefixName the common prefix which keys should have
+     * @param prefixName the common key prefix of all objects for removal
      */
     @PublicAtsApi
     public void deleteAll( String prefixName ) {
