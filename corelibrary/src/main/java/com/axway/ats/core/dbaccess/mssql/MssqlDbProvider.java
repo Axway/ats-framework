@@ -195,21 +195,28 @@ public class MssqlDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT");
-        sql.append(" indexes.name as Name,");
-        sql.append(" indexes.type_desc as Type,");
-        sql.append(" ds.name as DataSpaceName,");
-        sql.append(" ds.type as DataSpaceType,");
-        sql.append(" indexes.is_primary_key as IsPrimaryKey,");
-        sql.append(" indexes.is_unique as IsUnique,");
-        sql.append(" indexes.ignore_dup_key as IsDuplicateKey,");
-        sql.append(" indexes.is_unique_constraint as IsUniqueConstraint");
-        sql.append(" FROM");
-        sql.append(" sys.indexes as indexes");
-        sql.append(" JOIN");
-        sql.append(" sys.data_spaces ds on ds.data_space_id = indexes.data_space_id");
-        sql.append(" WHERE object_id = (select object_id from sys.objects where name = '" + tableName
-                   + "');");
+        sql.append("SELECT ")
+           .append("indexes.name + '|-|' + columns.name AS index_and_column_name,")
+           .append("indexes.name AS index_name,")
+           .append("columns.name AS column_name,")
+           .append("indexes.type_desc AS type,")
+           .append("ind_col.index_column_id AS column_position,")
+           .append("ds.name AS DataSpaceName,")
+           .append("ds.type AS DataSpaceType,")
+           .append("indexes.is_primary_key AS IsPrimaryKey,")
+           .append("indexes.is_unique AS IsUnique,")
+           .append("indexes.ignore_dup_key AS IsDuplicateKey,")
+           .append("indexes.is_unique_constraint AS IsUniqueConstraint")
+           .append(" FROM sys.indexes AS indexes,")
+           .append("sys.data_spaces ds,")
+           .append("sys.index_columns ind_col,")
+           .append("sys.columns columns")
+           .append(" WHERE ds.data_space_id = indexes.data_space_id AND")
+           .append(" indexes.index_id=ind_col.index_id AND")
+           .append(" ind_col.column_id=columns.column_id AND")
+           .append(" indexes.object_id = ind_col.object_id AND")
+           .append(" indexes.object_id = columns.object_id AND")
+           .append(" indexes.object_id = (select object_id FROM sys.objects WHERE name = '" + tableName + "');");
 
         String indexName = null;
         Map<String, String> indexes = new HashMap<>();
@@ -219,7 +226,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
-                if ("Name".equalsIgnoreCase(name)) {
+                if ("index_and_column_name".equalsIgnoreCase(name)) {
                     indexName = value;
                 } else {
                     if (firstTime) {
@@ -233,7 +240,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
             if (indexName == null) {
                 indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
-                log.warn("IndexName column not found in query polling for index properties:\nQuery: "
+                log.warn("index_and_column_name column not found in query polling for index properties:\nQuery: "
                          + sql.toString() + "\nQuery result: " + valueList.toString()
                          + "\nWe will use the following as an index name: " + indexName);
             }

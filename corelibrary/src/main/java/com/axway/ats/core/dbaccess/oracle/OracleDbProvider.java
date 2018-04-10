@@ -36,7 +36,6 @@ import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.OracleColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.IoUtils;
-import com.axway.ats.core.utils.StringUtils;
 
 /**
  * Provides Oracle specific database queries.
@@ -44,8 +43,6 @@ import com.axway.ats.core.utils.StringUtils;
 public class OracleDbProvider extends AbstractDbProvider {
 
     private static final Logger log = Logger.getLogger(OracleDbProvider.class);
-    
-    private final String INDEX_KEY_DELIMITER = "__";
 
     /**
      * Constructor to create authenticated connection to a database.
@@ -187,58 +184,49 @@ public class OracleDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT");
-        sql.append(" ais.INDEX_NAME,");
-        sql.append(" ais.PARTITION_NAME,");
-        sql.append(" ais.PARTITION_POSITION,");
-        sql.append(" ais.OBJECT_TYPE");
-        sql.append(" FROM");
-        sql.append(" ALL_IND_STATISTICS ais");
-        sql.append(" WHERE TABLE_OWNER='" + dbConnection.getUser() + "'");
-        sql.append(" AND TABLE_NAME='" + tableName + "'");
-        sql.append(" AND ais.INDEX_NAME NOT LIKE 'SYS_%'"); // skip system indexes
+        sql.append("SELECT d_ind.index_name || '|-|' || ind_col.column_name as index_and_column_name,")
+           .append(" d_ind.index_name AS index_name,")
+           .append(" ind_col.column_name,")
+           .append(" d_ind.index_type,")
+           .append(" ind_col.column_position,")
+           .append(" d_ind.uniqueness,")
+           .append(" d_ind.partitioned")
+           .append(" FROM all_indexes d_ind,")
+           .append(" all_ind_columns ind_col")
+           .append(" WHERE d_ind.table_owner=ind_col.table_owner AND")
+           .append(" d_ind.index_name=ind_col.index_name AND")
+           .append(" d_ind.table_owner='" + dbConnection.getUser() + "' AND")
+           .append(" d_ind.table_name='" + tableName + "'");
 
         Map<String, String> indexes = new HashMap<>();
         for (DbRecordValuesList valueList : select(sql.toString())) {
             StringBuilder info = new StringBuilder();
             boolean firstTime = true;
-            String indexKey = null;
+            String indexName = null;
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
                 
-                if ("INDEX_NAME".equalsIgnoreCase(name)) {
-                    if (StringUtils.isNullOrEmpty(indexKey)) {
-                        indexKey = value;
-                    } else {
-                        indexKey += INDEX_KEY_DELIMITER + value;
-                    }
-                }
-                
-                if ("PARTITION_NAME".equalsIgnoreCase(name)) {
-                    if (StringUtils.isNullOrEmpty(indexKey)) {
-                        indexKey = value;
-                    } else {
-                        indexKey += INDEX_KEY_DELIMITER + value;
-                    }
-                }
-                
-                if (firstTime) {
-                    firstTime = false;
-                    info.append(name + "=" + value);
+                if ("index_and_column_name".equalsIgnoreCase(name)) {
+                    indexName = value;
                 } else {
-                    info.append(", " + name + "=" + value);
+                    if (firstTime) {
+                        firstTime = false;
+                        info.append(name + "=" + value);
+                    } else {
+                        info.append(", " + name + "=" + value);
+                    }
                 }
             }
 
-            if (indexKey == null) {
-                indexKey = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
-                log.warn("IndexName column not found in query polling for index properties:\nQuery: "
+            if (indexName == null) {
+                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+                log.warn("index_and_column_name column not found in query polling for index properties:\nQuery: "
                          + sql.toString() + "\nQuery result: " + valueList.toString()
-                         + "\nWe will use the following as an index name: " + indexKey);
+                         + "\nWe will use the following as an index name: " + indexName);
             }
 
-            indexes.put(indexKey, info.toString());
+            indexes.put(indexName, info.toString());
         }
 
         return indexes;
