@@ -4,7 +4,7 @@
 
     <groupId>com.axway.ats.framework</groupId>
     <artifactId>ats-framework</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0-SPT-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ATS-Framework</name>
     <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
