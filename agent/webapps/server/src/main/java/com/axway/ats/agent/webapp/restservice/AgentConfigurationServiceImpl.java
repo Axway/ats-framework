@@ -304,10 +304,10 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         // create the new appender
         PassiveDbAppender attachedAppender = new PassiveDbAppender();
 
+        attachedAppender.setAppenderConfig(appenderConfiguration);
+        
         // calculate the time stamp offset, between the test executor and the agent
         attachedAppender.calculateTimeOffset(timestamp);
-
-        attachedAppender.setAppenderConfig(appenderConfiguration);
         // use a default pattern, as we log in the db
         attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
         attachedAppender.activateOptions();
