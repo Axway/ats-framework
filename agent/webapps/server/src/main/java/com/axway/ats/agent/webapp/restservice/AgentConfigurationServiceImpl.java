@@ -56,7 +56,8 @@ import com.axway.ats.log.autodb.TestCaseState;
 @Path( "configuration")
 public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
-    protected AtsDbLogger     dbLog                 = AtsDbLogger.getLogger(AgentConfigurationServiceImpl.class.getName());
+    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
+    protected AtsDbLogger     dbLog                 = AtsDbLogger.getLogger(AgentConfigurationServiceImpl.class.getName(), true);
 
     private static int        lastRunId             = -1;
 

@@ -43,7 +43,10 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
 
     protected AbstractClientExecutor() {
 
-        log = AtsDbLogger.getLogger(this.getClass().getName());
+        /** since we want to be able to execute actions on the agent even if there is no db appender attached,
+         *  we skip the check whether that appender is attached, by passing true as a second argument
+         */
+        log = AtsDbLogger.getLogger(this.getClass().getName(), true);
     }
 
     public abstract Object executeAction( ActionRequest actionRequest ) throws AgentException;
@@ -81,6 +84,10 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
      */
     public int retrieveQueueId( int sequence, String hostsList ) throws AgentException {
 
+        if(!ActiveDbAppender.isAttached) {
+            throw new AgentException("Unable to retrieve queue id from ATS Log database. Db appender is not attached.");
+        }
+        
         int queueId;
         try {
             if (dbAccess == null) {

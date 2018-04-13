@@ -31,6 +31,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.model.TestCaseResult;
 
 /**
@@ -45,7 +46,11 @@ public class AtsJunitTestListener extends RunListener {
 
     private static final Logger      log                              = Logger.getLogger(AtsJunitTestListener.class);
 
-    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger("com.axway.ats");
+    /*
+     * skip checking whether ActiveDbAppender is attached in order for test execution to proceed
+     * Note that additional check in each of the methods check once again whether that appender is attached
+     * */
+    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger("com.axway.ats", true);
 
     private static final String      MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
 
@@ -78,6 +83,10 @@ public class AtsJunitTestListener extends RunListener {
     */
     @Override
     public void testRunStarted( Description description ) throws Exception {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) { // currently always returns null for Description parameter
             log.debug("testRunStarted(): Called before any test is run. Description of all tests expected: "
@@ -108,6 +117,10 @@ public class AtsJunitTestListener extends RunListener {
     */
     @Override
     public void testRunFinished( Result result ) throws Exception {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("testRunFinished(): result " + "| failure count: " + result.getFailureCount()
@@ -129,6 +142,10 @@ public class AtsJunitTestListener extends RunListener {
      */
     @Override
     public void testAssumptionFailure( Failure failure ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("testAssumptionFailure(): Test failed: " + failure.toString() + "| Description: "
@@ -148,6 +165,10 @@ public class AtsJunitTestListener extends RunListener {
      */
     @Override
     public void testFinished( Description description ) throws Exception {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("testFinished(): description: " + description.getDisplayName() + "| is suite: "
@@ -188,6 +209,10 @@ public class AtsJunitTestListener extends RunListener {
      */
     @Override
     public void testStarted( Description description ) throws Exception {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) {
 
@@ -235,6 +260,10 @@ public class AtsJunitTestListener extends RunListener {
      */
     @Override
     public void testFailure( Failure failure ) throws Exception {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("testFailure(): Test failed: " + failure.toString() + "| Description: "
@@ -273,6 +302,10 @@ public class AtsJunitTestListener extends RunListener {
      */
     @Override
     public void testIgnored( Description description ) throws Exception {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (log.isDebugEnabled()) {
             log.info("testIgnored(): description: " + description.getDisplayName() + "| is test: "

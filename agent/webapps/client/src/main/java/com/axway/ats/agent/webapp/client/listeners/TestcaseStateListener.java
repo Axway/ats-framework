@@ -148,7 +148,8 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      */
     private TestCaseState getCurrentTestCaseState() {
 
-        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger(ActionClient.class.getName())
+        /** We want to send event to the agents, even if db appender is not attached, so we skip that check **/
+        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger(ActionClient.class.getName(), true)
                                                                           .getCurrentTestCaseState();
         if (testCaseState == null) {
             return null;

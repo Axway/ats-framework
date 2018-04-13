@@ -28,7 +28,10 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  */
 public class RetryAnalyzer implements IRetryAnalyzer {
 
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats");
+    /**
+     * Do not throw exception if db appender is not attached. (by passing true as a 2nd argument)
+     * */
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
 
     private String                   lastTestName;
 

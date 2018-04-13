@@ -56,7 +56,10 @@ import com.axway.ats.log.model.TestCaseResult;
 
 public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener2 {
 
-    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats");
+    /** Skip checking whether ActiveDbAppender is attached. 
+     *  This is done in order to enable execution of tests when that appender is not attached/presented
+     * */
+    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats", true);
 
     private static final String      MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
 
@@ -95,6 +98,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     @Override
     public void beforeInvocation( IInvokedMethod method, ITestResult testResult, ITestContext context ) {
 
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
+        
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
 
             if (method.getTestMethod().isBeforeClassConfiguration()) { // check if method is @BeforeClass
@@ -191,6 +198,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     @Override
     public void afterInvocation( IInvokedMethod method, ITestResult testResult, ITestContext context ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
 
@@ -309,6 +320,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     @Override
     public void onStart( ISuite suite ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         // get the run name specified by the user
         String runName = CommonConfigurator.getInstance().getRunName();
@@ -339,6 +354,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     @Override
     public void onFinish( ISuite suite ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         if (currentSuiteName != null) {
 

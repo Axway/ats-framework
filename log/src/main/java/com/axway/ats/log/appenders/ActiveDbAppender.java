@@ -25,6 +25,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.TimeUtils;
+import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.LogEventRequest;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
@@ -46,6 +47,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
     private static final long       EVENT_WAIT_LONG_TIMEOUT                  = 15 * 60 * 1000;
     private static ActiveDbAppender instance                                 = null;
 
+    public static boolean           isAttached                               = false;
+
     /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
     public static boolean           isBeforeAndAfterMessagesLoggingSupported = false;
 
@@ -54,6 +57,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
      * We use this mutex for synchronization aid. 
      */
     private Object                  listenerMutex                            = new Object();
+    
+    public static final String DUMMY_DB_HOST = "ATS_NO_DB_HOST_SET";
+    public static final String DUMMY_DB_DATABASE = "ATS_NO_DB_NAME_SET";
+    public static final String DUMMY_DB_USER = "ATS_NO_DB_USER_SET";
+    public static final String DUMMY_DB_PASSWORD = "ATS_NO_DB_PASSWORD_SET";
 
     /**
      * Constructor
@@ -61,7 +69,27 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public ActiveDbAppender() {
 
         super();
-
+        
+        /** create dummy appender configuration 
+         *  This configuration will be replaced with one from log4j.xml file
+         * */
+        appenderConfig.setHost(DUMMY_DB_HOST);
+        appenderConfig.setDatabase(DUMMY_DB_DATABASE);
+        appenderConfig.setUser(DUMMY_DB_USER);
+        appenderConfig.setPassword(DUMMY_DB_PASSWORD);
+        
+        /**
+         * Create dummy event request processor.
+         * This processor will be replaced once config from log4j.xml is loaded
+         * */
+        eventProcessor = new DbEventRequestProcessor();
+    }
+    
+    @Override
+    public void activateOptions(){
+        super.activateOptions();
+        
+        isAttached = true;
     }
 
     @Override
@@ -105,7 +133,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     return;
                 }
                 case END_TEST_CASE: {
-                    
+
                     // on Test Executor side we block until the test case start is committed in the DB
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
@@ -260,13 +288,13 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         appenderConfig.setHost(host);
     }
-    
+
     public String getPort() {
 
         return appenderConfig.getPort();
     }
-    
-    public void setPort(String port) {
+
+    public void setPort( String port ) {
 
         appenderConfig.setPort(port);
     }
@@ -317,10 +345,27 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
                 if (appender instanceof ActiveDbAppender) {
                     instance = (ActiveDbAppender) appender;
+                    isAttached = true;
+                    return instance;
                 }
             }
         }
+        
+        if (instance != null) {
+            return instance;
+        }
 
+        /*
+         * Configuration in log4j.xml file was not found for ActiveDbAppender
+         * A dummy com.axway.ats.log.autodb.DbEventRequestProcessor is
+         * created in order to prevent NPE when invoking methods such as getRunId()
+         */
+        new AtsConsoleLogger(ActiveDbAppender.class).warn(
+                                                          "ATS Database appender is not specified in log4j.xml file. "
+                                                          + "Methods such as ActiveDbAppender@getRunId() will not work.");
+        
+        isAttached = false;
+        instance = new ActiveDbAppender();
         return instance;
     }
 
@@ -369,7 +414,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 listenerMutex.notifyAll();
             }
         }
-        
+
         public void onTestcaseFinished() {
 
             synchronized (listenerMutex) {
@@ -377,4 +422,5 @@ public class ActiveDbAppender extends AbstractDbAppender {
             }
         }
     }
+
 }

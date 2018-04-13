@@ -174,6 +174,16 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * Keeps the ID of the last ended suite
      * */
     private int                           lastEndedSuiteId           = -1;
+    
+    /**
+     * Do not use this constructor.
+     * It is implemented only to be used, when a dummy db event request processor is needed to be created.
+     * Currently the only case that is needed is when ActiveDbAppender config info is not found in log4j.xml
+     * */
+    public DbEventRequestProcessor() {
+        
+        this.eventProcessorState = new EventProcessorState();
+    }
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     boolean isBatchMode ) throws DatabaseAccessException {

@@ -33,6 +33,7 @@ import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
  * Suite listener to capture test events from TestNG<br>
@@ -50,10 +51,18 @@ import com.axway.ats.log.AtsDbLogger;
 @PublicAtsApi
 public class AtsTestngSuiteListener implements ISuiteListener {
 
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats");
+    /*
+     * skip checking whether ActiveDbAppender is attached in order for test execution to proceed
+     * Note that additional check in each of the methods check once again whether that appender is attached
+     * */
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
 
     public void onStart( ISuite suite ) {
 
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
+        
         // get the run name specified by the user
         String runName = CommonConfigurator.getInstance().getRunName();
         if (runName.equals(CommonConfigurator.DEFAULT_RUN_NAME)) {
@@ -93,6 +102,10 @@ public class AtsTestngSuiteListener implements ISuiteListener {
     }
 
     public void onFinish( ISuite suite ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         // clear the lastSuiteName
         AtsTestngTestListener.resetLastSuiteName();

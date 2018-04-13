@@ -56,7 +56,11 @@ import com.axway.ats.log.model.TestCaseResult;
 @PublicAtsApi
 public class AtsTestngTestListener extends TestListenerAdapter {
 
-    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats");
+    /*
+     * skip checking whether ActiveDbAppender is attached in order for test execution to proceed
+     * Note that additional check in each of the methods check once again whether that appender is attached
+     * */
+    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats", true);
 
     private static final String      MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
 
@@ -87,6 +91,10 @@ public class AtsTestngTestListener extends TestListenerAdapter {
      */
     @Override
     public void onTestStart( ITestResult testResult ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
@@ -141,6 +149,10 @@ public class AtsTestngTestListener extends TestListenerAdapter {
      */
     @Override
     public void onTestFailure( ITestResult testResult ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         try {
             //Check if the test was successfully started, if not - make it started and then end it with failure
@@ -176,6 +188,10 @@ public class AtsTestngTestListener extends TestListenerAdapter {
      */
     @Override
     public void onTestSuccess( ITestResult testResult ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         sendTestEndEventToAgents();
         boolean shouldTestFail = TestcaseStateEventsDispacher.getInstance().hasAnyQueueFailed();
@@ -201,6 +217,10 @@ public class AtsTestngTestListener extends TestListenerAdapter {
      */
     @Override
     public void onTestSkipped( ITestResult testResult ) {
+        
+        if (!ActiveDbAppender.isAttached) {
+            return;
+        }
 
         //Check if the test was successfully started, if not - make it started and then end it with failure
         String testName = testResult.getMethod().toString();

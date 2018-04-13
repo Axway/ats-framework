@@ -29,7 +29,11 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  */
 public class AtsTestngClassListener {
 
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats");
+    /*
+     * skip checking whether ActiveDbAppender is attached in order for test execution to proceed
+     * Note that additional check in each of the methods check once again whether that appender is attached
+     * */
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
     private static String            lastSuiteName;
 
     /**
@@ -38,7 +42,7 @@ public class AtsTestngClassListener {
      */
     public void onStart( ITestClass testClass ) {
 
-        if (ActiveDbAppender.getCurrentInstance() != null) {
+        if (ActiveDbAppender.isAttached) {
 
             String suiteName = testClass.getName();
             String suiteSimpleName = suiteName.substring(suiteName.lastIndexOf('.') + 1);
@@ -54,7 +58,7 @@ public class AtsTestngClassListener {
      */
     public void onFinish() {
 
-        if (ActiveDbAppender.getCurrentInstance() != null) {
+        if (ActiveDbAppender.isAttached) {
             if (lastSuiteName != null) {
                 logger.endSuite();
                 lastSuiteName = null;

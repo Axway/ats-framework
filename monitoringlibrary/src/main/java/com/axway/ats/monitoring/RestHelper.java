@@ -20,12 +20,13 @@ import java.io.IOException;
 
 import com.axway.ats.action.rest.RestClient;
 import com.axway.ats.action.rest.RestClient.RESTDebugLevel;
+import com.axway.ats.action.rest.RestMediaType;
+import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.utils.IoUtils;
-import com.axway.ats.action.rest.RestMediaType;
-import com.axway.ats.action.rest.RestResponse;
+import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
  * This class is used to keep track of information, needed for each monitoring
@@ -73,6 +74,11 @@ public class RestHelper {
 
     public RestResponse post( String atsAgentIp, String baseRestUri, String relativeRestUri, Object[] values ) {
 
+        // check if ActiveDbAppender is attached
+        if (!ActiveDbAppender.isAttached) {
+            throw new IllegalStateException("Unable to execute monitoring operation.ATS DB Appender is not presented in log4j.xml");
+        }
+
         RestResponse response = null;
 
         initializeRestClient(atsAgentIp, baseRestUri, relativeRestUri);
@@ -115,9 +121,16 @@ public class RestHelper {
         response = this.restClient.postObject(jsonBody);
 
         if (relativeRestUri.endsWith(INITIALIZE_DB_CONNECTION_RELATIVE_URI)) {
-            this.uid = response.getBodyAsJson().getString(ApplicationContext.ATS_UID_SESSION_TOKEN);
-            this.agentVersion = response.getBodyAsJson().getString("agent_version");
-            synchronizeUidWithLocalOne();
+            if (response.getStatusCode() == 200) {
+                this.uid = response.getBodyAsJson().getString(ApplicationContext.ATS_UID_SESSION_TOKEN);
+                this.agentVersion = response.getBodyAsJson().getString("agent_version");
+                synchronizeUidWithLocalOne();
+            } else {
+                String errorMessage = "Exception occured on agent '" + atsAgentIp + "'\nAgent Exception:\n"
+                                      + response.getBodyAsString();
+                throw new RuntimeException(errorMessage);
+            }
+
         }
 
         return response;

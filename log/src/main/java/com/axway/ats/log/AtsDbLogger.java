@@ -70,21 +70,54 @@ public class AtsDbLogger {
 
     protected Logger            logger;
 
-    private AtsDbLogger( Logger logger ) {
+    private AtsDbLogger( Logger logger, boolean skipAppenderCheck) {
 
         this.logger = logger;
+        // check if the ActiveDbAppender is specified in log4j.xml
+        if (!skipAppenderCheck) {
+            if (!ActiveDbAppender.isAttached) {
+                throw new IllegalStateException("ATS Database appender not specified in log4j.xml file.");
+            }
+        }
+
     }
 
+    @PublicAtsApi
     public static synchronized AtsDbLogger getLogger(
                                                       String name ) {
 
-        return new AtsDbLogger(Logger.getLogger(name));
+        return new AtsDbLogger(Logger.getLogger(name), false);
     }
 
+    @PublicAtsApi
     public static synchronized AtsDbLogger getLogger(
                                                       Logger logger ) {
 
-        return new AtsDbLogger(logger);
+        return new AtsDbLogger(logger, false);
+    }
+
+    /**
+     * This method is intended for internal (by ATS devs) usage only.
+     * @param name the name of the logger
+     * @param skipAppenderCheck enable/disable check for availability of db appender
+     * 
+     *
+     * */
+    public static synchronized AtsDbLogger getLogger(
+                                                      String name, boolean skipAppenderCheck) {
+
+        return new AtsDbLogger(Logger.getLogger(name), skipAppenderCheck);
+    }
+
+    /**
+     * This method is intended for internal (by ATS devs) usage only.
+     * @param logger the Apache log4j logger
+     * @param skipAppenderCheck enable/disable check for availability of db appender
+     * */
+    public static synchronized AtsDbLogger getLogger(
+                                                      Logger logger,  boolean skipAppenderCheck ) {
+
+        return new AtsDbLogger(logger, skipAppenderCheck);
     }
 
     public Logger getInternalLogger() {

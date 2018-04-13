@@ -678,7 +678,6 @@ public class SystemMonitor {
 
     }
 
-
     /**
      * Removes the PassiveDbAppender on the agent, that was appended via
      * initializeDbConnection(), and leaves the current testcase.
@@ -693,6 +692,10 @@ public class SystemMonitor {
 
     private void initializeDbConnection(
                                          String monitoredHost ) {
+
+        if (!ActiveDbAppender.isAttached) {
+            throw new MonitoringException("Db appender is not presented in log4j.xml");
+        }
 
         DbAppenderConfiguration appenderConfiguration = ActiveDbAppender.getCurrentInstance()
                                                                         .getAppenderConfig();
@@ -748,6 +751,13 @@ public class SystemMonitor {
 
         TestCaseState testCaseState = AtsDbLogger.getLogger(SystemMonitor.class.getName())
                                                  .getCurrentTestCaseState();
+
+        if (testCaseState.getRunId() < 1 || testCaseState.getTestcaseId() < 1) {
+
+            throw new MonitoringException("Run ID and/or Testcase ID are invallid. "
+                                          + "Did you attach AtsTestngListener to your Test class?");
+
+        }
 
         String errorMsg = performMonitoringOperation(monitoredHost,
                                                      RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
