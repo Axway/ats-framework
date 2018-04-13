@@ -220,11 +220,15 @@ public class HostUtils {
 
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-            log.debug( "---> Start Iterating All Network Interfaces!" );
+            if (log.isTraceEnabled()) {
+                log.trace( "Start iterating all network interfaces!" );
+            }
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
                 if (!netInterface.isLoopback()) {
-                    log.debug( "---> Start Iterating Interface '" + netInterface.getName() + "'!" );
+                    if (log.isTraceEnabled()) {
+                        log.trace( "    Start iterating interface '" + netInterface.getName() + "'" );
+                    }
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
                     InetAddress ipAddress = null;
@@ -257,7 +261,9 @@ public class HostUtils {
                     }
                 }
             }
-            log.debug( "---> Finish Iterating All Network Interfaces!" );
+            if (log.isTraceEnabled()) {
+                log.trace( "Finish iterating all network interfaces!" );
+            }
         } catch (SocketException se) {
             log.error("Error obtaining the local host address", se);
         }
