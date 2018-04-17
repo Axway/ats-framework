@@ -23,8 +23,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.log4j.BasicConfigurator;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.atsconfig.exceptions.AtsConfigurationException;
@@ -43,11 +47,13 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class AtsInfrastructureManager {
 
-    private static AbstractAtsLogger log                     = AbstractAtsLogger.getDefaultInstance(AtsInfrastructureManager.class);
+    private static AbstractAtsLogger log                     = AbstractAtsLogger.getDefaultInstance( AtsInfrastructureManager.class );
 
     private static final String      TOP_LEVEL_ACTION_PREFIX = "***** ";
 
     private AtsProjectConfiguration  projectConfiguration;
+
+    private Map<String, String>      sshClientConfigurationProperties;
 
     public enum ApplicationStatus {
 
@@ -56,7 +62,9 @@ public class AtsInfrastructureManager {
 
     public AtsInfrastructureManager( String atsConfigurationFile ) throws AtsConfigurationException {
 
-        this.projectConfiguration = new AtsProjectConfiguration(atsConfigurationFile);
+        this.projectConfiguration = new AtsProjectConfiguration( atsConfigurationFile );
+
+        this.sshClientConfigurationProperties = new HashMap<>();
     }
 
     public void reloadConfigurationFile() {
@@ -74,14 +82,31 @@ public class AtsInfrastructureManager {
     }
 
     /**
+     * Currently we use internally JCraft's JSch library
+     * which can be configured through this method.
+     * 
+     * You need to find the acceptable key-value configuration pairs in the JSch documentation.
+     * They might be also available in the source code of com.jcraft.jsch.JSch
+     * 
+     * Example: The default value of "PreferredAuthentications" is "gssapi-with-mic,publickey,keyboard-interactive,password" 
+     * 
+     * @param key configuration key
+     * @param value configuration value
+     */
+    public void setSshClientConfigurationProperty( String key, String value ) {
+
+        sshClientConfigurationProperties.put( key, value );
+    }
+
+    /**
      * Start all the ATS Agents declared in the configuration
      *
      * @throws AtsManagerException
      */
     public void startAllAgents() throws AtsManagerException {
 
-        for (Entry<String, AgentInfo> agentData : projectConfiguration.getAgents().entrySet()) {
-            startAnyApplication(agentData.getKey(), true);
+        for( Entry<String, AgentInfo> agentData : projectConfiguration.getAgents().entrySet() ) {
+            startAnyApplication( agentData.getKey(), true );
         }
     }
 
@@ -92,8 +117,8 @@ public class AtsInfrastructureManager {
      */
     public void restartAllAgents() throws AtsManagerException {
 
-        for (Entry<String, AgentInfo> agentData : projectConfiguration.getAgents().entrySet()) {
-            restartAnyApplication(agentData.getKey());
+        for( Entry<String, AgentInfo> agentData : projectConfiguration.getAgents().entrySet() ) {
+            restartAnyApplication( agentData.getKey() );
         }
     }
 
@@ -104,8 +129,8 @@ public class AtsInfrastructureManager {
      */
     public void stopAllAgents() throws AtsManagerException {
 
-        for (Entry<String, AgentInfo> agentData : projectConfiguration.getAgents().entrySet()) {
-            stopAnyApplication(agentData.getKey(), true);
+        for( Entry<String, AgentInfo> agentData : projectConfiguration.getAgents().entrySet() ) {
+            stopAnyApplication( agentData.getKey(), true );
         }
     }
 
@@ -113,20 +138,20 @@ public class AtsInfrastructureManager {
                                                   String anyApplicationAlias,
                                                   boolean isTopLevelAction ) throws AtsManagerException {
 
-        return getController(anyApplicationAlias).start(isTopLevelAction);
+        return getController( anyApplicationAlias ).start( createNewSshClient(), isTopLevelAction );
     }
 
     public ApplicationStatus stopAnyApplication(
                                                  String anyApplicationAlias,
                                                  boolean isTopLevelAction ) throws AtsManagerException {
 
-        return getController(anyApplicationAlias).stop(isTopLevelAction);
+        return getController( anyApplicationAlias ).stop( createNewSshClient(), isTopLevelAction );
     }
 
     public ApplicationStatus restartAnyApplication(
                                                     String anyApplicationAlias ) throws AtsManagerException {
 
-        return getController(anyApplicationAlias).restart();
+        return getController( anyApplicationAlias ).restart( createNewSshClient() );
     }
 
     /**
@@ -139,9 +164,9 @@ public class AtsInfrastructureManager {
     public ApplicationStatus getAnyApplicationStatus(
                                                       String anyApplicationAlias ) throws AtsManagerException {
 
-        JschSshClient sshClient = new JschSshClient();
+        JschSshClient sshClient = createNewSshClient();
         try {
-            return getController(anyApplicationAlias).getStatus(sshClient, true);
+            return getController( anyApplicationAlias ).getStatus( sshClient, true );
         } finally {
             sshClient.disconnect();
         }
@@ -156,75 +181,75 @@ public class AtsInfrastructureManager {
     public ApplicationStatus installAgent(
                                            String agentAlias ) throws AtsManagerException {
 
-        AgentInfo agentInfo = getAgentInfo(agentAlias);
+        AgentInfo agentInfo = getAgentInfo( agentAlias );
 
-        log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to install " + agentInfo.getDescription());
+        log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to install " + agentInfo.getDescription() );
 
         String agentZip = projectConfiguration.getSourceProject().getAgentZip();
-        if (StringUtils.isNullOrEmpty(agentZip)) {
-            throw new AtsManagerException("The agent zip source file is not specified in the configuration");
+        if( StringUtils.isNullOrEmpty( agentZip ) ) {
+            throw new AtsManagerException( "The agent zip source file is not specified in the configuration" );
         }
 
         // extract agent.zip to a temporary local directory
-        String agentFolder = IoUtils.normalizeDirPath(extractAgentZip(agentZip));
+        String agentFolder = IoUtils.normalizeDirPath( extractAgentZip( agentZip ) );
 
         JschSftpClient sftpClient = new JschSftpClient();
         try {
             // upload clean agent
-            log.info("Upload clean " + agentInfo.getDescription());
+            log.info( "Upload clean " + agentInfo.getDescription() );
             sftpClient.connect(agentInfo.getSystemUser(),
                                agentInfo.getSystemPassword(),
                                agentInfo.getHost(),
                                agentInfo.getSSHPort(),
                                agentInfo.getSSHPrivateKey(),
-                               agentInfo.getSSHPrivateKeyPassword());
+                                agentInfo.getSSHPrivateKeyPassword() );
 
-            if (sftpClient.isRemoteFileOrDirectoryExisting(agentInfo.getSftpHome())) {
-                sftpClient.purgeRemoteDirectoryContents(agentInfo.getSftpHome());
+            if( sftpClient.isRemoteFileOrDirectoryExisting( agentInfo.getSftpHome() ) ) {
+                sftpClient.purgeRemoteDirectoryContents( agentInfo.getSftpHome() );
             }
-            sftpClient.uploadDirectory(agentFolder, agentInfo.getSftpHome(), true);
+            sftpClient.uploadDirectory( agentFolder, agentInfo.getSftpHome(), true );
 
             // upload custom agent dependencies
-            log.info("Upload custom agent dependencies");
-            for (PathInfo pathInfo : agentInfo.getPaths()) {
-                if (pathInfo.isFile()) {
-                    if (!sftpClient.isRemoteFileOrDirectoryExisting(pathInfo.getSftpPath())) {
+            log.info( "Upload custom agent dependencies" );
+            for( PathInfo pathInfo : agentInfo.getPaths() ) {
+                if( pathInfo.isFile() ) {
+                    if( !sftpClient.isRemoteFileOrDirectoryExisting( pathInfo.getSftpPath() ) ) {
 
-                        String fileName = IoUtils.getFileName(pathInfo.getSftpPath());
-                        String filePath = projectConfiguration.getSourceProject().findFile(fileName);
-                        if (filePath == null) {
-                            log.warn("File '" + fileName
-                                     + "' can't be found in the source project libraries,"
-                                     + " so it can't be uploaded to " + agentInfo.getDescription());
+                        String fileName = IoUtils.getFileName( pathInfo.getSftpPath() );
+                        String filePath = projectConfiguration.getSourceProject().findFile( fileName );
+                        if( filePath == null ) {
+                            log.warn( "File '" + fileName
+                                      + "' can't be found in the source project libraries,"
+                                      + " so it can't be uploaded to " + agentInfo.getDescription() );
                             continue;
                         }
 
-                        if (!new File(filePath).exists()) {
-                            log.warn("Local file '" + filePath + "' does not exist on the local system,"
-                                     + " so it can't be uploaded to " + agentInfo.getDescription());
+                        if( !new File( filePath ).exists() ) {
+                            log.warn( "Local file '" + filePath + "' does not exist on the local system,"
+                                      + " so it can't be uploaded to " + agentInfo.getDescription() );
                             continue;
                         }
 
-                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf('/');
-                        if (lastSlashIdx > 0) {
-                            sftpClient.makeRemoteDirectories(pathInfo.getSftpPath()
-                                                                     .substring(0, lastSlashIdx));
+                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf( '/' );
+                        if( lastSlashIdx > 0 ) {
+                            sftpClient.makeRemoteDirectories( pathInfo.getSftpPath()
+                                                                      .substring( 0, lastSlashIdx ) );
                         }
 
-                        sftpClient.uploadFile(filePath, pathInfo.getSftpPath());
+                        sftpClient.uploadFile( filePath, pathInfo.getSftpPath() );
                     }
                 } else {
-                    log.warn("Uploading directories into ATS agent is still not supported");
+                    log.warn( "Uploading directories into ATS agent is still not supported" );
                 }
             }
 
             // make agent start file to be executable
-            makeScriptsExecutable(agentInfo);
+            makeScriptsExecutable( agentInfo );
 
             // execute post install shell command, if any
-            executePostActionShellCommand(agentInfo, "install", agentInfo.getPostInstallShellCommand());
+            executePostActionShellCommand( agentInfo, "install", agentInfo.getPostInstallShellCommand() );
 
-            log.info(TOP_LEVEL_ACTION_PREFIX + "Successfully installed " + agentInfo.getDescription());
+            log.info( TOP_LEVEL_ACTION_PREFIX + "Successfully installed " + agentInfo.getDescription() );
             return ApplicationStatus.STOPPED;
         } finally {
 
@@ -241,15 +266,15 @@ public class AtsInfrastructureManager {
      */
     public ApplicationStatus lightUpgradeAgent(
                                                 String agentAlias,
-                                                ApplicationStatus previousStatus ) throws AtsManagerException {
+                               ApplicationStatus previousStatus ) throws AtsManagerException {
 
         // we enter here when the agent is STARTED or STOPPED
         ApplicationStatus newStatus = previousStatus;
 
-        AgentInfo agentInfo = getAgentInfo(agentAlias);
+        AgentInfo agentInfo = getAgentInfo( agentAlias );
 
-        log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform light upgrade on "
-                 + agentInfo.getDescription());
+        log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform light upgrade on "
+                  + agentInfo.getDescription() );
 
         JschSftpClient sftpClient = new JschSftpClient();
         try {
@@ -258,48 +283,48 @@ public class AtsInfrastructureManager {
                                agentInfo.getHost(),
                                agentInfo.getSSHPort(),
                                agentInfo.getSSHPrivateKey(),
-                               agentInfo.getSSHPrivateKeyPassword());
+                               agentInfo.getSSHPrivateKeyPassword() );
 
             // Stop the agent if at least one of the file upgrades requires it
-            if (newStatus == ApplicationStatus.STARTED) {
-                for (PathInfo pathInfo : agentInfo.getPaths()) {
+            if( newStatus == ApplicationStatus.STARTED ) {
+                for( PathInfo pathInfo : agentInfo.getPaths() ) {
 
-                    if (pathInfo.isUpgrade() && mustUpgradeOnStoppedAgent(pathInfo.getSftpPath())) {
+                    if( pathInfo.isUpgrade() && mustUpgradeOnStoppedAgent( pathInfo.getSftpPath() ) ) {
 
-                        log.info("We must stop the agent prior to upgrading " + pathInfo.getPath());
+                        log.info( "We must stop the agent prior to upgrading " + pathInfo.getPath() );
                         try {
-                            newStatus = stopAnyApplication(agentAlias, false);
+                            newStatus = stopAnyApplication( agentAlias, false );
                             break;
-                        } catch (AtsManagerException e) {
-                            throw new AtsManagerException("Canceling upgrade as could not stop the agent",
-                                                          e);
+                        } catch( AtsManagerException e ) {
+                            throw new AtsManagerException( "Canceling upgrade as could not stop the agent",
+                                                           e );
                         }
                     }
                 }
             }
 
             // Do the actual upgrade
-            for (PathInfo pathInfo : agentInfo.getPaths()) {
+            for( PathInfo pathInfo : agentInfo.getPaths() ) {
 
-                if (pathInfo.isUpgrade()) {
+                if( pathInfo.isUpgrade() ) {
 
-                    if (pathInfo.isFile()) {
+                    if( pathInfo.isFile() ) {
 
-                        String fileName = IoUtils.getFileName(pathInfo.getSftpPath());
-                        String filePath = projectConfiguration.getSourceProject().findFile(fileName);
-                        if (filePath == null) {
-                            log.warn("File '" + fileName
-                                     + "' can not be found in the source project libraries,"
-                                     + " so we can not upgrade it on the target agent");
+                        String fileName = IoUtils.getFileName( pathInfo.getSftpPath() );
+                        String filePath = projectConfiguration.getSourceProject().findFile( fileName );
+                        if( filePath == null ) {
+                            log.warn( "File '" + fileName
+                                      + "' can not be found in the source project libraries,"
+                                      + " so we can not upgrade it on the target agent" );
                             continue;
                         }
                         // create directories to the file, only if not exist
-                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf('/');
-                        if (lastSlashIdx > 0) {
-                            sftpClient.makeRemoteDirectories(pathInfo.getSftpPath()
-                                                                     .substring(0, lastSlashIdx));
+                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf( '/' );
+                        if( lastSlashIdx > 0 ) {
+                            sftpClient.makeRemoteDirectories( pathInfo.getSftpPath()
+                                                                      .substring( 0, lastSlashIdx ) );
                         }
-                        sftpClient.uploadFile(filePath, pathInfo.getSftpPath());
+                        sftpClient.uploadFile( filePath, pathInfo.getSftpPath() );
                     } else {
                         // TODO: upgrade directory
                     }
@@ -307,19 +332,19 @@ public class AtsInfrastructureManager {
             }
 
             // Start the agent if we stopped it
-            if (previousStatus == ApplicationStatus.STARTED && newStatus == ApplicationStatus.STOPPED) {
+            if( previousStatus == ApplicationStatus.STARTED && newStatus == ApplicationStatus.STOPPED ) {
 
-                log.info("We stopped the agent while upgrading. Now we will start it back on");
-                newStatus = startAnyApplication(agentAlias, false);
+                log.info( "We stopped the agent while upgrading. Now we will start it back on" );
+                newStatus = startAnyApplication( agentAlias, false );
 
-                log.info(TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
-                         + " is successfully upgraded");
+                log.info( TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
+                          + " is successfully upgraded" );
                 return newStatus;
             } else {
                 // agent status was not changed in this method
 
-                log.info(TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
-                         + " is successfully upgraded");
+                log.info( TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
+                          + " is successfully upgraded" );
                 return previousStatus;
             }
         } finally {
@@ -339,18 +364,18 @@ public class AtsInfrastructureManager {
                                            ApplicationStatus previousStatus ) throws AtsManagerException {
 
         // we enter here when the agent is STARTED or STOPPED
-        AgentInfo agentInfo = getAgentInfo(agentAlias);
+        AgentInfo agentInfo = getAgentInfo( agentAlias );
 
-        log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform full upgrade on "
-                 + agentInfo.getDescription());
+        log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform full upgrade on "
+                  + agentInfo.getDescription() );
 
         String agentZip = projectConfiguration.getSourceProject().getAgentZip();
-        if (StringUtils.isNullOrEmpty(agentZip)) {
-            throw new AtsManagerException("The agent zip file is not specified in the configuration");
+        if( StringUtils.isNullOrEmpty( agentZip ) ) {
+            throw new AtsManagerException( "The agent zip file is not specified in the configuration" );
         }
 
         // extract agent.zip to a temporary local directory
-        String agentFolder = IoUtils.normalizeDirPath(extractAgentZip(agentZip));
+        String agentFolder = IoUtils.normalizeDirPath( extractAgentZip( agentZip ) );
 
         JschSftpClient sftpClient = new JschSftpClient();
         try {
@@ -359,49 +384,49 @@ public class AtsInfrastructureManager {
                                agentInfo.getHost(),
                                agentInfo.getSSHPort(),
                                agentInfo.getSSHPrivateKey(),
-                               agentInfo.getSSHPrivateKeyPassword());
+                                agentInfo.getSSHPrivateKeyPassword() );
 
-            if (!sftpClient.isRemoteFileOrDirectoryExisting(agentInfo.getSftpHome())) {
+            if( !sftpClient.isRemoteFileOrDirectoryExisting( agentInfo.getSftpHome() ) ) {
 
-                throw new AtsManagerException("The " + agentInfo.getDescription() + " is not installed in "
-                                              + agentInfo.getSftpHome() + ". You must install it first.");
+                throw new AtsManagerException( "The " + agentInfo.getDescription() + " is not installed in "
+                                               + agentInfo.getSftpHome() + ". You must install it first." );
             }
 
-            if (previousStatus == ApplicationStatus.STARTED) {
+            if( previousStatus == ApplicationStatus.STARTED ) {
                 // agent is started, stop it before the upgrade
-                log.info("We must stop the agent prior to upgrading");
+                log.info( "We must stop the agent prior to upgrading" );
                 try {
-                    stopAnyApplication(agentAlias, false);
-                } catch (AtsManagerException e) {
-                    throw new AtsManagerException("Canceling upgrade as could not stop the agent", e);
+                    stopAnyApplication( agentAlias, false );
+                } catch( AtsManagerException e ) {
+                    throw new AtsManagerException( "Canceling upgrade as could not stop the agent", e );
                 }
             }
 
             // cleanup the remote directories content
-            List<String> preservedPaths = getPreservedPathsList(agentInfo.getPaths());
-            sftpClient.purgeRemoteDirectoryContents(agentInfo.getSftpHome(), preservedPaths);
+            List<String> preservedPaths = getPreservedPathsList( agentInfo.getPaths() );
+            sftpClient.purgeRemoteDirectoryContents( agentInfo.getSftpHome(), preservedPaths );
 
             agentInfo.markPathsUnchecked();
-            updateAgentFolder(sftpClient, agentInfo, agentFolder, "");
+            updateAgentFolder( sftpClient, agentInfo, agentFolder, "" );
 
-            for (PathInfo pathInfo : agentInfo.getUnckeckedPaths()) {
+            for( PathInfo pathInfo : agentInfo.getUnckeckedPaths() ) {
 
-                if (pathInfo.isUpgrade()) {
-                    if (pathInfo.isFile()) {
-                        String fileName = IoUtils.getFileName(pathInfo.getSftpPath());
-                        String filePath = projectConfiguration.getSourceProject().findFile(fileName);
-                        if (filePath == null) {
-                            log.warn("File '" + fileName
-                                     + "' can not be found in the source project libraries,"
-                                     + " so we can not upgrade it on the target agent");
+                if( pathInfo.isUpgrade() ) {
+                    if( pathInfo.isFile() ) {
+                        String fileName = IoUtils.getFileName( pathInfo.getSftpPath() );
+                        String filePath = projectConfiguration.getSourceProject().findFile( fileName );
+                        if( filePath == null ) {
+                            log.warn( "File '" + fileName
+                                      + "' can not be found in the source project libraries,"
+                                      + " so we can not upgrade it on the target agent" );
                             continue;
                         }
-                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf('/');
-                        if (lastSlashIdx > 0) {
-                            sftpClient.makeRemoteDirectories(pathInfo.getSftpPath()
-                                                                     .substring(0, lastSlashIdx));
+                        int lastSlashIdx = pathInfo.getSftpPath().lastIndexOf( '/' );
+                        if( lastSlashIdx > 0 ) {
+                            sftpClient.makeRemoteDirectories( pathInfo.getSftpPath()
+                                                                      .substring( 0, lastSlashIdx ) );
                         }
-                        sftpClient.uploadFile(filePath, pathInfo.getSftpPath());
+                        sftpClient.uploadFile( filePath, pathInfo.getSftpPath() );
                     } else {
                         // TODO: upgrade directory
                     }
@@ -409,23 +434,23 @@ public class AtsInfrastructureManager {
             }
 
             // make agent start file to be executable
-            makeScriptsExecutable(agentInfo);
+            makeScriptsExecutable( agentInfo );
 
             // execute post install shell command, if any
-            executePostActionShellCommand(agentInfo, "install", agentInfo.getPostInstallShellCommand());
+            executePostActionShellCommand( agentInfo, "install", agentInfo.getPostInstallShellCommand() );
 
-            if (previousStatus == ApplicationStatus.STARTED) {
-                log.info("We stopped the agent while upgrading. Now we will start it back on");
-                ApplicationStatus newStatus = startAnyApplication(agentAlias, false);
+            if( previousStatus == ApplicationStatus.STARTED ) {
+                log.info( "We stopped the agent while upgrading. Now we will start it back on" );
+                ApplicationStatus newStatus = startAnyApplication( agentAlias, false );
 
-                log.info(TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
-                         + " is successfully upgraded");
+                log.info( TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
+                          + " is successfully upgraded" );
                 return newStatus;
             } else {
                 // agent status was not changed in this method
 
-                log.info(TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
-                         + " is successfully upgraded");
+                log.info( TOP_LEVEL_ACTION_PREFIX + agentInfo.getDescription()
+                          + " is successfully upgraded" );
                 return ApplicationStatus.STOPPED;
             }
         } finally {
@@ -441,12 +466,10 @@ public class AtsInfrastructureManager {
      * @param command the command to run
      * @throws AtsManagerException
      */
-    public JschSshClient executeShellCommand(
-                                              String applicationAlias,
-                                              String command ) throws AtsManagerException {
+    public void executeShellCommand( String applicationAlias, String command ) throws AtsManagerException {
 
-        AbstractApplicationController controller = getController(applicationAlias);
-        return controller.executeShellCommand(controller.getApplicationInfo(), command);
+        AbstractApplicationController controller = getController( applicationAlias );
+        controller.executeShellCommand( createNewSshClient(), controller.getApplicationInfo(), command );
     }
 
     /**
@@ -458,29 +481,29 @@ public class AtsInfrastructureManager {
     private AgentInfo getAgentInfo(
                                     String agentAlias ) throws AtsManagerException {
 
-        if (!projectConfiguration.getAgents().containsKey(agentAlias)) {
+        if( !projectConfiguration.getAgents().containsKey( agentAlias ) ) {
 
-            throw new AtsManagerException("Can't find agent with alias '" + agentAlias
-                                          + "' in the configuration");
+            throw new AtsManagerException( "Can't find agent with alias '" + agentAlias
+                                           + "' in the configuration" );
         }
-        return projectConfiguration.getAgents().get(agentAlias);
+        return projectConfiguration.getAgents().get( agentAlias );
     }
 
     private AbstractApplicationController getController(
                                                          String alias ) throws AtsManagerException {
 
-        AgentInfo agentInfo = projectConfiguration.getAgents().get(alias);
-        if (agentInfo != null) {
-            return new AgentController(agentInfo, projectConfiguration.getSourceProject());
+        AgentInfo agentInfo = projectConfiguration.getAgents().get( alias );
+        if( agentInfo != null ) {
+            return new AgentController( agentInfo, projectConfiguration.getSourceProject() );
         }
 
-        ApplicationInfo applicationInfo = projectConfiguration.getApplications().get(alias);
-        if (applicationInfo != null) {
-            return new ApplicationController(applicationInfo);
+        ApplicationInfo applicationInfo = projectConfiguration.getApplications().get( alias );
+        if( applicationInfo != null ) {
+            return new ApplicationController( applicationInfo );
         }
 
-        throw new AtsManagerException("Can't find application with alias '" + alias
-                                      + "' in the configuration");
+        throw new AtsManagerException( "Can't find application with alias '" + alias
+                                       + "' in the configuration" );
     }
 
     /**
@@ -491,7 +514,7 @@ public class AtsInfrastructureManager {
     private boolean mustUpgradeOnStoppedAgent(
                                                String path ) {
 
-        return !path.contains("/agentactions/");
+        return !path.contains( "/agentactions/" );
     }
 
     /**
@@ -502,9 +525,9 @@ public class AtsInfrastructureManager {
                                                 List<PathInfo> pathInfos ) {
 
         List<String> preservedPaths = new ArrayList<String>();
-        if (pathInfos != null) {
-            for (PathInfo path : pathInfos) {
-                preservedPaths.add(path.getSftpPath());
+        if( pathInfos != null ) {
+            for( PathInfo path : pathInfos ) {
+                preservedPaths.add( path.getSftpPath() );
             }
         }
         return preservedPaths;
@@ -525,37 +548,37 @@ public class AtsInfrastructureManager {
                                     String relativeFolderPath ) throws AtsManagerException {
 
         String remoteFolderPath = agentInfo.getSftpHome() + relativeFolderPath;
-        if (!sftpClient.isRemoteFileOrDirectoryExisting(remoteFolderPath)) {
-            sftpClient.uploadDirectory(localAgentFolder + relativeFolderPath, remoteFolderPath, true);
+        if( !sftpClient.isRemoteFileOrDirectoryExisting( remoteFolderPath ) ) {
+            sftpClient.uploadDirectory( localAgentFolder + relativeFolderPath, remoteFolderPath, true );
             return;
         }
 
-        File localFolder = new File(localAgentFolder + relativeFolderPath);
+        File localFolder = new File( localAgentFolder + relativeFolderPath );
         File[] localEntries = localFolder.listFiles();
-        if (localEntries != null && localEntries.length > 0) {
+        if( localEntries != null && localEntries.length > 0 ) {
 
-            for (File localEntry : localEntries) {
+            for( File localEntry : localEntries ) {
 
                 String remoteFilePath = remoteFolderPath + localEntry.getName();
-                PathInfo pathInfo = agentInfo.getPathInfo(remoteFilePath, localEntry.isFile(), true);
-                if (pathInfo != null) {
+                PathInfo pathInfo = agentInfo.getPathInfo( remoteFilePath, localEntry.isFile(), true );
+                if( pathInfo != null ) {
 
-                    pathInfo.setChecked(true);
-                    if (!pathInfo.isUpgrade()) {
-                        log.info("Skipping upgrade of '" + remoteFilePath
-                                 + "', because its 'upgrade' flag is 'false'");
+                    pathInfo.setChecked( true );
+                    if( !pathInfo.isUpgrade() ) {
+                        log.info( "Skipping upgrade of '" + remoteFilePath
+                                  + "', because its 'upgrade' flag is 'false'" );
                         continue;
                     }
                 }
 
-                if (localEntry.isDirectory()) {
+                if( localEntry.isDirectory() ) {
                     updateAgentFolder(sftpClient,
                                       agentInfo,
                                       localAgentFolder,
-                                      relativeFolderPath + localEntry.getName() + "/");
+                                       relativeFolderPath + localEntry.getName() + "/" );
                 } else {
                     String localFilePath = localAgentFolder + relativeFolderPath + localEntry.getName();
-                    sftpClient.uploadFile(localFilePath, remoteFilePath);
+                    sftpClient.uploadFile( localFilePath, remoteFilePath );
                 }
             }
         }
@@ -571,22 +594,22 @@ public class AtsInfrastructureManager {
                                         AgentInfo agentInfo ) throws AtsManagerException {
 
         // set executable privileges to the script files
-        if (agentInfo.isUnix()) {
+        if( agentInfo.isUnix() ) {
 
-            log.info("Set executable priviledges on all 'sh' files in " + agentInfo.getHome());
-            JschSshClient sshClient = new JschSshClient();
+            log.info( "Set executable priviledges on all 'sh' files in " + agentInfo.getHome() );
+            JschSshClient sshClient = createNewSshClient();
             try {
                 sshClient.connect(agentInfo.getSystemUser(),
                                   agentInfo.getSystemPassword(),
                                   agentInfo.getHost(),
                                   agentInfo.getSSHPort(),
                                   agentInfo.getSSHPrivateKey(),
-                                  agentInfo.getSSHPrivateKeyPassword());
+                                   agentInfo.getSSHPrivateKeyPassword() );
 
-                int exitCode = sshClient.execute("chmod a+x " + agentInfo.getHome() + "/*.sh", true);
-                if (exitCode != 0) {
-                    throw new AtsManagerException("Unable to set execute privileges to the shell script files in '"
-                                                  + agentInfo.getHome() + "'");
+                int exitCode = sshClient.execute( "chmod a+x " + agentInfo.getHome() + "/*.sh", true );
+                if( exitCode != 0 ) {
+                    throw new AtsManagerException( "Unable to set execute privileges to the shell script files in '"
+                                                   + agentInfo.getHome() + "'" );
                 }
             } finally {
                 sshClient.disconnect();
@@ -605,33 +628,33 @@ public class AtsInfrastructureManager {
                                                 String actionName,
                                                 String shellCommand ) throws AtsManagerException {
 
-        if (shellCommand != null) {
+        if( shellCommand != null ) {
 
-            log.info("Executing post '" + actionName + "' shell command: " + shellCommand);
-            JschSshClient sshClient = new JschSshClient();
+            log.info( "Executing post '" + actionName + "' shell command: " + shellCommand );
+            JschSshClient sshClient = createNewSshClient();
             try {
                 sshClient.connect(agentInfo.getSystemUser(),
                                   agentInfo.getSystemPassword(),
                                   agentInfo.getHost(),
                                   agentInfo.getSSHPort(),
                                   agentInfo.getSSHPrivateKey(),
-                                  agentInfo.getSSHPrivateKeyPassword());
+                                  agentInfo.getSSHPrivateKeyPassword() );
 
-                int exitCode = sshClient.execute(shellCommand, true);
-                if (exitCode != 0) {
-                    throw new AtsManagerException("Unable to execute the post '" + actionName
-                                                  + "' shell command '" + shellCommand + "' on agent '"
-                                                  + agentInfo.getAlias() + "'. The error output is"
-                                                  + (StringUtils.isNullOrEmpty(sshClient.getErrorOutput())
-                                                                                                           ? " empty."
-                                                                                                           : ":\n"
-                                                                                                             + sshClient.getErrorOutput()));
+                int exitCode = sshClient.execute( shellCommand, true );
+                if( exitCode != 0 ) {
+                    throw new AtsManagerException( "Unable to execute the post '" + actionName
+                                                   + "' shell command '" + shellCommand + "' on agent '"
+                                                   + agentInfo.getAlias() + "'. The error output is"
+                                                   + ( StringUtils.isNullOrEmpty( sshClient.getErrorOutput() )
+                                                                                                               ? " empty."
+                                                                                                               : ":\n"
+                                                                                                                 + sshClient.getErrorOutput() ) );
                 }
-                log.info("The output of shell command \"" + shellCommand + "\" is"
-                         + (StringUtils.isNullOrEmpty(sshClient.getStandardOutput())
-                                                                                     ? " empty."
-                                                                                     : ":\n"
-                                                                                       + sshClient.getStandardOutput()));
+                log.info( "The output of shell command \"" + shellCommand + "\" is"
+                          + ( StringUtils.isNullOrEmpty( sshClient.getStandardOutput() )
+                                                                                         ? " empty."
+                                                                                         : ":\n"
+                                                                                           + sshClient.getStandardOutput() ) );
             } finally {
                 sshClient.disconnect();
             }
@@ -650,32 +673,32 @@ public class AtsInfrastructureManager {
 
         // the temp path contains the thread name to have uniqueness when running action on more than
         // one agent at same time
-        final String tempPath = IoUtils.normalizeDirPath(AtsSystemProperties.SYSTEM_USER_TEMP_DIR
-                                                         + "/ats_tmp/")
+        final String tempPath = IoUtils.normalizeDirPath( AtsSystemProperties.SYSTEM_USER_TEMP_DIR
+                                                          + "/ats_tmp/" )
                                 + Thread.currentThread().getName() + "_";
 
-        if (agentZipPath.toLowerCase().startsWith("http://")) {
+        if( agentZipPath.toLowerCase().startsWith( "http://" ) ) {
             // download from HTTP URL
-            agentZipPath = downloadAgentZip(agentZipPath, tempPath);
+            agentZipPath = downloadAgentZip( agentZipPath, tempPath );
         }
 
-        File agentZip = new File(agentZipPath);
-        if (!agentZip.exists()) {
+        File agentZip = new File( agentZipPath );
+        if( !agentZip.exists() ) {
 
-            throw new AtsManagerException("The agent ZIP file doesn't exist '" + agentZipPath + "'");
+            throw new AtsManagerException( "The agent ZIP file doesn't exist '" + agentZipPath + "'" );
         }
-        String agentFolderName = tempPath + "agent_" + String.valueOf(agentZip.lastModified());
-        File agentFolder = new File(agentFolderName);
-        if (!agentFolder.exists()) {
+        String agentFolderName = tempPath + "agent_" + String.valueOf( agentZip.lastModified() );
+        File agentFolder = new File( agentFolderName );
+        if( !agentFolder.exists() ) {
 
             try {
-                log.info("Unzip " + agentZipPath + " into " + agentFolderName);
-                IoUtils.unzip(agentZipPath, agentFolderName, true);
-            } catch (IOException ioe) {
+                log.info( "Unzip " + agentZipPath + " into " + agentFolderName );
+                IoUtils.unzip( agentZipPath, agentFolderName, true );
+            } catch( IOException ioe ) {
 
-                throw new AtsManagerException("Unable to unzip the agent ZIP file '" + agentZipPath
-                                              + "' to the temporary created directory '" + agentFolderName
-                                              + "'", ioe);
+                throw new AtsManagerException( "Unable to unzip the agent ZIP file '" + agentZipPath
+                                               + "' to the temporary created directory '" + agentFolderName
+                                               + "'", ioe );
             }
         }
 
@@ -686,29 +709,40 @@ public class AtsInfrastructureManager {
                                      String agentZipUrl,
                                      String tempPath ) throws AtsManagerException {
 
-        File downloadedFile = new File(tempPath + "agent.zip");
+        File downloadedFile = new File( tempPath + "agent.zip" );
         downloadedFile.deleteOnExit();
 
-        log.info("Download ATS agent from " + agentZipUrl + " into " + downloadedFile);
+        log.info( "Download ATS agent from " + agentZipUrl + " into " + downloadedFile );
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
         try {
-            URL url = new URL(agentZipUrl);
+            URL url = new URL( agentZipUrl );
             URLConnection conn = url.openConnection();
 
-            bis = new BufferedInputStream(conn.getInputStream());
-            bos = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+            bis = new BufferedInputStream( conn.getInputStream() );
+            bos = new BufferedOutputStream( new FileOutputStream( downloadedFile ) );
             int inByte;
-            while ( (inByte = bis.read()) != -1) {
-                bos.write(inByte);
+            while( ( inByte = bis.read() ) != -1 ) {
+                bos.write( inByte );
             }
             return downloadedFile.getPath();
-        } catch (Exception e) {
-            throw new AtsManagerException("Error downloading agent ZIP file from " + agentZipUrl, e);
+        } catch( Exception e ) {
+            throw new AtsManagerException( "Error downloading agent ZIP file from " + agentZipUrl, e );
         } finally {
-            IoUtils.closeStream(bis);
-            IoUtils.closeStream(bos);
+            IoUtils.closeStream( bis );
+            IoUtils.closeStream( bos );
         }
+    }
+
+    private JschSshClient createNewSshClient() {
+
+        JschSshClient sshClient = new JschSshClient();
+
+        for( Entry<String, String> entry : sshClientConfigurationProperties.entrySet() ) {
+            sshClient.setConfigurationProperty( entry.getKey(), entry.getValue() );
+        }
+
+        return sshClient;
     }
 }

@@ -44,25 +44,28 @@ public abstract class AbstractApplicationController {
     public abstract ApplicationStatus getStatus( JschSshClient sshClient,
                                                  boolean isTopLevelAction ) throws AtsManagerException;
 
-    public abstract ApplicationStatus start( boolean isTopLevelAction ) throws AtsManagerException;
+    public abstract ApplicationStatus start( JschSshClient sshClient,
+                                             boolean isTopLevelAction ) throws AtsManagerException;
 
-    public abstract ApplicationStatus stop( boolean isTopLevelAction ) throws AtsManagerException;
+    public abstract ApplicationStatus stop( JschSshClient sshClient,
+                                            boolean isTopLevelAction ) throws AtsManagerException;
 
-    public abstract ApplicationStatus restart() throws AtsManagerException;
+    public abstract ApplicationStatus restart( JschSshClient sshClient ) throws AtsManagerException;
 
-    public JschSshClient executeShellCommand( AbstractApplicationInfo info, String command ) {
+    public void executeShellCommand( JschSshClient sshClient, AbstractApplicationInfo info,
+                                              String command ) {
 
         if (!info.isUnix()) {
             command = "cmd.exe /c \"" + command + "\"";
         }
 
-        JschSshClient sshClient = new JschSshClient();
-
-        log.info("Run '" + command + "' on " + info.alias);
-        sshClient.connect(info.systemUser, info.systemPassword, info.host, info.sshPort);
-        sshClient.execute(command, false);
-
-        return sshClient;
+        log.info( "Run '" + command + "' on " + info.alias );
+        try {
+            sshClient.connect( info.systemUser, info.systemPassword, info.host, info.sshPort );
+            sshClient.execute( command, false );
+        } finally {
+            sshClient.disconnect();
+        }
     }
 
     /**
@@ -71,13 +74,14 @@ public abstract class AbstractApplicationController {
      * @param applicationInfo application information
      * @throws AtsManagerException
      */
-    protected void executePostActionShellCommand( AbstractApplicationInfo applicationInfo, String actionName,
+    protected void executePostActionShellCommand( JschSshClient parentSshClient,
+                                                  AbstractApplicationInfo applicationInfo, String actionName,
                                                   String shellCommand ) throws AtsManagerException {
 
         if (!StringUtils.isNullOrEmpty(shellCommand)) {
 
             log.info("Executing post '" + actionName + "' shell command: " + shellCommand);
-            JschSshClient sshClient = new JschSshClient();
+            JschSshClient sshClient = parentSshClient.newFreshInstance();
             try {
                 sshClient.connect(applicationInfo.systemUser, applicationInfo.systemPassword,
                                   applicationInfo.host, applicationInfo.sshPort);

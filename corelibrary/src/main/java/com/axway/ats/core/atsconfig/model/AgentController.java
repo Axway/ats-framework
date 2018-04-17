@@ -45,7 +45,7 @@ public class AgentController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus getStatus( JschSshClient sshClient,
+    public ApplicationStatus getStatus( JschSshClient parentSshClient,
                                         boolean isTopLevelAction ) throws AtsManagerException {
 
         if (isTopLevelAction) {
@@ -57,7 +57,7 @@ public class AgentController extends AbstractApplicationController {
         // check if running and available via WS
         if (isWsdlAvailable(anyApplicationInfo)) {
 
-            updateAgentVersion(anyApplicationInfo, sshClient, false);
+            updateAgentVersion(anyApplicationInfo, parentSshClient);
             return ApplicationStatus.STARTED;
         }
 
@@ -67,9 +67,10 @@ public class AgentController extends AbstractApplicationController {
 
             return ApplicationStatus.NOT_INSTALLED;
         }
-        updateAgentVersion(anyApplicationInfo, sshClient, false);
+        updateAgentVersion(anyApplicationInfo, parentSshClient);
 
         // it is deployed, but not available via WS
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
         try {
             sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
@@ -108,32 +109,30 @@ public class AgentController extends AbstractApplicationController {
                                               sshClient.getStandardOutput(), sshClient.getErrorOutput());
             }
         } finally {
-
-            if (isTopLevelAction) {
-                sshClient.disconnect();
-            }
+            sshClient.disconnect();
         }
     }
 
     @Override
-    public ApplicationStatus start( boolean isTopLevelAction ) throws AtsManagerException {
+    public ApplicationStatus start( JschSshClient parentSshClient,
+                                    boolean isTopLevelAction ) throws AtsManagerException {
 
-        JschSshClient sshClient = new JschSshClient();
+        ApplicationStatus status = getStatus( parentSshClient, false );
+        if( status != ApplicationStatus.STOPPED ) {
+            log.error( ( isTopLevelAction
+                                          ? TOP_LEVEL_ACTION_PREFIX
+                                          : "" )
+                       + "We will not try to start " + anyApplicationInfo.description + " as it is currently "
+                       + status.name() );
+            return status;
+        }
+
+        log.info( ( isTopLevelAction
+                                     ? TOP_LEVEL_ACTION_PREFIX
+                                     : "" )
+                  + "Now we will try to start " + anyApplicationInfo.description );
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
         try {
-            ApplicationStatus status = getStatus(sshClient, false);
-            if (status != ApplicationStatus.STOPPED) {
-                log.error( (isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "")
-                           + "We will not try to start " + anyApplicationInfo.description
-                           + " as it is currently " + status.name());
-                return status;
-            }
-
-            log.info( (isTopLevelAction
-                                        ? TOP_LEVEL_ACTION_PREFIX
-                                        : "")
-                      + "Now we will try to start " + anyApplicationInfo.description);
             sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
@@ -179,7 +178,7 @@ public class AgentController extends AbstractApplicationController {
                                                 ? TOP_LEVEL_ACTION_PREFIX
                                                 : "")
                               + anyApplicationInfo.description + " is successfully started");
-                    executePostActionShellCommand(anyApplicationInfo, "START",
+                    executePostActionShellCommand(sshClient, anyApplicationInfo, "START",
                                                   anyApplicationInfo.getPostStartShellCommand());
                     return ApplicationStatus.STARTED;
                 }
@@ -195,26 +194,25 @@ public class AgentController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus stop(
-
+    public ApplicationStatus stop( JschSshClient parentSshClient,
                                    boolean isTopLevelAction ) throws AtsManagerException {
 
-        JschSshClient sshClient = new JschSshClient();
-        try {
-            ApplicationStatus status = getStatus(sshClient, false);
-            if (status != ApplicationStatus.STARTED) {
-                log.error( (isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "")
-                           + "We will not try to stop " + anyApplicationInfo.description
-                           + " as it is currently " + status.name());
-                return status;
-            }
+        ApplicationStatus status = getStatus( parentSshClient, false );
+        if( status != ApplicationStatus.STARTED ) {
+            log.error( ( isTopLevelAction
+                                          ? TOP_LEVEL_ACTION_PREFIX
+                                          : "" )
+                       + "We will not try to stop " + anyApplicationInfo.description + " as it is currently "
+                       + status.name() );
+            return status;
+        }
 
-            log.info( (isTopLevelAction
-                                        ? TOP_LEVEL_ACTION_PREFIX
-                                        : "")
-                      + "Now we will try to stop " + anyApplicationInfo.description);
+        log.info( ( isTopLevelAction
+                                     ? TOP_LEVEL_ACTION_PREFIX
+                                     : "" )
+                  + "Now we will try to stop " + anyApplicationInfo.description );
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
+        try {
             sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
@@ -234,7 +232,7 @@ public class AgentController extends AbstractApplicationController {
                                                 ? TOP_LEVEL_ACTION_PREFIX
                                                 : "")
                               + anyApplicationInfo.description + " is successfully stopped");
-                    executePostActionShellCommand(anyApplicationInfo, "STOP",
+                    executePostActionShellCommand(sshClient, anyApplicationInfo, "STOP",
                                                   anyApplicationInfo.getPostStopShellCommand());
                     return ApplicationStatus.STOPPED;
                 }
@@ -250,19 +248,18 @@ public class AgentController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus restart() throws AtsManagerException {
+    public ApplicationStatus restart( JschSshClient parentSshClient ) throws AtsManagerException {
 
-        JschSshClient sshClient = new JschSshClient();
+        ApplicationStatus status = getStatus( parentSshClient, false );
+        if( status != ApplicationStatus.STOPPED && status != ApplicationStatus.STARTED ) {
+            log.error( TOP_LEVEL_ACTION_PREFIX + "We will not try to restart "
+                       + anyApplicationInfo.description + " as it is currently " + status.name() );
+            return status;
+        }
+
+        log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to restart " + anyApplicationInfo.description );
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
         try {
-            ApplicationStatus status = getStatus(sshClient, false);
-            if (status != ApplicationStatus.STOPPED && status != ApplicationStatus.STARTED) {
-                log.error(TOP_LEVEL_ACTION_PREFIX + "We will not try to restart "
-                          + anyApplicationInfo.description + " as it is currently " + status.name());
-                return status;
-            }
-
-            log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to restart "
-                     + anyApplicationInfo.description);
             sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword);
@@ -294,7 +291,7 @@ public class AgentController extends AbstractApplicationController {
                 if (getStatus(sshClient, false) == ApplicationStatus.STARTED) {
                     log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
                              + " is successfully restarted");
-                    executePostActionShellCommand(anyApplicationInfo, "START",
+                    executePostActionShellCommand(sshClient, anyApplicationInfo, "START",
                                                   anyApplicationInfo.getPostStartShellCommand());
                     return ApplicationStatus.STARTED;
                 }
@@ -304,12 +301,11 @@ public class AgentController extends AbstractApplicationController {
                                           + restartCommandExecutionResult
                                           + "\nYou can check the nohup.out file for details");
         } finally {
-
             sshClient.disconnect();
         }
     }
 
-    public ApplicationStatus upgrade( ApplicationStatus previousStatus ) throws AtsManagerException {
+    public ApplicationStatus upgrade( JschSshClient sshClient, ApplicationStatus previousStatus ) throws AtsManagerException {
 
         // we enter here when the agent is STARTED or STOPPED
         log.info(TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform full upgrade on "
@@ -340,7 +336,7 @@ public class AgentController extends AbstractApplicationController {
                 // agent is started, stop it before the upgrade
                 log.info("We must stop the agent prior to upgrading");
                 try {
-                    stop(false);
+                    stop( sshClient, false );
                 } catch (AtsManagerException e) {
                     throw new AtsManagerException("Canceling upgrade as could not stop the agent", e);
                 }
@@ -378,15 +374,15 @@ public class AgentController extends AbstractApplicationController {
             }
 
             // make agent start file to be executable
-            makeScriptsExecutable(anyApplicationInfo);
+            makeScriptsExecutable( sshClient, anyApplicationInfo );
 
             // execute post install shell command, if any
-            executePostActionShellCommand(anyApplicationInfo, "INSTALL",
+            executePostActionShellCommand(sshClient, anyApplicationInfo, "INSTALL",
                                           anyApplicationInfo.postInstallShellCommand);
 
             if (previousStatus == ApplicationStatus.STARTED) {
                 log.info("We stopped the agent while upgrading. We will start it back on");
-                ApplicationStatus newStatus = start(false);
+                ApplicationStatus newStatus = start( sshClient, false );
 
                 log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
                          + " is successfully upgraded");
@@ -470,17 +466,17 @@ public class AgentController extends AbstractApplicationController {
      *
      * @param agentInfo the agent info declared in the configuration
      * @param sshClient {@link JschSshClient} instance. If it is null, the new one will be created
-     * @param isTopLevelAction whether to disconnect the SSH session connection
      * @throws AtsManagerException
      */
-    private void updateAgentVersion( AbstractApplicationInfo agentInfo, JschSshClient sshClient,
-                                     boolean isTopLevelAction ) throws AtsManagerException {
+    private void updateAgentVersion( AbstractApplicationInfo agentInfo,
+                                     JschSshClient parentSshClient ) throws AtsManagerException {
 
         if (agentInfo.getVersion() != null) {
             // we already know the version
             return;
         }
 
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
         try {
             sshClient.connect(agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
                               agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword);
@@ -502,9 +498,7 @@ public class AgentController extends AbstractApplicationController {
                          + " (stderr: \"" + sshClient.getErrorOutput() + "\")");
             }
         } finally {
-            if (isTopLevelAction) {
-                sshClient.disconnect();
-            }
+            sshClient.disconnect();
         }
     }
 
@@ -542,13 +536,13 @@ public class AgentController extends AbstractApplicationController {
      * @param agentInfo agent information
      * @throws AtsManagerException
      */
-    private void makeScriptsExecutable( AbstractApplicationInfo agentInfo ) throws AtsManagerException {
+    private void makeScriptsExecutable( JschSshClient sshClient,
+                                        AbstractApplicationInfo agentInfo ) throws AtsManagerException {
 
         // set executable privileges to the script files
         if (agentInfo.isUnix()) {
 
             log.info("Set executable priviledges on all 'sh' files in " + agentInfo.getHome());
-            JschSshClient sshClient = new JschSshClient();
             try {
                 sshClient.connect(agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
                                   agentInfo.sshPort, agentInfo.sshPrivateKey,

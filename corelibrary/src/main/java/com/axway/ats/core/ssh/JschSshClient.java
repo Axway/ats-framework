@@ -16,6 +16,9 @@
 package com.axway.ats.core.ssh;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +46,16 @@ public class JschSshClient {
 
     private Session          session;
     private ChannelExec      execChannel;
+
+    // some optional configuration properties
+    private Map<String, String> configurationProperties;
+
+    public JschSshClient() {
+        this.configurationProperties = new HashMap<>();
+
+        // by default - skip checking of known hosts and verifying RSA keys
+        this.configurationProperties.put( "StrictHostKeyChecking", "no" );
+    }
 
     /**
      *
@@ -118,8 +131,10 @@ public class JschSshClient {
             }
             session.setPassword(password);
 
-            // skip checking of known hosts and verifying RSA keys
-            session.setConfig("StrictHostKeyChecking", "no");
+            // apply any configuration properties
+            for( Entry<String, String> entry : configurationProperties.entrySet() ) {
+                session.setConfig( entry.getKey(), entry.getValue() );
+            }
 
             session.connect(CONNECTION_TIMEOUT);
         } catch (Exception e) {
@@ -128,6 +143,7 @@ public class JschSshClient {
                                              + "' at " + host + " on port " + port, e);
         }
     }
+    
 
     /**
      * Disconnect the SSH session connection
@@ -147,6 +163,32 @@ public class JschSshClient {
         if (session != null) {
             session.disconnect();
         }
+    }
+
+    /**
+     * Create a new instance of this client with same settings,
+     * but without internal session data.
+     * 
+     * It is expected to do a connect as a next step.
+     * 
+     * @return
+     */
+    public JschSshClient newFreshInstance() {
+
+        JschSshClient instance = new JschSshClient();
+        for( Entry<String, String> entry : this.configurationProperties.entrySet() ) {
+            instance.setConfigurationProperty( entry.getKey(), entry.getValue() );
+        }
+
+        return instance;
+    }
+    
+    /**
+     * Pass configuration property for the internally used SSH client library
+     */
+    public void setConfigurationProperty( String key, String value ) {
+
+        configurationProperties.put( key, value );
     }
 
     /**

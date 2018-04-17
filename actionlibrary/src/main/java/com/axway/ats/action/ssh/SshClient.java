@@ -16,6 +16,11 @@
 package com.axway.ats.action.ssh;
 
 import java.io.Closeable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.log4j.BasicConfigurator;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.ssh.JschSshClient;
@@ -32,6 +37,14 @@ import com.axway.ats.core.ssh.JschSshClient;
 public class SshClient implements Closeable {
 
     private JschSshClient sshClient;
+    
+    // connection parameters
+    private String host;
+    private String user;
+    private String password;
+    private int port;
+    
+    private Map<String, String>      sshClientConfigurationProperties;
 
     /**
      * Construct SSH client. It will work on the default port 22
@@ -60,9 +73,29 @@ public class SshClient implements Closeable {
                       String password,
                       int port ) {
 
-        sshClient = new JschSshClient();
+        this.host = host;
+        this.user = user;
+        this.password = password;
+        this.port = port;
+        
+        this.sshClientConfigurationProperties = new HashMap<>();
+    }
 
-        sshClient.connect(user, password, host, port);
+    /**
+     * Currently we use internally JCraft's JSch library
+     * which can be configured through this method.
+     * 
+     * You need to find the acceptable key-value configuration pairs in the JSch documentation.
+     * They might be also available in the source code of com.jcraft.jsch.JSch
+     * 
+     * Example: The default value of "PreferredAuthentications" is "gssapi-with-mic,publickey,keyboard-interactive,password" 
+     * 
+     * @param key configuration key
+     * @param value configuration value
+     */
+    public void setSshClientConfigurationProperty( String key, String value ) {
+
+        sshClientConfigurationProperties.put( key, value );
     }
 
     /**
@@ -85,6 +118,10 @@ public class SshClient implements Closeable {
     public void execute(
                          String command ) {
 
+        sshClient = createNewSshClient();
+        
+        sshClient.connect(user, password, host, port);
+        
         sshClient.execute(command, true);
     }
 
@@ -130,5 +167,16 @@ public class SshClient implements Closeable {
         if (sshClient != null) {
             sshClient.disconnect();
         }
+    }
+    
+    private JschSshClient createNewSshClient() {
+
+        JschSshClient sshClient = new JschSshClient();
+
+        for( Entry<String, String> entry : sshClientConfigurationProperties.entrySet() ) {
+            sshClient.setConfigurationProperty( entry.getKey(), entry.getValue() );
+        }
+
+        return sshClient;
     }
 }

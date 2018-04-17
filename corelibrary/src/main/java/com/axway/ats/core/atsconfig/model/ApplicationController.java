@@ -39,7 +39,7 @@ public class ApplicationController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus getStatus( JschSshClient sshClient,
+    public ApplicationStatus getStatus( JschSshClient parentSshClient,
                                         boolean isTopLevelAction ) throws AtsManagerException {
 
         if (isTopLevelAction) {
@@ -63,6 +63,7 @@ public class ApplicationController extends AbstractApplicationController {
         // it is deployed, but not available via URL
         String statusShellCommand = anyApplicationInfo.getStatusCommand();
         if (statusShellCommand != null) {
+            JschSshClient sshClient = parentSshClient.newFreshInstance();
             try {
                 sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                                   anyApplicationInfo.host, anyApplicationInfo.sshPort);
@@ -103,10 +104,7 @@ public class ApplicationController extends AbstractApplicationController {
                     return ApplicationStatus.STOPPED;
                 }
             } finally {
-
-                if (isTopLevelAction) {
-                    sshClient.disconnect();
-                }
+                sshClient.disconnect();
             }
         } else {
             // we do not have a way to check the application status by shell command, so we assume it is stopped
@@ -115,27 +113,28 @@ public class ApplicationController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus start( boolean isTopLevelAction ) throws AtsManagerException {
+    public ApplicationStatus start( JschSshClient parentSshClient,
+                                    boolean isTopLevelAction ) throws AtsManagerException {
 
-        JschSshClient sshClient = new JschSshClient();
+        // it must be stopped, before we try to start it
+        ApplicationStatus status = getStatus( parentSshClient, false );
+        if( status != ApplicationStatus.STOPPED ) {
+            log.error( ( isTopLevelAction
+                                          ? TOP_LEVEL_ACTION_PREFIX
+                                          : "" )
+                       + "We will not try to start " + anyApplicationInfo.description + " as it is currently "
+                       + status.name() );
+            return status;
+        }
+
+        // connect
+        String command = anyApplicationInfo.getStartCommand();
+        log.info( ( isTopLevelAction
+                                     ? TOP_LEVEL_ACTION_PREFIX
+                                     : "" )
+                  + "Now we will try to start " + anyApplicationInfo.description + " with: " + command );
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
         try {
-            // it must be stopped, before we try to start it
-            ApplicationStatus status = getStatus(sshClient, false);
-            if (status != ApplicationStatus.STOPPED) {
-                log.error( (isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "")
-                           + "We will not try to start " + anyApplicationInfo.description
-                           + " as it is currently " + status.name());
-                return status;
-            }
-
-            // connect
-            String command = anyApplicationInfo.getStartCommand();
-            log.info( (isTopLevelAction
-                                        ? TOP_LEVEL_ACTION_PREFIX
-                                        : "")
-                      + "Now we will try to start " + anyApplicationInfo.description + " with: " + command);
             sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                               anyApplicationInfo.host, anyApplicationInfo.sshPort);
 
@@ -173,7 +172,7 @@ public class ApplicationController extends AbstractApplicationController {
                                             : "")
                           + anyApplicationInfo.description + " is successfully started");
 
-                executePostActionShellCommand(anyApplicationInfo, "START",
+                executePostActionShellCommand(sshClient, anyApplicationInfo, "START",
                                               anyApplicationInfo.getPostStartShellCommand());
                 return ApplicationStatus.STARTED;
             } else {
@@ -187,27 +186,28 @@ public class ApplicationController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus stop( boolean isTopLevelAction ) throws AtsManagerException {
+    public ApplicationStatus stop( JschSshClient parentSshClient,
+                                   boolean isTopLevelAction ) throws AtsManagerException {
 
-        JschSshClient sshClient = new JschSshClient();
+        // it must be started, before we try to stop it
+        ApplicationStatus status = getStatus( parentSshClient, false );
+        if( status != ApplicationStatus.STARTED ) {
+            log.error( ( isTopLevelAction
+                                          ? TOP_LEVEL_ACTION_PREFIX
+                                          : "" )
+                       + "We will not try to stop " + anyApplicationInfo.description + " as it is currently "
+                       + status.name() );
+            return status;
+        }
+
+        // connect
+        String command = anyApplicationInfo.getStopCommand();
+        log.info( ( isTopLevelAction
+                                     ? TOP_LEVEL_ACTION_PREFIX
+                                     : "" )
+                  + "Now we will try to stop " + anyApplicationInfo.description + " with: " + command );
+        JschSshClient sshClient = parentSshClient.newFreshInstance();
         try {
-            // it must be started, before we try to stop it
-            ApplicationStatus status = getStatus(sshClient, false);
-            if (status != ApplicationStatus.STARTED) {
-                log.error( (isTopLevelAction
-                                             ? TOP_LEVEL_ACTION_PREFIX
-                                             : "")
-                           + "We will not try to stop " + anyApplicationInfo.description
-                           + " as it is currently " + status.name());
-                return status;
-            }
-
-            // connect
-            String command = anyApplicationInfo.getStopCommand();
-            log.info( (isTopLevelAction
-                                        ? TOP_LEVEL_ACTION_PREFIX
-                                        : "")
-                      + "Now we will try to stop " + anyApplicationInfo.description + " with: " + command);
             sshClient.connect(anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
                               anyApplicationInfo.host, anyApplicationInfo.sshPort);
 
@@ -244,7 +244,7 @@ public class ApplicationController extends AbstractApplicationController {
                                             ? TOP_LEVEL_ACTION_PREFIX
                                             : "")
                           + anyApplicationInfo.description + " is successfully stopped");
-                executePostActionShellCommand(anyApplicationInfo, "STOP",
+                executePostActionShellCommand(sshClient, anyApplicationInfo, "STOP",
                                               anyApplicationInfo.getPostStopShellCommand());
                 return ApplicationStatus.STOPPED;
             } else {
@@ -258,7 +258,7 @@ public class ApplicationController extends AbstractApplicationController {
     }
 
     @Override
-    public ApplicationStatus restart() throws AtsManagerException {
+    public ApplicationStatus restart( JschSshClient sshClient ) throws AtsManagerException {
 
         throw new AtsManagerException("Not implemented");
 
