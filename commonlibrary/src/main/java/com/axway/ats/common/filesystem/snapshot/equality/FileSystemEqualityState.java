@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.axway.ats.common.PublicAtsApi;
 
@@ -82,6 +84,50 @@ public class FileSystemEqualityState implements Serializable {
         });
 
         return differences;
+    }
+    
+    /** 
+     * Create and return a map that holds differences from files presented in both snapshots
+     * <div>EXAMPLE:
+     * <p>{</p>
+     * <p>&nbsp;&nbsp;&nbsp;&nbsp;Presence of common.testboxes.client : {snap1 : YES, snap2 : NO},</p>
+     * <p>&nbsp;&nbsp;&nbsp;&nbsp;property key 'common.testboxes.client' : {snap1 : AAA, snap2 : BBB},</p>
+     * <p>&nbsp;&nbsp;&nbsp;&nbsp;Section [languages], key '00A' : {snap1: 'English', snap1: 'Spanish'}</p>
+     * <p>}</p>
+     * </div>
+     * @returns map that holds the differences 
+     * */
+
+    @PublicAtsApi
+    public Map<String, Map<String, String>> getFilesDifferences() {
+
+        Map<String, Map<String, String>> differencesMap = new HashMap<>();
+        // iterate over each file trace object
+        for (FileTrace diff : getDifferences()) {
+            // get the file differences in first snapshot
+            Map<String, String> first = diff.getFirstSnapshotDifferencies();
+            // get the file differences in second snapshot
+            Map<String, String> second = diff.getSecondSnapshotDifferencies();
+            // iterate over each file from the first snapshot difference map
+            for (Map.Entry<String, String> entry1 : first.entrySet()) {
+                // iterate over each file from the second snapshot difference map
+                for (Map.Entry<String, String> entry2 : second.entrySet()) {
+                    // check if the current two entries contains information for the same file difference
+                    if (entry1.getKey().equals(entry2.getKey())) {
+                        // create map that will hold information about the status of the current difference for each snapshot
+                        Map<String, String> snapToValueMap = new HashMap<String, String>();
+                        // put the difference value from the first snapshot to the map
+                        snapToValueMap.put(getFirstSnapshotName(), entry1.getValue());
+                        // put the difference value from the second snapshot to the map
+                        snapToValueMap.put(getSecondSnapshotName(), entry2.getValue());
+                        // add the whole information for the current difference to the difference map
+                        differencesMap.put(entry1.getKey(), snapToValueMap);
+                    }
+                }
+            }
+        }
+
+        return differencesMap;
     }
 
     public void addDifference( FileTrace difference ) {
