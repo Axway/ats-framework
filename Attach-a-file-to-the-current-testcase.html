@@ -47,7 +47,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="Attachafiletothecurrenttestcase-HereishowitmightlooklikeinTestExplorer:">Here is how it might look like in Test Explorer:</h1> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="12"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="13"></span></p> 
       <p>As you can see we have an additional <em>Attachments</em> panel.</p> 
       <p>If you click on a button with the name of your file, its content is displayed. Of course this is meaningful for text files.</p> 
       <p>No matter if the file is text or binary, you can always download the file by clicking its link so can examine it with an appropriate viewer on your PC.</p> 
@@ -73,7 +73,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
  }
 
  // creating the file, that will contain the last 100 lines
- File logChunk = new File( ""C:\\logFiles\\logChunk.txt" );
+ File logChunk = new File( "C:\\logFiles\\logChunk.txt" );
  // make the file to be deleted, after the operation ends
  logChunk.deleteOnExit();
  
@@ -82,7 +82,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
  // ...
 
  // and now attaching the new smaller file
- boolean isAttachedOk = new AtsDbLoggerUtilities().attachFileToCurrentTest( logChunk, "TestExplorer-4.0.0-2" );
+ boolean isAttachedOk = new AtsDbLoggerUtilities().attachFileToCurrentTest( logChunk, "TestExplorer-4.0.4" );
  // if needed, you can check whether the file was attached successfully</pre> 
        </div> 
       </div> 
@@ -117,7 +117,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
         // ...
 
         // and now attaching the new file which contains the new lines only
-        boolean isAttachedOk = new AtsDbLoggerUtilities().attachFileToCurrentTest( logChunk, "TestExplorer-4.0.0-2" );
+        boolean isAttachedOk = new AtsDbLoggerUtilities().attachFileToCurrentTest( logChunk, "TestExplorer-4.0.4" );
         // if needed, you can check where the file was attached successfully</pre> 
        </div> 
       </div> 
@@ -125,14 +125,14 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
       <hr> 
       <h1 id="Attachafiletothecurrenttestcase-Attachingafiletoaspecifictestcase">Attaching a file to a specific testcase</h1> 
       <p>By default, the file will be attached to the currently running testcase.</p> 
-      <p>However, there might be cases when you want to attach the file after the test has already completed, so there isn't a current testcase. In such case you can get the id of the last executed testcase and give it to the attach method:</p> 
+      <p>However, there might be cases when you want to attach the file after the test has already completed, so there isn't a current testcase. In such case you can get the ID of the last executed testcase and give it to the attach method:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">// get the the ID of the last executed testcase as it is in the Test Explorer DB
 int lastExecutedTestcaseId = ActiveDbAppender.getCurrentInstance().getLastExecutedTestCaseId();
 
 // now call the attach method
-new AtsDbLoggerUtilities().attachFileToTestcase( lastExecutedTestcaseId, "C:\\logFiles\\log.txt", "TestExplorer-4.0.0-2" );</pre> 
+new AtsDbLoggerUtilities().attachFileToTestcase( lastExecutedTestcaseId, "C:\\logFiles\\log.txt", "TestExplorer-4.0.4" );</pre> 
        </div> 
       </div> 
       <p><br></p> 

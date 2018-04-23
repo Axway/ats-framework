@@ -31,9 +31,32 @@
       <p>Each protocol sometimes needs more configuration options besides the regular host, port and user credentials.</p> 
       <p>For such cases the <strong> <em>FileTransferClient</em> </strong> provides the <em> <strong>addCustomProperty</strong> </em> method which accepts a key and value.</p> 
       <p>The key always starts with the name of the protocol - for example <em>FTPS_CONNNECTION_TYPE</em>. The possible values start with the name of the key - for example <em>FTPS_CONNNECTION_TYPE__IMPLICIT</em>, <em>FTPS_CONNNECTION_TYPE__AUTH_SSL</em> and <em>FTPS_CONNNECTION_TYPE__AUTH_TLS</em>. Using this key you can change the connection type.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Filetransfers-FTP/FTPSclient">FTP/FTPS client</h1> 
+      <h1 id="Filetransfers-Connectusingmulti-factorauthentication(byusername-passwordandprivate-publickey)">Connect using multi-factor authentication (by username-password and private-public key)</h1> 
+      <p>All of the available secure connection (<strong>HTTPS, FTPS, SFTP</strong>) can be created via multi-factor authentication (by providing private-public key pair, along with username and password)</p> 
+      <p>The key pair can be obtained from either&nbsp;<strong>JKS (.jks) or PKCS12 (.p12)</strong>&nbsp;key stores.</p> 
+      <p>The method for providing key store is <strong><em>setKeystore</em>&nbsp;</strong>and the methods providing trust store/certificate are <em><strong>setTruststore</strong></em> and <em><strong>setTrustServerSSLCertificate</strong></em>.</p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>Specifying key store and or trusted certificates are not allowed for FTP and HTTP connections, since they are not secured and any call to such methods will result in an exception.</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <p><br></p> 
+      <h1 id="Filetransfers-Providetruststoreortrustedservercertificate">Provide trust store or trusted server certificate</h1> 
+      <p>Optionally, the client can set trust server certificate/s, which will validate if the remote host is trusted or not.</p> 
+      <p>The trust store can be obtained from either&nbsp;<strong>JKS (.jks) or PKCS12 (.p12)</strong>&nbsp;key stores, while the trust certificate can be obtained from a&nbsp;<strong>PEM (.pem) file</strong>.</p> 
+      <p><br></p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you specify trust store and than trust certificate, only the trust certificate will be used for validation and if the order is reversed, then the trust store will be used.</p> 
+       </div> 
+      </div> 
+      <hr> 
+      <h1 id="Filetransfers-FTP/FTPSclient"><span style="color: rgb(120,0,0);">FTP/FTPS client</span></h1> 
+      <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.filetransfer.FileTransferClient;
@@ -44,7 +67,19 @@ FileTransferClient transferClient = new FileTransferClient( TransferProtocol.FTP
 transferClient.setPort( 121 );
 
 // the next method can be used to set some custom properties, for example to set the FTP connection type
-ftpClient.addCustomProperty( FileTransferClient.FTPS_CONNNECTION_TYPE, FileTransferClient.FTPS_CONNNECTION_TYPE__IMPLICIT);
+transferClient.addCustomProperty( FileTransferClient.FTPS_CONNNECTION_TYPE, FileTransferClient.FTPS_CONNNECTION_TYPE__IMPLICIT);
+
+
+// set key-pair (e.g. enable multi-factor authentication)
+// note that the last argument is required only when working with SFTP connections
+transferClient.setKeystore( KEY_STORE_LOCATION, KEY_STORE_PASSWORD, KEY_ALIAS );
+
+
+// specify trusted server certificates (this step is optional)
+// provide trust store
+transferClient.setTruststore( TRUST_STORE_LOCATION, TRUST_STORE_PASSWORD );
+// or provide PEM certificate
+transferClient.setTrustedServerSSLCertificate( TRUSTED_SERVER_CERTIFICATE );
  
 // connect using appropriate parameters
 transferClient.connect( SERVER_IP, USER_NAME, USER_PASSWORD );
@@ -122,6 +157,17 @@ String commandReturnCode = ftpClient.executeCommand( "mdir some_remote_directory
 httpClient.addCustomProperty( GenericTransferClient.HTTP_HTTPS_UPLOAD_CONTENT_TYPE, "text/plain");
 httpClient.addCustomProperty( GenericTransferClient.HTTP_HTTPS_SOCKET_READ_TIMEOUT, "10000");
 
+
+// set key-pair (e.g. enable multi-factor authentication)
+// note that the last argument is required only when working with SFTP connections
+httpClient.setKeystore( KEY_STORE_LOCATION, KEY_STORE_PASSWORD, KEY_ALIAS );
+
+// specify trusted server certificates (this step is optional)
+// provide trust store
+httpClient.setTruststore( TRUST_STORE_LOCATION, TRUST_STORE_PASSWORD );
+// or provide PEM certificate
+httpClient.setTrustedServerSSLCertificate( TRUSTED_SERVER_CERTIFICATE );
+
 // do something real
 httpClient.connect( SERVER_IP, USER_NAME, USER_PASSWORD );
 
@@ -194,11 +240,20 @@ httpClient.disconnect();
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">FileTransferClient sftpClient = new FileTransferClient( TransferProtocol.SFTP );
 
+// set key-pair (e.g. enable multi-factor authentication)
+// note that the last argument is required only when working with SFTP connections
+sftpClient.setKeystore( KEY_STORE_LOCATION, KEY_STORE_PASSWORD, KEY_ALIAS );
+// specify trusted server certificates (this step is optional)
+// provide trust store
+sftpClient.setTruststore( TRUST_STORE_LOCATION, TRUST_STORE_PASSWORD );
+// or provide PEM certificate 
+sftpClient.setTrustedServerSSLCertificate( TRUSTED_SERVER_CERTIFICATE );
+
 // do something real
-httpClient.connect( SERVER_IP, USER_NAME, USER_PASSWORD );
+sftpClient.connect( SERVER_IP, USER_NAME, USER_PASSWORD );
 
 // upload a local file to the remote root folder of our user
-httpClient.uploadFile( LOCAL_FILE_LOCATION + FILE_NAME, "/" );
+sftpClient.uploadFile( LOCAL_FILE_LOCATION + FILE_NAME, "/" );
 
 sftpClient.disconnect();
 </pre> 

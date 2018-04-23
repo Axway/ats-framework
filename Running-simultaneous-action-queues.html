@@ -91,16 +91,16 @@
        &nbsp;ftpLoader.executeQueuedActions();
 
         // create the HTTP load client
-        LoadClient htpLoader = new LoadClient( LOADER_ADDRESS );
-        htpLoader.setThreadingPattern( new AllAtOncePattern( 2, false, 100, 0 ) );
+        LoadClient httpLoader = new LoadClient( LOADER_ADDRESS );
+        httpLoader.setThreadingPattern( new AllAtOncePattern( 2, false, 100, 0 ) );
 
         // do HTTP transfers
-        htpLoader.startQueueing( "HTTP transfer" );
-        FileTransferActions htpTransferActions = new FileTransferActions();
-        htpTransferActions.connect( SERVER_IP, "HTTP", SERVER_HTTP_PORT, USER_NAME, USER_PASSWORD );
-        htpTransferActions.upload( "C:/some_other_file.txt" );
-        htpTransferActions.disconnect();
-        htpLoader.executeQueuedActions();
+        httpLoader.startQueueing( "HTTP transfer" );
+        FileTransferActions httpTransferActions = new FileTransferActions();
+        httpTransferActions.connect( SERVER_IP, "HTTP", SERVER_HTTP_PORT, USER_NAME, USER_PASSWORD );
+        httpTransferActions.upload( "C:/some_other_file.txt" );
+        httpTransferActions.disconnect();
+        httpLoader.executeQueuedActions();
 
         ActionQueue.waitUntilAllQueuesFinish();
     }
@@ -118,7 +118,7 @@
        <li>The last test line causes waiting until all(in our case both) action queues are completed</li> 
       </ul> 
       <h1 id="Runningsimultaneousactionqueues-Theresult">The result</h1> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496598/119496712.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="4"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496598/119496712.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
       <p>Both queues have started at the same time, but their duration is significantly different</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 

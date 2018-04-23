@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Ready-to-use test project</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Ready-to-use test project </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p>There is a way to quickly put your hands on running ATS test examples</p> 
+      <p>See how to do it by watching a short <a class="external-link" href="http://a.com" rel="nofollow">video</a> or follow the next steps.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Ready-to-usetestproject-Preparation">Preparation</h1> 
+      <p>We've create a VM image with ready-to-use ATS test project. It runs on top of VirtualBox</p> 
+      <ol> 
+       <li>Download the ATS test project <a class="external-link" href="http://a.com" rel="nofollow">image</a></li> 
+       <li>Download the appropriate <a class="external-link" href="https://www.virtualbox.org/wiki/Downloads" rel="nofollow">VirtualBox</a> version for your operating system. It's been tested to work well with version 5.2.x</li> 
+       <li>Install it</li> 
+       <li>Start it</li> 
+       <li>Go to File -&gt; Import Applicance</li> 
+       <li>Select the downloaded ATS test project image file</li> 
+       <li>You can allow more resources in order to get better performance by right clicking the imported image, go to Settings → System. For instance you can allocate more CPUs and RAM.</li> 
+       <li>Right click the imported image and go to Start</li> 
+       <li>When prompted, login as 'atsuser' with password 'atspassword'</li> 
+      </ol> 
+      <p>Now you have a running OS at your service.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Ready-to-usetestproject-Startsomeoftheavailabletests">Start some of the available tests</h1> 
+      <ol> 
+       <li>You need to start some applications used by the tests. So from the command terminal go to<strong> /home/atsuser/Desktop/AtsDemoTests</strong> and execute the <strong>start_ats_test_applications</strong>.</li> 
+       <li>Now open the AtsDemoTests folder located on the desktop and go to <strong>eclipse</strong> subfolder in order to start Eclipse.</li> 
+       <li>You will see a number of classes with tests in the <strong>ats-demo-tests</strong> project. Right-click some class and run it as TestNG test.</li> 
+       <li>Test results are available in suitable format if start Firefox browser and visit <strong>localhost:8080/TestExplorer</strong></li> 
+       <li>Enjoy it. If something does not work as expected - contact the ATS dev team.</li> 
+      </ol> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="ATS-Documentation.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>   
+ </body>
+</html>

@@ -59,12 +59,12 @@
         loader.startQueueing( "FTP transfer" );
   
         // create an instance of your action class
-        FileTransferAction ftAction = new FileTransferAction();
+        FileTransferActions ftActions = new FileTransferActions();
   
         // list all the actions you want to run
-        ftAction.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETRIZED_USER, USER_PASSWORD );
-        ftAction.upload( PARAMETRIZED_FILE );
-        ftAction.disconnect();
+        ftActions.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETRIZED_USER, USER_PASSWORD );
+        ftActions.upload( PARAMETRIZED_FILE );
+        ftActions.disconnect();
   
         // now execute the requested action queue according to the threading pattern
         loader.executeQueuedActions();
@@ -157,19 +157,19 @@
         loader.setThreadingPattern( new AllAtOncePattern( 5, true ) );
 
         // set as many as needed data configurators
-        loadClient.addParameterDataConfigurator( new ListDataConfig( PARAMETRIZED_USER, USER_TOKENS ) );
-        loadClient.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
+        loader.addParameterDataConfigurator( new ListDataConfig( PARAMETRIZED_USER, USER_TOKENS ) );
+        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
 
         // give a name to your action queue
         loader.startQueueing( "FTP transfer" );
   
         // create an instance of your action class
-        FileTransferAction ftAction = new FileTransferAction();
+        FileTransferActions ftActions = new FileTransferActions();
   
         // list all the actions you want to run
-        ftAction.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETRIZED_USER, USER_PASSWORD );
-        ftAction.upload( PARAMETRIZED_FILE );
-        ftAction.disconnect();
+        ftActions.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETRIZED_USER, USER_PASSWORD );
+        ftActions.upload( PARAMETRIZED_FILE );
+        ftActions.disconnect();
   
         // now execute the requested action queue according to the threading pattern
         loader.executeQueuedActions();
@@ -189,11 +189,11 @@
       <hr> 
       <h1 id="Parametrization-Usernamegenerationpattern">Username generation pattern</h1> 
       <p>When reviewing your testcase messages in Test Explorer you will see that there is a <em>thread</em> associated with each message:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495116.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495116.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="7"></span></p> 
       <p>In this example the messages come from 2 different hosts(machines).</p> 
       <p>The first host is the one that starts the tests and its thread is called <em>main</em>.</p> 
       <p>The other host is where the actions are running which is the ATS Loader. A number of threads are started and the thread names are displayed next to each message they produce.<br> But in many cases it is preferable to see <em>user names</em> instead of&nbsp; <em>thread names</em>:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495115.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495115.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="7"></span></p> 
       <p>To achieve this, you need to add a <em> <strong>Username Data Configurator</strong> </em>. This can be done in two ways:</p> 
       <h3 id="Parametrization-Usingastaticlistofusernames:">Using a static list of usernames:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 

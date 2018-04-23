@@ -23,7 +23,7 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="DatabaseOperations-Introduction">Introduction</h1> 
-      <p>Currently ATS supports <em>Oracle</em>, <em>MySQL</em>, <em>MSSQL</em> and <em>Cassandra</em>. With some effort, It is also possible to plug-in support for your own database type.</p> 
+      <p>Currently ATS supports <em>Oracle</em>, <em>MySQL</em>, <em>MSSQL, PostgreSQL</em> and <em>Cassandra</em>. With some effort, It is also possible to plug-in support for your own database type.</p> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="DatabaseOperations-Basicexample">Basic example</h1> 
@@ -269,6 +269,9 @@ customProperties.put( DbKeys.USE_SECURE_SOCKET, "true" );
        <li>"Non PRIMARY KEY type found in where clause" - Change your <em>where</em> clause.</li> 
        <li>"Invalid STRING constant (a14f0f51-7ff2-43fe-b922-8c36ddbbd91f) for id of type uuid" - In the <em>where</em> clauses, some data types (like UUID) must not be quoted while others (like TEXT) must be quoted.</li> 
       </ul> 
+      <p><br></p> 
+      <h1 id="DatabaseOperations-PostgreSQL">PostgreSQL</h1> 
+      <p>In order to preserve the case of the letters for the table name or for the name of the table columns, you must additionally enclose them in double quotes (if the table name is Persons, you must pass "Persons" in the query)</p> 
       <p>&nbsp;</p> 
       <hr> 
       <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 

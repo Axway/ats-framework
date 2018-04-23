@@ -63,19 +63,3 @@ function collapse_all() {
 		}
 	});
 }
-
-function toggle_sidebar(toggle_btn) {
-	
-	var content_div = $('#content');
-	$('menu_btn').toggle();
-	if (content_div.attr('style').includes('margin-left: 20%;')) {
-		content_div.attr('style','margin-left: 0%;');
-		$(toggle_btn).toggle();
-	}
-	else if (content_div.attr('style').includes('margin-left: 0%;')) {
-		content_div.attr('style','margin-left: 20%;');
-		$(toggle_btn).toggle();
-	}
-	
-	
-}

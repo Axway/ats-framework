@@ -24,8 +24,26 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Databaseverifications-Introduction">Introduction</h1> 
-      <p>Currently ATS database operations are possible for ATS supports <em>Oracle</em>, <em>MySQL</em>, <em>MSSQL</em> and <em>Cassandra</em></p> 
+      <p>Currently ATS database operations are possible for ATS supports <em>Oracle</em>, <em>MySQL</em>, <em>MSSQL</em>,&nbsp;<em>Cassandra and PostgreSQL</em></p> 
       <p>This page shows how to verify some data is present or not into some table cell following the logic of Rule Based Verifications</p> 
+      <p><br></p> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <p class="title">PostgreSQL notes</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>When you are verifying a value from a PostgreSQL database:</p> 
+        <ol> 
+         <li>The format of the column name must be &lt;TABLE_NAME&gt;.&lt;COLUMN_NAME&gt;</li> 
+         <li>If the table name or the column name is not lower-case only, they must be enclosed in double quotes.</li> 
+        </ol> 
+        <p>Example:</p> 
+        <p>...</p> 
+        <pre>dbVerification.checkFieldValueContains( "\"Table1\"", "Table1.column1", "How old" ); // only then using PostgreSQL</pre> 
+        <pre>dbVerification.checkFieldValueContains( "Table1", "column1", "How old" ); // when using MySql, Oracle, etc</pre> 
+        <p>...</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="Databaseverifications-Constructingtheverificationobject">Constructing the verification object</h1> 

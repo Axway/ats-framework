@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Release Notes 4.0.4</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="Release-Notes.html">Release Notes</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Release Notes 4.0.4 </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p><strong>1 March 2018</strong></p> 
+      <h3 id="ReleaseNotes4.0.4-NewFeatures">New Features</h3> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span>&nbsp;<em> <strong>Amazon S3</strong> </em> Some extensions and optimizations</p> 
+      <ul> 
+       <li>Add <strong> <em>region</em> </strong> support for all operations</li> 
+       <li>Delete all objects with keys having some specified prefix<br>See the <strong> <em>deleteAll( String prefixName )</em> </strong> method in <strong> <em>S3Operaions</em> </strong>class</li> 
+       <li>Optimize operations which list or delete multiple objects at once</li> 
+      </ul> 
+      <p><a class="external-link" href="https://axway.github.io/ats-framework/Remote-Storage-Operations.html" rel="nofollow">Here</a> is the S3 operations dedicated page</p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span>&nbsp;<em> <strong>File Transfer Client </strong> </em>Support for multifactor authentication over HTTPS, FTSP and SFTP</p> 
+      <p>Use the <em> <strong>setKeystore</strong> </em>, <em> <strong>setTruststore</strong> </em>and <em> <strong>setTrustedServerSSLCertificate</strong> </em>methods found in FileTransferClient class which itself is presented <a class="external-link" href="https://axway.github.io/ats-framework/File-transfers.html" rel="nofollow">here</a></p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span> <em> <strong>File System Operations </strong> </em>Support replacing more than one text in file at once</p> 
+      <p>In case you need to make many changes to some configuration file(or similar), you needed to make a call for each change. That is possible by using:</p> 
+      <p style="margin-left: 30.0px;"><strong> <em>replaceTextInFile( String filePath, String searchText, String newText, boolean isRegex )</em> </strong></p> 
+      <p>Now there is another variation:</p> 
+      <p style="margin-left: 30.0px;"><em> <strong>replaceTextInFile( String filePath, Map&lt;String, String&gt; searchTokens, boolean isRegex )</strong> </em></p> 
+      <p>which allows to provide a map containing all the tokens to be replaced and the new values to use.</p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span> <em> <strong>Framework </strong> </em>Allow hostname, domain or subdomain to accept digit as first character</p> 
+      <p>Many times it is needed to specify some remote target and we often do verification on the passed values. Now you can use a digit as a first character.</p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span> <em> <strong>REST Client </strong> </em>Support serializing received body as object by using a generic type parameter</p> 
+      <p>Each REST call returns a REST response which provides several methods for use of the body. Now a new method was added to the list:</p> 
+      <p style="margin-left: 30.0px;"><em> <strong>public &lt;T&gt; T getBodyAsObject( GenericType&lt;T&gt; theType )</strong> </em></p> 
+      <p class="confluence-link"><a href="https://techweb.axway.com/confluence/display/ATS/REST+Operations+-+Working+with+the+response" rel="nofollow">More</a> about working with the REST response</p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span> <em> <strong>REST Client </strong> </em>Allow null body for <em> <strong>putObject</strong> </em>and <em> <strong>putForm</strong> </em>methods</p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012553.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span> <em> <strong>Logging system</strong> </em>Allow specifying the testcase to attach a file to</p> 
+      <p>You can attach some file to the currently running test. In case you need to do so after a test is over, now we provide an additional parameter which specifies the testcase we are attaching to.</p> 
+      <p>See the "Attaching a file to a specific testcase" section <a class="external-link" href="https://axway.github.io/ats-framework/Attach-a-file-to-the-current-testcase.html" rel="nofollow">here</a></p> 
+      <h3 id="ReleaseNotes4.0.4-BugFixes">Bug Fixes</h3> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012554.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span>&nbsp;<em> <strong>File Transfer Client </strong> </em>Failure when uploading/downloading file with non UTF-8 compliant name</p> 
+      <p><br></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150012552/150012554.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="3"></span>&nbsp;<em> <strong>File System Operations </strong> </em>Failure when copying directories with wrong trailing</p> 
+      <h3 id="ReleaseNotes4.0.4-Changesinthirdpartydependencies">Changes in third party dependencies</h3> 
+      <p>none</p> 
+      <p><br></p> 
+     </div> 
+    </div> 
+   </div> 
+  </div>   
+  <hr>
+  <p>Go to <a href="./Release-Notes.html">parent page</a></p>
+  <p>Go to <a href="./toc.html">Table of Contents</a></p>
+  <hr>
+ </body>
+</html>

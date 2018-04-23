@@ -56,6 +56,7 @@
         class="com.axway.ats.log.appenders.ActiveDbAppender"&gt;
         &lt;param name="host" value="___Test Explorer server IP or Host name___" /&gt;
         &lt;param name="database" value="___My DB name___" /&gt;
+        &lt;param name="port" value="___My DB Port___" /&gt;
         &lt;param name="user" value="___My DB user name___" /&gt;
         &lt;param name="password" value="___My DB user password___" /&gt;
         &lt;layout class="org.apache.log4j.PatternLayout"&gt;
@@ -79,11 +80,12 @@
       </div> 
       <p>You need to understand the following:</p> 
       <ol> 
-       <li><em> <strong>Console appender</strong> </em> <br>enables logging the test results in your console. It is useful while developing your tests as you can see right away what happens during the execution of this test.</li> 
-       <li><em> <strong>DB appender</strong> </em> <br>enables logging the test results in the Test Explorer database. This way you can see the test results via the Test Explorer UI 
+       <li><em> <strong>Console appender</strong> </em><br>enables logging the test results in your console. It is useful while developing your tests as you can see right away what happens during the execution of this test.</li> 
+       <li><em> <strong>DB appender</strong> </em><br>enables logging the test results in the Test Explorer database. This way you can see the test results via the Test Explorer UI 
         <ol> 
          <li><strong> <em>host</em> </strong>- where your database is located</li> 
          <li><strong> <em>database</em> </strong> - the name of your database</li> 
+         <li><em><strong>port</strong></em> - the database port ( If no port is specified, the default one for MSSQL will be used (1433) )</li> 
          <li><strong> <em>user</em> </strong> - the database username</li> 
          <li><em> <strong>password</strong> </em> - the database user password</li> 
         </ol></li> 
@@ -93,6 +95,13 @@
          <li>sets the <strong> <em>priority level</em> </strong> which defines how verbose the logging will be. <br>The possible options are trace, debug, info, warn, error, fatal where trace is really verbose and each next is less.</li> 
         </ol></li> 
       </ol> 
+      <p><br></p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>If you want to connect to a <strong>PostgreSQL</strong> database, you<strong> must</strong> specify the database port in the <strong>log4j.xml</strong> file.</p> 
+        <p><span>The default port for </span><strong>PostgreSQL</strong><span> is </span><strong>5432</strong><span>.</span></p> 
+       </div> 
+      </div> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p><strong>The appropriate log verbose (priority) level</strong></p> 

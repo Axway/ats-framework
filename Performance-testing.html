@@ -26,7 +26,7 @@
       <hr> 
       <h1 id="Performancetesting-Thetestlandscape">The test landscape</h1> 
       <p>First, please have a look at the following simple diagram:</p> 
-      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="400" width="733" confluence-query-params="effects=border-simple,blur-border,tape" src="attachments/119486578/119486587.png?effects=border-simple,blur-border,tape" data-unresolved-comment-count="0" data-linked-resource-version="2" data-linked-resource-default-alias="PerformanceTestsLandscape.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="14"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="400" width="733" confluence-query-params="effects=border-simple,blur-border,tape" src="attachments/119486578/119486587.png?effects=border-simple,blur-border,tape" data-unresolved-comment-count="0" data-linked-resource-version="2" data-linked-resource-default-alias="PerformanceTestsLandscape.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="15"></span></p> 
       <p>Whenever you work with your tests, it will be good to have an idea about the participating parties, there placement and relations.</p> 
       <p>This diagram is an example which could be different than your own case but still:</p> 
       <ol> 
@@ -57,7 +57,7 @@ loader.setThreadingPattern( new FixedDurationAllAtOncePattern( 5, true, 20, 1000
 loader.startQueueing( "FTP transfer" );
  
 // create an instance of your action class
-FileTransferAction ftAction = new FileTransferAction();
+FileTransferActions ftAction = new FileTransferActions();
  
 // list all the actions you want to run
 ftAction.connect( SERVER_IP, SERVER_FTP_PORT, USER_NAME, USER_PASSWORD );
@@ -74,7 +74,7 @@ loader.executeQueuedActions();</pre>
       <p>As soon as the <em> <strong>executeQueuedActions()</strong> </em> method is called, it all gets triggered on the Loader.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>The <em> <strong>FileTransferAction</strong> </em> class used in the example is not distributed with ATS framework!</p> 
+        <p>The <em> <strong>FileTransferActions</strong> </em> class used in the example is not distributed with ATS framework!</p> 
         <p>The performance tests run code specific for your testing needs which means we cannot guess what you need. You are the ones that will make these actions and will use the framework to run them. Once you know how to create such actions, you can include them in your performance tests to satisfy your testing needs.</p> 
        </div> 
       </div> 
@@ -83,7 +83,7 @@ loader.executeQueuedActions();</pre>
       <hr> 
       <h1 id="Performancetesting-Exampletestresult">Example test result</h1> 
       <p>When you go to Test Explorer UI you will see something similar to:</p> 
-      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-content-image-border" height="250" width="1104" src="attachments/119486578/119486711.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="14"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-content-image-border" height="250" width="1104" src="attachments/119486578/119486711.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="15"></span></p> 
       <p>Here you can see what kind of threading pattern is used. How many times each action was executed, was it successful, how long time it took to executed etc.</p> 
       <p>&nbsp;</p> 
       <hr> 

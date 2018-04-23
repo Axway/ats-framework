@@ -28,9 +28,9 @@
       <h1 id="SpecialconsiderationsforfilecopyinDockerenvironment-Details">Details</h1> 
       <p>ATS is designed as a network independent tool, i.e. it works in same way both locally and remotely. That is why usually you should not expect test modifications when using Docker. There is just one detail that should be considered and it is related to the fact that <strong>containers may need exposing of network ports</strong>. Common picture is outlined below.</p> 
       <p>There the <em>host</em> is on the left and the container <em>C2</em> is on the right. The needed configuration step is for the incoming link to C2 where internal port 80 is mapped to external (host) port 5000:</p> 
-      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/125484651/125484812.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="Docker_NAT_.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/125484651/125484812.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="Docker_NAT_.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="6"></span></p> 
       <p>Source: <a class="external-link" href="https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Designing_Scalable%2C_Portable_Docker_Container_Networks#External_Access_for_Standalone_Containers" rel="nofollow">docker.com</a></p> 
-      <p>Affected ATS functionality is when copying files from outside to some Docker container. This is because the accepting part (the ATS agent) should be accessible from the sending part (usually the Test Executor like Eclipse or Maven process). In order to achieve this you may need to:</p> 
+      <p>Affected ATS functionality is when copying files <em>from outside to some Docker container</em>. This is because the accepting part (the ATS agent) should be accessible from the sending part (usually the Test Executor like Eclipse or Maven process). In order to achieve this you need to:</p> 
       <p><strong>1. Export some port range</strong> of the container to be visible from outside. This range could be set for later use for file copy operations in two ways:&nbsp;</p> 
       <ul> 
        <li><strong>programatically</strong>, via ActionLibraryConfigurator.getInstance().setCopyFileStartPort() and ActionLibraryConfigurator.getInstance().setCopyFileEndPort();</li> 
@@ -39,11 +39,11 @@
         <li><em>actionlibrary.filesystem.copyfile.start.port</em></li> 
         <li><em>actionlibrary.filesystem.copyfile.end.port</em> <br> You need to load them either via <em>CommonConfigurator.registerConfigFile(fileName)</em> or <em>CommonConfigurator.registerConfigFileFromClasspath(fileName)</em>;</li> 
        </ul> 
-       <li>Then you should to the same in Docker configuration. The specific command is not described here.</li> 
+       <li>Then you should to the same in Docker configuration. <br>The specific command is not described here. Note that ports mapped should match, i.e. local container port 12345 should be exposed to host with the same port number, 12345. Port ranges should also be the same like: 12345-12349:12345-12349</li> 
       </ul> 
       <p><strong>2. If Test Executor is on the same host</strong> where the Docker containers reside then you should do <strong>additional configuration</strong>. This is because all ATS agent operations have a check whether target agent is on the same IP (host). In such case ATS shortcuts to use operations in same JVM instead of contacting agent remotely via socket. To avoid this ATS team has developed a new method <em>CommonConfigurator.getInstance().setHostLocality()</em>. Note that this method affects all operations to agent with such name/IP.</p> 
       <p><strong>Recommendation</strong></p> 
-      <p>ATS team recommends usage of a homogeneous environment, i.e. in this case all involved test machines to be containers, even test executor. This way all containers will be in same net and will NOT require declaration of&nbsp;open ports or the use of <em>setHostLocality()</em> method.</p> 
+      <p>ATS team recommends usage of a homogeneous environment, i.e. all involved test machines to be containers, even test executor. This way all containers will be in same network and will NOT require declaration of&nbsp;open ports or the use of <em>setHostLocality()</em> method.</p> 
       <p>When this is not possible then you may need the configuration steps mentioned above.</p> 
       <p><strong>Links</strong></p> 
       <ul> 
