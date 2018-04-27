@@ -402,10 +402,13 @@ public class RestResponse {
 
     private void checkResponseBodyStatus() {
 
-        /* prevents java.lang.IllegalStateException: Entity input stream has already been closed. 
-         * if the file size is less than MAX_RESPONSE_SIZE
+        /* Next code prevents java.lang.IllegalStateException: Entity input stream has already been closed. 
+         * 
+         * It is unsafe to do this on very large bodies as it may need too much memory.
+         * So we restrict the max size.
+         * Note that length of -1 could be indication of a very large chunked body.
         */
-        if (response.getLength() < MAX_RESPONSE_SIZE) {
+        if( response.getLength() > 0 && response.getLength() < MAX_RESPONSE_SIZE ) {
             response.bufferEntity();
         }
     }
