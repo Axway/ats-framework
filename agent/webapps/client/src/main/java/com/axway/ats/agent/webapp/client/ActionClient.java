@@ -29,6 +29,8 @@ import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
  */
 public abstract class ActionClient extends AbstractAgentClient {
 
+    private int actionId = -1;
+
     /**
      * Constructor for this class - sets the host on which the action to be
      * performed, as well as the component name
@@ -132,14 +134,17 @@ public abstract class ActionClient extends AbstractAgentClient {
         // Check if we are queuing - in this case all actions will be routed to the queue
         // The exception is when we are sending command to the Monitoring Service
         ActionQueue actionQueue = ActionQueue.getCurrentInstance();
-        if( actionQueue == null || !actionQueue.isInQueueMode()
-            || component.equals( SystemMonitorDefinitions.ATS_SYSTEM_MONITORING_COMPONENT_NAME ) ) {
-            if( atsAgent.equals( LOCAL_JVM ) ) {
+        if (actionQueue == null || !actionQueue.isInQueueMode()
+            || component.equals(SystemMonitorDefinitions.ATS_SYSTEM_MONITORING_COMPONENT_NAME)) {
+            if (atsAgent.equals(LOCAL_JVM)) {
                 LocalExecutor localExecutor = new LocalExecutor();
-                result = localExecutor.executeAction( actionRequest );
+                result = localExecutor.executeAction(actionRequest);
             } else {
-                RemoteExecutor remoteExecutor = new RemoteExecutor( atsAgent );
-                result = remoteExecutor.executeAction( actionRequest );
+                RemoteExecutor remoteExecutor = new RemoteExecutor(atsAgent);
+                if (actionId < 0) {
+                    actionId = remoteExecutor.initializeAction(actionRequest);
+                }
+                result = remoteExecutor.executeAction(actionRequest);
             }
         } else {
             actionQueue.addActionRequest(actionRequest);
@@ -170,5 +175,19 @@ public abstract class ActionClient extends AbstractAgentClient {
                              + "'. This meta key will not be applied on this action.");
             }
         }
+    }
+
+    @Override
+    protected void finalize() {
+
+        try {
+            if (actionId > -1) {
+                RemoteExecutor executor = new RemoteExecutor(atsAgent);
+                executor.deinitializeAction(actionId);
+            }
+        } catch (Exception e) {
+            log.error("Unable to finalize ActionClass object", e);
+        }
+
     }
 }

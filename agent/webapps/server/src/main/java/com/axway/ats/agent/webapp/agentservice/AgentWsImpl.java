@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
-import com.axway.ats.agent.core.ActionHandler;
+//import com.axway.ats.agent.core.ActionHandler;
 import com.axway.ats.agent.core.EnvironmentHandler;
 import com.axway.ats.agent.core.MainComponentLoader;
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
@@ -214,35 +214,35 @@ public class AgentWsImpl {
      * @throws AgentException if any error occurs
      * @throws InternalComponentException if an exception occurs in the Agent action
      */
-    @WebMethod
-    public byte[] executeAction(
-                                 @WebParam( name = "componentName") String componentName,
-                           @WebParam(name = "actionName") String actionName,
-                           @WebParam(name = "args") ArgumentWrapper[] args ) throws AgentException,
-                                                                             InternalComponentException {
-
-        final String caller = getCaller();
-        ThreadsPerCaller.registerThread( caller );
-
-        try {
-            Object result = executeAction( caller, componentName, actionName, args );
-
-            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
-            objectOutStream.writeObject( result );
-
-            return byteOutStream.toByteArray();
-        } catch( Exception e ) {
-            handleExceptions( e );
-
-            // should never reach this line because handleExceptions() will
-            // always throw
-            // but the compiler is not aware of this
-            return null;
-        } finally {
-            ThreadsPerCaller.unregisterThread();
-        }
-    }
+//    @WebMethod
+//    public byte[] executeAction(
+//                                 @WebParam( name = "componentName") String componentName,
+//                           @WebParam(name = "actionName") String actionName,
+//                           @WebParam(name = "args") ArgumentWrapper[] args ) throws AgentException,
+//                                                                             InternalComponentException {
+//
+//        final String caller = getCaller();
+//        ThreadsPerCaller.registerThread( caller );
+//
+//        try {
+//            Object result = executeAction( caller, componentName, actionName, args );
+//
+//            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+//            ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
+//            objectOutStream.writeObject( result );
+//
+//            return byteOutStream.toByteArray();
+//        } catch( Exception e ) {
+//            handleExceptions( e );
+//
+//            // should never reach this line because handleExceptions() will
+//            // always throw
+//            // but the compiler is not aware of this
+//            return null;
+//        } finally {
+//            ThreadsPerCaller.unregisterThread();
+//        }
+//    }
 
     /**
      * @param caller the IP of the WS caller
@@ -251,36 +251,36 @@ public class AgentWsImpl {
      * @param args arguments - array of ArgumentWrapper
      * @return action returned result (not serialized)
      */
-    private Object executeAction(
-                                  String caller,
-                                  String componentName,
-                                  String actionName,
-                                  ArgumentWrapper[] args ) throws IOException, NoSuchComponentException,
-                                                           NoSuchActionException, ActionExecutionException,
-                                                           InternalComponentException,
-                                                           NoCompatibleMethodFoundException,
-                                                           ClassNotFoundException {
-
-        Object[] arguments = null;
-        if( args == null ) { // Apache CXF impl. provides null instead of empty array
-            arguments = new Object[0];
-        } else {
-            int numArguments = args.length;
-            arguments = new Object[numArguments];
-
-            // unwrap the action arguments
-            for( int i = 0; i < numArguments; i++ ) {
-                ArgumentWrapper argWrapper = args[i];
-
-                ByteArrayInputStream byteInStream = new ByteArrayInputStream( argWrapper.getArgumentValue() );
-                ObjectInputStream objectInStream = new ObjectInputStream( byteInStream );
-
-                arguments[i] = objectInStream.readObject();
-            }
-        }
-
-        return ActionHandler.executeAction( caller, componentName, actionName, arguments );
-    }
+//    private Object executeAction(
+//                                  String caller,
+//                                  String componentName,
+//                                  String actionName,
+//                                  ArgumentWrapper[] args ) throws IOException, NoSuchComponentException,
+//                                                           NoSuchActionException, ActionExecutionException,
+//                                                           InternalComponentException,
+//                                                           NoCompatibleMethodFoundException,
+//                                                           ClassNotFoundException {
+//
+//        Object[] arguments = null;
+//        if( args == null ) { // Apache CXF impl. provides null instead of empty array
+//            arguments = new Object[0];
+//        } else {
+//            int numArguments = args.length;
+//            arguments = new Object[numArguments];
+//
+//            // unwrap the action arguments
+//            for( int i = 0; i < numArguments; i++ ) {
+//                ArgumentWrapper argWrapper = args[i];
+//
+//                ByteArrayInputStream byteInStream = new ByteArrayInputStream( argWrapper.getArgumentValue() );
+//                ObjectInputStream objectInStream = new ObjectInputStream( byteInStream );
+//
+//                arguments[i] = objectInStream.readObject();
+//            }
+//        }
+//
+//        return ActionHandler.executeAction( caller, componentName, actionName, arguments );
+//    }
 
     /**
      * Tells if an Agent component is loaded, so its actions can be called
@@ -288,24 +288,24 @@ public class AgentWsImpl {
      * @param componentName the name of the component
      * @return whether it is available
      */
-    @WebMethod
-    public boolean isComponentLoaded(
-                                      @WebParam( name = "componentName") String componentName ) {
-
-        String caller = getCaller();
-        ThreadsPerCaller.registerThread( caller );
-
-        try {
-            boolean isLoaded = ActionHandler.isComponentLoaded( caller, componentName );
-            log.info( "Agent component '" + componentName + "' is " + ( isLoaded
-                                                                                 ? ""
-                                                                                 : "not " )
-                      + "loaded for caller with IP " + caller );
-            return isLoaded;
-        } finally {
-            ThreadsPerCaller.unregisterThread();
-        }
-    }
+//    @WebMethod
+//    public boolean isComponentLoaded(
+//                                      @WebParam( name = "componentName") String componentName ) {
+//
+//        String caller = getCaller();
+//        ThreadsPerCaller.registerThread( caller );
+//
+//        try {
+//            boolean isLoaded = ActionHandler.isComponentLoaded( caller, componentName );
+//            log.info( "Agent component '" + componentName + "' is " + ( isLoaded
+//                                                                                 ? ""
+//                                                                                 : "not " )
+//                      + "loaded for caller with IP " + caller );
+//            return isLoaded;
+//        } finally {
+//            ThreadsPerCaller.unregisterThread();
+//        }
+//    }
 
     /**
      * Restore the environment for a given component. This will cause the

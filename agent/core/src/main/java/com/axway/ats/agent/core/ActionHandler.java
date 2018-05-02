@@ -28,64 +28,64 @@ import com.axway.ats.agent.core.exceptions.NoSuchComponentException;
  * {@link DynamicRegistration}. This class is a singleton.
  * 
  */
-public final class ActionHandler {
-
-    /**
-     * Execute an action on the remote host, pass the arguments as Objects 
-     * 
-     * @param caller            the remote caller
-     * @param componentName     the name of the component
-     * @param actionName        the name of the action
-     * @param args              list of Object arguments
-     * @return                  the result of the execution as an Object
-     * 
-     * @throws NoSuchComponentException     if the given component is not registered
-     * @throws NoSuchActionException        if the given action is not registered
-     * @throws ActionExecutionException     if exception occurred during action execution
-     * @throws NoCompatibleMethodFoundException if no compatible method is found for this action
-     */
-    public static Object executeAction( String caller, String componentName, String actionName,
-                                        Object[] args ) throws NoSuchComponentException, NoSuchActionException,
-                                                        ActionExecutionException, InternalComponentException,
-                                                        NoCompatibleMethodFoundException {
-
-        //get the component action map for this caller
-        //if component with this name does not exist, a NoSuchComponentException is thrown
-        ComponentActionMap actionMap = ComponentRepository.getInstance()
-                                                          .getComponentActionMap(caller, componentName);
-
-        //get the argument types
-        Class<?>[] argTypes = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] == null) {
-                argTypes[i] = Void.TYPE;
-            } else {
-                argTypes[i] = args[i].getClass();
-            }
-        }
-
-        ActionMethod actionMethod = actionMap.getActionMethod(actionName, argTypes);
-        Object actionClassInstance = actionMap.getCachedActionClassInstance(caller, actionMethod);
-
-        //invoke the action
-        return actionMethod.invoke(actionClassInstance, args, true);
-    }
-
-    /**
-     * Tells if an Agent component is loaded, so its actions can be called 
-     * 
-     * @param caller            the remote caller
-     * @param componentName     the name of the component
-     * @return                  whether it is available
-     */
-    public static boolean isComponentLoaded( String caller, String componentName ) {
-
-        try {
-            // check if the component is loaded
-            ComponentRepository.getInstance().getComponentActionMap(caller, componentName);
-            return true;
-        } catch (NoSuchComponentException e) {
-            return false;
-        }
-    }
-}
+//public final class ActionHandler {
+//
+//    /**
+//     * Execute an action on the remote host, pass the arguments as Objects 
+//     * 
+//     * @param caller            the remote caller
+//     * @param componentName     the name of the component
+//     * @param actionName        the name of the action
+//     * @param args              list of Object arguments
+//     * @return                  the result of the execution as an Object
+//     * 
+//     * @throws NoSuchComponentException     if the given component is not registered
+//     * @throws NoSuchActionException        if the given action is not registered
+//     * @throws ActionExecutionException     if exception occurred during action execution
+//     * @throws NoCompatibleMethodFoundException if no compatible method is found for this action
+//     */
+//    public static Object executeAction( String caller, String componentName, String actionName,
+//                                        Object[] args ) throws NoSuchComponentException, NoSuchActionException,
+//                                                        ActionExecutionException, InternalComponentException,
+//                                                        NoCompatibleMethodFoundException {
+//
+//        //get the component action map for this caller
+//        //if component with this name does not exist, a NoSuchComponentException is thrown
+//        ComponentActionMap actionMap = ComponentRepository.getInstance()
+//                                                          .getComponentActionMap(caller, componentName);
+//
+//        //get the argument types
+//        Class<?>[] argTypes = new Class<?>[args.length];
+//        for (int i = 0; i < args.length; i++) {
+//            if (args[i] == null) {
+//                argTypes[i] = Void.TYPE;
+//            } else {
+//                argTypes[i] = args[i].getClass();
+//            }
+//        }
+//
+//        ActionMethod actionMethod = actionMap.getActionMethod(actionName, argTypes);
+//        Object actionClassInstance = actionMap.getCachedActionClassInstance(caller, actionMethod);
+//
+//        //invoke the action
+//        return actionMethod.invoke(actionClassInstance, args, true);
+//    }
+//
+//    /**
+//     * Tells if an Agent component is loaded, so its actions can be called 
+//     * 
+//     * @param caller            the remote caller
+//     * @param componentName     the name of the component
+//     * @return                  whether it is available
+//     */
+//    public static boolean isComponentLoaded( String caller, String componentName ) {
+//
+//        try {
+//            // check if the component is loaded
+//            ComponentRepository.getInstance().getComponentActionMap(caller, componentName);
+//            return true;
+//        } catch (NoSuchComponentException e) {
+//            return false;
+//        }
+//    }
+//}

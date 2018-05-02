@@ -62,10 +62,11 @@ class MethodTemplateProcessor extends TemplateProcessor {
             //construct the return type
             String returnTypeName = returnType.getSimpleName();
             StringBuilder execDefinition = new StringBuilder();
+            StringBuilder execDefinitionEnd = new StringBuilder();
             if (!"void".equals(returnTypeName)) {
-                execDefinition.append("return ( ");
+                execDefinition.append("return new Gson().fromJson( (String) ");
                 if (returnType.isPrimitive() && !returnType.isArray()) {
-                    execDefinition.append(getObjectTypeForPrimitive(returnTypeName));
+                    execDefinitionEnd.append(getObjectTypeForPrimitive(", "+returnTypeName+".class )"));
                 } else {
 
                     Type genericReturnType = actionImplementation.getGenericReturnType();
@@ -82,12 +83,15 @@ class MethodTemplateProcessor extends TemplateProcessor {
                                               + ">";
                         }
                     }
-                    execDefinition.append(returnTypeName);
+                    //execDefinition.append(returnTypeName+".class");
+                    execDefinitionEnd.append(", "+returnTypeName+".class )");
+                    
                 }
-                execDefinition.append(" ) ");
+                //execDefinition.append(" ) ");
             }
             placeHolderValues.put("$RETURN_TYPE$", returnTypeName);
             placeHolderValues.put("$EXEC_RETURN_DEFINITION$", execDefinition.toString());
+            placeHolderValues.put("$EXEC_RETURN_DEFINITION_END$", execDefinitionEnd.toString());
             if (registerAction) {
                 placeHolderValues.put("$EXECUTE_ACTION$", "executeAction");
             } else {

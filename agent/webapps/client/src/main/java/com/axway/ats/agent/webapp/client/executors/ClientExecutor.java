@@ -26,6 +26,22 @@ import com.axway.ats.agent.core.exceptions.AgentException;
 public interface ClientExecutor {
 
     /**
+     * Initialize a single action class
+     * @param actionRequest the request bean
+     * @return action id that maps the initialized class
+     * @throws AgentException
+     * */
+    int initializeAction( ActionRequest actionRequest ) throws AgentException;
+
+    /**
+     * Deinitialize action class
+     * @param actioId the action id
+     * @return 
+     * @throws AgentException
+     * */
+    void deinitializeAction( int actionId ) throws AgentException;
+
+    /**
      * Execute a single action and return the result
      *
      * @param actionRequest the request bean

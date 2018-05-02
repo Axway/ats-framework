@@ -70,7 +70,7 @@ class TemplateProcessor {
 
             processedTemplate = processedTemplate.replace(placeHolder, value);
         }
-
+        
         return processedTemplate;
     }
 }

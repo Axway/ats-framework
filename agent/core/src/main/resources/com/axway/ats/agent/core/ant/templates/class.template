@@ -3,6 +3,7 @@ package $PACKAGE$;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.agent.webapp.client.ActionClient;
 import com.axway.ats.agent.core.exceptions.AgentException;
+import com.google.gson.Gson;
 
 $RETURN_CLASS_IMPORTS$
 
