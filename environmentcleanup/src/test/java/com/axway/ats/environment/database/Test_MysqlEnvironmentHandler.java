@@ -123,24 +123,21 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
 
         //foreign keys check start
         mockFileWriter.write("SET FOREIGN_KEY_CHECKS = 0;" + EOL_MARKER + LINE_SEPARATOR);
+        mockFileWriter.write("LOCK TABLES table1 WRITE, table2 WRITE " + EOL_MARKER + LINE_SEPARATOR);
 
         //table1
-        mockFileWriter.write("LOCK TABLES `table1` WRITE;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("DELETE FROM `table1`;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO `table1` (name1,name2,name3) VALUES('value1',NULL,0x1);"
                              + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.flush();
         mockFileWriter.write("UNLOCK TABLES;" + EOL_MARKER + LINE_SEPARATOR);
-        mockFileWriter.write(LINE_SEPARATOR);
 
         //table2
-        mockFileWriter.write("LOCK TABLES `table2` WRITE;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("DELETE FROM `table2`;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO `table2` (name1,name2,name3) VALUES('value1',NULL,0x1);"
                              + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.flush();
         mockFileWriter.write("UNLOCK TABLES;" + EOL_MARKER + LINE_SEPARATOR);
-        mockFileWriter.write(LINE_SEPARATOR);
 
         //foreign keys check end
         mockFileWriter.write("");
@@ -208,28 +205,25 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
 
         //foreign keys check start
         mockFileWriter.write("SET FOREIGN_KEY_CHECKS = 0;" + EOL_MARKER + LINE_SEPARATOR);
+        mockFileWriter.write("LOCK TABLES table1 WRITE, table2 WRITE " + EOL_MARKER + LINE_SEPARATOR);
 
         //table1
-        mockFileWriter.write("LOCK TABLES `table1` WRITE;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("DELETE FROM `table1`;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO `table1` (name1,name2,name3) VALUES('value1',NULL,0x00);"
                              + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.flush();
         mockFileWriter.write("UNLOCK TABLES;" + EOL_MARKER + LINE_SEPARATOR);
-        mockFileWriter.write(LINE_SEPARATOR);
 
         //table2
-        mockFileWriter.write("LOCK TABLES `table2` WRITE;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("DELETE FROM `table2`;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO `table2` (name1,name3) VALUES('value1',0x10);" + EOL_MARKER
                              + LINE_SEPARATOR);
         mockFileWriter.flush();
         mockFileWriter.write("UNLOCK TABLES;" + EOL_MARKER + LINE_SEPARATOR);
-        mockFileWriter.write(LINE_SEPARATOR);
 
         //foreign keys check end
         mockFileWriter.write("");
-
+        
         replayAll();
 
         DbTable table1 = new DbTable("table1");
@@ -280,12 +274,10 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         //table1
         mockFileWriter.write("INSERT INTO `table1` (name1) VALUES('value1');" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.flush();
-        mockFileWriter.write(LINE_SEPARATOR);
 
         //table2
         mockFileWriter.write("INSERT INTO `table2` (name1) VALUES('value1');" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.flush();
-        mockFileWriter.write(LINE_SEPARATOR);
 
         replayAll();
 
@@ -373,11 +365,11 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         expect(mockDbProvider.select(isA(DbQuery.class), eq(DbReturnModes.ESCAPED_STRING))).andReturn(recordValues);
 
         mockFileWriter.write("SET FOREIGN_KEY_CHECKS = 0;" + EOL_MARKER + LINE_SEPARATOR);
+        mockFileWriter.write("LOCK TABLES table1 WRITE, table2 WRITE " + EOL_MARKER + LINE_SEPARATOR);
 
         mockFileWriter.write("DELETE FROM `table1`;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("DELETE FROM `table2`;" + EOL_MARKER + LINE_SEPARATOR);
 
-        mockFileWriter.write("LOCK TABLES `table1` WRITE;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO `table1` (name1,name2,name3) VALUES('value1',NULL,0x1);"
                              + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.flush();
