@@ -52,6 +52,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     private static final String    ERROR_CREATING_BACKUP      = "Could not create backup in file ";
     protected static final String  ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String    DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
+    protected static final String  SOL_DROP_MARKER            = " -- ATS SOL DROP ";
     protected static final String  EOL_MARKER                 = " -- ATS EOL;";
 
     protected boolean              addLocks;
@@ -62,6 +63,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected DbProvider           dbProvider;
     // whether the delete statements are already written to file
     protected boolean              deleteStatementsInserted;
+    protected boolean              dropEntireTable;
 
     /**
      * Constructor
@@ -84,10 +86,11 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @throws DatabaseEnvironmentCleanupException  if the backup file cannot be created
      * @see com.axway.ats.environment.database.model.BackupHandler#createBackup(java.lang.String)
      */
-    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
+    public void createBackup( String backupFileName, boolean dropEntireTable ) throws DatabaseEnvironmentCleanupException {
 
         // reset flag, so delete statements will be inserted
         this.deleteStatementsInserted = false;
+        this.dropEntireTable = dropEntireTable;
 
         BufferedWriter fileWriter = null;
         try {
@@ -184,7 +187,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             selectQuery.append("SELECT ");
             selectQuery.append(getColumnsString(columnsToSelect));
             selectQuery.append(" FROM ");
-            selectQuery.append(dbTable.getTableName());
+            selectQuery.append(dbTable.getTableSchema() + "." + dbTable.getTableName());
 
             DbQuery query = new DbQuery(selectQuery.toString());
 

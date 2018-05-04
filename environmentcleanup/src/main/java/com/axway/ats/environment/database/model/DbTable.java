@@ -25,6 +25,7 @@ import java.util.List;
 public class DbTable {
 
     private String       tableName;
+    private String       schema;
     private List<String> columnsToExclude;
     private boolean      lockTable             = true;
     private boolean      identityColumnPresent = false;
@@ -38,45 +39,63 @@ public class DbTable {
      */
     public DbTable( String tableName ) {
 
-        this(tableName, new ArrayList<String>());
+        this(tableName, new String(), new ArrayList<String>());
+    }
+    
+    /**
+     * Constructor - no columns will be excluded from the backup
+     *
+     * @param tableName name of the table
+     * @param schema schema of the table
+     */
+    public DbTable( String tableName, String schema ) {
+
+        this(tableName, schema, new ArrayList<String>());
     }
 
     /**
      * Constructor
      *
      * @param tableName name of the table
+     * @param schema schema of the table
      * @param columnsToExclude list of columns to exclude from the backup
      */
     public DbTable( String tableName,
+                    String schema,
                     List<String> columnsToExclude ) {
 
-        this(tableName, columnsToExclude, true);
+        this(tableName, schema, columnsToExclude, true);
     }
 
     /**
      * Constructor - no columns will be excluded from the backup
      *
      * @param tableName name of the table
+     * @param schema name of the schema
      * @param lockTable parameter if the table must be locked during restore
      */
     public DbTable( String tableName,
+                    String schema,
                     boolean lockTable ) {
 
-        this(tableName, new ArrayList<String>(), lockTable);
+        this(tableName, schema, new ArrayList<String>(), lockTable);
     }
 
     /**
      * Constructor
      *
      * @param tableName name of the table
+     * @param schema schema of the table
      * @param columnsToExclude list of columns to exclude from the backup
      * @param lockTable parameter if the table must be locked during restore
      */
     public DbTable( String tableName,
+                    String schema,
                     List<String> columnsToExclude,
                     boolean lockTable ) {
 
         this.tableName = tableName;
+        this.schema = schema;
         this.columnsToExclude = columnsToExclude;
         this.lockTable = lockTable;
     }
@@ -89,6 +108,16 @@ public class DbTable {
     public String getTableName() {
 
         return tableName;
+    }
+    
+    /**
+     * Get the table schema
+     *
+     * @return the table schema
+     */
+    public String getTableSchema() {
+
+        return schema;
     }
 
     /**
@@ -144,7 +173,7 @@ public class DbTable {
 
     public DbTable getNewCopy() {
 
-        DbTable newDbTable = new DbTable(this.tableName, this.lockTable);
+        DbTable newDbTable = new DbTable(this.tableName, this.schema, this.lockTable);
 
         List<String> newColumnsToExclude = new ArrayList<String>();
         for (String columnToExclude : this.columnsToExclude) {

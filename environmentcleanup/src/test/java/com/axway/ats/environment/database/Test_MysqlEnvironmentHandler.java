@@ -235,7 +235,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         DbTable table1 = new DbTable("table1");
         List<String> columnsToSkip = new ArrayList<String>();
         columnsToSkip.add("name2");
-        DbTable table2 = new DbTable("table2", columnsToSkip);
+        DbTable table2 = new DbTable("table2", "dbo", columnsToSkip);
 
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler(mockDbConnection, mockDbProvider);
         envHandler.addTable(table1);
@@ -389,7 +389,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         DbTable table1 = new DbTable("table1");
         List<String> columnsToSkip = new ArrayList<String>();
         columnsToSkip.add("name2");
-        DbTable table2 = new DbTable("table2", columnsToSkip);
+        DbTable table2 = new DbTable("table2", "dbo", columnsToSkip);
 
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler(mockDbConnection, mockDbProvider);
         envHandler.addTable(table1);

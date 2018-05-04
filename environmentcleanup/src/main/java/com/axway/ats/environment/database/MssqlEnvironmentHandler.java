@@ -19,13 +19,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.Writer;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -35,11 +41,13 @@ import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.MssqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
@@ -48,7 +56,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     private static final Logger log            = Logger.getLogger(MssqlEnvironmentHandler.class);
     private static final String HEX_PREFIX_STR = "0x";
-
+    
     MssqlEnvironmentHandler( DbConnSQLServer dbConnection,
                              MssqlDbProvider dbProvider ) {
 
@@ -89,7 +97,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 ColumnDescription colDescription = new MssqlColumnDescription(columnName,
                                                                               (String) columnMetaData.get("DATA_TYPE"));
                 columnsToSelect.add(colDescription);
-                if ((Integer) columnMetaData.get("isIdentity") == 1) {
+                if ( columnMetaData.get("isIdentity") != null && (Integer) columnMetaData.get("isIdentity") == 1) {
                     table.setIdentityColumnPresent(true);
                 }
             } else {
@@ -111,8 +119,19 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException, ParseException {
 
-        if (!this.deleteStatementsInserted) {
-            writeDeleteStatements(fileWriter);
+        if( this.addLocks ) {
+            fileWriter.write( "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE " + EOL_MARKER
+                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        }
+        
+        if( this.dropEntireTable ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( SOL_DROP_MARKER + dbTable.getTableSchema() + "." + dbTable.getTableName()
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+        } else if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
 
         if (table.getAutoIncrementResetValue() != null) {
@@ -194,11 +213,12 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     @Override
     protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
 
-        if (this.includeDeleteStatements) {
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
+        if( this.includeDeleteStatements ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
                 DbTable dbTable = entry.getValue();
-                fileWriter.write("DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
-                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                String deleteQuery = "DELETE FROM " + dbTable.getTableName();
+                fileWriter.write( deleteQuery + ";" + EOL_MARKER
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
             }
             this.deleteStatementsInserted = true;
         }
@@ -254,7 +274,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
      */
     public void restore(
                          String backupFileName ) throws DatabaseEnvironmentCleanupException {
-
+        
         BufferedReader backupReader = null;
         Connection connection = null;
 
@@ -277,7 +297,12 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
                 sql.append(line);
 
-                if (line.endsWith(EOL_MARKER)) {
+                if (line.startsWith(SOL_DROP_MARKER)) {
+                  
+                    String tableName = line.substring( SOL_DROP_MARKER.length() ).trim();
+                    dropAndRecreateTable( connection, tableName );
+                    
+                } else if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
@@ -338,6 +363,219 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             } catch (SQLException sqle) {
                 log.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
+        }
+    }
+    
+    private void dropAndRecreateTable( Connection connection, String tableName ) {
+
+        List<String> generateForeignKeysScripts = new ArrayList<String>();
+        
+        Map<String, List<String>> foreignKeys = getForeingKeys( tableName, connection );
+        
+        // generate script for restoring the exact table
+        String generateTableScript = generateTableScript( tableName, connection );
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String file = classLoader.getResource("generateForeignKeyScript.sql").getPath();
+        
+        // create the generateForeignKeyScript procedure
+        createDatabaseProcedure( connection, file );
+        
+        for( Entry<String, List<String>> keyEntry : foreignKeys.entrySet() ) {
+            String parentTableName = keyEntry.getKey();
+            for( String key : keyEntry.getValue() ) {
+                // generate scripts for creating all foreign keys
+                generateForeignKeysScripts.add( generateForeignKeyScript( parentTableName, key,
+                                                                          connection ) );
+            }
+        }
+        
+        // drop the newly created procedure
+        executeUpdate( "DROP PROCEDURE generateForeignKeyScript", connection );
+        
+        // drop the foreign keys
+        dropForeignKeys( tableName, connection );
+        // drop the table
+        executeUpdate( "DROP TABLE " + tableName + ";", connection );
+        
+        // create new table
+        executeUpdate( generateTableScript, connection );
+        // create all the missing foreign keys
+        for( String script : generateForeignKeysScripts ) {
+            executeUpdate( script, connection );
+        }
+    }
+
+    private Map<String, List<String>> getForeingKeys( String tableName,
+                                                      Connection connection ) throws DbException {
+
+        PreparedStatement stmnt = null;
+        Map<String, List<String>> tableForeignKey = new HashMap<String, List<String>>();
+        ResultSet rs = null;
+        try {
+            String simpleTableName = tableName.substring( tableName.indexOf( '.' ) + 1, tableName.length() );
+            stmnt = connection.prepareStatement( "EXEC sp_fkeys '" + simpleTableName + "'" );
+            rs = stmnt.executeQuery();
+            while( rs.next() ) {
+                String fKey = rs.getString( "FK_NAME" );
+                String parentTableName = rs.getString( "FKTABLE_OWNER" ) + "."
+                                         + rs.getString( "FKTABLE_NAME" );
+                if(tableName.equals( parentTableName )) {
+                    // this is the same table, the foreign key is created in the table creation script
+                    continue;
+                }
+                if( tableForeignKey.containsKey( parentTableName ) ) {
+                    if( !tableForeignKey.get( parentTableName ).contains( fKey ) ) {
+                        tableForeignKey.get( parentTableName ).add( fKey );
+                    }
+                } else {
+                    List<String> fKeys = new ArrayList<String>();
+                    fKeys.add( fKey );
+                    tableForeignKey.put( parentTableName, fKeys );
+                }
+            }
+
+            return tableForeignKey;
+        } catch( SQLException e ) {
+            log.error( "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                       + e.getMessage(), e );
+            throw new DbException( e );
+        } finally {
+            DbUtils.closeStatement( stmnt );
+        }
+    }
+    
+    private void executeUpdate( String query, Connection connection ) throws DbException {
+
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = connection.prepareStatement( query );
+            stmnt.executeUpdate();
+        } catch( SQLException e ) {
+            log.error( "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                       + e.getMessage(), e );
+            throw new DbException( e );
+        } finally {
+            DbUtils.closeStatement( stmnt );
+        }
+    }
+    
+    private void createDatabaseProcedure( Connection conn, String scriptPath ) {
+
+        StringBuilder command = null;
+        Statement stmt = null;
+        try (LineNumberReader lineReader = new LineNumberReader( new FileReader( scriptPath ) )) {
+            String line = null;
+            while( ( line = lineReader.readLine() ) != null ) {
+                if( command == null ) {
+                    command = new StringBuilder();
+                }
+                String trimmedLine = line.trim();
+
+                // Line is end of statement
+                if( trimmedLine.endsWith( "GO" ) ) {
+                    command.append( line );
+                    command.append( " " );
+
+                    stmt = conn.createStatement();
+                    stmt.execute( command.toString() );
+                    command = null;
+
+                } else {
+                    command.append( line );
+                    command.append( " " );
+                }
+            }
+        } catch( Exception e ) {
+            log.error( "Error on command: " + command );
+        } finally {
+            DbUtils.closeStatement( stmt );
+        }
+    }
+    
+    private String generateForeignKeyScript( String tableName, String foreingKey, Connection connection ) throws DbException {
+
+        CallableStatement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            callableStatement = connection.prepareCall( "{ call generateForeignKeyScript(?,?) }" );
+            callableStatement.setString( 1, tableName );
+            callableStatement.setString( 2, StringUtils.isNullOrEmpty( foreingKey )
+                                                                                     ? null
+                                                                                     : foreingKey );
+
+            rs = callableStatement.executeQuery();
+            String createQuery = new String();
+            if( rs.next() ) {
+                createQuery = rs.getString( 1 );
+            }
+
+            return createQuery;
+
+        } catch( Exception e ) {
+            throw new DbException( "Error while generating script for the foreign keys of the table '"
+                                   + tableName + "'.", e );
+        } finally {
+            DbUtils.closeStatement( callableStatement );
+        }
+    }
+
+    private String generateTableScript( String tableName, Connection connection ) throws DbException {
+        
+        ClassLoader classLoader = getClass().getClassLoader();
+        String file = classLoader.getResource("generateTableScript.sql").getPath();
+        
+        // create the generateTableScript procedure
+        createDatabaseProcedure( connection, file );
+        
+        CallableStatement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            callableStatement = connection.prepareCall( "{ call generateTableScript(?) }" );
+            callableStatement.setString( 1, tableName );
+
+            rs = callableStatement.executeQuery();
+            String createQuery = new String();
+            if( rs.next() ) {
+                createQuery = rs.getString( 1 );
+            }
+            
+            return createQuery;
+
+        } catch( Exception e ) {
+            throw new DbException( "Error while generating script for the table '" + tableName + "'.", e );
+        } finally {
+            DbUtils.closeStatement( callableStatement );
+            
+            // drop the newly created procedure
+            executeUpdate( "DROP PROCEDURE generateTableScript", connection );
+            
+        }
+    }
+
+    private void dropForeignKeys( String tableName, Connection connection ) throws DbException {
+
+        String query = "SELECT "
+                        + "'ALTER TABLE [' +  OBJECT_SCHEMA_NAME(parent_object_id) + "
+                        + "'].[' + OBJECT_NAME(parent_object_id) + "
+                        + "'] DROP CONSTRAINT [' + name + ']' "
+                    + " FROM sys.foreign_keys "
+                    + " WHERE referenced_object_id = object_id('" + tableName + "')";
+        
+        Statement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            callableStatement = connection.createStatement();
+            rs = callableStatement.executeQuery( query );
+
+            while( rs.next() ) {
+                executeUpdate( rs.getString( 1 ), connection );
+            }
+
+        } catch( Exception e ) {
+            throw new DbException( "Error while droping the foreign keys of table '" + tableName + "'.", e );
+        } finally {
+            DbUtils.closeStatement( callableStatement );
         }
     }
 }

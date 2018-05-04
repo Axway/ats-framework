@@ -73,8 +73,8 @@ public interface BackupHandler {
      * @param backupFileName                        the name of the backup file
      * @throws DatabaseEnvironmentCleanupException  if the backup file cannot be created
      */
-    public void createBackup(
-                              String backupFileName ) throws DatabaseEnvironmentCleanupException;
+    public void createBackup( String backupFileName,
+                              boolean dropEntireTable ) throws DatabaseEnvironmentCleanupException;
 
     /**
      * Release the database connection

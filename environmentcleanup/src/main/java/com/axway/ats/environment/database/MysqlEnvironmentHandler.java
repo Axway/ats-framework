@@ -20,9 +20,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.MysqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
@@ -90,7 +93,14 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             while (line != null) {
 
                 sql.append(line);
-                if (line.endsWith(EOL_MARKER)) {
+                if (line.startsWith(SOL_DROP_MARKER)) {
+                    
+                    String table = line.substring( SOL_DROP_MARKER.length() ).trim();
+                    String owner = table.substring( 0, table.indexOf( "." ) );
+                    String simpleTableName = table.substring( table.indexOf( "." ) + 1 );
+                    dropAndRecreateTable( connection, simpleTableName, owner );
+                    
+                } if (line.endsWith(EOL_MARKER)) {
 
                     // remove the OEL marker
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
@@ -205,14 +215,12 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbTable table,
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException {
-
-        if (!this.deleteStatementsInserted) {
-            writeDeleteStatements(fileWriter);
-        }
-
-        if (this.addLocks && table.isLockTable()) {
-            fileWriter.write("LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
-                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        
+        if( this.dropEntireTable ) {
+            fileWriter.write( SOL_DROP_MARKER + table.getTableSchema() + "." + table.getTableName()
+                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        } else if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
 
         if (table.getAutoIncrementResetValue() != null) {
@@ -270,11 +278,21 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (this.addLocks && table.isLockTable()) {
             fileWriter.write("UNLOCK TABLES;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
-        fileWriter.write(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
     }
 
     @Override
     protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
+        
+        if( this.addLocks ) {
+            StringBuilder lockTables = new StringBuilder();
+            lockTables.append( "LOCK TABLES " );
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                lockTables.append( dbTable.getTableName() + " WRITE, " );
+            }
+            lockTables.deleteCharAt( lockTables.length() - 2 );
+            fileWriter.write( lockTables + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        }
 
         if (this.includeDeleteStatements) {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
@@ -413,6 +431,58 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             return false;
         }
         return true;
+    }
+    
+    private void dropAndRecreateTable( Connection connection, String table, String schema ) {
+
+        String tableName =  schema + "." + table;
+            // generate script for restoring the exact table
+            String generateTableScript = generateTableScript( tableName, connection );
+
+            // drop the table
+            executeUpdate( "DROP TABLE " + tableName + ";", connection );
+
+            // create new table
+            executeUpdate( generateTableScript, connection );
+    }
+    
+
+    private String generateTableScript( String tableName, Connection connection ) throws DbException {
+
+        CallableStatement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            String query = "SHOW CREATE TABLE " + tableName + ";";
+            callableStatement = connection.prepareCall( query );
+
+            rs = callableStatement.executeQuery();
+            String createQuery = new String();
+            if( rs.next() ) {
+                createQuery = rs.getString( 2 );
+            }
+
+            return createQuery;
+
+        } catch( Exception e ) {
+            throw new DbException( "Error while generating script for the table '" + tableName + "'.", e );
+        } finally {
+            DbUtils.closeStatement( callableStatement );
+        }
+    }
+    
+    private void executeUpdate( String query, Connection connection ) throws DbException {
+
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = connection.prepareStatement( query );
+            stmnt.executeUpdate();
+        } catch( SQLException e ) {
+            log.error( "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                       + e.getMessage(), e );
+            throw new DbException( e );
+        } finally {
+            DbUtils.closeStatement( stmnt );
+        }
     }
 
 }

@@ -121,12 +121,17 @@ public class Test_OracleEnvironmentHandler extends BaseTest {
 
         //foreign keys check start
         mockFileWriter.write("SET CONSTRAINTS ALL DEFERRED;" + EOL_MARKER + LINE_SEPARATOR);
+        
+        // lock table1
+        mockFileWriter.write("LOCK TABLE table1 IN EXCLUSIVE MODE NOWAIT;" + EOL_MARKER + LINE_SEPARATOR);
 
         //table1
         mockFileWriter.write("DELETE FROM table1;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO table1(name1,name2,name3) VALUES ('value1',NULL,'"
                              + new String(new char[]{ 1 }) + "');" + EOL_MARKER + LINE_SEPARATOR);
-
+        // lock table2
+        mockFileWriter.write("LOCK TABLE table2 IN EXCLUSIVE MODE NOWAIT;" + EOL_MARKER + LINE_SEPARATOR);
+        
         //table2
         mockFileWriter.write("DELETE FROM table2;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO table2(name1,name2,name3) VALUES ('value1',NULL,'"
@@ -155,7 +160,7 @@ public class Test_OracleEnvironmentHandler extends BaseTest {
 
         List<String> columnsToSkip = new ArrayList<String>();
         columnsToSkip.add("name2");
-        DbTable table2 = new DbTable("table2", columnsToSkip);
+        DbTable table2 = new DbTable("table2", "dbo", columnsToSkip);
 
         //the columns meta data
         DbRecordValuesList column1MetaData = new DbRecordValuesList();
@@ -206,10 +211,16 @@ public class Test_OracleEnvironmentHandler extends BaseTest {
         //foreign keys check start
         mockFileWriter.write("SET CONSTRAINTS ALL DEFERRED;" + EOL_MARKER + LINE_SEPARATOR);
 
+        // lock table1
+        mockFileWriter.write("LOCK TABLE table1 IN EXCLUSIVE MODE NOWAIT;" + EOL_MARKER + LINE_SEPARATOR);
+        
         //table1
         mockFileWriter.write("DELETE FROM table1;" + EOL_MARKER + LINE_SEPARATOR);
         mockFileWriter.write("INSERT INTO table1(name1,name2,name3) VALUES ('value1',NULL,'"
                              + new String(new char[]{ 5 }) + "');" + EOL_MARKER + LINE_SEPARATOR);
+
+        // lock table2
+        mockFileWriter.write("LOCK TABLE table2 IN EXCLUSIVE MODE NOWAIT;" + EOL_MARKER + LINE_SEPARATOR);
 
         //table2
         mockFileWriter.write("DELETE FROM table2;" + EOL_MARKER + LINE_SEPARATOR);
@@ -320,7 +331,7 @@ public class Test_OracleEnvironmentHandler extends BaseTest {
         DbTable table1 = new DbTable("table1");
         List<String> columnsToSkip = new ArrayList<String>();
         columnsToSkip.add("name2");
-        DbTable table2 = new DbTable("table2", columnsToSkip);
+        DbTable table2 = new DbTable("table2", "dbo", columnsToSkip);
 
         //the columns meta data
         DbRecordValuesList column1MetaData = new DbRecordValuesList();

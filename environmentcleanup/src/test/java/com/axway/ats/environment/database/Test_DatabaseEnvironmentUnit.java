@@ -85,7 +85,7 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
         mockBackupHandler.addTable(table1);
         mockBackupHandler.addTable(table2);
 
-        mockBackupHandler.createBackup(tempFile.getCanonicalPath());
+        mockBackupHandler.createBackup(tempFile.getCanonicalPath(), false);
         mockBackupHandler.disconnect();
 
         replay(mockFactory);

@@ -159,7 +159,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
             String backupFile = getBackupFile();
             createDirIfNotExist(backupFile);
-            dbBackup.createBackup(backupFile);
+            dbBackup.createBackup(backupFile, false );
 
             log.info("Successfully created backup of environment unit " + getDescription());
         } finally {

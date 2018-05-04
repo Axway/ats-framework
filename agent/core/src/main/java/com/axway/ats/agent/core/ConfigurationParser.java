@@ -384,7 +384,7 @@ public class ConfigurationParser {
                                                   .getNodeValue()
                                                   .trim();
                     if ("false".equalsIgnoreCase(nodeValue) || "true".equalsIgnoreCase(nodeValue)) {
-                        dbTable = new DbTable(tableName, Arrays.asList(columnsToExclude),
+                        dbTable = new DbTable(tableName, new String(), Arrays.asList(columnsToExclude),
                                               Boolean.parseBoolean(nodeValue));
                     } else {
                         log.warn("Invalid db table 'lock' attribute value '" + nodeValue
@@ -392,7 +392,7 @@ public class ConfigurationParser {
                     }
                 }
                 if (dbTable == null) {
-                    dbTable = new DbTable(tableName, Arrays.asList(columnsToExclude));
+                    dbTable = new DbTable(tableName, new String(), Arrays.asList(columnsToExclude));
                 }
 
                 // parse db table 'autoIncrementResetValue' attribute
