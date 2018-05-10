@@ -1,2 +1,2 @@
-# increment the counter when need to trigger another manual build
-ticks=29
+# increment the counter when it is needed to trigger another build
+ticks=30
