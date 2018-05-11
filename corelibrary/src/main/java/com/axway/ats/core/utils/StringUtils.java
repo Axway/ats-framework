@@ -31,10 +31,35 @@ public class StringUtils {
     // Max sizes when parsing method's input arguments
     private static final int     METHOD_ARGS__MAX_NUMBER_ELEMENTS = 10;
     private static final int     METHOD_ARGS__MAX_ELEMENT_LENGTH  = 100;
+    
+    // ASCII codes for some non-printable characters
+    public static final int TAB_CODE = 9;
+    public static final int NL_CODE = 10;
+    public static final int CR_CODE = 13;
 
     // Command line arguments pattern
     private static final Pattern COMMAND_ARGUMENTS_PATTERN        = Pattern.compile("(?:\\\"[^\\\"]*\\\")|(?:\\'[^\\']*\\')|(?:[^\\s]+)");
 
+    /**
+     * Escapes non-printable characters (ASCII code is < 32)
+     * 
+     * @param string the String whom contant will be escaped
+     * @returns the String with escaped non-printable characters
+     */
+    public static String escapeNonPrintableAsciiCharacters(String message) {
+		char[] escapedMessage = message.toCharArray();
+		for (int i = 0; i < escapedMessage.length; i++) {
+			int asciiCode = (int) escapedMessage[i];
+			if (asciiCode < 32) {
+				if (asciiCode != TAB_CODE && asciiCode != NL_CODE && asciiCode != CR_CODE) {
+					message = message.replace(escapedMessage[i] + "",
+							"\\0x" + Integer.toHexString(asciiCode).toUpperCase());
+				}
+			}
+		}
+		return message;
+	}
+    
     /**
      * Tests if a string is null or empty
      *
