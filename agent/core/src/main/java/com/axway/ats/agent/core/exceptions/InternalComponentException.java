@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.core.utils.StringUtils;
 
 /**
  * This exception will be thrown whenever an exception occurs during action execution
@@ -81,9 +82,10 @@ public class InternalComponentException extends AgentException {
         // if chained agents are used this line could already be appended, so we check it
         String locationErrorMsg = "\n[" + HostUtils.getLocalHostIP() + " stacktrace]";
         String formattedExceptionMsg = exc.getMessage();
-        if( formattedExceptionMsg == null ) {
-            formattedExceptionMsg = "null";
+        if( StringUtils.isNullOrEmpty( formattedExceptionMsg ) ) {
+            formattedExceptionMsg = "<No message details on this exception>";
         }
+        
         if (!formattedExceptionMsg.trim().endsWith(locationErrorMsg)) {
             formattedExceptionMsg = formatMessage(formattedExceptionMsg + locationErrorMsg);
         } else {
