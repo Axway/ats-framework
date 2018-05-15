@@ -51,17 +51,25 @@ public class ConfigurationManager {
                        List<Configurator> configurators ) throws ConfigurationException {
 
         //first revert all previous configurations
-        for (Configurator configurator : configurators) {
-            if (configurator.needsApplying()) {
+        for( Configurator configurator : configurators ) {
+            if( configurator.needsApplying() ) {
                 //first revert any previous configuration
                 configurator.revert();
 
                 //and then apply the new one
                 configurator.apply();
+
+                // cache this configurator
+                // if there was already a cached instance - replace it
+                for( Configurator currentConfigurator : currentConfigurators ) {
+                    if( currentConfigurator.getDescription().equals( configurator.getDescription() ) ) {
+                        currentConfigurators.remove( currentConfigurator );
+                        break;
+                    }
+                }
+                currentConfigurators.add( configurator );
             }
         }
-
-        currentConfigurators = configurators;
     }
 
     /**

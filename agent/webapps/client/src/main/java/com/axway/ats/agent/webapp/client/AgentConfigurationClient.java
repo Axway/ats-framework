@@ -30,6 +30,7 @@ import com.axway.ats.agent.core.configuration.Configurator;
 import com.axway.ats.agent.core.configuration.GenericAgentConfigurator;
 import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
+import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.agent.webapp.client.executors.AbstractClientExecutor;
 import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
@@ -143,9 +144,9 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void setLogLevel( LogLevel logLevel ) throws AgentException {
 
-        RemoteLoggingConfigurator.setAtsDbLogLevelPerAgent(atsAgent, logLevel);
+        AgentConfigurationLandscape.getInstance( atsAgent ).setDbLogLevel( logLevel );
 
-        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator(atsAgent);
+        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator( atsAgent, logLevel );
 
         applyConfiguration(rlc);
     }
@@ -271,7 +272,7 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void useHttpsConnection() {
 
-        AgentConfigurator.setConnectionProtocol(atsAgent, "https");
+        AgentConfigurationLandscape.getInstance( atsAgent ).setConnectionProtocol( "https" );
     }
 
     /**
