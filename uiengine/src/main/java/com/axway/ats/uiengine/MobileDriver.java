@@ -550,7 +550,7 @@ public class MobileDriver extends UiDriver {
                                            e);
             }
         }
-        return new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, command, commandArguments);
+        return new LocalProcessExecutor(command, commandArguments);
     }
 
     /**
@@ -590,10 +590,10 @@ public class MobileDriver extends UiDriver {
             // fallback to taskkill
             try {
                 if (OperatingSystemType.getCurrentOsType().isWindows()) {
-                    pe = new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, "taskkill.exe",
+                    pe = new LocalProcessExecutor("taskkill.exe",
                                                   new String[]{ "/IM", "adb.exe", "/F", "/T" });
                 } else {
-                    pe = new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, "killall",
+                    pe = new LocalProcessExecutor("killall",
                                                   new String[]{ "adb" });
                 }
                 pe.execute();

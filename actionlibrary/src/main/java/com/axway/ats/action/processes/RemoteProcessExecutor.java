@@ -16,16 +16,13 @@
 package com.axway.ats.action.processes;
 
 import com.axway.ats.agent.components.system.operations.clients.InternalProcessOperations;
-import com.axway.ats.agent.core.action.CallerRelatedInfoRepository;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.common.process.ProcessExecutorException;
-import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.process.model.IProcessExecutor;
 
 public class RemoteProcessExecutor implements IProcessExecutor {
 
     private String                    atsAgent;
-    private String                    internalId;
 
     private String                    standardOutputFile;
     private String                    errorOutputFile;
@@ -37,12 +34,12 @@ public class RemoteProcessExecutor implements IProcessExecutor {
 
     public RemoteProcessExecutor( String atsAgent,
                                   String command,
-                                  String... commandArguments ) {
+                                  String... commandArguments ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.remoteProcessOperations = new InternalProcessOperations(atsAgent);
         try {
-            this.internalId = this.remoteProcessOperations.initProcessExecutor(command, commandArguments);
+            this.remoteProcessOperations.initProcessExecutor(command, commandArguments);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -59,7 +56,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                          boolean waitForCompletion ) {
 
         try {
-            this.remoteProcessOperations.startProcess(internalId,
+            this.remoteProcessOperations.startProcess(
                                                       workDirectory,
                                                       standardOutputFile,
                                                       errorOutputFile,
@@ -75,7 +72,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public void kill() {
 
         try {
-            this.remoteProcessOperations.killProcess(internalId);
+            this.remoteProcessOperations.killProcess();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -85,7 +82,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public void killAll() {
 
         try {
-            this.remoteProcessOperations.killProcessAndItsChildren(internalId);
+            this.remoteProcessOperations.killProcessAndItsChildren();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -95,7 +92,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public int getProcessId() {
 
         try {
-            return this.remoteProcessOperations.getProcessId(internalId);
+            return this.remoteProcessOperations.getProcessId();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -105,7 +102,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public int getExitCode() {
 
         try {
-            return this.remoteProcessOperations.getProcessExitCode(internalId);
+            return this.remoteProcessOperations.getProcessExitCode();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -115,7 +112,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getStandardOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessStandardOutput(internalId);
+            return this.remoteProcessOperations.getProcessStandardOutput();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -125,7 +122,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getErrorOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessErrorOutput(internalId);
+            return this.remoteProcessOperations.getProcessErrorOutput();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -172,7 +169,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                 String variableValue ) {
 
         try {
-            this.remoteProcessOperations.setEnvVariable(internalId, variableName, variableValue);
+            this.remoteProcessOperations.setEnvVariable(variableName, variableValue);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -184,7 +181,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                      String variableValueToAppend ) {
 
         try {
-            this.remoteProcessOperations.appendToEnvVariable(internalId, variableName, variableValueToAppend);
+            this.remoteProcessOperations.appendToEnvVariable(variableName, variableValueToAppend);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -195,7 +192,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                   String variableName ) {
 
         try {
-            return this.remoteProcessOperations.getEnvVariable(internalId, variableName);
+            return this.remoteProcessOperations.getEnvVariable(variableName);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -205,7 +202,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getCurrentStandardOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessCurrentStandardOutput(internalId);
+            return this.remoteProcessOperations.getProcessCurrentStandardOutput();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -215,7 +212,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public String getCurrentErrorOutput() {
 
         try {
-            return this.remoteProcessOperations.getProcessCurrentErrorOutput(internalId);
+            return this.remoteProcessOperations.getProcessCurrentErrorOutput();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -225,7 +222,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public boolean isStandardOutputFullyRead() {
 
         try {
-            return this.remoteProcessOperations.isStandardOutputFullyRead(internalId);
+            return this.remoteProcessOperations.isStandardOutputFullyRead();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -235,30 +232,10 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     public boolean isErrorOutputFullyRead() {
 
         try {
-            return this.remoteProcessOperations.isErrorOutputFullyRead(internalId);
+            return this.remoteProcessOperations.isErrorOutputFullyRead();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
     }
 
-    /**
-     * The Process Executor instance on a remote agent may keep lots of
-     * output data.
-     *  
-     * Here, when this object is garbage collected, we ask the agent to
-     * discard its related Process Executor instance.
-     * 
-     * Of course this does not guarantee the prevention of Out of memory errors on the agent, 
-     * but it is still some form of unattended cleanup.
-     */
-    @Override
-    protected void finalize() throws Throwable {
-
-        TestcaseStateEventsDispacher.getInstance()
-                                    .cleanupInternalObjectResources(atsAgent,
-                                                                    CallerRelatedInfoRepository.KEY_PROCESS_EXECUTOR
-                                                                              + internalId);
-
-        super.finalize();
-    }
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.agent.components.system.operations.clients.InternalFileSystemOperations;
+import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.common.filesystem.EndOfLineStyle;
 import com.axway.ats.common.filesystem.FileMatchInfo;
 import com.axway.ats.common.filesystem.FileSystemOperationException;
@@ -47,7 +48,7 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
      *
      * @param atsAgent
      */
-    public RemoteFileSystemOperations( String atsAgent ) {
+    public RemoteFileSystemOperations( String atsAgent ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);

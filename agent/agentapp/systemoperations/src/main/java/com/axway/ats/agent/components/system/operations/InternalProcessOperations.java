@@ -15,34 +15,30 @@
  */
 package com.axway.ats.agent.components.system.operations;
 
-import com.axway.ats.agent.core.action.CallerRelatedAction;
-import com.axway.ats.agent.core.action.CallerRelatedInfoRepository;
 import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.ActionRequestInfo;
 import com.axway.ats.agent.core.model.Parameter;
 import com.axway.ats.core.process.LocalProcessExecutor;
 
-public class InternalProcessOperations extends CallerRelatedAction {
+public class InternalProcessOperations {
 
-    private static final String OBJECT_KEY_PREFIX = CallerRelatedInfoRepository.KEY_PROCESS_EXECUTOR;
+    private LocalProcessExecutor processExecutor;
 
-    public InternalProcessOperations( String caller ) {
+    public InternalProcessOperations() {
 
-        super(caller);
     }
 
     @Action( name = "Internal Process Operations init Process Executor")
-    public String initProcessExecutor(
+    @ActionRequestInfo( requestUrl = "processes/executors", requestMethod = "PUT" )
+    public void initProcessExecutor(
                                        @Parameter( name = "command") String command,
                                        @Parameter( name = "commandArguments") String[] commandArguments ) {
 
-        // Add a new instance into the repository and return its unique counter 
-        // which will be used in next calls
-        return dataRepo.addObject(OBJECT_KEY_PREFIX, new LocalProcessExecutor(caller,
-                                                                              command,
-                                                                              commandArguments));
+        processExecutor = new LocalProcessExecutor(command, commandArguments);
     }
 
     @Action( name = "Internal Process Operations kill External Process")
+    @ActionRequestInfo( requestUrl = "processes/executors/kill/external", requestMethod = "POST" )
     public int killExternalProcess(
                                     @Parameter( name = "startCommandSnippet") String startCommandSnippet ) {
 
@@ -51,7 +47,6 @@ public class InternalProcessOperations extends CallerRelatedAction {
 
     /**
      *
-     * @param internalProcessId internal process id (the unique id for the current LocalProcessExecutor)
      * @param workDirectory the working directory. If null, the working directory of the current Java process will be used
      * @param standardOutputFile the standard output file name. If null, the standard output will not be sent to a file
      * @param errorOutputFile the error output file name. If null, the error output will not be sent to a file
@@ -59,18 +54,15 @@ public class InternalProcessOperations extends CallerRelatedAction {
      * @param logErrorOutput whether to log the error output
      * @param waitForCompletion whether to wait for a process completion
      */
-    @Action( name = "Internal Process Operations start Process")
+    @Action( name = "Internal Process Operations start Process" )
+    @ActionRequestInfo( requestUrl = "processes/executors/start", requestMethod = "POST" )
     public void startProcess(
-                              @Parameter( name = "internalProcessId") String internalProcessId,
                               @Parameter( name = "workDirectory") String workDirectory,
                               @Parameter( name = "standardOutputFile") String standardOutputFile,
                               @Parameter( name = "errorOutputFile") String errorOutputFile,
                               @Parameter( name = "logStandardOutput") boolean logStandardOutput,
                               @Parameter( name = "logErrorOutput") boolean logErrorOutput,
                               @Parameter( name = "waitForCompletion") boolean waitForCompletion ) {
-
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
 
         processExecutor.setWorkDirectory(workDirectory);
         processExecutor.setStandardOutputFile(standardOutputFile);
@@ -81,125 +73,102 @@ public class InternalProcessOperations extends CallerRelatedAction {
         processExecutor.execute(waitForCompletion);
     }
 
-    @Action( name = "Internal Process Operations get Process Standard Output")
-    public String getProcessStandardOutput(
-                                            @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @Action( name = "Internal Process Operations get Process Standard Output" )
+    @ActionRequestInfo( requestUrl = "processes/executors/stdout", requestMethod = "GET" )
+    public String getProcessStandardOutput() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getStandardOutput();
     }
 
     @Action( name = "Internal Process Operations get Process Error Output")
-    public String getProcessErrorOutput(
-                                         @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/stderr", requestMethod = "GET" )
+    public String getProcessErrorOutput() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getErrorOutput();
     }
 
     @Action( name = "Internal Process Operations get Process Current Standard Output")
-    public String getProcessCurrentStandardOutput(
-                                                   @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/stdout/current", requestMethod = "GET" )
+    public String getProcessCurrentStandardOutput() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getCurrentStandardOutput();
     }
 
     @Action( name = "Internal Process Operations get Process Current Error Output")
-    public String getProcessCurrentErrorOutput(
-                                                @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/stderr/current", requestMethod = "GET" )
+    public String getProcessCurrentErrorOutput() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getCurrentErrorOutput();
     }
 
     @Action( name = "Internal Process Operations get Process Exit Code")
-    public int getProcessExitCode(
-                                   @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/exitCode", requestMethod = "GET" )
+    public int getProcessExitCode() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getExitCode();
     }
 
     @Action( name = "Internal Process Operations get Process Id")
-    public int getProcessId(
-                             @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/pid", requestMethod = "GET" )
+    public int getProcessId() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getProcessId();
     }
 
     @Action( name = "Internal Process Operations kill Process")
-    public void killProcess(
-                             @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/kill", requestMethod = "POST" )
+    public void killProcess() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         processExecutor.kill();
     }
 
     @Action( name = "Internal Process Operations kill Process And Its Children")
-    public void killProcessAndItsChildren(
-                                           @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/kill", requestMethod = "POST" )
+    public void killProcessAndItsChildren() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         processExecutor.killAll();
     }
 
     @Action( name = "Internal Process Operations set Env Variable")
+    @ActionRequestInfo( requestUrl = "processes/executors/envvars", requestMethod = "PUT" )
     public void setEnvVariable(
-                                @Parameter( name = "internalProcessId") String internalProcessId,
+
                                 @Parameter( name = "variableName") String variableName,
                                 @Parameter( name = "variableValue") String variableValue ) {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         processExecutor.setEnvVariable(variableName, variableValue);
     }
 
     @Action( name = "Internal Process Operations append To Env Variable")
+    @ActionRequestInfo( requestUrl = "processes/executors/envvars", requestMethod = "POST" )
     public void appendToEnvVariable(
-                                     @Parameter( name = "internalProcessId") String internalProcessId,
+
                                      @Parameter( name = "variableName") String variableName,
                                      @Parameter( name = "variableValueToAppend") String variableValueToAppend ) {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         processExecutor.appendToEnvVariable(variableName, variableValueToAppend);
     }
 
     @Action( name = "Internal Process Operations get Env Variable")
+    @ActionRequestInfo( requestUrl = "processes/executors/envvars", requestMethod = "GET" )
     public String getEnvVariable(
-                                  @Parameter( name = "internalProcessId") String internalProcessId,
+
                                   @Parameter( name = "variableName") String variableName ) {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.getEnvVariable(variableName);
     }
 
     @Action( name = "Internal Process Operations is Standard Output Fully Read")
-    public boolean isStandardOutputFullyRead(
-                                              @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/stdout/fullyread", requestMethod = "GET" )
+    public boolean isStandardOutputFullyRead() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.isStandardOutputFullyRead();
     }
 
     @Action( name = "Internal Process Operations is Error Output Fully Read")
-    public boolean isErrorOutputFullyRead(
-                                           @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo( requestUrl = "processes/executors/stderr/fullyread", requestMethod = "GET" )
+    public boolean isErrorOutputFullyRead() {
 
-        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                         + internalProcessId);
         return processExecutor.isErrorOutputFullyRead();
     }
 

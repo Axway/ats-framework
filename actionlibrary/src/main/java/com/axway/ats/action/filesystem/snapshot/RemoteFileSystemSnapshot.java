@@ -35,7 +35,7 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
 
     public RemoteFileSystemSnapshot( String atsAgent,
                                      String name,
-                                     SnapshotConfiguration configuration ) {
+                                     SnapshotConfiguration configuration ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.configuration = configuration;
@@ -104,10 +104,11 @@ public class RemoteFileSystemSnapshot implements IFileSystemSnapshot {
     public RemoteFileSystemSnapshot newSnapshot(
                                                  String newSnapshotName ) {
 
-        RemoteFileSystemSnapshot newSnapshot = new RemoteFileSystemSnapshot(this.atsAgent,
-                                                                            newSnapshotName,
-                                                                            configuration);
+        RemoteFileSystemSnapshot newSnapshot = null;
         try {
+            newSnapshot = new RemoteFileSystemSnapshot(this.atsAgent,
+                                                       newSnapshotName,
+                                                       configuration);
             newSnapshot.internalId = remoteFSSnapshot.newSnapshot(internalId, newSnapshotName);
             return newSnapshot;
         } catch (AgentException e) {

@@ -55,25 +55,6 @@ public class LocalExecutor extends AbstractClientExecutor {
     }
 
     @Override
-    public int initializeAction( ActionRequest actionRequest ) throws AgentException {
-
-        /*
-         * This method is left empty, due to its usage only when we are working with ATS agent and not locally
-         * */
-        return -1;
-
-    }
-
-    @Override
-    public void deinitializeAction( int actionId ) throws AgentException {
-
-        /*
-         * This method is left empty, due to its usage only when we are working with ATS agent and not locally
-         * */
-
-    }
-
-    @Override
     public Object executeAction( ActionRequest actionRequest ) throws AgentException {
 
         String actionName = actionRequest.getActionName();
@@ -147,5 +128,4 @@ public class LocalExecutor extends AbstractClientExecutor {
 
         MultiThreadedActionHandler.getInstance(ThreadsPerCaller.getCaller()).waitUntilAllQueuesFinish();
     }
-
 }

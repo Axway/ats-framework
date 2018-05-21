@@ -222,26 +222,6 @@ public class ComponentActionMap {
             throw new ActionExecutionException("Could not instantiate action class " + actionClassName, ie);
         }
     }
-    
-    /** Get the action class instance
-     * @param actionClass the action class full name
-     * @return the action class object or null if not action with the provided name is found
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
-     * */
-    public Object getActionClassInstance(String actionClass) throws InstantiationException, IllegalAccessException {
-        for (Map.Entry<String, ActionMethodContainer> entry : actions.entrySet()) {
-            ActionMethodContainer container = entry.getValue();
-            for (Method method : container.getMethods()) {
-                Class<?> clss = method.getDeclaringClass();
-                if (clss.getName().equals(actionClass)) {
-                    return clss.newInstance();
-                }
-            }
-        }
-        
-        return null;
-    }
 
     /**
      * Get the implementation method for the given action

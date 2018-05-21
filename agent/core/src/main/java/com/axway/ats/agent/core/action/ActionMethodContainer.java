@@ -142,7 +142,7 @@ public class ActionMethodContainer {
     /**
      * @return a list of all methods associated with the given action name
      */
-    public List<Method> getMethods() {
+    private List<Method> getMethods() {
 
         ArrayList<Method> methods = new ArrayList<Method>();
         for (ActionMethod actionMethod : actionMethods) {

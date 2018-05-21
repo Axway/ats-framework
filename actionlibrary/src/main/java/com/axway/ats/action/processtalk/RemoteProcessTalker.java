@@ -30,7 +30,7 @@ public class RemoteProcessTalker implements IProcessTalker {
     private InternalProcessTalker remoteProcessTalker;
 
     public RemoteProcessTalker( String atsAgent,
-                                String command ) {
+                                String command ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.remoteProcessTalker = new InternalProcessTalker(atsAgent);

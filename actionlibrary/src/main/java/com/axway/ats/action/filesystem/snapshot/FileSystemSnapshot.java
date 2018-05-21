@@ -16,6 +16,7 @@
 package com.axway.ats.action.filesystem.snapshot;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
+import com.axway.ats.action.processes.RemoteProcessExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.core.filesystem.snapshot.IFileSystemSnapshot;
@@ -423,7 +424,12 @@ public class FileSystemSnapshot {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemSnapshot(name, configuration);
         } else {
-            return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
+            try {
+                return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote file system snapshot impl object", e);
+            }
+            
         }
     }
 

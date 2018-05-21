@@ -31,7 +31,7 @@ import com.axway.ats.agent.core.model.EnvironmentCleanupHandler;
  */
 public class EnvironmentHandler {
 
-    private static final Logger                        log = Logger.getLogger(EnvironmentHandler.class);
+    private static final Logger                        log = Logger.getLogger(ActionHandler.class);
 
     private static EnvironmentHandler                  instance;
 

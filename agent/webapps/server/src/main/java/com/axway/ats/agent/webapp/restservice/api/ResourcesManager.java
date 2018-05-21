@@ -17,32 +17,34 @@ package com.axway.ats.agent.webapp.restservice.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.axway.ats.agent.core.ComponentRepository;
 import com.axway.ats.agent.core.exceptions.NoCompatibleMethodFoundException;
 import com.axway.ats.agent.core.exceptions.NoSuchActionException;
 import com.axway.ats.agent.core.exceptions.NoSuchComponentException;
-import com.axway.ats.agent.webapp.restservice.api.model.ActionPojo;
+import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.google.gson.Gson;
 
-public class ActionsManager {
+/**
+ * Class that is responsible for initialization, execution and deinitialization of resources ( Action class instances ).
+ *  **/
+public class ResourcesManager {
 
-    private static Map<Integer, Object> actions  = new HashMap<>();
-    private static int                  actionId = -1;
-
-    public synchronized static int initializeAction( ActionPojo pojo ) throws NoSuchActionException,
-                                                                       NoCompatibleMethodFoundException,
-                                                                       NoSuchComponentException, ClassNotFoundException,
-                                                                       InstantiationException, IllegalAccessException {
+    public synchronized static int initializeResource( ActionPojo pojo ) throws NoSuchActionException,
+                                                                         NoCompatibleMethodFoundException,
+                                                                         NoSuchComponentException,
+                                                                         ClassNotFoundException,
+                                                                         InstantiationException,
+                                                                         IllegalAccessException {
 
         Method method = getActionMethod(pojo);
 
-        // get the Actual Action class instance
+        // get the actual Action class instance
         Object actionClassInstance = method.getDeclaringClass().newInstance();
-        // put it in the map
-        actions.put(++actionId, actionClassInstance);
+        // put it in the resource map for that session
+
+        int actionId = ResourcesRepository.getInstance().putResource(pojo.getSessionId(), actionClassInstance);
 
         return actionId;
 
@@ -58,7 +60,7 @@ public class ActionsManager {
             // get actual Action method object
             return ComponentRepository.getInstance()
                                       .getComponentActionMap(pojo.getComponentName())
-                                      .getActionMethod(pojo.getActionMethodName(),
+                                      .getActionMethod(pojo.getMethodName(),
                                                        new Class<?>[]{})
                                       .getMethod();
         } else {
@@ -70,32 +72,37 @@ public class ActionsManager {
             // get actual Action method object
             return ComponentRepository.getInstance()
                                       .getComponentActionMap(pojo.getComponentName())
-                                      .getActionMethod(pojo.getActionMethodName(),
+                                      .getActionMethod(pojo.getMethodName(),
                                                        actionMethodActualArgumentsClasses)
                                       .getMethod();
         }
     }
 
-    public synchronized static int deinitializeAction( int actionId ) {
+    public synchronized static int deinitializeResource( String sessionId, int resourceId ) {
 
-        Object actionClassInstance = actions.remove(actionId);
+        Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(sessionId, resourceId);
         if (actionClassInstance == null) {
-            throw new RuntimeException("Unable to delete action with id '" + actionId + "'. No such actionId exists");
+            throw new NoSuchElementException("Unable to delete resource with id '" + resourceId
+                                             + "' for session with id '"
+                                             + sessionId + "'. No such actionId exists");
         }
-        return actionId;
+        return resourceId;
     }
 
-    public synchronized static Object executeAction( ActionPojo pojo ) throws NoSuchActionException,
-                                                                       NoCompatibleMethodFoundException,
-                                                                       NoSuchComponentException, ClassNotFoundException,
-                                                                       InstantiationException, IllegalAccessException,
-                                                                       IllegalArgumentException,
-                                                                       InvocationTargetException {
+    public synchronized static Object executeOverResource( ActionPojo pojo ) throws NoSuchActionException,
+                                                                             NoCompatibleMethodFoundException,
+                                                                             NoSuchComponentException,
+                                                                             ClassNotFoundException,
+                                                                             InstantiationException,
+                                                                             IllegalAccessException,
+                                                                             IllegalArgumentException,
+                                                                             InvocationTargetException {
 
-        Object actionClassInstance = actions.get(pojo.getActionId());
+        Object actionClassInstance = ResourcesRepository.getInstance().getResource(pojo.getSessionId(),
+                                                                                   pojo.getResourceId());
         Method method = getActionMethod(pojo);
         if (pojo.getArgumentsTypes() == null) {
-            return method.invoke(actionClassInstance, new Object[]{}); // or null
+            return method.invoke(actionClassInstance, new Object[]{});
         }
         if (pojo.getArgumentsTypes().length != pojo.getArgumentsValues().length) {
             throw new RuntimeException("Provided action method arguments types and arguments values have different length");
@@ -125,20 +132,28 @@ public class ActionsManager {
 
         switch (argClassName) {
             case "byte.class":
+            case "byte":
                 return byte.class;
             case "short.class":
+            case "short":
                 return short.class;
             case "int.class":
+            case "int":
                 return int.class;
             case "long.class":
+            case "long":
                 return long.class;
             case "float.class":
+            case "float":
                 return float.class;
             case "double.class":
+            case "double":
                 return double.class;
             case "boolean.class":
+            case "boolean":
                 return boolean.class;
             case "char.class":
+            case "char":
                 return char.class;
             default:
                 return Class.forName(argClassName);

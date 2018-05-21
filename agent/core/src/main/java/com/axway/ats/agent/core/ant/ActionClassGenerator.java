@@ -44,6 +44,7 @@ import com.axway.ats.agent.core.ConfigurationParser;
 import com.axway.ats.agent.core.action.ActionMethod;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.ActionRequestInfo;
 import com.axway.ats.agent.core.model.Parameter;
 import com.axway.ats.agent.core.model.TemplateAction;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -144,9 +145,12 @@ class ActionClassGenerator {
         boolean errorsWhileProcessing = false;
 
         //next we need to generate the action classes
-        Set<String> actionClassNames = configParser.getActionClassNames();
-        for (String actionClassName : actionClassNames) {
-
+        Map<String, String> actionsClassesInformation = configParser.getActionsClassesInformation();
+        for (Map.Entry<String, String> actionClassInfo : actionsClassesInformation.entrySet()) {
+            
+            String actionClassName = actionClassInfo.getKey();
+            String actionClassInitialRequestUrl = actionClassInfo.getValue();
+            
             Class<?> actionClass;
 
             try {
@@ -192,7 +196,8 @@ class ActionClassGenerator {
             try {
                 fileWriter = new PrintWriter(new FileOutputStream(new File(destFileName)));
 
-                fileWriter.write(generateStub(configParser.getComponentName(), actionClass,
+                fileWriter.write(generateStub(configParser.getComponentName(), actionClass, 
+                                              actionClassInitialRequestUrl, 
                                               targetActionClassPackage, originalTargetPackage,
                                               actionJavadocMap));
                 fileWriter.flush();
@@ -221,7 +226,8 @@ class ActionClassGenerator {
         return targetPath;
     }
 
-    private String generateStub( String componentName, Class<?> actionClass, String targetActionClassPackage,
+    private String generateStub( String componentName, Class<?> actionClass, String initialRequestUrl,
+                                 String targetActionClassPackage,
                                  String originalTargetPackage, Map<String, String> actionJavadocMap ) {
 
         try {
@@ -235,6 +241,7 @@ class ActionClassGenerator {
             for (Method actionClassMethod : actionClassMethods) {
                 if (isAnActionClass(actionClassMethod)) {
                     Action actionAnnotation = actionClassMethod.getAnnotation(Action.class);
+                    ActionRequestInfo actionRequestInfoAnnotation = actionClassMethod.getAnnotation(ActionRequestInfo.class);
                     TemplateAction templateActionAnnotation = actionClassMethod.getAnnotation(TemplateAction.class);
 
                     String actionName;
@@ -260,6 +267,14 @@ class ActionClassGenerator {
                         throw new BuildException("Action '" + actionName
                                                  + "' has a declared transfer unit, but the return type is not Long");
                     }
+                    String requestUrl = null;
+                    if (actionRequestInfoAnnotation != null) {
+                        requestUrl = actionRequestInfoAnnotation.requestUrl();
+                    }
+                    String requestMethod = null;
+                    if (actionRequestInfoAnnotation != null) {
+                        requestMethod = actionRequestInfoAnnotation.requestMethod();
+                    }
 
                     String actionJavaDoc = actionJavadocMap.get(actionName);
 
@@ -274,7 +289,8 @@ class ActionClassGenerator {
                         registerActionExecution = actionAnnotation.registerActionExecution();
                     }
                     String actionDefinition = generateActionDefinition(actionName, actionClassMethod, transferUnit,
-                                                                       registerActionExecution);
+                                                                       registerActionExecution, requestUrl,
+                                                                       requestMethod);
                     methodsDefinition.append(actionDefinition);
 
                     //get any enum constants
@@ -297,7 +313,8 @@ class ActionClassGenerator {
                 //use default template
                 classProcessor = new ClassTemplateProcessor(originalSourcePackage, originalTargetPackage,
                                                             targetActionClassPackage, actionClass,
-                                                            componentName, methodsDefinition.toString(),
+                                                            initialRequestUrl, componentName,
+                                                            methodsDefinition.toString(),
                                                             publicConstants.toString());
             }
 
@@ -468,7 +485,9 @@ class ActionClassGenerator {
     private String generateActionDefinition( String actionName,
                                              Method actionImplementation,
                                              String transferUnit,
-                                             boolean registerAction ) {
+                                             boolean registerAction,
+                                             String requestUrl,
+                                             String requestMethod ) {
 
         log.info("Generating method implementation for action '" + actionName + "'");
 
@@ -518,7 +537,8 @@ class ActionClassGenerator {
 
         try {
             return new MethodTemplateProcessor(actionImplementation, actionName, paramNames, registerAction,
-                                               paramTypes, transferUnit, isDeprecated).processTemplate();
+                                               paramTypes, transferUnit, isDeprecated, requestUrl, requestMethod)
+                                                                                                                 .processTemplate();
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         }

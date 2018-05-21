@@ -36,7 +36,7 @@ public class RemoteSystemOperations implements ISystemOperations {
      *
      * @param atsAgent
      */
-    public RemoteSystemOperations( String atsAgent ) {
+    public RemoteSystemOperations( String atsAgent ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.remoteSystemOperations = new InternalSystemOperations(atsAgent);

@@ -15,6 +15,7 @@
  */
 package com.axway.ats.action.registry;
 
+import com.axway.ats.action.processes.RemoteProcessExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.registry.LocalRegistryOperations;
 import com.axway.ats.core.registry.model.IRegistryOperations;
@@ -306,7 +307,12 @@ public class RegistryOperations {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalRegistryOperations();
         } else {
-            return new RemoteRegistryOperations(atsAgent);
+            try {
+                return new RemoteRegistryOperations(atsAgent);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote registry operations impl object", e);
+            }
+            
         }
     }
 }

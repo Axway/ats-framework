@@ -1580,7 +1580,12 @@ public class FileSystemOperations {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemOperations();
         } else {
-            return new RemoteFileSystemOperations(atsAgent);
+            try {
+                return new RemoteFileSystemOperations(atsAgent);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote file system operations impl object", e);
+            }
+            
         }
     }
 }

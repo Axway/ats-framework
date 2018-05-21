@@ -74,7 +74,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>ATS Agent REST API Service</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/api/v1/*</url-pattern>
     </servlet-mapping>
     
 </web-app>

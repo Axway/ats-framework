@@ -11,7 +11,8 @@
     <actionClass
         name="com.axway.ats.agent.components.system.operations.InternalSystemOperations" />
     <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalProcessOperations" />
+        name="com.axway.ats.agent.components.system.operations.InternalProcessOperations"
+        initializeRequestUrl="processes/executors" />
     <actionClass
         name="com.axway.ats.agent.components.system.operations.InternalProcessTalker" />        
 	<actionClass

@@ -59,6 +59,29 @@ class ClassTemplateProcessor extends TemplateProcessor {
                                targetPackage,
                                actionClass,
                                componentName,
+                               "",
+                               methodDefinitions,
+                               publicConstants);
+    }
+    
+    public ClassTemplateProcessor( String originalSourcePackage,
+                                   String originalTargetPackage,
+                                   String targetPackage,
+                                   Class<?> actionClass,
+                                   String initializeRequestUrl,
+                                   String componentName,
+                                   String methodDefinitions,
+                                   String publicConstants ) throws IOException {
+
+        super(ClassTemplateProcessor.class.getResourceAsStream(DEFAULT_CLASS_TEMPLATE),
+              DEFAULT_CLASS_TEMPLATE);
+
+        initializePlaceholders(originalSourcePackage,
+                               originalTargetPackage,
+                               targetPackage,
+                               actionClass,
+                               componentName,
+                               initializeRequestUrl,
                                methodDefinitions,
                                publicConstants);
     }
@@ -79,6 +102,7 @@ class ClassTemplateProcessor extends TemplateProcessor {
                                targetPackage,
                                actionClass,
                                componentName,
+                               "",
                                methodDefinitions,
                                publicConstants);
     }
@@ -99,6 +123,29 @@ class ClassTemplateProcessor extends TemplateProcessor {
                                targetPackage,
                                actionClass,
                                componentName,
+                               "",
+                               methodDefinitions,
+                               publicConstants);
+    }
+    
+    public ClassTemplateProcessor( File fileTemplate,
+                                   String originalSourcePackage,
+                                   String originalTargetPackage,
+                                   String targetPackage,
+                                   Class<?> actionClass,
+                                   String componentName,
+                                   String initialRequestUrl,
+                                   String methodDefinitions,
+                                   String publicConstants ) throws IOException {
+
+        super(new FileInputStream(fileTemplate), fileTemplate.getAbsolutePath());
+
+        initializePlaceholders(originalSourcePackage,
+                               originalTargetPackage,
+                               targetPackage,
+                               actionClass,
+                               componentName,
+                               initialRequestUrl,
                                methodDefinitions,
                                publicConstants);
     }
@@ -109,6 +156,9 @@ class ClassTemplateProcessor extends TemplateProcessor {
      * @param targetPackage the package of the currently processed Action class
      * @param actionClass the currently processed Action class
      * @param componentName the currently processed component
+     * @param initializeRequestUrl the request URL that will be used to create instance of this Action class on the ATS agent.
+     *        It is intended for internal usage only, so third-party/custom actions should pass null or empty string, because
+     *        for that kind of actions passing any value for that String will have zero effect.
      * @param methodDefinitions this Action class' methods
      * @param publicConstants this Action class' public constants
      */
@@ -118,6 +168,7 @@ class ClassTemplateProcessor extends TemplateProcessor {
                                          String targetPackage,
                                          Class<?> actionClass,
                                          String componentName,
+                                         String initializeRequestUrl,
                                          String methodDefinitions,
                                          String publicConstants ) {
 
@@ -211,6 +262,7 @@ class ClassTemplateProcessor extends TemplateProcessor {
                                   memberClassesOneArgInitialization.toString());
             placeHolderValues.put("$PACKAGE$", targetPackage);
             placeHolderValues.put("$CLASS_NAME$", actionClass.getSimpleName());
+            placeHolderValues.put("$INITIALIZE_REQUEST_URL$", initializeRequestUrl);
             placeHolderValues.put("$COMPONENT_NAME$", componentName);
             placeHolderValues.put("$METHOD_DEFINITIONS$", methodDefinitions);
             placeHolderValues.put("$PUBLIC_CONSTANTS$", publicConstants);
