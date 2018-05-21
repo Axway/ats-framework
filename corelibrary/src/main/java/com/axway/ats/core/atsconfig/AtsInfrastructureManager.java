@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.BasicConfigurator;
-
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.atsconfig.exceptions.AtsConfigurationException;
 import com.axway.ats.core.atsconfig.exceptions.AtsManagerException;
@@ -138,20 +136,41 @@ public class AtsInfrastructureManager {
                                                   String anyApplicationAlias,
                                                   boolean isTopLevelAction ) throws AtsManagerException {
 
-        return getController( anyApplicationAlias ).start( createNewSshClient(), isTopLevelAction );
+        AbstractApplicationController controller = getController( anyApplicationAlias,
+                                                                  sshClientConfigurationProperties );
+
+        try {
+            return controller.start(isTopLevelAction);
+        } finally {
+            controller.disconnect();
+        }
     }
 
     public ApplicationStatus stopAnyApplication(
                                                  String anyApplicationAlias,
                                                  boolean isTopLevelAction ) throws AtsManagerException {
 
-        return getController( anyApplicationAlias ).stop( createNewSshClient(), isTopLevelAction );
+        AbstractApplicationController controller = getController( anyApplicationAlias,
+                                                                  sshClientConfigurationProperties );
+
+        try {
+            return controller.stop(isTopLevelAction);
+        } finally {
+            controller.disconnect();
+        }
     }
 
     public ApplicationStatus restartAnyApplication(
                                                     String anyApplicationAlias ) throws AtsManagerException {
 
-        return getController( anyApplicationAlias ).restart( createNewSshClient() );
+        AbstractApplicationController controller = getController( anyApplicationAlias,
+                                                                  sshClientConfigurationProperties );
+
+        try {
+            return controller.restart();
+        } finally {
+            controller.disconnect();
+        }
     }
 
     /**
@@ -164,11 +183,13 @@ public class AtsInfrastructureManager {
     public ApplicationStatus getAnyApplicationStatus(
                                                       String anyApplicationAlias ) throws AtsManagerException {
 
-        JschSshClient sshClient = createNewSshClient();
+        AbstractApplicationController controller = getController( anyApplicationAlias,
+                                                                  sshClientConfigurationProperties );
+
         try {
-            return getController( anyApplicationAlias ).getStatus( sshClient, true );
+            return controller.getStatus( true );
         } finally {
-            sshClient.disconnect();
+            controller.disconnect();
         }
     }
 
@@ -193,7 +214,7 @@ public class AtsInfrastructureManager {
         // extract agent.zip to a temporary local directory
         String agentFolder = IoUtils.normalizeDirPath( extractAgentZip( agentZip ) );
 
-        JschSftpClient sftpClient = new JschSftpClient();
+        JschSftpClient sftpClient = createNewSftpClient();
         try {
             // upload clean agent
             log.info( "Upload clean " + agentInfo.getDescription() );
@@ -202,7 +223,7 @@ public class AtsInfrastructureManager {
                                agentInfo.getHost(),
                                agentInfo.getSSHPort(),
                                agentInfo.getSSHPrivateKey(),
-                                agentInfo.getSSHPrivateKeyPassword() );
+                               agentInfo.getSSHPrivateKeyPassword() );
 
             if( sftpClient.isRemoteFileOrDirectoryExisting( agentInfo.getSftpHome() ) ) {
                 sftpClient.purgeRemoteDirectoryContents( agentInfo.getSftpHome() );
@@ -276,7 +297,7 @@ public class AtsInfrastructureManager {
         log.info( TOP_LEVEL_ACTION_PREFIX + "Now we will try to perform light upgrade on "
                   + agentInfo.getDescription() );
 
-        JschSftpClient sftpClient = new JschSftpClient();
+        JschSftpClient sftpClient = createNewSftpClient();
         try {
             sftpClient.connect(agentInfo.getSystemUser(),
                                agentInfo.getSystemPassword(),
@@ -377,14 +398,14 @@ public class AtsInfrastructureManager {
         // extract agent.zip to a temporary local directory
         String agentFolder = IoUtils.normalizeDirPath( extractAgentZip( agentZip ) );
 
-        JschSftpClient sftpClient = new JschSftpClient();
+        JschSftpClient sftpClient = createNewSftpClient();
         try {
             sftpClient.connect(agentInfo.getSystemUser(),
                                agentInfo.getSystemPassword(),
                                agentInfo.getHost(),
                                agentInfo.getSSHPort(),
                                agentInfo.getSSHPrivateKey(),
-                                agentInfo.getSSHPrivateKeyPassword() );
+                               agentInfo.getSSHPrivateKeyPassword() );
 
             if( !sftpClient.isRemoteFileOrDirectoryExisting( agentInfo.getSftpHome() ) ) {
 
@@ -464,12 +485,19 @@ public class AtsInfrastructureManager {
      *
      * @param applicationAlias the application alias declared in the configuration
      * @param command the command to run
+     * @return information about the execution result containing exit code, STD OUT and STD ERR
      * @throws AtsManagerException
      */
-    public void executeShellCommand( String applicationAlias, String command ) throws AtsManagerException {
+    public String executeShellCommand( String anyApplicationAlias,
+                                       String command ) throws AtsManagerException {
 
-        AbstractApplicationController controller = getController( applicationAlias );
-        controller.executeShellCommand( createNewSshClient(), controller.getApplicationInfo(), command );
+        AbstractApplicationController controller = getController( anyApplicationAlias,
+                                                                  sshClientConfigurationProperties );
+        try {
+            return controller.executeShellCommand( controller.getApplicationInfo(), command );
+        } finally {
+            controller.disconnect();
+        }
     }
 
     /**
@@ -489,17 +517,19 @@ public class AtsInfrastructureManager {
         return projectConfiguration.getAgents().get( agentAlias );
     }
 
-    private AbstractApplicationController getController(
-                                                         String alias ) throws AtsManagerException {
+    private AbstractApplicationController
+            getController( String alias,
+                           Map<String, String> sshClientConfigurationProperties ) throws AtsManagerException {
 
         AgentInfo agentInfo = projectConfiguration.getAgents().get( alias );
         if( agentInfo != null ) {
-            return new AgentController( agentInfo, projectConfiguration.getSourceProject() );
+            return new AgentController( agentInfo, projectConfiguration.getSourceProject(),
+                                        sshClientConfigurationProperties );
         }
 
         ApplicationInfo applicationInfo = projectConfiguration.getApplications().get( alias );
         if( applicationInfo != null ) {
-            return new ApplicationController( applicationInfo );
+            return new ApplicationController( applicationInfo, sshClientConfigurationProperties );
         }
 
         throw new AtsManagerException( "Can't find application with alias '" + alias
@@ -604,7 +634,7 @@ public class AtsInfrastructureManager {
                                   agentInfo.getHost(),
                                   agentInfo.getSSHPort(),
                                   agentInfo.getSSHPrivateKey(),
-                                   agentInfo.getSSHPrivateKeyPassword() );
+                                  agentInfo.getSSHPrivateKeyPassword() );
 
                 int exitCode = sshClient.execute( "chmod a+x " + agentInfo.getHome() + "/*.sh", true );
                 if( exitCode != 0 ) {
@@ -744,5 +774,15 @@ public class AtsInfrastructureManager {
         }
 
         return sshClient;
+    }
+    
+    private JschSftpClient createNewSftpClient() {
+
+        JschSftpClient sftpClient = new JschSftpClient();
+        for( Entry<String, String> entry : sshClientConfigurationProperties.entrySet() ) {
+            sftpClient.setConfigurationProperty( entry.getKey(), entry.getValue() );
+        }
+
+        return sftpClient;
     }
 }

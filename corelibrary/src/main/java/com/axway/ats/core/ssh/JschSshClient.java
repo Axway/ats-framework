@@ -166,24 +166,6 @@ public class JschSshClient {
     }
 
     /**
-     * Create a new instance of this client with same settings,
-     * but without internal session data.
-     * 
-     * It is expected to do a connect as a next step.
-     * 
-     * @return
-     */
-    public JschSshClient newFreshInstance() {
-
-        JschSshClient instance = new JschSshClient();
-        for( Entry<String, String> entry : this.configurationProperties.entrySet() ) {
-            instance.setConfigurationProperty( entry.getKey(), entry.getValue() );
-        }
-
-        return instance;
-    }
-    
-    /**
      * Pass configuration property for the internally used SSH client library
      */
     public void setConfigurationProperty( String key, String value ) {

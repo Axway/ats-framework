@@ -17,7 +17,10 @@ package com.axway.ats.core.ssh;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.log.AbstractAtsLogger;
@@ -48,9 +51,15 @@ public class JschSftpClient {
 
     private Session                  session;
     private ChannelSftp              channel;
+    
+    // some optional configuration properties
+    private Map<String, String> configurationProperties;
 
     public JschSftpClient() {
+        this.configurationProperties = new HashMap<>();
 
+        // by default - skip checking of known hosts and verifying RSA keys
+        this.configurationProperties.put( "StrictHostKeyChecking", "no" );
     }
 
     /**
@@ -128,8 +137,10 @@ public class JschSftpClient {
             }
             this.session.setPassword(password);
 
-            // skip checking of known hosts and verifying RSA keys
-            this.session.setConfig("StrictHostKeyChecking", "no");
+            // apply any configuration properties
+            for( Entry<String, String> entry : configurationProperties.entrySet() ) {
+                session.setConfig( entry.getKey(), entry.getValue() );
+            }
 
             this.session.connect(CONNECTION_TIMEOUT);
 
@@ -141,7 +152,7 @@ public class JschSftpClient {
             throw new JschSftpClientException(e.getMessage(), e);
         }
     }
-
+    
     /**
      * Disconnect the STFP session connection
      */
@@ -153,6 +164,14 @@ public class JschSftpClient {
         if (session != null) {
             session.disconnect();
         }
+    }
+    
+    /**
+     * Pass configuration property for the internally used SSH client library
+     */
+    public void setConfigurationProperty( String key, String value ) {
+
+        configurationProperties.put( key, value );
     }
 
     /**
