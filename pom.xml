@@ -1,492 +1,481 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.axway.ats.framework</groupId>
-	<artifactId>ats-framework</artifactId>
-	<version>4.1.0-SPT-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>ATS-Framework</name>
-	<description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
-	<url>https://github.com/Axway/ats-framework</url>
+    <groupId>com.axway.ats.framework</groupId>
+    <artifactId>ats-framework</artifactId>
+    <version>4.1.0-SPT-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>ATS-Framework</name>
+    <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
+    <url>https://github.com/Axway/ats-framework</url>
 
-	<modules>
-		<module>commonlibrary</module>
-		<module>corelibrary</module>
-		<module>configuration</module>
-		<module>environmentcleanup</module>
-		<module>log</module>
-		<module>testharness</module>
-		<module>monitoringlibrary</module>
-		<module>agent</module>
-		<module>actionlibrary</module>
-		<module>uiengine</module>
-		<module>rbv</module>
-		<module>utilities</module>
-	</modules>
+    <modules>
+        <module>commonlibrary</module>
+        <module>corelibrary</module>
+        <module>configuration</module>
+        <module>environmentcleanup</module>
+        <module>log</module>
+        <module>testharness</module>
+        <module>monitoringlibrary</module>
+        <module>agent</module>
+        <module>actionlibrary</module>
+        <module>uiengine</module>
+        <module>rbv</module>
+        <module>utilities</module>
+    </modules>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<java.version>1.8</java.version> <!-- min JDK to use. Currently forced to Java 8 because Selenium produces 
-			Java 8 class level artifacts -->
-		<java.classlevel.version>1.7</java.classlevel.version> <!-- Output classpath compliance level -->
-		<maven.min.version>3.2.5</maven.min.version>
-		<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
-		<maven-resources-plugin.version>2.7</maven-resources-plugin.version> <!-- min version to copy empty dirs -->
-		<!-- Minimum version to work with TestNG with more than three version tokens 
-			like in 6.9.13.6 -->
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
-		<maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
-		<maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
-		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
-		<!-- Travis CI plugin versions -->
-		<org.apache.maven.plugins.maven.source.plugin.version>2.2.1</org.apache.maven.plugins.maven.source.plugin.version>
-		<org.apache.maven.plugins.maven.javadoc.plugin.version>2.9.1</org.apache.maven.plugins.maven.javadoc.plugin.version>
-		<org.sonatype.plugins.nexus.staging.maven.plugin.version>1.6.7</org.sonatype.plugins.nexus.staging.maven.plugin.version>
-		<maven.release.plugin.version>2.5.3</maven.release.plugin.version>
-		<org.apache.maven.scm>1.8.1</org.apache.maven.scm>
-		<!-- Maven GPG plugin properties -->
-		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-		<gpg.skip>true</gpg.skip> <!-- skip maven gpg execution. Enable via -Dgpg.skip=false -->
-		<gpg.executable>gpg2</gpg.executable>
+        <java.version>1.8</java.version> <!-- min JDK to use. Currently forced to Java 8 because Selenium produces Java 8 class level artifacts-->
+        <java.classlevel.version>1.7</java.classlevel.version> <!-- Output classpath compliance level -->
+        <maven.min.version>3.2.5</maven.min.version>
+        <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>2.7</maven-resources-plugin.version> <!-- min version to copy empty dirs -->
+        <!--  Minimum version to work with TestNG with more than three version tokens like in 6.9.13.6 -->
+        <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+        <maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
+        <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
+        <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+        <!-- Travis CI plugin versions -->
+        <org.apache.maven.plugins.maven.source.plugin.version>2.2.1</org.apache.maven.plugins.maven.source.plugin.version>
+        <org.apache.maven.plugins.maven.javadoc.plugin.version>2.9.1</org.apache.maven.plugins.maven.javadoc.plugin.version>
+        <org.sonatype.plugins.nexus.staging.maven.plugin.version>1.6.7</org.sonatype.plugins.nexus.staging.maven.plugin.version>
+        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+        <org.apache.maven.scm>1.8.1</org.apache.maven.scm>
+        <!-- Maven GPG plugin properties -->
+        <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
+        <gpg.skip>true</gpg.skip> <!-- skip maven gpg execution. Enable via -Dgpg.skip=false -->
+        <gpg.executable>gpg2</gpg.executable>
 
-		<log4j.version>1.2.17</log4j.version>
-		<!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
-		<javax.mail.version>1.4.4</javax.mail.version>
-		<!-- activation: Current: 1.1.1. Used in CoreLibrary and ActionLibrary -->
-		<javax.activation.version>1.1</javax.activation.version>
-		<apache.xalan.version>2.7.1</apache.xalan.version>
-		<!-- xercesImpl: (used by xalan) There is xalan 2.7 which depends on xercesImpl 
-			2.9.0(we used 2.7.0 before). -->
-		<apache.xercesImpl.version>2.10.0</apache.xercesImpl.version>
+        <log4j.version>1.2.17</log4j.version>
+        <!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
+        <javax.mail.version>1.4.4</javax.mail.version>
+        <!-- activation: Current: 1.1.1. Used in CoreLibrary and ActionLibrary -->
+        <javax.activation.version>1.1</javax.activation.version>
+        <apache.xalan.version>2.7.1</apache.xalan.version>
+        <!-- xercesImpl: (used by xalan) There is xalan 2.7 which depends on xercesImpl 2.9.0(we used 2.7.0 before). -->
+        <apache.xercesImpl.version>2.10.0</apache.xercesImpl.version>
 
-		<!-- Needed for jTDS -->
-		<apache.commons-dbcp.version>2.11</apache.commons-dbcp.version>
-		<apache.commons-pool.version>2.4.3</apache.commons-pool.version>
-		<commons-io.version>2.4</commons-io.version>
-		<apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
-		<!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
-		<net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
-		<!-- PostgreSQL driver dependency version -->
-		<org.postgresql.postgresql.version>42.1.3.jre7</org.postgresql.postgresql.version>
-		<oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
+        <!-- Needed for jTDS -->
+        <apache.commons-dbcp.version>2.11</apache.commons-dbcp.version>
+        <apache.commons-pool.version>2.4.3</apache.commons-pool.version>
+        <commons-io.version>2.4</commons-io.version>
+        <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
+        <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
+        <net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
+        <!-- PostgreSQL driver dependency version -->
+        <org.postgresql.postgresql.version>42.1.3.jre7</org.postgresql.postgresql.version>
+        <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 
-		<junit.version>4.12</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3 
-			Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
-		<org.powermock.powermock-easymock.version>1.6.2</org.powermock.powermock-easymock.version>
-		<org.easymock.version>3.3.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
-		<cglib.cglib.version>3.0</cglib.cglib.version>
-		<org.javassist.version>3.20.0-GA</org.javassist.version>
-		<!-- TestNG version extended by ATS team. Used in TestHarness -->
-		<testng.version>6.10</testng.version>
-		<!-- Used in TestHarness - data-driven tests -->
-		<net.sourceforgejexcelapi.jxl.version>2.6.10</net.sourceforgejexcelapi.jxl.version>
+        <junit.version>4.12</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
+        <org.powermock.powermock-easymock.version>1.6.2</org.powermock.powermock-easymock.version>
+        <org.easymock.version>3.3.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
+        <cglib.cglib.version>3.0</cglib.cglib.version>
+        <org.javassist.version>3.20.0-GA</org.javassist.version>
+        <!-- TestNG version extended by ATS team. Used in TestHarness -->
+        <testng.version>6.10</testng.version>
+        <!-- Used in TestHarness - data-driven tests -->
+        <net.sourceforgejexcelapi.jxl.version>2.6.10</net.sourceforgejexcelapi.jxl.version>
 
-		<!-- Used in ActionLibrary -->
-		<!-- Bouncycastle provider JDK6. Used in AactionLibrary -->
-		<org.bouncycastle.version>1.57</org.bouncycastle.version>
-		<net.sourceforge.javamail-crypto.version>0.5.3.5</net.sourceforge.javamail-crypto.version>
-		<!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module 
-			only in ActionLibrary -->
-		<gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
-		<javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
-		<org.apache.commons.commons-lang3.version>3.1</org.apache.commons.commons-lang3.version>
-		<org.glassfish.jersey.jersey-client.version>2.22.2</org.glassfish.jersey.jersey-client.version>
-		<org.glassfish.jersey.jersey-server.version>2.22.2</org.glassfish.jersey.jersey-server.version>
-		<javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
-		<com.jcraft.jsch.version>0.1.50</com.jcraft.jsch.version>
+        <!-- Used in ActionLibrary -->
+        <!-- Bouncycastle provider JDK6. Used in AactionLibrary -->
+        <org.bouncycastle.version>1.57</org.bouncycastle.version>
+        <net.sourceforge.javamail-crypto.version>0.5.3.5</net.sourceforge.javamail-crypto.version>
+        <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module only in ActionLibrary -->
+        <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
+        <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
+        <org.apache.commons.commons-lang3.version>3.1</org.apache.commons.commons-lang3.version>
+        <org.glassfish.jersey.jersey-client.version>2.22.2</org.glassfish.jersey.jersey-client.version>
+        <org.glassfish.jersey.jersey-server.version>2.22.2</org.glassfish.jersey.jersey-server.version>
+        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+        <com.jcraft.jsch.version>0.1.50</com.jcraft.jsch.version>
 
-		<net.java.dev.jna.version>3.4.0</net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client 
-			dependency -->
-		<commons-compress.version>1.10</commons-compress.version>
-
-		<ats-expectj.version>2.0.8</ats-expectj.version>
+        <net.java.dev.jna.version>3.4.0</net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client dependency -->
+        <commons-compress.version>1.10</commons-compress.version>
 
 		<gson.version>2.8.2</gson.version>
 
-	</properties>
+        <ats-expectj.version>2.0.8</ats-expectj.version>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${java.classlevel.version}</source>
-					<target>${java.classlevel.version}</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>${maven-resources-plugin.version}</version>
-				<configuration>
-					<includeEmptyDirs>true</includeEmptyDirs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
-				<configuration>
-					<!--<argLine>-XX:-UseSplitVerifier</argLine>For jdk 7 (<=1.7.0-72 ) 
-						https://code.google.com/p/powermock/issues/detail?id=504 -->
-					<includes>
-						<include>**/Test*.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/*$*</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<!-- TODO: investigate why HTML report is not generated on test run -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
-				<executions>
-					<execution>
-						<phase>test</phase>
-						<goals>
-							<goal>report-only</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+    </properties>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>${maven-clean-plugin.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.17</version>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>7.5.1</version><!-- 6.15 -->
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>checkstyle</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<headerLocation>java.header</headerLocation>
-							<configLocation>license-checks.xml</configLocation>
-							<consoleOutput>true</consoleOutput>
-							<failOnViolation>true</failOnViolation>
-							<violationSeverity>error</violationSeverity>
-							<failsOnError>true</failsOnError>
-							<includeTestSourceDirectory>true</includeTestSourceDirectory>
-							<!-- <excludes>**/generated-sources/**</excludes> -->
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Travis CI plugin serverId must be the same as in setings.xml -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>${org.apache.maven.plugins.maven.source.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${org.apache.maven.plugins.maven.javadoc.plugin.version}</version>
-				<configuration>
-					<!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are 
-						treated as warnings -->
-					<!-- due to being not available in JDK 7, building it via it, will cause 
-						build error -->
-					<additionalparam>-Xdoclint:none</additionalparam>
-					<quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>${org.sonatype.plugins.nexus.staging.maven.plugin.version}</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>${maven-enforcer-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>enforce-rules</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireJavaVersion>
-									<version>${java.version}</version>
-								</requireJavaVersion>
-								<requireMavenVersion>
-									<version>${maven.min.version}</version>
-								</requireMavenVersion>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Used only when deploying new release version -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>${maven.gpg.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>${maven.release.plugin.version}</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.scm</groupId>
-						<artifactId>maven-scm-provider-gitexe</artifactId>
-						<version>${org.apache.maven.scm}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>${maven-surefire-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.0.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.0.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.0.1</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.classlevel.version}</source>
+                    <target>${java.classlevel.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <configuration>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <!--<argLine>-XX:-UseSplitVerifier</argLine>For jdk 7 (<=1.7.0-72 ) https://code.google.com/p/powermock/issues/detail?id=504 -->
+                    <includes>
+                        <include>**/Test*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!-- TODO: investigate why HTML report is not generated on test run -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report-only</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
-			</plugin>
-		</plugins>
-	</reporting>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven-clean-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>7.5.1</version><!-- 6.15 -->
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <headerLocation>java.header</headerLocation>
+                            <configLocation>license-checks.xml</configLocation>
+                            <consoleOutput>true</consoleOutput>
+                            <failOnViolation>true</failOnViolation>
+                            <violationSeverity>error</violationSeverity>
+                            <failsOnError>true</failsOnError>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <!-- <excludes>**/generated-sources/**</excludes> -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+           <!-- Travis CI plugin serverId must be the same as in setings.xml-->
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-source-plugin</artifactId>
+               <version>${org.apache.maven.plugins.maven.source.plugin.version}</version>
+               <executions>
+                   <execution>
+                       <id>attach-sources</id>
+                       <goals>
+                           <goal>jar-no-fork</goal>
+                       </goals>
+                   </execution>
+               </executions>
+               </plugin>
+               <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <version>${org.apache.maven.plugins.maven.javadoc.plugin.version}</version>
+               <configuration>
+                   <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are treated as warnings -->
+                   <!-- due to being not available in JDK 7, building it via it, will cause build error -->
+                   <additionalparam>-Xdoclint:none</additionalparam>
+                   <quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
+               </configuration>
+               <executions>
+                   <execution>
+                       <id>attach-javadocs</id>
+                       <goals>
+                           <goal>jar</goal>
+                       </goals>
+                   </execution>
+               </executions>
+           </plugin>
+           <plugin>
+               <groupId>org.sonatype.plugins</groupId>
+               <artifactId>nexus-staging-maven-plugin</artifactId>
+               <version>${org.sonatype.plugins.nexus.staging.maven.plugin.version}</version>
+               <extensions>true</extensions>
+               <configuration>
+                   <serverId>ossrh</serverId>
+                   <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                   <autoReleaseAfterClose>true</autoReleaseAfterClose>
+               </configuration>
+           </plugin>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-enforcer-plugin</artifactId>
+               <version>${maven-enforcer-plugin.version}</version>
+               <executions>
+                   <execution>
+                       <id>enforce-rules</id>
+                       <goals>
+                           <goal>enforce</goal>
+                       </goals>
+                       <configuration>
+                           <rules>
+                               <requireJavaVersion>
+                                   <version>${java.version}</version>
+                               </requireJavaVersion>
+                               <requireMavenVersion>
+                                   <version>${maven.min.version}</version>
+                               </requireMavenVersion>
+                           </rules>
+                       </configuration>
+                   </execution>
+               </executions>
+           </plugin>
+           <!-- Used only when deploying new release version -->
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <version>${maven.gpg.plugin.version}</version>
+               <executions>
+                   <execution>
+                       <id>sign-artifacts</id>
+                       <phase>verify</phase>
+                       <goals>
+                           <goal>sign</goal>
+                       </goals>
+                   </execution>
+               </executions>
+           </plugin>
+           <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven.release.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>${org.apache.maven.scm}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+       </plugins>
+       <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+   </build>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${org.apache.commons.commons-lang3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-compress</artifactId>
-				<version>${commons-compress.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>${gson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.oracle.jdbc</groupId>
-				<artifactId>ojdbc7</artifactId>
-				<version>${oracle.ojdbc.version}</version>
-				<optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed. Resolved 
-					from maven.oracle.com password protected repository -->
-				<exclusions>
-					<exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
-						<groupId>com.oracle.jdbc</groupId>
-						<artifactId>xmlparserv2</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-			<!-- TEST dependencies -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.easymock</groupId>
-				<artifactId>easymock</artifactId>
-				<version>${org.easymock.version}</version>
-				<scope>test</scope>
-				<exclusions>
-					<exclusion>
-						<artifactId>cglib</artifactId>
-						<groupId>cglib</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${org.powermock.powermock-easymock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-easymock</artifactId>
-				<version>${org.powermock.powermock-easymock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>cglib</groupId>
-				<artifactId>cglib</artifactId>
-				<version>${cglib.cglib.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.javassist</groupId>
-				<artifactId>javassist</artifactId>
-				<version>${org.javassist.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${org.apache.commons.commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+            <dependency>
+                <groupId>com.oracle.jdbc</groupId>
+                <artifactId>ojdbc7</artifactId>
+                <version>${oracle.ojdbc.version}</version>
+                <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed.
+                    Resolved from maven.oracle.com password protected repository -->
+                <exclusions>
+                    <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
+                        <groupId>com.oracle.jdbc</groupId>
+                        <artifactId>xmlparserv2</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-	<organization>
-		<name>Axway Software</name>
-		<url>http://www.axway.com</url>
-	</organization>
+            <!-- TEST dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>${org.easymock.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>cglib</artifactId>
+                        <groupId>cglib</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${org.powermock.powermock-easymock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-easymock</artifactId>
+                <version>${org.powermock.powermock-easymock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cglib.cglib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${org.javassist.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-	<scm>
-		<connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
-		<developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
-		<url>https://github.com/Axway/ats-framework</url>
-		<tag>HEAD</tag>
-	</scm>
+    <organization>
+        <name>Axway Software</name>
+        <url>http://www.axway.com</url>
+    </organization>
 
-	<developers>
-		<developer>
-			<name>Angel Todorov</name>
-			<email>atodorov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Nikolay Gogovski</name>
-			<email>ngogovski@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Svilen Dikov</name>
-			<email>sdikov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Radoslav Kostadinov</name>
-			<email>rkostadinov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Dragoslav Slaveykov</name>
-			<email>dslaveykov@axway.com</email>
-			<organization>Axway</organization>
-			<organizationUrl>http://www.axway.com</organizationUrl>
-		</developer>
-	</developers>
+    <distributionManagement>
+    <snapshotRepository>
+        <id>ossrh</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+        <id>ossrh</id>
+        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    </distributionManagement>
 
-	<profiles>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-		</profile>
-		<profile>
-			<id>fast</id>
-			<!-- Use this profile with "mvn goal -P fast" if you want quick build 
-				without running tests and generating JavaDoc -->
-			<properties>
-				<maven.javadoc.skip>true</maven.javadoc.skip>
-				<!-- Uncomment this if you want to compile tests but not to run them 
-					<skipTests>true</skipTests> -->
-				<maven.test.skip>true</maven.test.skip>
-			</properties>
-		</profile>
-	</profiles>
+    <scm>
+        <connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
+        <developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
+        <url>https://github.com/Axway/ats-framework</url>
+      <tag>HEAD</tag>
+  </scm>
+
+    <developers>
+        <developer>
+            <name>Angel Todorov</name>
+            <email>atodorov@axway.com</email>
+            <organization>Axway</organization>
+            <organizationUrl>http://www.axway.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Nikolay Gogovski</name>
+            <email>ngogovski@axway.com</email>
+            <organization>Axway</organization>
+            <organizationUrl>http://www.axway.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Svilen Dikov</name>
+            <email>sdikov@axway.com</email>
+            <organization>Axway</organization>
+            <organizationUrl>http://www.axway.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Radoslav Kostadinov</name>
+            <email>rkostadinov@axway.com</email>
+            <organization>Axway</organization>
+            <organizationUrl>http://www.axway.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Dragoslav Slaveykov</name>
+            <email>dslaveykov@axway.com</email>
+            <organization>Axway</organization>
+            <organizationUrl>http://www.axway.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>fast</id>
+            <!-- Use this profile with "mvn goal -P fast" if you want quick build
+                 without running tests and generating JavaDoc -->
+            <properties>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <!-- Uncomment this if you want to compile tests but not to run them <skipTests>true</skipTests> -->
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>

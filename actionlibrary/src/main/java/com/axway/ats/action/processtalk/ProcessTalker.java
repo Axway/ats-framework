@@ -525,7 +525,12 @@ public class ProcessTalker {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalProcessTalker(command);
         } else {
-            return new RemoteProcessTalker(atsAgent, command);
+            try {
+                return new RemoteProcessTalker(atsAgent, command);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote process talker impl object", e);
+            }
+            
         }
     }
 }

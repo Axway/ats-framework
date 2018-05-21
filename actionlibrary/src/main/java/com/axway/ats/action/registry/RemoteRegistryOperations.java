@@ -26,7 +26,7 @@ public class RemoteRegistryOperations implements IRegistryOperations {
 
     private InternalRegistryOperations registryOperations;
 
-    public RemoteRegistryOperations( String atsAgent ) {
+    public RemoteRegistryOperations( String atsAgent ) throws AgentException {
 
         this.atsAgent = atsAgent;
         this.registryOperations = new InternalRegistryOperations(atsAgent);

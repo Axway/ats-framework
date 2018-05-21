@@ -76,7 +76,7 @@ public final class AgentConfigurationClient extends ActionClient {
      *            current JVM without routing through the web service
      */
     @PublicAtsApi
-    public AgentConfigurationClient( String atsAgent ) {
+    public AgentConfigurationClient( String atsAgent ) throws AgentException {
 
         // this client works on the level of Agent distribution, 
         // not on the level of Agent components
