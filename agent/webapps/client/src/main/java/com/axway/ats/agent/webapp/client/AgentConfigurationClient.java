@@ -146,7 +146,7 @@ public final class AgentConfigurationClient extends ActionClient {
 
         AgentConfigurationLandscape.getInstance( atsAgent ).setDbLogLevel( logLevel );
 
-        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator( atsAgent, logLevel );
+        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator( logLevel );
 
         applyConfiguration(rlc);
     }

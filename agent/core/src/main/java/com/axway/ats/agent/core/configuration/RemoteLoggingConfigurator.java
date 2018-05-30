@@ -40,6 +40,8 @@ import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
 @SuppressWarnings( "serial")
 public class RemoteLoggingConfigurator implements Configurator {
 
+    private static final long serialVersionUID = 1L;
+    
     private DbAppenderConfiguration      appenderConfiguration;
     private String                       appenderLogger;
 
@@ -54,21 +56,18 @@ public class RemoteLoggingConfigurator implements Configurator {
     
     /**
      * We will try to find if a DB appender has been configured on the local system
-     * 
-     * @param atsAgent the Agent to configure
      */
-    public RemoteLoggingConfigurator( String atsAgent ) {
-        this( atsAgent, null );
+    public RemoteLoggingConfigurator() {
+        this( null );
     }
     
     /**
      * We will try to find if a DB appender has been configured on the local system
      * 
-     * @param atsAgent the Agent to configure
      * @param customLogLevel log level specified in the test
      */
     @SuppressWarnings( "unchecked")
-    public RemoteLoggingConfigurator( String atsAgent, LogLevel customLogLevel ) {
+    public RemoteLoggingConfigurator( LogLevel customLogLevel ) {
 
         /*
          * This code is run on:
