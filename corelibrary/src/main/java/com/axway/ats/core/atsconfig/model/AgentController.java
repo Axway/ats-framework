@@ -15,8 +15,10 @@
  */
 package com.axway.ats.core.atsconfig.model;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,19 +57,19 @@ public class AgentController extends AbstractApplicationController {
         }
 
         // check if running and available via WS
-        if (isWsdlAvailable(anyApplicationInfo)) {
+        if( isWsdlAvailableNow() ) {
 
-            updateAgentVersion(anyApplicationInfo);
+            updateAgentVersion( true );
             return ApplicationStatus.STARTED;
         }
 
         // not available via WS
         // check if deployed at all
-        if (!isAgentInstalled(anyApplicationInfo)) {
+        if( !isAgentInstalled() ) {
 
             return ApplicationStatus.NOT_INSTALLED;
         }
-        updateAgentVersion(anyApplicationInfo);
+        updateAgentVersion( false );
 
         // it is deployed, but not available via WS
         sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
@@ -84,7 +86,7 @@ public class AgentController extends AbstractApplicationController {
 
                 // the agent window is up, maybe it is just starting or
                 // there is a some problem starting
-                if( isWsdlAvailable( anyApplicationInfo, 60 ) ) {
+                if( isWsdlAvailable() ) {
                     // it got successfully started within the timeout period
                     return ApplicationStatus.STARTED;
                 } else {
@@ -145,27 +147,7 @@ public class AgentController extends AbstractApplicationController {
                       + anyApplicationInfo.description
                       + " is probably started, but we will do a quick check");
 
-            boolean isWsdlAvailable = false;
-            int startupLatency = anyApplicationInfo.startupLatency;
-            if (startupLatency > 0) {
-                // some applications do not start quickly and the user can set a static startup latency
-                log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait statically "
-                         + startupLatency + " seconds for application startup");
-                try {
-                    Thread.sleep(startupLatency * 1000);
-                } catch (InterruptedException e) {}
-            } else {
-                // The user did not set a static startup latency period, so here we will do it in
-                // a more dynamic way by waiting some time for the WSDL.
-
-                // If we skip this step, it is possible that we have issued a start command
-                // on the agent, but the PID file is still not present and when
-                // we run getStatus() a little later,  we will still think the agent is not running,
-                // but it just needs some more time
-                isWsdlAvailable = isWsdlAvailable(anyApplicationInfo, 10);
-            }
-
-            if (isWsdlAvailable || getStatus(false) == ApplicationStatus.STARTED) {
+            if( isWsdlAvailable() ) {
                 log.info( (isTopLevelAction
                                             ? TOP_LEVEL_ACTION_PREFIX
                                             : "")
@@ -267,7 +249,7 @@ public class AgentController extends AbstractApplicationController {
             log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
                      + " is probably started, but we will do a quick check");
 
-            if (getStatus(false) == ApplicationStatus.STARTED) {
+            if( isWsdlAvailable() ) {
                 log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
                          + " is successfully restarted");
                 executePostActionShellCommand( anyApplicationInfo, "START",
@@ -321,7 +303,7 @@ public class AgentController extends AbstractApplicationController {
         sftpClient.purgeRemoteDirectoryContents(anyApplicationInfo.sftpHome, preservedPaths);
 
         anyApplicationInfo.markPathsUnchecked();
-        updateAgentFolder(sftpClient, anyApplicationInfo, agentFolder, "");
+        updateAgentFolder( sftpClient, agentFolder, "" );
 
         for (PathInfo pathInfo : anyApplicationInfo.getUnckeckedPaths()) {
 
@@ -348,7 +330,7 @@ public class AgentController extends AbstractApplicationController {
         }
 
         // make agent start file to be executable
-        makeScriptsExecutable( anyApplicationInfo );
+        makeScriptsExecutable();
 
         // execute post install shell command, if any
         executePostActionShellCommand( anyApplicationInfo, "INSTALL",
@@ -370,42 +352,48 @@ public class AgentController extends AbstractApplicationController {
         }
     }
 
-    /**
-     * Check whether the Agent WSDL is available/accessible
-     *
-     * @param hostAddress the host address
-     * @param timeout the timeout in seconds
-     * @return <code>true</code> if the Agent WSDL is available/accessible
-     */
-    private boolean isWsdlAvailable( AbstractApplicationInfo agentInfo, int timeout ) {
+    
+	/**
+	 * Check whether the Agent WSDL is available/accessible,
+	 * but wait for some time if needed
+	 *
+	 * @return <code>true</code> if the Agent WSDL is available/accessible
+	 */
+    private boolean isWsdlAvailable() {
 
-        log.info("We will wait up to " + timeout + " seconds for " + agentInfo.getDescription()
-                 + " to get remotely available");
+        // the startup latency period can be specified by the user
+        int startupLatency = anyApplicationInfo.startupLatency;
+        if( startupLatency < 1 ) {
+            // user did not set a startup latency period, use some default value
+            startupLatency = 10;
+        }
 
-        long nanoTimeout = TimeUnit.SECONDS.toNanos(timeout);
+        log.info( "We will wait for up to " + startupLatency + " seconds for "
+                  + anyApplicationInfo.getDescription() + " to get remotely available" );
+
+        long nanoTimeout = TimeUnit.SECONDS.toNanos( startupLatency );
         long startTime = System.nanoTime();
-        while ( (System.nanoTime() - startTime) < nanoTimeout) {
+        while( ( System.nanoTime() - startTime ) < nanoTimeout ) {
 
-            if (isWsdlAvailable(agentInfo)) {
+            if( isWsdlAvailableNow() ) {
                 return true;
             }
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
+                Thread.sleep( 1000 );
+            } catch( InterruptedException e ) {}
         }
 
         return false;
     }
-
+    
     /**
-     * Check whether the Agent WSDL is available/accessible
+     * Check whether the Agent WSDL is available/accessible at the current moment
      *
-     * @param hostAddress the host address
      * @return <code>true</code> if the Agent WSDL is available/accessible
      */
-    private boolean isWsdlAvailable( AbstractApplicationInfo agentInfo ) {
+    private boolean isWsdlAvailableNow(  ) {
 
-        String urlString = "http://" + agentInfo.getAddress() + "/agentapp/agentservice?wsdl";
+        String urlString = "http://" + anyApplicationInfo.getAddress() + "/agentapp/agentservice?wsdl";
         try {
             URL url = new URL(urlString);
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
@@ -414,16 +402,16 @@ public class AgentController extends AbstractApplicationController {
             httpConnection.connect();
 
             if (httpConnection.getResponseCode() == 200) {
-                log.info(agentInfo.getDescription() + " is available for remote connections");
+                log.info(anyApplicationInfo.getDescription() + " is available for remote connections");
                 return true;
             } else {
-                log.warn(agentInfo.getDescription() + " is not available for remote connections. Accessing "
+                log.warn(anyApplicationInfo.getDescription() + " is not available for remote connections. Accessing "
                          + urlString + " returns '" + httpConnection.getResponseCode() + ": "
                          + httpConnection.getResponseMessage() + "'");
                 return false;
             }
         } catch (Exception e) {
-            log.warn(agentInfo.getDescription()
+            log.warn(anyApplicationInfo.getDescription()
                      + " is not available for remote connections. We cannot access " + urlString
                      + ". Error message is '" + e.getMessage() + "'");
             return false;
@@ -434,33 +422,73 @@ public class AgentController extends AbstractApplicationController {
      *
      * Update the ATS Agent version in {@link AgentInfo}
      *
-     * @param agentInfo the agent info declared in the configuration
+     * @param tryOverHttp whether we should try to get the info via HTTP
      * @throws AtsManagerException
      */
-    private void updateAgentVersion( AbstractApplicationInfo agentInfo ) throws AtsManagerException {
+    private void updateAgentVersion( boolean tryOverHttp ) throws AtsManagerException {
 
-        if (agentInfo.getVersion() != null) {
+        if (anyApplicationInfo.getVersion() != null) {
             // we already know the version
             return;
         }
 
-        sshClient.connect( agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host, agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword );
-        String shellVersionCommand = ( ( AgentInfo ) agentInfo ).getVersionCommand();
+        if( tryOverHttp ) {
+            // we will try to obtain the version via HTTP request as it is cheap and fast
+            final String urlString = "http://" + anyApplicationInfo.getAddress()
+                                     + "/agentapp/restservice/configuration/getAtsVersion";
+            HttpURLConnection httpConnection = null;
+            BufferedReader reader = null;
+            try {
+                URL url = new URL( urlString );
+                httpConnection = ( HttpURLConnection ) url.openConnection();
+                httpConnection.setConnectTimeout( 10000 );
+                httpConnection.setRequestMethod( "GET" );
+                httpConnection.connect();
+
+                if( httpConnection.getResponseCode() == 200 ) {
+                    reader = new BufferedReader( new InputStreamReader( httpConnection.getInputStream() ) );
+                    // read the response body
+                    // it is expected to be just one line with one token
+                    StringBuilder body = new StringBuilder();
+                    String line = "";
+                    while( ( line = reader.readLine() ) != null ) {
+                        body.append( line );
+                    }
+
+                    // set the version as we found it
+                    if( body.length() > 0 ) {
+                        anyApplicationInfo.setVersion( body.toString().trim() );
+                        return;
+                    }
+                }
+            } catch( Exception e ) {
+                // we got some kind of error over HTTP, so we will try with SSH
+            } finally {
+                IoUtils.closeStream( reader );
+                httpConnection.disconnect();
+            }
+        }
+        
+        // we will try to obtain the version via SSH executed command
+        sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                           anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                           anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+        String shellVersionCommand = ( ( AgentInfo ) anyApplicationInfo ).getVersionCommand();
 
         int exitCode = sshClient.execute( shellVersionCommand, true );
         String stdout = sshClient.getStandardOutput();
         int versionKeyIndex = stdout.indexOf( AtsVersion.VERSION_KEY + "=" );
         if( exitCode == 0 && versionKeyIndex > -1 ) {
-            agentInfo.setVersion( stdout.substring( versionKeyIndex
-                                                    + ( AtsVersion.VERSION_KEY + "=" ).length() )
-                                        .trim() );
+            anyApplicationInfo.setVersion( stdout.substring( versionKeyIndex
+                                                             + ( AtsVersion.VERSION_KEY + "=" ).length() )
+                                                 .trim() );
             return;
         }
 
         // maybe the agent is old one and have no 'version' option
         if( !stdout.toLowerCase().startsWith( "usage" ) ) {
-            log.info( "Unable to parse " + agentInfo.getDescription() + " 'version' output:\n" + stdout
-                      + " (stderr: \"" + sshClient.getErrorOutput() + "\")" );
+            log.info( "Unable to parse " + anyApplicationInfo.getDescription() + " 'version' output:\n"
+                      + stdout + " (stderr: \"" + sshClient.getErrorOutput() + "\")" );
         }
     }
 
@@ -468,42 +496,42 @@ public class AgentController extends AbstractApplicationController {
      * Check whether the agent is installed or not. Currently are just checking
      * whether the agentapp.war file is existing on the right place.
      *
-     * @param agentAlias the agent alias declared in the configuration
      * @return <code>true</code> if the ATS Agent is installed
      * @throws AtsManagerException
      */
-    private boolean isAgentInstalled( AbstractApplicationInfo agentInfo ) throws AtsManagerException {
+    private boolean isAgentInstalled() throws AtsManagerException {
 
-        sftpClient.connect( agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host, agentInfo.sshPort, agentInfo.sshPrivateKey, agentInfo.sshPrivateKeyPassword );
-        boolean isDeployed = sftpClient.isRemoteFileOrDirectoryExisting( agentInfo.getSftpHome()
+        sftpClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                            anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                            anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+        boolean isDeployed = sftpClient.isRemoteFileOrDirectoryExisting( anyApplicationInfo.getSftpHome()
                                                                          + "ats-agent/webapp/agentapp.war" );
 
-        log.info( agentInfo.getDescription() + " seems " + ( isDeployed
-                                                                        ? ""
-                                                                        : "not" )
-                  + " deployed in " + agentInfo.getSftpHome() );
+        log.info( anyApplicationInfo.getDescription() + " seems " + ( isDeployed
+                                                                                 ? ""
+                                                                                 : "not" )
+                  + " deployed in " + anyApplicationInfo.getSftpHome() );
         return isDeployed;
     }
 
     /**
      * Make script files executable
      *
-     * @param agentInfo agent information
      * @throws AtsManagerException
      */
-    private void makeScriptsExecutable( AbstractApplicationInfo agentInfo ) throws AtsManagerException {
+    private void makeScriptsExecutable() throws AtsManagerException {
 
         // set executable privileges to the script files
-        if (agentInfo.isUnix()) {
+        if (anyApplicationInfo.isUnix()) {
 
-            log.info("Set executable priviledges on all 'sh' files in " + agentInfo.getHome());
-            sshClient.connect(agentInfo.systemUser, agentInfo.systemPassword, agentInfo.host,
-                              agentInfo.sshPort, agentInfo.sshPrivateKey,
-                              agentInfo.sshPrivateKeyPassword);
-            int exitCode = sshClient.execute("chmod a+x " + agentInfo.getHome() + "/*.sh", true);
+            log.info( "Set executable priviledges on all 'sh' files in " + anyApplicationInfo.getHome() );
+            sshClient.connect( anyApplicationInfo.systemUser, anyApplicationInfo.systemPassword,
+                               anyApplicationInfo.host, anyApplicationInfo.sshPort,
+                               anyApplicationInfo.sshPrivateKey, anyApplicationInfo.sshPrivateKeyPassword );
+            int exitCode = sshClient.execute("chmod a+x " + anyApplicationInfo.getHome() + "/*.sh", true);
             if (exitCode != 0) {
                 throw new AtsManagerException("Unable to set execute privileges to the shell script files in '"
-                                              + agentInfo.getHome() + "'");
+                                              + anyApplicationInfo.getHome() + "'");
             }
         }
     }
@@ -527,16 +555,14 @@ public class AgentController extends AbstractApplicationController {
     /**
      *
      * @param sftpClient {@link JschSftpClient} instance
-     * @param agentInfo the current agent information
      * @param localAgentFolder local agent folder
      * @param relativeFolderPath the relative path of the current folder for update
      * @throws AtsManagerException
      */
-    private void updateAgentFolder( JschSftpClient sftpClient, AbstractApplicationInfo agentInfo,
-                                    String localAgentFolder,
+    private void updateAgentFolder( JschSftpClient sftpClient, String localAgentFolder,
                                     String relativeFolderPath ) throws AtsManagerException {
 
-        String remoteFolderPath = agentInfo.getSftpHome() + relativeFolderPath;
+        String remoteFolderPath = anyApplicationInfo.getSftpHome() + relativeFolderPath;
         if (!sftpClient.isRemoteFileOrDirectoryExisting(remoteFolderPath)) {
             sftpClient.uploadDirectory(localAgentFolder + relativeFolderPath, remoteFolderPath, true);
             return;
@@ -549,7 +575,8 @@ public class AgentController extends AbstractApplicationController {
             for (File localEntry : localEntries) {
 
                 String remoteFilePath = remoteFolderPath + localEntry.getName();
-                PathInfo pathInfo = agentInfo.getPathInfo(remoteFilePath, localEntry.isFile(), true);
+                PathInfo pathInfo = anyApplicationInfo.getPathInfo( remoteFilePath, localEntry.isFile(),
+                                                                    true );
                 if (pathInfo != null) {
 
                     pathInfo.setChecked(true);
@@ -561,8 +588,8 @@ public class AgentController extends AbstractApplicationController {
                 }
 
                 if (localEntry.isDirectory()) {
-                    updateAgentFolder(sftpClient, agentInfo, localAgentFolder,
-                                      relativeFolderPath + localEntry.getName() + "/");
+                    updateAgentFolder( sftpClient, localAgentFolder,
+                                       relativeFolderPath + localEntry.getName() + "/" );
                 } else {
                     String localFilePath = localAgentFolder + relativeFolderPath + localEntry.getName();
                     sftpClient.uploadFile(localFilePath, remoteFilePath);
