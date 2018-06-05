@@ -72,6 +72,10 @@ public class DbConnSQLServer extends DbConnection {
     private static final String                JNETDIRECT_JDBC_DRIVER_PREFIX         = "jdbc:JSQLConnect://";
     private static final String                JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";                                    // JNetDirect com.jnetdirect.jsql.JSQLDriver
     private static final String                JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
+    // MSSQL driver settings which are used by default
+    private static final String                MSSQL_JDBC_DRIVER_PREFIX              = "jdbc:JSQLConnect://";
+    private static final String                MSSQL_JDBC_DRIVER_CLASS_NAME          = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String                MSSQL_JDBC_DATASOURCE_CLASS_NAME      = "com.microsoft.sqlserver.jdbc.SQLServerDataSource";
 
     /**
      * Default DB port
@@ -165,23 +169,14 @@ public class DbConnSQLServer extends DbConnection {
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
         updateConnectionSettings();
 
-        if (!useSSL) {
-            // because the port can be changed after execution of the parent constructor, use this.port, instead of port
-            url.append(jdbcDriverPrefix).append(host).append(":").append(this.port);
-
-            if (db != null) {
-                url.append("/").append(db);
-            }
-        } else {
-            // url prefix is missing the ':jtds:' part in SSL connection
-            // because the port can be changed after execution of the parent constructor, use this.port, instead of port
-            url.append("jdbc:sqlserver://").append(host).append(":").append(this.port);
-
-            if (db != null) {
-                url.append(";databaseName=")
-                   .append(db)
-                   .append(";integratedSecurity=false;encrypt=true;trustServerCertificate=true");
-            }
+        // because the port can be changed after execution of the parent constructor, use this.port, instead of port
+        url.append(jdbcDriverPrefix).append(host).append(":").append(this.port);
+        
+        if( db != null ) {
+            url.append( "/" ).append( db );
+        }
+        if( useSSL ) {
+            url.append( ";ssl=require" );
         }
     }
 
@@ -275,6 +270,28 @@ public class DbConnSQLServer extends DbConnection {
             ds.setPassword(password);
             ds.setUrl(getURL());
             return ds;
+        } else if (jdbcDataSourceClass.getName().equals(JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME)) {
+            DataSource ds = null;
+            try {
+                ds = jdbcDataSourceClass.newInstance();
+                // FIXME these methods are not standard so error might occur with non-tested driver
+                Method setServerName = jdbcDataSourceClass.getMethod("setServerName", String.class);
+                setServerName.invoke(ds, this.host);
+                Method setPortNumber = jdbcDataSourceClass.getMethod("setPortNumber", int.class);
+                setPortNumber.invoke(ds, this.port);
+                Method setDatabase = null;
+                try {
+                    setDatabase = jdbcDataSourceClass.getMethod("setDatabase", String.class);
+                }catch (NoSuchMethodException nsme) {
+                    // The method name could differ in the different drivers
+                    setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
+                }
+                setDatabase.invoke(ds, this.db);
+            } catch (Exception e) {
+                throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
+                                      + "' for use", e);
+            }
+            return ds;
         } else {
             DataSource ds = null;
             try {
@@ -284,7 +301,8 @@ public class DbConnSQLServer extends DbConnection {
                 setServerName.invoke(ds, this.host);
                 Method setPortNumber = jdbcDataSourceClass.getMethod("setPortNumber", int.class);
                 setPortNumber.invoke(ds, this.port);
-                Method setDatabase = jdbcDataSourceClass.getMethod("setDatabase", String.class);
+                Method setDatabase = null;
+                setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
                 setDatabase.invoke(ds, this.db);
             } catch (Exception e) {
                 throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
@@ -396,8 +414,13 @@ public class DbConnSQLServer extends DbConnection {
                     break;
                 case JNETDIRECT:
                     System.setProperty(JDBC_PREFIX_KEY, JNETDIRECT_JDBC_DRIVER_PREFIX);
-                    System.setProperty(JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME);
-                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME);
+                    System.setProperty( JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME );
+                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME );
+                    break;
+                case MSSQL:
+                    System.setProperty(JDBC_PREFIX_KEY, MSSQL_JDBC_DRIVER_PREFIX);
+                    System.setProperty( JDBC_DRIVER_CLASS_KEY, MSSQL_JDBC_DRIVER_CLASS_NAME );
+                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, MSSQL_JDBC_DATASOURCE_CLASS_NAME );
                     break;
                 default:
                     // not expected. Just in case if enum is updated w/o implementation here
@@ -490,6 +513,6 @@ public class DbConnSQLServer extends DbConnection {
      * Supported MsSQL JDBC drivers
      */
     enum MsSQLJDBCDriverVendor {
-        JTDS, JNETDIRECT
+        JTDS, JNETDIRECT, MSSQL
     }
 }
