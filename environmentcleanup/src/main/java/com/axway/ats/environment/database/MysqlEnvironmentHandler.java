@@ -93,9 +93,9 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             while (line != null) {
 
                 sql.append(line);
-                if (line.startsWith(SOL_DROP_MARKER)) {
+                if (line.startsWith(DROP_TABLE_MARKER)) {
                     
-                    String table = line.substring( SOL_DROP_MARKER.length() ).trim();
+                    String table = line.substring( DROP_TABLE_MARKER.length() ).trim();
                     String owner = table.substring( 0, table.indexOf( "." ) );
                     String simpleTableName = table.substring( table.indexOf( "." ) + 1 );
                     dropAndRecreateTable( connection, simpleTableName, owner );
@@ -111,10 +111,9 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                         updateStatement.execute();
 
                     } catch (SQLException sqle) {
-                        log.error("Error invoking restore satement: " + sql.toString());
                         //we have to roll back the transaction and re throw the exception
                         connection.rollback();
-                        throw sqle;
+						throw new SQLException("Error invoking restore satement: " + sql.toString(), sqle);
                     } finally {
                         try {
                             updateStatement.close();
@@ -180,10 +179,8 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         try {
             columnsMetaData = dbProvider.select("SHOW COLUMNS FROM " + table.getTableName());
         } catch (DbException e) {
-            log.error("Could not get columns for table "
-                      + table.getTableName()
-                      + ". Check if the table is existing and that the user has permissions. See more details in the trace.");
-            throw e;
+			throw new DbException("Could not get columns for table " + table.getTableName()
+					+ ". Check if the table is existing and that the user has permissions. See more details in the trace.");
         }
 
         for (DbRecordValuesList columnMetaData : columnsMetaData) {
@@ -217,7 +214,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      Writer fileWriter ) throws IOException {
         
         if( this.dropEntireTable ) {
-            fileWriter.write( SOL_DROP_MARKER + table.getTableSchema() + "." + table.getTableName()
+            fileWriter.write( DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
                               + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
         } else if( !this.deleteStatementsInserted ) {
             writeDeleteStatements( fileWriter );
@@ -477,9 +474,8 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             stmnt = connection.prepareStatement( query );
             stmnt.executeUpdate();
         } catch( SQLException e ) {
-            log.error( "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                       + e.getMessage(), e );
-            throw new DbException( e );
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement( stmnt );
         }

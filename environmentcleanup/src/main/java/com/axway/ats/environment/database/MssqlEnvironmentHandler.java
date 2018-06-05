@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -80,10 +79,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         try {
             columnsMetaData = this.dbProvider.select(selectColumnsInfo);
         } catch (DbException e) {
-            log.error("Could not get columns for table "
-                      + table.getTableName()
-                      + ". Check if the table is existing and that the user has permissions. See more details in the trace.");
-            throw e;
+			throw new DbException("Could not get columns for table " + table.getTableName()
+					+ ". Check if the table is existing and that the user has permissions. See more details in the trace.",
+					e);
         }
 
         table.setIdentityColumnPresent(false); // the Identity column can be skipped(excluded)
@@ -125,11 +123,8 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
         
         if( this.dropEntireTable ) {
-            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
-                DbTable dbTable = entry.getValue();
-                fileWriter.write( SOL_DROP_MARKER + dbTable.getTableSchema() + "." + dbTable.getTableName()
-                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-            }
+            fileWriter.write( DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
+                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
         } else if( !this.deleteStatementsInserted ) {
             writeDeleteStatements( fileWriter );
         }
@@ -297,9 +292,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
                 sql.append(line);
 
-                if (line.startsWith(SOL_DROP_MARKER)) {
+                if (line.startsWith(DROP_TABLE_MARKER)) {
                   
-                    String tableName = line.substring( SOL_DROP_MARKER.length() ).trim();
+                    String tableName = line.substring( DROP_TABLE_MARKER.length() ).trim();
                     dropAndRecreateTable( connection, tableName );
                     
                 } else if (line.endsWith(EOL_MARKER)) {
@@ -312,10 +307,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     try {
                         updateStatement.execute();
                     } catch (SQLException sqle) {
-                        log.error("Error invoking restore satement: " + sql.toString());
                         //we have to roll back the transaction and re-throw the exception
                         connection.rollback();
-                        throw sqle;
+						throw new SQLException("Error invoking restore satement: " + sql.toString(), sqle);
                     } finally {
                         try {
                             updateStatement.close();
@@ -437,9 +431,8 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
             return tableForeignKey;
         } catch( SQLException e ) {
-            log.error( "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                       + e.getMessage(), e );
-            throw new DbException( e );
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement( stmnt );
         }
@@ -452,46 +445,41 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             stmnt = connection.prepareStatement( query );
             stmnt.executeUpdate();
         } catch( SQLException e ) {
-            log.error( "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                       + e.getMessage(), e );
-            throw new DbException( e );
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement( stmnt );
         }
     }
     
-    private void createDatabaseProcedure( Connection conn, String scriptPath ) {
+	private void createDatabaseProcedure(Connection conn, String scriptPath) {
 
-        StringBuilder command = null;
-        Statement stmt = null;
-        try (LineNumberReader lineReader = new LineNumberReader( new FileReader( scriptPath ) )) {
-            String line = null;
-            while( ( line = lineReader.readLine() ) != null ) {
-                if( command == null ) {
-                    command = new StringBuilder();
-                }
-                String trimmedLine = line.trim();
+		StringBuilder command = new StringBuilder();
+		Statement stmt = null;
 
-                // Line is end of statement
-                if( trimmedLine.endsWith( "GO" ) ) {
-                    command.append( line );
-                    command.append( " " );
+		try (BufferedReader lineReader = new BufferedReader(new FileReader(scriptPath))) {
+			String line;
+			while ((line = lineReader.readLine()) != null) {
 
-                    stmt = conn.createStatement();
-                    stmt.execute( command.toString() );
-                    command = null;
+				line = line.trim();
+				command.append(line);
+				command.append(" ");
 
-                } else {
-                    command.append( line );
-                    command.append( " " );
-                }
-            }
-        } catch( Exception e ) {
-            log.error( "Error on command: " + command );
-        } finally {
-            DbUtils.closeStatement( stmt );
-        }
-    }
+				if (line.endsWith("GO")) {
+
+					// commit the transaction
+					stmt = conn.createStatement();
+					stmt.execute(command.toString());
+					command.setLength(0);
+				}
+			}
+
+		} catch (Exception e) {
+			throw new DbException("Error while creating database procedure by running command: " + command);
+		} finally {
+			DbUtils.closeStatement(stmt);
+		}
+	}
     
     private String generateForeignKeyScript( String tableName, String foreingKey, Connection connection ) throws DbException {
 
