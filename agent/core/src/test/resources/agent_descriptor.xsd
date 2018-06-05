@@ -138,6 +138,16 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="drop" type="xs:boolean" use="optional"
+                default="false">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Indicates if the table
+                        will be recreated during restore.
+                        Default value is 'false'.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="autoIncrementResetValue" type="xs:nonNegativeInteger"
                 use="optional">
                 <xs:annotation>
