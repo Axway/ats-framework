@@ -52,7 +52,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     private static final String    ERROR_CREATING_BACKUP      = "Could not create backup in file ";
     protected static final String  ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String    DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
-    protected static final String  SOL_DROP_MARKER            = " -- ATS SOL DROP ";
+    protected static final String  DROP_TABLE_MARKER          = " -- ATS DROP TABLE ";
     protected static final String  EOL_MARKER                 = " -- ATS EOL;";
 
     protected boolean              addLocks;
@@ -86,11 +86,10 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @throws DatabaseEnvironmentCleanupException  if the backup file cannot be created
      * @see com.axway.ats.environment.database.model.BackupHandler#createBackup(java.lang.String)
      */
-    public void createBackup( String backupFileName, boolean dropEntireTable ) throws DatabaseEnvironmentCleanupException {
+    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         // reset flag, so delete statements will be inserted
         this.deleteStatementsInserted = false;
-        this.dropEntireTable = dropEntireTable;
 
         BufferedWriter fileWriter = null;
         try {
@@ -307,6 +306,19 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     public void setLockTables( boolean lockTables ) {
 
         this.addLocks = lockTables;
+
+    }
+    
+    /**
+     * Choose whether to recreate the tables during restore - default
+     * value should be false
+     * 
+     * @param dropEntireTable    enable or disable
+     * @see com.axway.ats.environment.database.model.BackupHandler#setDropTables(boolean)
+     */
+    public void setDropTables( boolean dropEntireTable ) {
+
+        this.dropEntireTable = dropEntireTable;
 
     }
 

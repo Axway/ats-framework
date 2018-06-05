@@ -68,13 +68,21 @@ public interface BackupHandler {
                                boolean lockTables ) throws DatabaseEnvironmentCleanupException;
 
     /**
+     * Choose whether to recreate the tables during restore - default
+     * value should be false
+     * 
+     * @param dropTable    enable or disable
+     * @see com.axway.ats.environment.database.model.BackupHandler#setDropTables(boolean)
+     */
+    public void setDropTables( boolean dropTable );
+    
+    /**
      * Create the database backup for the selected tables
      * 
      * @param backupFileName                        the name of the backup file
      * @throws DatabaseEnvironmentCleanupException  if the backup file cannot be created
      */
-    public void createBackup( String backupFileName,
-                              boolean dropEntireTable ) throws DatabaseEnvironmentCleanupException;
+    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException;
 
     /**
      * Release the database connection

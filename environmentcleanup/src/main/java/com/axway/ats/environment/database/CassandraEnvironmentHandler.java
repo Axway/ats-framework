@@ -238,11 +238,10 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
      * Disconnect after backup process
      */
     @Override
-    public void createBackup( String backupFileName,
-                              boolean dropEntireTable ) throws DatabaseEnvironmentCleanupException {
+    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         try {
-            super.createBackup( backupFileName, dropEntireTable );
+            super.createBackup( backupFileName );
         } finally {
             ( ( CassandraDbProvider ) dbProvider ).disconnect();
         }
