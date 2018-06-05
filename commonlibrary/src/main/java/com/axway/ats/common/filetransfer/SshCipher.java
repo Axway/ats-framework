@@ -34,62 +34,87 @@ public class SshCipher implements Serializable {
     public static final SshCipher AES128_CBC       = new SshCipher("aes128-cbc",
                                                                    "AES/CBC/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.AES256Cbc",
                                                                    16,
                                                                    16);
     @PublicAtsApi
     public static final SshCipher AES192_CBC       = new SshCipher("aes192-cbc",
                                                                    "AES/CBC/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.AES192Cbc",
                                                                    16,
                                                                    24);
     @PublicAtsApi
     public static final SshCipher AES256_CBC       = new SshCipher("aes256-cbc",
                                                                    "AES/CBC/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.AES256Cbc",
                                                                    16,
                                                                    32);
     @PublicAtsApi
     public static final SshCipher AES128_CTR       = new SshCipher("aes128-ctr",
                                                                    "AES/CTR/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.AES128Ctr",
                                                                    16,
                                                                    16);
     @PublicAtsApi
     public static final SshCipher AES192_CTR       = new SshCipher("aes192-ctr",
                                                                    "AES/CTR/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.AES192Ctr",
                                                                    16,
                                                                    24);
     @PublicAtsApi
     public static final SshCipher AES256_CTR       = new SshCipher("aes256-ctr",
                                                                    "AES/CTR/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.AES256Ctr",
                                                                    16,
                                                                    32);
-    @PublicAtsApi
-    public static final SshCipher _3DES_CBC        = new SshCipher("3des-cbc",
-                                                                   "DESede/CBC/NoPadding",
-                                                                   null,
-                                                                   8,
-                                                                   24);
     @PublicAtsApi
     public static final SshCipher BLOWFISH_CBC     = new SshCipher("blowfish-cbc",
                                                                    "Blowfish/CBC/NoPadding",
                                                                    null,
+                                                                   "com.sshtools.ssh.components.jce.BlowfishCbc",
+                                                                   8,
+                                                                   16);
+    @PublicAtsApi
+    public static final SshCipher ARCFOUR       = new SshCipher("arcfour",
+                                                                   "Arcfour/CBC/NoPadding",
+                                                                   "BC",
+                                                                   "com.sshtools.ssh.components.jce.ArcFour",
                                                                    8,
                                                                    16);
     @PublicAtsApi
     public static final SshCipher ARCFOUR128       = new SshCipher("arcfour128",
                                                                    "Arcfour/CBC/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.ArcFour128",
                                                                    8,
                                                                    16);
     @PublicAtsApi
     public static final SshCipher ARCFOUR256       = new SshCipher("arcfour256",
                                                                    "Arcfour/CBC/NoPadding",
                                                                    "BC",
+                                                                   "com.sshtools.ssh.components.jce.ArcFour256",
                                                                    8,
                                                                    32);
+    @PublicAtsApi
+    public static final SshCipher _3DES_CBC        = new SshCipher("3des-cbc",
+                                                                   "DESede/CBC/NoPadding",
+                                                                   null,
+                                                                   "com.sshtools.ssh.components.jce.TripleDesCbc",
+                                                                   8,
+                                                                   24);
+    @PublicAtsApi
+    public static final SshCipher _3DES_CTR        = new SshCipher("3des-cbc",
+                                                                   "DESede/CBC/NoPadding",
+                                                                   null,
+                                                                   "com.sshtools.ssh.components.jce.TripleDesCtr",
+                                                                   8,
+                                                                   24);
+    
 
     /**
      * Check currently defined ciphers here (SSH RFC4253, [Page 10]): http://www.ietf.org/rfc/rfc4253.txt<br/>
@@ -118,6 +143,12 @@ public class SshCipher implements Serializable {
      * For example "BC" for BouncyCastle or null for the default Sun provider
      */
     public String                 provider;
+    
+    /**
+     * The cipher class name<br/>
+     * For example "TripleDesCtr"
+     */
+    public String                 className;
 
     /**
      * The cipher block length in bytes
@@ -139,10 +170,11 @@ public class SshCipher implements Serializable {
     @PublicAtsApi
     public SshCipher( String sshAlgorithmName,
                       String jceAlgorithmName,
+                      String className,
                       int blockLength,
                       int keyLength ) {
 
-        this(sshAlgorithmName, jceAlgorithmName, null, blockLength, keyLength);
+        this(sshAlgorithmName, jceAlgorithmName, className, null, blockLength, keyLength);
     }
 
     /**
@@ -157,12 +189,14 @@ public class SshCipher implements Serializable {
     public SshCipher( String sshAlgorithmName,
                       String jceAlgorithmName,
                       String provider,
+                      String className,
                       int blockLength,
                       int keyLength ) {
 
         this.sshAlgorithmName = sshAlgorithmName;
         this.jceAlgorithmName = jceAlgorithmName;
         this.provider = provider;
+        this.className = className;
         this.blockLength = blockLength;
         this.keyLength = keyLength;
     }
@@ -194,6 +228,16 @@ public class SshCipher implements Serializable {
 
         return provider;
     }
+    
+    /**
+    *
+    * @return the class name of the cipher
+    */
+   @PublicAtsApi
+   public String getClassName() {
+
+       return className;
+   }
 
     /**
      *
@@ -246,6 +290,17 @@ public class SshCipher implements Serializable {
     }
 
     /**
+    *
+    * @param className the Cipher class name
+    */
+   @PublicAtsApi
+   public void setClassName(
+                            String className ) {
+
+       this.className = className;
+   }
+    
+    /**
      *
      * @param blockLength the cipher block length in bytes
      */
@@ -269,7 +324,7 @@ public class SshCipher implements Serializable {
     @Override
     public String toString() {
 
-        return sshAlgorithmName + " (" + jceAlgorithmName + ", " + keyLength + " bytes)";
+        return sshAlgorithmName + " (" + jceAlgorithmName + ", " + className + ", " + keyLength + " bytes)";
     }
 
 }

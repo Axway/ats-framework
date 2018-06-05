@@ -16,50 +16,53 @@
 package com.axway.ats.core.filetransfer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.security.KeyStore;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.net.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.bouncycastle.openssl.PEMWriter;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.SshCipher;
 import com.axway.ats.core.filetransfer.model.TransferListener;
 import com.axway.ats.core.filetransfer.model.ftp.SftpFileTransferProgressMonitor;
-import com.axway.ats.core.filetransfer.model.ftp.SftpListener;
 import com.axway.ats.core.filetransfer.model.ftp.SynchronizationSftpTransferListener;
+import com.axway.ats.core.ssh.exceptions.JschSftpClientException;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.SslUtils;
 import com.axway.ats.core.utils.StringUtils;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.HostKey;
-import com.jcraft.jsch.HostKeyRepository;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.UserInfo;
+import com.sshtools.net.SocketTransport;
+import com.sshtools.publickey.ConsoleKnownHostsKeyVerification;
+import com.sshtools.publickey.SshPublicKeyFileFactory;
+import com.sshtools.sftp.SftpStatusException;
+import com.sshtools.sftp.TransferCancelledException;
+import com.sshtools.ssh.HostKeyVerification;
+import com.sshtools.ssh.PasswordAuthentication;
+import com.sshtools.ssh.PublicKeyAuthentication;
+import com.sshtools.ssh.SshAuthentication;
+import com.sshtools.ssh.SshClient;
+import com.sshtools.ssh.SshConnector;
+import com.sshtools.ssh.SshException;
+import com.sshtools.ssh.components.ComponentManager;
+import com.sshtools.ssh.components.SshPublicKey;
+import com.sshtools.ssh.components.jce.Ssh2RsaPrivateKey;
+import com.sshtools.ssh.components.jce.SshX509RsaSha1PublicKey;
+import com.sshtools.ssh2.Ssh2Client;
+import com.sshtools.ssh2.Ssh2Context;
 
 /**
  * Uses the JSch component suite for Java
@@ -68,12 +71,8 @@ import com.jcraft.jsch.UserInfo;
  */
 public class SftpClient extends AbstractFileTransferClient {
 
-    private JSch                                jsch                                = null;
-    private Session                             session                             = null;
-    private ChannelSftp                         channel                             = null;
-
-    private SftpFileTransferProgressMonitor     debugProgressMonitor                = null;
-    private SynchronizationSftpTransferListener synchronizationSftpTransferListener = null;
+//    private SftpFileTransferProgressMonitor     debugProgressMonitor                = null;
+//    private SynchronizationSftpTransferListener synchronizationSftpTransferListener = null;
 
     private static final Logger                 log                                 = Logger.getLogger( SftpClient.class );
 
@@ -81,6 +80,13 @@ public class SftpClient extends AbstractFileTransferClient {
 
     public static final String                  SFTP_USERNAME                       = "SFTP_USERNAME";
     public static final String                  SFTP_CIPHERS                        = "SFTP_CIPHERS";
+
+    private SshConnector                        con;
+    private SshClient                           ssh;
+    private Ssh2Client                          ssh2;
+    private com.sshtools.sftp.SftpClient        sftp;
+    
+    private SftpFileTransferProgressMonitor     debugProgressMonitor          = null;
 
     private List<SshCipher>                     ciphers;
 
@@ -110,7 +116,11 @@ public class SftpClient extends AbstractFileTransferClient {
 
         super();
 
-        this.jsch = new JSch();
+        try {
+            con = SshConnector.createInstance();
+        } catch( SshException e ) {
+            throw new JschSftpClientException( "Cannot create ssh connector instance.", e.getCause() );
+        }
     }
 
     @Override
@@ -127,13 +137,6 @@ public class SftpClient extends AbstractFileTransferClient {
             log.info( "Keystore location set to '" + this.keyStoreFile + "'" );
         }
 
-        if( this.channel != null ) {
-            this.channel.disconnect();
-        }
-        if( this.session != null ) {
-            this.session.disconnect();
-        }
-
         applyCustomProperties();
         doConnect();
 
@@ -148,7 +151,7 @@ public class SftpClient extends AbstractFileTransferClient {
     }
 
     private void doConnect() throws FileTransferException {
-
+        
         // make new SFTP object for every new connection
         disconnect();
 
@@ -158,74 +161,104 @@ public class SftpClient extends AbstractFileTransferClient {
          * until at least one thread enables it again
          */
         if( isDebugMode() ) {
-            JSch.setLogger( new SftpListener() );
             debugProgressMonitor = new SftpFileTransferProgressMonitor();
         } else {
             debugProgressMonitor = null;
         }
 
         try {
+            
+            ComponentManager comManager = ComponentManager.getInstance();
+            
+            // FIXME check setHostKeyVerification method, right now we are using it twice
+            ConsoleKnownHostsKeyVerification hostKeyVerification = new ConsoleKnownHostsKeyVerification();
+            addHostKeyRepository( hostKeyVerification );
+            
+            con.getContext().setHostKeyVerification( hostKeyVerification );
+            con.getContext().setPreferredPublicKey( Ssh2Context.PUBLIC_KEY_SSHDSS );
+            con.getContext().setSocketTimeout( this.timeout );
 
-            addHostKeyRepository();
-
-            if( username != null ) {
-                this.session = jsch.getSession( this.username, this.hostname, this.port );
-            }
-
-            this.session.setPassword( this.password );
-
-            if( !StringUtils.isNullOrEmpty( this.keyStoreFile ) ) {
-                byte[] privateKeyContent = getPrivateKeyContent();
-                this.jsch.addIdentity( "client_prvkey", privateKeyContent, null, null );
-            }
-
-            //The internally used client version 'SSH-2.0-JSCH-0.1.54' needs to be changed to 'SSH-2.0-OpenSSH_2.5.3'
-            this.session.setClientVersion( "SSH-2.0-OpenSSH_2.5.3" );
-
-            /** if no trust server certificate or trust store are provided, do not check if hostname is in known hosts **/
-            if( StringUtils.isNullOrEmpty( this.trustedServerSSLCerfiticateFile )
-                && StringUtils.isNullOrEmpty( this.trustStoreFile ) ) {
-                // skip checking of known hosts and verifying RSA keys
-                this.session.setConfig( "StrictHostKeyChecking", "no" );
-            }
-
-            // make keyboard-interactive last authentication method
-            this.session.setConfig( "PreferredAuthentications", "publickey,password,keyboard-interactive" );
-            this.session.setTimeout( this.timeout );
             if( this.ciphers != null && this.ciphers.size() > 0 ) {
                 StringBuilder ciphers = new StringBuilder();
                 for( SshCipher cipher : this.ciphers ) {
                     ciphers.append( cipher.getSshAlgorithmName() + "," );
+                    addCipherClass( cipher, comManager );
                 }
-                this.session.setConfig( "cipher.c2s", ciphers.toString() );
-                this.session.setConfig( "cipher.s2c", ciphers.toString() );
-                this.session.setConfig( "CheckCiphers", ciphers.toString() );
+                
+                if( ciphers.toString().endsWith( "," ) ) {
+                    ciphers.deleteCharAt( ciphers.length() - 1 );
+                }
+                
+                con.getContext().setPreferredCipherCS( ciphers.toString() );
+                con.getContext().setPreferredCipherSC( ciphers.toString() );
             }
-            if( this.listener != null ) {
-                this.listener.setResponses( new ArrayList<String>() );
-                JSch.setLogger( ( com.jcraft.jsch.Logger ) this.listener );
+            // TODO set logger if possible 
+            //            if (this.listener != null) {
+            //                this.listener.setResponses(new ArrayList<String>());
+            //                JSch.setLogger((com.jcraft.jsch.Logger) this.listener);
+            //            }
+            
+            HostKeyVerification hkv = new HostKeyVerification() {
+                public boolean verifyHost( String hostname, SshPublicKey key ) {
+
+                    try {
+                        log.debug( "The connected host's key (" + key.getAlgorithm() + ") is "
+                                   + key.getFingerprint() );
+                    } catch( SshException e ) {}
+                    return true;
+                }
+            };
+
+            con.getContext().setHostKeyVerification(hkv);
+
+            SocketTransport t = new SocketTransport( hostname, port );
+            t.setTcpNoDelay( true );
+            ssh = con.connect( t, username, true );
+
+            // Authenticate the user using password authentication
+            PasswordAuthentication pwd = new PasswordAuthentication();
+            pwd.setPassword( password );
+            if( ssh.authenticate( pwd ) == SshAuthentication.FAILED ) {
+                throw new JschSftpClientException( "Cannot connect on host '" + hostname + "' with user: '"
+                                                   + username + "', password: '" + password + "' and port: '"
+                                                   + port + "'." );
             }
+            
+            if( keyStoreFile != null && !ssh.isAuthenticated() ) {
+                KeyStore keyStore = SslUtils.loadKeystore( keyStoreFile, keyStorePassword );
+                RSAPrivateKey prv = ( RSAPrivateKey ) keyStore.getKey( keyAlias,
+                                                                       keyStorePassword.toCharArray() );
+                X509Certificate x509 = ( X509Certificate ) keyStore.getCertificate( keyAlias );
+                
+                PublicKeyAuthentication pk = new PublicKeyAuthentication();
+                pk.setPublicKey( new SshX509RsaSha1PublicKey( x509 ) );
+                pk.setPrivateKey( new Ssh2RsaPrivateKey( prv ) );
+                
+                if( ssh.authenticate( pk ) == SshAuthentication.FAILED ) {
+                    throw new JschSftpClientException( "X509 authentication failed" );
+                }
+            }
+            
+            ssh2 = ( Ssh2Client ) ssh;
+            sftp = new com.sshtools.sftp.SftpClient( ssh2 );
 
-            /* 
-             * SFTP reference implementation does not support transfer mode.
-               Due to that, JSch does not support it either.
-               For now setTransferMode() has no effect. It may be left like that,
-               implemented to throw new FileTransferException( "Not implemented" )
-               or log warning, that SFTP protocol does not support transfer mode change.
-            */
-
-            this.session.connect();
-            this.channel = ( ChannelSftp ) this.session.openChannel( "sftp" );
-            this.channel.connect();
         } catch( Exception e ) {
             throw new FileTransferException( "Unable to connect!", e );
         }
     }
+    
+    private void addCipherClass( SshCipher cipher,
+                                 ComponentManager comManager ) throws ClassNotFoundException {
 
-    private void addHostKeyRepository() throws Exception {
+        comManager.supportedSsh2CiphersCS().add( cipher.getSshAlgorithmName(),
+                                                 Class.forName( cipher.getClassName() ) );
+        comManager.supportedSsh2CiphersSC().add( cipher.getSshAlgorithmName(),
+                                                 Class.forName( cipher.getClassName() ) );
+    }
+
+    private void addHostKeyRepository( ConsoleKnownHostsKeyVerification hostKeyRep ) throws Exception {
 
         if( !StringUtils.isNullOrEmpty( this.trustStoreFile ) ) {
-            HostKeyRepository hostKeyRepository = new DefaultHostKeyRepository();
             KeyStore trustStore = SslUtils.loadKeystore( trustStoreFile, trustStorePassword );
             // iterate over all entries
             Enumeration<String> aliases = trustStore.aliases();
@@ -235,7 +268,11 @@ public class SftpClient extends AbstractFileTransferClient {
                     /** the alias points to a certificate **/
                     Certificate certificate = trustStore.getCertificate( alias );
                     if( certificate != null ) {
-                        addPublicKeyToHostKeyRepostitory( certificate.getPublicKey(), hostKeyRepository );
+
+                        byte[] opensshKeyContent = convertPubToOpenSsh( ( RSAPublicKey ) certificate.getPublicKey() );
+                        SshPublicKey pubKey = SshPublicKeyFileFactory.parse( opensshKeyContent )
+                                                                     .toPublicKey();
+                        hostKeyRep.allowHost( hostname, pubKey, true );
                     }
                 } else {
                     /** the alias does not point to a certificate, 
@@ -246,108 +283,85 @@ public class SftpClient extends AbstractFileTransferClient {
                         /**
                          * the certificate was extracted from a private-public key entry
                          * */
-                        addPublicKeyToHostKeyRepostitory( certificate.getPublicKey(), hostKeyRepository );
+                        addPublicKeyToHostKeyRepostitory( certificate.getPublicKey(), hostKeyRep );
                     } else {
                         /**
                          * the alias points to a certificate chain
                          * */
                         Certificate[] chain = trustStore.getCertificateChain( alias );
                         for( Certificate cert : chain ) {
-                            addPublicKeyToHostKeyRepostitory( cert.getPublicKey(), hostKeyRepository );
+                            addPublicKeyToHostKeyRepostitory( cert.getPublicKey(), hostKeyRep );
                         }
                     }
                 }
             }
-            this.jsch.setHostKeyRepository( hostKeyRepository );
         } else {
             if( StringUtils.isNullOrEmpty( this.trustedServerSSLCerfiticateFile ) ) {
                 return;
             } else {
                 try {
-                    HostKeyRepository hostKeyRepository = new DefaultHostKeyRepository();
                     KeyStore trustStore = KeyStore.getInstance( "JKS" );
                     trustStore.load( null );
                     trustStore.setCertificateEntry( "cert",
                                                     SslUtils.convertFileToX509Certificate( new File( this.trustedServerSSLCerfiticateFile ) ) );
                     addPublicKeyToHostKeyRepostitory( trustStore.getCertificate( "cert" ).getPublicKey(),
-                                                      hostKeyRepository );
-                    this.jsch.setHostKeyRepository( hostKeyRepository );
+                                                      hostKeyRep );
                 } catch( Exception e ) {
                     throw new Exception( "Unable to add public key from certificate '"
-                                        + this.trustedServerSSLCerfiticateFile
-                                        + "' to known host keys", e);
+                                         + this.trustedServerSSLCerfiticateFile + "' to known host keys", e );
                 }
             }
         }
 
     }
 
-    private void addPublicKeyToHostKeyRepostitory( PublicKey key,
-                                                   HostKeyRepository hostKeyRepository ) throws Exception {
+    private void
+            addPublicKeyToHostKeyRepostitory( PublicKey key,
+                                              ConsoleKnownHostsKeyVerification hostKeyRepository ) throws Exception {
 
         if( !key.getAlgorithm().contains( "RSA" ) ) {
             throw new Exception( "Only RSA keys are supported!." );
         }
 
-        byte[] opensshKeyContent = convertToOpenSSHKeyFormat( ( RSAPublicKey ) key );
+        byte[] encodedKey = convertPubToOpenSsh( ( RSAPublicKey ) key ) ;
 
-        HostKey hostkey = new HostKey( hostname, HostKey.SSHRSA, opensshKeyContent );
-        hostKeyRepository.add( hostkey, null );
-
+        SshPublicKey pubKey = SshPublicKeyFileFactory.parse( encodedKey ).toPublicKey();
+        hostKeyRepository.allowHost( hostname, pubKey, true );
     }
+    
+    private byte[] convertPubToOpenSsh( RSAPublicKey rsaPublicKey ) throws Exception {
 
-    private byte[] convertToOpenSSHKeyFormat( RSAPublicKey key ) throws Exception {
+        ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( byteOs );
+        dos.writeInt( "ssh-rsa".getBytes().length );
+        dos.write( "ssh-rsa".getBytes() );
+        dos.writeInt( rsaPublicKey.getPublicExponent().toByteArray().length );
+        dos.write( rsaPublicKey.getPublicExponent().toByteArray() );
+        dos.writeInt( rsaPublicKey.getModulus().toByteArray().length );
+        dos.write( rsaPublicKey.getModulus().toByteArray() );
+        
+        String publicKeyEncoded = "ssh-rsa " + new String( Base64.encodeBase64( byteOs.toByteArray() ) );
 
-        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        byte[] name = "ssh-rsa".getBytes( "US-ASCII" );
-        write( name, buf );
-        write( key.getPublicExponent().toByteArray(), buf );
-        write( key.getModulus().toByteArray(), buf );
-        return buf.toByteArray();
-    }
-
-    // encode the str byte array to Base64 one, also encode its length
-    private void write( byte[] str, OutputStream os ) throws IOException {
-
-        for( int shift = 24; shift >= 0; shift -= 8 ) {
-            os.write( ( str.length >>> shift ) & 0xFF );
-        }
-        os.write( str );
-
-    }
-
-    private byte[] getPrivateKeyContent() throws Exception {
-
-        try {
-            KeyStore keyStore = SslUtils.loadKeystore( keyStoreFile, keyStorePassword );
-            PrivateKey privateKey = ( PrivateKey ) keyStore.getKey( keyAlias, null );
-
-            if( privateKey == null ) {
-                throw new Exception("The alias '" + keyAlias + "' does not point to an existing key-related entry");
-            }
-
-            StringWriter stringWriter = new StringWriter();
-            PEMWriter pemWriter = new PEMWriter( stringWriter );
-            pemWriter.writeObject( privateKey );
-            pemWriter.close();
-
-            byte[] privateKeyPEM = stringWriter.toString().getBytes();
-
-            return privateKeyPEM;
-        } catch( Exception e ) {
-            throw new Exception( "Could not get private key content", e );
-        }
-
+        return publicKeyEncoded.getBytes();
     }
 
     @Override
     public void disconnect() throws FileTransferException {
 
-        if( this.channel != null && this.channel.isConnected() ) {
-            this.channel.disconnect();
+        if( this.ssh != null && this.ssh.isConnected() ) {
+            ssh.disconnect();
         }
-        if( this.session != null && this.session.isConnected() ) {
-            this.session.disconnect();
+
+        if( this.ssh2 != null && this.ssh2.isConnected() ) {
+            ssh.disconnect();
+        }
+
+        if( this.sftp != null && !this.sftp.isClosed() ) {
+            try {
+                sftp.quit();
+            } catch( SshException e ) {
+                throw new FileTransferException( " SFTP connection cannot be closed. ", e );
+            }
         }
 
     }
@@ -362,8 +376,6 @@ public class SftpClient extends AbstractFileTransferClient {
     protected void performUploadFile( String localFile, String remoteDir,
                                       String remoteFile ) throws FileTransferException {
 
-        checkConnected( "file upload" );
-        
         FileInputStream fis = null;
 
         try {
@@ -381,19 +393,31 @@ public class SftpClient extends AbstractFileTransferClient {
             // upload the file
             File file = new File( localFile );
             fis = new FileInputStream( file );
-            if( synchronizationSftpTransferListener != null ) {
-                this.channel.put( fis, remoteFileAbsPath, synchronizationSftpTransferListener );
-            } else if( isDebugMode() && debugProgressMonitor != null ) {
-                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
-                this.channel.put( fis, remoteFileAbsPath, debugProgressMonitor );
+//            if( synchronizationSftpTransferListener != null ) {
+//                this.sftp.put( fis, remoteFileAbsPath, synchronizationSftpTransferListener );
+//            } else if( isDebugMode() && debugProgressMonitor != null ) {
+//                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
+//                this.sftp.put( fis, remoteFileAbsPath, debugProgressMonitor );
+//            } else {
+//            }
+            
+            if( isDebugMode() && debugProgressMonitor != null ) {
+                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath );
+                this.sftp.put( fis, remoteFileAbsPath, debugProgressMonitor );
             } else {
-                this.channel.put( fis, remoteFileAbsPath );
+                this.sftp.put( fis, remoteFileAbsPath );
             }
-        } catch( SftpException e ) {
+        } catch( TransferCancelledException e ) {
             log.error( "Unable to upload file!", e );
             throw new FileTransferException( e );
         } catch( FileNotFoundException e ) {
             log.error( "Unable to find the file that needs to be uploaded!", e );
+            throw new FileTransferException( e );
+        } catch( SshException e ) {
+            log.error( "Ssh connectio error " + localFile, e );
+            throw new FileTransferException( e );
+        } catch( SftpStatusException e ) {
+            log.error( "Sftp expected status error " + localFile, e );
             throw new FileTransferException( e );
         } finally {
             // close the file input stream
@@ -412,8 +436,6 @@ public class SftpClient extends AbstractFileTransferClient {
     protected void performDownloadFile( String localFile, String remoteDir,
                                         String remoteFile ) throws FileTransferException {
 
-        checkConnected( "file download" );
-        
         FileOutputStream fos = null;
         try {
             String remoteFileAbsPath = null;
@@ -428,19 +450,30 @@ public class SftpClient extends AbstractFileTransferClient {
                 remoteFileAbsPath = remoteDir + remoteFile;
             }
             // download the file
-            File file = new File( localFile );
             fos = new FileOutputStream( localFile );
+//            File file = new File( localFile );
+//            if( isDebugMode() && debugProgressMonitor != null ) {
+//                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
+//                this.sftp.get( remoteFileAbsPath, fos, debugProgressMonitor );
+//            } else {
+//            }
             if( isDebugMode() && debugProgressMonitor != null ) {
-                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
-                this.channel.get( remoteFileAbsPath, fos, debugProgressMonitor );
+                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath );
+                this.sftp.get( remoteFileAbsPath, fos, debugProgressMonitor );
             } else {
-                this.channel.get( remoteFileAbsPath, fos );
+                this.sftp.get( remoteFileAbsPath, fos );
             }
-        } catch( SftpException e ) {
+        } catch( TransferCancelledException e ) {
             log.error( "Unable to download " + localFile, e );
             throw new FileTransferException( e );
         } catch( FileNotFoundException e ) {
             log.error( "Unable to create " + localFile, e );
+            throw new FileTransferException( e );
+        } catch( SshException e ) {
+            log.error( "Ssh connectio error " + localFile, e );
+            throw new FileTransferException( e );
+        } catch( SftpStatusException e ) {
+            log.error( "Sftp expected status error " + localFile, e );
             throw new FileTransferException( e );
         } finally {
             // close the file output stream
@@ -459,7 +492,7 @@ public class SftpClient extends AbstractFileTransferClient {
 
         SynchronizationSftpTransferListener listener = new SynchronizationSftpTransferListener( this,
                                                                                                 progressEventNumber );
-        this.synchronizationSftpTransferListener = listener;
+//        this.synchronizationSftpTransferListener = listener;
 
         return listener;
     }
@@ -476,8 +509,6 @@ public class SftpClient extends AbstractFileTransferClient {
 
         // ensure the connection is terminated
         this.disconnect();
-
-        this.listener = null;
 
         super.finalize();
     }
@@ -527,8 +558,8 @@ public class SftpClient extends AbstractFileTransferClient {
                     throw new IllegalArgumentException( "Unsupported '" + SFTP_CIPHERS + "' value type" );
                 }
             } else {
-                throw new IllegalArgumentException("Unknown property with key '" + customPropertyEntry.getKey()
-                                                   + "' is passed. "
+                throw new IllegalArgumentException( "Unknown property with key '"
+                                                    + customPropertyEntry.getKey() + "' is passed. "
                                                     + USE_ONE_OF_THE_SFTP_CONSTANTS );
             }
         }
@@ -606,129 +637,9 @@ public class SftpClient extends AbstractFileTransferClient {
      * This method exposes the underlying SFTP connection.
      * Since the implementation can be change at any time, users must not use this method directly.
      * */
-    public ChannelSftp getInternalFtpsClient() {
+    public com.sshtools.sftp.SftpClient getInternalFtpsClient() {
 
-        return this.channel;
-
-    }
-
-    private void checkConnected( String operation ) {
-
-        // the current implementation works always with 'channel' and 'session'
-        // to it is enough to check one of them
-        if( this.channel == null || !this.channel.isConnected() ) {
-            throw new FileTransferException( "Cannot do " + operation + " when not connected" );
-        }
-    }
-
-    /**
-     * Default implementation of HostKeyRepository that check if there are trusted server certificates in the presented trust store
-     * */
-    class DefaultHostKeyRepository implements HostKeyRepository {
-
-        Map<String, Set<byte[]>> knownHostsMap = new HashMap<>();
-
-        @Override
-        public void remove( String host, String type, byte[] key ) {
-
-            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0];
-
-            Set<byte[]> keys = knownHostsMap.get( host );
-            keys.remove( key );
-        }
-
-        @Override
-        public void remove( String host, String type ) {
-
-            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0];
-
-            knownHostsMap.remove( host );
-
-        }
-
-        @Override
-        public String getKnownHostsRepositoryID() {
-
-            return Thread.currentThread().getName() + "SFTP_KnownHostsRepository";
-        }
-
-        @Override
-        public HostKey[] getHostKey( String host, String type ) {
-
-            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0];
-
-            Set<byte[]> keys = knownHostsMap.get( host );
-
-            HostKey[] hostKeys = new HostKey[keys.size()];
-            Iterator<byte[]> it = keys.iterator();
-            int i = 0;
-            while( it.hasNext() ) {
-                try {
-                    hostKeys[i++] = new HostKey( host, HostKey.SSHRSA, it.next() );
-                } catch( JSchException e ) {
-                    throw new RuntimeException( "Unable to get hostkey for host '" + host + "'" );
-                }
-            }
-            return hostKeys;
-        }
-
-        @Override
-        public HostKey[] getHostKey() {
-
-            List<HostKey[]> hostKeysList = new ArrayList<>();
-            Iterator<String> it = knownHostsMap.keySet().iterator();
-            int size = 0;
-            while( it.hasNext() ) {
-                HostKey[] hostKeysEntry = getHostKey( it.next(), "public key" );
-                hostKeysList.add( hostKeysEntry );
-                size += hostKeysEntry.length;
-            }
-
-            HostKey[] hostKeys = new HostKey[size];
-            int i = 0;
-            for( HostKey[] keys : hostKeysList ) {
-                for( HostKey key : keys ) {
-                    hostKeys[i++] = key;
-                }
-            }
-
-            return hostKeys;
-        }
-
-        @Override
-        public int check( String host, byte[] key ) {
-
-            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0]; // get only the IP address of the server
-
-            if( knownHostsMap.get( host ) == null ) {
-                log.error( "The presented trust store certificates could not match any of the server provided ones" );
-                return HostKeyRepository.NOT_INCLUDED;
-            }
-            Set<byte[]> keys = knownHostsMap.get( host );
-            for( byte[] key1 : keys ) {
-                key1 = Base64.decodeBase64( key1 ); // we must decode the key from the client trust store first
-                if( Arrays.equals( key, key1 ) ) {
-                    log.info( "Server certificate trusted." );
-                    return HostKeyRepository.OK;
-                }
-            }
-            log.error( "The presented trust store certificates could not match any of the server provided ones" );
-            return HostKeyRepository.NOT_INCLUDED;
-
-        }
-
-        @Override
-        public void add( HostKey hostkey, UserInfo ui ) {
-
-            Set<byte[]> keys = knownHostsMap.get( hostkey.getHost() );
-            if( keys == null ) {
-                keys = new HashSet<>();
-            }
-            keys.add( hostkey.getKey().getBytes() );
-            knownHostsMap.put( hostkey.getHost(), keys );
-
-        }
+        return this.sftp;
 
     }
-
 }

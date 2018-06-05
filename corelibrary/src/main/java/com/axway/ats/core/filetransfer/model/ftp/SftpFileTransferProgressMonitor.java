@@ -17,84 +17,51 @@ package com.axway.ats.core.filetransfer.model.ftp;
 
 import org.apache.log4j.Logger;
 
-import com.jcraft.jsch.SftpProgressMonitor;
+import com.sshtools.sftp.FileTransferProgress;
 
 /** Class used to log file transfer progress when debugMode is true (enabled) for @SftpClient **/
-public class SftpFileTransferProgressMonitor implements SftpProgressMonitor {
+public class SftpFileTransferProgressMonitor implements FileTransferProgress {
 
-    private static final Logger log                  = Logger.getLogger(SftpFileTransferProgressMonitor.class);
+    private static final Logger log         = Logger.getLogger( SftpFileTransferProgressMonitor.class );
 
-    private String              source               = null;
-    private String              destination          = null;
-    private long                totalBytesTransfered = -1;
-    private long                fileSize             = -1;
+    private String              source      = null;
+    private String              destination = null;
 
     public SftpFileTransferProgressMonitor() {
 
     }
 
-    public SftpFileTransferProgressMonitor( String source,
-                                            String destination,
-                                            long fileSize ) {
+    public void setTransferMetadata( String source, String destination ) {
 
         this.source = source;
         this.destination = destination;
-        this.fileSize = fileSize;
     }
 
     @Override
-    public void init(
-                      int op,
-                      String src,
-                      String dest,
-                      long max ) {
+    public void started( long bytesTotal, String remoteFile ) {
 
-        String operation = (op == SftpProgressMonitor.PUT)
-                                                           ? "UPLOAD"
-                                                           : "DOWNLOAD";
-
-        log.debug("Begin " + operation + " from " + this.source + " to " + this.destination);
+        log.debug( "Start file transfer from '" + this.source + "' to '" + this.destination
+                   + "' with total size " + bytesTotal );
 
     }
 
     @Override
-    public void end() {
+    public boolean isCancelled() {
 
-        if (this.fileSize > 0) {
-            log.debug("Transfer finished. Successfully transfered " + this.totalBytesTransfered + " from "
-                      + this.fileSize);
-        } else {
-            log.debug("Transfer finished. Successfully transfered " + this.totalBytesTransfered);
-        }
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void progressed( long bytesSoFar ) {
+
+        log.debug( "Total bytes transfered so far " + bytesSoFar );
 
     }
 
     @Override
-    public boolean count(
-                          long count ) {
+    public void completed() {
 
-        this.totalBytesTransfered += count;
-        /* if the operation is UPLOAD, we know what is the file size of the file to be uploaded,
-         * so we log the total transfered bytes as a percentage from the whole file size */
-        if (this.fileSize > 0) {
-            float transferedPercentage = (float) (this.totalBytesTransfered) / (this.fileSize) * 100.0f;
-
-            log.debug(Math.ceil(transferedPercentage) + " % uploaded.");
-        } else {
-            /* if the operation is DOWNLOAD, we do not know the file size of the file to be downloaded,
-             * so we log only the total bytes transfered from the start of the operation up to the current moment*/
-            log.debug(this.totalBytesTransfered + " bytes downloaded overall.");
-        }
-        return true;
-    }
-
-    public void setTransferMetadata(
-                                     String source,
-                                     String destination,
-                                     long fileSize ) {
-
-        this.source = source;
-        this.destination = destination;
-        this.fileSize = fileSize;
+        log.debug( "File successfully transfered." );
     }
 }

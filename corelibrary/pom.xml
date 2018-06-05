@@ -26,6 +26,7 @@
 		<org.dom4j.version>1.6.1</org.dom4j.version>
 		<!-- PostgreSQL dependency is defined in parent pom.xml -->
 		<!-- ExpectJ dependency is defined in parent pom.xml -->
+		<j2ssh-maverick.version>1.5.5</j2ssh-maverick.version>
 	</properties>
 
 	<dependencies>
@@ -135,6 +136,12 @@
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>${com.jcraft.jsch.version}</version>
+		</dependency>
+			<!-- https://mvnrepository.com/artifact/com.sshtools/j2ssh-maverick -->
+		<dependency>
+		    <groupId>com.sshtools</groupId>
+		    <artifactId>j2ssh-maverick</artifactId>
+		    <version>${j2ssh-maverick.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>

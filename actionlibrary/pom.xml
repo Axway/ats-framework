@@ -166,11 +166,6 @@
             <version>${org.json.simple.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>${com.jcraft.jsch.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>jms-api</artifactId>
             <version>${javax.jms.jms-api.version}</version>
