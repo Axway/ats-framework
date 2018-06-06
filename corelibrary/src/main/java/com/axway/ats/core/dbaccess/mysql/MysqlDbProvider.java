@@ -123,10 +123,10 @@ public class MysqlDbProvider extends AbstractDbProvider {
     protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
                                                        String catalog ) throws DbException {
 
-        String sql = "SELECT TABLE_NAME,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,SUB_PART,PACKED,NULLABLE,INDEX_TYPE "
-                     + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName + "'";
+    	String sql = "SELECT TABLE_NAME, CONCAT('COLUMN_NAME=', COLUMN_NAME, ', INDEX_NAME=', INDEX_NAME) AS INDEX_UID,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,SUB_PART,PACKED,NULLABLE,INDEX_TYPE "
+                + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName + "'";
 
-        String indexName = null;
+        String indexUid = null;
         Map<String, String> indexes = new HashMap<>();
         for (DbRecordValuesList valueList : select(sql)) {
             StringBuilder info = new StringBuilder();
@@ -134,8 +134,8 @@ public class MysqlDbProvider extends AbstractDbProvider {
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
-                if ("INDEX_NAME".equalsIgnoreCase(name)) {
-                    indexName = value;
+                if ("INDEX_UID".equalsIgnoreCase(name)) {
+                    indexUid = value;
                 } else {
                     if (firstTime) {
                         firstTime = false;
@@ -146,14 +146,14 @@ public class MysqlDbProvider extends AbstractDbProvider {
                 }
             }
 
-            if (indexName == null) {
-                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
-                log.warn("IndexName column not found in query polling for index properties:\nQuery: " + sql
+            if (indexUid == null) {
+                indexUid = "NULL_UID_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+                log.warn("INDEX_UID column not found in query polling for index properties:\nQuery: " + sql
                          + "\nQuery result: " + valueList.toString()
-                         + "\nWe will use the following as an index name: " + indexName);
+                         + "\nWe will use the following as an index uid: " + indexUid);
             }
 
-            indexes.put(indexName, info.toString());
+            indexes.put(indexUid, info.toString());
         }
 
         return indexes;

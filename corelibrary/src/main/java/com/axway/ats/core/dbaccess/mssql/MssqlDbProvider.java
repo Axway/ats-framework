@@ -195,8 +195,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT ")
-           .append("indexes.name + '|-|' + columns.name AS index_and_column_name,")
+        sql.append("SELECT 'column_name=' + columns.name + ', ' + 'index_name=' + indexes.name as column_and_index_name,")
            .append("indexes.name AS index_name,")
            .append("columns.name AS column_name,")
            .append("indexes.type_desc AS type,")
@@ -218,7 +217,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
            .append(" indexes.object_id = columns.object_id AND")
            .append(" indexes.object_id = (select object_id FROM sys.objects WHERE name = '" + tableName + "');");
 
-        String indexName = null;
+        String indexUid = null;
         Map<String, String> indexes = new HashMap<>();
         for (DbRecordValuesList valueList : select(sql.toString())) {
             StringBuilder info = new StringBuilder();
@@ -226,8 +225,8 @@ public class MssqlDbProvider extends AbstractDbProvider {
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
-                if ("index_and_column_name".equalsIgnoreCase(name)) {
-                    indexName = value;
+                if ("column_and_index_name".equalsIgnoreCase(name)) {
+                    indexUid = value;
                 } else {
                     if (firstTime) {
                         firstTime = false;
@@ -238,14 +237,14 @@ public class MssqlDbProvider extends AbstractDbProvider {
                 }
             }
 
-            if (indexName == null) {
-                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+            if (indexUid == null) {
+                indexUid = "NULL_UID_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
                 log.warn("index_and_column_name column not found in query polling for index properties:\nQuery: "
                          + sql.toString() + "\nQuery result: " + valueList.toString()
-                         + "\nWe will use the following as an index name: " + indexName);
+                         + "\nWe will use the following as an index uid: " + indexUid);
             }
 
-            indexes.put(indexName, info.toString());
+            indexes.put(indexUid, info.toString());
         }
 
         return indexes;
