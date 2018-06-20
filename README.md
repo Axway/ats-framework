@@ -15,7 +15,7 @@ ATS **key features** include:
   <li>Consolidated reporting allowing easy test result analyzes</li>
   <li>Ability to freely mix ATS code with your own code</li>
   <li>Ability to plug in your own code, so it feels like it is part of ATS. For example you can use your own file transfer protocol or database</li>
-  <li>Some functionalities can also be used by non-java projects</li>
+  <li>Some functionalities can also be used by non-Java projects</li>
 </ul>
 
 **Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
