@@ -93,10 +93,6 @@ public class ContainerStarter {
 
         final String jettyHome = getJettyHome();
 
-        // the folder where the web application is deployed
-        final String jettyWorkDir = jettyHome + "/work";
-        new File(jettyWorkDir).mkdir();
-
         logSystemInformation(jettyHome);
 
         // start the server
@@ -110,7 +106,7 @@ public class ContainerStarter {
         webApp.setContextPath("/agentapp");
         webApp.setWar(jettyHome + "/webapp/agentapp.war");
         webApp.setAttribute("org.eclipse.jetty.webapp.basetempdir",
-                            jettyWorkDir);
+                            getJettyWorkDir(jettyHome));
 
         server.setHandler(webApp);
         server.setStopAtShutdown(true);
@@ -188,6 +184,25 @@ public class ContainerStarter {
         }
 
         return jettyHome;
+    }
+
+    /**
+     * @param jettyHome 
+     * @return the folder where our web application will be deployed
+     */
+    private static String getJettyWorkDir( String jettyHome ) {
+
+        // the folder where the web application will be deployed
+        final String jettyWorkDir = jettyHome + "/work";
+
+        /* Make the folder if does not exist.
+         * If cannot make this folder for some reason, no error will be reported. 
+         * Then Jetty will see this folder does not exist and will use the folder
+         * pointed by the java.io.tmpdir system property
+         */
+        new File(jettyWorkDir).mkdir();
+
+        return jettyWorkDir;
     }
 
     private static void setExtraClasspath( WebAppContext webApp, String jettyHome ) {
