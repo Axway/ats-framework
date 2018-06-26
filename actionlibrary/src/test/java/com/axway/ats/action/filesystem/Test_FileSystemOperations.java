@@ -27,7 +27,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.MockRepository;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -47,6 +49,7 @@ import com.axway.ats.core.validation.exceptions.InvalidInputArgumentsException;
 @PrepareForTest( { FileSystemOperations.class,
                    LocalFileSystemOperations.class,
                    RemoteFileSystemOperations.class })
+@PowerMockIgnore( "javax.net.*")
 public class Test_FileSystemOperations extends BaseTest {
 
     private static final String        DESTINATION_FILE_NAME_VALID    = "destination.file";
@@ -73,16 +76,17 @@ public class Test_FileSystemOperations extends BaseTest {
 
     /**
      * Setup method
+     * @throws Exception 
      */
     @Before
-    public void setUpTest_FileSystemOperations() {
+    public void setUpTest_FileSystemOperations() throws Exception {
 
         fileSystemOperationsLocal = new FileSystemOperations();
         fileSystemOperationsLocal.createFile(SOURCE_FILE_NAME_VALID, "");
         fileSystemOperationsLocal.createFile(DESTINATION_FILE_NAME_VALID, "");
         fileSystemOperationsRemote = new FileSystemOperations(REMOTE_HOST_NAME_VALID);
         localFSOperationsMock = createMock(LocalFileSystemOperations.class);
-        remoteFSOperationsMock = createMock(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID);
+        remoteFSOperationsMock = createMock(RemoteFileSystemOperations.class);
     }
 
     @After
@@ -110,7 +114,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testConstructorWithInvalidRemoteHost() throws Exception {
 
         new FileSystemOperations(REMOTE_HOST_NAME_INVALID);
@@ -144,7 +149,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testFileCopyNegativeWrongDestination() throws Exception {
 
         // execute operation
@@ -155,7 +161,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testFileCopyNegativeWrongSource() throws Exception {
 
         // execute operation
@@ -211,7 +218,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testFileCopyBothRemoteNegativeWrongDestination() throws Exception {
 
         // execute operation
@@ -225,7 +233,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testFileCopyBothRemoteNegativeWrongSourceHost() throws Exception {
 
         // execute operation
@@ -263,7 +272,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testFileDeleteFileNegative() throws Exception {
 
         // execute operation
@@ -294,7 +304,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testFileDeleteFileRemoteNegativeInvalidFile() throws Exception {
 
         // execute operation
@@ -329,7 +340,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateDirectoryNegative() throws Exception {
 
         // execute operation
@@ -360,7 +372,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateRemoteNegativeInvalidDirectory() throws Exception {
 
         // execute operation
@@ -395,7 +408,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateNegativeWithUidAndGid() throws Exception {
 
         // execute operation
@@ -426,7 +440,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateDirectoryWithUidAndGidNegativeInvalidName() throws Exception {
 
         // execute operation
@@ -461,7 +476,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testDeleteDirectoryNegative() throws Exception {
 
         // execute operation
@@ -492,7 +508,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void testDeleteDirectoryException() throws Exception {
 
         // setup expectations
@@ -513,7 +530,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void testDeleteDirectoryRemoteException() throws Exception {
 
         // setup expectations
@@ -535,7 +553,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testDeleteDirectoryRemoteNegativeInvalidDirectory() throws Exception {
 
         // execute operation
@@ -570,7 +589,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testPurgeDirectoryNegative() throws Exception {
 
         // execute operation
@@ -601,7 +621,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void testPurgeDirectoryException() throws Exception {
 
         // setup expectations
@@ -622,7 +643,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void testPurgeDirectoryRemoteException() throws Exception {
 
         // setup expectations
@@ -643,7 +665,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testPurgeDirectoryRemoteNegativeInvalidDirectory() throws Exception {
 
         // execute operation
@@ -801,7 +824,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void testCreateFileLocalAltNegativeException() throws Exception {
 
         // setup expectations
@@ -825,7 +849,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalAltNegativeInvalidFileName() throws Exception {
 
         // execute operation
@@ -839,7 +864,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalAltNegativeInvalidSize() throws Exception {
 
         // execute operation
@@ -853,7 +879,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidFileName() throws Exception {
 
         // execute operation
@@ -868,7 +895,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidFileSize() throws Exception {
 
         // execute operation
@@ -883,7 +911,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidUID() throws Exception {
 
         // execute operation
@@ -898,7 +927,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void testCreateFileLocalNegativeInvalidGID() throws Exception {
 
         // execute operation
@@ -973,7 +1003,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidFileName() throws Exception {
 
         // execute operation
@@ -988,7 +1019,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidFileSize() throws Exception {
 
         // execute operation
@@ -1003,7 +1035,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidUID() throws Exception {
 
         // execute operation
@@ -1018,7 +1051,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void createBinaryFileLocalNegativeInvalidGID() throws Exception {
 
         // execute operation
@@ -1060,7 +1094,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void computeMD5NegativeExceptionRemote() throws Exception {
 
         // setup expectations
@@ -1081,7 +1116,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void computeMD5NegativeWrongFile() throws Exception {
 
         // execute operation
@@ -1115,7 +1151,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = FileSystemOperationException.class)
+    @Test(
+            expected = FileSystemOperationException.class)
     public void computeMD5NegativeExceptionLocal() throws Exception {
 
         // setup expectations
@@ -1136,7 +1173,8 @@ public class Test_FileSystemOperations extends BaseTest {
      * Test case
      * @throws Exception
      */
-    @Test( expected = InvalidInputArgumentsException.class)
+    @Test(
+            expected = InvalidInputArgumentsException.class)
     public void computeMD5NegativeWrongFileLocal() throws Exception {
 
         // execute operation
