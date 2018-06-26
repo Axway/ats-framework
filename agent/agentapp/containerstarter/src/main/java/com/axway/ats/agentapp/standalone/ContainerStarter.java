@@ -93,6 +93,10 @@ public class ContainerStarter {
 
         final String jettyHome = getJettyHome();
 
+        // the folder where the web application is deployed
+        final String jettyWorkDir = jettyHome + "/work";
+        new File(jettyWorkDir).mkdir();
+
         logSystemInformation(jettyHome);
 
         // start the server
@@ -105,6 +109,8 @@ public class ContainerStarter {
         WebAppContext webApp = new WebAppContext();
         webApp.setContextPath("/agentapp");
         webApp.setWar(jettyHome + "/webapp/agentapp.war");
+        webApp.setAttribute("org.eclipse.jetty.webapp.basetempdir",
+                            jettyWorkDir);
 
         server.setHandler(webApp);
         server.setStopAtShutdown(true);
@@ -380,11 +386,11 @@ public class ContainerStarter {
 
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-            log.debug( "---> Start Iterating All Network Interfaces!" );
+            log.debug("---> Start Iterating All Network Interfaces!");
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
                 if (!netInterface.isLoopback()) {
-                    log.debug( "---> Start Iterating Interface '" + netInterface.getName() + "'!" );
+                    log.debug("---> Start Iterating Interface '" + netInterface.getName() + "'!");
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
                     InetAddress ipAddress = null;
@@ -409,7 +415,7 @@ public class ContainerStarter {
                     }
                 }
             }
-            log.debug( "---> Finish Iterating All Network Interfaces!" );
+            log.debug("---> Finish Iterating All Network Interfaces!");
         } catch (SocketException se) {
             log.error("Error obtaining the local host address", se);
         }
