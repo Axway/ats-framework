@@ -31,6 +31,7 @@ import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
 
 /**
@@ -124,6 +125,11 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      */
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
+        
+        if (ActiveDbAppender.getCurrentInstance() == null) {
+            // database logger attached/specified in log4j.xml
+            return;
+        }
 
         for (String atsAgent : atsAgents) {
 
