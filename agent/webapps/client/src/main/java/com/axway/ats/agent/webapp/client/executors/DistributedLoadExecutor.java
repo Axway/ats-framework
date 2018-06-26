@@ -15,12 +15,8 @@
  */
 package com.axway.ats.agent.webapp.client.executors;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,14 +27,11 @@ import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.monitoring.queue.ActionExecutionStatistic;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
-import com.axway.ats.agent.webapp.client.ActionWrapper;
-import com.axway.ats.agent.webapp.client.AgentException_Exception;
-import com.axway.ats.agent.webapp.client.AgentService;
-import com.axway.ats.agent.webapp.client.AgentServicePool;
-import com.axway.ats.agent.webapp.client.InternalComponentException;
-import com.axway.ats.agent.webapp.client.InternalComponentException_Exception;
+import com.axway.ats.agent.webapp.client.RestHelper;
+import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.threads.ImportantThread;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.model.LoadQueueResult;
 
@@ -50,6 +43,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
     private List<String> atsAgents;
     private int          queueSequence;
+    private RestHelper   restHelper;
 
     public DistributedLoadExecutor( String name, int sequence, List<String> atsAgents,
                                     ThreadingPattern threadingPattern,
@@ -62,6 +56,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
         this.queueSequence = sequence;
         this.threadingPattern = threadingPattern;
         this.loaderDataConfig = loaderDataConfig;
+        this.restHelper = new RestHelper();
 
         //configure the remote loaders(ATS agents)
         try {
@@ -105,25 +100,61 @@ public class DistributedLoadExecutor extends RemoteExecutor {
             //first schedule the loaders on all hosts
             for (int i = 0; i < distributedPatterns.size(); i++) {
 
-                //serialize the threading pattern - it's easier to pass it to the web service that way
-                byte[] serializedThreadingPattern = serializeObject(distributedPatterns.get(i));
-                byte[] serializedLoaderDataConfig = serializeObject(distributedLoaderDataConfigs.get(i));
-
                 //wrap all the action requests
-                List<ActionWrapper> actionWrappers = new ArrayList<ActionWrapper>();
+                List<ActionPojo> actionPojos = new ArrayList<ActionPojo>();
                 for (ActionRequest actionRequest : actionRequests) {
-                    actionWrappers.add(wrapActionRequest(actionRequest));
+                    actionPojos.add(new ActionPojo(actionRequest));
                 }
 
                 //schedule the actions, but do not execute
-                //get the client
-                AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                .getClientForHost(atsAgents.get(i));
-                agentServicePort.scheduleActionsInMultipleThreads(queueName, queueId, actionWrappers,
-                                                                  serializedThreadingPattern,
-                                                                  serializedLoaderDataConfig,
-                                                                  distributedPatterns.get(0)
-                                                                                     .isUseSynchronizedIterations());
+                String sessionId = ExecutorUtils.createExecutorId(atsAgents.get(i), ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("{")
+                  .append("\"")
+                  .append("sessionId")
+                  .append("\":\"")
+                  .append(sessionId)
+                  .append("\",")
+                  .append("\"")
+                  .append("queueName")
+                  .append("\":\"")
+                  .append(queueName)
+                  .append("\",")
+                  .append("\"")
+                  .append("queueId")
+                  .append("\":")
+                  .append(queueId)
+                  .append(",")
+                  .append("\"")
+                  .append("actions")
+                  .append("\":")
+                  .append(restHelper.serializeJavaObject(actionPojos))
+                  .append(",")
+                  .append("\"")
+                  .append("threadingPattern")
+                  .append("\":")
+                  .append(restHelper.serializeJavaObject(distributedPatterns.get(i)))
+                  .append(",")
+                  .append("\"")
+                  .append("threadingPatternClass")
+                  .append("\":\"")
+                  .append(distributedPatterns.get(i).getClass().getName())
+                  .append("\",")
+                  .append("\"")
+                  .append("loaderDataConfig")
+                  .append("\":")
+                  .append(restHelper.serializeJavaObject(distributedLoaderDataConfigs.get(i)))
+                  .append(",")
+                  .append("\"")
+                  .append("useSynchronizedIterations")
+                  .append("\":")
+                  .append(distributedPatterns.get(0)
+                                             .isUseSynchronizedIterations())
+                  .append("}");
+
+                restHelper.executeRequest(atsAgents.get(i), "/queues/schedule", "PUT", sb.toString(), null, null);
             }
 
             boolean useSynchronizedIterations = distributedPatterns.get(0).isUseSynchronizedIterations();
@@ -141,8 +172,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                         runSynchedIterations();
                     }
                 });
-                helpThread.setExecutorId( Thread.currentThread().getName() );
-                helpThread.setDescription( queueName );
+                helpThread.setExecutorId(Thread.currentThread().getName());
+                helpThread.setDescription(queueName);
                 helpThread.start();
             } else {
                 if (useSynchronizedIterations) {
@@ -155,19 +186,6 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                     runNotSynchedIterations(blockUntilCompletion);
                 }
             }
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-
-            //we need to get internal component exception info from the soap fault
-            InternalComponentException faultInfo = ice.getFaultInfo();
-
-            //then construct and throw a real InternalComponentException (not the JAXB mapping type above)
-            throw new com.axway.ats.agent.core.exceptions.InternalComponentException(faultInfo.getComponentName(),
-                                                                                     faultInfo.getActionName(),
-                                                                                     faultInfo.getExceptionMessage(),
-                                                                                     faultInfo.getHostIp());
-
         } catch (Exception e) {
             throw new AgentException(e.getMessage(), e);
         }
@@ -181,20 +199,20 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         try {
             for (String host : atsAgents) {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
-
                 log.info("Waiting until action queue '" + queueName + "' finish its execution on agent '"
                          + host + "'");
 
-                //wait until finished on this host
-                agentServicePort.waitUntilQueueFinish(queueName);
+                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
+                // wait until finished on this host
+                restHelper.executeRequest(host, "/queues/opts", "POST",
+                                          "{\"sessionId\":\"" + sessionId
+                                                                        + "\",\"queueName\":\"" + queueName
+                                                                        + "\", \"operation\":\"waitUntilFinish\"}",
+                                          null, null);
 
                 log.info("Action queue '" + queueName + "' finished on agent '" + host + "'");
             }
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
         } catch (Exception e) {
             throw new AgentException(e.getMessage(), e);
         }
@@ -209,12 +227,15 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         for (String host : atsAgents) {
             try {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
 
                 log.info("Cancelling action queue '" + queueName + "' on agent '" + host + "'");
 
+                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
                 //cancel any running queues
-                agentServicePort.cancelAllQueues();
+                restHelper.executeRequest(host, "/queues/opts", "POST",
+                                          "{\"sessionId\":\"" + sessionId + "\", \"operation\":\"cancelAll\"}",
+                                          null, null);
 
                 log.info("Cancelled action queue '" + queueName + "' on agent '" + host + "'");
             } catch (Exception e) {
@@ -227,8 +248,15 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         for (String host : atsAgents) {
             try {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
-                if (agentServicePort.isQueueRunning(queueName)) {
+                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
+                boolean running = (boolean) restHelper.executeRequest(host, "/queues/opts", "POST",
+                                                                      "{\"sessionId\":\"" + sessionId
+                                                                                                    + "\",\"queueName\":\""
+                                                                                                    + queueName
+                                                                                                    + "\", \"operation\":\"isRunning\"}",
+                                                                      "running", boolean.class);
+                if (running) {
                     log.info("Queue with name '" + queueName + "' is still running on " + host);
                     return true;
                 }
@@ -257,8 +285,14 @@ public class DistributedLoadExecutor extends RemoteExecutor {
             for (int i = 0; i < atsAgents.size(); i++) {
                 String host = atsAgents.get(i);
 
-                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
-                agentServicePort.startQueue(queueName);
+                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
+                restHelper.executeRequest(host, "/queues/opts", "POST",
+                                          "{\"sessionId\":\"" + sessionId
+                                                                        + "\",\"queueName\":\""
+                                                                        + queueName
+                                                                        + "\", \"operation\":\"start\"}",
+                                          null, null);
             }
         } catch (Exception e) {
             String msg = "Error starting action queue '" + queueName + "'";
@@ -281,8 +315,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                         waitUntilQueueFinishOnAllLoaders();
                     }
                 });
-                helpThread.setExecutorId( Thread.currentThread().getName() );
-                helpThread.setDescription( queueName );
+                helpThread.setExecutorId(Thread.currentThread().getName());
+                helpThread.setDescription(queueName);
                 helpThread.start();
             }
         } catch (Exception e) {
@@ -301,8 +335,14 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 String host = atsAgents.get(i);
 
                 log.info("Waiting until queue '" + queueName + "' finish on '" + host + "'");
-                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
-                agentServicePort.waitUntilQueueFinish(queueName);
+                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
+                restHelper.executeRequest(host, "/queues/opts", "POST",
+                                          "{\"sessionId\":\"" + sessionId
+                                                                        + "\",\"queueName\":\""
+                                                                        + queueName
+                                                                        + "\", \"operation\":\"waitUntilFinish\"}",
+                                          null, null);
                 log.info("Finished executing action queue '" + queueName + "' on '" + host + "'");
             }
 
@@ -333,8 +373,14 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         try {
             for (String host : atsAgents) {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
-                agentServicePort.startQueue(queueName);
+                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                  Thread.currentThread().getName());
+                restHelper.executeRequest(host, "/queues/opts", "POST",
+                                          "{\"sessionId\":\"" + sessionId
+                                                                        + "\",\"queueName\":\""
+                                                                        + queueName
+                                                                        + "\", \"operation\":\"start\"}",
+                                          null, null);
             }
         } catch (Exception e) {
             String msg = "Error running action queue '" + queueName + "'";
@@ -358,9 +404,16 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
                 Iterator<String> agentsIterator = atsAgentsTmp.iterator();
                 while (agentsIterator.hasNext()) {
-                    AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                    .getClientForHost(agentsIterator.next());
-                    boolean needToRunAgain = agentServicePort.waitUntilQueueIsPaused(queueName);
+                    String host = agentsIterator.next();
+                    String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
+                                                                      Thread.currentThread().getName());
+                    boolean needToRunAgain = (boolean) restHelper.executeRequest(host, "/queues/opts",
+                                                                                 "POST",
+                                                                                 "{\"sessionId\":\"" + sessionId
+                                                                                         + "\",\"queueName\":\""
+                                                                                         + queueName
+                                                                                         + "\", \"operation\":\"waitUntilPaused\"}",
+                                                                                 "paused", boolean.class);
                     if (!needToRunAgain) {
                         agentsIterator.remove();
                     }
@@ -372,8 +425,14 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
                 // resume the actions on all agents
                 for (String agent : atsAgentsTmp) {
-                    AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(agent);
-                    agentServicePort.resumeQueue(queueName);
+                    String sessionId = ExecutorUtils.createExecutorId(agent, ExecutorUtils.getUserRandomToken(),
+                                                                      Thread.currentThread().getName());
+                    restHelper.executeRequest(agent, "/queues/opts", "POST",
+                                              "{\"sessionId\":\"" + sessionId
+                                                                             + "\",\"queueName\":\""
+                                                                             + queueName
+                                                                             + "\", \"operation\":\"resume\"}",
+                                              null, null);
                 }
             }
 
@@ -452,45 +511,29 @@ public class DistributedLoadExecutor extends RemoteExecutor {
     /**
      * Get the action execution results for a given queue on a given agent
      */
-    @SuppressWarnings( "unchecked")
     public List<ActionExecutionStatistic>
             getActionExecutionResults( String atsAgent, String queueName ) throws AgentException {
 
-        // get the client instance
-        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
-
         try {
-            ByteArrayInputStream byteInStream = new ByteArrayInputStream(agentServicePort.getActionExecutionResults(queueName));
-            ObjectInputStream objectInStream = new ObjectInputStream(byteInStream);
-            return (List<ActionExecutionStatistic>) objectInStream.readObject();
+            String sessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
+                                                              Thread.currentThread().getName());
+            ActionExecutionStatistic[] result = (ActionExecutionStatistic[]) restHelper.executeRequest(atsAgent,
+                                                                                                       "/queues/opts",
+                                                                                                       "POST",
+                                                                                                       "{\"sessionId\":\""
+                                                                                                               + sessionId
+                                                                                                               + "\",\"queueName\":\""
+                                                                                                               + queueName
+                                                                                                               + "\", \"operation\":\"getActionExecutionResults\"}",
+                                                                                                       "queue_results",
+                                                                                                       ActionExecutionStatistic[].class);
+
+            return Arrays.asList(result);
+
         } catch (Exception ioe) {
             // log hint for further serialization issue investigation
             log.error(ioe);
             throw new AgentException(ioe);
-        }
-    }
-
-    /**
-     * Serialize the threading pattern so we can pass it over the web service
-     *
-     * @param object the object to serialize
-     * @return serialized pattern
-     * @throws AgentException on error while serializing
-     */
-    private final byte[] serializeObject( Object object ) throws AgentException {
-
-        try {
-            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-            objectOutStream.writeObject(object);
-
-            return byteOutStream.toByteArray();
-
-        } catch (IOException ioe) {
-            throw new AgentException("Could not serialize input arguments for object " + ( (object != null)
-                                                                                                            ? object.toString()
-                                                                                                            : object),
-                                     ioe);
         }
     }
 

@@ -15,7 +15,6 @@
  */
 package com.axway.ats.core.filesystem.model;
 
-import java.nio.charset.Charset;
 import java.util.Map;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
@@ -184,7 +183,7 @@ public interface IFileSystemOperations {
     public String[] getLastLinesFromFile(
                                           String fileName,
                                           int numLinesToRead,
-                                          Charset chartset );
+                                          String charset );
 
     public String[] findFiles(
                                String location,

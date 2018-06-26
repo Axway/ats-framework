@@ -15,10 +15,9 @@
  */
 package com.axway.ats.agent.webapp.client.executors;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -39,12 +38,6 @@ import org.apache.http.util.EntityUtils;
 
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.webapp.client.ActionWrapper;
-import com.axway.ats.agent.webapp.client.AgentException_Exception;
-import com.axway.ats.agent.webapp.client.AgentService;
-import com.axway.ats.agent.webapp.client.AgentServicePool;
-import com.axway.ats.agent.webapp.client.ArgumentWrapper;
-import com.axway.ats.agent.webapp.client.InternalComponentException_Exception;
 import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.utils.ExecutorUtils;
@@ -88,7 +81,9 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     /**
      * @param atsAgent the remote agent address
-     * @param initializeRequestUrl the URL that will be used to tell the ATS Agent to initialize actions that will be executed via this class
+     * @param initializeRequestUrl URL that will be used when prior to an action execution, 
+     * an action class initialization must take place. 
+     * This URL points to the proper REST method that needs to initialize the action class
      * @throws AgentException
      */
     public RemoteExecutor( String atsAgent, String initializeRequestUrl ) throws AgentException {
@@ -116,7 +111,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
         // we assume the ATS Agent address here comes with IP and PORT
         this.atsAgent = atsAgent;
-        this.atsAgentSessionId = ExecutorUtils.createExecutorId(atsAgent,
+        this.atsAgentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
                                                                 Thread.currentThread().getName());
 
         if (configureAgent) {
@@ -144,7 +139,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
         // we assume the ATS Agent address here comes with IP and PORT
         this.atsAgent = atsAgent;
-        this.atsAgentSessionId = ExecutorUtils.createExecutorId(atsAgent,
+        this.atsAgentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
                                                                 Thread.currentThread().getName());
         if (StringUtils.isNullOrEmpty(initializeRequestUrl)) {
             // we assume that we have a custom action
@@ -203,7 +198,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
              * */
             requestUrl = constructAbsoluteRequestUrl(this.executeRequestUrl);
             requestMethod = "POST";
-            requestBody = createCustomActionRequestBody(actionRequest);
+            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest), ActionPojo.class);
 
         } else {
             if (!StringUtils.isNullOrEmpty(actionRequest.getRequestUrl())) {
@@ -219,7 +214,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
                  */
                 requestUrl = constructAbsoluteRequestUrl(this.executeRequestUrl);
                 requestMethod = "POST";
-                requestBody = createCustomActionRequestBody(actionRequest);
+                requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest), ActionPojo.class);
             }
 
         }
@@ -246,8 +241,9 @@ public class RemoteExecutor extends AbstractClientExecutor {
      * Initializes a action class via action request
      * @param actionRequest the action request that contains information about the action
      * @return the action request type {@link RemoteExecutor.ActionRequestType}
+     * @throws AgentException 
      * */
-    private ActionRequestType initializeAction( ActionRequest actionRequest ) {
+    private ActionRequestType initializeAction( ActionRequest actionRequest ) throws AgentException {
 
         log.info("Start registration of action class for action '" + actionRequest.getActionName() + "' with arguments "
                  + StringUtils.methodInputArgumentsToString(actionRequest.getArguments()));
@@ -261,11 +257,12 @@ public class RemoteExecutor extends AbstractClientExecutor {
             // this is an Action request from a custom/third-party action
             requestUrl = constructAbsoluteRequestUrl("actions");
             requestMethod = "PUT";
-            requestBody = createCustomActionRequestBody(actionRequest);
+            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest), ActionPojo.class);
             actionRequestType = ActionRequestType.INITIALIZE_CUSTOM_ACTION;
         } else {
             // this is an Action request from an ATS predefined action
-            if (this.initializeRequestUrl.equals(actionRequest.getRequestUrl())) {
+            if (this.initializeRequestUrl.equals(actionRequest.getRequestUrl())
+                && actionRequest.getRequestMethod().equalsIgnoreCase("PUT")) {
                 requestUrl = constructAbsoluteRequestUrl(actionRequest.getRequestUrl());
                 requestMethod = actionRequest.getRequestMethod();
                 requestBody = actionRequest.getRequestBody();
@@ -289,25 +286,6 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
         return actionRequestType;
 
-    }
-
-    private String createCustomActionRequestBody( ActionRequest actionRequest ) {
-
-        String[] argumentsTypes = null;
-        String[] argumentsValues = null;
-        if (actionRequest.getArguments() != null) {
-            argumentsTypes = new String[actionRequest.getArguments().length];
-            argumentsValues = new String[actionRequest.getArguments().length];
-            for (int i = 0; i < actionRequest.getArguments().length; i++) {
-                Class<?> argClass = actionRequest.getArguments()[i].getClass();
-                argumentsTypes[i] = argClass.getName();
-                argumentsValues[i] = httpClient.gson.toJson(actionRequest.getArguments()[i], argClass);
-            }
-        }
-
-        ActionPojo actionPojo = new ActionPojo(atsAgentSessionId, resourceId, actionRequest.getComponentName(),
-                                               actionRequest.getActionName(), argumentsTypes, argumentsValues);
-        return httpClient.gson.toJson(actionPojo, ActionPojo.class);
     }
 
     private String constructAbsoluteRequestUrl( String requestUrl ) {
@@ -336,126 +314,169 @@ public class RemoteExecutor extends AbstractClientExecutor {
     @Override
     public boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException {
 
-        try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId
+                             + "\",\"operation\":\"isComponentLoaded\",\"value\":\"" + actionRequest.getComponentName()
+                             + "\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        boolean loaded = httpClient.gson.fromJson(responseBody.get("loaded"), boolean.class);
 
-            //FIXME: swap with ActionWrapper
-            return agentServicePort.isComponentLoaded(actionRequest.getComponentName());
-        } catch (Exception e) {
-            return false;
-        }
+        return loaded;
     }
 
     @Override
     public String getAgentHome() throws AgentException {
 
-        try {
-            return AgentServicePool.getInstance().getClientForHost(atsAgent).getAgentHome();
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getAgentHome\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        String agentHome = httpClient.gson.fromJson(responseBody.get("agent_home"), String.class);
+
+        return agentHome;
     }
 
     public List<String> getClassPath() throws AgentException {
 
-        return AgentServicePool.getInstance().getClientForHost(atsAgent).getClassPath();
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getClassPath\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        String[] classPath = httpClient.gson.fromJson(responseBody.get("classpath"), String[].class);
+
+        return Arrays.asList(classPath);
     }
 
     public void logClassPath() throws AgentException {
 
-        AgentServicePool.getInstance().getClientForHost(atsAgent).logClassPath();
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"logClassPath\"}";
+        httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                  requestBody);
     }
 
     public List<String> getDuplicatedJars() throws AgentException {
 
-        return AgentServicePool.getInstance().getClientForHost(atsAgent).getDuplicatedJars();
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getDuplicatedJars\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        String[] duplicatedJars = httpClient.gson.fromJson(responseBody.get("duplicated_jars"), String[].class);
+
+        return Arrays.asList(duplicatedJars);
     }
 
     public void logDuplicatedJars() throws AgentException {
 
-        AgentServicePool.getInstance().getClientForHost(atsAgent).logDuplicatedJars();
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"logDuplicatedJars\"}";
+        httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                  requestBody);
     }
 
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
-        try {
-            return AgentServicePool.getInstance().getClientForHost(atsAgent).getNumberPendingLogEvents();
-        } catch (Exception e) {
-            return -1;
-        }
+        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getDuplicatedJars\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        int pendingLogEvents = httpClient.gson.fromJson(responseBody.get("getNumberPendingLogEvents"), int.class);
+
+        return pendingLogEvents;
     }
 
     @Override
     public void restore( String componentName, String environmentName,
                          String folderPath ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("componentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(componentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("folderPath")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(folderPath)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/restore"), "POST", sb.toString());
 
-        try {
-            agentServicePort.restoreEnvironment(componentName, environmentName, folderPath);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
     }
 
     @Override
     public void restoreAll( String environmentName ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
-
-        try {
-            //passing null will clean all components
-            agentServicePort.restoreEnvironment(null, environmentName, null);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/restore"), "POST", sb.toString());
     }
 
     @Override
     public void backup( String componentName, String environmentName,
                         String folderPath ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
-
-        try {
-            agentServicePort.backupEnvironment(componentName, environmentName, folderPath);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("componentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(componentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("folderPath")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(folderPath)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/backup"), "POST", sb.toString());
     }
 
     @Override
     public void backupAll( String environmentName ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
-
-        try {
-            //passing null will backup all components
-            agentServicePort.backupEnvironment(null, environmentName, null);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/backup"), "POST", sb.toString());
     }
 
     @Override
@@ -466,65 +487,10 @@ public class RemoteExecutor extends AbstractClientExecutor {
          * as this remote client is used for running a single action, so
          * no performance queues are available.
          *
-         * TODO: maybe we can safely throw some error here to say that
-         * it is not expected to call this method.
-         * Or we can implement an empty body here or in the abstract parent.
          */
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgentSessionId);
+        throw new UnsupportedOperationException("");
 
-        try {
-            log.info("Waiting until all queues on host '" + atsAgent + "' finish execution");
-
-            agentServicePort.waitUntilAllQueuesFinish();
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Wrap the action request into an ActionWrapper so it is easily
-     * passed to the web service
-     *
-     * @param actionRequest the action request to wrap
-     * @return the action wrapper
-     * @throws AgentException on error
-     */
-    protected final ActionWrapper wrapActionRequest( ActionRequest actionRequest ) throws AgentException {
-
-        Object[] arguments = actionRequest.getArguments();
-
-        List<ArgumentWrapper> wrappedArguments = new ArrayList<ArgumentWrapper>();
-
-        try {
-            //wrap the arguments - each argument is serialized as
-            //a byte stream
-            for (Object argument : arguments) {
-                ArgumentWrapper argWrapper = new ArgumentWrapper();
-
-                ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-                objectOutStream.writeObject(argument);
-
-                argWrapper.setArgumentValue(byteOutStream.toByteArray());
-                wrappedArguments.add(argWrapper);
-            }
-        } catch (IOException ioe) {
-            throw new AgentException("Could not serialize input arguments", ioe);
-        }
-
-        //construct the action wrapper
-        ActionWrapper actionWrapper = new ActionWrapper();
-        actionWrapper.setComponentName(actionRequest.getComponentName());
-        actionWrapper.setActionName(actionRequest.getActionName());
-        actionWrapper.getArgs().addAll(wrappedArguments);
-
-        return actionWrapper;
     }
 
     /** This class is used to send actions information to the Agent's REST API service **/
@@ -532,7 +498,17 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
         private Gson gson = new Gson();
 
-        public JsonObject executeRequest( String url, String httpMethodName, String requestBody ) {
+        /**
+         * Execute REST request.
+         * @param url the relative URL of the REST method. The agent IP:Port will be added for the final request URL
+         * @param httpMethodName the HTTP method name for performing the REST operation ("POST", "DELETE", etc)
+         * @param requestBody the request body ( in JSON )
+         * @return {@link JsonObject}
+         * @throws AgentException 
+         * @throws RuntimeException
+         * */
+        public JsonObject executeRequest( String url, String httpMethodName,
+                                          String requestBody ) throws AgentException {
 
             CloseableHttpClient client = HttpClientBuilder.create().build();
             HttpRequestBase httpRequest = null;
@@ -552,11 +528,6 @@ public class RemoteExecutor extends AbstractClientExecutor {
                 }
                 requestBody = requestBodyObject.toString();
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Executing '" + httpMethodName + "' request to '" + url + "' with body '" + requestBody
-                              + "'");
-                }
-
                 switch (httpMethodName) {
                     case HttpPost.METHOD_NAME:
                         httpRequest = new HttpPost(url);
@@ -572,14 +543,17 @@ public class RemoteExecutor extends AbstractClientExecutor {
                         break;
                     case HttpDelete.METHOD_NAME:
                         url = transformRequestBodyToQueryParams(requestBodyObject, url);
+                        requestBody = "{}";
                         httpRequest = new HttpDelete(url);
                         break;
                     case HttpGet.METHOD_NAME:
                         url = transformRequestBodyToQueryParams(requestBodyObject, url);
+                        requestBody = "{}";
                         httpRequest = new HttpGet(url);
                         break;
                     case HttpHead.METHOD_NAME:
                         url = transformRequestBodyToQueryParams(requestBodyObject, url);
+                        requestBody = "{}";
                         httpRequest = new HttpHead(url);
                         break;
                     default:
@@ -587,10 +561,25 @@ public class RemoteExecutor extends AbstractClientExecutor {
                 }
                 httpRequest.setHeader("Accept", "application/json");
                 HttpClientContext context = HttpClientContext.create();
-                httpResponse = client.execute(httpRequest, context);
-                String responseString = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                String responseString = null;
+                try {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Executing '" + httpMethodName + "' request to '" + url + "' with body '"
+                                  + requestBody
+                                  + "'");
+                    }
+                    httpResponse = client.execute(httpRequest, context);
+                    responseString = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                } catch (Exception e) {
+                    throw new AgentException("Unable to execute '" + httpMethodName + "' to '" + url + "'", e);
+                }
                 if (log.isDebugEnabled()) {
                     log.debug("Received HTTP response with body '" + responseString + "'");
+                }
+                if (!httpResponse.getFirstHeader("Content-type").getValue().equalsIgnoreCase("application/json")) {
+                    throw new RuntimeException("Response's Content-type is not 'application/json', but '"
+                                               + httpResponse.getFirstHeader("Content-type").getValue()
+                                               + "'. Status line is '" + httpResponse.getStatusLine().toString());
                 }
                 JsonObject jsonObject = new JsonParser().parse(responseString).getAsJsonObject();
                 /* 
@@ -610,11 +599,9 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
                     Exception e = (Exception) exceptionClass.cast(gson.fromJson(jsonObject.get("error"),
                                                                                 exceptionClass));
-                    throw e;
+                    throw new AgentException("Error while executing operation on agent", e);
                 }
                 return jsonObject;
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to execute '" + httpMethodName + "' to '" + url + "'", e);
             } finally {
                 try {
                     if (httpResponse != null) {
@@ -636,7 +623,14 @@ public class RemoteExecutor extends AbstractClientExecutor {
             while (it.hasNext()) {
                 String key = (String) it.next();
                 JsonElement value = json.get(key);
-                sb.append(key).append("=").append(value.toString().replace("\"", "")).append("&");
+                try {
+                    sb.append(key)
+                      .append("=")
+                      .append(URLEncoder.encode(value.toString().replace("\"", ""), "UTF-8"))
+                      .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException("Unable to encode query parameter '" + key + "'", e);
+                }
             }
 
             // remove trailing &

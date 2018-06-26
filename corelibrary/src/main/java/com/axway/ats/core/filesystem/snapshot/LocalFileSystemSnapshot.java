@@ -604,7 +604,7 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(sourceFile));
             doc.getDocumentElement().normalize();
         } catch (Exception e) {
-            throw new FileSystemSnapshotException("Error reading backup file " + sourceFile);
+            throw new FileSystemSnapshotException("Error reading backup file " + sourceFile, e);
         }
 
         Element fileSystemNode = doc.getDocumentElement();
@@ -709,7 +709,7 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
     }
 
     @Override
-    public String toString() {
+    public String getDescription() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("snapshot [" + this.name + "] taken at "

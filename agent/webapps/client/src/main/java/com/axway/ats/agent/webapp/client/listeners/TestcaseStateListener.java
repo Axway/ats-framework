@@ -15,6 +15,7 @@
  */
 package com.axway.ats.agent.webapp.client.listeners;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,22 +25,20 @@ import org.apache.log4j.Logger;
 import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.client.ActionClient;
-import com.axway.ats.agent.webapp.client.AgentException_Exception;
-import com.axway.ats.agent.webapp.client.AgentService;
-import com.axway.ats.agent.webapp.client.AgentServicePool;
-import com.axway.ats.agent.webapp.client.TestCaseState;
+import com.axway.ats.agent.webapp.client.RestHelper;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.autodb.TestCaseState;
 
 /**
  * Currently used to configure the remote Agents prior to working with them
  */
 public class TestcaseStateListener implements ITestcaseStateListener {
 
-    private static Logger                log = Logger.getLogger( TestcaseStateListener.class );
+    private static Logger                log = Logger.getLogger(TestcaseStateListener.class);
 
     // List of agents with configured logging.
     // They know the database to work with.
@@ -67,7 +66,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
     public static synchronized TestcaseStateListener getInstance() {
 
-        if( instance == null ) {
+        if (instance == null) {
             instance = new TestcaseStateListener();
         }
         return instance;
@@ -88,32 +87,31 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         String thisThread = Thread.currentThread().getName();
 
         // need synchronization when running parallel tests
-        synchronized( configurationMutex ) {
-            for( String agentSessionId : testConfiguredAgents ) {
+        synchronized (configurationMutex) {
+            for (String agentSessionId : testConfiguredAgents) {
 
-                String thread = ExecutorUtils.extractThread( agentSessionId );
+                String thread = ExecutorUtils.extractThread(agentSessionId);
 
-                if( thisThread.equals( thread ) ) {
-                    // found
-                    String agentHost = ExecutorUtils.extractHost( agentSessionId );
+                if (thisThread.equals(thread)) {
+                    // found the agent host
+                    String agentHost = ExecutorUtils.extractHost(agentSessionId);
                     try {
-                        //get the client
-                        AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                        .getClientForHostAndTestcase( agentHost,
-                                                                                                      agentSessionId );
-                        agentServicePort.onTestEnd();
-                    } catch( Exception e ) {
-                        log.error( "Can't send onTestEnd event to ATS agent '" + agentHost + "'", e );
+                        RestHelper helper = new RestHelper();
+                        helper.executeRequest(agentHost,
+                                              "/testcases?sessionId=" + URLEncoder.encode(agentSessionId, "UTF-8"),
+                                              "DELETE", null, null,
+                                              null);
+                    } catch (Exception e) {
+                        log.error("Can't send onTestEnd event to ATS agent '" + agentHost + "'", e);
                     }
-
                     // remember the ended sessions
-                    endedSessions.add( agentSessionId );
+                    endedSessions.add(agentSessionId);
                 }
             }
 
             // cleanup
-            for( String agentSessionId : endedSessions ) {
-                testConfiguredAgents.remove( agentSessionId );
+            for (String agentSessionId : endedSessions) {
+                testConfiguredAgents.remove(agentSessionId);
             }
         }
     }
@@ -127,40 +125,52 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
 
-        for( String atsAgent : atsAgents ) {
+        for (String atsAgent : atsAgents) {
 
             // the remote endpoint is defined by Agent host and Test Executor's current thread(in case of parallel tests)
-            String agentSessionId = ExecutorUtils.createExecutorId( atsAgent,
-                                                                          Thread.currentThread().getName() );
+            String agentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
+                                                                   Thread.currentThread().getName());
 
-            if( !testConfiguredAgents.contains( agentSessionId ) ) {
+            if (!testConfiguredAgents.contains(agentSessionId)) {
 
                 // need synchronization when running parallel tests
-                synchronized( configurationMutex ) {
+                synchronized (configurationMutex) {
 
                     // Pass the logging configuration to the remote agent.
                     // We do this just once for the whole run.
-                    if( !logConfiguredAgents.contains( atsAgent ) ) {
+                    if (!logConfiguredAgents.contains(atsAgent)) {
 
                         RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
-                        new RemoteConfigurationManager().pushConfiguration( atsAgent,
-                                                                            remoteLoggingConfigurator );
-                        logConfiguredAgents.add( atsAgent );
+                        new RemoteConfigurationManager().pushConfiguration(atsAgent,
+                                                                           remoteLoggingConfigurator);
+                        logConfiguredAgents.add(atsAgent);
                     }
 
                     // Pass the testcase configuration to the remote agent.
                     // We do this each time a new test is started
-                    if( !testConfiguredAgents.contains( agentSessionId ) ) {
+                    if (!testConfiguredAgents.contains(agentSessionId)) {
+                        String agentHost = null;
+                        TestCaseState testCaseState = null;
                         try {
-                            AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                            .getClientForHostAndTestcase( atsAgent,
-                                                                                                          agentSessionId );
-                            agentServicePort.onTestStart( getCurrentTestCaseState() );
-                        } catch( AgentException_Exception ae ) {
-                            throw new AgentException( ae.getMessage() );
-                        }
+                            agentHost = ExecutorUtils.extractHost(agentSessionId);
+                            testCaseState = getCurrentTestCaseState();
+                            RestHelper helper = new RestHelper();
+                            helper.executeRequest(agentHost, "/testcases",
+                                                  "PUT",
+                                                  "{\"sessionId\":\"" + agentSessionId
+                                                         + "\",\"testCaseState\":"
+                                                         + helper.serializeJavaObject(testCaseState) + "}",
+                                                  null, null);
 
-                        testConfiguredAgents.add( agentSessionId );
+                            testConfiguredAgents.add(agentSessionId);
+                        } catch (Exception e) {
+                            String message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
+                                             + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
+                                             + agentHost
+                                             + "'";
+                            log.error(message);
+                            throw new AgentException(message, e);
+                        }
                     }
                 }
             }
@@ -176,14 +186,14 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     private TestCaseState getCurrentTestCaseState() {
 
     	/** We want to send event to the agents, even if db appender is not attached, so we skip that check **/
-        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger( ActionClient.class.getName(), true )
+        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger(ActionClient.class.getName(), true)
                                                                           .getCurrentTestCaseState();
-        if( testCaseState == null ) {
+        if (testCaseState == null) {
             return null;
         } else {
             TestCaseState wsTestCaseState = new TestCaseState();
-            wsTestCaseState.setTestcaseId( testCaseState.getTestcaseId() );
-            wsTestCaseState.setRunId( testCaseState.getRunId() );
+            wsTestCaseState.setTestcaseId(testCaseState.getTestcaseId());
+            wsTestCaseState.setRunId(testCaseState.getRunId());
             return wsTestCaseState;
         }
     }
@@ -196,35 +206,20 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
         try {
             Set<Thread> threads = Thread.getAllStackTraces().keySet();
-            for( Thread th : threads ) {
-                if( th != null && th.isAlive() && ( th instanceof ImportantThread ) ) {
-                    log.warn( "There is a still running Agent action queue '"
-                              + ( ( ImportantThread ) th ).getDescription()
-                              + "'. Now we will wait for its completion. "
-                              + "If you want to skip this warning, you must explicitly wait in your test code for the queue completion." );
+            for (Thread th : threads) {
+                if (th != null && th.isAlive() && (th instanceof ImportantThread)) {
+                    log.warn("There is a still running Agent action queue '"
+                             + ((ImportantThread) th).getDescription()
+                             + "'. Now we will wait for its completion. "
+                             + "If you want to skip this warning, you must explicitly wait in your test code for the queue completion.");
                     try {
                         th.join();
-                    } catch( InterruptedException ie ) {}
+                    } catch (InterruptedException ie) {}
                 }
             }
-        } catch( Exception e ) {
-            log.warn( "Error waiting for all important threads to finish.", e );
+        } catch (Exception e) {
+            log.warn("Error waiting for all important threads to finish.", e);
         }
     }
 
-    /**
-     * Called to release the internal object resources on the agent side
-     */
-    @Override
-    public void cleanupInternalObjectResources( String atsAgent, String internalObjectResourceId ) {
-
-        try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost( atsAgent );
-            agentServicePort.cleanupInternalObjectResources( internalObjectResourceId );
-        } catch( Exception e ) {
-            // As this code is triggered when the garbage collector disposes the client side object
-            // at the Test Executor side, the following message seems confusing:
-            // log.error( "Can't cleanup resource with identifier " + internalObjectResourceId + " on ATS agent '" + atsAgent + "'", e );
-        }
-    }
 }

@@ -29,7 +29,6 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.action.processes.RemoteProcessExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.system.SystemOperationException;

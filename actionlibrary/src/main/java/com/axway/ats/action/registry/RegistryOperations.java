@@ -15,7 +15,6 @@
  */
 package com.axway.ats.action.registry;
 
-import com.axway.ats.action.processes.RemoteProcessExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.registry.LocalRegistryOperations;
 import com.axway.ats.core.registry.model.IRegistryOperations;

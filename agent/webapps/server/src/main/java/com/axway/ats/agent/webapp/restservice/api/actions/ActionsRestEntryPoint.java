@@ -16,6 +16,7 @@
 package com.axway.ats.agent.webapp.restservice.api.actions;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -31,18 +32,19 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.restservice.api.ResourcesManager;
+import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerClass;
+import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethod;
+import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinition;
+import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinitions;
+import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodResponse;
+import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodResponses;
+import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.StringUtils;
 import com.google.gson.Gson;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
 
 @Path( "actions")
-@Api( value = "/actions")
+@SwaggerClass( "actions")
 public class ActionsRestEntryPoint {
 
     private static final Logger LOG  = Logger.getLogger(ActionsRestEntryPoint.class);
@@ -50,22 +52,72 @@ public class ActionsRestEntryPoint {
 
     @PUT
     @Path( "")
-    @ApiOperation( value = "Initialize action class", notes = "Create instance of an action class")
-    @ApiResponses( value = { @ApiResponse( code = 200, message = "Successful initialization of an action class", response = Response.class),
-                             @ApiResponse( code = 500, message = "Internal server error", response = AgentException.class) })
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    public Response initialize( @ApiParam( value = "Action details", required = true) ActionPojo pojo ) {
+    @SwaggerMethod(
+            httpOperation = "put",
+            parametersDefinition = "Initialize custom action class details",
+            summary = "Initialize custom action class",
+            url = "")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
+            description = "The session ID",
+            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            name = "sessionId",
+            type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The action method name. Note that this is not the actual Java method name, but instead the value of the @Action annotation name attribute",
+                                                  example = "FTP actions connect",
+                                                  name = "methodName",
+                                                  type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The component name",
+                                                  example = "ftpactions",
+                                                  name = "componentName",
+                                                  type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The action arguments' types/classes",
+                                                  example = "[\"java.lang.String\",\"int.class\",\"boolean\",\"com.ftpactions.model.CustomClass\"]",
+                                                  name = "argumentsTypes",
+                                                  type = "string[]"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The action arguments' values",
+                                                  example = "[\"a string\",\"1\",\"true\",\"{custom_class_field_name:some_value}\"]",
+                                                  name = "argumentsValues",
+                                                  type = "string[]") })
+    @SwaggerMethodResponses( { @SwaggerMethodResponse(
+            code = 200,
+            definition = "Successfull initialization of Action details",
+            description = "Successfull initialization of Action",
+            parametersDefinitions = { @SwaggerMethodParameterDefinition(
+                    description = "The resource ID for the initialized action class",
+                    example = "123",
+                    name = "resourceId",
+                    type = "integer") }),
+                               @SwaggerMethodResponse(
+                                       code = 500,
+                                       definition = "Error while initializing Action details",
+                                       description = "Error while initializing Action",
+                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
+                                               description = "the actual java exception",
+                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
+                                               name = "error",
+                                               type = "object"),
+                                                                 @SwaggerMethodParameterDefinition(
+                                                                         description = "the java exception class name",
+                                                                         example = "java.lang.Exception",
+                                                                         name = "exceptionClass",
+                                                                         type = "string") }) })
+    public Response initialize( @Context HttpServletRequest request, ActionPojo pojo ) {
 
         try {
             if (StringUtils.isNullOrEmpty(pojo.getSessionId())) {
-                throw new IllegalArgumentException("Session ID is not provided with the request");
+                throw new NoSuchElementException("sessionId is not provided with the request");
             }
+            ThreadsPerCaller.registerThread(pojo.getSessionId());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Initializing of action class for method '" + pojo.getMethodName()
                           + "' in session with id '" + pojo.getSessionId() + "'");
             }
-
             int resourceId = ResourcesManager.initializeResource(pojo);
             String response = "{\"resourceId\":" + resourceId + "}";
             return Response.ok(response).build();
@@ -77,22 +129,85 @@ public class ActionsRestEntryPoint {
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
                                    + "\"}")
                            .build();
+        } finally {
+            ThreadsPerCaller.unregisterThread();
         }
-
     }
 
     @POST
     @Path( "execute")
-    @ApiOperation( value = "Execute action method", notes = "Execute action method")
-    @ApiResponses( value = { @ApiResponse( code = 200, message = "Successful execution of an action method", response = Response.class),
-                             @ApiResponse( code = 500, message = "Internal server error", response = AgentException.class) })
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-
-    public Response execute( @ApiParam( value = "Action details", required = true) ActionPojo pojo ) {
+    @SwaggerMethod(
+            httpOperation = "post",
+            parametersDefinition = "Execute custom action details",
+            summary = "Execute custom action",
+            url = "execute")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
+            description = "The session ID",
+            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            name = "sessionId",
+            type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The resource ID",
+                                                  example = "1",
+                                                  name = "resourceId",
+                                                  type = "integer"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The action method name. Note that this is not the actual Java method name, but instead the value of the Action annotation's name attribute",
+                                                  example = "FTP actions connect",
+                                                  name = "methodName",
+                                                  type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The component name",
+                                                  example = "ftpactions",
+                                                  name = "componentName",
+                                                  type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The action argument's class names",
+                                                  example = "[\"java.lang.String\", \"int.class\", \"boolean\", \"com.ftpactions.model.CustomClass\"]",
+                                                  name = "argumentsTypes",
+                                                  type = "string[]"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The action arguments values",
+                                                  example = "[\"a string\",\"1\",\"true\",\"{some_field_from_custom_class:some_value}\"]",
+                                                  name = "argumentsValues",
+                                                  type = "string[]") })
+    @SwaggerMethodResponses( {
+                               @SwaggerMethodResponse(
+                                       code = 200,
+                                       definition = "Successful execution of action method details",
+                                       description = "Successful execution of action method",
+                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
+                                               description = "The action result",
+                                               example = "some_string",
+                                               name = "action_result",
+                                               type = "any") }),
+                               @SwaggerMethodResponse(
+                                       code = 500,
+                                       definition = "Error while executing action method details",
+                                       description = "Error while executing action method",
+                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
+                                               description = "THe actuon Java exception object",
+                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
+                                               name = "error",
+                                               type = "object"),
+                                                                 @SwaggerMethodParameterDefinition(
+                                                                         description = "The java exception class name",
+                                                                         example = "com.custom.exception.NoEntryException",
+                                                                         name = "exceptionClass",
+                                                                         type = "string") })
+    })
+    public Response execute( @Context HttpServletRequest request, ActionPojo pojo ) {
 
         try {
-
+            if (StringUtils.isNullOrEmpty(pojo.getSessionId())) {
+                throw new NoSuchElementException("sessionId is not provided with the request");
+            }
+            if (pojo.getResourceId() < 0) {
+                throw new IllegalArgumentException("resourceId must be >=0, but was" + pojo.getResourceId());
+            }
+            ThreadsPerCaller.registerThread(pojo.getSessionId());
             if (LOG.isDebugEnabled()) {
                 String message = "Executing action '" + pojo.getMethodName() + "' from component '"
                                  + pojo.getComponentName() + "' using the following arguments '"
@@ -117,28 +232,71 @@ public class ActionsRestEntryPoint {
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
                                    + "\"}")
                            .build();
+        } finally {
+            ThreadsPerCaller.unregisterThread();
         }
-
     }
 
     @DELETE
     @Path( "")
-    @ApiOperation( value = "Deinitialize an action class", notes = "Deinitialize an action class")
-    @ApiResponses( value = { @ApiResponse( code = 200, message = "Successful deinitialization of an action method", response = Response.class),
-                             @ApiResponse( code = 500, message = "Internal server error", response = AgentException.class) })
     @Produces( MediaType.APPLICATION_JSON)
+    @SwaggerMethod(
+            httpOperation = "delete",
+            parametersDefinition = "",
+            summary = "Deinitialize custom action class",
+            url = "")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
+            description = "The session ID",
+            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            name = "sessionId",
+            type = "string"),
+                                          @SwaggerMethodParameterDefinition(
+                                                  description = "The resource ID",
+                                                  example = "1",
+                                                  name = "resourceId",
+                                                  type = "integer") })
+
+    @SwaggerMethodResponses( {
+                               @SwaggerMethodResponse(
+                                       code = 200,
+                                       definition = "Successfull deinitialization of action class details",
+                                       description = "Successfull deinitialization of action class",
+                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
+                                               description = "The resource ID of the deinitialized action class",
+                                               example = "123",
+                                               name = "resourceId",
+                                               type = "integer"),
+                                                                 @SwaggerMethodParameterDefinition(
+                                                                         description = "Status message",
+                                                                         example = "Action class with resource id '10' successfully deleted",
+                                                                         name = "status_message",
+                                                                         type = "string") }),
+                               @SwaggerMethodResponse(
+                                       code = 500,
+                                       definition = "Error while deinitializing action class details",
+                                       description = "Error while deinitializing action class",
+                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
+                                               description = "The actuon Java exception object",
+                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
+                                               name = "error",
+                                               type = "object"),
+                                                                 @SwaggerMethodParameterDefinition(
+                                                                         description = "The java exception class name",
+                                                                         example = "com.mypoduct.exception.NoEntryException",
+                                                                         name = "exceptionClass",
+                                                                         type = "string") })
+    })
     public Response deinitialize( @Context HttpServletRequest request,
-                                  @ApiParam( value = "Session ID", required = true) @QueryParam( "sessionId") String sessionId,
-                                  @ApiParam( value = "Resource ID", required = true) @QueryParam( "resourceId") int resourceId ) {
+                                  @QueryParam( "sessionId") String sessionId,
+                                  @QueryParam( "resourceId") int resourceId ) {
 
         try {
-
             if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new IllegalArgumentException("SessionID is not provided with the request");
+                throw new NoSuchElementException("sessionId is not provided with the request");
             }
-
+            ThreadsPerCaller.registerThread(sessionId);
             if (resourceId < 0) {
-                throw new IllegalArgumentException("ResourceID has invallid values (" + resourceId + ")");
+                throw new IllegalArgumentException("resourceId must be >= 0, but was" + resourceId);
             }
 
             if (LOG.isDebugEnabled()) {
@@ -147,7 +305,8 @@ public class ActionsRestEntryPoint {
             }
 
             resourceId = ResourcesManager.deinitializeResource(sessionId, resourceId);
-            String response = "{\"resourceId\":" + resourceId + ", \"status\":\"deleted\"}";
+            String response = "{\"status_message\":\"Action class with resource id '" + resourceId
+                              + "' successfully deleted\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to deinitialize action class with id'" + resourceId
@@ -157,8 +316,9 @@ public class ActionsRestEntryPoint {
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
                                    + "\"}")
                            .build();
+        } finally {
+            ThreadsPerCaller.unregisterThread();
         }
-
     }
 
 }

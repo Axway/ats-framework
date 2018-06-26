@@ -16,83 +16,146 @@
 package com.axway.ats.agent.components.system.operations;
 
 import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.ActionRequestInfo;
 import com.axway.ats.agent.core.model.Parameter;
 import com.axway.ats.core.system.LocalSystemOperations;
 
 public class InternalSystemInputOperations {
 
-    private LocalSystemOperations localSystemOperations = new LocalSystemOperations();
+    private LocalSystemOperations localSystemOperations = null;
 
-    @Action( name = "Internal System Input Operations click At")
+    @Action(
+            name = "Internal System Input Operations initialize")
+    @ActionRequestInfo(
+            requestMethod = "PUT",
+            requestUrl = "system/input")
+    public void initialize() {
+
+        localSystemOperations = new LocalSystemOperations();
+    }
+
+    @Action(
+            name = "Internal System Input Operations click At")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/mouse/click")
     public void clickAt(
-                         @Parameter( name = "x") int x,
-                         @Parameter( name = "y") int y ) {
+                         @Parameter(
+                                 name = "x") int x,
+                         @Parameter(
+                                 name = "y") int y ) {
 
         localSystemOperations.getInputOperations().clickAt(x, y);
     }
 
-    @Action( name = "Internal System Input Operations type")
+    @Action(
+            name = "Internal System Input Operations type")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/type")
     public void type(
-                      @Parameter( name = "text") String text ) {
+                      @Parameter(
+                              name = "text") String text ) {
 
         localSystemOperations.getInputOperations().type(text);
     }
 
-    @Action( name = "Internal System Input Operations type")
+    @Action(
+            name = "Internal System Input Operations type")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/type")
     public void type(
-                      @Parameter( name = "keyCodes") int... keyCodes ) {
+                      @Parameter(
+                              name = "keyCodes") int... keyCodes ) {
 
         localSystemOperations.getInputOperations().type(keyCodes);
     }
 
-    @Action( name = "Internal System Input Operations type")
+    @Action(
+            name = "Internal System Input Operations type")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/type")
     public void type(
-                      @Parameter( name = "text") String text,
-                      @Parameter( name = "keyCodes") int... keyCodes ) {
+                      @Parameter(
+                              name = "text") String text,
+                      @Parameter(
+                              name = "keyCodes") int... keyCodes ) {
 
         localSystemOperations.getInputOperations().type(text, keyCodes);
     }
 
-    @Action( name = "Internal System Input Operations press Alt F4")
+    @Action(
+            name = "Internal System Input Operations press Alt F4")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/alt/with/functional/4/press")
     public void pressAltF4() {
 
         localSystemOperations.getInputOperations().pressAltF4();
     }
 
-    @Action( name = "Internal System Input Operations press Esc")
+    @Action(
+            name = "Internal System Input Operations press Esc")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/escape/press")
     public void pressEsc() {
 
         localSystemOperations.getInputOperations().pressEsc();
     }
 
-    @Action( name = "Internal System Input Operations press Enter")
+    @Action(
+            name = "Internal System Input Operations press Enter")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/enter/press")
     public void pressEnter() {
 
         localSystemOperations.getInputOperations().pressEnter();
     }
 
-    @Action( name = "Internal System Input Operations press Space")
+    @Action(
+            name = "Internal System Input Operations press Space")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/space/press")
     public void pressSpace() {
 
         localSystemOperations.getInputOperations().pressSpace();
     }
 
-    @Action( name = "Internal System Input Operations press Tab")
+    @Action(
+            name = "Internal System Input Operations press Tab")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/tab/press")
     public void pressTab() {
 
         localSystemOperations.getInputOperations().pressTab();
     }
 
-    @Action( name = "Internal System Input Operations key Press")
+    @Action(
+            name = "Internal System Input Operations key Press")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/press")
     public void keyPress(
-                          @Parameter( name = "keyCode") int keyCode ) {
+                          @Parameter(
+                                  name = "keyCode") int keyCode ) {
 
         localSystemOperations.getInputOperations().keyPress(keyCode);
     }
 
-    @Action( name = "Internal System Input Operations key Release")
+    @Action(
+            name = "Internal System Input Operations key Release")
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "system/input/keyboard/key/release")
     public void keyRelease(
-                            @Parameter( name = "keyCode") int keyCode ) {
+                            @Parameter(
+                                    name = "keyCode") int keyCode ) {
 
         localSystemOperations.getInputOperations().keyRelease(keyCode);
     }

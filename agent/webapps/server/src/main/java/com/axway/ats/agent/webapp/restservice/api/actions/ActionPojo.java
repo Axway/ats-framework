@@ -15,26 +15,18 @@
  */
 package com.axway.ats.agent.webapp.restservice.api.actions;
 
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
-@ApiModel( value = "Action details")
+import com.axway.ats.agent.core.action.ActionRequest;
+import com.google.gson.Gson;
+
 public class ActionPojo {
 
-    /** 
-     * the session ID string 
-     * **/
-    @ApiModelProperty( required = true, value = "sessionId", example = "1")
     private String   sessionId;
-    
-    /**
-     * The resource id that will identify the action class that have execute the sprecified method from this pojo
-     *  **/
-    @ApiModelProperty( required = true, value = "resourceId", example = "1", notes = "When calling initialize, "
-            + "this property may be skipped. Evety other call must contains in though")
+
     private int      resourceId;
 
-    @ApiModelProperty( required = true, value = "componentName", example = "ftp-actions")
     private String   componentName;
     /**
      * the value of the @Action's annotation name parameter, NOT the actual Java method name
@@ -43,23 +35,47 @@ public class ActionPojo {
      * public void connect(...)
      * In that situation the methodName must be "FTP actions connect"
      *  **/
-    @ApiModelProperty( required = true, value = "methodName", example = "Ftp Actions connect")
+
     private String   methodName;
-    
+
     /**
      * the fully qualified names of each of the arguments Java classes
      *  **/
-    @ApiModelProperty( required = true, value = "argumentsTypes", example = "[java.lang.String, com.custom.package.User]")
+
     private String[] argumentsTypes;
     /**
      * the values of each argument.
      * Those values will be casted to the Java classes, specified in the argumentsTypes class member
      *  **/
-    @ApiModelProperty( required = true, value = "argumentsValues", example = "['test', '{'name':'AtsUser'}']")
+
     private String[] argumentsValues;
 
     public ActionPojo() {}
 
+    public ActionPojo( ActionRequest actionRequest ) {
+
+        this.componentName = actionRequest.getComponentName();
+        this.methodName = actionRequest.getActionName();
+        if (actionRequest.getArguments() != null) {
+            Gson gson = new Gson();
+            this.argumentsTypes = new String[actionRequest.getArguments().length];
+            this.argumentsValues = new String[actionRequest.getArguments().length];
+            for (int i = 0; i < actionRequest.getArguments().length; i++) {
+                Class<?> argClass = actionRequest.getArguments()[i].getClass();
+                this.argumentsTypes[i] = argClass.getName();
+                this.argumentsValues[i] = gson.toJson(actionRequest.getArguments()[i], argClass);
+            }
+        }
+    }
+
+    /**
+     * @param sessionId
+     * @param resourceId
+     * @param componentName
+     * @param methodName
+     * @param argumentsTypes array of Java class names
+     * @param argumentsValues
+     * */
     public ActionPojo( String sessionId, int resourceId, String componentName, String methodName,
                        String[] argumentsTypes,
                        String[] argumentsValues ) {
@@ -130,6 +146,25 @@ public class ActionPojo {
     public void setArgumentsValues( String[] argumentsValues ) {
 
         this.argumentsValues = argumentsValues;
+    }
+
+    /**
+     * Return the actual (casted to their appropriate Java class) arguments values
+     * @throws ClassNotFoundException 
+     * */
+    public Object[] getActualArguments() throws ClassNotFoundException {
+
+        List<Object> actualArgs = new ArrayList<>();
+        Gson gson = new Gson();
+        for (int i = 0; i < argumentsValues.length; i++) {
+            String value = argumentsValues[i];
+            String className = argumentsTypes[i];
+            Class<?> actualClass = Class.forName(className);
+            Object actualValue = gson.fromJson(value, actualClass);
+            actualArgs.add(actualValue);
+        }
+
+        return actualArgs.toArray();
     }
 
 }

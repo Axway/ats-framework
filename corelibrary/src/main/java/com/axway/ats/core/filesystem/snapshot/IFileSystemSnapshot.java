@@ -83,6 +83,6 @@ public interface IFileSystemSnapshot {
     public void toFile(
                         String backupFile );
 
-    public String toString();
+    public String getDescription();
 
 }

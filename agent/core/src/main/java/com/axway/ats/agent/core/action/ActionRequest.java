@@ -15,8 +15,12 @@
  */
 package com.axway.ats.agent.core.action;
 
+import java.lang.reflect.Array;
+import java.util.Map;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -214,27 +218,57 @@ public class ActionRequest {
                     if (StringUtil.isNullOrEmpty(key)) {
                         throw new IllegalArgumentException("Argument name at index '" + i + "' is empty/null");
                     }
-                    if (args[i] != null && args[i].getClass().isArray()) {
-                        /* arrays are "special"
-                         * so they need special treatment
-                        */
-                        JsonArray array = new JsonArray();
-                        for (Object arrayEl : (Object[]) args[i]) {
-                            array.add(gson.toJson(arrayEl));
-                        }
-                        jsonObject.add(key, array);
-                    } else if (args[i] != null && args[i].getClass().getName().equals(String.class.getName())) {
-                        // GSON additionally escapes String,
-                        // this line prevent that
-                        jsonObject.add(key, new JsonPrimitive((String) args[i]));
+                    if (args[i] == null) {
+                        /* 
+                         * this way if the argument is String and also null,
+                         * the actual value will be null instead of "null"
+                         */
+                        jsonObject.add(key, null);
                     } else {
-                        String value = null;
-                        if (args[i] != null) {
-                            value = gson.toJson(args[i], args[i].getClass());
+                        if (args[i].getClass().isArray()) {
+                            /* arrays are "special"
+                             * so they need special treatment
+                            */
+                            if (args[i] instanceof Object[]) {
+                                JsonArray array = new JsonArray();
+                                for (Object arrayEl : (Object[]) args[i]) {
+                                    if (arrayEl instanceof String) {
+                                        // GSON additionally escapes String, this line prevent that
+                                        array.add(new JsonPrimitive((String) arrayEl));
+                                    } else {
+                                        array.add(gson.toJson(arrayEl));
+                                    }
+                                }
+                                jsonObject.add(key, array);
+                            } else {
+                                // the array is of primitive type (int[], boolean[], etc)
+                                JsonArray array = new JsonArray();
+                                for (int k = 0; k < Array.getLength(args[i]); k++) {
+                                    array.add(gson.toJson(Array.get(args[i], k)));
+                                }
+                                jsonObject.add(key, array);
+                            }
+
+                        } else if (args[i].getClass().getName().equals(String.class.getName())) {
+                            // GSON additionally escapes String, this line prevent that
+                            jsonObject.add(key, new JsonPrimitive((String) args[i]));
+                        } else if (Map.class.isAssignableFrom(args[i].getClass())) {
+                            //
+                            JsonObject map = new JsonObject();
+                            // map elements that have String objects as value are not properly serialized
+                            for (Map.Entry<String, String> entry : ((Map<String, String>) args[i]).entrySet()) {
+                                map.add(entry.getKey(), new JsonPrimitive(entry.getValue()));
+                            }
+                            jsonObject.add(key, map);
                         } else {
-                            value = gson.toJson(args[i]);
+                            JsonElement value = null;
+                            if (args[i] != null) {
+                                value = gson.toJsonTree(args[i], args[i].getClass());
+                            } else {
+                                value = gson.toJsonTree(args[i]);
+                            }
+                            jsonObject.add(key, value);
                         }
-                        jsonObject.addProperty(key, value);
                     }
                 }
             }

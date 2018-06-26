@@ -28,7 +28,7 @@ public interface IProcessTalker {
     public String getCurrentStandardOutContents();
 
     public String getCurrentStandardErrContents();
-
+    
     public void expect(
                         String pattern );
 

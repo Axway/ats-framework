@@ -8,32 +8,14 @@
     <description>agentapp</description>
     <listener>
         <listener-class>
-            com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+            com.axway.ats.agent.webapp.restservice.api.listeners.AgentContextListener
         </listener-class>
     </listener>
     <listener>
         <listener-class>
-            com.axway.ats.agent.webapp.agentservice.AgentWsContextListener
+            com.axway.ats.agent.webapp.restservice.api.listeners.AgentRequestListener
         </listener-class>
     </listener>
-     <listener>
-        <listener-class>
-            com.axway.ats.agent.webapp.agentservice.AgentWsRequestListener
-        </listener-class>
-    </listener>
-    <servlet>
-        <servlet-name>agentservice_servlet</servlet-name>
-        
-        
-        <servlet-class>
-            com.sun.xml.ws.transport.http.servlet.WSServlet
-        </servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>agentservice_servlet</servlet-name>
-        <url-pattern>/agentservice</url-pattern>
-    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -52,7 +34,7 @@
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>com.axway.ats.agent.webapp.restservice</param-value>
         </init-param>
-        <load-on-startup>2</load-on-startup>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>ATS Agent REST Service</servlet-name>
@@ -70,7 +52,7 @@
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>com.axway.ats.agent.webapp.restservice.api</param-value>
         </init-param>
-        <load-on-startup>3</load-on-startup>
+        <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>ATS Agent REST API Service</servlet-name>

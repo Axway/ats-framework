@@ -16,7 +16,6 @@
 package com.axway.ats.action.filesystem.snapshot;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
-import com.axway.ats.action.processes.RemoteProcessExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.core.filesystem.snapshot.IFileSystemSnapshot;
@@ -413,7 +412,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public String toString() {
 
-        return this.fsSnapshotImpl.toString();
+        return this.fsSnapshotImpl.getDescription();
     }
 
     private IFileSystemSnapshot getOperationsImplementationFor( String atsAgent, String name,

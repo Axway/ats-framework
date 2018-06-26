@@ -16,7 +16,6 @@
 package com.axway.ats.action.filesystem;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -52,6 +51,7 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
 
         this.atsAgent = atsAgent;
         this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
+        this.remoteFileSystemOperations.initialize();
         this.localFileSystemOperations = new LocalFileSystemOperations();
     }
 
@@ -629,10 +629,10 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
 
     public String[] getLastLinesFromFile( String fileName, int numLinesToRead ) {
 
-        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1);
+        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1.name());
     }
 
-    public String[] getLastLinesFromFile( String fileName, int numLinesToRead, Charset chartset ) {
+    public String[] getLastLinesFromFile( String fileName, int numLinesToRead, String charset ) {
 
         try {
             return remoteFileSystemOperations.getLastLines(fileName, numLinesToRead);

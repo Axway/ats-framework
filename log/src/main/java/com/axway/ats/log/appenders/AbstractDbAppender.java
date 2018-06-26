@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -38,7 +39,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     // the channels for each test case
     private Map<String, DbChannel>    channels         = new HashMap<String, DbChannel>();
 
-    protected AtsConsoleLogger        atsConsoleLogger = new AtsConsoleLogger( getClass() );
+    protected AtsConsoleLogger        atsConsoleLogger = new AtsConsoleLogger(getClass());
 
     /**
      * The configuration for this appender
@@ -68,37 +69,40 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // check whether the configuration is valid first
         try {
             this.appenderConfig.validate();
-        } catch( InvalidAppenderConfigurationException iace ) {
-            throw new DbAppenederException( iace );
+        } catch (InvalidAppenderConfigurationException iace) {
+            throw new DbAppenederException(iace);
         }
 
         // set the threshold if there is such
-        this.appenderConfig.setLoggingThreshold( getThreshold() );
+        if (getThreshold() != null) {
+            this.appenderConfig.setLoggingThreshold(getThreshold().toInt());
+        }
+
     }
 
     protected abstract String getDbChannelKey( LoggingEvent event );
 
     protected DbChannel getDbChannel( LoggingEvent event ) {
 
-        String channelKey = getDbChannelKey( event );
+        String channelKey = getDbChannelKey(event);
 
-        DbChannel channel = this.channels.get( channelKey );
-        if( channel == null ) {
-            channel = new DbChannel( this.appenderConfig );
+        DbChannel channel = this.channels.get(channelKey);
+        if (channel == null) {
+            channel = new DbChannel(this.appenderConfig);
 
-            channel.initialize( atsConsoleLogger, this.layout, true );
+            channel.initialize(atsConsoleLogger, this.layout, true);
 
-            this.channels.put( channelKey, channel );
+            this.channels.put(channelKey, channel);
         }
 
         return channel;
     }
-    
+
     protected void distroyDbChannel( String channelKey ) {
 
         DbChannel channel = this.channels.get( channelKey );
         
-        this.channels.remove( channelKey );
+        this.channels.remove(channelKey);
     }
 
     public abstract GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event );
@@ -110,7 +114,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public void close() {
 
-        getDbChannel( null ).close();
+        getDbChannel(null).close();
     }
 
     /*
@@ -132,14 +136,14 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setLayout(
                            Layout layout ) {
 
-        super.setLayout( layout );
+        super.setLayout(layout);
 
         // remember it 
         this.layout = layout;
 
         // set the layout to the event processor as well
-        DbChannel channel = getDbChannel( null );
-        channel.eventProcessor.setLayout( layout );
+        DbChannel channel = getDbChannel(null);
+        channel.eventProcessor.setLayout(layout);
     }
 
     /**
@@ -151,7 +155,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setEvents(
                            String maxNumberLogEvents ) {
 
-        this.appenderConfig.setMaxNumberLogEvents( maxNumberLogEvents );
+        this.appenderConfig.setMaxNumberLogEvents(maxNumberLogEvents);
     }
 
     /**
@@ -167,7 +171,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getNumberPendingLogEvents() {
 
-        return getDbChannel( null ).getNumberPendingLogEvents();
+        return getDbChannel(null).getNumberPendingLogEvents();
     }
 
     /**
@@ -189,7 +193,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setMode(
                          String mode ) {
 
-        this.appenderConfig.setMode( mode );
+        this.appenderConfig.setMode(mode);
     }
 
     /**
@@ -199,7 +203,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getRunId() {
 
-        return getDbChannel( null ).eventProcessor.getRunId();
+        return getDbChannel(null).eventProcessor.getRunId();
     }
 
     /**
@@ -209,7 +213,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getSuiteId() {
 
-        return getDbChannel( null ).eventProcessor.getSuiteId();
+        return getDbChannel(null).eventProcessor.getSuiteId();
     }
 
     /**
@@ -219,7 +223,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public String getRunName() {
 
-        return getDbChannel( null ).eventProcessor.getRunName();
+        return getDbChannel(null).eventProcessor.getRunName();
     }
 
     /**
@@ -229,7 +233,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public String getRunUserNote() {
 
-        return getDbChannel( null ).eventProcessor.getRunUserNote();
+        return getDbChannel(null).eventProcessor.getRunUserNote();
     }
 
     /**
@@ -238,7 +242,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getTestCaseId() {
 
-        return getDbChannel( null ).eventProcessor.getTestCaseId();
+        return getDbChannel(null).eventProcessor.getTestCaseId();
     }
 
     /**
@@ -246,7 +250,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      * */
     public int getLastExecutedTestCaseId() {
 
-        return getDbChannel( null ).eventProcessor.getLastExecutedTestCaseId();
+        return getDbChannel(null).eventProcessor.getLastExecutedTestCaseId();
     }
 
     public boolean getEnableCheckpoints() {
@@ -256,7 +260,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
     public void setEnableCheckpoints( boolean enableCheckpoints ) {
 
-        this.appenderConfig.setEnableCheckpoints( enableCheckpoints );
+        this.appenderConfig.setEnableCheckpoints(enableCheckpoints);
     }
 
     public DbAppenderConfiguration getAppenderConfig() {
@@ -267,12 +271,12 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     public void setAppenderConfig( DbAppenderConfiguration appenderConfig ) {
 
         this.appenderConfig = appenderConfig;
-        threshold = appenderConfig.getLoggingThreshold();
+        threshold = Level.toLevel(appenderConfig.getLoggingThreshold());
     }
 
     public void calculateTimeOffset( long executorTimestamp ) {
 
         // FIXME make the next working
-        getDbChannel( null ).calculateTimeOffset( executorTimestamp );
+        getDbChannel(null).calculateTimeOffset(executorTimestamp);
     }
 }

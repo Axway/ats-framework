@@ -1,25 +1,33 @@
 <?xml version='1.0' encoding='utf-8'?>
-<component name="auto-system-operations" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="agent_descriptor.xsd">
+<component name="auto-system-operations"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="agent_descriptor.xsd">
 
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalFileSystemOperations" />
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalFileSystemSnapshot" />        
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalSystemInputOperations" />
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalSystemOperations" />
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalProcessOperations"
-        initializeRequestUrl="processes/executors" />
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalProcessTalker" />        
 	<actionClass
-        name="com.axway.ats.agent.components.system.operations.InternalRegistryOperations" />
-    <actionClass
-        name="com.axway.ats.agent.components.system.operations.MachineDescriptionOperations" />
-        
-    <cleanupHandler
-        name="com.axway.ats.agent.components.system.operations.CleanupHandler" />
+		name="com.axway.ats.agent.components.system.operations.InternalFileSystemOperations"
+		initializeRequestUrl="filesystem" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.InternalFileSystemSnapshot"
+		initializeRequestUrl="filesystem/snapshot" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.InternalSystemInputOperations"
+		initializeRequestUrl="system/input" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.InternalSystemOperations"
+		initializeRequestUrl="system" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.InternalProcessOperations"
+		initializeRequestUrl="processes/executors" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.InternalProcessTalker"
+		initializeRequestUrl="processes/talkers" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.InternalRegistryOperations"
+		initializeRequestUrl="registry" />
+	<actionClass
+		name="com.axway.ats.agent.components.system.operations.MachineDescriptionOperations"
+		initializeRequestUrl="machine/description" />
+
+	<cleanupHandler
+		name="com.axway.ats.agent.components.system.operations.CleanupHandler" />
 </component>

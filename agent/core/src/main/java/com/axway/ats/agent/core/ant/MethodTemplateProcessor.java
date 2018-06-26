@@ -140,9 +140,9 @@ class MethodTemplateProcessor extends TemplateProcessor {
             } else {
                 placeHolderValues.put("$REQUEST_METHOD$", "\"" + requestMethod + "\", ");
             }
-            
-            if(!returnTypeName.equalsIgnoreCase("void")) {
-                placeHolderValues.put("$RETURN_TYPE_CLASS$", ", " + returnTypeName+".class");
+
+            if (!returnTypeName.equalsIgnoreCase("void")) {
+                placeHolderValues.put("$RETURN_TYPE_CLASS$", ", " + returnTypeName + ".class");
             } else {
                 placeHolderValues.put("$RETURN_TYPE_CLASS$", ", null");
             }
@@ -153,126 +153,11 @@ class MethodTemplateProcessor extends TemplateProcessor {
                 placeHolderValues.put("$DEPRECATED$", "");
             }
 
-            //            String requestPojoClassName = WordUtils.capitalize(actionImplementation.getDeclaringClass().getSimpleName())
-            //                                          + WordUtils.capitalize(placeHolderValues.get("$METHOD_NAME$"))
-            //                                          + "RequestPojo";
-            //            // generate Rest Server Request POJO class for the current method
-            //            try (FileWriter fw = new FileWriter(new File("./target/" + requestPojoClassName + ".java"))) {
-            //                String[] arguments = placeHolderValues.get("$ARGUMENTS$").split(",");
-            //                String[] parameters = placeHolderValues.get("$PARAMETERS$").split(",");
-            //                fw.write(generateRequestMethodPojo(requestPojoClassName, parameters, arguments));
-            //                fw.flush();
-            //                fw.close();
-            //            } catch (Exception e) {
-            //                throw new RuntimeException("Unable to create Request POJO for '"
-            //                                           + WordUtils.capitalize(placeHolderValues.get("$METHOD_NAME$")) + "'", e);
-            //            }
-            //
-            //            // generate Rest Server Response POJO class for the current method
-            //            String responcePojoClassName = WordUtils.capitalize(actionImplementation.getDeclaringClass()
-            //                                                                                    .getSimpleName())
-            //                                           + WordUtils.capitalize(placeHolderValues.get("$METHOD_NAME$"))
-            //                                           + "ResponsePojo";
-            //            try (FileWriter fw = new FileWriter(new File("./target/" + responcePojoClassName + ".java"))) {
-            //                String returnObjectKey = null;
-            //                fw.write(generateResponseMethodPojo(responcePojoClassName, placeHolderValues.get("$RETURN_TYPE$"),
-            //                                                    returnObjectKey));
-            //                fw.flush();
-            //                fw.close();
-            //
-            //            } catch (Exception e) {
-            //                throw new RuntimeException("Unable to create Response POJO for '"
-            //                                           + WordUtils.capitalize(placeHolderValues.get("$METHOD_NAME$")) + "'", e);
-            //            }
-
         } catch (Exception e) {
             throw new BuildException("Error building Agent action stub for action method "
                                      + actionImplementation.toString(), e);
         }
     }
-
-    //    private String generateResponseMethodPojo( String className, String returnType, String returnObjectKey ) {
-    //
-    //        StringBuilder sb = new StringBuilder();
-    //        sb.append("import com.wordnik.swagger.annotations.ApiModel;\r\n" +
-    //                  "import com.wordnik.swagger.annotations.ApiModelProperty")
-    //          .append("\r\n")
-    //          .append("\r\n")
-    //          .append("@ApiModel( value = \"" + className.replace("Pojo", "").replace("Request", " Request").replace("Internal","") + " details\")")
-    //          .append("\r\n")
-    //          .append("public class " + className + " {")
-    //          .append("\r\n")
-    //          .append("\r\n");
-    //        
-    //        sb.append("}");
-    //        return sb.toString();
-    //    }
-    //
-    //    private String generateRequestMethodPojo( String className, String[] params, String[] arguments ) {
-    //
-    //        StringBuilder sb = new StringBuilder();
-    //        sb.append("import com.wordnik.swagger.annotations.ApiModel;\r\n" +
-    //                  "import com.wordnik.swagger.annotations.ApiModelProperty")
-    //          .append("\r\n")
-    //          .append("\r\n")
-    //          .append("@ApiModel( value = \"" + className.replace("Pojo", "").replace("Response", " Response").replace("Internal","") + " details\")")
-    //          .append("\r\n")
-    //          .append("public class " + className + " {")
-    //          .append("\r\n")
-    //          .append("\r\n");
-    //
-    //        for (int i = 0; i < arguments.length; i++) {
-    //            String arg = arguments[i].trim();
-    //            String param = params[i].trim();
-    //            sb.append("\t@ApiModelProperty( required = true, value = \"" + arg + "\" )")
-    //              .append("\r\n")
-    //              .append("\tprivate " + param + ";")
-    //              .append("\r\n")
-    //              .append("\r\n");
-    //        }
-    //
-    //        sb.append("\tpublic " + className + "(){}")
-    //          .append("\r\n\r\n");
-    //
-    //        sb.append("\tpublic " + className + "( "
-    //                  + Arrays.toString(params).substring(1, Arrays.toString(params).length() - 1) + " ) {")
-    //          .append("\t\t\r\n");
-    //        for (int i = 0; i < arguments.length; i++) {
-    //            String arg = arguments[i].trim();
-    //
-    //            sb.append("\t\t\r\n")
-    //              .append("\t\tthis." + arg + " = " + arg + ";");
-    //        }
-    //
-    //        sb.append("\t\r\n\r\n");
-    //        sb.append("\t}");
-    //
-    //        for (int i = 0; i < arguments.length; i++) {
-    //            String arg = arguments[i].trim();
-    //            String param = params[i].trim();
-    //            sb.append("\r\n\r\n")
-    //              .append("\tpublic " + "void set" + WordUtils.capitalize(arg) + "( " + param + " ) {")
-    //              .append("\t\r\n")
-    //              .append("\t\r\n")
-    //              .append("\t\tthis." + arg + " = " + arg + ";")
-    //              .append("\t\r\n")
-    //              .append("\t\r\n")
-    //              .append("\t}");
-    //
-    //            sb.append("\r\n\r\n")
-    //              .append("\tpublic " + param.replace(arg, "get" + WordUtils.capitalize(arg)) + "() {")
-    //              .append("\t\r\n")
-    //              .append("\t\r\n")
-    //              .append("\t\treturn this." + arg + ";")
-    //              .append("\t\r\n")
-    //              .append("\t\r\n")
-    //              .append("\t}");
-    //        }
-    //
-    //        sb.append("\r\n\r\n}");
-    //
-    //        return sb.toString();
-    //    }
 
     private String getObjectTypeForPrimitive(
                                               String primitiveTypeName ) {

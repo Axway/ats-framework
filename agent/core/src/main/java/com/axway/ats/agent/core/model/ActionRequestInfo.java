@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to declare additional information about execution of an ATS Agent Action.
- * Note This Annotation is for internal use only.
+ * <p>This annotation is used to declare additional information about execution of an ATS Agent Action.</p>
+ * <p><strong>This annotation is for internal use only. Do not use it when creating your own actions.</strong></p>
  */
 @Retention( RetentionPolicy.RUNTIME)
 @Target( ElementType.METHOD)
@@ -31,11 +31,11 @@ public @interface ActionRequestInfo {
     /**
      * The URL ( relative to the ATS agent REST API ) that will serve the action request on the agent
      * */
-    String requestUrl() default "";
+    String requestUrl();
 
     /**
      * The HTTP method that will be used when the request is sent to the agent
      */
-    String requestMethod() default "";
+    String requestMethod();
 
 }

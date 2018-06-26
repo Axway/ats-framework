@@ -1475,8 +1475,9 @@ public class FileSystemOperations {
     }
 
     /**
-     * Unzip archive to local or remote machine. Use extract() method
-     * If the machine is UNIX-like it will preserve the permissions
+     * <p>Unzip archive to local or remote machine.</p>
+     * <p>If the machine is UNIX-like it will preserve the permissions</p>
+     * <p>This method is deprecated. Use extract().</p>
      *
      * @param zipFilePath the ZIP file path
      * @param outputDirPath output directory which is used as base directory for extracted files

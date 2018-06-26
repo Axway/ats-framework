@@ -37,7 +37,7 @@ public class RemoteProcessExecutor implements IProcessExecutor {
                                   String... commandArguments ) throws AgentException {
 
         this.atsAgent = atsAgent;
-        this.remoteProcessOperations = new InternalProcessOperations(atsAgent);
+        this.remoteProcessOperations = new InternalProcessOperations(this.atsAgent);
         try {
             this.remoteProcessOperations.initProcessExecutor(command, commandArguments);
         } catch (AgentException e) {

@@ -31,27 +31,28 @@ import com.axway.ats.core.filesystem.LocalFileSystemOperations;
  */
 public class ExecutorUtils {
 
-    private static Logger      log                  = Logger.getLogger( ExecutorUtils.class );
+    private static Logger      log                             = Logger.getLogger(ExecutorUtils.class);
 
-    public final static String ATS_HOST_ID          = "HOST_ID";
-    public final static String ATS_RANDOM_TOKEN     = "RANDOM_TOKEN";
-    public final static String ATS_THREAD_ID        = "THREAD_ID";
+    public final static String ATS_HOST_ID                     = "HOST_ID";
+    public final static String ATS_RANDOM_TOKEN                = "RANDOM_TOKEN";
+    public final static String ATS_THREAD_ID                   = "THREAD_ID";
+    public final static String ATS_EXECUTOR_ID_TOKEN_DELIMITER = ";";
 
     // A universe wide ;) random token used to identify the Test Executor.
     // Test Executors are different when started on different hosts.
     // Test Executors are different when started on same hosts, but different work folders.
     private static String      userRandomToken;
 
-    private static boolean     reuseUserRandomToken = true;
+    private static boolean     reuseUserRandomToken            = true;
 
     /**
      * @return random token for the current executor
      */
     public static String getUserRandomToken() {
 
-        if( reuseUserRandomToken ) {
+        if (reuseUserRandomToken) {
             // token can be reused
-            if( userRandomToken == null ) {
+            if (userRandomToken == null) {
                 // we come here for first time, so we do not have a token
 
                 // try to use the token from the previous execution
@@ -60,46 +61,46 @@ public class ExecutorUtils {
                 String uuidFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR
                                           + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
                                           + "ats_user_random_tokens.txt";
-                File uuidFile = new File( uuidFileLocation );
+                File uuidFile = new File(uuidFileLocation);
 
-                if( uuidFile.exists() ) {
+                if (uuidFile.exists()) {
                     // try to extract the random token from the file
                     String uuidFileContent;
                     try {
-                        uuidFileContent = IoUtils.streamToString( IoUtils.readFile( uuidFileLocation ) );
-                    } catch( IOException e ) {
-                        throw new FileSystemOperationException( "Unable to extract randome user token from file '"
-                                                                + uuidFile.getPath() + "'", e );
+                        uuidFileContent = IoUtils.streamToString(IoUtils.readFile(uuidFileLocation));
+                    } catch (IOException e) {
+                        throw new FileSystemOperationException("Unable to extract randome user token from file '"
+                                                               + uuidFile.getPath() + "'", e);
                     }
-                    if( uuidFileContent.contains( userWorkingDirectory ) ) {
+                    if (uuidFileContent.contains(userWorkingDirectory)) {
                         // the needed token is in there, extract it
-                        for( String line : uuidFileContent.split( "\n" ) ) {
-                            if( line.contains( userWorkingDirectory ) ) {
-                                userRandomToken = line.substring( userWorkingDirectory.length() ).trim();
+                        for (String line : uuidFileContent.split("\n")) {
+                            if (line.contains(userWorkingDirectory)) {
+                                userRandomToken = line.substring(userWorkingDirectory.length()).trim();
                                 break;
                             }
                         }
                     } else {
                         // the file does not contain the needed token, create a new one
                         userRandomToken = generateNewRandomToken();
-                        new LocalFileSystemOperations().appendToFile( uuidFileLocation,
-                                                                      userWorkingDirectory + "\t"
-                                                                                        + userRandomToken
-                                                                                        + "\n" );
+                        new LocalFileSystemOperations().appendToFile(uuidFileLocation,
+                                                                     userWorkingDirectory + "\t"
+                                                                                       + userRandomToken
+                                                                                       + "\n");
                     }
                 } else {
                     // no such file, create a new one
                     userRandomToken = generateNewRandomToken();
                     try {
                         uuidFile.createNewFile();
-                    } catch( IOException e ) {
-                        log.warn( "Unable to create file '" + uuidFile.getAbsolutePath() + "'" );
+                    } catch (IOException e) {
+                        log.warn("Unable to create file '" + uuidFile.getAbsolutePath() + "'");
                     }
-                    if( uuidFile.exists() ) {
-                        new LocalFileSystemOperations().appendToFile( uuidFileLocation,
-                                                                      userWorkingDirectory + "\t"
-                                                                                        + userRandomToken
-                                                                                        + "\n" );
+                    if (uuidFile.exists()) {
+                        new LocalFileSystemOperations().appendToFile(uuidFileLocation,
+                                                                     userWorkingDirectory + "\t"
+                                                                                       + userRandomToken
+                                                                                       + "\n");
                     }
                 }
             }
@@ -118,30 +119,26 @@ public class ExecutorUtils {
 
     public static String createExecutorId( String host, String randomToken, String threadId ) {
 
-        return ATS_HOST_ID + ":" + host + ";" + ATS_RANDOM_TOKEN + ":" + randomToken + ";" + ATS_THREAD_ID
+        return ATS_HOST_ID + ":" + host + ATS_EXECUTOR_ID_TOKEN_DELIMITER + ATS_RANDOM_TOKEN + ":" + randomToken
+               + ATS_EXECUTOR_ID_TOKEN_DELIMITER + ATS_THREAD_ID
                + ": " + threadId;
-    }
-
-    public static String createExecutorId( String host, String threadId ) {
-
-        return ATS_HOST_ID + ":" + host + ";" + ATS_THREAD_ID + ":" + threadId;
     }
 
     public static String extractHost( String sessionId ) {
 
-        return extractToken( sessionId, ATS_HOST_ID );
+        return extractToken(sessionId, ATS_HOST_ID);
     }
 
     public static String extractThread( String sessionId ) {
 
-        return extractToken( sessionId, ATS_THREAD_ID );
+        return extractToken(sessionId, ATS_THREAD_ID);
     }
 
     private static String extractToken( String sessionId, String key ) {
 
-        for( String token : sessionId.split( ";" ) ) {
-            if( token.startsWith( key ) ) {
-                return token.replace( key + ":", "" ).trim();
+        for (String token : sessionId.split(ATS_EXECUTOR_ID_TOKEN_DELIMITER)) {
+            if (token.startsWith(key)) {
+                return token.replace(key + ":", "").trim();
             }
         }
 

@@ -40,7 +40,10 @@ public class ResourcesRepository {
 
     public synchronized int putResource( String sessionId, Object resource ) {
 
-        Map<Integer, Object> map = new HashMap<>();
+        Map<Integer, Object> map = resourcesMap.get(sessionId);
+        if (map == null) {
+            map = new HashMap<>();
+        }
         map.put(++resourceId, resource);
         resourcesMap.put(sessionId, map);
         return resourceId;
