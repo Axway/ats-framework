@@ -17,7 +17,10 @@ package com.axway.ats.agent.webapp.restservice.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
+
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.ComponentRepository;
 import com.axway.ats.agent.core.exceptions.NoCompatibleMethodFoundException;
@@ -30,6 +33,8 @@ import com.google.gson.Gson;
  * Class that is responsible for initialization, execution and deinitialization of resources ( Action class instances ).
  *  **/
 public class ResourcesManager {
+
+    private static final Logger LOG = Logger.getLogger(ResourcesManager.class);
 
     public synchronized static int initializeResource( ActionPojo pojo ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
@@ -46,7 +51,62 @@ public class ResourcesManager {
 
         int actionId = ResourcesRepository.getInstance().putResource(pojo.getSessionId(), actionClassInstance);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Action class '" + method.getDeclaringClass().getName() + "' received resource id '" + actionId
+                      + "'");
+        }
+
         return actionId;
+
+    }
+
+    public synchronized static int deinitializeResource( String sessionId, int resourceId ) {
+
+        Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(sessionId, resourceId);
+        if (actionClassInstance == null) {
+            throw new NoSuchElementException("Unable to delete resource with id '" + resourceId
+                                             + "' for session with id '"
+                                             + sessionId + "'. No such actionId exists");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Resource with id '" + resourceId + "' deleted");
+        }
+
+        return resourceId;
+    }
+
+    public synchronized static Object executeOverResource( ActionPojo pojo ) throws NoSuchActionException,
+                                                                             NoCompatibleMethodFoundException,
+                                                                             NoSuchComponentException,
+                                                                             ClassNotFoundException,
+                                                                             InstantiationException,
+                                                                             IllegalAccessException,
+                                                                             IllegalArgumentException,
+                                                                             InvocationTargetException {
+
+        Object actionClassInstance = ResourcesRepository.getInstance().getResource(pojo.getSessionId(),
+                                                                                   pojo.getResourceId());
+        Method method = getActionMethod(pojo);
+        if (pojo.getArgumentsTypes() == null) {
+            return method.invoke(actionClassInstance, new Object[]{});
+        }
+        if (pojo.getArgumentsTypes().length != pojo.getArgumentsValues().length) {
+            throw new RuntimeException("Provided action method arguments types and arguments values have different length");
+        }
+        
+        Object[] args = getActualArgumentsValues(pojo);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Execution of action method '" + method.getDeclaringClass().getName() + "@" + method.getName()
+                      + "' with arguments {"
+                      + Arrays.asList(args).toString().substring(1, Arrays.asList(args).toString().length() - 1)
+                      + "} using resource with id '"
+                      + pojo.getResourceId() + "' from session with id '"
+                      + pojo.getSessionId() + "'");
+        }
+
+        return method.invoke(actionClassInstance, args);
 
     }
 
@@ -76,40 +136,6 @@ public class ResourcesManager {
                                                        actionMethodActualArgumentsClasses)
                                       .getMethod();
         }
-    }
-
-    public synchronized static int deinitializeResource( String sessionId, int resourceId ) {
-
-        Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(sessionId, resourceId);
-        if (actionClassInstance == null) {
-            throw new NoSuchElementException("Unable to delete resource with id '" + resourceId
-                                             + "' for session with id '"
-                                             + sessionId + "'. No such actionId exists");
-        }
-        return resourceId;
-    }
-
-    public synchronized static Object executeOverResource( ActionPojo pojo ) throws NoSuchActionException,
-                                                                             NoCompatibleMethodFoundException,
-                                                                             NoSuchComponentException,
-                                                                             ClassNotFoundException,
-                                                                             InstantiationException,
-                                                                             IllegalAccessException,
-                                                                             IllegalArgumentException,
-                                                                             InvocationTargetException {
-
-        Object actionClassInstance = ResourcesRepository.getInstance().getResource(pojo.getSessionId(),
-                                                                                   pojo.getResourceId());
-        Method method = getActionMethod(pojo);
-        if (pojo.getArgumentsTypes() == null) {
-            return method.invoke(actionClassInstance, new Object[]{});
-        }
-        if (pojo.getArgumentsTypes().length != pojo.getArgumentsValues().length) {
-            throw new RuntimeException("Provided action method arguments types and arguments values have different length");
-        }
-        Object[] args = getActualArgumentsValues(pojo);
-        return method.invoke(actionClassInstance, args);
-
     }
 
     private static Object[] getActualArgumentsValues( ActionPojo pojo ) throws ClassNotFoundException {

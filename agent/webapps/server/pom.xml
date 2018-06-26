@@ -17,97 +17,22 @@
 		<gson.version>2.7</gson.version>
 	</properties>
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.github.kongchen</groupId>
-										<artifactId>swagger-maven-plugin</artifactId>
-										<versionRange>[3.0.0,)</versionRange>
-										<goals>
-											<!-- plugin goals -->
-											<goal>generate</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
 		<plugins>
+			<!-- Generate Swagger documentation for REST API -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>wsgen</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<sei>com.axway.ats.agent.webapp.agentservice.AgentWsImpl</sei>
-					<genWsdl>true</genWsdl>
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.github.kongchen</groupId>
-				<artifactId>swagger-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<apiSources>
-						<apiSource>
-							<springmvc>false</springmvc>
-							<schemes>http</schemes>
-							<host>localhost:8089</host>
-							<basePath>/agentapp/api/v1</basePath>
-							<locations>com.axway.ats.agent.webapp.restservice.api</locations>
-							<info>
-								<title>ATS Agent REST API</title>
-								<version>v${project.version}</version>
-								<description>
-									ATS Agent REST API
-								</description>
-								<contact>
-									<email>group.ats.team@axway.com</email>
-									<name>ATS Team</name>
-									<url>http://github.com/Axway/ats-framework</url>
-								</contact>
-							</info>
-
-							<!-- securityDefinitions> <securityDefinition> <name>basicAuth</name> 
-								<type>basic</type> </securityDefinition> <securityDefinition> <json>/securityDefinition.json</json> 
-								</securityDefinition> </securityDefinitions -->
-
-							<!-- Support classpath or file absolute path here. 1) classpath e.g: 
-								"classpath:/markdown.hbs", "classpath:/swagger/templates/hello.html" 2) file 
-								e.g: "${basedir}/src/main/resources/markdown.hbs", "${basedir}/src/main/resources/template/hello.html" -->
-							<templatePath>${basedir}/src/main/config/swagger/templates/strapdown.html.hbs</templatePath>
-							<outputPath>${basedir}/target/generated/document.html</outputPath>
-							<swaggerDirectory>${basedir}/target/generated/swagger-ui</swaggerDirectory>
-						</apiSource>
-					</apiSources>
-				</configuration>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
 						<goals>
-							<goal>generate</goal>
+							<goal>java</goal>
 						</goals>
+						<configuration>
+							<mainClass>com.axway.ats.agent.webapp.restservice.api.documentation.SwaggerDocumentationGenerator</mainClass>
+							<classpathScope>compile</classpathScope>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -181,17 +106,5 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-		 <dependency>
-            <groupId>com.wordnik</groupId>
-            <artifactId>swagger-core</artifactId>
-            <scope>compile</scope>
-            <version>1.5.1-M2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.ws.rs</groupId>
-                    <artifactId>jsr311-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 	</dependencies>
 </project>

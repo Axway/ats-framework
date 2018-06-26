@@ -25,6 +25,7 @@ import org.hyperic.sigar.NetInterfaceConfig;
 import org.hyperic.sigar.Sigar;
 
 import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.ActionRequestInfo;
 
 public class MachineDescriptionOperations {
 
@@ -50,7 +51,11 @@ public class MachineDescriptionOperations {
                                                               "language",
                                                               "time zone" };
 
-    @Action( name = "Machine Description Operations Get Description")
+    @Action(
+            name = "Machine Description Operations Get Description")
+    @ActionRequestInfo(
+            requestMethod = "GET",
+            requestUrl = "machine/description")
     public String getDescription() throws Exception {
 
         StringBuilder sb = new StringBuilder();
