@@ -111,12 +111,4 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
 
         return atLeastOneQueueFailed;
     }
-
-    @Override
-    public void cleanupInternalObjectResources( String atsAgent, String internalObjectResourceId ) {
-
-        if (testcaseStateListener != null) {
-            testcaseStateListener.cleanupInternalObjectResources(atsAgent, internalObjectResourceId);
-        }
-    }
 }

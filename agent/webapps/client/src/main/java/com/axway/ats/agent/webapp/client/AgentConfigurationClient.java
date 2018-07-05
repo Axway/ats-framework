@@ -37,6 +37,7 @@ import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.system.LocalSystemOperations;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
@@ -75,7 +76,7 @@ public final class AgentConfigurationClient extends ActionClient {
      *            current JVM without routing through the web service
      */
     @PublicAtsApi
-    public AgentConfigurationClient( String atsAgent ) {
+    public AgentConfigurationClient( String atsAgent ) throws AgentException {
 
         // this client works on the level of Agent distribution, 
         // not on the level of Agent components
@@ -262,7 +263,7 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void setUseNewCallerIdOnEachRun() throws AgentException {
 
-        AgentServicePool.useNewUniqueId();
+        ExecutorUtils.setReuseUserRandomToken( true );
     }
 
     /**

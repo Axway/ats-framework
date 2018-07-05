@@ -15,16 +15,20 @@
  */
 package com.axway.ats.log.autodb;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+<<<<<<< 28962be579ed52a328534ed957a99e04fb42b367
 import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.log.AtsConsoleLogger;
+||||||| merged common ancestors
+import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
+
+=======
+>>>>>>> [Restify Agent] All methods have been implemented and documented
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 
 /**
@@ -32,24 +36,38 @@ import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException
  */
 public class DbAppenderConfiguration implements Serializable {
 
-    private static final long  serialVersionUID                      = 4786587768915142179L;
+    private static final long serialVersionUID                      = 4786587768915142179L;
     //connection parameters
+<<<<<<< 28962be579ed52a328534ed957a99e04fb42b367
     private String             host;
     private String             port;
     private String             database;
     private String             user;
     private String             password;
     private String             mode                                  = "";
+||||||| merged common ancestors
+    private String             host;
+    private String             database;
+    private String             user;
+    private String             password;
+    private String             mode                                  = "";
+=======
+    private String            host;
+    private String            database;
+    private String            user;
+    private String            password;
+    private String            mode                                  = "";
+>>>>>>> [Restify Agent] All methods have been implemented and documented
 
     // the capacity of our logging queue
-    private String             maxNumberLogEvents                    = "";
-    private static final int   DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
+    private String            maxNumberLogEvents                    = "";
+    private static final int  DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
 
     //are checkpoints enabled
-    private boolean            enableCheckpoints                     = true;
+    private boolean           enableCheckpoints                     = true;
 
     //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    transient private Priority loggingThreshold;
+    private int               loggingThreshold                      = -1;
 
     public String getHost() {
 
@@ -172,13 +190,13 @@ public class DbAppenderConfiguration implements Serializable {
         this.enableCheckpoints = enableCheckpoints;
     }
 
-    public Priority getLoggingThreshold() {
+    public int getLoggingThreshold() {
 
         return loggingThreshold;
     }
 
     public void setLoggingThreshold(
-                                     Priority loggingThreshold ) {
+                                     int loggingThreshold ) {
 
         this.loggingThreshold = loggingThreshold;
     }
@@ -257,41 +275,11 @@ public class DbAppenderConfiguration implements Serializable {
             return false;
         }
 
-        if (!loggingThreshold.equals(otherConfig.loggingThreshold)) {
+        if (loggingThreshold != otherConfig.loggingThreshold) {
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Custom deserialization of DbAppenderConfiguration
-     * @param s serialization stream.
-     * @throws IOException if IO exception.
-     * @throws ClassNotFoundException if class not found.
-     */
-    private void readObject(
-                             final ObjectInputStream s ) throws IOException, ClassNotFoundException {
-
-        s.defaultReadObject();
-        int levelInt = s.readInt();
-        loggingThreshold = Level.toLevel(levelInt);
-    }
-
-    /**
-     * Serialize DbAppenderConfiguration.
-     * @param s serialization stream.
-     * @throws IOException if exception during serialization.
-     */
-    private void writeObject(
-                              final ObjectOutputStream s ) throws IOException {
-
-        s.defaultWriteObject();
-        if (loggingThreshold == null) {
-            // should be set in RemoteLoggingConfiguration
-            throw new IllegalStateException("Logging level should not be null");
-        }
-        s.writeInt(loggingThreshold.toInt());
     }
 
 }

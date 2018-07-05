@@ -25,6 +25,7 @@ import com.axway.ats.action.objects.model.Package;
 import com.axway.ats.action.objects.model.PackageException;
 import com.axway.ats.action.objects.model.PackageHeader;
 import com.axway.ats.action.system.SystemOperations;
+import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.Md5SumMode;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -446,7 +447,7 @@ public class FilePackage implements Package {
         return getAbsolutePath();
     }
 
-    private IFileSystemOperations getFileSystemOperationsImplementationFor( String atsAgent ) {
+    private IFileSystemOperations getFileSystemOperationsImplementationFor( String atsAgent ) throws AgentException {
 
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemOperations();

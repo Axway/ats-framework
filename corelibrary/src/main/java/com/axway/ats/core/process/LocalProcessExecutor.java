@@ -35,8 +35,6 @@ import com.axway.ats.common.process.ProcessExecutorException;
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.process.model.IProcessExecutor;
-import com.axway.ats.core.threads.ThreadsPerCaller;
-import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 
@@ -70,11 +68,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     private boolean             suppressLogMessages;
     private boolean             doNotUseStandardInput;
 
-    private String              caller;
-
-    public LocalProcessExecutor( String caller, String command, String... commandArguments ) {
-
-        this.caller = caller;
+    public LocalProcessExecutor( String command, String... commandArguments ) {
 
         this.commandDescription = command;
 
@@ -122,11 +116,11 @@ public class LocalProcessExecutor implements IProcessExecutor {
             }
             this.theProcess = processBuilder.start();
 
-            errorReaderThread = new ProcessOutputReader(caller, "ERROR OUTPUT", this.theProcess,
+            errorReaderThread = new ProcessOutputReader("ERROR OUTPUT", this.theProcess,
                                                         this.theProcess.getErrorStream(), logErrorOutput,
                                                         errorOutputFile);
 
-            outputReaderThread = new ProcessOutputReader(caller, "STANDARD OUTPUT", this.theProcess,
+            outputReaderThread = new ProcessOutputReader("STANDARD OUTPUT", this.theProcess,
                                                          this.theProcess.getInputStream(), logStandardOutput,
                                                          standardOutputFile);
 
@@ -218,14 +212,14 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 //      UNIX95 = Unix 95 behavior
                 //      XPG4   = X/Open's Portability Guide Issue 4
                 // The UNIX95 variable (when set) simply alters the way the 'ps' command functions. In our case enabling '-A' and '-o' options
-                pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "/bin/sh", "-c",
+                pExecutor = new LocalProcessExecutor("/bin/sh", "-c",
                                                      "export UNIX95=XPG4 && " + command);
             } else {
-                pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "/bin/sh", "-c", command);
+                pExecutor = new LocalProcessExecutor("/bin/sh", "-c", command);
             }
         } else if (OperatingSystemType.getCurrentOsType().isWindows()) {
 
-            pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "cmd",
+            pExecutor = new LocalProcessExecutor("cmd",
                                                  "/c",
                                                  "wmic process where (commandline like \"%"
                                                        + startCommandSnippet
@@ -452,8 +446,6 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         private final Logger        log;
 
-        private String              caller;
-
         private static final int    READ_TIMEOUT = 60 * 1000;                  // in milliseconds
 
         private final StringBuilder content      = new StringBuilder();
@@ -470,12 +462,10 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         private CountDownLatch      countdownLatchForExternalProcessCompletion;
 
-        ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
+        ProcessOutputReader( String type, Process externalProcess, InputStream is,
                              boolean logOutput, String outputFile ) {
 
             log = Logger.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
-
-            this.caller = caller;
 
             this.externalProcess = externalProcess;
 
@@ -517,8 +507,6 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         @Override
         public void run() {
-
-            ThreadsPerCaller.registerThread(caller);
 
             BufferedReader bufReaderStream = null;
             try {
@@ -588,7 +576,6 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 IoUtils.closeStream(bufReaderStream);
 
                 countdownLatchForExternalProcessCompletion.countDown();
-                ThreadsPerCaller.unregisterThread();
             }
         }
 

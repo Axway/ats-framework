@@ -21,15 +21,17 @@ import java.util.List;
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.core.threading.ImportantThread;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.exceptions.NoSuchLoadQueueException;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
+import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.model.LoadQueueResult;
 
 /**
+ * NOTE: THIS CODE IS NOT OFFICIALLY EXPOSED NOR IT IS REALLY TESTED
+ * 
  * This class is responsible for the execution of an action in multiple threads
  * in the local JVM
  */
@@ -103,7 +105,8 @@ public class LocalLoadExecutor extends LocalExecutor {
                         }
                     }
                 });
-                helpThread.setDescription(queueName);
+                helpThread.setExecutorId( Thread.currentThread().getName() );
+                helpThread.setDescription( queueName );
                 helpThread.start();
                 log.info("Action queue '" + queueName + "' scheduled for asynchronous execution");
             }

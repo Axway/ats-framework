@@ -430,7 +430,7 @@ public class MobileDeviceUtils {
                                            e);
             }
         }
-        return new LocalProcessExecutor(HostUtils.LOCAL_HOST_NAME, command, commandArguments);
+        return new LocalProcessExecutor(command, commandArguments);
     }
 
 }

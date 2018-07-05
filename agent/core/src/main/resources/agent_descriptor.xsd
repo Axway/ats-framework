@@ -6,12 +6,15 @@
             <xs:sequence>
 
                 <xs:element name="actionClass" minOccurs="1" maxOccurs="unbounded">
+                
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
                             Action class element
                         </xs:documentation>
                     </xs:annotation>
+                    
                     <xs:complexType>
+                    
                         <xs:attribute name="name" type="classPath" use="required">
                             <xs:annotation>
                                 <xs:documentation xml:lang="en">
@@ -21,7 +24,20 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:attribute>
+                        
+                        <xs:attribute name="initializeRequestUrl" type="URL" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    Relative ( to the ATS agent REST API location ) URL 
+                                    for creating instance of this Action class on the agent.
+                                    For internal use only. Do not use it for your own custom actions.
+                                    e.g. processes/executor
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        
                     </xs:complexType>
+                    
                 </xs:element>
 
                 <xs:element name="initHandler" minOccurs="0" maxOccurs="1">
@@ -188,6 +204,12 @@
     <xs:simpleType name="classPath">
         <xs:restriction base="xs:string">
             <xs:pattern value="[a-zA-Z0-9\\.\\_\\-]+" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="URL">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9//-]+" />
         </xs:restriction>
     </xs:simpleType>
 

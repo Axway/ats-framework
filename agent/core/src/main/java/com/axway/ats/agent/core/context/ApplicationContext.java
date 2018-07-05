@@ -16,20 +16,13 @@
 package com.axway.ats.agent.core.context;
 
 /**
- * Context to be used by all components when they any state to be
- * available across all sessions. 
+ * Application wide context accessible by all ATS Agent components.
+ * 
+ * Currently all shared data is defined in the parent class.
  */
 public class ApplicationContext extends Context {
 
     private static ApplicationContext appContext;
-
-    // used for maintaining session between Agent and its caller
-    public final static String        ATS_UID_SESSION_TOKEN     = "ATS_UID";
-    /**
-     * separates IP address from UID
-     * Used to determine which queues to be cancelled on AgentWsImpl.onTestStart() method invocation
-     **/
-    public final static String        CALLER_ID_TOKEN_SEPARATOR = "; ";
 
     private ApplicationContext() {
 
@@ -37,23 +30,10 @@ public class ApplicationContext extends Context {
 
     public static synchronized ApplicationContext getInstance() {
 
-        if (appContext == null) {
+        if( appContext == null ) {
             appContext = new ApplicationContext();
         }
 
         return appContext;
     }
-
-    public static String createCallerID( String agentIpAddress, String uid ) {
-
-        return "<Caller: " + agentIpAddress + CALLER_ID_TOKEN_SEPARATOR + "ATS UID: " + uid + ">";
-    }
-
-    public static String extractCallerIP( String callerID ) {
-
-        String[] tokens = callerID.split(CALLER_ID_TOKEN_SEPARATOR);
-        String ip = tokens[0].replace("<Caller:", "").trim();
-        return ip;
-    }
-
 }

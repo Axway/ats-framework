@@ -15,326 +15,423 @@
  */
 package com.axway.ats.agent.components.system.operations;
 
-import com.axway.ats.agent.core.action.CallerRelatedAction;
-import com.axway.ats.agent.core.action.CallerRelatedInfoRepository;
 import com.axway.ats.agent.core.model.Action;
+import com.axway.ats.agent.core.model.ActionRequestInfo;
 import com.axway.ats.agent.core.model.Parameter;
 import com.axway.ats.common.filesystem.snapshot.FileSystemSnapshotException;
 import com.axway.ats.core.filesystem.snapshot.LocalFileSystemSnapshot;
 import com.axway.ats.core.filesystem.snapshot.SnapshotConfiguration;
 
-public class InternalFileSystemSnapshot extends CallerRelatedAction {
+public class InternalFileSystemSnapshot {
 
-    private static final String OBJECT_KEY_PREFIX = CallerRelatedInfoRepository.KEY_FILESYSTEM_SNAPSHOT;
+    private LocalFileSystemSnapshot localFileSystemSnapshot = null;
 
-    public InternalFileSystemSnapshot( String caller ) {
+    public InternalFileSystemSnapshot() {
 
-        super(caller);
     }
 
     @Action
-    public String initFileSystemSnapshot(
-                                          @Parameter( name = "name") String name,
-                                          @Parameter( name = "configuration") SnapshotConfiguration configuration ) {
+    @ActionRequestInfo(
+            requestMethod = "PUT",
+            requestUrl = "filesystem/snapshot")
+    public void initFileSystemSnapshot(
+                                        @Parameter(
+                                                name = "name") String name,
+                                        @Parameter(
+                                                name = "configuration") SnapshotConfiguration configuration ) {
 
-        // Add a new instance into the repository and return its unique counter 
-        // which will be used in next calls
-        return dataRepo.addObject(OBJECT_KEY_PREFIX, new LocalFileSystemSnapshot(name, configuration));
+        this.localFileSystemSnapshot = new LocalFileSystemSnapshot(name, configuration);
     }
 
     /**
      * Return a remote instance
-     * 
-     * @param internalProcessId
-     * @return
+     * @return {@link LocalFileSystemSnapshot}
      */
     @Action
-    public LocalFileSystemSnapshot getFileSystemSnapshot(
-                                                          @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo(
+            requestMethod = "GET",
+            requestUrl = "filesystem/snapshot")
+    public LocalFileSystemSnapshot getFileSystemSnapshot() {
 
-        return (LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId);
+        return this.localFileSystemSnapshot;
     }
 
     /**
      * Replace a remote instance with a new one
-     * 
-     * @param internalProcessId
      * @param newSnapshot
      * @return
      */
     @Action
-    public String pushFileSystemSnapshot(
-                                          @Parameter( name = "internalProcessId") String internalProcessId,
-                                          @Parameter( name = "newSnapshot") LocalFileSystemSnapshot newSnapshot ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot")
+    public void pushFileSystemSnapshot(
 
-        // clean up the old object
-        dataRepo.removeObject(internalProcessId);
+                                        @Parameter(
+                                                name = "newSnapshot") LocalFileSystemSnapshot newSnapshot ) {
 
-        // from now on we will use the new instance
-        return dataRepo.addObject(OBJECT_KEY_PREFIX, newSnapshot);
+        this.localFileSystemSnapshot = newSnapshot;
     }
 
     /**
      * Create a new remote instance
-     * 
-     * @param internalProcessId
+     * @param srcFileSystemSnapshot the source file system snapshot from which a new one will be created
      * @param newSnapshotName
      * @return
      */
     @Action
-    public String newSnapshot(
-                               @Parameter( name = "internalProcessId") String internalProcessId,
-                               @Parameter( name = "newSnapshotName") String newSnapshotName ) {
+    @ActionRequestInfo(
+            requestMethod = "PUT",
+            requestUrl = "filesystem/snapshot/new")
+    public void newSnapshot(
+                             @Parameter(
+                                     name = "srcFileSystemSnapshot") LocalFileSystemSnapshot srcFileSystemSnapshot,
+                             @Parameter(
+                                     name = "newSnapshotName") String newSnapshotName ) {
 
-        return dataRepo.addObject(OBJECT_KEY_PREFIX,
-                                  ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                + internalProcessId)).newSnapshot(newSnapshotName));
+        this.localFileSystemSnapshot = (LocalFileSystemSnapshot) srcFileSystemSnapshot.newSnapshot(newSnapshotName);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/name")
     public void setName(
-                         @Parameter( name = "internalProcessId") String internalProcessId,
-                         @Parameter( name = "name") String name ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).setName(name);
+                         @Parameter(
+                                 name = "name") String name ) {
+
+        this.localFileSystemSnapshot.setName(name);
 
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "PUT",
+            requestUrl = "filesystem/snapshot/directory/add")
     public void addDirectory(
-                              @Parameter( name = "internalProcessId") String internalProcessId,
-                              @Parameter( name = "directoryAlias") String directoryAlias,
-                              @Parameter( name = "directoryPath") String directoryPath ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).addDirectory(directoryAlias,
-                                                                                         directoryPath);
+                              @Parameter(
+                                      name = "directoryAlias") String directoryAlias,
+                              @Parameter(
+                                      name = "directoryPath") String directoryPath ) {
+
+        this.localFileSystemSnapshot.addDirectory(directoryAlias,
+                                                  directoryPath);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/directory/skip")
     public void skipDirectory(
-                               @Parameter( name = "internalProcessId") String internalProcessId,
-                               @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                               @Parameter( name = "relativeDirectoryPath") String relativeDirectoryPath ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipDirectory(rootDirectoryAlias,
-                                                                                          relativeDirectoryPath);
+                               @Parameter(
+                                       name = "rootDirectoryAlias") String rootDirectoryAlias,
+                               @Parameter(
+                                       name = "relativeDirectoryPath") String relativeDirectoryPath ) {
+
+        this.localFileSystemSnapshot.skipDirectory(rootDirectoryAlias,
+                                                   relativeDirectoryPath);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/directory/skip/byRegex")
     public void skipDirectoryByRegex(
-                                      @Parameter( name = "internalProcessId") String internalProcessId,
-                                      @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                      @Parameter( name = "relativeDirectoryPath") String relativeDirectoryPath ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipDirectoryByRegex(rootDirectoryAlias,
-                                                                                                 relativeDirectoryPath);
+                                      @Parameter(
+                                              name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                      @Parameter(
+                                              name = "relativeDirectoryPath") String relativeDirectoryPath ) {
+
+        this.localFileSystemSnapshot.skipDirectoryByRegex(rootDirectoryAlias,
+                                                          relativeDirectoryPath);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/skip")
     public void skipFile(
-                          @Parameter( name = "internalProcessId") String internalProcessId,
-                          @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                          @Parameter( name = "relativeFilePath") String relativeFilePath,
-                          @Parameter( name = "skipRules") int... skipRules ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipFile(rootDirectoryAlias,
-                                                                                     relativeFilePath,
-                                                                                     skipRules);
+                          @Parameter(
+                                  name = "rootDirectoryAlias") String rootDirectoryAlias,
+                          @Parameter(
+                                  name = "relativeFilePath") String relativeFilePath,
+                          @Parameter(
+                                  name = "skipRules") int... skipRules ) {
+
+        this.localFileSystemSnapshot.skipFile(rootDirectoryAlias,
+                                              relativeFilePath,
+                                              skipRules);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/skip/byRegex")
     public void skipFileByRegex(
-                                 @Parameter( name = "internalProcessId") String internalProcessId,
-                                 @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                 @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                 @Parameter( name = "skipRules") int... skipRules ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipFileByRegex(rootDirectoryAlias,
-                                                                                            relativeFilePath,
-                                                                                            skipRules);
+                                 @Parameter(
+                                         name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                 @Parameter(
+                                         name = "relativeFilePath") String relativeFilePath,
+                                 @Parameter(
+                                         name = "skipRules") int... skipRules ) {
+
+        this.localFileSystemSnapshot.skipFileByRegex(rootDirectoryAlias,
+                                                     relativeFilePath,
+                                                     skipRules);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/check")
     public void checkFile(
-                           @Parameter( name = "internalProcessId") String internalProcessId,
-                           @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                           @Parameter( name = "relativeFilePath") String relativeFilePath,
-                           @Parameter( name = "checkRules") int... checkRules ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).checkFile(rootDirectoryAlias,
-                                                                                      relativeFilePath,
-                                                                                      checkRules);
+                           @Parameter(
+                                   name = "rootDirectoryAlias") String rootDirectoryAlias,
+                           @Parameter(
+                                   name = "relativeFilePath") String relativeFilePath,
+                           @Parameter(
+                                   name = "checkRules") int... checkRules ) {
+
+        this.localFileSystemSnapshot.checkFile(rootDirectoryAlias,
+                                               relativeFilePath,
+                                               checkRules);
     }
 
     @Action
-    public void skipPropertyWithKey( @Parameter( name = "internalProcessId") String internalProcessId,
-                                     @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                     @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                     @Parameter( name = "key") String key,
-                                     @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/property/skip/key")
+    public void skipPropertyWithKey(
+                                     @Parameter(
+                                             name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                     @Parameter(
+                                             name = "relativeFilePath") String relativeFilePath,
+                                     @Parameter(
+                                             name = "key") String key,
+                                     @Parameter(
+                                             name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipPropertyWithKey(rootDirectoryAlias,
-                                                                                                relativeFilePath,
-                                                                                                key,
-                                                                                                matchType);
+        this.localFileSystemSnapshot.skipPropertyWithKey(rootDirectoryAlias,
+                                                         relativeFilePath,
+                                                         key,
+                                                         matchType);
     }
 
     @Action
-    public void skipPropertyWithValue( @Parameter( name = "internalProcessId") String internalProcessId,
-                                       @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                       @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                       @Parameter( name = "value") String value,
-                                       @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/property/skip/value")
+    public void skipPropertyWithValue(
+                                       @Parameter(
+                                               name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                       @Parameter(
+                                               name = "relativeFilePath") String relativeFilePath,
+                                       @Parameter(
+                                               name = "value") String value,
+                                       @Parameter(
+                                               name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipPropertyWithKey(rootDirectoryAlias,
-                                                                                                relativeFilePath,
-                                                                                                value,
-                                                                                                matchType);
+        this.localFileSystemSnapshot.skipPropertyWithKey(rootDirectoryAlias,
+                                                         relativeFilePath,
+                                                         value,
+                                                         matchType);
     }
 
     @Action
-    public void skipNodeByValue( @Parameter( name = "internalProcessId") String internalProcessId,
-                                 @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                 @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                 @Parameter( name = "nodeXpath") String nodeXpath,
-                                 @Parameter( name = "value") String value,
-                                 @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/xml/skip/node/value")
+    public void skipNodeByValue(
+                                 @Parameter(
+                                         name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                 @Parameter(
+                                         name = "relativeFilePath") String relativeFilePath,
+                                 @Parameter(
+                                         name = "nodeXpath") String nodeXpath,
+                                 @Parameter(
+                                         name = "value") String value,
+                                 @Parameter(
+                                         name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipNodeByValue(rootDirectoryAlias,
-                                                                                            relativeFilePath,
-                                                                                            nodeXpath,
-                                                                                            value,
-                                                                                            matchType);
+        this.localFileSystemSnapshot.skipNodeByValue(rootDirectoryAlias,
+                                                     relativeFilePath,
+                                                     nodeXpath,
+                                                     value,
+                                                     matchType);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/xml/skip/node/attribute")
     public void
-            skipNodeByAttribute( @Parameter( name = "internalProcessId") String internalProcessId,
-                                 @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                 @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                 @Parameter( name = "nodeXpath") String nodeXpath,
-                                 @Parameter( name = "attributeKey") String attributeKey,
-                                 @Parameter( name = "attributeValue") String attributeValue,
-                                 @Parameter( name = "attributeValueMatchType") String attributeValueMatchType ) {
+            skipNodeByAttribute(
+                                 @Parameter(
+                                         name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                 @Parameter(
+                                         name = "relativeFilePath") String relativeFilePath,
+                                 @Parameter(
+                                         name = "nodeXpath") String nodeXpath,
+                                 @Parameter(
+                                         name = "attributeKey") String attributeKey,
+                                 @Parameter(
+                                         name = "attributeValue") String attributeValue,
+                                 @Parameter(
+                                         name = "attributeValueMatchType") String attributeValueMatchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipNodeByAttribute(rootDirectoryAlias,
-                                                                                                relativeFilePath,
-                                                                                                nodeXpath,
-                                                                                                attributeKey,
-                                                                                                attributeValue,
-                                                                                                attributeValueMatchType);
+        this.localFileSystemSnapshot.skipNodeByAttribute(rootDirectoryAlias,
+                                                         relativeFilePath,
+                                                         nodeXpath,
+                                                         attributeKey,
+                                                         attributeValue,
+                                                         attributeValueMatchType);
     }
 
     @Action
-    public void skipIniSection( @Parameter( name = "internalProcessId") String internalProcessId,
-                                @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                @Parameter( name = "section") String section,
-                                @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/ini/skip/section")
+    public void skipIniSection(
+                                @Parameter(
+                                        name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                @Parameter(
+                                        name = "relativeFilePath") String relativeFilePath,
+                                @Parameter(
+                                        name = "section") String section,
+                                @Parameter(
+                                        name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipIniSection(rootDirectoryAlias,
-                                                                                           relativeFilePath,
-                                                                                           section,
-                                                                                           matchType);
+        this.localFileSystemSnapshot.skipIniSection(rootDirectoryAlias,
+                                                    relativeFilePath,
+                                                    section,
+                                                    matchType);
     }
 
     @Action
-    public void skipIniPropertyWithKey( @Parameter( name = "internalProcessId") String internalProcessId,
-                                        @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                        @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                        @Parameter( name = "section") String section,
-                                        @Parameter( name = "key") String key,
-                                        @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/ini/skip/property/key")
+    public void skipIniPropertyWithKey(
+                                        @Parameter(
+                                                name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                        @Parameter(
+                                                name = "relativeFilePath") String relativeFilePath,
+                                        @Parameter(
+                                                name = "section") String section,
+                                        @Parameter(
+                                                name = "key") String key,
+                                        @Parameter(
+                                                name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipIniPropertyWithKey(rootDirectoryAlias,
-                                                                                                   relativeFilePath,
-                                                                                                   section,
-                                                                                                   key,
-                                                                                                   matchType);
+        this.localFileSystemSnapshot.skipIniPropertyWithKey(rootDirectoryAlias,
+                                                            relativeFilePath,
+                                                            section,
+                                                            key,
+                                                            matchType);
     }
 
     @Action
-    public void skipIniPropertyWithValue( @Parameter( name = "internalProcessId") String internalProcessId,
-                                          @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                                          @Parameter( name = "relativeFilePath") String relativeFilePath,
-                                          @Parameter( name = "section") String section,
-                                          @Parameter( name = "value") String value,
-                                          @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/ini/skip/property/value")
+    public void skipIniPropertyWithValue(
+                                          @Parameter(
+                                                  name = "rootDirectoryAlias") String rootDirectoryAlias,
+                                          @Parameter(
+                                                  name = "relativeFilePath") String relativeFilePath,
+                                          @Parameter(
+                                                  name = "section") String section,
+                                          @Parameter(
+                                                  name = "value") String value,
+                                          @Parameter(
+                                                  name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipIniPropertyWithValue(rootDirectoryAlias,
-                                                                                                     relativeFilePath,
-                                                                                                     section,
-                                                                                                     value,
-                                                                                                     matchType);
+        this.localFileSystemSnapshot.skipIniPropertyWithValue(rootDirectoryAlias,
+                                                              relativeFilePath,
+                                                              section,
+                                                              value,
+                                                              matchType);
     }
 
     @Action
-    public void skipTextLine( @Parameter( name = "internalProcessId") String internalProcessId,
-                              @Parameter( name = "rootDirectoryAlias") String rootDirectoryAlias,
-                              @Parameter( name = "relativeFilePath") String relativeFilePath,
-                              @Parameter( name = "line") String line,
-                              @Parameter( name = "matchType") String matchType ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/file/skip/line")
+    public void skipTextLine(
+                              @Parameter(
+                                      name = "rootDirectoryAlias") String rootDirectoryAlias,
+                              @Parameter(
+                                      name = "relativeFilePath") String relativeFilePath,
+                              @Parameter(
+                                      name = "line") String line,
+                              @Parameter(
+                                      name = "matchType") String matchType ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                      + internalProcessId)).skipTextLine(rootDirectoryAlias,
-                                                                                         relativeFilePath,
-                                                                                         line,
-                                                                                         matchType);
+        this.localFileSystemSnapshot.skipTextLine(rootDirectoryAlias,
+                                                  relativeFilePath,
+                                                  line,
+                                                  matchType);
     }
 
     @Action
-    public void takeSnapshot(
-                              @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/take")
+    public void takeSnapshot() {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).takeSnapshot();
+        this.localFileSystemSnapshot.takeSnapshot();
     }
 
     @Action
+    @ActionRequestInfo(
+                       requestMethod = "POST",
+                       requestUrl = "filesystem/snapshot/compare")
     public void compare(
-                         @Parameter( name = "thisInternalProcessId") String thisInternalProcessId,
-                         @Parameter( name = "thatInternalProcessId") String thatInternalProcessId ) {
-
-        LocalFileSystemSnapshot thisLocalFileSystemSnapshot = (LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                                           + thisInternalProcessId);
-        LocalFileSystemSnapshot thatLocalFileSystemSnapshot = (LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX
-                                                                                                           + thatInternalProcessId);
+                         @Parameter(
+                                 name = "thisLocalFileSystemSnapshot") LocalFileSystemSnapshot thisLocalFileSystemSnapshot,
+                         @Parameter(
+                                 name = "thatLocalFileSystemSnapshot") LocalFileSystemSnapshot thatLocalFileSystemSnapshot ) {
 
         thisLocalFileSystemSnapshot.compare(thatLocalFileSystemSnapshot);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/loadFromFile")
     public void loadFromFile(
-                              @Parameter( name = "internalProcessId") String internalProcessId,
-                              @Parameter( name = "sourceFile") String sourceFile ) throws FileSystemSnapshotException {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).loadFromFile(sourceFile);
+                              @Parameter(
+                                      name = "sourceFile") String sourceFile ) throws FileSystemSnapshotException {
+
+        this.localFileSystemSnapshot.loadFromFile(sourceFile);
     }
 
     @Action
+    @ActionRequestInfo(
+            requestMethod = "POST",
+            requestUrl = "filesystem/snapshot/toFile")
     public void toFile(
-                        @Parameter( name = "internalProcessId") String internalProcessId,
-                        @Parameter( name = "backupFile") String backupFile ) {
+                        @Parameter(
+                                name = "backupFile") String backupFile ) {
 
-        ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).toFile(backupFile);
+        this.localFileSystemSnapshot.toFile(backupFile);
     }
 
     @Action
-    public String toString(
-                            @Parameter( name = "internalProcessId") String internalProcessId ) {
+    @ActionRequestInfo(
+                       requestMethod = "GET",
+                       requestUrl = "filesystem/snapshot/description")
+    public String getDescription() {
 
-        return ((LocalFileSystemSnapshot) dataRepo.getObject(OBJECT_KEY_PREFIX + internalProcessId)).toString();
+        return this.localFileSystemSnapshot.getDescription();
+
     }
 }

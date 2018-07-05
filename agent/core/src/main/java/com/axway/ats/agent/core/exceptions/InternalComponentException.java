@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.axway.ats.core.utils.HostUtils;
-import com.axway.ats.core.utils.StringUtils;
 
 /**
  * This exception will be thrown whenever an exception occurs during action execution

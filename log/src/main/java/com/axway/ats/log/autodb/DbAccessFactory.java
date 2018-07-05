@@ -96,10 +96,9 @@ public class DbAccessFactory {
      * @throws DatabaseAccessException
      */
 
-    public SQLServerDbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender(
-                                                                                 String callerId ) throws DatabaseAccessException {
+    public SQLServerDbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender( ) throws DatabaseAccessException {
 
-        PassiveDbAppender loggingAppender = PassiveDbAppender.getCurrentInstance(callerId);
+        PassiveDbAppender loggingAppender = PassiveDbAppender.getCurrentInstance();
         if (loggingAppender == null) {
             throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS PassiveDbAppender for caller '"
                                               + ThreadsPerCaller.getCaller()

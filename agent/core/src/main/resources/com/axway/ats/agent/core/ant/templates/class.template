@@ -12,6 +12,7 @@ $MEMBER_CLASS_IMPORT$
 public class $CLASS_NAME$ extends ActionClient {
 
     private static final String COMPONENT_NAME = "$COMPONENT_NAME$";
+    public  static final String INITIALIZE_REQUEST_URL = "$INITIALIZE_REQUEST_URL$";
     
 $MEMBER_CLASS_DECLARATION$
     
@@ -26,9 +27,9 @@ $MEMBER_CLASS_NO_ARG_INIT$
     }
 
     @PublicAtsApi
-    public $CLASS_NAME$( String host ) {
+    public $CLASS_NAME$( String host ) throws AgentException {
 
-        super( host, COMPONENT_NAME );
+        super( host, COMPONENT_NAME, INITIALIZE_REQUEST_URL );
         
 $MEMBER_CLASS_ONE_ARG_INIT$
     }

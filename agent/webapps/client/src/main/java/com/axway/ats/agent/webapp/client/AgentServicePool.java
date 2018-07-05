@@ -15,48 +15,53 @@
  */
 package com.axway.ats.agent.webapp.client;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.MessageContext;
 
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
 import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.context.ApplicationContext;
+||||||| merged common ancestors
+import org.apache.log4j.Logger;
+
+import com.axway.ats.agent.core.configuration.AgentConfigurator;
+import com.axway.ats.agent.core.context.ApplicationContext;
+=======
+import com.axway.ats.agent.core.configuration.AgentConfigurator;
+>>>>>>> Initial commit for running tests in parallel
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.agentservice.AgentWsDefinitions;
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.utils.IoUtils;
+||||||| merged common ancestors
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.filesystem.LocalFileSystemOperations;
+import com.axway.ats.core.utils.IoUtils;
+=======
+import com.axway.ats.core.utils.ExecutorUtils;
+>>>>>>> Initial commit for running tests in parallel
 import com.axway.ats.core.utils.SslUtils;
 import com.sun.xml.ws.client.BindingProviderProperties;
 
 public class AgentServicePool {
 
-    private static Logger                 log        = Logger.getLogger(AgentServicePool.class);
-
     //singleton instance
     private static AgentServicePool       instance;
 
-    //hashmap of all service ports
+    // map of all service ports
     private HashMap<String, AgentService> servicePorts;
-
-    // A universe wide ;) unique ID used for maintaining session between Agent and its caller.
-    // We use one instance per Test Executor JVM.
-    // It is used by the Agent to recognize the caller. 
-    private String                        uniqueId;
-
-    private static boolean                useNewUuId = false;
 
     private AgentServicePool() {
 
@@ -66,31 +71,60 @@ public class AgentServicePool {
         //TestNG enables assertion by default and the code for
         //getting a service port fails miserably due to a forgotten
         //assert statement in the JAX-WS implementation which fails
-        Thread.currentThread().getContextClassLoader().setPackageAssertionStatus("com.sun.xml.ws", false);
+        Thread.currentThread().getContextClassLoader().setPackageAssertionStatus( "com.sun.xml.ws", false );
     }
 
     public static AgentServicePool getInstance() {
 
-        if (instance == null) {
+        if( instance == null ) {
             instance = new AgentServicePool();
         }
 
         return instance;
     }
 
-    public static void useNewUniqueId() {
-
-        useNewUuId = true;
-    }
-
-    public AgentService getClient( String atsAgent ) throws AgentException {
+    /**
+     * Returns client which is concerned only about Agent address 
+     * without worry about the caller thread.
+     * 
+     * Used when simply running some sort of action on the Agent side.
+     * 
+     * @param agentHost
+     * @param testcaseSessionId
+     * @return
+     * @throws AgentException
+     */
+    public AgentService getClientForHostAndTestcase( String agentHost,
+                                                     String testcaseSessionId ) throws AgentException {
 
         // we assume the ATS Agent address here comes with IP and PORT
 
-        AgentService servicePort = servicePorts.get(atsAgent);
-        if (servicePort == null) {
-            servicePort = createServicePort(atsAgent);
-            servicePorts.put(atsAgent, servicePort);
+        AgentService servicePort = servicePorts.get( testcaseSessionId );
+        if( servicePort == null ) {
+            servicePort = createServicePort( agentHost );
+            servicePorts.put( testcaseSessionId, servicePort );
+        }
+
+        return servicePort;
+    }
+
+    /**
+     * Returns client which is concerned about Agent address and the caller thread.
+     * 
+     * Used when controlling the logging on the Agent side.
+     * 
+     * @param atsAgent
+     * @return
+     * @throws AgentException
+     */
+    public AgentService getClientForHost( String atsAgent ) throws AgentException {
+
+        // we assume the ATS Agent address here comes with IP and PORT
+
+        AgentService servicePort = servicePorts.get( atsAgent );
+        if( servicePort == null ) {
+            servicePort = createServicePort( atsAgent );
+            servicePorts.put( atsAgent, servicePort );
         }
 
         return servicePort;
@@ -99,8 +133,18 @@ public class AgentServicePool {
     private AgentService createServicePort( String host ) throws AgentException {
 
         try {
+<<<<<<< 9eeb7d42a8d5d8bd4b1e44fc93c05f170744823e
             String protocol = AgentConfigurationLandscape.getInstance( host ).getConnectionProtocol();
             if (protocol == null) {
+||||||| merged common ancestors
+
+            String protocol = AgentConfigurator.getConnectionProtocol(host);
+            if (protocol == null) {
+=======
+
+            String protocol = AgentConfigurator.getConnectionProtocol( host );
+            if( protocol == null ) {
+>>>>>>> Initial commit for running tests in parallel
                 protocol = "http";
             } else {
                 SslUtils.trustAllHttpsCertificates();
@@ -108,80 +152,41 @@ public class AgentServicePool {
             }
 
             URL url = this.getClass()
-                          .getResource("/META-INF/wsdl/" + AgentWsDefinitions.AGENT_SERVICE_XML_LOCAL_NAME
-                                       + ".wsdl");
+                          .getResource( "/META-INF/wsdl/" + AgentWsDefinitions.AGENT_SERVICE_XML_LOCAL_NAME
+                                        + ".wsdl" );
 
-            Service agentService = Service.create(url,
-                                                  new QName(AgentWsDefinitions.AGENT_SERVICE_XML_TARGET_NAMESPACE,
-                                                            AgentWsDefinitions.AGENT_SERVICE_XML_LOCAL_NAME));
-            AgentService agentServicePort = agentService.getPort(new QName(AgentWsDefinitions.AGENT_SERVICE_XML_TARGET_NAMESPACE,
-                                                                           AgentWsDefinitions.AGENT_SERVICE_XML_PORT_NAME),
-                                                                 AgentService.class);
-            Map<String, Object> ctxt = ((BindingProvider) agentServicePort).getRequestContext();
+            Service agentService = Service.create( url,
+                                                   new QName( AgentWsDefinitions.AGENT_SERVICE_XML_TARGET_NAMESPACE,
+                                                              AgentWsDefinitions.AGENT_SERVICE_XML_LOCAL_NAME ) );
+            AgentService agentServicePort = agentService.getPort( new QName( AgentWsDefinitions.AGENT_SERVICE_XML_TARGET_NAMESPACE,
+                                                                             AgentWsDefinitions.AGENT_SERVICE_XML_PORT_NAME ),
+                                                                  AgentService.class );
+            Map<String, Object> ctxt = ( ( BindingProvider ) agentServicePort ).getRequestContext();
 
             // setting ENDPOINT ADDRESS, which defines the web service URL for SOAP communication
             // NOTE: if we specify WSDL URL (...<endpoint_address>?wsdl), the JBoss server returns the WSDL on a SOAP call,
             // but we are expecting a SOAP message response and an exception is thrown.
             // The Jetty server (in ATS agents) is working in both cases.
-            ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                     protocol + "://" + host + AgentWsDefinitions.AGENT_SERVICE_ENDPOINT_ADDRESS);
+            ctxt.put( BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                      protocol + "://" + host + AgentWsDefinitions.AGENT_SERVICE_ENDPOINT_ADDRESS );
             // setting timeouts
-            ctxt.put(BindingProviderProperties.CONNECT_TIMEOUT, 10000); // timeout in milliseconds
+            ctxt.put( BindingProviderProperties.CONNECT_TIMEOUT, 10000 ); // timeout in milliseconds
 
-            // check if new unique id must be generated each time
-            if (!useNewUuId) {
-                // create temp file containing caller working directory and the unique id
-                String userWorkingDirectory = AtsSystemProperties.SYSTEM_USER_HOME_DIR;
-                String uuiFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR
-                                         + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + "\\ats_uid.txt";
-                File uuiFile = new File(uuiFileLocation);
-
-                // check if the file exist and if exist check if the data we need is in, 
-                // otherwise add it to the file 
-                if (uuiFile.exists()) {
-                    String uuiFileContent = IoUtils.streamToString(IoUtils.readFile(uuiFileLocation));
-                    if (uuiFileContent.contains(userWorkingDirectory)) {
-                        for (String line : uuiFileContent.split("\n")) {
-                            if (line.contains(userWorkingDirectory)) {
-                                uniqueId = line.substring(userWorkingDirectory.length()).trim();
-                            }
-                        }
-                    } else {
-                        generateNewUUID();
-                        new LocalFileSystemOperations().appendToFile(uuiFileLocation,
-                                                                     userWorkingDirectory + "\t" + uniqueId + "\n");
-                    }
-                } else {
-                    generateNewUUID();
-                    try {
-                        uuiFile.createNewFile();
-                    } catch (IOException e) {
-                        log.warn("Unable to create file '" + uuiFile.getAbsolutePath() + "'");
-                    }
-                    if (uuiFile.exists()) {
-                        new LocalFileSystemOperations().appendToFile(uuiFileLocation,
-                                                                     userWorkingDirectory + "\t" + uniqueId + "\n");
-                    }
-                }
-            } else {
-                generateNewUUID();
-            }
-
-            // add header with unique session ID
-            Map<String, List<String>> requestHeaders = new HashMap<>();
-            requestHeaders.put(ApplicationContext.ATS_UID_SESSION_TOKEN,
-                               Arrays.asList(uniqueId));
-            ctxt.put(MessageContext.HTTP_REQUEST_HEADERS, requestHeaders);
+            // add headers to allow the Agent distinguish this call among calls from:
+            //  - different Executors
+            //  - different threads from same Executor(when have parallel tests)
+            Map<String, List<String>> headers = new HashMap<>();
+            // this header tells the exact Executor
+            headers.put( ExecutorUtils.ATS_RANDOM_TOKEN,
+                         Arrays.asList( ExecutorUtils.getUserRandomToken() ) );
+            // this header tells the exact thread
+            headers.put( ExecutorUtils.ATS_THREAD_ID, Arrays.asList( Thread.currentThread().getName() ) );
+            ctxt.put( MessageContext.HTTP_REQUEST_HEADERS, headers );
 
             return agentServicePort;
-        } catch (Exception e) {
-            throw new AgentException("Cannot connect to Agent application on host '" + host
-                                     + "' check your configuration", e);
+        } catch( Exception e ) {
+            throw new AgentException( "Cannot connect to Agent application on host '" + host
+                                      + "' check your configuration", e );
         }
-    }
-
-    private void generateNewUUID() {
-
-        uniqueId = UUID.randomUUID().toString().trim();
     }
 }

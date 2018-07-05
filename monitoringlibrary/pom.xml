@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.axway.ats.framework</groupId>
 		<artifactId>ats-framework</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
+		<version>4.1.0-SPT-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>ats-monitoringlibrary</artifactId>

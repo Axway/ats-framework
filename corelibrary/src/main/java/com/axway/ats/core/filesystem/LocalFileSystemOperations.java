@@ -110,7 +110,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     //file transfer socket commands (during file/directory copy)
     private static final String              FILE_COPY_SOCKET_COMMAND             = "file";
     private static final String              DIR_CREATE_SOCKET_COMMAND            = "dir";
-    private static final int                 INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                                                                                // used for file/dir command and  file name length
+    private static final int                 INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                             // used for file/dir command and  file name length
 
     //read buffer
     private static final int                 READ_BUFFER_SIZE                     = 16384;
@@ -119,7 +119,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private static final int                 FILE_TRANSFER_TIMEOUT                = 60 * 1000;
 
     // file size threshold after which a warning is issued for too-big file and that problems might arise
-    private static final int                 FILE_SIZE_FOR_WARNING                = 10 * 1024 * 1024;                                                                                    // 10 MB
+    private static final int                 FILE_SIZE_FOR_WARNING                = 10 * 1024 * 1024;                                 // 10 MB
 
     /**
      * The ASCII decimal code of the character at the beginning of the allowed
@@ -728,7 +728,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                               + "'");
                                     }
                                 }
-                                
+
                                 try {
                                     fos = new FileOutputStream(file, false);
                                 } catch (IOException e) {
@@ -935,9 +935,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public void replaceTextInFile( String fileName, String searchString, String newString, boolean isRegex ) {
 
         Map<String, String> tokensMap = new HashMap<>();
-        tokensMap.put( searchString, newString );
+        tokensMap.put(searchString, newString);
 
-        replaceTextInFile( fileName, tokensMap, isRegex );
+        replaceTextInFile(fileName, tokensMap, isRegex);
     }
 
     @Override
@@ -950,66 +950,66 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         File outputFile = null;
         StringBuilder info = new StringBuilder();
 
-        for( String token : searchTokens.keySet() ) {
-            info.append( token );
-            info.append( "," );
+        for (String token : searchTokens.keySet()) {
+            info.append(token);
+            info.append(",");
         }
-        info = info.deleteCharAt( info.length() - 1 );
+        info = info.deleteCharAt(info.length() - 1);
 
         try {
             try {
-                inputFile = new File( fileName );
-                outputFile = new File( fileName + "_" + System.currentTimeMillis() + ".tmp" );
+                inputFile = new File(fileName);
+                outputFile = new File(fileName + "_" + System.currentTimeMillis() + ".tmp");
 
-                inFileReader = new BufferedReader( new FileReader( inputFile ) );
-                outFileWriter = new BufferedWriter( new FileWriter( outputFile, false ) );
+                inFileReader = new BufferedReader(new FileReader(inputFile));
+                outFileWriter = new BufferedWriter(new FileWriter(outputFile, false));
 
                 String currentLine = inFileReader.readLine();
-                while( currentLine != null ) {
+                while (currentLine != null) {
 
-                    for( Entry<String, String> tokens : searchTokens.entrySet() ) {
-                        if( isRegex ) {
-                            currentLine = currentLine.replaceAll( tokens.getKey(), tokens.getValue() );
+                    for (Entry<String, String> tokens : searchTokens.entrySet()) {
+                        if (isRegex) {
+                            currentLine = currentLine.replaceAll(tokens.getKey(), tokens.getValue());
                         } else {
-                            currentLine = currentLine.replace( tokens.getKey(), tokens.getValue() );
+                            currentLine = currentLine.replace(tokens.getKey(), tokens.getValue());
                         }
                     }
-                    outFileWriter.write( currentLine );
+                    outFileWriter.write(currentLine);
                     outFileWriter.newLine();
 
                     //read a new line
                     currentLine = inFileReader.readLine();
                 }
 
-                log.info( "Successfully replaced all" + ( isRegex
-                                                                  ? " regular expression"
-                                                                  : "" )
-                          + " instances of '" + info.toString() + "' in file '" + fileName + "'" );
+                log.info("Successfully replaced all" + (isRegex
+                                                                ? " regular expression"
+                                                                : "")
+                         + " instances of '" + info.toString() + "' in file '" + fileName + "'");
             } finally {
-                IoUtils.closeStream( inFileReader );
-                IoUtils.closeStream( outFileWriter );
+                IoUtils.closeStream(inFileReader);
+                IoUtils.closeStream(outFileWriter);
             }
 
             //after we are finished, rename the temporary file to the original one
-            if( OperatingSystemType.getCurrentOsType().isUnix() ) {
+            if (OperatingSystemType.getCurrentOsType().isUnix()) {
 
                 // getting original file permissions before overriding operation
-                String permissions = getFilePermissions( inputFile.getCanonicalPath() );
+                String permissions = getFilePermissions(inputFile.getCanonicalPath());
 
-                renameFile( outputFile.getCanonicalPath(), fileName, true );
+                renameFile(outputFile.getCanonicalPath(), fileName, true);
                 // restoring file permissions
-                setFilePermissions( fileName, permissions );
+                setFilePermissions(fileName, permissions);
             } else {
 
-                renameFile( outputFile.getCanonicalPath(), fileName, true );
+                renameFile(outputFile.getCanonicalPath(), fileName, true);
             }
-        } catch( IOException ioe ) {
+        } catch (IOException ioe) {
 
-            throw new FileSystemOperationException( "Unable to replace" + ( isRegex
-                                                                                    ? " regular expression"
-                                                                                    : "" )
-                                                    + " instances of '" + info.toString() + "' in file '"
-                                                    + fileName + "'", ioe );
+            throw new FileSystemOperationException("Unable to replace" + (isRegex
+                                                                                  ? " regular expression"
+                                                                                  : "")
+                                                   + " instances of '" + info.toString() + "' in file '"
+                                                   + fileName + "'", ioe);
         }
     }
 
@@ -1479,19 +1479,19 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                           String fileName,
                                           int numLinesToRead ) {
 
-        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1);
+        return getLastLinesFromFile(fileName, numLinesToRead, StandardCharsets.ISO_8859_1.name());
     }
 
     @Override
     public String[] getLastLinesFromFile(
                                           String fileName,
                                           int numLinesToRead,
-                                          Charset chartset ) {
+                                          String charset ) {
 
         LinkedList<String> lastLinesList = new LinkedList<String>();
         ReversedLinesFileReader reversedReader = null;
         try {
-            reversedReader = new ReversedLinesFileReader(new File(fileName), 4096, chartset);
+            reversedReader = new ReversedLinesFileReader(new File(fileName), 4096, charset);
             while (lastLinesList.size() < numLinesToRead) {
                 String line = reversedReader.readLine();
                 // check if the file has less lines than the wanted
@@ -2002,12 +2002,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String filename ) {
 
         try {
-            Integer uid = ( Integer ) Files.getAttribute( new File( filename ).toPath(), "unix:uid",
-                                                          LinkOption.NOFOLLOW_LINKS );
+            Integer uid = (Integer) Files.getAttribute(new File(filename).toPath(), "unix:uid",
+                                                       LinkOption.NOFOLLOW_LINKS);
             return uid.longValue();
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get UID for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get UID for '" + filename + "'", e);
         }
     }
 
@@ -2021,13 +2021,13 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            UserPrincipal owner = Files.readAttributes( new File( filename ).toPath(),
-                                                        PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS )
+            UserPrincipal owner = Files.readAttributes(new File(filename).toPath(),
+                                                       PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS)
                                        .owner();
             return owner.getName();
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get owner for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get owner for '" + filename + "'", e);
         }
     }
 
@@ -2041,12 +2041,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            Integer gid = ( Integer ) Files.getAttribute( new File( filename ).toPath(), "unix:gid",
-                                                          LinkOption.NOFOLLOW_LINKS );
+            Integer gid = (Integer) Files.getAttribute(new File(filename).toPath(), "unix:gid",
+                                                       LinkOption.NOFOLLOW_LINKS);
             return gid.longValue();
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get GID for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get GID for '" + filename + "'", e);
         }
     }
 
@@ -2060,14 +2060,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                              String filename ) {
 
         try {
-            GroupPrincipal group = Files.readAttributes( new File( filename ).toPath(),
-                                                         PosixFileAttributes.class,
-                                                         LinkOption.NOFOLLOW_LINKS )
+            GroupPrincipal group = Files.readAttributes(new File(filename).toPath(),
+                                                        PosixFileAttributes.class,
+                                                        LinkOption.NOFOLLOW_LINKS)
                                         .group();
             return group.getName();
 
-        } catch( Exception e ) {
-            throw new FileSystemOperationException( "Could not get group for '" + filename + "'", e );
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Could not get group for '" + filename + "'", e);
         }
     }
 
@@ -2226,7 +2226,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
              * This is done, because later, this slash or backslash is needed, when constructing the target file name
              */
             if (!fromDirName.endsWith(AtsSystemProperties.SYSTEM_FILE_SEPARATOR)) {
-            fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
+                fromDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
             }
             if (!toDirName.endsWith("/") && !toDirName.endsWith("\\")) {
                 toDirName += AtsSystemProperties.SYSTEM_FILE_SEPARATOR;
@@ -2814,4 +2814,29 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             }
         }
     }
+
+//    private Charset loadCharset( String charset ) {
+//
+//        if (StringUtils.isNullOrEmpty(charset) || StandardCharsets.ISO_8859_1.name().equals(charset)) {
+//            return StandardCharsets.ISO_8859_1;
+//        }
+//        if (StandardCharsets.US_ASCII.name().equals(charset)) {
+//            return StandardCharsets.US_ASCII;
+//        }
+//        if (StandardCharsets.UTF_16.name().equals(charset)) {
+//            return StandardCharsets.UTF_16;
+//        }
+//        if (StandardCharsets.UTF_16BE.name().equals(charset)) {
+//            return StandardCharsets.UTF_16BE;
+//        }
+//        if (StandardCharsets.UTF_16LE.name().equals(charset)) {
+//            return StandardCharsets.UTF_16LE;
+//        }
+//        if (StandardCharsets.UTF_8.name().equals(charset)) {
+//            return StandardCharsets.UTF_8;
+//        }
+//
+//        throw new IllegalArgumentException("Charset '" + charset
+//                                           + "' is not supported. See java.nio.charset.StandardCharsets for supported ones.");
+//    }
 }
