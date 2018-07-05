@@ -155,6 +155,13 @@
             <version>${org.glassfish.jersey.jersey-client.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- this dependency is required to be added for jersey 2.27 -->
+        <!-- https://stackoverflow.com/questions/44088493/jersey-stopped-working-with-injectionmanagerfactory-not-found -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.inject</groupId>
+		    <artifactId>jersey-hk2</artifactId>
+		    <version>${org.glassfish.jersey.inject.version}</version>
+		</dependency>        
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
