@@ -122,7 +122,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!--<argLine>-XX:-UseSplitVerifier</argLine>For jdk 7 (<=1.7.0-72 ) https://code.google.com/p/powermock/issues/detail?id=504 -->
                     <includes>
