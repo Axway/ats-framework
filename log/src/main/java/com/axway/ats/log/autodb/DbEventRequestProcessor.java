@@ -178,12 +178,29 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * Keeps the ID of the last ended suite
      * */
     private int                                     lastEndedSuiteId           = -1;
+    
+    /**
+     * Do not use this constructor.
+     * It is implemented only to be used, when a dummy db event request processor is needed to be created.
+     * Currently the only case that this is needed is when ActiveDbAppender config info is not found in log4j.xml
+     **/
+    public DbEventRequestProcessor() {
+            
+    	if( _state == null ) {
+            _state = new EventProcessorState();
+        }
 
-    public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
+        if( _state.getRunId() == 0 ) {
+            // this event is sent from a spawn thread and is missing some important data
+            _state.injectRunInformation( _startRunState );
+        }
+    }
+
+    /*public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     boolean isBatchMode ) throws DatabaseAccessException {
 
         this( appenderConfig, layout, null, isBatchMode );
-    }
+    }*/
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     EventRequestProcessorListener listener,
@@ -223,8 +240,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             this.dbAccess = new PGDbWriteAccess( ( DbConnPostgreSQL ) dbConnection, isBatchMode );
 
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost()
-                            + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
+        	String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                    + (!StringUtils.isNullOrEmpty(appenderConfig.getPort()) ? appenderConfig.getPort() : "")
+                    + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
             throw new DatabaseAccessException( errMsg );
         }
 

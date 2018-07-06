@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 public class Test_RemoteLoggingConfigurator {
@@ -82,6 +83,7 @@ public class Test_RemoteLoggingConfigurator {
 
         ActiveDbAppender appender = new ActiveDbAppender();
         appender.setHost( "test" );
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
         appender.setDatabase( "test" );
         appender.setUser( "test" );
         appender.setPassword( "test" );
@@ -128,6 +130,7 @@ public class Test_RemoteLoggingConfigurator {
 
         ActiveDbAppender appender = new ActiveDbAppender();
         appender.setHost( "test" );
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
         appender.setDatabase( "test" );
         appender.setUser( "test" );
         appender.setPassword( "test" );
@@ -153,6 +156,7 @@ public class Test_RemoteLoggingConfigurator {
 
         ActiveDbAppender appender = new ActiveDbAppender();
         appender.setHost( "test" );
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
         appender.setDatabase( "test" );
         appender.setUser( "test" );
         appender.setPassword( "test" );
