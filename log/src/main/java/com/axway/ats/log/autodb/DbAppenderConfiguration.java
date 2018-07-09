@@ -17,6 +17,7 @@ package com.axway.ats.log.autodb;
 
 import java.io.Serializable;
 import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 
@@ -69,7 +70,11 @@ public class DbAppenderConfiguration implements Serializable {
     
     public void setPort( String port) {
     	
-    	this.port = port;
+    	if (StringUtils.isNullOrEmpty(port)) {
+    		new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. "
+        			+ "We will set it to the default one for MSSQL databases (" + DbConnSQLServer.DEFAULT_PORT + ")");
+    		this.port = DbConnSQLServer.DEFAULT_PORT + "";
+    	}
     }
 
     public void setDatabase(
@@ -187,8 +192,7 @@ public class DbAppenderConfiguration implements Serializable {
         }
         
         if ( port == null ) {
-        	new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. "
-        			+ "We will set it to the default one for MSSQL databases (" + DbConnSQLServer.DEFAULT_PORT + ")");
+        	throw new InvalidAppenderConfigurationException("port");
         }
 
         if (database == null) {
