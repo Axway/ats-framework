@@ -89,6 +89,13 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         DbChannel channel = this.channels.get(channelKey);
         if (channel == null) {
             channel = new DbChannel(this.appenderConfig);
+            
+            // check whether the configuration is valid first
+            try {
+                this.appenderConfig.validate();
+            } catch (InvalidAppenderConfigurationException iace) {
+                throw new DbAppenederException(iace);
+            }
 
             channel.initialize(atsConsoleLogger, this.layout, true);
 

@@ -59,6 +59,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
         appenderConfig.setDatabase(DUMMY_DB_DATABASE);
         appenderConfig.setUser(DUMMY_DB_USER);
         appenderConfig.setPassword(DUMMY_DB_PASSWORD);
+        
+        isAttached = true;
 
     }
 
