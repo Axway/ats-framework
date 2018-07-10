@@ -25,6 +25,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.log.autodb.events.EndRunEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 
 /**
@@ -75,6 +76,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
         event.getThreadName();
 
         getDbChannel(event).append(event);
+        
+        if (event instanceof EndRunEvent) {
+        	destroyAllChannels(true);
+        }
+        
     }
 
     @Override

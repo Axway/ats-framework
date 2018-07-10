@@ -334,7 +334,7 @@ public class SystemOperations {
             try {
                 return new RemoteSystemOperations(atsAgent);
             } catch (Exception e) {
-                throw new RuntimeException("Unable to create remote process executor impl object", e);
+                throw new SystemOperationException("Unable to create remote process executor impl object", e);
             }
         }
     }

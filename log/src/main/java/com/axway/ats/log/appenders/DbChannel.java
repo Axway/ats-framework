@@ -153,6 +153,22 @@ public class DbChannel {
             queueLogger.interrupt();
         }
     }
+    
+    /**
+     * Wait for queue logger thread to process all events
+     * */
+    public void waitForQueueToProcessAllEvents() {
+    	
+    	this.atsConsoleLogger.info("Waiting for queue '" + queueLogger.getName() + "__" + queueLogger.getId() + "' to process all log events ...");
+    	
+    	while (getNumberPendingLogEvents() > 0) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
+    }
 
     /**
      * All logging events are processed by this method

@@ -109,7 +109,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     /**
      * The current state of the event processor
      */
-    private static EventProcessorState    _startRunState;
+    private static EventProcessorState    _startRunState = new EventProcessorState();
     private EventProcessorState           _state;
 
     /**
@@ -322,7 +322,17 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                                                      : null;
 
         if( dbAppenderEvent != null && dbAppenderEvent.getEventType() == LoggingEventType.START_RUN ) {
-            _startRunState = new EventProcessorState();
+            if ( _startRunState.getPreviousRunId() > 0 ) {
+            	// we already have started a run
+            	// join this run with it
+            	_startRunState.setRunId(_startRunState.getPreviousRunId());
+            	_startRunState.setLifeCycleState(LifeCycleState.RUN_STARTED);
+            	//notify the listener that the run started successfully
+                if( listener != null ) {
+                    listener.onRunStarted();
+                }
+            	return;
+            }
         }
 
         String executorId;

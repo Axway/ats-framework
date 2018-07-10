@@ -105,11 +105,26 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         return channel;
     }
 
-    protected void distroyDbChannel( String channelKey ) {
+    protected void destroyDbChannel( String channelKey ) {
 
         DbChannel channel = this.channels.get( channelKey );
         
         this.channels.remove(channelKey);
+    }
+    
+    /**
+     * Destroy all db channels
+     * 
+     * @param flushEventQueue whether to wait for each channel's queue logger thread to finish execution of all events
+     * */
+    protected void destroyAllChannels(boolean waitForQueueToProcessAllEvents) {
+    	
+    	for (DbChannel channel : channels.values()) {
+    		if (waitForQueueToProcessAllEvents) {
+    			channel.waitForQueueToProcessAllEvents();
+    		}
+    	}
+    	channels.clear();
     }
 
     public abstract GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event );
@@ -286,4 +301,5 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // FIXME make the next working
         getDbChannel(null).calculateTimeOffset(executorTimestamp);
     }
+    
 }
