@@ -786,6 +786,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         //set the current appender state
         _state.setLifeCycleState( LifeCycleState.TEST_CASE_STARTED );
+        
+        //set the run id
+        _state.setRunId( joinTestCaseEvent.getTestCaseState().getRunId() );
 
         /*
          * Now the Agent can log into this test case
