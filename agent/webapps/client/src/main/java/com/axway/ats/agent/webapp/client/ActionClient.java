@@ -46,13 +46,17 @@ public abstract class ActionClient extends AbstractAgentClient {
      *            current JVM without routing through the web service
      * @param component
      *            the name of the component for which to execute an action
-     * @throws AgentException 
      */
     public ActionClient( String atsAgent,
                          String component ) {
 
         super(atsAgent, component);
-
+        try {
+        	remoteExecutor = new RemoteExecutor(HostUtils.getAtsAgentIpAndPort(atsAgent), this.initializeRequestUrl);
+        } catch (Exception e) {
+			throw new RuntimeException("Unable to initialize remote executor", e);
+		}
+        
     }
 
     /**
