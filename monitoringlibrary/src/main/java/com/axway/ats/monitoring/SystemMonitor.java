@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
-import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.AtsVersion;
