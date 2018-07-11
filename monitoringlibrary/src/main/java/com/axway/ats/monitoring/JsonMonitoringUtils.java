@@ -51,6 +51,7 @@ public class JsonMonitoringUtils {
 
     public static final String[] INITIALIZE_DB_CONNECTION_KEYS           = new String[]{ "uid",
                                                                                          "dbHost",
+                                                                                         "dbPort",
                                                                                          "dbName",
                                                                                          "dbUser",
                                                                                          "dbPass",

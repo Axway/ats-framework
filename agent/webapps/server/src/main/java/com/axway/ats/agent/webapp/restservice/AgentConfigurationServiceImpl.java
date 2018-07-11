@@ -92,6 +92,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             // create DbAppenderConfiguration
             DbAppenderConfiguration newAppenderConfiguration = new DbAppenderConfiguration();
             newAppenderConfiguration.setHost(dbConnectionPojo.getDbHost());
+            newAppenderConfiguration.setPort(dbConnectionPojo.getDbPort());
             newAppenderConfiguration.setDatabase(dbConnectionPojo.getDbName());
             newAppenderConfiguration.setUser(dbConnectionPojo.getDbUser());
             newAppenderConfiguration.setPassword(dbConnectionPojo.getDbPass());

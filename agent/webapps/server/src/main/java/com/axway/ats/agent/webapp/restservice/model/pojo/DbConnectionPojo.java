@@ -19,6 +19,7 @@ public class DbConnectionPojo extends BasePojo {
 
     private long   timestamp;
     private String dbHost;
+    private String dbPort;
     private String dbName;
     private String dbUser;
     private String dbPass;
@@ -29,10 +30,12 @@ public class DbConnectionPojo extends BasePojo {
 
     public DbConnectionPojo() {}
 
-    public DbConnectionPojo( long timestamp, String dbHost, String dbName, String dbUser, String dbPass,
+    public DbConnectionPojo( long timestamp, String dbHost, String dbPort, String dbName, String dbUser, String dbPass,
                              String mode, int loggingThreshold, String maxNumberLogEvents ) {
+
         this.timestamp = timestamp;
         this.dbHost = dbHost;
+        this.dbPort = dbPort;
         this.dbName = dbName;
         this.dbUser = dbUser;
         this.dbPass = dbPass;
@@ -49,6 +52,16 @@ public class DbConnectionPojo extends BasePojo {
     public void setDbHost( String dbHost ) {
 
         this.dbHost = dbHost;
+    }
+
+    public String getDbPort() {
+
+        return dbPort;
+    }
+
+    public void setDbPort( String dbPort ) {
+
+        this.dbPort = dbPort;
     }
 
     public String getDbName() {
