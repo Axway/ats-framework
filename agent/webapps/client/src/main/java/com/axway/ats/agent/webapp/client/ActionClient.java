@@ -32,7 +32,7 @@ import com.axway.ats.core.utils.HostUtils;
  */
 public abstract class ActionClient extends AbstractAgentClient {
 
-    private String           initializeRequestUrl;
+    private String           initializeRequestUrl = null;
 
     protected RemoteExecutor remoteExecutor;
 
@@ -51,12 +51,6 @@ public abstract class ActionClient extends AbstractAgentClient {
                          String component ) {
 
         super(atsAgent, component);
-        try {
-        	remoteExecutor = new RemoteExecutor(HostUtils.getAtsAgentIpAndPort(atsAgent), this.initializeRequestUrl);
-        } catch (Exception e) {
-			throw new RuntimeException("Unable to initialize remote executor", e);
-		}
-        
     }
 
     /**
@@ -80,7 +74,6 @@ public abstract class ActionClient extends AbstractAgentClient {
         super(atsAgent, component);
 
         this.initializeRequestUrl = initializeRequestUrl;
-        remoteExecutor = new RemoteExecutor(HostUtils.getAtsAgentIpAndPort(atsAgent), this.initializeRequestUrl);
 
     }
 
@@ -313,6 +306,9 @@ public abstract class ActionClient extends AbstractAgentClient {
                 LocalExecutor localExecutor = new LocalExecutor();
                 result = localExecutor.executeAction(actionRequest);
             } else {
+            	if (remoteExecutor == null) {
+            		remoteExecutor = new RemoteExecutor(HostUtils.getAtsAgentIpAndPort(atsAgent), this.initializeRequestUrl);
+            	}
                 result = remoteExecutor.executeAction(actionRequest);
             }
         } else {
