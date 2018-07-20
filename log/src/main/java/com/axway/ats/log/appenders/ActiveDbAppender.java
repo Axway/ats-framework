@@ -142,8 +142,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
                     // clear test case id
                     testCaseState.clearTestcaseId();
-                    // now pass the event to the queue
-                    break;
+                    // this event has already been through the queue
+                    return;
                 }
                 case GET_CURRENT_TEST_CASE_STATE: {
                     // get current test case id which will be passed to ATS agent
