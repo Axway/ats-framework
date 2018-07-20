@@ -47,7 +47,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     private DbConnection              dbConnection;
     private List<DbTable>             dbTables;
 
-    private boolean                   addLocks;
+    private boolean                   addSeparateLocks;
     private boolean                   disableForeignKeys;
     private boolean                   includeDeleteStatements;
 
@@ -118,7 +118,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
         this.backupDirPath = IoUtils.normalizeDirPath(backupDirPath);
         this.backupFileName = backupFileName;
-        this.addLocks = true;
+        this.addSeparateLocks = true;
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
 
@@ -149,10 +149,9 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
             //create db backup handler instance
             dbBackup = environmentHandlerFactory.createDbBackupHandler(dbConnection);
-            dbBackup.setLockTables(addLocks);
             dbBackup.setForeignKeyCheck(disableForeignKeys);
             dbBackup.setIncludeDeleteStatements(includeDeleteStatements);
-
+            dbBackup.setLockTables(addSeparateLocks);
             for (DbTable dbTable : dbTables) {
                 dbBackup.addTable(dbTable);
             }

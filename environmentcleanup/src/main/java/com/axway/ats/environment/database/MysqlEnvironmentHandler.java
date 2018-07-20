@@ -26,7 +26,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -205,15 +204,20 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbTable table,
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException {
-
-        if (!this.deleteStatementsInserted) {
-            writeDeleteStatements(fileWriter);
-        }
-
-        if (this.addLocks && table.isLockTable()) {
+    	
+    	// LOCK this single table for update. Lock is released after delete and then insert of backup data. 
+    	// This leads to less potential data integrity issues. If another process updates tables at same time
+    	// LOCK at once for all tables is not applicable as in reality DB connection hangs
+    	
+    	if (this.addLocks && table.isLockTable()) {
             fileWriter.write("LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
+        if (this.includeDeleteStatements) {
+            fileWriter.write("DELETE FROM `" + table.getTableName() + "`;" + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
+
 
         if (table.getAutoIncrementResetValue() != null) {
             fileWriter.write("SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';" + EOL_MARKER
@@ -225,9 +229,10 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             // If the table was locked, after using ALTER TABLE it becomes unlocked and will throw an error.
             // ( explained here: http://dev.mysql.com/doc/refman/5.0/en/alter-table-problems.html )
             // To handle this, lock the table again
-            if (this.addLocks && table.isLockTable()) {
-                fileWriter.write("LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
-                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            if ( this.addLocks && table.isLockTable()) {
+            	fileWriter.write("LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
+                        + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
             }
         }
 
@@ -266,27 +271,19 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 fileWriter.flush();
             }
         }
-
+        
+        // unlock table
         if (this.addLocks && table.isLockTable()) {
             fileWriter.write("UNLOCK TABLES;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
         fileWriter.write(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
     }
-
+    
     @Override
-    protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
-
-        if (this.includeDeleteStatements) {
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
-                DbTable dbTable = entry.getValue();
-                fileWriter.write("DELETE FROM `" + dbTable.getTableName() + "`;" + EOL_MARKER
-                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            }
-            this.deleteStatementsInserted = true;
-        }
-
-    }
-
+	protected void writeDeleteStatements(Writer fileWriter) throws IOException {
+		// Left empty due to delete being now generated per table - see writeTableToFile() method
+	}
+    
     // escapes the characters in the value string, according to the MySQL manual. This
     // method escape each symbol *even* if the symbol itself is part of an escape sequence
     protected String escapeValue( String fieldValue ) {
@@ -384,6 +381,9 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
     protected String disableForeignKeyChecksEnd() {
 
         return "";
+        // TODO: disable foreign checks in current way is session-wide and code relies that at the end it should be reset.
+        // better use this explicitly to know potential errors on commit
+        // return "SET FOREIGN_KEY_CHECKS = 1;" + EOL_MARKER + ATSSystemProperties.SYSTEM_LINE_SEPARATOR;
     }
 
     private boolean checkDriverVersion( MysqlDbProvider dbProvider ) {
@@ -414,5 +414,5 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
         return true;
     }
-
+    
 }
