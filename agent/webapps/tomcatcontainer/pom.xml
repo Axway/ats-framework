@@ -208,10 +208,11 @@
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>${org.glassfish.jersey.jersey-server.version}</version>
 		</dependency>
-		<dependency>
+		<!-- this dependency is required after jersey 2.26 -->
+		<!-- <dependency>
 			<groupId>org.glassfish.jersey.inject</groupId>
 			<artifactId>jersey-hk2</artifactId>
 			<version>${org.glassfish.jersey.inject.version}</version>
-		</dependency>
+		</dependency> -->
     </dependencies>
 </project>
