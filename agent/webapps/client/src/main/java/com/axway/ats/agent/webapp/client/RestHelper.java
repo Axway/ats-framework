@@ -164,7 +164,7 @@ public class RestHelper {
             }
             return jsonObject;
         } catch (Exception e) {
-            throw new AgentException("Unable to execute '" + httpMethodName + "' to '" + url + "'", e);
+            throw new AgentException("Error while executing '" + httpMethodName + "' to '" + url + "'", e);
         } finally {
             try {
                 if (httpResponse != null) {
@@ -179,6 +179,13 @@ public class RestHelper {
         }
     }
 
+    /**
+     * Serialize complex java object
+     * <br>Most primitive types can be serialize otherwise
+     * @param object the object that needs to be serialized
+     * @return a JSON representation of the object
+     * @throws RuntimeException if the provided object is null
+     * */
     public String serializeJavaObject( Object object ) {
 
         if (object == null) {
@@ -188,10 +195,17 @@ public class RestHelper {
         return gson.toJson(object);
     }
 
+    /**
+     * Deserialize complex object form its JSON representation
+     * @param json the JSON representation of the Java object
+     * @param clss the Class of the Java object (String.class, CustomObject.class, etc)
+     * @return the deserialized java object
+     * @throws RuntimeException if the JSON string is null or empty or if the Class object is null
+     * */
     public Object deserializeJavaObject( String json, Class<?> clss ) {
 
         if (StringUtils.isNullOrEmpty(json)) {
-            throw new RuntimeException("Provided JSON representation of an object is null/empty");
+            throw new RuntimeException("Provided JSON string is null/empty");
         }
 
         if (clss == null) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.agent.webapp.restservice;
+package com.axway.ats.agent.webapp.restservice.api.system.monitoring;
 
 import java.util.ArrayList;
 import java.util.HashMap;

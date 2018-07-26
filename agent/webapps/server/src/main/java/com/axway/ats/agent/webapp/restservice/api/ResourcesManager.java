@@ -30,17 +30,21 @@ import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.google.gson.Gson;
 
 /**
- * Class that is responsible for initialization, execution and deinitialization of resources ( Action class instances ).
- *  **/
+ * Class that is responsible for initialization, execution and deinitialization
+ * of resources ( Action class instances ).
+ **/
 public class ResourcesManager {
 
     private static final Logger LOG = Logger.getLogger(ResourcesManager.class);
 
-    public synchronized static int initializeResource( ActionPojo pojo ) throws NoSuchActionException,
+    /**
+     * Initialize resource to some InternalXYZOperation's class
+     */
+    public synchronized static int initializeResource( ActionPojo pojo )
+                                                                         throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
                                                                          NoSuchComponentException,
-                                                                         ClassNotFoundException,
-                                                                         InstantiationException,
+                                                                         ClassNotFoundException, InstantiationException,
                                                                          IllegalAccessException {
 
         Method method = getActionMethod(pojo);
@@ -52,21 +56,49 @@ public class ResourcesManager {
         int actionId = ResourcesRepository.getInstance().putResource(pojo.getSessionId(), actionClassInstance);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Action class '" + method.getDeclaringClass().getName() + "' received resource id '" + actionId
-                      + "'");
+            LOG.debug("Action class '" + method.getDeclaringClass().getName() + "' added to session '"
+                      + pojo.getSessionId() + ". Its resourceID is '" + actionId + "'");
         }
 
         return actionId;
 
     }
 
+    /**
+     * <p>
+     * Add non-action resource to the current session
+     * </p>
+     * <p>
+     * This method is used when we want to access a resource (an JAVA object) that
+     * is not an action class
+     * </p>
+     * 
+     * @param sessionId
+     *            the sessionID (caller)
+     * @param resource
+     *            the resource that we want to add to this session
+     */
+    public synchronized static int addResource( String sessionId, Object resource ) {
+
+        int resourceId = ResourcesRepository.getInstance().putResource(sessionId, resource);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("New object from class '" + resource.getClass().getName() + "' added to session '" + sessionId
+                      + "'. Its resourceID is '" + resourceId + "'");
+        }
+
+        return resourceId;
+
+    }
+
+    /**
+     * Deinitialize resource to some InternalXYZOperation's class
+     */
     public synchronized static int deinitializeResource( String sessionId, int resourceId ) {
 
         Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(sessionId, resourceId);
         if (actionClassInstance == null) {
             throw new NoSuchElementException("Unable to delete resource with id '" + resourceId
-                                             + "' for session with id '"
-                                             + sessionId + "'. No such actionId exists");
+                                             + "' for session with id '" + sessionId + "'. No such actionId exists");
         }
 
         if (LOG.isDebugEnabled()) {
@@ -76,6 +108,9 @@ public class ResourcesManager {
         return resourceId;
     }
 
+    /**
+     * Execute some action method using some InternalXYZOperation action object
+     */
     public synchronized static Object executeOverResource( ActionPojo pojo ) throws NoSuchActionException,
                                                                              NoCompatibleMethodFoundException,
                                                                              NoSuchComponentException,
@@ -92,17 +127,17 @@ public class ResourcesManager {
             return method.invoke(actionClassInstance, new Object[]{});
         }
         if (pojo.getArgumentsTypes().length != pojo.getArgumentsValues().length) {
-            throw new RuntimeException("Provided action method arguments types and arguments values have different length");
+            throw new RuntimeException(
+                                       "Provided action method arguments types and arguments values have different length");
         }
-        
+
         Object[] args = getActualArgumentsValues(pojo);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Execution of action method '" + method.getDeclaringClass().getName() + "@" + method.getName()
                       + "' with arguments {"
                       + Arrays.asList(args).toString().substring(1, Arrays.asList(args).toString().length() - 1)
-                      + "} using resource with id '"
-                      + pojo.getResourceId() + "' from session with id '"
+                      + "} using resource with id '" + pojo.getResourceId() + "' from session with id '"
                       + pojo.getSessionId() + "'");
         }
 
@@ -110,9 +145,15 @@ public class ResourcesManager {
 
     }
 
-    private static Method getActionMethod( ActionPojo pojo ) throws NoSuchActionException,
-                                                             NoCompatibleMethodFoundException,
-                                                             NoSuchComponentException,
+    public synchronized static Object getResource( String sessionId, int resourceId ) {
+
+        return ResourcesRepository.getInstance().getResource(sessionId, resourceId);
+
+    }
+
+    private static Method getActionMethod( ActionPojo pojo )
+                                                             throws NoSuchActionException,
+                                                             NoCompatibleMethodFoundException, NoSuchComponentException,
                                                              ClassNotFoundException, InstantiationException,
                                                              IllegalAccessException {
 
@@ -120,8 +161,7 @@ public class ResourcesManager {
             // get actual Action method object
             return ComponentRepository.getInstance()
                                       .getComponentActionMap(pojo.getComponentName())
-                                      .getActionMethod(pojo.getMethodName(),
-                                                       new Class<?>[]{})
+                                      .getActionMethod(pojo.getMethodName(), new Class<?>[]{})
                                       .getMethod();
         } else {
             Class<?>[] actionMethodActualArgumentsClasses = new Class<?>[pojo.getArgumentsTypes().length];
@@ -132,8 +172,7 @@ public class ResourcesManager {
             // get actual Action method object
             return ComponentRepository.getInstance()
                                       .getComponentActionMap(pojo.getComponentName())
-                                      .getActionMethod(pojo.getMethodName(),
-                                                       actionMethodActualArgumentsClasses)
+                                      .getActionMethod(pojo.getMethodName(), actionMethodActualArgumentsClasses)
                                       .getMethod();
         }
     }

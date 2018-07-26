@@ -255,7 +255,6 @@ public class ActionsRestEntryPoint {
                                                   example = "1",
                                                   name = "resourceId",
                                                   type = "integer") })
-
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,

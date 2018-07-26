@@ -133,7 +133,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
         for (String atsAgent : atsAgents) {
 
-            // the remote endpoint is defined by Agent host and Test Executor's current thread(in case of parallel tests)
+            // the remote end-point is defined by Agent host and Test Executor's current thread(in case of parallel tests)
             String agentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
                                                                    Thread.currentThread().getName());
 
