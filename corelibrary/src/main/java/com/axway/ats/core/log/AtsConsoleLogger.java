@@ -174,6 +174,8 @@ public class AtsConsoleLogger {
 
         String now = TimeUtils.getFormattedDateTillMilliseconds();
 
+        sb.append(now).append(" ");
+        
         if (!StringUtils.isNullOrEmpty(level)) {
             if (level.length() < 5) { // 5 is the max number of chars for level ID String (ERROR, TRACE, DEBUG)
                 // in order to preserve some kind of padding, if the level ID String is shorter, add additional space char after it
@@ -183,7 +185,7 @@ public class AtsConsoleLogger {
             }
         }
 
-        sb.append(now).append(" ");
+        sb.append("["+Thread.currentThread().getName()+"]").append(" ");
 
         if (this.classNameTokens.length < 2) {
             sb.append(this.callingClass.getSimpleName());
