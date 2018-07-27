@@ -221,12 +221,11 @@ public class SwaggerDocumentationGenerator {
                                             "com.axway.ats.agent.webapp.restservice.api.system.SystemRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.system.input.SystemInputRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.registry.RegistryRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.machine.MachineDescriptionRestEntryPoint"
+                                            "com.axway.ats.agent.webapp.restservice.api.machine.MachineDescriptionRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.system.monitoring.SystemMonitorsRestEntryPoint"
         };
 
-        String swaggerDocLocation = System.getProperty("user.dir") + File.separator
-                                    + "agent" + File.separator + "agentapp" + File.separator + "systemoperations"
-                                    + File.separator + "target";
+        String swaggerDocLocation = System.getProperty("user.dir") + File.separator + "target";
         new SwaggerDocumentationGenerator(classNames, swaggerDocLocation).generate();
         if (swaggerDocLocation.endsWith(File.separator)) {
             System.out.println("Swagger documentation saved as " + swaggerDocLocation + OUTPUT_FILE_NAME);
