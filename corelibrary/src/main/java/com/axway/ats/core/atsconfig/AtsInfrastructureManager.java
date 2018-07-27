@@ -91,12 +91,18 @@ public class AtsInfrastructureManager {
 	 * documentation. They might be also available in the source code of
 	 * com.jcraft.jsch.JSch
 	 * <p/>
+	 * <p>
+	 * Example: The default value of "PreferredAuthentications" is
+	 * "gssapi-with-mic,publickey,keyboard-interactive,password"
+	 * </p>
 	 * ATS uses two types of properties to configure the ssh client: <br>
 	 * <ul>
 	 * <li>global - equivalent to {@link JSch#setConfig(String, String)}, example
 	 * <strong>global.RequestTTY</strong>=true</li>
 	 * <li>session - equivalent to {@link Session#setConfig(String, String)},
-	 * example <strong>session.StrictHostKeyChecking</strong>=no</li>
+	 * example <strong>session.StrictHostKeyChecking</strong>=no <br>
+	 * Note that if there is no global. or session. prefix, the property is assumed
+	 * to be a session one</li>
 	 * </ul>
 	 * <p/>
 	 * 

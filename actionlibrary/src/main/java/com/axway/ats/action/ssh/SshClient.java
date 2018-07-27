@@ -19,11 +19,10 @@ import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.log4j.BasicConfigurator;
-
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.ssh.JschSshClient;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 
 /**
  * An SSH client class
@@ -36,15 +35,15 @@ import com.axway.ats.core.ssh.JschSshClient;
 @PublicAtsApi
 public class SshClient implements Closeable {
 
-    private JschSshClient sshClient;
-    
+    private JschSshClient       sshClient;
+
     // connection parameters
-    private String host;
-    private String user;
-    private String password;
-    private int port;
-    
-    private Map<String, String>      sshClientConfigurationProperties;
+    private String              host;
+    private String              user;
+    private String              password;
+    private int                 port;
+
+    private Map<String, String> sshClientConfigurationProperties;
 
     /**
      * Construct SSH client. It will work on the default port 22
@@ -77,25 +76,27 @@ public class SshClient implements Closeable {
         this.user = user;
         this.password = password;
         this.port = port;
-        
+
         this.sshClientConfigurationProperties = new HashMap<>();
     }
 
     /**
-     * Currently we use internally JCraft's JSch library
-     * which can be configured through this method.
-     * 
-     * You need to find the acceptable key-value configuration pairs in the JSch documentation.
-     * They might be also available in the source code of com.jcraft.jsch.JSch
-     * 
-     * Example: The default value of "PreferredAuthentications" is "gssapi-with-mic,publickey,keyboard-interactive,password" 
+     * Set configuration property <p/> Currently we use internally JCraft's JSch library which can be configured through
+     * this method. <p/> You need to find the acceptable key-value configuration pairs in the JSch documentation. They
+     * might be also available in the source code of com.jcraft.jsch.JSch <p/> <p> Example: The default value of
+     * "PreferredAuthentications" is "gssapi-with-mic,publickey,keyboard-interactive,password" </p> ATS uses two types
+     * of properties to configure the ssh client: <br> <ul> <li>global - equivalent to
+     * {@link JSch#setConfig(String, String)}, example <strong>global.RequestTTY</strong>=true</li> <li>session -
+     * equivalent to {@link Session#setConfig(String, String)}, example
+     * <strong>session.StrictHostKeyChecking</strong>=no <br> Note that if there is no global. or session. prefix, the
+     * property is assumed to be a session one</li> </ul> <p/>
      * 
      * @param key configuration key
      * @param value configuration value
      */
     public void setSshClientConfigurationProperty( String key, String value ) {
 
-        sshClientConfigurationProperties.put( key, value );
+        sshClientConfigurationProperties.put(key, value);
     }
 
     /**
@@ -119,9 +120,9 @@ public class SshClient implements Closeable {
                          String command ) {
 
         sshClient = createNewSshClient();
-        
+
         sshClient.connect(user, password, host, port);
-        
+
         sshClient.execute(command, true);
     }
 
@@ -168,13 +169,13 @@ public class SshClient implements Closeable {
             sshClient.disconnect();
         }
     }
-    
+
     private JschSshClient createNewSshClient() {
 
         JschSshClient sshClient = new JschSshClient();
 
-        for( Entry<String, String> entry : sshClientConfigurationProperties.entrySet() ) {
-            sshClient.setConfigurationProperty( entry.getKey(), entry.getValue() );
+        for (Entry<String, String> entry : sshClientConfigurationProperties.entrySet()) {
+            sshClient.setConfigurationProperty(entry.getKey(), entry.getValue());
         }
 
         return sshClient;
