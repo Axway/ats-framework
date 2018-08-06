@@ -58,6 +58,7 @@ import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.events.UpdateRunEvent;
 import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
 import com.axway.ats.log.autodb.events.UpdateTestcaseEvent;
+import com.axway.ats.log.model.AutoLogger;
 import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
 import com.axway.ats.log.model.SystemLogLevel;
@@ -67,6 +68,11 @@ import com.axway.ats.log.model.TestCaseResult;
 public class AtsDbLogger {
 
     private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
+    
+    /**
+     * Flag that is used to log error for missing Ats Database logger only once
+     */
+    private static boolean isErrorMessageLogged = false;
 
     protected Logger            logger;
 
@@ -76,10 +82,15 @@ public class AtsDbLogger {
         // check if the ActiveDbAppender is specified in log4j.xml
         if (!skipAppenderCheck) {
             if (!ActiveDbAppender.isAttached) {
-                throw new IllegalStateException("ATS Database appender not specified in log4j.xml file.");
+                if (!isErrorMessageLogged) {
+                    this.logger.error(
+                            "ATS Database appender not specified in log4j.xml file. No test data will be sent to ATS Log database and some methods from classes '"
+                                    + AutoLogger.AUTO_LOGGER_CLASS_NAME + "' and '" + AtsDbLogger.class.getName()
+                                    + "' will not work as expected");
+                    isErrorMessageLogged = true;
+                }
             }
         }
-
     }
 
     @PublicAtsApi
